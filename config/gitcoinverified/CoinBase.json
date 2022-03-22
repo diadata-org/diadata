@@ -53,6 +53,12 @@
             "Exchange": "CoinBase",
             "Blockchain": "Fetch",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "DIA",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"
         }
     ]
 }

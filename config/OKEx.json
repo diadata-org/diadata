@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "OKEx",
+      "ForeignName": "DIA-USDT",
+      "Ignore": false,
+      "Symbol": "DIA"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "METIS-USDT",
       "Ignore": false,
       "Symbol": "METIS"

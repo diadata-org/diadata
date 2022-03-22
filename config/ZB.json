@@ -224,6 +224,12 @@
     },
     {
       "Exchange": "ZB",
+      "ForeignName": "diausdt",
+      "Ignore": false,
+      "Symbol": "DIA"
+    },
+    {
+      "Exchange": "ZB",
       "ForeignName": "dogebtc",
       "Ignore": false,
       "Symbol": "DOGE"

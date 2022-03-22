@@ -37,6 +37,12 @@
             "Address": "0xBe428c3867F05deA2A89Fc76a102b544eaC7f772"
         },
         {
+            "Symbol": "DIA",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"
+        },
+        {
             "Symbol": "GLM",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
