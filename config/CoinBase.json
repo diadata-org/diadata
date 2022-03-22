@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "CoinBase",
+      "ForeignName": "DIA-USD",
+      "Ignore": false,
+      "Symbol": "DIA"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "FET-USD",
       "Ignore": false,
       "Symbol": "FET"
