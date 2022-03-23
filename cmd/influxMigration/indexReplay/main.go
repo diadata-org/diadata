@@ -188,9 +188,9 @@ func processIndexVals(timeInit, timeFinal time.Time, stepSize int64, indexSymbol
 			constituents := oldIndexVals[i].Constituents
 			for j := range constituents {
 				// 1. Substitute cappingFactor
-				constituents[i].CappingFactor = cappingMap[constituents[i].Asset.Address]
+				constituents[j].CappingFactor = cappingMap[constituents[j].Asset.Address]
 				// 2. Substitute numBaseTokens
-				constituents[i].NumBaseTokens = numBaseTokensMap[constituents[i].Asset.Address]
+				constituents[j].NumBaseTokens = numBaseTokensMap[constituents[j].Asset.Address]
 				// 3. Substitute price
 				if constituents[j].Price == float64(0) {
 					price, err := ds.GetAssetPriceUSD(constituents[j].Asset, oldIndexVals[i].CalculationTime)
