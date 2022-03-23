@@ -1,0 +1,19 @@
+{
+  "name": "DIAData",
+  "version": "0.0.1",
+  "description": "Dummy description",
+  "main": "index.js",
+  "authors": {
+    "name": "DIA",
+    "email": "info@diadata.org"
+  },
+  "repository": "https://github.com/diadata-org/diadata/DIAData",
+  "scripts": {
+    "dev": "vuepress dev src",
+    "build": "vuepress build src"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "vuepress": "^1.9.7"
+  }
+}
