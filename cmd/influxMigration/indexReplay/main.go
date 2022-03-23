@@ -12,11 +12,12 @@ import (
 )
 
 var (
-	log              *logrus.Logger
-	symbolsMap       map[string]string
-	cappingMap       map[string]float64
-	numBaseTokensMap map[string]float64
-	indexMap         map[string]dia.Asset
+	log                 *logrus.Logger
+	symbolsMap          map[string]string
+	cappingMap          map[string]float64
+	numBaseTokensMap    map[string]float64
+	numBaseTokensGBIMap map[string]float64
+	indexMap            map[string]dia.Asset
 )
 
 func init() {
@@ -88,6 +89,16 @@ func init() {
 	numBaseTokensMap["0x4E15361FD6b4BB609Fa63C81A2be19d873717870"] = float64(234454930204332481)
 	numBaseTokensMap["0xba100000625a3754423978a60c9317c58a424e3D"] = float64(3941681400720949)
 	numBaseTokensMap["0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9"] = float64(16635301231735492)
+
+	numBaseTokensGBIMap = make(map[string]float64)
+	numBaseTokensGBIMap["0x0000000000000000000000000000000000000000"] = float64(33027773221964)
+	numBaseTokensGBIMap["0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"] = float64(4599079607032)
+	numBaseTokensGBIMap["0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"] = float64(9881034391355640)
+	numBaseTokensGBIMap["0x1fDaB294EDA5112B7d066ED8F2E4E562D5bCc664"] = float64(102974575097533460)
+	numBaseTokensGBIMap["0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"] = float64(2230000000000)
+	numBaseTokensGBIMap["0x514910771AF9Ca656af840dff83E8264EcF986CA"] = float64(6573758852347496)
+	numBaseTokensGBIMap["0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"] = float64(49081301118524)
+	numBaseTokensGBIMap["0xc00e94Cb662C3520282E6f5717214004A7f26888"] = float64(847576459219179)
 
 	indexMap = make(map[string]dia.Asset)
 	indexMap["SCIFI"] = dia.Asset{
@@ -192,6 +203,8 @@ func processIndexVals(timeInit, timeFinal time.Time, stepSize int64, indexSymbol
 				// 2. Substitute numBaseTokens
 				if indexSymbol == "SCIFI" {
 					constituents[j].NumBaseTokens = numBaseTokensMap[constituents[j].Asset.Address]
+				} else {
+					constituents[j].NumBaseTokens = numBaseTokensGBIMap[constituents[j].Asset.Address]
 				}
 				// 3. Substitute price
 				if constituents[j].Price == float64(0) {
