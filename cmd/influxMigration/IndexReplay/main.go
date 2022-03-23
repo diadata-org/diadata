@@ -12,9 +12,11 @@ import (
 )
 
 var (
-	log        *logrus.Logger
-	symbolsMap map[string]string
-	indexMap   map[string]dia.Asset
+	log              *logrus.Logger
+	symbolsMap       map[string]string
+	cappingMap       map[string]float64
+	numBaseTokensMap map[string]float64
+	indexMap         map[string]dia.Asset
 )
 
 func init() {
@@ -62,6 +64,30 @@ func init() {
 	symbolsMap["YFI"] = "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
 	symbolsMap["Yf-DAI"] = "0xf4CD3d3Fda8d7Fd6C5a500203e38640A70Bf9577"
 	symbolsMap["wNXM"] = "0x0d438F3b5175Bebc262bF23753C1E53d03432bDE"
+
+	cappingMap = make(map[string]float64)
+	cappingMap["0x6B3595068778DD592e39A122f4f5a5cF09C90fE2"] = float64(0.8481712413)
+	cappingMap["0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"] = float64(1.829351993)
+	cappingMap["0x1fDaB294EDA5112B7d066ED8F2E4E562D5bCc664"] = float64(1111.932789)
+	cappingMap["0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671"] = float64(0.8501919544)
+	cappingMap["0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44"] = float64(0.8474172955)
+	cappingMap["0xD533a949740bb3306d119CC777fa900bA034cd52"] = float64(0.8452712665)
+	cappingMap["0xbC396689893D065F41bc2C6EcbeE5e0085233447"] = float64(0.8496875939)
+	cappingMap["0x4E15361FD6b4BB609Fa63C81A2be19d873717870"] = float64(0.5305555209)
+	cappingMap["0xba100000625a3754423978a60c9317c58a424e3D"] = float64(0.8494870174)
+	cappingMap["0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9"] = float64(0.6908255324)
+
+	numBaseTokensMap = make(map[string]float64)
+	cappingMap["0x6B3595068778DD592e39A122f4f5a5cF09C90fE2"] = float64(34969303170127981)
+	cappingMap["0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"] = float64(8067221838047583)
+	cappingMap["0x1fDaB294EDA5112B7d066ED8F2E4E562D5bCc664"] = float64(382922797228701943)
+	cappingMap["0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671"] = float64(1610484614974134)
+	cappingMap["0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44"] = float64(47725897426893)
+	cappingMap["0xD533a949740bb3306d119CC777fa900bA034cd52"] = float64(127432811325197740)
+	cappingMap["0xbC396689893D065F41bc2C6EcbeE5e0085233447"] = float64(4920853921311107)
+	cappingMap["0x4E15361FD6b4BB609Fa63C81A2be19d873717870"] = float64(234454930204332481)
+	cappingMap["0xba100000625a3754423978a60c9317c58a424e3D"] = float64(3941681400720949)
+	cappingMap["0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9"] = float64(16635301231735492)
 
 	indexMap = make(map[string]dia.Asset)
 	indexMap["SCIFI"] = dia.Asset{
@@ -162,7 +188,10 @@ func processIndexVals(timeInit, timeFinal time.Time, stepSize int64, indexSymbol
 			constituents := oldIndexVals[i].Constituents
 			for j := range constituents {
 				// 1. Substitute cappingFactor
+				constituents[i].CappingFactor = cappingMap[constituents[i].Asset.Address]
 				// 2. Substitute numBaseTokens
+				constituents[i].NumBaseTokens = numBaseTokensMap[constituents[i].Asset.Address]
+				// 3. Substitute price
 				if constituents[j].Price == float64(0) {
 					price, err := ds.GetAssetPriceUSD(constituents[j].Asset, oldIndexVals[j].CalculationTime)
 					if err != nil {
@@ -183,7 +212,7 @@ func processIndexVals(timeInit, timeFinal time.Time, stepSize int64, indexSymbol
 
 			// Compute new index value.
 			indexValue := models.GetIndexValue(index.Symbol, constituents)
-			index := ds.IndexValueCalculation(constituents, index, indexValue)
+			index := indexValueCalculation(constituents, oldIndexVals[i], indexValue, ds)
 
 			// Save index.
 			err = ds.SetCryptoIndex(&index)
@@ -199,6 +228,26 @@ func processIndexVals(timeInit, timeFinal time.Time, stepSize int64, indexSymbol
 	}
 	log.Info("...done copying.")
 	time.Sleep(24 * 60 * time.Minute)
+}
+
+func indexValueCalculation(currentConstituents []models.CryptoIndexConstituent, cryptoIndex models.CryptoIndex, indexValue float64, datastore *models.DB) models.CryptoIndex {
+
+	var price float64
+	tradeObject, err := datastore.GetIndexPrice(cryptoIndex.Asset, cryptoIndex.CalculationTime, time.Duration(7*24*time.Hour))
+	if err == nil {
+		price = tradeObject.EstimatedUSDPrice
+	}
+
+	index := models.CryptoIndex{
+		Asset:           cryptoIndex.Asset,
+		Price:           price,
+		Value:           indexValue,
+		CalculationTime: cryptoIndex.CalculationTime,
+		Constituents:    currentConstituents,
+		Divisor:         cryptoIndex.Divisor,
+	}
+	log.Info("Index: ", index)
+	return index
 }
 
 func computePercentages(indexSymbol string, constituents *[]models.CryptoIndexConstituent, currentIndexValue float64) {
