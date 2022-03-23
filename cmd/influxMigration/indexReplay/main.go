@@ -204,10 +204,10 @@ func processIndexVals(timeInit, timeFinal time.Time, stepSize int64, indexSymbol
 			currIndexValue := models.GetIndexValue(indexSymbol, constituents)
 			computePercentages(indexSymbol, &constituents, currIndexValue)
 			for j := range constituents {
-				// err = ds.SetCryptoIndexConstituent(&constituents[j], oldIndexVals[i].Asset, oldIndexVals[i].CalculationTime)
-				// if err != nil {
-				// 	log.Error("set crypto index constituent: ", err)
-				// }
+				err = ds.SetCryptoIndexConstituent(&constituents[j], oldIndexVals[i].Asset, oldIndexVals[i].CalculationTime)
+				if err != nil {
+					log.Error("set crypto index constituent: ", err)
+				}
 				log.Infof("set constituent at time %v: %v", oldIndexVals[i].CalculationTime, constituents[j])
 			}
 
@@ -216,10 +216,10 @@ func processIndexVals(timeInit, timeFinal time.Time, stepSize int64, indexSymbol
 			index := indexValueCalculation(constituents, oldIndexVals[i], indexValue, ds)
 
 			// Save index.
-			// err = ds.SetCryptoIndex(&index)
-			// if err != nil {
-			// 	log.Error(err)
-			// }
+			err = ds.SetCryptoIndex(&index)
+			if err != nil {
+				log.Error(err)
+			}
 			log.Infof("set crypto index at calculation time %v: value, divisor, price -- %v, %v, %v ", index.CalculationTime, index.Value, index.Divisor, index.Price)
 
 			// log.Infof("successfully set index %s at time %v with value %v.", index.Asset.Symbol, index.CalculationTime, index.Value)
