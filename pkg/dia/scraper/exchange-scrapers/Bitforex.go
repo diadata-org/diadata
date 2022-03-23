@@ -312,8 +312,8 @@ func (s *BitforexScraper) toBitforexSymbol(foreignName string) string {
 
 func (s *BitforexScraper) extractSymbol(symbol string) (baseCurrency, foreignName string) {
 	ss := strings.SplitN(symbol, "-", 3)
-	baseCurrency = strings.ToUpper(ss[1])
-	foreignName = strings.ToUpper(ss[1] + "-" + ss[2])
+	baseCurrency = strings.ToUpper(ss[2])
+	foreignName = strings.ToUpper(ss[2] + "-" + ss[1])
 
 	return baseCurrency, foreignName
 }
