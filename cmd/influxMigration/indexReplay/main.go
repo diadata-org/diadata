@@ -78,16 +78,16 @@ func init() {
 	cappingMap["0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9"] = float64(0.6908255324)
 
 	numBaseTokensMap = make(map[string]float64)
-	cappingMap["0x6B3595068778DD592e39A122f4f5a5cF09C90fE2"] = float64(34969303170127981)
-	cappingMap["0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"] = float64(8067221838047583)
-	cappingMap["0x1fDaB294EDA5112B7d066ED8F2E4E562D5bCc664"] = float64(382922797228701943)
-	cappingMap["0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671"] = float64(1610484614974134)
-	cappingMap["0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44"] = float64(47725897426893)
-	cappingMap["0xD533a949740bb3306d119CC777fa900bA034cd52"] = float64(127432811325197740)
-	cappingMap["0xbC396689893D065F41bc2C6EcbeE5e0085233447"] = float64(4920853921311107)
-	cappingMap["0x4E15361FD6b4BB609Fa63C81A2be19d873717870"] = float64(234454930204332481)
-	cappingMap["0xba100000625a3754423978a60c9317c58a424e3D"] = float64(3941681400720949)
-	cappingMap["0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9"] = float64(16635301231735492)
+	numBaseTokensMap["0x6B3595068778DD592e39A122f4f5a5cF09C90fE2"] = float64(34969303170127981)
+	numBaseTokensMap["0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"] = float64(8067221838047583)
+	numBaseTokensMap["0x1fDaB294EDA5112B7d066ED8F2E4E562D5bCc664"] = float64(382922797228701943)
+	numBaseTokensMap["0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671"] = float64(1610484614974134)
+	numBaseTokensMap["0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44"] = float64(47725897426893)
+	numBaseTokensMap["0xD533a949740bb3306d119CC777fa900bA034cd52"] = float64(127432811325197740)
+	numBaseTokensMap["0xbC396689893D065F41bc2C6EcbeE5e0085233447"] = float64(4920853921311107)
+	numBaseTokensMap["0x4E15361FD6b4BB609Fa63C81A2be19d873717870"] = float64(234454930204332481)
+	numBaseTokensMap["0xba100000625a3754423978a60c9317c58a424e3D"] = float64(3941681400720949)
+	numBaseTokensMap["0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9"] = float64(16635301231735492)
 
 	indexMap = make(map[string]dia.Asset)
 	indexMap["SCIFI"] = dia.Asset{
@@ -116,14 +116,14 @@ func main() {
 	indexName := utils.Getenv("INDEX_NAME", "SCIFI")
 
 	// timeFinalString is the last timestamp for which trades are read from influx in Unix time seconds.
-	timeInitString := utils.Getenv("TIME_INIT", "1608338769")
+	timeInitString := utils.Getenv("TIME_INIT", "1645138800")
 	timeInitInt, err := strconv.ParseInt(timeInitString, 10, 64)
 	if err != nil {
 		log.Error("parse timeInit: ", err)
 	}
 	timeInit := time.Unix(timeInitInt, 0)
 
-	timeFinalString := utils.Getenv("TIME_FINAL", "1645093427")
+	timeFinalString := utils.Getenv("TIME_FINAL", "1645182000")
 	timeFinalInt, err := strconv.ParseInt(timeFinalString, 10, 64)
 	if err != nil {
 		log.Error("parse timeFinal: ", err)
@@ -132,7 +132,7 @@ func main() {
 	log.Info("timeInit: ", timeInit)
 	log.Info("timeFinal: ", timeFinal)
 
-	numRangesString := utils.Getenv("NUM_RANGES", "12")
+	numRangesString := utils.Getenv("NUM_RANGES", "6")
 	numRanges, err := strconv.Atoi(numRangesString)
 	if err != nil {
 		log.Error("parse num ranges: ", err)
@@ -193,7 +193,7 @@ func processIndexVals(timeInit, timeFinal time.Time, stepSize int64, indexSymbol
 				constituents[i].NumBaseTokens = numBaseTokensMap[constituents[i].Asset.Address]
 				// 3. Substitute price
 				if constituents[j].Price == float64(0) {
-					price, err := ds.GetAssetPriceUSD(constituents[j].Asset, oldIndexVals[j].CalculationTime)
+					price, err := ds.GetAssetPriceUSD(constituents[j].Asset, oldIndexVals[i].CalculationTime)
 					if err != nil {
 						log.Errorf("get asset price for address %s", constituents[j].Asset.Address)
 					}
@@ -204,10 +204,11 @@ func processIndexVals(timeInit, timeFinal time.Time, stepSize int64, indexSymbol
 			currIndexValue := models.GetIndexValue(indexSymbol, constituents)
 			computePercentages(indexSymbol, &constituents, currIndexValue)
 			for j := range constituents {
-				err = ds.SetCryptoIndexConstituent(&constituents[j], oldIndexVals[j].Asset, oldIndexVals[j].CalculationTime)
-				if err != nil {
-					log.Error("set crypto index constituent: ", err)
-				}
+				// err = ds.SetCryptoIndexConstituent(&constituents[j], oldIndexVals[i].Asset, oldIndexVals[i].CalculationTime)
+				// if err != nil {
+				// 	log.Error("set crypto index constituent: ", err)
+				// }
+				log.Infof("set constituent at time %v: %v", oldIndexVals[i].CalculationTime, constituents[j])
 			}
 
 			// Compute new index value.
@@ -215,12 +216,13 @@ func processIndexVals(timeInit, timeFinal time.Time, stepSize int64, indexSymbol
 			index := indexValueCalculation(constituents, oldIndexVals[i], indexValue, ds)
 
 			// Save index.
-			err = ds.SetCryptoIndex(&index)
-			if err != nil {
-				log.Error(err)
-			}
+			// err = ds.SetCryptoIndex(&index)
+			// if err != nil {
+			// 	log.Error(err)
+			// }
+			log.Infof("set crypto index at calculation time %v: value, divisor, price -- %v, %v, %v ", index.CalculationTime, index.Value, index.Divisor, index.Price)
 
-			log.Infof("successfully set index %s at time %v with value %v.", index.Asset.Symbol, index.CalculationTime, index.Value)
+			// log.Infof("successfully set index %s at time %v with value %v.", index.Asset.Symbol, index.CalculationTime, index.Value)
 
 		}
 
@@ -233,9 +235,9 @@ func processIndexVals(timeInit, timeFinal time.Time, stepSize int64, indexSymbol
 func indexValueCalculation(currentConstituents []models.CryptoIndexConstituent, cryptoIndex models.CryptoIndex, indexValue float64, datastore *models.DB) models.CryptoIndex {
 
 	var price float64
-	tradeObject, err := datastore.GetIndexPrice(cryptoIndex.Asset, cryptoIndex.CalculationTime, time.Duration(7*24*time.Hour))
+	indexQuotation, err := datastore.GetAssetQuotation(cryptoIndex.Asset, cryptoIndex.CalculationTime)
 	if err == nil {
-		price = tradeObject.EstimatedUSDPrice
+		price = indexQuotation.Price
 	}
 
 	index := models.CryptoIndex{
@@ -263,20 +265,6 @@ func computePercentages(indexSymbol string, constituents *[]models.CryptoIndexCo
 			(*constituents)[i].Percentage = currPercentage
 		}
 	}
-}
-
-// getAssetMap returns a map that maps the symbol of a crypto index constituent to its underlying dia.Asset.
-func getAssetMap(symbolsMap map[string]string, rdb *models.RelDB) (map[string]dia.Asset, error) {
-	assetMap := make(map[string]dia.Asset)
-	for key := range symbolsMap {
-		asset, err := rdb.GetAsset(symbolsMap[key], dia.ETHEREUM)
-		if err != nil {
-			log.Error("get asset: ", symbolsMap[key])
-			return assetMap, err
-		}
-		assetMap[key] = asset
-	}
-	return assetMap, nil
 }
 
 // makeTimeRanges returns @numRanges start- and endtimes partitioning [@timeInit, @timeFinal] in intervals of identical size.
