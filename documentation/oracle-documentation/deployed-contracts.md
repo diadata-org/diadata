@@ -164,6 +164,16 @@ __
 {% endtab %}
 {% endtabs %}
 
+### Nervos
+
+{% tabs %}
+{% tab title="Godwoken Testnet" %}
+| Published Assets                     | Smart Contract Address                                                                           | Oracle Type                                                                                                                           |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x96c5...cb99](https://v1.aggron.gwscan.com/account/0x96c5f1e50c4393efa890699cd9aecf3fb58dcb99) | [Key/Value Oracle V2](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract-v2) |
+{% endtab %}
+{% endtabs %}
+
 ### Arbitrum
 
 {% tabs %}
