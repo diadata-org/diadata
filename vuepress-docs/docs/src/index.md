@@ -7,7 +7,12 @@ actionLink: /guide/getting-started.html
 
 
 ::: slot footer
-# test headline
+# test blockquotes
+
+> Blockquotes can also be nested...
+>> ...by using additional greater-than signs right next to each other...
+> > > ...or with spaces between arrows.
+
 MIT Licensed | Copyright © 2018-present [Evan You](https://github.com/yyx990803)
 :::
 
