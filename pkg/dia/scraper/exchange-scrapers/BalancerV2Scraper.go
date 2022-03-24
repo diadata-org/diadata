@@ -27,13 +27,15 @@ import (
 const (
 	balancerV2RateLimitPerSec = 50
 	balancerV2FilterPageSize  = 50000
-	balancerV2RestDial        = ""
-	balancerV2WSDial          = ""
+	balancerV2RestDial        = "https://rpc.ftm.tools/"
+	balancerV2WSDial          = "wss://wsapi.fantom.network/"
 )
 
 var (
 	balancerV2VaultContract          = ""
 	balancerV2StartBlockPoolRegister = 16896080
+	reverseBasetokensBalancer        *[]string
+	reverseQuotetokensBalancer       *[]string
 )
 
 // BalancerV2Swap is a swap information
@@ -92,7 +94,8 @@ func NewBalancerV2Scraper(exchange dia.Exchange, scrape bool) *BalancerV2Scraper
 		balancerV2StartBlockPoolRegister = 12272146
 		break
 	case dia.BeetsExchange:
-		balancerV2StartBlockPoolRegister = 16896080
+		// balancerV2StartBlockPoolRegister = 16896080
+		balancerV2StartBlockPoolRegister = 30896080
 		break
 	}
 
@@ -122,6 +125,20 @@ func NewBalancerV2Scraper(exchange dia.Exchange, scrape bool) *BalancerV2Scraper
 }
 
 func (s *BalancerV2Scraper) mainLoop() {
+
+	// Import tokens which appear as base token and we need a quotation for
+	var err error
+	reverseBasetokensBalancer, err = getReverseTokensFromConfig("balancer/reverse_tokens/" + s.exchangeName + "Basetoken")
+	if err != nil {
+		log.Error("error getting tokens for which pairs should be reversed: ", err)
+	}
+	log.Info("reverse basetokens: ", reverseBasetokensBalancer)
+	reverseQuotetokensBalancer, err = getReverseTokensFromConfig("balancer/reverse_tokens/" + s.exchangeName + "Quotetoken")
+	if err != nil {
+		log.Error("error getting tokens for which pairs should be reversed: ", err)
+	}
+	log.Info("reverse quotetokens: ", reverseQuotetokensBalancer)
+
 	defer s.cleanup()
 	pairs, err := s.FetchAvailablePairs()
 	if err != nil {
@@ -214,6 +231,20 @@ func (s *BalancerV2Scraper) mainLoop() {
 				BaseToken:      assetIn,
 				QuoteToken:     assetOut,
 				VerifiedPair:   true,
+			}
+			switch {
+			case utils.Contains(reverseBasetokensBalancer, trade.BaseToken.Address):
+				// If we need quotation of a base token, reverse pair
+				tSwapped, err := dia.SwapTrade(*trade)
+				if err == nil {
+					trade = &tSwapped
+				}
+			case utils.Contains(reverseQuotetokensBalancer, trade.QuoteToken.Address):
+				// If we don't need quotation of quote token, reverse pair.
+				tSwapped, err := dia.SwapTrade(*trade)
+				if err == nil {
+					trade = &tSwapped
+				}
 			}
 
 			select {
@@ -445,6 +476,7 @@ func (s *BalancerV2Scraper) allRegisteredPools() ([]*balancervault.BalancerVault
 		if endBlock > currBlock {
 			endBlock = currBlock
 		}
+		log.Infof("startblock - endblock: %v --- %v ", startBlock, endBlock)
 
 		it, err := filterer.FilterPoolRegistered(&bind.FilterOpts{
 			Start: startBlock,
