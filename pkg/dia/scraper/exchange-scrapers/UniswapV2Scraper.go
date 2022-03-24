@@ -67,6 +67,7 @@ const (
 	solarbeamWaitMilliseconds   = "400"
 	trisolarisWaitMilliseconds  = "200"
 	metisWaitMilliseconds       = "200"
+	moonriverWaitMilliseconds   = "500"
 )
 
 type UniswapToken struct {
@@ -162,7 +163,9 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 	case dia.SushiSwapExchangeFantom:
 		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialFantom, wsDialFantom, metisWaitMilliseconds)
-
+	case dia.HuckleberryExchange:
+		listenByAddress = false
+		s = makeUniswapScraper(exchange, listenByAddress, restDialMoonriver, wsDialMoonriver, moonriverWaitMilliseconds)
 	}
 
 	if scrape {

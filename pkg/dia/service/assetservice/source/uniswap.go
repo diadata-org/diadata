@@ -42,6 +42,7 @@ const (
 	solarbeamWaitMilliseconds   = "200"
 	trisolarisWaitMilliseconds  = "200"
 	metisWaitMilliseconds       = "200"
+	moonriverWaitMilliseconds   = "500"
 )
 
 type UniswapAssetSource struct {
@@ -79,6 +80,8 @@ func NewUniswapAssetSource(exchange dia.Exchange) (uas *UniswapAssetSource) {
 		uas = makeUniswapAssetSource(exchange, restDialAurora, trisolarisWaitMilliseconds)
 	case dia.NetswapExchange:
 		uas = makeUniswapAssetSource(exchange, restDialMetis, metisWaitMilliseconds)
+	case dia.HuckleberryExchange:
+		uas = makeUniswapAssetSource(exchange, restDialMoonriver, moonriverWaitMilliseconds)
 	}
 
 	exchangeFactoryContractAddress = exchange.Contract.Hex()
