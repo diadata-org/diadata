@@ -1,13 +1,4 @@
-
-
-# Config
-
-## foo
-
-- Type: `string`
-- Default: `/`
-
-## bar
-
-- Type: `string`
-- Default: `/`
+# Config introduction readme
+asdfasdf
+asdfasdf
+asdfasdf
