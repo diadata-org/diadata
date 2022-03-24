@@ -5,12 +5,10 @@ actionText: Get Started →
 actionLink: /guide/getting-started.html
 ---
 
-::: slot sidebar
-test sitebar uniquesearchtermforsourcecodefulltextsearch
-:::
+
 
 ::: slot footer
-# test blockquotes
+# test blockquotes xxxxx
 
 > Blockquotes can also be nested...
 >> ...by using additional greater-than signs right next to each other...
@@ -44,6 +42,9 @@ console.log(foo(5));
 MIT Licensed | Copyright © 2018-present [Evan You](https://github.com/yyx990803)
 :::
 
+::: slot sidebar
+test sitebar uniquesearchtermforsourcecodefulltextsearch
+:::
 
 <div class="features">
   <div class="feature">
