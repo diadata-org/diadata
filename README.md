@@ -2,8 +2,6 @@
 description: >-
   DIA is a cross-chain, end-to-end, open-source data and oracle platform for
   Web3.
-cover: .gitbook/assets/Cover Photo Twitter Big DApps@2x.png
-coverY: 0
 ---
 
 # Introduction
