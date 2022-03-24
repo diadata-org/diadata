@@ -44,6 +44,10 @@ module.exports = {
       {
         text: 'VuePress',
         link: 'https://v1.vuepress.vuejs.org'
+      },
+      {
+        text: 'DiaData',
+        link: 'https://www.diadata.org/'
       }
     ],
     sidebar: {
@@ -54,16 +58,6 @@ module.exports = {
           children: [
             '',
             'using-vue',
-          ]
-        }
-      ],
-      '/config/': [
-        {
-          title: 'Data Access (Config)',
-          collapsable: false,
-          children: [
-            '',
-            'test',
           ]
         }
       ]
