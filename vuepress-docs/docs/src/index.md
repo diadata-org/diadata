@@ -5,6 +5,9 @@ actionText: Get Started →
 actionLink: /guide/getting-started.html
 ---
 
+::: slot sidebar
+test sitebar
+:::
 
 ::: slot footer
 # test blockquotes
