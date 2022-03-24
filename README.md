@@ -1,7 +1,6 @@
 ---
 description: 'Our Mission: Wikipedia for Financial Data'
-cover: >-
-  https://content.diadata.org/wp-content/uploads/2022/03/Cover-Photo-Twitter-Big-DApps.svg
+cover: .gitbook/assets/Cover Photo Twitter Big DApps.svg
 coverY: 0
 ---
 
