@@ -42,9 +42,6 @@ console.log(foo(5));
 MIT Licensed | Copyright © 2018-present [Evan You](https://github.com/yyx990803)
 :::
 
-::: slot sidebar
-test sitebar uniquesearchtermforsourcecodefulltextsearch
-:::
 
 <div class="features">
   <div class="feature">
