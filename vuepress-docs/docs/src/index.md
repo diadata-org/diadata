@@ -6,7 +6,7 @@ actionLink: /guide/getting-started.html
 ---
 
 ::: slot sidebar
-test sitebar
+test sitebar uniquesearchtermforsourcecodefulltextsearch
 :::
 
 ::: slot footer
