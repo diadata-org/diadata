@@ -4,13 +4,18 @@ heroImage: /hero.png
 actionText: Get Started →
 actionLink: /guide/getting-started.html
 ---
-::: slot footer
+::: slot xxx
 
 | Header DIA 1 | Header DIA 2 | Header DIA 3 |
 | ------ | ----------- |
 | Welcome to documentation   | Welcome to data access | welcome to contribute or other docu sections |
 | [link zu intro](xxx/) |  [link zu data access](yyy/) |  [link zu misc section](/zzz/) |
 
+
+:::
+
+
+::: slot footer
 
 
 MIT Licensed | Copyright © 2018-present [Evan You](https://github.com/yyx990803)
@@ -19,7 +24,7 @@ MIT Licensed | Copyright © 2018-present [Evan You](https://github.com/yyx990803
 
 <div class="features">
   <div class="feature">
-    <h2>Simplicity First</h2>
+    <h2>Do we really have to use this? Should be a component pro'lly</h2>
     <p>Minimal setup with markdown-centered project structure helps you focus on writing.</p>
   </div>
   <div class="feature">
