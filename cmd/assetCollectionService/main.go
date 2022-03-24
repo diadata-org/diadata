@@ -70,6 +70,8 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 		return source.NewAnyswapAssetSource(exchanges[dia.AnyswapExchange])
 	case dia.NetswapExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.NetswapExchange])
+	case dia.BeetsExchange:
+		return source.NewBalancerV2AssetSource(exchanges[dia.BeetsExchange])
 	case "assetlists":
 		return source.NewJSONReader(exchange, secret)
 	default:
@@ -111,7 +113,6 @@ func runAssetSource(relDB *models.RelDB, source string, caching bool, secret str
 					log.Error("Error caching asset: ", err)
 				}
 			}
-
 		case <-asset.Done():
 			return
 		}
