@@ -56,6 +56,16 @@ module.exports = {
             'using-vue',
           ]
         }
+      ],
+      '/config/': [
+        {
+          title: 'Data Access (Config)',
+          collapsable: false,
+          children: [
+            '',
+            'test',
+          ]
+        }
       ]
     }
   },
