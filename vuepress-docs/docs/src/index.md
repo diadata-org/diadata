@@ -13,6 +13,24 @@ actionLink: /guide/getting-started.html
 >> ...by using additional greater-than signs right next to each other...
 > > > ...or with spaces between arrows.
 
+# Syntax highlighting
+
+``` js
+var foo = function (bar) {
+  return bar++;
+};
+
+console.log(foo(5));
+```
+
+## Tables
+
+| Option | Description |
+| ------ | ----------- |
+| data   | path to data files to supply the data that will be passed into templates. |
+| engine | engine to be used for processing templates. Handlebars is the default. |
+| ext    | extension to be used for dest files. |
+
 MIT Licensed | Copyright © 2018-present [Evan You](https://github.com/yyx990803)
 :::
 
