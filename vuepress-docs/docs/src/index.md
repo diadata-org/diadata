@@ -36,7 +36,7 @@ console.log(foo(5));
 
 ### broken table
 | Option | Description | asdfasdf |
-| ------ | ----------- | ----------- |
+| ------ | ----------- | -------- |
 | data   | path to data files to supply the data that will be passed into templates. | path to data files tta that will be passed into templates. |
 | engine | engine to be used for processing templates. Handlebars is the default. | path to datply the data that will be passed into templates. |
 | ext    | extension to be used for dest files. | path to data files to supply the data that will be passed into templates. |
