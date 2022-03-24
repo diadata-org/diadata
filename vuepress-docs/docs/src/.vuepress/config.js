@@ -4,7 +4,7 @@ module.exports = {
   /**
    * Ref：https://v1.vuepress.vuejs.org/config/#title
    */
-  title: 'Vuepress Docs Boilerplate',
+  title: 'DIADATA new documentation',
   /**
    * Ref：https://v1.vuepress.vuejs.org/config/#description
    */
@@ -34,11 +34,11 @@ module.exports = {
     lastUpdated: false,
     nav: [
       {
-        text: 'Guide',
+        text: 'Introduction (Guide)',
         link: '/guide/',
       },
       {
-        text: 'Config',
+        text: 'Data Access (Config)',
         link: '/config/'
       },
       {
@@ -49,7 +49,17 @@ module.exports = {
     sidebar: {
       '/guide/': [
         {
-          title: 'Guide',
+          title: 'Introduction (Guide)',
+          collapsable: false,
+          children: [
+            '',
+            'using-vue',
+          ]
+        }
+      ],
+      '/config/': [
+        {
+          title: 'Data Access (Config)',
           collapsable: false,
           children: [
             '',
