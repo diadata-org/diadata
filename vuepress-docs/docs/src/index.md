@@ -4,7 +4,18 @@ heroImage: /hero.png
 actionText: Get Started →
 actionLink: /guide/getting-started.html
 ---
+::: slot footer
 
+| Header DIA 1 | Header DIA 2 | Header DIA 3 |
+| ------ | ----------- |
+| Welcome to documentation   | Welcome to data access | welcome to contribute or other docu sections |
+| [link zu intro](xxx/) |  [link zu data access](yyy/) |  [link zu misc section](/zzz/) |
+
+
+
+
+MIT Licensed | Copyright © 2018-present [Evan You](https://github.com/yyx990803)
+:::
 
 
 <div class="features">
@@ -21,15 +32,3 @@ actionLink: /guide/getting-started.html
     <p>VuePress generates pre-rendered static HTML for each page, and runs as an SPA once a page is loaded.</p>
   </div>
 </div>
-
-
-| Header DIA 1 | Header DIA 2 | Header DIA 3 |
-| ------ | ----------- |
-| Welcome to documentation   | Welcome to data access | welcome to contribute or other docu sections |
-| [link zu intro](xxx/) |  [link zu data access](yyy/) |  [link zu misc section](/zzz/) |
-
-
-
-::: slot footer
-MIT Licensed | Copyright © 2018-present [Evan You](https://github.com/yyx990803)
-:::
