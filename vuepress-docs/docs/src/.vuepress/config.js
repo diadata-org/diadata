@@ -51,6 +51,16 @@ module.exports = {
       }
     ],
     sidebar: {
+      '/': [
+        {
+          title: 'sitebar config for root dir, see config.js',
+          collapsable: false,
+          children: [
+            '',
+            'lalilu',
+          ]
+        }
+      ],
       '/guide/': [
         {
           title: 'Introduction (Guide)',
