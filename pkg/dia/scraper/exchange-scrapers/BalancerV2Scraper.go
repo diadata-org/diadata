@@ -94,8 +94,7 @@ func NewBalancerV2Scraper(exchange dia.Exchange, scrape bool) *BalancerV2Scraper
 		balancerV2StartBlockPoolRegister = 12272146
 		break
 	case dia.BeetsExchange:
-		// balancerV2StartBlockPoolRegister = 16896080
-		balancerV2StartBlockPoolRegister = 30896080
+		balancerV2StartBlockPoolRegister = 16896080
 		break
 	}
 
