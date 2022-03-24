@@ -60,6 +60,16 @@ module.exports = {
             'using-vue',
           ]
         }
+      ],
+      '/config/': [
+        {
+          title: 'sidebare test vueconfig',
+          collapsable: false,
+          children: [
+            '',
+            'test',
+          ]
+        }
       ]
     }
   },
