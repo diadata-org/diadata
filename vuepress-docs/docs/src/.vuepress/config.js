@@ -54,11 +54,11 @@ module.exports = {
         link: 'https://www.diadata.org/'
       }
     ],
-    sidebar: {
+    sidebar: [
       '/',
       '/page-a',
       ['/page-b', 'Explicit link text']
-    },
+    ],
     /**
     sidebar: {
       '/doc_dir_introduction/': [
