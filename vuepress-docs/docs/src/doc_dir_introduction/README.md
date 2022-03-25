@@ -4,5 +4,5 @@ demo component start
 demo component end
 
 ## Test Component
-<TestAlert display-text="Test" />
+<testcomponent display-text="Test" />
 
