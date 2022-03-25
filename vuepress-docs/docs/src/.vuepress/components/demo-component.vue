@@ -1,5 +1,5 @@
 <template>
-  <p class="demo">
+  <p class="demo" style="border:solid red 5px !important">
     {{ msg }}
   </p>
 </template>
