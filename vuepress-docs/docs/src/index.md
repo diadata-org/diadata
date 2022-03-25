@@ -32,6 +32,8 @@ console.log(foo(5));
 | engine | engine to be used for processing templates. Handlebars is the default. |
 | ext    | extension to be used for dest files. |
 
+-------
+
 | Option | Description | asdfasdf |
 | ------ | ----------- | -------- |
 | data   | path to data files to supply the data that will be passed into templates. | path to data files tta that will be passed into templates. |
