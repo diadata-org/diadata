@@ -56,8 +56,8 @@ module.exports = {
     ],
     sidebar: [
       '/',
-      '/page-a',
-      ['/page-b', 'Explicit link text']
+      ['/doc_dir_introduction/', 'Introduction'],
+      ['/guide/', 'Explicit link text']
     ],
     /**
     sidebar: {
