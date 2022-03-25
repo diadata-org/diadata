@@ -1,4 +1,5 @@
 # Readme doc_dir_introduction
-asdfasdf
-asdfasdf
-asdfasdf
+demo component start
+<demo-component/>
+demo component end
+
