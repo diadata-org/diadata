@@ -212,7 +212,7 @@ type BlockData struct {
 }
 
 type ExchangeVolume struct {
-	Exchange string  `json:"Exchnage"`
+	Exchange string  `json:"Exchange"`
 	Volume   float64 `json:"Volume"`
 }
 
