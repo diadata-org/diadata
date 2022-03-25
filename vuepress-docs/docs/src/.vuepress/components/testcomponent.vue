@@ -7,7 +7,7 @@
 
 <script>
 export default {
-  props: ['displayText',headlineText],
+  props: ['displayText','headlineText'],
   methods: {
     testAlert() {
       alert('Test Alert');
