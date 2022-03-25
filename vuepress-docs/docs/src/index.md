@@ -5,7 +5,29 @@ actionText: Get Started →
 actionLink: /guide/getting-started.html
 ---
 
+# is this still build?
 
+| Option | Description | asdfasdf |
+| ------ | ----------- | -------- |
+| data   | path to data files to supply the data that will be passed into templates. | path to data files tta that will be passed into templates. |
+| engine | engine to be used for processing templates. Handlebars is the default. | path to datply the data that will be passed into templates. |
+| ext    | extension to be used for dest files. | path to data files to supply the data that will be passed into templates. |
+
+<div class="features">
+  <div class="feature">
+    <h2>section 1</h2>
+    <p>paragraph 1</p>
+    <a href="asdfasdfa">asdfasdf</a>
+  </div>
+  <div class="feature">
+    <h2>section 2</h2>
+    <p>paragraph 2</p>
+  </div>
+  <div class="feature">
+    <h2>section 3</h2>
+    <p>paragraph 3</p>
+  </div>
+</div>
 
 ::: slot footer
 # is this still build?
@@ -34,11 +56,7 @@ console.log(foo(5));
 
 -------
 
-| Option | Description | asdfasdf |
-| ------ | ----------- | -------- |
-| data   | path to data files to supply the data that will be passed into templates. | path to data files tta that will be passed into templates. |
-| engine | engine to be used for processing templates. Handlebars is the default. | path to datply the data that will be passed into templates. |
-| ext    | extension to be used for dest files. | path to data files to supply the data that will be passed into templates. |
+
 
 MIT Licensed | Copyright © 2018-present [Evan You](https://github.com/yyx990803)
 :::
