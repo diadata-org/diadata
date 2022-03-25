@@ -34,8 +34,12 @@ module.exports = {
     lastUpdated: false,
     nav: [
       {
-        text: 'Introduction (Guide)',
+        text: 'Introduction (Guide, edited old config)',
         link: '/guide/',
+      },
+      {
+        text: 'Doc Introduction (new documentation content)',
+        link: '/doc_dir_introduction/'
       },
       {
         text: 'Data Access (Config)',
