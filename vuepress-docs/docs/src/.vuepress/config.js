@@ -34,15 +34,19 @@ module.exports = {
     lastUpdated: false,
     nav: [
       {
-        text: 'Introduction (Guide, edited old config)',
+        text: 'old1',
         link: '/guide/',
       },
       {
-        text: 'Doc Introduction (new documentation content)',
+        text: 'Doc Introduction',
         link: '/doc_dir_introduction/'
       },
       {
-        text: 'Data Access (Config)',
+        text: 'Doc Data access',
+        link: '/doc_dir_data-access/'
+      },
+      {
+        text: 'old2',
         link: '/config/'
       },
       {
@@ -56,8 +60,9 @@ module.exports = {
     ],
     sidebar: [
       '/',
-      ['/doc_dir_introduction/', 'Introduction'],
-      ['/guide/', 'Explicit link text']
+      ['/doc_dir_introduction/', 'Doc Introduction'],
+      ['/doc_dir_introduction/', 'Doc Data access'],
+      ['/guide/', 'old2']
     ],
     /**
     sidebar: {
