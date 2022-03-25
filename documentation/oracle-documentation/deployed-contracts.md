@@ -102,9 +102,9 @@ __
 {% endtab %}
 
 {% tab title="Shibuya Testnet" %}
-| Published Assets                     | Smart Contract Address                                                                         | Oracle Type                                                                                                                     |
-| ------------------------------------ | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| [DIA Asset Prices](crypto-assets.md) | [0x1232...733E](https://shibuya.subscan.io/account/0x1232acd632dd75f874e357c77295da3f5cd7733e) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
+| Published Assets                     | Smart Contract Address                                                                             | Oracle Type                                                                                                                     |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x1232...733E](https://blockscout.com/shibuya/address/0x1232AcD632Dd75f874E357c77295Da3f5Cd7733E) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
 {% endtab %}
 {% endtabs %}
 
