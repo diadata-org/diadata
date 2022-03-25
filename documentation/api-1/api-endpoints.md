@@ -97,6 +97,30 @@ Which symbol to get a quotation for, e.g., BTC.
 {% endswagger-response %}
 {% endswagger %}
 
+{% swagger method="get" path="/v1/assetQuotation" baseUrl="https://api.diadata.org" summary="Asset Quotation" %}
+{% swagger-description %}
+Returns the quotation for a fully qualified asset (i.e. distinguished by blockchain and address).
+
+Example: https://api.diadata.org/v1/assetQuotation/Bitcoin/0x000000000000000000000000000000000000000
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="blockchain" required="true" %}
+Name of the blockchain for requested asset
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="address" required="true" %}
+Address of the requested asset
+{% endswagger-parameter %}
+
+{% swagger-response status="200: OK" description="Asset quotation with details about price, 24h volume, last update time, address, and blockchain." %}
+```javascript
+{
+    // Response
+}
+```
+{% endswagger-response %}
+{% endswagger %}
+
 {% swagger baseUrl="https://api.diadata.org" path="/v1/exchanges" method="get" summary="Exchanges" %}
 {% swagger-description %}
 Get a list of all available crypto exchanges.
@@ -126,7 +150,7 @@ Name of the blockchain for requested asset
 {% endswagger-parameter %}
 
 {% swagger-parameter in="path" name="address" required="true" %}
-Address of the requetsed asset
+Address of the requested asset
 {% endswagger-parameter %}
 
 {% swagger-response status="200: OK" description="List of exchanges with volumes in the last 24h for all volmes that are > 0" %}
