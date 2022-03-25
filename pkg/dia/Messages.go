@@ -211,6 +211,11 @@ type BlockData struct {
 	Data        map[string]interface{}
 }
 
+type ExchangeVolume struct {
+	Exchange string  `json:"Exchange"`
+	Volume   float64 `json:"Volume"`
+}
+
 type EthereumBlockData struct {
 	GasLimit    uint64             `json:"gas_limit"`
 	GasUsed     uint64             `json:"gas_used"`

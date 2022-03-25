@@ -16,7 +16,7 @@ import (
 
 type Datastore interface {
 	SetInfluxClient(url string)
-
+	Get24HVolumePerExchange(asset dia.Asset) ([]dia.ExchangeVolume, error)
 	GetVolume(asset dia.Asset) (*float64, error)
 
 	// Deprecating
@@ -426,6 +426,33 @@ func (datastore *DB) Sum24HoursInflux(asset dia.Asset, exchange string, filter s
 		log.Errorln(errorString)
 		return nil, errors.New(errorString)
 	}
+}
+
+func (datastore *DB) Get24HVolumePerExchange(asset dia.Asset) ([]dia.ExchangeVolume, error) {
+	var exchangeVolume []dia.ExchangeVolume
+	filter := "VOL120"
+
+	queryString := " select sum(value)  FROM %s WHERE address='%s' and blockchain='%s' and filter='%s' and exchange !=''  and time > now() - 1d and time<now() group by exchange"
+	q := fmt.Sprintf(queryString, influxDbFiltersTable, asset.Address, asset.Blockchain, filter)
+	// q := "select sum(absvolume) from ( select abs(volume) as absvolume from trades) group by exchange;"
+
+	log.Infoln("Running influx query ", q)
+
+	// var errorString string
+	res, err := queryInfluxDB(datastore.influxClient, q)
+	if err != nil {
+		log.Errorln("Get24HVolumePerExchange ", err)
+		return nil, err
+	}
+
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for _, row := range res[0].Series {
+			volume, _ := row.Values[0][1].(json.Number).Float64()
+			exchangeVolume = append(exchangeVolume, dia.ExchangeVolume{Exchange: row.Tags["exchange"], Volume: volume})
+		}
+
+	}
+	return exchangeVolume, nil
 
 }
 
@@ -493,6 +520,7 @@ func (datastore *DB) SaveTradeInflux(t *dia.Trade) error {
 // SaveTradeInfluxToTable stores a trade in influx into @table.
 // Flushed when more than maxPoints in batch.
 func (datastore *DB) SaveTradeInfluxToTable(t *dia.Trade, table string) error {
+
 	// Create a point and add to batch
 	tags := map[string]string{
 		"symbol":               t.Symbol,
@@ -517,6 +545,7 @@ func (datastore *DB) SaveTradeInfluxToTable(t *dia.Trade, table string) error {
 	} else {
 		datastore.addPoint(pt)
 	}
+
 	return err
 }
 
