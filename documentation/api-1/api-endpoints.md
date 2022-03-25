@@ -114,6 +114,26 @@ https://api.diadata.org/v1/exchanges
 {% endswagger-response %}
 {% endswagger %}
 
+{% swagger method="get" path="/v1/assetMarkets" baseUrl="https://api.diadata.org" summary="List 24h market volumes for an asset" %}
+{% swagger-description %}
+Returns all observed volumes in the last 24h for a specified asset.
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="blockchain" required="true" %}
+Name of the blockchain for requested asset
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="address" required="true" %}
+Address of the requetsed asset
+{% endswagger-parameter %}
+
+{% swagger-response status="200: OK" description="List of exchanges with volumes in the last 24h for all volmes that are > 0" %}
+```javascript
+[{"Exchange":"Binance","Volume":1199.1039199999916},{"Exchange":"BitBay","Volume":57.20761510999996},{"Exchange":"Bitfinex","Volume":8625.797360533787},{"Exchange":"Bitmax","Volume":388.3493600000159},{"Exchange":"Bittrex","Volume":194.73298052999988},{"Exchange":"ByBit","Volume":3621.601983133232},{"Exchange":"CREX24","Volume":0.3536900000000002},{"Exchange":"CoinBase","Volume":11682.646369501423},{"Exchange":"Crypto.com","Volume":5574.927184001124},{"Exchange":"FTX","Volume":9606.986100000662},{"Exchange":"GateIO","Volume":772.3802987573356},{"Exchange":"HitBTC","Volume":3.6027500000000017},{"Exchange":"Huobi","Volume":8315.162517776456},{"Exchange":"Kraken","Volume":590.9460117199801},{"Exchange":"LBank","Volume":6632.81796153011},{"Exchange":"OKEx","Volume":650.4299946699018},{"Exchange":"Quoine","Volume":495.0948736999894},{"Exchange":"STEX","Volume":0.6928773800000005},{"Exchange":"ZB","Volume":907.4366999999507}]
+```
+{% endswagger-response %}
+{% endswagger %}
+
 {% swagger baseUrl="https://api.diadata.org/v1/FarmingPools" path="" method="get" summary="Farming Pools" %}
 {% swagger-description %}
 Get a list of all available farming pools.

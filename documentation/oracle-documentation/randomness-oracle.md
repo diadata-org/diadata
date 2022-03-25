@@ -173,9 +173,10 @@ Make sure to never directly query the latest randomness value, otherwise the min
 
 Currently, the randomness oracle is deployed on the Aurora EVM.
 
-| Oracle Name       | Smart Contract Address                                                                                               |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------- |
-| Randomness Oracle | [0x9055...4b22](https://explorer.mainnet.aurora.dev/address/0x905506f6dA815e73CA13547B45d1998867104b22/transactions) |
+| Blockchain     | Smart Contract Address                                                                                               |
+| -------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Aurora         | [0x9055...4b22](https://explorer.mainnet.aurora.dev/address/0x905506f6dA815e73CA13547B45d1998867104b22/transactions) |
+| Moonbeam Alpha | [0x48d3....6cec](https://moonbase.moonscan.io/address/0x48d351ab7f8646239bbade95c3cc6de3ef4a6cec)                    |
 
 ### Risk Mitigation
 
