@@ -55,6 +55,7 @@ module.exports = {
       }
     ],
     sidebar: {
+      '/',
       '/doc_dir_introduction/': [
         {
           title: 'sitebar config for root dir, see config.js',
