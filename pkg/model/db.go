@@ -431,7 +431,7 @@ func (datastore *DB) Sum24HoursInflux(asset dia.Asset, exchange string, filter s
 func (datastore *DB) Get24HVolumePerExchange(asset dia.Asset) ([]map[string]float64, error) {
 	var exchangeVolume []map[string]float64
 
-	queryString := "select sum(absvolume) from (select abs(volume) as absvolume FROM %s WHERE address='%s' and blockchain='%s'  and time > now() - 1d and time<now()) group by exchange"
+	queryString := "select sum(absvolume) from (select abs(volume) as absvolume FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s'  and time > now() - 1d and time<now()) group by exchange"
 	q := fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain)
 	// q := "select sum(absvolume) from ( select abs(volume) as absvolume from trades) group by exchange;"
 
