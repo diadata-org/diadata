@@ -1911,3 +1911,14 @@ func (env *Env) GetNFTPrice30Days(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, avgPrice)
 }
+
+func (env *Env) GetVolumePerExchange(c *gin.Context) {
+	blockchain := c.Param("blockchain")
+	address := common.HexToAddress(c.Param("address")).Hex()
+	exchangeVolume, err := env.DataStore.Get24HVolumePerExchange(dia.Asset{Blockchain: blockchain, Address: address})
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+
+	c.JSON(http.StatusOK, exchangeVolume)
+}
