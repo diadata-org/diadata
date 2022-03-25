@@ -16,7 +16,7 @@ import (
 
 type Datastore interface {
 	SetInfluxClient(url string)
-	Get24HVolumePerExchange(asset dia.Asset) ([]map[string]float64, error)
+	Get24HVolumePerExchange(asset dia.Asset) ([]dia.ExchangeVolume, error)
 	GetVolume(asset dia.Asset) (*float64, error)
 
 	// Deprecating
@@ -428,8 +428,8 @@ func (datastore *DB) Sum24HoursInflux(asset dia.Asset, exchange string, filter s
 	}
 }
 
-func (datastore *DB) Get24HVolumePerExchange(asset dia.Asset) ([]map[string]float64, error) {
-	var exchangeVolume []map[string]float64
+func (datastore *DB) Get24HVolumePerExchange(asset dia.Asset) ([]dia.ExchangeVolume, error) {
+	var exchangeVolume []dia.ExchangeVolume
 
 	queryString := "select sum(absvolume) from (select abs(volume) as absvolume FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s'  and time > now() - 1d and time<now()) group by exchange"
 	q := fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain)
@@ -447,10 +447,7 @@ func (datastore *DB) Get24HVolumePerExchange(asset dia.Asset) ([]map[string]floa
 	if len(res) > 0 && len(res[0].Series) > 0 {
 		for _, row := range res[0].Series {
 			volume, _ := row.Values[0][1].(json.Number).Float64()
-			ev := make(map[string]float64)
-			ev[row.Tags["exchange"]] = volume
-			exchangeVolume = append(exchangeVolume, ev)
-
+			exchangeVolume = append(exchangeVolume, dia.ExchangeVolume{Exchange: row.Tags["exchange"], Volume: volume})
 		}
 
 	}
