@@ -54,12 +54,12 @@ module.exports = {
         link: 'https://www.diadata.org/'
       }
     ],
-    sidebar: [
+    sidebar: {
       '/',
       '/page-a',
       ['/page-b', 'Explicit link text']
-    ],
-    /*
+    },
+    /**
     sidebar: {
       '/doc_dir_introduction/': [
         {
@@ -92,8 +92,9 @@ module.exports = {
         }
       ]
     }
+    */
   },
-  */
+
 
   /**
    * Apply plugins，ref：https://v1.vuepress.vuejs.org/zh/plugin/
