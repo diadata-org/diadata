@@ -54,16 +54,13 @@ module.exports = {
         link: 'https://www.diadata.org/'
       }
     ],
+    sidebar: [
+      '/',
+      '/page-a',
+      ['/page-b', 'Explicit link text']
+    ],
+    /*
     sidebar: {
-      '/':[
-        {
-          title: 'xxx',
-          collapsable: false,
-          children: [
-            '',
-          ]
-        }
-      ],
       '/doc_dir_introduction/': [
         {
           title: 'sitebar config for root dir, see config.js',
@@ -96,6 +93,7 @@ module.exports = {
       ]
     }
   },
+  */
 
   /**
    * Apply plugins，ref：https://v1.vuepress.vuejs.org/zh/plugin/
