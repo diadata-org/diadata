@@ -13,7 +13,7 @@ import (
 	ws "github.com/gorilla/websocket"
 )
 
-var ZBSocketURL string = "wss://api.zb.work/websocket"
+var ZBSocketURL string = "wss://api.zb.cafe/websocket"
 
 type ZBSubscribe struct {
 	Event   string `json:"event"`
