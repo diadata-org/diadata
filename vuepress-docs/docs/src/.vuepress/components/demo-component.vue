@@ -1,7 +1,7 @@
 <template>
-  <p class="demo" style="border:solid red 5px !important">
+  <p class="demo" style="border:solid blue 5px !important">
     {{ msg }}
-    {{ textattribute }}
+    {{ text }}
   </p>
 </template>
 
