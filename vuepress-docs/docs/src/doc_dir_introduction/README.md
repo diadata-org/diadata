@@ -4,5 +4,5 @@ demo component start
 demo component end
 # component 2
 demo component start
-<demo-component msg="test test test"/>
+<demo-component textattribute="test test test"/>
 demo component end
