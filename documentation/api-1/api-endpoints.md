@@ -114,9 +114,11 @@ https://api.diadata.org/v1/exchanges
 {% endswagger-response %}
 {% endswagger %}
 
-{% swagger method="get" path="/v1/assetMarkets" baseUrl="https://api.diadata.org" summary="List 24h market volumes for an asset" %}
+{% swagger method="get" path="/v1/assetMarkets" baseUrl="https://api.diadata.org" summary="Asset Markets" %}
 {% swagger-description %}
 Returns all observed volumes in the last 24h for a specified asset.
+
+Example: https://api.diadata.org/v1/assetMarkets/Bitcoin/0x000000000000000000000000000000000000000
 {% endswagger-description %}
 
 {% swagger-parameter in="path" name="blockchain" required="true" %}
