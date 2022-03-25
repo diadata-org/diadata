@@ -61,7 +61,7 @@ module.exports = {
     sidebar: [
       '/',
       ['/doc_dir_introduction/', 'Doc Introduction'],
-      ['/doc_dir_introduction/', 'Doc Data access'],
+      ['/doc_dir_data-access/', 'Doc Data access'],
       ['/guide/', 'old2']
     ],
     /**
