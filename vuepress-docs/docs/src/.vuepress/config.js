@@ -61,7 +61,6 @@ module.exports = {
           collapsable: false,
           children: [
             '',
-            'doc_content_introduction',
           ]
         }
       ],
