@@ -51,13 +51,13 @@ module.exports = {
       }
     ],
     sidebar: {
-      '/': [
+      '/doc_dir_introduction/': [
         {
           title: 'sitebar config for root dir, see config.js',
           collapsable: false,
           children: [
             '',
-            'lalilu',
+            'doc_content_introduction',
           ]
         }
       ],
