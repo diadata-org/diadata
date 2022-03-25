@@ -432,7 +432,7 @@ func (datastore *DB) Get24HVolumePerExchange(asset dia.Asset) ([]dia.ExchangeVol
 	var exchangeVolume []dia.ExchangeVolume
 	filter := "VOL120"
 
-	queryString := " select sum(value)  FROM %s WHERE address='%s' and blockchain='%s' and filter='%s' and time > now() - 1d and time<now() group by exchange"
+	queryString := " select sum(value)  FROM %s WHERE address='%s' and blockchain='%s' and filter='%s' and exchange !=''  and time > now() - 1d and time<now() group by exchange"
 	q := fmt.Sprintf(queryString, influxDbFiltersTable, asset.Address, asset.Blockchain, filter)
 	// q := "select sum(absvolume) from ( select abs(volume) as absvolume from trades) group by exchange;"
 
