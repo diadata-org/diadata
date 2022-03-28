@@ -72,16 +72,6 @@ module.exports = {
     ],
     */
     sidebar: {
-      '/': [
-        {
-          title: 'home dynamic text, see config.js',
-          collapsable: false,
-          children: [
-            '',
-            'doc_content_introduction',
-          ]
-        }
-      ],
       '/doc_dir_data-access/': [
         {
           title: 'Data access',
