@@ -54,9 +54,10 @@ module.exports = {
         link: 'https://www.diadata.org/'
       }
     ],
+    /**
     sidebar: [
       ['/', 'Sidebar Get Started (see config.js)'],
-      ['/doc_dir_data-access/': 
+      ['/doc_dir_data-access/', 
        {
           title: 'Data access',
           collapsable: true,
@@ -69,11 +70,11 @@ module.exports = {
       ['/doc_dir_contribute/', 'Sidebar Contribute'],
       ['/guide/', 'old2']
     ],
-    /**
+    */
     sidebar: {
-      '/doc_dir_introduction/': [
+      '/': [
         {
-          title: 'sitebar config for root dir, see config.js',
+          title: 'home dynamic text, see config.js',
           collapsable: false,
           children: [
             '',
@@ -81,19 +82,19 @@ module.exports = {
           ]
         }
       ],
-      '/guide/': [
+      '/doc_dir_data-access/': [
         {
-          title: 'Introduction (Guide)',
-          collapsable: false,
+          title: 'Data access',
+          collapsable: true,
           children: [
             '',
-            'using-vue',
+            'doc_content_data-access',
           ]
         }
       ],
-      '/config/': [
+      '/doc_dir_contribute/': [
         {
-          title: 'sidebare test vueconfig',
+          title: 'Contribute',
           collapsable: false,
           children: [
             '',
@@ -102,7 +103,7 @@ module.exports = {
         }
       ]
     }
-    */
+    
   },
 
 
