@@ -80,7 +80,8 @@ module.exports = {
         children: [
           '/doc_dir_contribute/',
           [
-            '/doc_dir_contribute/doc_dir_contribute_sub/'
+            title: 'come on',
+            path:'/doc_dir_contribute/doc_dir_contribute_sub/README'
           ],
         ],
       }
