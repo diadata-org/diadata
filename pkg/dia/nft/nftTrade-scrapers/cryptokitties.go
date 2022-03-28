@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"strings"
 	"time"
 
 	"github.com/diadata-org/diadata/config/nftContracts/cryptokitties"
@@ -81,7 +82,7 @@ func (scraper *CryptoKittiesScraper) FetchTrades() error {
 	log.Info("fetch trades...")
 	var err error
 	if scraper.lastBlockNumber == 0 {
-		scraper.lastBlockNumber, err = scraper.tradescraper.datastore.GetLastBlockNFTTradeScraper(dia.NFTClass{
+		scraper.lastBlockNumber, err = scraper.tradescraper.datastore.GetLastBlockNFTTrade(dia.NFTClass{
 			Address:    scraper.contractAddress.Hex(),
 			Blockchain: dia.ETHEREUM,
 		})
@@ -114,8 +115,18 @@ func (scraper *CryptoKittiesScraper) FetchTrades() error {
 			End:   &endBlockNumber,
 		})
 		if err != nil {
-			if err.Error() == "query returned more than 10000 results" {
+			if strings.Contains(err.Error(), "query returned more than 10000 results") || strings.Contains(err.Error(), "Log response size exceeded") {
 				fmt.Println("Got `query returned more than 10000 results` error, reduce the window size and try again...")
+				endBlockNumber = scraper.lastBlockNumber + (endBlockNumber-scraper.lastBlockNumber)/2
+				continue
+			}
+			if strings.Contains(err.Error(), "502 Bad Gateway") {
+				log.Info("Got `502 Bad Gateway` error, reduce the window size and try again...")
+				endBlockNumber = scraper.lastBlockNumber + (endBlockNumber-scraper.lastBlockNumber)/2
+				continue
+			}
+			if strings.Contains(err.Error(), "504 Gateway Timeout") {
+				log.Info("Got `504 Gateway Timeout` error, reduce the window size and try again...")
 				endBlockNumber = scraper.lastBlockNumber + (endBlockNumber-scraper.lastBlockNumber)/2
 				continue
 			}

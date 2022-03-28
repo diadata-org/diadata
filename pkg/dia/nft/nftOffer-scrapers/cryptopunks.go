@@ -81,7 +81,7 @@ func (scraper *CryptoPunksScraper) FetchOffers() error {
 
 	var err error
 	if scraper.lastBlockNumber == 0 {
-		scraper.lastBlockNumber, err = scraper.offerScraper.datastore.GetLastBlockNFTTradeScraper(dia.NFTClass{
+		scraper.lastBlockNumber, err = scraper.offerScraper.datastore.GetLastBlockNFTOffer(dia.NFTClass{
 			Address:    scraper.contractAddress.Hex(),
 			Blockchain: dia.ETHEREUM,
 		})

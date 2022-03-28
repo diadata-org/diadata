@@ -83,7 +83,7 @@ func (scraper *CryptokittiesScraper) FetchOffers() error {
 
 	var err error
 	if scraper.lastBlockNumber == 0 {
-		scraper.lastBlockNumber, err = scraper.offerScraper.datastore.GetLastBlockNFTTradeScraper(dia.NFTClass{
+		scraper.lastBlockNumber, err = scraper.offerScraper.datastore.GetLastBlockNFTOffer(dia.NFTClass{
 			Address:    scraper.contractAddress.Hex(),
 			Blockchain: dia.ETHEREUM,
 		})
@@ -120,6 +120,16 @@ func (scraper *CryptokittiesScraper) FetchOffers() error {
 		if err != nil {
 			if strings.Contains(err.Error(), "query returned more than 10000 results") || strings.Contains(err.Error(), "Log response size exceeded") {
 				fmt.Println("Got `query returned more than 10000 results` error, reduce the window size and try again...")
+				endBlockNumber = scraper.lastBlockNumber + (endBlockNumber-scraper.lastBlockNumber)/2
+				continue
+			}
+			if strings.Contains(err.Error(), "502 Bad Gateway") {
+				log.Info("Got `502 Bad Gateway` error, reduce the window size and try again...")
+				endBlockNumber = scraper.lastBlockNumber + (endBlockNumber-scraper.lastBlockNumber)/2
+				continue
+			}
+			if strings.Contains(err.Error(), "504 Gateway Timeout") {
+				log.Info("Got `504 Gateway Timeout` error, reduce the window size and try again...")
 				endBlockNumber = scraper.lastBlockNumber + (endBlockNumber-scraper.lastBlockNumber)/2
 				continue
 			}

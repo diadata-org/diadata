@@ -76,10 +76,11 @@ type RelDatastore interface {
 	GetNFTTrades(nft dia.NFT) ([]dia.NFTTrade, error)
 	GetNFTPrice30Days(nftclass dia.NFTClass) (float64, error)
 	GetLastBlockheightTopshot(upperBound time.Time) (uint64, error)
-	GetLastBlockNFTTradeScraper(nftclass dia.NFTClass) (uint64, error)
 	SetNFTBid(bid dia.NFTBid) error
 	GetLastNFTBid(address string, blockchain string, tokenID string, blockNumber uint64, blockPosition uint) (dia.NFTBid, error)
 	GetLastBlockNFTBid(nftclass dia.NFTClass) (uint64, error)
+	GetLastBlockNFTOffer(nftclass dia.NFTClass) (uint64, error)
+	GetLastBlockNFTTrade(nftclass dia.NFTClass) (uint64, error)
 	SetNFTOffer(offer dia.NFTOffer) error
 	GetLastNFTOffer(address string, blockchain string, tokenID string, blockNumber uint64, blockPosition uint) (offer dia.NFTOffer, err error)
 
