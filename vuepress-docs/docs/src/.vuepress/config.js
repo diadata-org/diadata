@@ -72,6 +72,17 @@ module.exports = {
     ],
     */
     sidebar: {
+      '/': [
+        {
+          title: 'Please be permanent',
+          collapsable: true,
+          children: [
+            '',
+            'doc_dir_data-access',
+            'doc_content_contribute'
+          ]
+        }
+      ],
       '/doc_dir_data-access/': [
         {
           title: 'Data access',
