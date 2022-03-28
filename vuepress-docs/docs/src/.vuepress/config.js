@@ -54,6 +54,22 @@ module.exports = {
         link: 'https://www.diadata.org/'
       }
     ],
+    sidebar: [
+      {
+        title: 'Home',   // required
+        path: '/',      // optional, link of the title, which should be an absolute path and must exist
+        collapsable: false, // optional, defaults to true
+        sidebarDepth: 1,    // optional, defaults to 1
+        children: [
+          '/'
+        ]
+      },
+      {
+        title: 'Data access',
+        path: '/doc_dir_data-access',
+        children: [ /* ... */ ]
+      }
+    ]
     /**
     sidebar: [
       ['/', 'Sidebar Get Started (see config.js)'],
@@ -70,7 +86,7 @@ module.exports = {
       ['/doc_dir_contribute/', 'Sidebar Contribute'],
       ['/guide/', 'old2']
     ],
-    */
+    
     sidebar: {
       '/': [
         {
@@ -102,6 +118,7 @@ module.exports = {
         }
       ]
     }
+    */
     
   },
 
