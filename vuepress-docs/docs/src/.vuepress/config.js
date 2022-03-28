@@ -68,6 +68,7 @@ module.exports = {
         title: 'Data access',
         path: '/doc_dir_data-access/',
         sidebarDepth: 5,
+        initialOpenGroupIndex: -1,
         children: [
             '/doc_dir_data-access/',
             '/doc_dir_data-access/doc_content_data-access_oracles',
@@ -78,9 +79,10 @@ module.exports = {
         title: 'Contribute',
         path: '/doc_dir_contribute/',
         sidebarDepth: 5,
+        initialOpenGroupIndex: -1,
         children: [
           '/doc_dir_contribute/',
-          '/doc_dir_contribute/doc_dir_contribute_sub/README',
+          '/doc_dir_contribute/doc_dir_contribute_sub/',
         ],
       }
     ]
