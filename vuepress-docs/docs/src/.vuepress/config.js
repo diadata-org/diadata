@@ -76,7 +76,7 @@ module.exports = {
         title: 'Contribute',
         path: '/doc_dir_contribute/',
         sidebarDepth: 3,
-        children: [ /* ... */ ],
+        children: [],
       }
     ]
     /**
