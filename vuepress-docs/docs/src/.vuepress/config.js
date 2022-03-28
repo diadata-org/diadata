@@ -59,13 +59,14 @@ module.exports = {
         title: 'Introduction',   // required
         path: '/',      // optional, link of the title, which should be an absolute path and must exist
         collapsable: false, // optional, defaults to true
-        sidebarDepth: 1,    // optional, defaults to 1
+        sidebarDepth: 5,    // optional, defaults to 1
+        initialOpenGroupIndex: -1
         children: [],
       },
       {
         title: 'Data access',
         path: '/doc_dir_data-access/',
-        sidebarDepth: 3,
+        sidebarDepth: 5,
         children: [
             '/doc_dir_data-access/',
             '/doc_dir_data-access/doc_content_data-access_oracles',
@@ -75,8 +76,10 @@ module.exports = {
       {
         title: 'Contribute',
         path: '/doc_dir_contribute/',
-        sidebarDepth: 3,
-        children: [],
+        sidebarDepth: 5,
+        children: [
+          '/doc_dir_contribute/',
+        ],
       }
     ]
     /**
