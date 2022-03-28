@@ -72,6 +72,16 @@ module.exports = {
     ],
     */
     sidebar: {
+      '/doc_dir_data-access/': [
+        {
+          title: 'Data access',
+          collapsable: true,
+          children: [
+            '',
+            'doc_content_data-access',
+          ]
+        }
+      ]
     }
     
   },
