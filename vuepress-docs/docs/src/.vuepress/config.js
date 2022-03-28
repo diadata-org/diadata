@@ -32,6 +32,7 @@ module.exports = {
     docsDir: '',
     editLinkText: '',
     lastUpdated: false,
+    displayAllHeaders: true,
     nav: [
       {
         text: 'Request Custom Data',
@@ -79,10 +80,7 @@ module.exports = {
         sidebarDepth: 5,
         children: [
           '/doc_dir_contribute/',
-          [
-            title: 'come on',
-            path:'/doc_dir_contribute/doc_dir_contribute_sub/README'
-          ],
+          '/doc_dir_contribute/doc_dir_contribute_sub/README',
         ],
       }
     ]
