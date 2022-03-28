@@ -75,11 +75,9 @@ module.exports = {
       '/': [
         {
           title: 'Please be permanent',
-          collapsable: true,
+          collapsable: false,
           children: [
-            '',
-            'doc_dir_data-access',
-            'doc_content_contribute'
+            ''
           ]
         }
       ],
