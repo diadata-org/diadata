@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"math/big"
+	"strings"
 	"time"
 
 	"github.com/diadata-org/diadata/config/nftContracts/cryptopunk"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	"github.com/diadata-org/diadata/pkg/utils"
 
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -104,7 +105,9 @@ func (scraper *CryptoPunksScraper) FetchOffers() error {
 	// It's a good practise to stay a little behind the head.
 	endBlockNumber := header.Number.Uint64() - blockDelayEthereum
 
-	scraper.lastBlockNumber = uint64(3918000)
+	// scraper.lastBlockNumber = uint64(3918000)
+	log.Info("last block number: ", scraper.lastBlockNumber)
+	log.Info("end block: ", endBlockNumber)
 
 	nftclass, err := scraper.offerScraper.datastore.GetNFTClass(scraper.contractAddress.Hex(), dia.ETHEREUM)
 	if err != nil {
@@ -117,20 +120,31 @@ func (scraper *CryptoPunksScraper) FetchOffers() error {
 			End:   &endBlockNumber,
 		}, nil, nil)
 		if err != nil {
-			if err.Error() == "query returned more than 10000 results" {
-				fmt.Println("Got `query returned more than 10000 results` error, reduce the window size and try again...")
+			if strings.Contains(err.Error(), "query returned more than 10000 results") || strings.Contains(err.Error(), "Log response size exceeded") {
+				log.Info("Got `query returned more than 10000 results` error, reduce the window size and try again...")
 				endBlockNumber = scraper.lastBlockNumber + (endBlockNumber-scraper.lastBlockNumber)/2
 				continue
 			}
-			fmt.Println("error filtering FilterPunkOffered: ", err)
+			if strings.Contains(err.Error(), "502 Bad Gateway") {
+				log.Info("Got `502 Bad Gateway` error, reduce the window size and try again...")
+				endBlockNumber = scraper.lastBlockNumber + (endBlockNumber-scraper.lastBlockNumber)/2
+				continue
+			}
+			if strings.Contains(err.Error(), "504 Gateway Timeout") {
+				log.Info("Got `504 Gateway Timeout` error, reduce the window size and try again...")
+				endBlockNumber = scraper.lastBlockNumber + (endBlockNumber-scraper.lastBlockNumber)/2
+				continue
+			}
+			log.Error("filtering FilterPunkOffered: ", err)
 			return err
 		}
 
 		for iter.Next() {
 
-			header, err := scraper.offerScraper.ethConnection.HeaderByNumber(context.Background(), big.NewInt(int64(iter.Event.Raw.BlockNumber)))
+			// Get block time.
+			timestamp, err := ethhelper.GetBlockTimeEth(int64(iter.Event.Raw.BlockNumber), scraper.offerScraper.datastore, scraper.offerScraper.ethConnection)
 			if err != nil {
-				return err
+				log.Errorf("getting block time: %+v", err)
 			}
 
 			tx, _, err := scraper.offerScraper.ethConnection.TransactionByHash(context.Background(), iter.Event.Raw.TxHash)
@@ -155,14 +169,11 @@ func (scraper *CryptoPunksScraper) FetchOffers() error {
 				CurrencyDecimals: int32(18),
 				BlockNumber:      iter.Event.Raw.BlockNumber,
 				BlockPosition:    uint64(iter.Event.Raw.Index),
-				Timestamp:        time.Unix(int64(header.Time), 0),
+				Timestamp:        timestamp,
 				TxHash:           iter.Event.Raw.TxHash.Hex(),
 				Exchange:         "CrypoPunksMarket",
 			}
-			fmt.Printf("got offer at time %v\n", offer.Timestamp)
-			fmt.Println("punk id: ", offer.NFT.TokenID)
-			fmt.Println("startValue: ", offer.StartValue)
-			fmt.Println("fromaddress: ", offer.FromAddress)
+			log.Infof("got offer for id %v from address %s at time %v with startValue %v ", offer.NFT.TokenID, offer.FromAddress, offer.Timestamp, offer.StartValue)
 
 			scraper.GetOfferChannel() <- offer
 		}

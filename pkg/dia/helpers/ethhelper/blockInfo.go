@@ -3,6 +3,7 @@ package ethhelper
 import (
 	"context"
 	"math/big"
+	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -55,4 +56,19 @@ func GetBlockDataOnChain(blockNumber int64, client *ethclient.Client) (dia.Block
 
 	return blockdata, nil
 
+}
+
+// GetBlockTimeEth returns the block time of @blockNumber on Ethereum mainnet.
+func GetBlockTimeEth(blockNumber int64, relDB *models.RelDB, client *ethclient.Client) (blockTime time.Time, err error) {
+	blockData, err := GetBlockData(blockNumber, relDB, client)
+	if err != nil {
+		return
+	}
+	switch blockData.Data["Time"].(type) {
+	case float64:
+		blockTime = time.Unix(int64(blockData.Data["Time"].(float64)), 0)
+	case uint64:
+		blockTime = time.Unix(int64(blockData.Data["Time"].(uint64)), 0)
+	}
+	return
 }

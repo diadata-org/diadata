@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"math/big"
 	"strings"
 	"time"
 
 	"github.com/diadata-org/diadata/config/nftContracts/cryptokitties"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	"github.com/diadata-org/diadata/pkg/utils"
 
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -118,7 +118,7 @@ func (scraper *CryptokittiesScraper) FetchOffers() error {
 			End:   &endBlockNumber,
 		})
 		if err != nil {
-			if err.Error() == "query returned more than 10000 results" {
+			if strings.Contains(err.Error(), "query returned more than 10000 results") || strings.Contains(err.Error(), "Log response size exceeded") {
 				fmt.Println("Got `query returned more than 10000 results` error, reduce the window size and try again...")
 				endBlockNumber = scraper.lastBlockNumber + (endBlockNumber-scraper.lastBlockNumber)/2
 				continue
@@ -129,9 +129,11 @@ func (scraper *CryptokittiesScraper) FetchOffers() error {
 
 		for iter.Next() {
 
-			header, err := scraper.offerScraper.ethConnection.HeaderByNumber(context.Background(), big.NewInt(int64(iter.Event.Raw.BlockNumber)))
+			// Get block time.
+
+			timestamp, err := ethhelper.GetBlockTimeEth(int64(iter.Event.Raw.BlockNumber), scraper.offerScraper.datastore, scraper.offerScraper.ethConnection)
 			if err != nil {
-				return err
+				log.Errorf("getting block time: %+v", err)
 			}
 
 			receipt, err := scraper.offerScraper.ethConnection.TransactionReceipt(context.Background(), iter.Event.Raw.TxHash)
@@ -165,7 +167,7 @@ func (scraper *CryptokittiesScraper) FetchOffers() error {
 				Duration:         time.Duration(iter.Event.Duration.Int64()),
 				BlockNumber:      iter.Event.Raw.BlockNumber,
 				BlockPosition:    uint64(iter.Event.Raw.Index),
-				Timestamp:        time.Unix(int64(header.Time), 0),
+				Timestamp:        timestamp,
 				TxHash:           iter.Event.Raw.TxHash.Hex(),
 				Exchange:         "CrypoKittiesMarket",
 			}

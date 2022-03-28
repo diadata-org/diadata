@@ -6,11 +6,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"math/big"
+	"strings"
 	"time"
 
 	"github.com/diadata-org/diadata/config/nftContracts/cryptopunk"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	"github.com/diadata-org/diadata/pkg/utils"
 
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -119,8 +120,18 @@ func (scraper *CryptoPunksScraper) FetchBids() error {
 			End:   &endBlockNumber,
 		}, nil, nil)
 		if err != nil {
-			if err.Error() == "query returned more than 10000 results" {
+			if strings.Contains(err.Error(), "query returned more than 10000 results") || strings.Contains(err.Error(), "Log response size exceeded") {
 				log.Warn("Got `query returned more than 10000 results` error, reduce the window size and try again...")
+				endBlockNumber = scraper.lastBlockNumber + (endBlockNumber-scraper.lastBlockNumber)/2
+				continue
+			}
+			if strings.Contains(err.Error(), "502 Bad Gateway") {
+				log.Info("Got `502 Bad Gateway` error, reduce the window size and try again...")
+				endBlockNumber = scraper.lastBlockNumber + (endBlockNumber-scraper.lastBlockNumber)/2
+				continue
+			}
+			if strings.Contains(err.Error(), "504 Gateway Timeout") {
+				log.Info("Got `504 Gateway Timeout` error, reduce the window size and try again...")
 				endBlockNumber = scraper.lastBlockNumber + (endBlockNumber-scraper.lastBlockNumber)/2
 				continue
 			}
@@ -129,11 +140,13 @@ func (scraper *CryptoPunksScraper) FetchBids() error {
 		}
 
 		for iterBid.Next() {
+
 			// Get block time.
-			header, err := scraper.bidScraper.ethConnection.HeaderByNumber(context.Background(), big.NewInt(int64(iterBid.Event.Raw.BlockNumber)))
+			timestamp, err := ethhelper.GetBlockTimeEth(int64(iterBid.Event.Raw.BlockNumber), scraper.bidScraper.datastore, scraper.bidScraper.ethConnection)
 			if err != nil {
-				return err
+				log.Errorf("getting block time: %+v", err)
 			}
+
 			bid := dia.NFTBid{
 				NFT: dia.NFT{
 					NFTClass: nftclass,
@@ -144,12 +157,11 @@ func (scraper *CryptoPunksScraper) FetchBids() error {
 				CurrencySymbol:   "ETH",
 				CurrencyAddress:  "0x0000000000000000000000000000000000000000",
 				CurrencyDecimals: int32(18),
-
-				BlockNumber:   iterBid.Event.Raw.BlockNumber,
-				BlockPosition: uint64(iterBid.Event.Raw.Index),
-				Timestamp:     time.Unix(int64(header.Time), 0),
-				TxHash:        iterBid.Event.Raw.TxHash.Hex(),
-				Exchange:      "CryptopunkMarket",
+				BlockNumber:      iterBid.Event.Raw.BlockNumber,
+				BlockPosition:    uint64(iterBid.Event.Raw.Index),
+				Timestamp:        timestamp,
+				TxHash:           iterBid.Event.Raw.TxHash.Hex(),
+				Exchange:         "CryptopunkMarket",
 			}
 			log.Infof("got bid at time %v: %v\n", bid.Timestamp, bid)
 			scraper.GetBidChannel() <- bid
