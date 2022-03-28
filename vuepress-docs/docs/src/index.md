@@ -15,14 +15,14 @@ DIA’s data is directly sourced from a broad array of on-chain and off-chain so
 | DATA ACCESS | CONTRIBUTE | KNOWLEDGE BASE |
 | ----------- | ---------- | -------------- |
 | Intro text Data access   | Introtext Contribute | Introtext Knowledge Base |
-| link Data access | link Contribute | Link Knowledge Base |
+| link [Data access](doc_dir_data-access/ "title text link hello world data access!") | link Contribute | Link Knowledge Base |
 
 # HTML Table (individual styling)
 <div class="features">
   <div class="feature">
     <h2>DATA ACCESS</h2>
     <p>Intro text Data access</p>
-    <a href="asdfasdfa">asdfasdf</a>
+    <a href="doc_dir_data-access/">Data access</a>
   </div>
   <div class="feature">
     <h2>CONTRIBUTE</h2>
