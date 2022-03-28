@@ -72,26 +72,6 @@ module.exports = {
     ],
     */
     sidebar: {
-      '/doc_dir_data-access/': [
-        {
-          title: 'Data access',
-          collapsable: true,
-          children: [
-            '',
-            'doc_content_data-access',
-          ]
-        }
-      ],
-      '/doc_dir_contribute/': [
-        {
-          title: 'Contribute',
-          collapsable: false,
-          children: [
-            '',
-            'test',
-          ]
-        }
-      ]
     }
     
   },
