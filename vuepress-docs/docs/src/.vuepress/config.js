@@ -56,7 +56,16 @@ module.exports = {
     ],
     sidebar: [
       ['/', 'Sidebar Get Started (see config.js)'],
-      ['/doc_dir_data-access/', 'Sidebar Data Access'],
+      ['/doc_dir_data-access/', 
+       {
+          title: 'Data access',
+          collapsable: true,
+          children: [
+            '',
+            'doc_content_data-access',
+          ]
+        }
+      ],
       ['/doc_dir_contribute/', 'Sidebar Contribute'],
       ['/guide/', 'old2']
     ],
