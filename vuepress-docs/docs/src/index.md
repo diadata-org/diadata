@@ -15,7 +15,7 @@ DIA’s data is directly sourced from a broad array of on-chain and off-chain so
 | DATA ACCESS | CONTRIBUTE | KNOWLEDGE BASE |
 | ----------- | ---------- | -------------- |
 | Intro text Data access   | Introtext Contribute | Introtext Knowledge Base |
-| link [Data access](doc_dir_data-access/ "title text link hello world data access!") | link Contribute | Link Knowledge Base |
+| link [Data access](doc_dir_data-access/ "title text link hello world data access!") | link [Contribute](doc_dir_contribute/ "title text link hello world data access!") | Link Knowledge Base |
 
 # HTML Table (individual styling)
 <div class="features">
@@ -27,7 +27,7 @@ DIA’s data is directly sourced from a broad array of on-chain and off-chain so
   <div class="feature">
     <h2>CONTRIBUTE</h2>
     <p>Introtext Contribute</p>
-    <a href="asdfasdfa">asdfasdf</a>
+    <a href="doc_dir_contribute/">link Contribute</a>
   </div>
   <div class="feature">
     <h2>KNOWLEDGE BASE</h2>
