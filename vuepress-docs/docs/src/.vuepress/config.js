@@ -56,7 +56,7 @@ module.exports = {
     ],
     sidebar: [
       {
-        title: 'Home',   // required
+        title: 'Introduction',   // required
         path: '/',      // optional, link of the title, which should be an absolute path and must exist
         collapsable: false, // optional, defaults to true
         sidebarDepth: 1,    // optional, defaults to 1
@@ -114,7 +114,8 @@ module.exports = {
           collapsable: true,
           children: [
             '',
-            'doc_content_data-access',
+            'doc_content_data-access_oracles',
+            'doc_content_data-access_apis',
           ]
         }
       ],
@@ -122,10 +123,7 @@ module.exports = {
         {
           title: 'Contribute',
           collapsable: true,
-          children: [
-            '',
-            'doc_content_contribute',
-          ]
+          children: [ /* ... */ ],
         }
       ]
     }
