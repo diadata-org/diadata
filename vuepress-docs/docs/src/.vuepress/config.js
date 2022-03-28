@@ -65,8 +65,19 @@ module.exports = {
       {
         title: 'Data access',
         path: '/doc_dir_data-access/',
+        sidebarDepth: 3,
         children: [
+            '/doc_dir_data-access/README',
             '/doc_dir_data-access/doc_content_data-access',
+        ]
+      },
+      {
+        title: 'Contribute',
+        path: '/doc_dir_contribute/',
+        sidebarDepth: 3,
+        children: [
+            '/doc_dir_contribute/README',
+            '/doc_dir_contribute/doc_content_contribute',
         ]
       }
     ]
