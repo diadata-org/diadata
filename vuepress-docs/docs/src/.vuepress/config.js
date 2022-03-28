@@ -81,6 +81,16 @@ module.exports = {
             'doc_content_data-access',
           ]
         }
+      ],
+      '/doc_dir_contribute/': [
+        {
+          title: 'Contribute',
+          collapsable: true,
+          children: [
+            '',
+            'doc_content_contribute',
+          ]
+        }
       ]
     }
     
