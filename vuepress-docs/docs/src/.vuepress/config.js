@@ -60,7 +60,7 @@ module.exports = {
         path: '/',      // optional, link of the title, which should be an absolute path and must exist
         collapsable: false, // optional, defaults to true
         sidebarDepth: 5,    // optional, defaults to 1
-        initialOpenGroupIndex: -1
+        initialOpenGroupIndex: -1,
         children: [],
       },
       {
