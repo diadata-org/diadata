@@ -445,6 +445,16 @@ func (scraper *CryptoPunksScraper) GetCreationEvents() (map[uint64]time.Time, ma
 				endBlockNumber = startBlockNumber + (endBlockNumber-startBlockNumber)/2
 				continue
 			}
+			if strings.Contains(err.Error(), "502 Bad Gateway") {
+				log.Info("Got `502 Bad Gateway` error, reduce the window size and try again...")
+				endBlockNumber = startBlockNumber + (endBlockNumber-startBlockNumber)/2
+				continue
+			}
+			if strings.Contains(err.Error(), "504 Gateway Timeout") {
+				log.Info("Got `504 Gateway Timeout` error, reduce the window size and try again...")
+				endBlockNumber = startBlockNumber + (endBlockNumber-startBlockNumber)/2
+				continue
+			}
 			log.Error("filtering assign punk: ", err)
 			return creationTimeMap, creatorAddressMap, err
 		}
