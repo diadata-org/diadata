@@ -68,17 +68,15 @@ module.exports = {
         sidebarDepth: 3,
         children: [
             '/doc_dir_data-access/',
-            '/doc_dir_data-access/doc_content_data-access',
+            '/doc_dir_data-access/doc_content_data-access_oracles',
+            '/doc_dir_data-access/doc_content_data-access_apis',
         ]
       },
       {
         title: 'Contribute',
         path: '/doc_dir_contribute/',
         sidebarDepth: 3,
-        children: [
-            '/doc_dir_contribute/',
-            '/doc_dir_contribute/doc_content_contribute',
-        ]
+        children: [ /* ... */ ],
       }
     ]
     /**
