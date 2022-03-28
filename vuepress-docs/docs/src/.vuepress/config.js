@@ -79,9 +79,9 @@ module.exports = {
         sidebarDepth: 5,
         children: [
           '/doc_dir_contribute/',
-          children: [
+          [
             '/doc_dir_contribute/doc_dir_contribute_sub/'
-          ]
+          ],
         ],
       }
     ]
