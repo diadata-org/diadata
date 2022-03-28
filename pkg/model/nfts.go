@@ -372,7 +372,8 @@ func (rdb *RelDB) GetLastNFTBid(address string, blockchain string, tokenID strin
 
 // GetLastBlockNFTBid returns the last blocknumber that was scraped for bids in @nftclass.
 func (rdb *RelDB) GetLastBlockNFTBid(nftclass dia.NFTClass) (blocknumber uint64, err error) {
-	query := fmt.Sprintf("SELECT b.blocknumber from %s b INNER JOIN %s n ON b.nft_id=nft_id INNER JOIN %s c ON(n.nftclass_id=c.nftclass_id AND c.address='%s' and c.blockchain='%s') ORDER BY b.blocknumber DESC LIMIT 1;", nftbidTable, nftTable, nftclassTable, nftclass.Address, nftclass.Blockchain)
+	query := fmt.Sprintf("SELECT b.blocknumber FROM %s b INNER JOIN %s n ON b.nft_id=n.nft_id INNER JOIN %s c ON(n.nftclass_id=c.nftclass_id AND c.address='%s' and c.blockchain='%s') ORDER BY b.blocknumber DESC LIMIT 1;", nftbidTable, nftTable, nftclassTable, nftclass.Address, nftclass.Blockchain)
+	log.Info("query: ", query)
 	err = rdb.postgresClient.QueryRow(context.Background(), query).Scan(&blocknumber)
 	if err != nil {
 		return
@@ -382,7 +383,7 @@ func (rdb *RelDB) GetLastBlockNFTBid(nftclass dia.NFTClass) (blocknumber uint64,
 
 // GetLastBlockNFTOffer returns the last blocknumber that was scraped for offers in @nftclass.
 func (rdb *RelDB) GetLastBlockNFTOffer(nftclass dia.NFTClass) (blocknumber uint64, err error) {
-	query := fmt.Sprintf("SELECT b.blocknumber from %s b INNER JOIN %s n ON b.nft_id=nft_id INNER JOIN %s c ON(n.nftclass_id=c.nftclass_id AND c.address='%s' and c.blockchain='%s') ORDER BY b.blocknumber DESC LIMIT 1;", nftofferTable, nftTable, nftclassTable, nftclass.Address, nftclass.Blockchain)
+	query := fmt.Sprintf("SELECT b.blocknumber FROM %s b INNER JOIN %s n ON b.nft_id=n.nft_id INNER JOIN %s c ON(n.nftclass_id=c.nftclass_id AND c.address='%s' and c.blockchain='%s') ORDER BY b.blocknumber DESC LIMIT 1;", nftofferTable, nftTable, nftclassTable, nftclass.Address, nftclass.Blockchain)
 	err = rdb.postgresClient.QueryRow(context.Background(), query).Scan(&blocknumber)
 	if err != nil {
 		return
