@@ -1,40 +1,58 @@
 ---
 home: true
 heroImage: /hero.png
-actionText: Get Started →
-actionLink: /guide/getting-started.html
+//actionText: Get Started →
+//actionLink: /guide/getting-started.html
 ---
 
-# is this still build?
+# What is DIA? 
+__DIA (Decentralised Information Asset) is a cross-chain, end-to-end, open-source data and oracle platform for Web3.__
+The DIA platform enables the sourcing, validation and sharing of transparent and verified data feeds for traditional and digital financial applications. DIA’s institutional-grade data feeds cover asset prices, metaverse data, lending rates and more.
+DIA’s data is directly sourced from a broad array of on-chain and off-chain sources at individual a trade-level. This allows DIA feeds to be fully customised with regards to the mix of sources and methodologies, resulting in tailor-made, high resilience feeds, setting a new paradigm for oracles.
 
-| Option | Description | asdfasdf |
-| ------ | ----------- | -------- |
-| data   | path to data files to supply the data that will be passed into templates. | path to data files tta that will be passed into templates. |
-| engine | engine to be used for processing templates. Handlebars is the default. | path to datply the data that will be passed into templates. |
-| ext    | extension to be used for dest files. | path to data files to supply the data that will be passed into templates. |
+# Markdown Table (VuePress styling)
 
+| DATA ACCESS | CONTRIBUTE | KNOWLEDGE BASE |
+| ----------- | ---------- | -------------- |
+| Intro text Data access   | Introtext Contribute | Introtext Knowledge Base |
+| link Data access | link Contribute | Link Knowledge Base |
+
+# HTML Table (individual styling)
 <div class="features">
   <div class="feature">
-    <h2>section 1</h2>
-    <p>paragraph 1</p>
+    <h2>DATA ACCESS</h2>
+    <p>Intro text Data access</p>
     <a href="asdfasdfa">asdfasdf</a>
   </div>
   <div class="feature">
-    <h2>section 2</h2>
-    <p>paragraph 2</p>
+    <h2>CONTRIBUTE</h2>
+    <p>Introtext Contribute</p>
+    <a href="asdfasdfa">asdfasdf</a>
   </div>
   <div class="feature">
-    <h2>section 3</h2>
-    <p>paragraph 3</p>
+    <h2>KNOWLEDGE BASE</h2>
+    <p>Introtext Knowledge Base</p>
+    <a href="asdfasdfa">asdfasdf</a>
   </div>
 </div>
 
-::: slot footer
-# is this still build?
+::: tip
+This is a tip
+:::
 
-> Blockquotes can also be nested...
->> ...by using additional greater-than signs right next to each other...
-> > > ...or with spaces between arrows.
+::: warning
+This is a warning
+:::
+
+::: danger
+This is a dangerous warning
+:::
+
+::: details
+This is a details block, which does not work in IE / Edge
+:::
+
+::: slot footer
 
 # Syntax highlighting
 
@@ -46,13 +64,6 @@ var foo = function (bar) {
 console.log(foo(5));
 ```
 
-## Tables
-
-| Option | Description |
-| ------ | ----------- |
-| data   | path to data files to supply the data that will be passed into templates. |
-| engine | engine to be used for processing templates. Handlebars is the default. |
-| ext    | extension to be used for dest files. |
 
 -------
 
@@ -60,20 +71,3 @@ console.log(foo(5));
 
 MIT Licensed | Copyright © 2018-present [Evan You](https://github.com/yyx990803)
 :::
-
-
-<div class="features">
-  <div class="feature">
-    <h2>Do we really have to use this? Should be a component pro'lly</h2>
-    <p>Minimal setup with markdown-centered project structure helps you focus on writing.</p>
-    <a href="asdfasdfa">asdfasdf</a>
-  </div>
-  <div class="feature">
-    <h2>Vue-Powered</h2>
-    <p>Enjoy the dev experience of Vue + webpack, use Vue components in markdown, and develop custom themes with Vue.</p>
-  </div>
-  <div class="feature">
-    <h2>Performant</h2>
-    <p>VuePress generates pre-rendered static HTML for each page, and runs as an SPA once a page is loaded.</p>
-  </div>
-</div>
