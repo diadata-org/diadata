@@ -34,24 +34,20 @@ module.exports = {
     lastUpdated: false,
     nav: [
       {
-        text: 'old1',
-        link: '/guide/',
+        text: 'Request Custom Data',
+        link: 'https://medium.com/dia-insights/how-to-submit-a-dia-custom-delivery-request-cdr-in-5-minutes-6f88b0a4ca56',
       },
       {
-        text: 'Doc Introduction',
-        link: '/doc_dir_introduction/'
+        text: 'Developer Discord',
+        link: 'https://discord.gg/zFmXtPFgQj'
       },
       {
-        text: 'Doc Data access',
-        link: '/doc_dir_data-access/'
+        text: 'DAO Forum',
+        link: 'https://dao.diadata.org/'
       },
       {
-        text: 'old2',
-        link: '/config/'
-      },
-      {
-        text: 'VuePress',
-        link: 'https://v1.vuepress.vuejs.org'
+        text: 'Relative link test',
+        link: '/doc_dir_contribute/'
       },
       {
         text: 'DiaData',
@@ -59,9 +55,9 @@ module.exports = {
       }
     ],
     sidebar: [
-      '/',
-      ['/doc_dir_introduction/', 'Doc Introduction'],
-      ['/doc_dir_data-access/', 'Doc Data access'],
+      ['/', 'Sidebar Get Started (see config.js)'],
+      ['/doc_dir_data-access/', 'Sidebar Data Access'],
+      ['/doc_dir_contribute/', 'Sidebar Contribute'],
       ['/guide/', 'old2']
     ],
     /**
