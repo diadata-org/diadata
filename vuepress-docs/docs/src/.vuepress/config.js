@@ -66,7 +66,7 @@ module.exports = {
         title: 'Data access',
         path: '/doc_dir_data-access/',
         children: [
-            '',
+            'doc_content_data-access',
         ]
       }
     ]
