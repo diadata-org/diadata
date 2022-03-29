@@ -18,8 +18,7 @@ Both are in "vuepress-docs/vuepress-docs/docs/src/.vuepress/config.js"
 CAUTION: editing is tricky, especially the sidebar needs to be handled with care. 
 
 Footer
-See "vuepress-docs/vuepress-docs/docs/src/index.md", there: ::: slot footer
-TODO: the footer does not appear on all pages, check why
+TODO: For now, we work with the component "ComponentFooter.vue" as a reusable footer, as "slots" dont seem to work (need to be re-defined in every markdown file). This should be re-considered, we should check the templating feature for that. For usage of components see below
 
 ---
 
