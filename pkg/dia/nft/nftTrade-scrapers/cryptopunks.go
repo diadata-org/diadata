@@ -176,7 +176,7 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 				err := abi.UnpackIntoInterface(&transferEvent, "Transfer", vLog.Data)
 				if err == nil {
 					log.Info("found a Transfer event")
-					if len(vLog.Topics) > 1 {
+					if len(vLog.Topics) > 2 {
 						transferEvent.To = common.BytesToAddress(vLog.Topics[2].Bytes())
 						break
 					}
