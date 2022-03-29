@@ -1,6 +1,6 @@
 ---
 home: true
-heroImage: /images/pixelated-logo.png
+heroImage: images/pixelated-logo.png
 //actionText: Get Started →
 //actionLink: /guide/getting-started.html
 ---
@@ -16,6 +16,13 @@ DIA’s data is directly sourced from a broad array of on-chain and off-chain so
 | ----------- | ---------- | -------------- |
 | Intro text Data access   | Introtext Contribute | Introtext Knowledge Base |
 | link [Data access](doc_dir_data-access/ "title text link hello world data access!") | link [Contribute](doc_dir_contribute/ "title text link hello world data access!") | Link Knowledge Base |
+
+
+# Image test
+![relative path](images/Architecture.svg)
+![absolute path](/images/Architecture.svg)
+![URI](https://effortless-marigold-12d892.netlify.app/images/Architecture.svg)
+
 
 # HTML Table (individual styling)
 <div class="features">
@@ -46,6 +53,10 @@ This is a warning
 
 ::: danger
 This is a dangerous warning
+:::
+
+::: danger CUSTOM TITLE
+This is a dangerous warning with a custom title
 :::
 
 ::: details
