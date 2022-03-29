@@ -74,7 +74,9 @@ This is a details block, which does not work in IE / Edge
 
 </SampleComponentMarkdownContent>
 
+# SampleComponentJavascriptExecution (also parameter passing)
 
+<SampleComponentJavascriptExecution display-text="display text" headlineText="headline text" />
 
 ::: slot footer
 
