@@ -63,6 +63,16 @@ This is a dangerous warning with a custom title
 This is a details block, which does not work in IE / Edge
 :::
 
+
+<SampleComponentMarkdownContent>
+
+### Example component with markdown content 
+- Any markdown
+- you put here
+> will be slotted in 
+
+</SampleComponentMarkdownContent>
+
 ::: slot footer
 
 # Syntax highlighting
