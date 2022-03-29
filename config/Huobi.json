@@ -8,6 +8,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "AURORAUSDT",
+      "Ignore": false,
+      "Symbol": "AURORA"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "AXSUSDT",
       "Ignore": false,
       "Symbol": "AXS"

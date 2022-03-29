@@ -1,6 +1,12 @@
 {
     "Tokens": [
         {
+            "Symbol": "AURORA",
+            "Exchange": "ZB",
+            "Blockchain": "Aurora",
+            "Address": "0x8BEc47865aDe3B172A928df8f990Bc7f2A3b9f79"
+        },
+        {
             "Symbol": "DIA",
             "Exchange": "ZB",
             "Blockchain": "Ethereum",

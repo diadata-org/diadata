@@ -33,7 +33,7 @@ func init() {
 	blockchains[dia.CELO] = dia.BlockChain{Name: dia.CELO, NativeToken: dia.Asset{Symbol: "CELO"}, VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.FANTOM] = dia.BlockChain{Name: dia.FANTOM, NativeToken: dia.Asset{Symbol: "FTM"}, VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.NEAR] = dia.BlockChain{Name: dia.NEAR, NativeToken: dia.Asset{Symbol: "NEAR"}, VerificationMechanism: dia.PROOF_OF_STAKE}
-	blockchains[dia.AURORA] = dia.BlockChain{Name: dia.AURORA, NativeToken: dia.Asset{Symbol: "AOA"}, VerificationMechanism: dia.PROOF_OF_STAKE}
+	blockchains[dia.AURORA] = dia.BlockChain{Name: dia.AURORA, NativeToken: dia.Asset{Symbol: "AURORA"}, VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.SOLANA] = dia.BlockChain{Name: dia.SOLANA, NativeToken: dia.Asset{Symbol: "SOL"}, VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.FLOW] = dia.BlockChain{Name: dia.FLOW, NativeToken: dia.Asset{Symbol: "FLOW"}, VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.MOONRIVER] = dia.BlockChain{Name: dia.MOONRIVER, NativeToken: dia.Asset{Symbol: "MOVR"}, VerificationMechanism: dia.PROOF_OF_STAKE}

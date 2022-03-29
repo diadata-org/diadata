@@ -38,6 +38,12 @@
     },
     {
       "Exchange": "ZB",
+      "ForeignName": "aurorausdt",
+      "Ignore": false,
+      "Symbol": "AURORA"
+    },
+    {
+      "Exchange": "ZB",
       "ForeignName": "batbtc",
       "Ignore": false,
       "Symbol": "BAT"
