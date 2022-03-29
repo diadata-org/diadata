@@ -51,5 +51,5 @@ Just add the following to your markdown:
 - Sample component with Javascript execution and parameter content (only strings)
 Just add the following to your markdown:
 
-<SampleComponentJavascriptExecution display-text="parameter for button label" headlineText="parameter for javascript" />
-TODO: There seems to be a bug with the parameter passing to javascript
+<SampleComponentJavascriptExecution display-text="parameter for button label" headlineText="parameter for headline" />
+TODO: The sample component shows how javascript in components is executed and it also shows how parameter are passed to the component. However, passing a parameter to javascript execution is not implemented for now - there are many examples for that in the VuePress documentation tho
