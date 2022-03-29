@@ -52,3 +52,4 @@ Just add the following to your markdown:
 Just add the following to your markdown:
 
 <SampleComponentJavascriptExecution display-text="parameter for button label" headlineText="parameter for javascript" />
+TODO: There seems to be a bug with the parameter passing to javascript
