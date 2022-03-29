@@ -10,3 +10,5 @@ content test slot
 
 <Content slot-key="footer"/>
 <Content slot-key="testslot"/>
+
+<ComponentFooter />
