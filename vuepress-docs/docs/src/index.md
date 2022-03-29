@@ -24,8 +24,6 @@ DIA’s data is directly sourced from a broad array of on-chain and off-chain so
 ![URI our repo](https://effortless-marigold-12d892.netlify.app/images/Architecture.svg)
 ![URI extern](https://octodex.github.com/images/minion.png)
 
-https://octodex.github.com/images/minion.png
-
 
 # HTML Table (individual styling)
 <div class="features">
