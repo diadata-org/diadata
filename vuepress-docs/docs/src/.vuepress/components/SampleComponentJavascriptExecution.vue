@@ -2,7 +2,7 @@
   <div>
   <h1>SampleComponentJavascriptExecution.vue</h1>
   <h2>{{ headlineText }}</h2>
-    <button @click="testAlert">{{ displayText }}</button>
+    <button @click="testAlert({{ headlineText }})">{{ displayText }}</button>
   </div>
 </template>
 
@@ -10,8 +10,8 @@
 export default {
   props: ['displayText','headlineText'],
   methods: {
-    testAlert() {
-      alert({{ headlineText }});
+    testAlert(arg) {
+      alert(arg);
     }
   }
 }
