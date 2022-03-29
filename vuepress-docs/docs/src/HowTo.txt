@@ -2,9 +2,10 @@ HowTo edit DIA documentation in VuePress
 
 GENERAL USE
 All content can be edited using markdown: https://markdown-it.github.io/
+This is the markdown renderer VuePress uses, with more documentation: https://github.com/markdown-it/markdown-it
 For VuePress, there is a great documentation here: https://v1.vuepress.vuejs.org/
 
-
+On top of that, there are only a few special things that are important, basically about navigation and custom components:
 
 NAVIGATION
 For now there are three navigation elements:
