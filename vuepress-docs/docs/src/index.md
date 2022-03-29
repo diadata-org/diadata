@@ -1,6 +1,6 @@
 ---
 home: true
-heroImage: /hero.png
+heroImage: /images/pixelated-logo.png
 //actionText: Get Started →
 //actionLink: /guide/getting-started.html
 ---
