@@ -68,11 +68,15 @@ module.exports = {
         title: 'Data access',
         path: '/doc_dir_data-access/',
         sidebarDepth: 5,
-        initialOpenGroupIndex: -1,
+//        initialOpenGroupIndex: -1,
         children: [
-            '/doc_dir_data-access/',
-            '/doc_dir_data-access/doc_content_data-access_oracles',
-            '/doc_dir_data-access/doc_content_data-access_apis',
+          {
+            title: '2nd level title',
+            path: 'doc_dir_data-access/doc_content_data-access_oracles',
+            collapsable: true,
+            children: [
+                ['/doc_dir_data-access/doc_content_data-access_apis', 'hopefully 3rd level'],
+            ]
         ]
       },
       {
