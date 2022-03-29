@@ -76,7 +76,8 @@ module.exports = {
             collapsable: true,
             children: [
                 ['/doc_dir_data-access/doc_content_data-access_apis', 'hopefully 3rd level'],
-            ]
+            ],
+          }
         ]
       },
       {
