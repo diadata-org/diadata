@@ -19,10 +19,10 @@ DIA’s data is directly sourced from a broad array of on-chain and off-chain so
 
 
 # Image test
-![relative path](images/Architecture.svg)
-![absolute path](/images/Architecture.svg)
-![URI our repo](https://effortless-marigold-12d892.netlify.app/images/Architecture.svg)
-![URI extern](https://octodex.github.com/images/minion.png)
+![source alias](~@source/src/images/Architecture.svg)
+![source alias 2](~@source/src/images/pixelated-logo.png)
+![URI our repo](https://effortless-marigold-12d892.netlify.app/src/images/Architecture.svg)
+
 
 
 # HTML Table (individual styling)
