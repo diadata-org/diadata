@@ -64,6 +64,7 @@ This is a details block, which does not work in IE / Edge
 :::
 
 
+# SampleComponentMarkdownContent
 <SampleComponentMarkdownContent>
 
 ### Example component with markdown content 
@@ -72,6 +73,8 @@ This is a details block, which does not work in IE / Edge
 > will be slotted in 
 
 </SampleComponentMarkdownContent>
+
+
 
 ::: slot footer
 
