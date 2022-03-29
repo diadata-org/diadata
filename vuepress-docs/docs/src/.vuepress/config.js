@@ -71,11 +71,12 @@ module.exports = {
 //        initialOpenGroupIndex: -1,
         children: [
           {
-            title: '2nd level title',
-            path: '/doc_dir_data-access/doc_content_data-access_oracles',
+            title: 'Oracles',
+            path: '/doc_dir_data-access/doc_dir_Oracles',
             collapsable: true,
             children: [
-                ['/doc_dir_data-access/doc_content_data-access_apis', 'hopefully 3rd level'],
+                ['/doc_dir_data-access/doc_dir_Oracles/doc_content_data-access_oracles_subpage_01.md', 'How to use them (tutorials for each different oracle)'],
+                ['/doc_dir_data-access/doc_dir_Oracles/doc_content_data-access_oracles_subpage_02.md', 'Oracle directory with links'],
             ],
           }
         ]
@@ -84,10 +85,10 @@ module.exports = {
         title: 'Contribute',
         path: '/doc_dir_contribute/',
         sidebarDepth: 5,
-        initialOpenGroupIndex: -1,
+//        initialOpenGroupIndex: -1,
         children: [
-          '/doc_dir_contribute/',
-          '/doc_dir_contribute/doc_dir_contribute_sub/',
+          ['/doc_dir_contribute/doc_content_become-a-DIA-community-etc.md', 'Become a DIA community dev on Gitcoin'],
+          ['/doc_dir_contribute/doc_content_contribute.md', 'Another subpage of contribute'],
         ],
       }
     ]
