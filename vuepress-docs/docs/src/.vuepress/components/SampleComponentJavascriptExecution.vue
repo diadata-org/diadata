@@ -7,11 +7,12 @@
 </template>
 
 <script>
+var myParam = {{ headlineText }};
 export default {
   props: ['displayText','headlineText'],
   methods: {
     testAlert() {
-      alert(headlineText);
+      alert(myParam);
     }
   }
 }
