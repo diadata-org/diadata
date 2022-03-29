@@ -79,8 +79,6 @@ This is a details block, which does not work in IE / Edge
 
 <SampleComponentJavascriptExecution display-text="display text" headlineText="headline text" />
 
-::: slot footer
-
 # Syntax highlighting
 
 ``` js
@@ -91,9 +89,13 @@ var foo = function (bar) {
 console.log(foo(5));
 ```
 
+::: slot footer
+
+
+
 
 -------
-
+[Footer Link Imprint](doc_dir_data-access/ "la li lu")
 
 
 MIT Licensed | Copyright © 2018-present [Evan You](https://github.com/yyx990803)
