@@ -24,7 +24,7 @@ TODO: For now, we work with the component "ComponentFooter.vue" as a reusable fo
 
 STYLING
 CSS can be applied individually but should rather be implemented either globally (in vuepress-docs/vuepress-docs/docs/src/.vuepress/styles) or for re-used components, see below
-TODO: changes in vuepress-docs/vuepress-docs/docs/src/.vuepress/styles/index.styl don't seem to have an effect
+
 
 ---
 
