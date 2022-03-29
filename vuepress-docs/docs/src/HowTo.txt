@@ -7,6 +7,8 @@ For VuePress, there is a great documentation here: https://v1.vuepress.vuejs.org
 
 On top of that, there are only a few special things that are important, basically about navigation and custom components:
 
+---
+
 NAVIGATION
 For now there are three navigation elements:
 
@@ -25,6 +27,13 @@ TODO: For now, we work with the component "ComponentFooter.vue" as a reusable fo
 STYLING
 CSS can be applied individually but should rather be implemented either globally (in vuepress-docs/vuepress-docs/docs/src/.vuepress/styles) or for re-used components, see below
 
+---
+
+IMAGES (and other static resources)
+Static files have to be placed in vuepress-docs/docs/src/.vuepress/public/
+For images there is vuepress-docs/docs/src/.vuepress/public/images
+If placed there, they can be used as described in markdown documentation, for example:
+![alt text](images/somelogo.png)
 
 ---
 
