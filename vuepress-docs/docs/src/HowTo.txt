@@ -1,0 +1,35 @@
+HowTo edit DIA documentation in VuePress
+
+GENERAL USE
+All content can be edited using markdown: https://markdown-it.github.io/
+For VuePress, there is a great documentation here: https://v1.vuepress.vuejs.org/
+
+
+
+NAVIGATION
+For now there are three navigation elements:
+
+Header-Navigatin and Side Bar Navigation
+Both are in "vuepress-docs/vuepress-docs/docs/src/.vuepress/config.js"
+- Header: themeConfig.nav
+- Sidebar: themeConfig.sidebar
+
+CAUTION: editing is tricky, especially the sidebar needs to be handled with care. 
+
+Footer
+See "vuepress-docs/vuepress-docs/docs/src/index.md", there: ::: slot footer
+TODO: the footer does not appear on all pages, check why
+
+---
+
+STYLING
+CSS can be applied individually but should rather be implemented either globally (in vuepress-docs/vuepress-docs/docs/src/.vuepress/styles) or for re-used components, see below
+TODO: changes in vuepress-docs/vuepress-docs/docs/src/.vuepress/styles/index.styl don't seem to have an effect
+
+---
+
+COMPONENTS
+Components are used for content elements which are not provided by markdown by default, for example for displaying sources / exchanges with logos, text, dynamic content etc
+CAUTION: VuePress comes with many components and plugins which have not been tried out during first setup, so before coding our own check if what we need is out there
+
+To examine how basic feature work we provide sample components in vuepress-docs/vuepress-docs/docs/src/.vuepress/components
