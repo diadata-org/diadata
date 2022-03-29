@@ -21,33 +21,36 @@ type FilterVOL struct {
 }
 
 func NewFilterVOL(asset dia.Asset, exchange string, memory int) *FilterVOL {
-	s := &FilterVOL{
+	filter := &FilterVOL{
 		asset:      asset,
 		exchange:   exchange,
 		volumeUSD:  0.0,
 		filterName: "VOL" + strconv.Itoa(memory),
 		memory:     memory,
 	}
-	return s
+	return filter
 }
 
-func (s *FilterVOL) compute(trade dia.Trade) {
-	s.volumeUSD += trade.EstimatedUSDPrice * math.Abs(trade.Volume)
-	s.currentTime = trade.Time
+func (filter *FilterVOL) compute(trade dia.Trade) {
+	filter.volumeUSD += trade.EstimatedUSDPrice * math.Abs(trade.Volume)
+	if filter.asset.Address == "0x249e38Ea4102D0cf8264d3701f1a0E39C4f2DC3B" || filter.asset.Address == "0xFca59Cd816aB1eaD66534D82bc21E7515cE441CF" {
+		log.Infof("volumeUSD for %s: %v", filter.asset.Address, filter.volumeUSD)
+	}
+	filter.currentTime = trade.Time
 }
 
-func (s *FilterVOL) finalCompute(time time.Time) float64 {
-	s.value = s.volumeUSD
-	s.volumeUSD = 0.0
-	return s.value
+func (filter *FilterVOL) finalCompute(time time.Time) float64 {
+	filter.value = filter.volumeUSD
+	filter.volumeUSD = 0.0
+	return filter.value
 }
 
-func (s *FilterVOL) filterPointForBlock() *dia.FilterPoint {
+func (filter *FilterVOL) filterPointForBlock() *dia.FilterPoint {
 	return nil
 }
 
-func (s *FilterVOL) save(ds models.Datastore) error {
-	err := ds.SetFilter(s.filterName, s.asset, s.exchange, s.value, s.currentTime)
+func (filter *FilterVOL) save(ds models.Datastore) error {
+	err := ds.SetFilter(filter.filterName, filter.asset, filter.exchange, filter.value, filter.currentTime)
 	if err != nil {
 		log.Errorln("FilterVOL Error:", err)
 	}
