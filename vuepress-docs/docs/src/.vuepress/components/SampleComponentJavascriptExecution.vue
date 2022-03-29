@@ -7,12 +7,11 @@
 </template>
 
 <script>
-var myParam = {{ headlineText }};
 export default {
   props: ['displayText','headlineText'],
   methods: {
     testAlert() {
-      alert(myParam);
+      alert("TODO: check how to pass parameter to javascript if needed");
     }
   }
 }
