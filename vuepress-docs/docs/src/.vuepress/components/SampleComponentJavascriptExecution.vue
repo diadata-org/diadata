@@ -11,7 +11,7 @@ export default {
   props: ['displayText','headlineText'],
   methods: {
     testAlert() {
-      alert("{{ displayText }}");
+      alert(headlineText);
     }
   }
 }
