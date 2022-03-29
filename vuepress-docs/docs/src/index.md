@@ -19,9 +19,8 @@ DIA’s data is directly sourced from a broad array of on-chain and off-chain so
 
 
 # Image test
-![asdf](images/Architecture.svg)
 ![asfasfasdf](images/somelogo.png)
-![URI our repo](https://effortless-marigold-12d892.netlify.app/images/Architecture.svg)
+![URI our repo](https://effortless-marigold-12d892.netlify.app/images/somelogo.png)
 
 
 
