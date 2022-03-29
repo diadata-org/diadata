@@ -252,16 +252,13 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 		{
 			filterPoints = queryhelper.FilterEMA(emaFilterPoints, asset, int(blockSizeSeconds))
 		}
-
 	case "mair":
 		{
 			filterPoints = queryhelper.FilterMAIR(tradeBlocks, asset, int(blockSizeSeconds))
 		}
 	case "ma":
 		{
-
 			filterPoints = queryhelper.FilterMA(tradeBlocks, asset, int(blockSizeSeconds))
-
 		}
 	case "vwap":
 		{
@@ -274,6 +271,10 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	case "medir":
 		{
 			filterPoints = queryhelper.FilterMEDIR(tradeBlocks, asset, int(blockSizeSeconds))
+		}
+	case "vol":
+		{
+			filterPoints = queryhelper.FilterVOL(tradeBlocks, asset, int(blockSizeSeconds))
 		}
 
 	}

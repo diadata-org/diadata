@@ -191,3 +191,23 @@ func FilterEMA(points []dia.FilterPoint, asset dia.Asset, blockSize int) (filter
 
 	return filterPoints
 }
+
+func FilterVOL(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint) {
+	for _, block := range tradeBlocks {
+		if len(block.Trades) > 0 {
+			volFilter := filters.NewFilterVOL(asset, "", blockSize)
+
+			for _, trade := range block.Trades {
+				volFilter.Compute(trade)
+			}
+
+			volFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
+			fp := volFilter.FilterPointForBlock()
+			if fp != nil {
+				fp.Time = time.Unix(block.TimeStamp/1e9, 0)
+				filterPoints = append(filterPoints, *fp)
+			}
+		}
+	}
+	return filterPoints
+}
