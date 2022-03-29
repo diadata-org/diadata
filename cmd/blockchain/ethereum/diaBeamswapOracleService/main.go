@@ -46,11 +46,15 @@ func main() {
 		"0x0000000000000000000000000000000000000000",//BNB
 		"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",//USDC
 		"0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",//BUSD
+		"0x0000000000000000000000000000000000000000",//ETH
+		"0x0000000000000000000000000000000000000000",//GLMR
 	}
 	blockchains := []string{
 		"BinanceSmartChain",
 		"Ethereum",
 		"BinanceSmartChain",
+		"Ethereum",
+		"Moonbeam",
 	}
 	oldPrices := make(map[int]float64)
 
