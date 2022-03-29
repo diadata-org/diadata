@@ -77,7 +77,7 @@ This is a details block, which does not work in IE / Edge
 
 # SampleComponentJavascriptExecution (also parameter passing)
 
-<SampleComponentJavascriptExecution display-text="display text" headlineText="headline text" />
+<SampleComponentJavascriptExecution display-text="display text" headlineText="hello world" />
 
 # Syntax highlighting
 
