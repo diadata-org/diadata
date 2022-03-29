@@ -17,7 +17,8 @@ Both are in "vuepress-docs/vuepress-docs/docs/src/.vuepress/config.js"
 - Header: themeConfig.nav
 - Sidebar: themeConfig.sidebar
 
-CAUTION: editing is tricky, especially the sidebar needs to be handled with care. 
+Caution: editing is tricky, especially the sidebar needs to be handled with care. 
+For the sidebar its important to understand that the file structure in vuepress-docs/vuepress-docs/docs/src does NOT match the navigation structure automatically, as the navigation structure can be configured in "config.js" in many different ways (for ecample including headlines in files). The initial setup of the documentation however follows the pattern "one file for each page" and those files are located in folders which hopefully make it easy to find the right file for each page.
 
 Footer
 TODO: For now, we work with the component "ComponentFooter.vue" as a reusable footer, as "slots" dont seem to work (need to be re-defined in every markdown file). This should be re-considered, we should check the templating feature for that. For usage of components see below
