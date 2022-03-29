@@ -34,3 +34,21 @@ Components are used for content elements which are not provided by markdown by d
 CAUTION: VuePress comes with many components and plugins which have not been tried out during first setup, so before coding our own check if what we need is out there
 
 To examine how basic feature work we provide sample components in vuepress-docs/vuepress-docs/docs/src/.vuepress/components
+
+HOW TO USE COMPONENTS
+There are two samples:
+- Sample component with "rich text content" (aka MarkDown Content)
+Just add the following to your markdown:
+<SampleComponentMarkdownContent>
+
+### Example component with markdown content 
+- Any markdown
+- you put here
+> will be slotted in 
+
+</SampleComponentMarkdownContent>
+
+- Sample component with Javascript execution and parameter content (only strings)
+Just add the following to your markdown:
+
+<SampleComponentJavascriptExecution display-text="parameter for button label" headlineText="parameter for javascript" />
