@@ -1,24 +1,44 @@
 # Oracle Documentation
 
-{% page-ref page="deployed-contracts.md" %}
+{% content-ref url="deployed-contracts.md" %}
+[deployed-contracts.md](deployed-contracts.md)
+{% endcontent-ref %}
 
-{% page-ref page="guest-quotations/coinmarketcap-quotations.md" %}
+{% content-ref url="guest-quotations/coinmarketcap-quotations.md" %}
+[coinmarketcap-quotations.md](guest-quotations/coinmarketcap-quotations.md)
+{% endcontent-ref %}
 
-{% page-ref page="guest-quotations/coingecko-quotations.md" %}
+{% content-ref url="guest-quotations/coingecko-quotations.md" %}
+[coingecko-quotations.md](guest-quotations/coingecko-quotations.md)
+{% endcontent-ref %}
 
-{% page-ref page="defi-protocol-rates-and-states.md" %}
+{% content-ref url="defi-protocol-rates-and-states.md" %}
+[defi-protocol-rates-and-states.md](defi-protocol-rates-and-states.md)
+{% endcontent-ref %}
 
-{% page-ref page="farming-pools.md" %}
+{% content-ref url="broken-reference" %}
+[Broken link](broken-reference)
+{% endcontent-ref %}
 
-{% page-ref page="chart-points.md" %}
+{% content-ref url="chart-points.md" %}
+[chart-points.md](chart-points.md)
+{% endcontent-ref %}
 
-{% page-ref page="fiat-prices.md" %}
+{% content-ref url="fiat-prices.md" %}
+[fiat-prices.md](fiat-prices.md)
+{% endcontent-ref %}
 
-{% page-ref page="interest-rates.md" %}
+{% content-ref url="interest-rates.md" %}
+[interest-rates.md](interest-rates.md)
+{% endcontent-ref %}
 
-{% page-ref page="crypto-assets.md" %}
+{% content-ref url="crypto-assets.md" %}
+[crypto-assets.md](crypto-assets.md)
+{% endcontent-ref %}
 
-{% page-ref page="guest-quotations/" %}
+{% content-ref url="guest-quotations/" %}
+[guest-quotations](guest-quotations/)
+{% endcontent-ref %}
 
 
 
@@ -36,11 +56,10 @@ Updates are supplied by the DIA Oracle service that periodically supplies update
 
 ## Example DApp: ECB FX Rates for Cryptos
 
-As an example application, we implemented and deployed a [simple smart contract that converts crypto asset prices from our oracle from USD to EUR](https://etherscan.io/address/0xccb30bf12177705d41ac208802a6066482a76eaa). 
+As an example application, we implemented and deployed a [simple smart contract that converts crypto asset prices from our oracle from USD to EUR](https://etherscan.io/address/0xccb30bf12177705d41ac208802a6066482a76eaa).&#x20;
 
 Call `getAssetEurRate()` with a crypto asset name as argument in order to request the current crypto asset price from our oracle which is then converted to EUR by using the ECB exchange rate for EUR-USD, also published in the oracle contract.  In the above link, you can use the "Read Contract" tab for easy web access. The rate is displayed in a fix comma format with five decimal digits. The source code of that example contract can be found at the "Code" tab. This shows how easy it is to integrate our oracle into any application: compile your application against the oracle interface and set the address where the oracle is deployed afterwards. Ideally, this should be done in a way that allows updates if the oracle address changes at any time in the future.
 
 ## Gas Estimation
 
 All DIA oracles use the go-ethereum gas estimation to estimate the gas costs for an update contract call. To ensure timely delivery of the transaction, the gas estimate is scaled to 110% of the original estimate.
-

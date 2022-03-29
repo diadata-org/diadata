@@ -37,7 +37,6 @@
     * [Access the Oracle](documentation/oracle-documentation/access-the-oracle.md)
     * [Crypto Index Value](documentation/oracle-documentation/crypto-index-value.md)
     * [DeFi Protocol Lending and Borrowing Rates](documentation/oracle-documentation/defi-protocol-rates-and-states.md)
-    * [Farming Pools](documentation/oracle-documentation/farming-pools.md)
     * [Chart Points](documentation/oracle-documentation/chart-points.md)
     * [Fiat Prices](documentation/oracle-documentation/fiat-prices.md)
     * [Interest Rates](documentation/oracle-documentation/interest-rates.md)
