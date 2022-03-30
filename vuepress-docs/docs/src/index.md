@@ -5,8 +5,6 @@ home: true
 //actionLink: /guide/getting-started.html
 ---
 
-<DIAComponentHeader />
-
 # Introduction into documentation
 This page shows the most important features of the new documentation tool - so consider this a list of tools and assets you can pick, use, and modify is needed
 
@@ -104,4 +102,3 @@ var foo = function (bar) {
 console.log(foo(5));
 ```
 
-<DIAComponentFooter />
