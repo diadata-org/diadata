@@ -18,12 +18,13 @@ export default {
       return assetId;
     },
     parseAndReturnAssetList( assetList ) {
-      return assetList;
+      var returnList = assetList.split(',');
+      return returnList;
     }
   },
   data: function() {
     return {
-      MyInternalList: this.parseAndReturnAssetList( this.AssetList.split(',') ),
+      MyInternalList: this.parseAndReturnAssetList( this.AssetList ),
     }
   }
  
