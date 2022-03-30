@@ -10,7 +10,7 @@ export default {
   props: ['MyList'],
   data: function() {
     return {
-      MyList: eval(this.MyList),
+      MyList: Array(this.MyList),
       //MyList: MyInternalList.split(',')
       //bigCats: ['Mountain Lion', '	Clouded leopard', 'Eurasian lynx']
     }
