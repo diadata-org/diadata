@@ -74,8 +74,15 @@ This is a details block, which does not work in IE / Edge
 </SampleComponentMarkdownContent>
 
 # SampleComponentJavascriptExecution (also parameter passing)
-
 <SampleComponentJavascriptExecution display-text="display text" headlineText="hello world" />
+
+
+# SampleComponentConditional Content
+<SampleComponentCondition language='java'>
+ // only show this to java users
+  test content only shown if language == java
+</SampleComponentCondition>
+
 
 # Syntax highlighting
 
