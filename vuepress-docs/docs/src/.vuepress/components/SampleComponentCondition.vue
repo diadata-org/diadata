@@ -8,7 +8,7 @@
 export default {
   name: 'code-block',
   props: {
-    language: String
+    MyConditionalParameter: String
   },
   data() {
     return {
@@ -24,7 +24,7 @@ export default {
   */
   mounted() {
     //const cookieValue = this.getCookie();
-    this.display = "java" === this.language;
+    this.display = "Peter" === this.MyConditionalParameter;
   }
 }
 </script>
