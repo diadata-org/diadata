@@ -69,7 +69,12 @@ This is a details block, which does not work in IE / Edge
 
 
 # Component with asset icons and markdown content For something like icon collections, can be passed as array of string ids
-<DIAComponentAssetListWithMarkdownContent AssetList="BTC,ETH,DIA" />
+<DIAComponentAssetListWithMarkdownContent AssetList="BTC,ETH,DIA">
+  ### Example component with markdown content 
+- Any markdown
+- you put here
+> will be slotted in 
+</DIAComponentAssetListWithMarkdownContent>
 
 
 # SampleComponentMarkdownContent
