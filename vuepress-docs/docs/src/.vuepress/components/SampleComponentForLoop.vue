@@ -7,9 +7,11 @@
 </template>
 <script>
 export default {
+  props: ['bigCats'],
   data: function() {
     return {
-      bigCats: ['Mountain Lion', '	Clouded leopard', 'Eurasian lynx']
+    
+      //bigCats: ['Mountain Lion', '	Clouded leopard', 'Eurasian lynx']
     }
   }
 }
