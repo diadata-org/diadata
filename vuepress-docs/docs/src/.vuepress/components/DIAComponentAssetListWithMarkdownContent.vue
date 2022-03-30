@@ -18,7 +18,11 @@ export default {
       return assetId;
     },
     parseAndReturnAssetList( assetList ) {
-      var returnList = assetList.split(',');
+      var tmpList = assetList.split(',');
+      var returnList = new Array();
+      for ( i=0; i<tmpList.length; i++ ) {
+        returnList.push( tmpList[i] );
+      }
       return returnList;
     }
   },
