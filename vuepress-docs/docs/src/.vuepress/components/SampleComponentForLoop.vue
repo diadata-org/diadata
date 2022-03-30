@@ -7,14 +7,14 @@
 </template>
 <script>
 export default {
-  props: ['MyList'].split(','),
-  /**
+  props: ['MyList'],
   data: function() {
     return {
+      MyList: this.props['MyList'].split(','),
       //MyList: MyInternalList.split(',')
       //bigCats: ['Mountain Lion', '	Clouded leopard', 'Eurasian lynx']
     }
   }
-  */
+ 
 }
 </script>
