@@ -1,7 +1,7 @@
 <template>
   <div>
-    <li v-for="InternalArrayKey in InternalArrayName" :key="InternalArrayKey">
-      {{ InternalArrayKey }}
+    <li v-for="InternalArrayItem in MyList" :key="InternalArrayItem">
+      {{ InternalArrayItem }}
     </li>
   </div>
 </template>
@@ -9,10 +9,8 @@
 export default {
   props: ['MyList'],
   data: function() {
-    //var MyListTEST = MyList.split(",");
-    var MyListTEST = ['a','b','c'];
     return {
-      MyList: ['a','b','c'];
+      MyList: ['a','b','c']
       //bigCats: ['Mountain Lion', '	Clouded leopard', 'Eurasian lynx']
     }
   }
