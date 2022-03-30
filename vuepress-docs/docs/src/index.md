@@ -87,7 +87,7 @@ This is a details block, which does not work in IE / Edge
 </SampleComponentCondition>
 
 # SampleComponentForLoop For something like icon collections, can be passed as array of string ids
-<SampleComponentForLoop MyList="ListItem1,ListItems2" />
+<SampleComponentForLoop MyList="ListItem1,ListItems2" MyInternalList="asfdasfd,qwerqwer,asfasdf" />
 
 # Syntax highlighting
 
