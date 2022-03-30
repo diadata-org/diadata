@@ -75,3 +75,11 @@ REAL DIA COMPONENTS
 there are some components which are for real use, those follow the naming convention DIAComponent<descriptive name>
 for example DIAComponentAssetListWithMarkdownContent: this takes a list of asset ids and markdown content and renders boxes with asset icons, descriptions etc
 TODO: this is only technical proof of concept for now. it works with a demo list of asset ids as keys and asset names as values, to show how it works, need some more to be completely useful 
+
+it can be used like
+<DIAComponentAssetListWithMarkdownContent AssetList="BTC,ETH,DIA">
+  ### Example component with markdown content 
+- Any markdown
+- you put here
+> will be slotted in 
+</DIAComponentAssetListWithMarkdownContent>
