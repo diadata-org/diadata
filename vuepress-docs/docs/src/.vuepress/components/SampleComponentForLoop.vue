@@ -10,7 +10,7 @@ export default {
   props: ['MyList'],
   data: function() {
     return {
-      MyList = MyList.split(',')
+      MyList: MyList.split(',')
       //bigCats: ['Mountain Lion', '	Clouded leopard', 'Eurasian lynx']
     }
   }
