@@ -1,16 +1,16 @@
 <template>
   <div>
-    <li v-for="bigCat in bigCats" :key="bigCat">
-      {{ bigCat }}
+    <li v-for="InternalArrayKey in InternalArrayName" :key="InternalArrayKey">
+      {{ InternalArrayKey }}
     </li>
   </div>
 </template>
 <script>
 export default {
-  props: ['bigCats'],
+  props: ['MyList'],
   data: function() {
     return {
-    
+      InternalArrayName = MyList.split(",");
       //bigCats: ['Mountain Lion', '	Clouded leopard', 'Eurasian lynx']
     }
   }
