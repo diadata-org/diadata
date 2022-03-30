@@ -68,6 +68,10 @@ This is a details block, which does not work in IE / Edge
 :::
 
 
+# Component with asset icons and markdown content For something like icon collections, can be passed as array of string ids
+<SampleComponentForLoop AssetList="BTC,ETH,DIA" />
+
+
 # SampleComponentMarkdownContent
 <SampleComponentMarkdownContent>
 
