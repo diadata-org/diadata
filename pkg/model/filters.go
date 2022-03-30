@@ -23,6 +23,26 @@ func (datastore *DB) SetFilter(filter string, asset dia.Asset, exchange string, 
 	return err
 }
 
+func (datastore *DB) GetFilterPointsAsset(filter string, exchange string, address string, blockchain string, starttime time.Time, endtime time.Time) (*Points, error) {
+
+	exchangeQuery := "AND exchange='" + exchange + "' "
+
+	q := fmt.Sprintf("SELECT time,address,blockchain,exchange,filter,symbol,value FROM %s"+
+		" WHERE filter='%s' %s AND address='%s' and blockchain='%s' AND time>%d and time<=%d ORDER BY DESC",
+		influxDbFiltersTable, filter, exchangeQuery, address, blockchain, starttime.UnixNano(), endtime.UnixNano())
+
+	res, err := queryInfluxDB(datastore.influxClient, q)
+	if err != nil {
+		log.Errorln("GetFilterPoints", err)
+	}
+
+	log.Info("GetFilterPoints query: ", q, " returned ", len(res))
+
+	return &Points{
+		DataPoints: res,
+	}, err
+}
+
 // GetFilterPoints returns filter points from either a specific exchange or all exchanges.
 // symbol is mapped to the underlying asset with biggest market cap.
 func (datastore *DB) GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error) {

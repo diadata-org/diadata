@@ -251,6 +251,7 @@ func (env *Env) GetAssetSupply(c *gin.Context) {
 	blockchain := c.Param("blockchain")
 	starttimeStr := c.Query("starttime")
 	endtimeStr := c.Query("endtime")
+
 	var starttime, endtime time.Time
 	if starttimeStr != "" && endtimeStr != "" {
 		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
@@ -451,6 +452,62 @@ func (env *Env) GetExchanges(c *gin.Context) {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
 	}
 	c.JSON(http.StatusOK, q)
+}
+
+// GetAssetChartPoints queries for filter points of asset given by address and blockchain.
+func (env *Env) GetAssetChartPoints(c *gin.Context) {
+	filter := c.Param("filter")
+	blockchain := c.Param("blockchain")
+	address := c.Param("address")
+	exchange := c.Query("exchange")
+	starttimeStr := c.Query("starttime")
+	endtimeStr := c.Query("endtime")
+
+	// Set times depending on what is given by the query parameters
+	var starttime, endtime time.Time
+	if starttimeStr == "" && endtimeStr == "" {
+		// Last seven days per default
+		starttime = time.Now().AddDate(0, 0, -7)
+		endtime = time.Now()
+	} else if starttimeStr == "" && endtimeStr != "" {
+		// zero time if not given
+		starttime = time.Time{}
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	} else if starttimeStr != "" && endtimeStr == "" {
+		// endtime now if not given
+		endtime = time.Now()
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+	} else {
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	}
+
+	p, err := env.DataStore.GetFilterPointsAsset(filter, exchange, address, blockchain, starttime, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	} else {
+		c.JSON(http.StatusOK, p)
+	}
 }
 
 // GetChartPoints godoc
@@ -1671,8 +1728,6 @@ func (env *Env) GetLastTradesAsset(c *gin.Context) {
 	if numTrades > 5000 {
 		numTrades = 5000
 	}
-	// Make the address EIP55 compliant.
-	address = common.HexToAddress(address).Hex()
 
 	asset, err := env.RelDB.GetAsset(address, blockchain)
 	if err != nil {

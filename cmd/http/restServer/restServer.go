@@ -224,6 +224,7 @@ func main() {
 		diaGroup.GET("/exchanges", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetExchanges))
 		diaGroup.GET("/defiLendingProtocols", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetLendingProtocols))
 		diaGroup.GET("/chartPoints/:filter/:exchange/:symbol", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetChartPoints))
+		diaGroup.GET("/assetChartPoints/:filter/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetAssetChartPoints))
 		diaGroup.GET("/chartPointsAllExchanges/:filter/:symbol", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetChartPointsAllExchanges))
 		diaGroup.GET("/cviIndex", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetCviIndex))
 		diaGroup.GET("/defiLendingRate/:protocol/:asset", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetDefiRate))
