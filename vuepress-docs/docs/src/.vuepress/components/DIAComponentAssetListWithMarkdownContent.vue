@@ -15,7 +15,7 @@ export default {
   props: ['AssetList'],
   methods: {
     getContentByAssetId( assetId ) {
-      return assetId;
+      return assetData[ assetId ];
     },
     parseAndReturnAssetList( assetList ) {
       var tmpList = assetList.split(',');
@@ -23,8 +23,7 @@ export default {
       for ( var i=0; i<tmpList.length; i++ ) {
         returnList.push( this.getContentByAssetId( tmpList[i] ) );
       }
-      //return returnList;
-      return new Array("a", "b", "c");
+      return returnList;
     }
   },
   data: function() {
