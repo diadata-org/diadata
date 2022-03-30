@@ -8,8 +8,7 @@
 <script>
 export default {
   props: ['MyList'],
-  data:MyList.split(',')
-    /**
+  /**
   data: function() {
     return {
       //MyList: MyInternalList.split(',')
