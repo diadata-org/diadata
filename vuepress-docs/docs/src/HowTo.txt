@@ -71,3 +71,7 @@ TODO: The sample component shows how javascript in components is executed and it
 - Sample Component with for loop, works with lists as a parameter (can be used for asset- or exchange lists, could render icons and descriptions etc based on a list like "BTC,ETH")
 <SampleComponentForLoop MyList="ListItem1,ListItems2" />
 
+REAL DIA COMPONENTS
+there are some components which are for real use, those follow the naming convention DIAComponent<descriptive name>
+for example DIAComponentAssetListWithMarkdownContent: this takes a list of asset ids and markdown content and renders boxes with asset icons, descriptions etc
+TODO: this is only technical proof of concept for now. it works with a demo list of asset ids as keys and asset names as values, to show how it works, need some more to be completely useful 
