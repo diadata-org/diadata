@@ -16,11 +16,14 @@ export default {
   methods: {
     getContentByAssetId( assetId ) {
       return assetId;
+    },
+    parseAndReturnAssetList( assetList ) {
+      return assetList;
     }
   },
   data: function() {
     return {
-      MyInternalList: this.AssetList.split(','),
+      MyInternalList: this.parseAndReturnAssetList( this.AssetList.split(',') ),
     }
   }
  
