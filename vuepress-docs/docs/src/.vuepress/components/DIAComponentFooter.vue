@@ -1,5 +1,5 @@
 <template>
-<div class="someHopefullyUniqueFooterCSSClassName">
+<div class="DIAStyleHeader">
   <a href="devnull">Imprint</a>
 </div>
 </template>
