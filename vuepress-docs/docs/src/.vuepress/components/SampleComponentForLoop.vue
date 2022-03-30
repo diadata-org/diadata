@@ -7,7 +7,7 @@
 </template>
 <script>
 export default {
-  props: ['MyList'],
+  props: ['MyList'].split(','),
   /**
   data: function() {
     return {
