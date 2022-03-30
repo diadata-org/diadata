@@ -45,7 +45,7 @@ CAUTION: VuePress comes with many components and plugins which have not been tri
 To examine how basic feature work we provide sample components in vuepress-docs/vuepress-docs/docs/src/.vuepress/components
 
 HOW TO USE COMPONENTS
-There are two samples:
+There are some samples:
 - Sample component with "rich text content" (aka MarkDown Content)
 Just add the following to your markdown:
 <SampleComponentMarkdownContent>
@@ -62,3 +62,12 @@ Just add the following to your markdown:
 
 <SampleComponentJavascriptExecution display-text="parameter for button label" headlineText="parameter for headline" />
 TODO: The sample component shows how javascript in components is executed and it also shows how parameter are passed to the component. However, passing a parameter to javascript execution is not implemented for now - there are many examples for that in the VuePress documentation tho
+
+- Sample Component with conditions (content is only rendered if parameters are set, useful for configurable components)
+<SampleComponentCondition MyConditionalParameter='Peter'>
+  test content only shown if MyConditionalParameter == Peter
+</SampleComponentCondition>
+
+- Sample Component with for loop, works with lists as a parameter (can be used for asset- or exchange lists, could render icons and descriptions etc based on a list like "BTC,ETH")
+<SampleComponentForLoop MyList="ListItem1,ListItems2" />
+
