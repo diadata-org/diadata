@@ -78,11 +78,17 @@ This is a details block, which does not work in IE / Edge
 
 
 # SampleComponentConditional Content
-<SampleComponentCondition language='java'>
- // only show this to java users
-  test content only shown if language == java
+<SampleComponentCondition MyConditionalParameter='peter'>
+  test content only shown if MyConditionalParameter == peter
 </SampleComponentCondition>
 
+<SampleComponentCondition MyConditionalParameter='bob'>
+  test content only shown if MyConditionalParameter == bob
+</SampleComponentCondition>
+
+<SampleComponentCondition MyConditionalParameter='xxx'>
+  should not be shown
+</SampleComponentCondition>
 
 # Syntax highlighting
 
