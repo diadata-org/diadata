@@ -86,6 +86,9 @@ This is a details block, which does not work in IE / Edge
   should not be shown
 </SampleComponentCondition>
 
+# SampleComponentForLoop For something like icon collections, can be passed as array of string ids
+<SampleComponentForLoop />
+
 # Syntax highlighting
 
 ``` js
