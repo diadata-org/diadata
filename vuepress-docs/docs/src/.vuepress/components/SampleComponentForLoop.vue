@@ -9,8 +9,9 @@
 export default {
   props: ['MyList'],
   data: function() {
+    var testArray = MyList.split(",");
     return {
-      InternalArrayName: MyList.split(",")
+      InternalArrayName: testArray
       //bigCats: ['Mountain Lion', '	Clouded leopard', 'Eurasian lynx']
     }
   }
