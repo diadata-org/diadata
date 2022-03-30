@@ -23,7 +23,8 @@ export default {
       for ( var i=0; i<tmpList.length; i++ ) {
         returnList.push( this.getContentByAssetId( tmpList[i] ) );
       }
-      return returnList;
+      //return returnList;
+      return new Array("a", "b", "c");
     }
   },
   data: function() {
