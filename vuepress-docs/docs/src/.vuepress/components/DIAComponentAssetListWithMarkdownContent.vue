@@ -9,6 +9,11 @@
 <script>
 export default {
   props: ['AssetList'],
+  methods: {
+    getContentByAssetId( assetId ) {
+      return assetId;
+    }
+  },
   data: function() {
     return {
       MyInternalList: this.AssetList.split(','),
