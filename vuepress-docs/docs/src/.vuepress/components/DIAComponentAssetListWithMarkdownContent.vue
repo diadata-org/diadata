@@ -7,6 +7,10 @@
   </div>
 </template>
 <script>
+var assetData = new Array();
+assetData['BTC'] = "bitcoin";
+assetData['ETH'] = "ethereum";
+assetData['DIA'] = "DIAdata";
 export default {
   props: ['AssetList'],
   methods: {
