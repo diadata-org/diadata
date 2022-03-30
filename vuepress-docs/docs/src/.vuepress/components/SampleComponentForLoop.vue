@@ -9,9 +9,10 @@
 export default {
   props: ['MyList'],
   data: function() {
-    //var testArray = MyList.split(",");
+    //var MyListTEST = MyList.split(",");
+    var MyListTEST = ['a','b','c'];
     return {
-      InternalArrayName: MyList
+      MyList: ['a','b','c'];
       //bigCats: ['Mountain Lion', '	Clouded leopard', 'Eurasian lynx']
     }
   }
