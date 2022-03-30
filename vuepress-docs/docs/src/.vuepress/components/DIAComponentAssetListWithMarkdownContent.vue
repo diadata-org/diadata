@@ -21,7 +21,7 @@ export default {
       var tmpList = assetList.split(',');
       var returnList = new Array();
       for ( var i=0; i<tmpList.length; i++ ) {
-        returnList.push( tmpList[i] );
+        returnList.push( this.getContentByAssetId( tmpList[i] ) );
       }
       return returnList;
     }
