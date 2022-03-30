@@ -5,6 +5,9 @@ heroImage: images/pixelated-logo.png
 //actionLink: /guide/getting-started.html
 ---
 
+# Introduction into documentation
+This page shows the most important features of the new documentation tool - so consider this a list of tools and assets you can pick, use, and modify is needed
+
 # What is DIA? 
 __DIA (Decentralised Information Asset) is a cross-chain, end-to-end, open-source data and oracle platform for Web3.__
 The DIA platform enables the sourcing, validation and sharing of transparent and verified data feeds for traditional and digital financial applications. DIA’s institutional-grade data feeds cover asset prices, metaverse data, lending rates and more.
