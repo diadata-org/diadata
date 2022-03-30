@@ -1,6 +1,6 @@
 ---
 home: true
-//heroImage: images/pixelated-logo.png
+heroImage: images/pixelated-logo.png
 //actionText: Get Started →
 //actionLink: /guide/getting-started.html
 ---
@@ -102,3 +102,6 @@ var foo = function (bar) {
 console.log(foo(5));
 ```
 
+::: slot footer
+asdfasdf
+:::
