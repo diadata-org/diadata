@@ -78,12 +78,8 @@ This is a details block, which does not work in IE / Edge
 
 
 # SampleComponentConditional Content
-<SampleComponentCondition MyConditionalParameter='peter'>
-  test content only shown if MyConditionalParameter == peter
-</SampleComponentCondition>
-
-<SampleComponentCondition MyConditionalParameter='bob'>
-  test content only shown if MyConditionalParameter == bob
+<SampleComponentCondition MyConditionalParameter='Peter'>
+  test content only shown if MyConditionalParameter == Peter
 </SampleComponentCondition>
 
 <SampleComponentCondition MyConditionalParameter='xxx'>
