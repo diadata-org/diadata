@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div class="DIAComponentAssetListWithMarkdownContent">
+    <slot />
     <li v-for="InternalArrayItem in MyInternalList" :key="InternalArrayItem">
       {{ InternalArrayItem }}
     </li>
