@@ -15,14 +15,16 @@ export default {
       display: false
     }
   },
+  /**
   methods: {
     getCookie() {
       return document.cookie.replace(/(?:(?:^|.*;\s*)language\s*\=\s*([^;]*).*$)|^.*$/, "$1");
     },
   },
+  */
   mounted() {
-    const cookieValue = this.getCookie();
-    this.display = cookieValue === this.language;
+    //const cookieValue = this.getCookie();
+    this.display = "java" === this.language;
   }
 }
 </script>
