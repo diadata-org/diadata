@@ -46,10 +46,12 @@ module.exports = {
         text: 'DAO Forum',
         link: 'https://dao.diadata.org/'
       },
+      /*
       {
         text: 'Relative link test',
         link: '/doc_dir_contribute/'
       },
+      */
       {
         text: 'DiaData',
         link: 'https://www.diadata.org/'
