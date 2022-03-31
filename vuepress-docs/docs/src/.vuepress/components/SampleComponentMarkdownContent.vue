@@ -1,7 +1,7 @@
 <template>
 <section class="some-section-class">
     <img class="some-img-class" :src="$attrs.imgSrc" />
-    <h1>Sample component with rich content</h1>
+    <h1>see src/.vuepress/components/SampleComponentMarkdownContent.vue</h1>
     <div>
         <slot /> <!-- This is where your markdown content will be inserted -->
     </div>
