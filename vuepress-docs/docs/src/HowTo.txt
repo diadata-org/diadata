@@ -83,3 +83,7 @@ it can be used like
 - you put here
 > will be slotted in 
 </DIAComponentAssetListWithMarkdownContent>
+
+For header and footer there are
+<DIAComponentHeader /> <-- the image / headline aka title
+<DIAComponentFooter /> <-- footer
