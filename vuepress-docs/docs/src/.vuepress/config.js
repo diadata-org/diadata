@@ -98,6 +98,15 @@ module.exports = {
           ['/doc_dir_contribute/doc_content_become-a-DIA-community-etc.md', 'Become a DIA community dev on Gitcoin'],
           ['/doc_dir_contribute/doc_content_contribute.md', 'Another subpage of contribute'],
         ],
+      },
+      {
+        title: 'Knowledge Base',
+        path: '/doc_dir_knowledge-base/',
+        sidebarDepth: 5,
+//        initialOpenGroupIndex: -1,
+        children: [
+          ['/doc_dir_knowledge-base/doc_API-Endpoint-Directory.md', 'API Endpoint Directory'],
+        ],
       }
     ]
     /**
