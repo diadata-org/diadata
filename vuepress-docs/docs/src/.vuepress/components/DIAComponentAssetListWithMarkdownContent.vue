@@ -1,4 +1,5 @@
 <template>
+see src/.vuepress/components/DIAComponentAssetListWithMarkdownContent.vue
   <div class="DIAComponentAssetListWithMarkdownContent">
     <slot />
     <li v-for="InternalArrayItem in MyInternalList" :key="InternalArrayItem">
