@@ -78,6 +78,14 @@ module.exports = {
                 ['/doc_dir_data-access/doc_dir_Oracles/doc_content_data-access_oracles_subpage_01.md', 'How to use them (tutorials for each different oracle)'],
                 ['/doc_dir_data-access/doc_dir_Oracles/doc_content_data-access_oracles_subpage_02.md', 'Oracle directory with links'],
             ],
+          },
+          {
+            title: 'APIs',
+            path: '/doc_dir_data-access/doc_dir_APIs',
+            collapsable: true,
+            children: [ // this is a group, we use this to have a 2nd navi level which links to individual pages, not headlines aka named anchors
+                ['/doc_dir_data-access/doc_dir_APIs/doc_HowToUseRest.md', 'How to use ReST'],
+            ],
           }
         ]
       },
