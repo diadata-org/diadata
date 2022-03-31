@@ -170,7 +170,6 @@ module.exports = {
     '@vuepress/plugin-medium-zoom',
     '@vuepress/search',
 //    '@vuepress/plugin-search',
-//    ['@vuepress/search', {searchMaxSuggestions: 10}],
-    ['@vuepress/search', {autocomplete: true}],
+    ['@vuepress/search', {searchMaxSuggestions: 10}],
   ]
 }
