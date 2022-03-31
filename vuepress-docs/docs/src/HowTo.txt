@@ -103,7 +103,8 @@ SEARCH
 Right now, the search doesn't work, although the plugin seems to be loaded and compiled.
 Hints:
 - see dependency config in /vuepress-docs/docs/yarn.lock --> line 1422
+--- would be weird to have an error here but on the other hand: there seems to be no javascript attached to the search input fiel whatsoever, according to developer tools in chrome, so there seems to be an issue with javascript
 - see plugin settings in vuepress-docs/docs/src/.vuepress/config.js --> lines 171 - 173
--- these lines are superfluous, but seem to prove the plugin is loaded and configurable (otherwise I'd expect compiler errors)
--- line 172 "kills" the website when not commented: compiler doesnt say anything but the website doesnt load correctly although it should work I believe
+--- these lines are superfluous, but seem to prove the plugin is loaded and configurable (otherwise I'd expect compiler errors)
+--- line 172 "kills" the website when not commented: compiler doesnt say anything but the website doesnt load correctly although it should work I believe
 
