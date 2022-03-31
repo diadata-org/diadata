@@ -20,7 +20,7 @@ DIA’s data is directly sourced from a broad array of on-chain and off-chain so
 | DATA ACCESS | CONTRIBUTE | KNOWLEDGE BASE |
 | ----------- | ---------- | -------------- |
 | Intro text Data access   | Introtext Contribute | Introtext Knowledge Base |
-| link [Data access](doc_dir_data-access/ "title text link hello world data access!") | link [Contribute](doc_dir_contribute/ "title text link hello world data access!") | Link Knowledge Base |
+| link [Data access](doc_dir_data-access/ "title text link hello world data access!") | link [Contribute](doc_dir_contribute/ "title text link hello world data access!") | link [Knowledge Base](doc_dir_knowledge-base/ "title text link hello world data access!") |
 
 
 # Image test
