@@ -9,6 +9,7 @@ On top of that, there are only a few special things that are important, basicall
 
 ---
 
+
 NAVIGATION
 For now there are three navigation elements:
 
@@ -23,12 +24,16 @@ For the sidebar its important to understand that the file structure in vuepress-
 Footer
 TODO: For now, we work with the component "ComponentFooter.vue" as a reusable footer, as "slots" dont seem to work (need to be re-defined in every markdown file). This should be re-considered, we should check the templating feature for that. For usage of components see below
 
+
 ---
+
 
 STYLING
 CSS can be applied individually but should rather be implemented either globally (in vuepress-docs/vuepress-docs/docs/src/.vuepress/styles) or for re-used components, see below
 
+
 ---
+
 
 IMAGES (and other static resources)
 Static files have to be placed in vuepress-docs/docs/src/.vuepress/public/
@@ -36,7 +41,9 @@ For images there is vuepress-docs/docs/src/.vuepress/public/images
 If placed there, they can be used as described in markdown documentation, for example:
 ![alt text](images/somelogo.png)
 
+
 ---
+
 
 COMPONENTS
 Components are used for content elements which are not provided by markdown by default, for example for displaying sources / exchanges with logos, text, dynamic content etc
@@ -87,3 +94,16 @@ it can be used like
 For header and footer there are
 <DIAComponentHeader /> <-- the image / headline aka title
 <DIAComponentFooter /> <-- footer
+
+
+---
+
+
+SEARCH
+Right now, the search doesn't work, although the plugin seems to be loaded and compiled.
+Hints:
+- see dependency config in /vuepress-docs/docs/yarn.lock --> line 1422
+- see plugin settings in vuepress-docs/docs/src/.vuepress/config.js --> lines 171 - 173
+-- these lines are superfluous, but seem to prove the plugin is loaded and configurable (otherwise I'd expect compiler errors)
+-- line 172 "kills" the website when not commented: compiler doesnt say anything but the website doesnt load correctly although it should work I believe
+
