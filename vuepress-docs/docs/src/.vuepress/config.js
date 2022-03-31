@@ -169,6 +169,7 @@ module.exports = {
     '@vuepress/plugin-back-to-top',
     '@vuepress/plugin-medium-zoom',
     '@vuepress/search',
+    '@vuepress/plugin-search',
     ['@vuepress/search', {searchMaxSuggestions: 10}],
   ]
 }
