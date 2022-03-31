@@ -290,3 +290,87 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 
 	return &sr, nil
 }
+
+// GetNFT returns an NFT by address, blockchain and token_id.
+func (r *DiaResolver) GetNFT(ctx context.Context, args struct {
+	Address    graphql.NullString
+	Blockchain graphql.NullString
+	TokenID    graphql.NullString
+}) (*NFTResolver, error) {
+
+	n, err := r.RelDB.GetNFT(*args.Address.Value, *args.Blockchain.Value, *args.TokenID.Value)
+	if err != nil {
+		return nil, err
+	}
+
+	return &NFTResolver{n: n}, nil
+}
+
+// GetNFTTrades returns trades of an NFT by address, blockchain, token_id and time range
+func (r *DiaResolver) GetNFTTrades(ctx context.Context, args struct {
+	Address    graphql.NullString
+	Blockchain graphql.NullString
+	TokenID    graphql.NullString
+}) (*[]*NFTTradeResolver, error) {
+
+	var tr []*NFTTradeResolver
+	trades, err := r.RelDB.GetNFTTrades(*args.Address.Value, *args.Blockchain.Value, *args.TokenID.Value)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, trade := range trades {
+		trade.NFT.NFTClass.Address = *args.Address.Value
+		trade.NFT.NFTClass.Blockchain = *args.Blockchain.Value
+		trade.NFT.TokenID = *args.TokenID.Value
+		tr = append(tr, &NFTTradeResolver{trade: trade})
+	}
+
+	return &tr, nil
+}
+
+// GetNFTOffers returns offers of an NFT by address, blockchain, token_id and time range
+func (r *DiaResolver) GetNFTOffers(ctx context.Context, args struct {
+	Address    graphql.NullString
+	Blockchain graphql.NullString
+	TokenID    graphql.NullString
+}) (*[]*NFTOfferResolver, error) {
+
+	var or []*NFTOfferResolver
+	offers, err := r.RelDB.GetNFTOffers(*args.Address.Value, *args.Blockchain.Value, *args.TokenID.Value)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, offer := range offers {
+		offer.NFT.NFTClass.Address = *args.Address.Value
+		offer.NFT.NFTClass.Blockchain = *args.Blockchain.Value
+		offer.NFT.TokenID = *args.TokenID.Value
+		or = append(or, &NFTOfferResolver{offer: offer})
+	}
+
+	return &or, nil
+}
+
+// GetNFTOffers returns offers of an NFT by address, blockchain, token_id and time range
+func (r *DiaResolver) GetNFTBids(ctx context.Context, args struct {
+	Address    graphql.NullString
+	Blockchain graphql.NullString
+	TokenID    graphql.NullString
+}) (*[]*NFTBidResolver, error) {
+
+	var br []*NFTBidResolver
+	bids, err := r.RelDB.GetNFTBids(*args.Address.Value, *args.Blockchain.Value, *args.TokenID.Value)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, bid := range bids {
+		bid.NFT.NFTClass.Address = *args.Address.Value
+		bid.NFT.NFTClass.Blockchain = *args.Blockchain.Value
+		bid.NFT.TokenID = *args.TokenID.Value
+		br = append(br, &NFTBidResolver{bid: bid})
+	}
+
+	return &br, nil
+}

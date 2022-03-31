@@ -243,10 +243,10 @@ func (rdb *RelDB) GetLastBlockNFTTrade(nftclass dia.NFTClass) (blocknumber uint6
 	return
 }
 
-// GetNFTTrades returns all trades done on @nft.
-func (rdb *RelDB) GetNFTTrades(nft dia.NFT) (trades []dia.NFTTrade, err error) {
+// GetNFTTrades returns all trades done on the nft given by @address, @blockchain and @tokenID.
+func (rdb *RelDB) GetNFTTrades(address string, blockchain string, tokenID string) (trades []dia.NFTTrade, err error) {
 	var rows pgx.Rows
-	nftID, err := rdb.GetNFTID(nft.NFTClass.Address, nft.NFTClass.Blockchain, nft.TokenID)
+	nftID, err := rdb.GetNFTID(address, blockchain, tokenID)
 	tradeVars := "price,price_usd,transfer_from,transfer_to,currency_symbol,currency_address,currency_decimals,block_number,trade_time,tx_hash,marketplace"
 	query := fmt.Sprintf("select %s from %s where nft_id='%s' order by trade_time desc", tradeVars, nfttradeTable, nftID)
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
@@ -281,6 +281,114 @@ func (rdb *RelDB) GetNFTTrades(nft dia.NFT) (trades []dia.NFTTrade, err error) {
 		}
 		trade.Price = n
 		trades = append(trades, trade)
+	}
+	return
+}
+
+// GetNFTOffers returns all offers done on the nft given by @address, @blockchain and @tokenID.
+func (rdb *RelDB) GetNFTOffers(address string, blockchain string, tokenID string) (offers []dia.NFTOffer, err error) {
+	var rows pgx.Rows
+	nftID, err := rdb.GetNFTID(address, blockchain, tokenID)
+	tradeVars := "start_value,end_value,duration,from_address,auction_type,currency_symbol,currency_address,currency_decimals,blocknumber,offer_time,tx_hash,marketplace"
+	query := fmt.Sprintf("select %s from %s where nft_id='%s' order by offer_time desc", tradeVars, nftofferTable, nftID)
+	rows, err = rdb.postgresClient.Query(context.Background(), query)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			offer      dia.NFTOffer
+			startvalue string
+			endvalue   string
+			duration   int
+		)
+		err := rows.Scan(
+			&startvalue,
+			&endvalue,
+			&duration,
+			&offer.FromAddress,
+			&offer.AuctionType,
+			&offer.CurrencySymbol,
+			&offer.CurrencyAddress,
+			&offer.CurrencyDecimals,
+			&offer.BlockNumber,
+			&offer.Timestamp,
+			&offer.TxHash,
+			&offer.Exchange,
+		)
+		if err != nil {
+			return []dia.NFTOffer{}, err
+		}
+		if startvalue != "<nil>" {
+			s := new(big.Int)
+			s, ok := s.SetString(startvalue, 10)
+			if !ok {
+				log.Error("err parse startvalue.")
+				return []dia.NFTOffer{}, err
+			}
+			offer.StartValue = s
+		}
+		if endvalue != "<nil>" {
+			e := new(big.Int)
+			e, ok := e.SetString(endvalue, 10)
+			if !ok {
+				log.Error("err parse endvalue.")
+				return []dia.NFTOffer{}, err
+			}
+			offer.EndValue = e
+		}
+		offer.Duration = time.Duration(duration) * time.Second
+
+		offers = append(offers, offer)
+	}
+	return
+}
+
+// GetNFTBids returns all bids done on the nft given by @address, @blockchain and @tokenID.
+func (rdb *RelDB) GetNFTBids(address string, blockchain string, tokenID string) (bids []dia.NFTBid, err error) {
+	var rows pgx.Rows
+	nftID, err := rdb.GetNFTID(address, blockchain, tokenID)
+	tradeVars := "bid_value,from_address,currency_symbol,currency_address,currency_decimals,blocknumber,bid_time,tx_hash,marketplace"
+	query := fmt.Sprintf("select %s from %s where nft_id='%s' order by bid_time desc", tradeVars, nftbidTable, nftID)
+	rows, err = rdb.postgresClient.Query(context.Background(), query)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+
+		var (
+			bid      dia.NFTBid
+			bidvalue string
+		)
+		err := rows.Scan(
+			&bidvalue,
+			&bid.FromAddress,
+			&bid.CurrencySymbol,
+			&bid.CurrencyAddress,
+			&bid.CurrencyDecimals,
+			&bid.BlockNumber,
+			&bid.Timestamp,
+			&bid.TxHash,
+			&bid.Exchange,
+		)
+		if err != nil {
+			return []dia.NFTBid{}, err
+		}
+		if bidvalue != "<nil>" {
+			e := new(big.Int)
+			e, ok := e.SetString(bidvalue, 10)
+			if !ok {
+				log.Error("err parse bidvalue.")
+				return []dia.NFTBid{}, err
+			}
+			bid.Value = e
+		}
+
+		bids = append(bids, bid)
 	}
 	return
 }

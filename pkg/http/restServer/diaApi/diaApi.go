@@ -1940,11 +1940,7 @@ func (env *Env) GetNFTTrades(c *gin.Context) {
 	address := common.HexToAddress(c.Param("address")).Hex()
 	id := c.Param("id")
 
-	nft, err := env.RelDB.GetNFT(address, blockchain, id)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, nil)
-	}
-	q, err := env.RelDB.GetNFTTrades(nft)
+	q, err := env.RelDB.GetNFTTrades(address, blockchain, id)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
 	}
