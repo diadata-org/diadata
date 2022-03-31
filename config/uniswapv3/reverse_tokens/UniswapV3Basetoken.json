@@ -51,6 +51,10 @@
     {
       "Address": "0xe53EC727dbDEB9E2d5456c3be40cFF031AB40A55",
       "Symbol": "SUPER"
+    },
+    {
+      "Address": "0xCfef8857E9C80e3440A823971420F7Fa5F62f020",
+      "Symbol": "CFTI"
     }
   ]
 }
