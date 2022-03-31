@@ -32,7 +32,7 @@ module.exports = {
     docsDir: '',
     editLinkText: '',
     lastUpdated: false,
-    displayAllHeaders: true,
+    displayAllHeaders: true, // not sure what this does tbh
     nav: [
       {
         text: 'Request Custom Data',
@@ -67,14 +67,14 @@ module.exports = {
       {
         title: 'Data access',
         path: '/doc_dir_data-access/',
-        sidebarDepth: 5,
+        sidebarDepth: 5,  // this uses the headline inside files! be aware of the fact that we use groups / nested navigation trees with files = pages on the 2nd level, so if we want headline we have to change this or configure headlines on each level individually
 //        initialOpenGroupIndex: -1,
         children: [
           {
             title: 'Oracles',
             path: '/doc_dir_data-access/doc_dir_Oracles',
             collapsable: true,
-            children: [
+            children: [ // this is a group, we use this to have a 2nd navi level which links to individual pages, not headlines aka named anchors
                 ['/doc_dir_data-access/doc_dir_Oracles/doc_content_data-access_oracles_subpage_01.md', 'How to use them (tutorials for each different oracle)'],
                 ['/doc_dir_data-access/doc_dir_Oracles/doc_content_data-access_oracles_subpage_02.md', 'Oracle directory with links'],
             ],
