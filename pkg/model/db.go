@@ -296,6 +296,23 @@ func createBatchInflux() clientInfluxdb.BatchPoints {
 
 func (datastore *DB) Flush() error {
 	var err error
+
+	// ------------ Logging for debugging influx batch flush -------------
+	log.Info("Influx Flush called...")
+	points := datastore.influxBatchPoints.Points()
+	for _, pt := range points {
+		if val, ok := pt.Tags()["address"]; ok && val == "0x249e38Ea4102D0cf8264d3701f1a0E39C4f2DC3B" {
+			if pt.Tags()["blockchain"] == dia.ETHEREUM && pt.Tags()["filter"] == "VOL120" {
+				value, err := pt.Fields()
+				if err != nil {
+					log.Error("get fields: ", err)
+				} else {
+					log.Infof("found value on exchange %s in Flush(): %v", pt.Tags()["exchange"], value["value"].(float64))
+				}
+			}
+		}
+	}
+
 	if datastore.influxBatchPoints != nil {
 		err = datastore.WriteBatchInflux()
 	}
@@ -355,6 +372,7 @@ func (datastore *DB) addPoint(pt *clientInfluxdb.Point) {
 			}
 			if pointAdded {
 				log.Infof("point added to batch. Now of size: %v", datastore.influxPointsInBatch)
+				log.Infof("Number of points in batch: %v", len(p))
 			} else {
 				log.Warn("point not added")
 			}
@@ -367,7 +385,7 @@ func (datastore *DB) addPoint(pt *clientInfluxdb.Point) {
 		log.Info("------ flush batch in addPoint ------")
 		err := datastore.WriteBatchInflux()
 		if err != nil {
-			log.Error("add point to influx batch: ", err)
+			log.Error("write influx batch: ", err)
 		}
 	}
 }
