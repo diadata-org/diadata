@@ -40,18 +40,18 @@ func (filter *FilterVOL) FinalCompute(t time.Time) {
 
 func (filter *FilterVOL) compute(trade dia.Trade) {
 	filter.volumeUSD += trade.EstimatedUSDPrice * math.Abs(trade.Volume)
-	if filter.asset.Address == "0x249e38Ea4102D0cf8264d3701f1a0E39C4f2DC3B" && filter.asset.Blockchain == dia.ETHEREUM {
-		log.Infof("volumeUSD for %s on %s: %v", filter.asset.Address, filter.exchange, filter.volumeUSD)
-	}
+	// if filter.asset.Address == "0x249e38Ea4102D0cf8264d3701f1a0E39C4f2DC3B" && filter.asset.Blockchain == dia.ETHEREUM {
+	// 	log.Infof("volumeUSD for %s on %s: %v", filter.asset.Address, filter.exchange, filter.volumeUSD)
+	// }
 	filter.currentTime = trade.Time
 }
 
 func (filter *FilterVOL) finalCompute(time time.Time) float64 {
 	filter.value = filter.volumeUSD
 	filter.volumeUSD = 0.0
-	if filter.asset.Address == "0x249e38Ea4102D0cf8264d3701f1a0E39C4f2DC3B" && filter.asset.Blockchain == dia.ETHEREUM {
-		log.Infof("filter.value in final compute for %s on %s: %v", filter.asset.Address, filter.exchange, filter.value)
-	}
+	// if filter.asset.Address == "0x249e38Ea4102D0cf8264d3701f1a0E39C4f2DC3B" && filter.asset.Blockchain == dia.ETHEREUM {
+	// 	log.Infof("filter.value in final compute for %s on %s: %v", filter.asset.Address, filter.exchange, filter.value)
+	// }
 	return filter.value
 }
 

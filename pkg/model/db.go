@@ -301,17 +301,29 @@ func (datastore *DB) Flush() error {
 	log.Info("Influx Flush called...")
 	points := datastore.influxBatchPoints.Points()
 	for _, pt := range points {
-		if val, ok := pt.Tags()["address"]; ok && val == "0x249e38Ea4102D0cf8264d3701f1a0E39C4f2DC3B" {
-			if pt.Tags()["blockchain"] == dia.ETHEREUM && pt.Tags()["filter"] == "VOL120" {
-				value, err := pt.Fields()
-				if err != nil {
-					log.Error("get fields: ", err)
-				} else {
-					log.Infof("found value on exchange %s in Flush(): %v", pt.Tags()["exchange"], value["value"].(float64))
-				}
+		if _, ok := pt.Tags()["address"]; ok {
+			timestamp := pt.UnixNano()
+			tags := pt.Tags()
+			fields, err := pt.Fields()
+			if err != nil {
+				log.Error("get fields: ", err)
+			} else {
+				log.Infof("Flush(): point in batch at time %v with value %v: filter: %s -- exchange: %s -- symbol: %s --  address: %s ", timestamp, fields["value"], tags["filter"], tags["exchange"], tags["symbol"], tags["address"])
 			}
 		}
 	}
+	// for _, pt := range points {
+	// 	if val, ok := pt.Tags()["address"]; ok && val == "0x249e38Ea4102D0cf8264d3701f1a0E39C4f2DC3B" {
+	// 		if pt.Tags()["blockchain"] == dia.ETHEREUM && pt.Tags()["filter"] == "VOL120" {
+	// 			value, err := pt.Fields()
+	// 			if err != nil {
+	// 				log.Error("get fields: ", err)
+	// 			} else {
+	// 				log.Infof("found value on exchange %s in Flush(): %v", pt.Tags()["exchange"], value["value"].(float64))
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	if datastore.influxBatchPoints != nil {
 		err = datastore.WriteBatchInflux()
