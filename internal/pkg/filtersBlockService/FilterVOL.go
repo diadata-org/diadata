@@ -66,9 +66,6 @@ func (filter *FilterVOL) FilterPointForBlock() *dia.FilterPoint {
 
 func (filter *FilterVOL) save(ds models.Datastore) error {
 	if filter.modified {
-		if filter.asset.Address == "0x249e38Ea4102D0cf8264d3701f1a0E39C4f2DC3B" && filter.asset.Blockchain == dia.ETHEREUM {
-			log.Infof("set filter.value in save() for %s on %s: %v", filter.asset.Address, filter.exchange, filter.value)
-		}
 		filter.modified = false
 		err := ds.SetFilter(filter.filterName, filter.asset, filter.exchange, filter.value, filter.currentTime)
 		if err != nil {
