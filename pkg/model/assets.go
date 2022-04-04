@@ -35,7 +35,7 @@ func (rdb *RelDB) GetKeyAsset(asset dia.Asset) (string, error) {
 
 // SetAsset stores an asset into postgres.
 func (rdb *RelDB) SetAsset(asset dia.Asset) error {
-	query := fmt.Sprintf("insert into %s (symbol,name,address,decimals,blockchain) values ($1,$2,$3,$4,$5)", assetTable)
+	query := fmt.Sprintf("INSERT INTO %s (symbol,name,address,decimals,blockchain) VALUES ($1,$2,$3,$4,$5)", assetTable)
 	_, err := rdb.postgresClient.Exec(context.Background(), query, asset.Symbol, asset.Name, asset.Address, strconv.Itoa(int(asset.Decimals)), asset.Blockchain)
 	if err != nil {
 		return err
@@ -45,7 +45,7 @@ func (rdb *RelDB) SetAsset(asset dia.Asset) error {
 
 // GetAssetID returns the unique identifier of @asset in postgres table asset, if the entry exists.
 func (rdb *RelDB) GetAssetID(asset dia.Asset) (ID string, err error) {
-	query := fmt.Sprintf("select asset_id from %s where address=$1 and blockchain=$2", assetTable)
+	query := fmt.Sprintf("SELECT asset_id FROM %s WHERE address=$1 AND blockchain=$2", assetTable)
 	err = rdb.postgresClient.QueryRow(context.Background(), query, asset.Address, asset.Blockchain).Scan(&ID)
 	if err != nil {
 		return
@@ -64,7 +64,7 @@ func (rdb *RelDB) GetAsset(address, blockchain string) (asset dia.Asset, err err
 		return
 	}
 	var decimals string
-	query := fmt.Sprintf("select symbol,name,address,decimals,blockchain from %s where address=$1 and blockchain=$2", assetTable)
+	query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE address=$1 AND blockchain=$2", assetTable)
 	err = rdb.postgresClient.QueryRow(context.Background(), query, address, blockchain).Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
 	if err != nil {
 		return
@@ -81,7 +81,7 @@ func (rdb *RelDB) GetAsset(address, blockchain string) (asset dia.Asset, err err
 // GetAssetByID returns an asset by its uuid
 func (rdb *RelDB) GetAssetByID(assetID string) (asset dia.Asset, err error) {
 	var decimals string
-	query := fmt.Sprintf("select symbol,name,address,decimals,blockchain from %s where asset_id=$1", assetTable)
+	query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE asset_id=$1", assetTable)
 	err = rdb.postgresClient.QueryRow(context.Background(), query, assetID).Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
 	if err != nil {
 		return
@@ -97,7 +97,7 @@ func (rdb *RelDB) GetAssetByID(assetID string) (asset dia.Asset, err error) {
 // GetAllAssets returns all assets on @blockchain from asset table.
 func (rdb *RelDB) GetAllAssets(blockchain string) (assets []dia.Asset, err error) {
 	var rows pgx.Rows
-	query := fmt.Sprintf("select symbol,name,address,decimals from %s where blockchain=$1", assetTable)
+	query := fmt.Sprintf("SELECT symbol,name,address,decimals FROM %s WHERE blockchain=$1", assetTable)
 	rows, err = rdb.postgresClient.Query(context.Background(), query, blockchain)
 	if err != nil {
 		return
@@ -129,13 +129,13 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 	var decimals string
 	var rows pgx.Rows
 	if name == "" {
-		query := fmt.Sprintf("select symbol,name,address,decimals,blockchain from %s where symbol=$1", assetTable)
+		query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE symbol=$1", assetTable)
 		rows, err = rdb.postgresClient.Query(context.Background(), query, symbol)
 	} else if symbol == "" {
-		query := fmt.Sprintf("select symbol,name,address,decimals,blockchain from %s where name=$1", assetTable)
+		query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE name=$1", assetTable)
 		rows, err = rdb.postgresClient.Query(context.Background(), query, name)
 	} else {
-		query := fmt.Sprintf("select symbol,name,address,decimals,blockchain from %s where symbol=$1 and name=$2", assetTable)
+		query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE symbol=$1 AND name=$2", assetTable)
 		rows, err = rdb.postgresClient.Query(context.Background(), query, symbol, name)
 	}
 	if err != nil {
@@ -163,7 +163,7 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 // fiat currencies are uniquely defined by their symbol.
 func (rdb *RelDB) GetFiatAssetBySymbol(symbol string) (asset dia.Asset, err error) {
 	var decimals string
-	query := fmt.Sprintf("select name,address,decimals from %s where symbol=$1 and blockchain='Fiat'", assetTable)
+	query := fmt.Sprintf("SELECT name,address,decimals FROM %s WHERE symbol=$1 AND blockchain='Fiat'", assetTable)
 	err = rdb.postgresClient.QueryRow(context.Background(), query, symbol).Scan(&asset.Name, &asset.Address, &decimals)
 	if err != nil {
 		return
@@ -189,23 +189,23 @@ func (rdb *RelDB) GetFiatAssetBySymbol(symbol string) (asset dia.Asset, err erro
 // of 'United States dollar'? On idea would be to add a table with alternative names for
 // symbol tickers, so WBTC -> [Wrapped Bitcoin, Wrapped bitcoin, Wrapped BTC,...]
 func (rdb *RelDB) IdentifyAsset(asset dia.Asset) (assets []dia.Asset, err error) {
-	query := fmt.Sprintf("select symbol,name,address,decimals,blockchain from %s where ", assetTable)
+	query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE ", assetTable)
 	var and string
 	if asset.Symbol != "" {
 		query += fmt.Sprintf("symbol='%s'", asset.Symbol)
-		and = " and "
+		and = " AND "
 	}
 	if asset.Name != "" {
 		query += fmt.Sprintf(and+"name='%s'", asset.Name)
-		and = " and "
+		and = " AND "
 	}
 	if asset.Address != "" {
 		query += fmt.Sprintf(and+"address='%s'", common.HexToAddress(asset.Address).Hex())
-		and = " and "
+		and = " AND "
 	}
 	if asset.Decimals != 0 {
 		query += fmt.Sprintf(and+"decimals='%d'", asset.Decimals)
-		and = " and "
+		and = " AND "
 	}
 	if asset.Blockchain != "" {
 		query += fmt.Sprintf(and+"blockchain='%s'", asset.Blockchain)
@@ -241,7 +241,7 @@ func (rdb *RelDB) IdentifyAsset(asset dia.Asset) (assets []dia.Asset, err error)
 
 // SetExchangeSymbol writes unique data into exchangesymbol table if not yet in there.
 func (rdb *RelDB) SetExchangeSymbol(exchange string, symbol string) error {
-	query := fmt.Sprintf("insert into %s (symbol,exchange) select $1,$2 where not exists (select 1 from exchangesymbol where symbol=$1 and exchange=$2)", exchangesymbolTable)
+	query := fmt.Sprintf("INSERT INTO %s (symbol,exchange) SELECT $1,$2 WHERE NOT EXISTS (SELECT 1 FROM exchangesymbol WHERE symbol=$1 AND exchange=$2)", exchangesymbolTable)
 	_, err := rdb.postgresClient.Exec(context.Background(), query, symbol, exchange)
 	if err != nil {
 		return err
@@ -251,7 +251,7 @@ func (rdb *RelDB) SetExchangeSymbol(exchange string, symbol string) error {
 
 // GetAssets returns all assets which share the symbol ticker @symbol.
 func (rdb *RelDB) GetAssets(symbol string) (assets []dia.Asset, err error) {
-	query := fmt.Sprintf("select symbol,name,address,decimals,blockchain from %s where symbol=$1 ", assetTable)
+	query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE symbol=$1 ", assetTable)
 	var rows pgx.Rows
 	rows, err = rdb.postgresClient.Query(context.Background(), query, symbol)
 	if err != nil {
@@ -280,7 +280,7 @@ func (rdb *RelDB) GetAssets(symbol string) (assets []dia.Asset, err error) {
 // GetAssetExchnage returns all assets which share the symbol ticker @symbol.
 func (rdb *RelDB) GetAssetExchange(symbol string) (exchnages []string, err error) {
 
-	query := fmt.Sprintf("select exchange  FROM %s  INNER JOIN %s ON asset.asset_id = exchangesymbol.asset_id where exchangesymbol.symbol = $1 ", exchangesymbolTable, assetTable)
+	query := fmt.Sprintf("SELECT exchange FROM %s  INNER JOIN %s ON asset.asset_id = exchangesymbol.asset_id WHERE exchangesymbol.symbol = $1 ", exchangesymbolTable, assetTable)
 	var rows pgx.Rows
 	rows, err = rdb.postgresClient.Query(context.Background(), query, symbol)
 	if err != nil {
@@ -302,7 +302,7 @@ func (rdb *RelDB) GetAssetExchange(symbol string) (exchnages []string, err error
 
 // GetUnverifiedExchangeSymbols returns all symbols from @exchange which haven't been verified yet.
 func (rdb *RelDB) GetUnverifiedExchangeSymbols(exchange string) (symbols []string, err error) {
-	query := fmt.Sprintf("select symbol from %s where exchange=$1 and verified=false order by symbol asc", exchangesymbolTable)
+	query := fmt.Sprintf("SELECT symbol FROM %s WHERE exchange=$1 AND verified=false ORDER BY symbol ASC", exchangesymbolTable)
 	var rows pgx.Rows
 	rows, err = rdb.postgresClient.Query(context.Background(), query, exchange)
 	if err != nil {
@@ -328,20 +328,20 @@ func (rdb *RelDB) GetExchangeSymbols(exchange string, substring string) (symbols
 	var rows pgx.Rows
 	if exchange != "" {
 		if substring != "" {
-			query = fmt.Sprintf("select symbol from %s where exchange=$1 and symbol ILIKE '%s%%'", exchangesymbolTable, substring)
+			query = fmt.Sprintf("SELECT symbol FROM %s WHERE exchange=$1 AND symbol ILIKE '%s%%'", exchangesymbolTable, substring)
 			rows, err = rdb.postgresClient.Query(context.Background(), query, exchange)
 
 		} else {
-			query = fmt.Sprintf("select symbol from %s where exchange=$1", exchangesymbolTable)
+			query = fmt.Sprintf("SELECT symbol FROM %s WHERE exchange=$1", exchangesymbolTable)
 			rows, err = rdb.postgresClient.Query(context.Background(), query, exchange)
 		}
 	} else {
 		if substring != "" {
-			query = fmt.Sprintf("select symbol from %s where symbol ILIKE '%s%%'", exchangesymbolTable, substring)
+			query = fmt.Sprintf("SELECT symbol FROM %s WHERE symbol ILIKE '%s%%'", exchangesymbolTable, substring)
 			log.Info("query: ", query)
 			rows, err = rdb.postgresClient.Query(context.Background(), query)
 		} else {
-			query = fmt.Sprintf("select symbol from %s", exchangesymbolTable)
+			query = fmt.Sprintf("SELECT symbol FROM %s", exchangesymbolTable)
 			rows, err = rdb.postgresClient.Query(context.Background(), query)
 		}
 	}
@@ -364,7 +364,7 @@ func (rdb *RelDB) GetExchangeSymbols(exchange string, substring string) (symbols
 // VerifyExchangeSymbol verifies @symbol on @exchange and maps it uniquely to @assetID in asset table.
 // It returns true if symbol,exchange is present and succesfully updated.
 func (rdb *RelDB) VerifyExchangeSymbol(exchange string, symbol string, assetID string) (bool, error) {
-	query := fmt.Sprintf("update %s set verified=true,asset_id=$1 where symbol=$2 and exchange=$3", exchangesymbolTable)
+	query := fmt.Sprintf("UPDATE %s SET verified=true,asset_id=$1 WHERE symbol=$2 AND exchange=$3", exchangesymbolTable)
 	resp, err := rdb.postgresClient.Exec(context.Background(), query, assetID, symbol, exchange)
 	if err != nil {
 		return false, err
@@ -382,7 +382,7 @@ func (rdb *RelDB) VerifyExchangeSymbol(exchange string, symbol string, assetID s
 // in case the symbol is verified. An empty string if not.
 func (rdb *RelDB) GetExchangeSymbolAssetID(exchange string, symbol string) (assetID string, verified bool, err error) {
 	var uuid pgtype.UUID
-	query := fmt.Sprintf("select asset_id, verified from %s where symbol=$1 and exchange=$2", exchangesymbolTable)
+	query := fmt.Sprintf("SELECT asset_id, verified FROM %s WHERE symbol=$1 AND exchange=$2", exchangesymbolTable)
 	err = rdb.postgresClient.QueryRow(context.Background(), query, symbol, exchange).Scan(&uuid, &verified)
 	if err != nil {
 		return
@@ -412,7 +412,7 @@ func (rdb *RelDB) GetExchangePair(exchange string, foreignname string) (dia.Exch
 	var uuid_quotetoken pgtype.UUID
 	var uuid_basetoken pgtype.UUID
 
-	query := fmt.Sprintf("select symbol,verified,id_quotetoken,id_basetoken from %s where exchange=$1 and foreignname=$2", exchangepairTable)
+	query := fmt.Sprintf("SELECT symbol,verified,id_quotetoken,id_basetoken FROM %s WHERE exchange=$1 AND foreignname=$2", exchangepairTable)
 	err := rdb.postgresClient.QueryRow(context.Background(), query, exchange, foreignname).Scan(&exchangepair.Symbol, &verified, &uuid_quotetoken, &uuid_basetoken)
 	if err != nil {
 		return dia.ExchangePair{}, err
@@ -450,7 +450,7 @@ func (rdb *RelDB) GetExchangePair(exchange string, foreignname string) (dia.Exch
 
 // GetExchangePairSymbols returns all foreign names on @exchange from exchangepair table.
 func (rdb *RelDB) GetExchangePairSymbols(exchange string) (pairs []dia.ExchangePair, err error) {
-	query := fmt.Sprintf("select symbol,foreignname from %s where exchange=$1", exchangepairTable)
+	query := fmt.Sprintf("SELECT symbol,foreignname FROM %s WHERE exchange=$1", exchangepairTable)
 	var rows pgx.Rows
 	rows, err = rdb.postgresClient.Query(context.Background(), query, exchange)
 	if err != nil {
@@ -473,7 +473,7 @@ func (rdb *RelDB) GetExchangePairSymbols(exchange string) (pairs []dia.ExchangeP
 // If cache==true, it is also cached into redis
 func (rdb *RelDB) SetExchangePair(exchange string, pair dia.ExchangePair, cache bool) error {
 	var query string
-	query = fmt.Sprintf("insert into %s (symbol,foreignname,exchange) select $1,$2,$3 where not exists (select 1 from %s where symbol=$1 and foreignname=$2 and exchange=$3)", exchangepairTable, exchangepairTable)
+	query = fmt.Sprintf("INSERT INTO %s (symbol,foreignname,exchange) SELECT $1,$2,$3 WHERE NOT EXISTS (SELECT 1 FROM %s WHERE symbol=$1 AND foreignname=$2 AND exchange=$3)", exchangepairTable, exchangepairTable)
 	_, err := rdb.postgresClient.Exec(context.Background(), query, pair.Symbol, pair.ForeignName, exchange)
 	if err != nil {
 		return err
@@ -487,20 +487,20 @@ func (rdb *RelDB) SetExchangePair(exchange string, pair dia.ExchangePair, cache 
 		log.Error(err)
 	}
 	if basetokenID != "" {
-		query = fmt.Sprintf("update %s set id_basetoken='%s' where foreignname='%s' and exchange='%s'", exchangepairTable, basetokenID, pair.ForeignName, exchange)
+		query = fmt.Sprintf("UPDATE %s SET id_basetoken='%s' WHERE foreignname='%s' AND exchange='%s'", exchangepairTable, basetokenID, pair.ForeignName, exchange)
 		_, err = rdb.postgresClient.Exec(context.Background(), query)
 		if err != nil {
 			return err
 		}
 	}
 	if quotetokenID != "" {
-		query = fmt.Sprintf("update %s set id_quotetoken='%s' where foreignname='%s' and exchange='%s'", exchangepairTable, quotetokenID, pair.ForeignName, exchange)
+		query = fmt.Sprintf("UPDATE %s SET id_quotetoken='%s' WHERE foreignname='%s' AND exchange='%s'", exchangepairTable, quotetokenID, pair.ForeignName, exchange)
 		_, err = rdb.postgresClient.Exec(context.Background(), query)
 		if err != nil {
 			return err
 		}
 	}
-	query = fmt.Sprintf("update %s set verified='%v' where foreignname='%s' and exchange='%s'", exchangepairTable, pair.Verified, pair.ForeignName, exchange)
+	query = fmt.Sprintf("UPDATE %s SET verified='%v' WHERE foreignname='%s' AND exchange='%s'", exchangepairTable, pair.Verified, pair.ForeignName, exchange)
 	_, err = rdb.postgresClient.Exec(context.Background(), query)
 	if err != nil {
 		return err
@@ -557,7 +557,7 @@ func (rdb *RelDB) GetBlockchain(name string) (blockchain dia.BlockChain, err err
 // GetAllBlockchains returns all blockchain names existent in the asset table.
 func (rdb *RelDB) GetAllBlockchains() ([]string, error) {
 	var blockchains []string
-	query := fmt.Sprintf("select distinct blockchain from %s order by blockchain asc", assetTable)
+	query := fmt.Sprintf("SELECT DISTINCT blockchain FROM %s ORDER BY blockchain ASC", assetTable)
 	rows, err := rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return []string{}, err
@@ -585,7 +585,7 @@ func (rdb *RelDB) GetPage(pageNumber uint32) (assets []dia.Asset, hasNextPage bo
 
 	pagesize := rdb.pagesize
 	skip := pagesize * pageNumber
-	rows, err := rdb.postgresClient.Query(context.Background(), "select symbol,name,address,decimals,blockchain from asset LIMIT $1 OFFSET $2 ", pagesize, skip)
+	rows, err := rdb.postgresClient.Query(context.Background(), "SELECT symbol,name,address,decimals,blockchain FROM asset LIMIT $1 OFFSET $2 ", pagesize, skip)
 	if err != nil {
 		return
 	}
@@ -606,7 +606,7 @@ func (rdb *RelDB) GetPage(pageNumber uint32) (assets []dia.Asset, hasNextPage bo
 		return
 	}
 	// No next page
-	nextPageRows, err := rdb.postgresClient.Query(context.Background(), "select symbol,name,address,decimals,blockchain from asset LIMIT $1 OFFSET $2 ", pagesize, skip+1)
+	nextPageRows, err := rdb.postgresClient.Query(context.Background(), "SELECT symbol,name,address,decimals,blockchain FROM asset LIMIT $1 OFFSET $2 ", pagesize, skip+1)
 	if len(nextPageRows.RawValues()) == 0 {
 		hasNextPage = false
 		return
@@ -618,7 +618,7 @@ func (rdb *RelDB) GetPage(pageNumber uint32) (assets []dia.Asset, hasNextPage bo
 
 // Count returns the number of assets stored in postgres
 func (rdb *RelDB) Count() (count uint32, err error) {
-	err = rdb.postgresClient.QueryRow(context.Background(), "select count(*) from asset").Scan(&count)
+	err = rdb.postgresClient.QueryRow(context.Background(), "SELECT COUNT(*) FROM asset").Scan(&count)
 	if err != nil {
 		return
 	}
@@ -683,8 +683,8 @@ func (rdb *RelDB) GetExchangePairCache(exchange string, foreignName string) (dia
 
 func (rdb *RelDB) SetAssetVolume24H(asset dia.Asset, volume float64) error {
 
-	initialStr := fmt.Sprintf("insert into %s (asset_id,volume) values ", assetVolumeTable)
-	substring := fmt.Sprintf("((select asset_id from asset where address='%s' and blockchain='%s'),%f)", asset.Address, asset.Blockchain, volume)
+	initialStr := fmt.Sprintf("INSERT INTO %s (asset_id,volume) VALUES ", assetVolumeTable)
+	substring := fmt.Sprintf("((SELECT asset_id FROM asset WHERE address='%s' AND blockchain='%s'),%f)", asset.Address, asset.Blockchain, volume)
 	conflict := " ON CONFLICT (asset_id) do UPDATE SET volume = EXCLUDED.volume "
 
 	query := initialStr + substring + conflict
@@ -702,7 +702,7 @@ func (rdb *RelDB) GetAssetVolume24H(asset dia.Asset) (volume float64, err error)
 }
 
 func (rdb *RelDB) GetTopAssetByVolume(symbol string) (assets []dia.Asset, err error) {
-	query := fmt.Sprintf("select symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON asset.asset_id = assetvolume.asset_id where symbol=$1 order by volume DESC", assetTable, assetVolumeTable)
+	query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON asset.asset_id = assetvolume.asset_id WHERE symbol=$1 ORDER BY volume DESC", assetTable, assetVolumeTable)
 	var rows pgx.Rows
 	rows, err = rdb.postgresClient.Query(context.Background(), query, symbol)
 	if err != nil {
@@ -730,7 +730,7 @@ func (rdb *RelDB) GetTopAssetByVolume(symbol string) (assets []dia.Asset, err er
 
 func (rdb *RelDB) GetByLimit(limit, skip uint32) (assets []dia.Asset, assetIds []string, err error) {
 
-	rows, err := rdb.postgresClient.Query(context.Background(), "select asset_id,symbol,name,address,decimals,blockchain from asset LIMIT $1 OFFSET $2 ", limit, skip)
+	rows, err := rdb.postgresClient.Query(context.Background(), "SELECT asset_id,symbol,name,address,decimals,blockchain FROM asset LIMIT $1 OFFSET $2 ", limit, skip)
 	if err != nil {
 		return
 	}
@@ -760,14 +760,14 @@ func (rdb *RelDB) GetByLimit(limit, skip uint32) (assets []dia.Asset, assetIds [
 }
 
 func (rdb *RelDB) GetActiveAssetCount() (count int, err error) {
-	query := fmt.Sprintf("select count(*) FROM %s INNER JOIN %s ON asset.asset_id = exchangesymbol.asset_id  ", assetTable, exchangesymbolTable)
+	query := fmt.Sprintf("SELECT count(*) FROM %s INNER JOIN %s ON asset.asset_id = exchangesymbol.asset_id  ", assetTable, exchangesymbolTable)
 	rows := rdb.postgresClient.QueryRow(context.Background(), query)
 	err = rows.Scan(&count)
 	return
 }
 
 func (rdb *RelDB) GetActiveAsset(limit, skip int) (assets []dia.Asset, assetIds []string, err error) {
-	query := fmt.Sprintf("select asset.asset_id,asset.symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON asset.asset_id = exchangesymbol.asset_id order by exchangesymbol.asset_id desc Limit $1 offset $2  ", assetTable, exchangesymbolTable)
+	query := fmt.Sprintf("SELECT asset.asset_id,asset.symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON asset.asset_id = exchangesymbol.asset_id ORDER BY exchangesymbol.asset_id DESC LIMIT $1 OFFSET $2  ", assetTable, exchangesymbolTable)
 	var rows pgx.Rows
 	log.Errorln("query", query)
 	rows, err = rdb.postgresClient.Query(context.Background(), query, limit, skip)
@@ -810,15 +810,15 @@ func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, substring string) (volumeSor
 			queryString = "SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) ORDER BY assetvolume.volume DESC"
 			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable)
 		} else {
-			queryString = "SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) where symbol ILIKE '%s%%' ORDER BY assetvolume.volume DESC"
+			queryString = "SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) WHERE symbol ILIKE '%s%%' ORDER BY assetvolume.volume DESC"
 			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, substring)
 		}
 	} else {
 		if substring == "" {
-			queryString = "SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) ORDER BY assetvolume.volume DESC limit %d"
+			queryString = "SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) ORDER BY assetvolume.volume DESC LIMIT %d"
 			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, numAssets)
 		} else {
-			queryString = "SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) where symbol ILIKE '%s%%' ORDER BY assetvolume.volume DESC limit %d"
+			queryString = "SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) WHERE symbol ILIKE '%s%%' ORDER BY assetvolume.volume DESC LIMIT %d"
 			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, substring, numAssets)
 		}
 	}
@@ -850,7 +850,7 @@ func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, substring string) (volumeSor
 // GetAssetsWithVOLInflux returns all assets that have an entry in Influx's volumes table and hence have been traded since @timeInit.
 func (datastore *DB) GetAssetsWithVOLInflux(timeInit time.Time) ([]dia.Asset, error) {
 	var quotedAssets []dia.Asset
-	q := fmt.Sprintf("SELECT address,blockchain,value FROM %s WHERE filter='VOL120' AND exchange='' AND time>%d and time<now()", influxDbFiltersTable, timeInit.UnixNano())
+	q := fmt.Sprintf("SELECT address,blockchain,value FROM %s WHERE filter='VOL120' AND exchange='' AND time>%d AND time<now()", influxDbFiltersTable, timeInit.UnixNano())
 	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		return quotedAssets, err

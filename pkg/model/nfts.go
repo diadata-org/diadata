@@ -16,7 +16,7 @@ import (
 
 // SetNFTClass stores @nftClass in postgres.
 func (rdb *RelDB) SetNFTClass(nftClass dia.NFTClass) error {
-	query := fmt.Sprintf("insert into %s (address,symbol,name,blockchain,contract_type,category) values ($1,$2,$3,$4,$5,NULLIF($6,''))", nftclassTable)
+	query := fmt.Sprintf("INSERT INTO %s (address,symbol,name,blockchain,contract_type,category) VALUES ($1,$2,$3,$4,$5,NULLIF($6,''))", nftclassTable)
 	_, err := rdb.postgresClient.Exec(context.Background(), query, nftClass.Address, nftClass.Symbol, nftClass.Name, nftClass.Blockchain, nftClass.ContractType, nftClass.Category)
 	if err != nil {
 		return err
@@ -25,7 +25,7 @@ func (rdb *RelDB) SetNFTClass(nftClass dia.NFTClass) error {
 }
 
 func (rdb *RelDB) GetNFTClass(address string, blockchain string) (nftclass dia.NFTClass, err error) {
-	query := fmt.Sprintf("select symbol,name,contract_type,category from %s where address=$1 and blockchain=$2", nftclassTable)
+	query := fmt.Sprintf("SELECT symbol,name,contract_type,category FROM %s WHERE address=$1 AND blockchain=$2", nftclassTable)
 	var category interface{}
 	err = rdb.postgresClient.QueryRow(context.Background(), query, address, blockchain).Scan(&nftclass.Symbol, &nftclass.Name, &nftclass.ContractType, &category)
 	if err != nil {
@@ -40,7 +40,7 @@ func (rdb *RelDB) GetNFTClass(address string, blockchain string) (nftclass dia.N
 }
 
 func (rdb *RelDB) GetNFTClassID(address string, blockchain string) (ID string, err error) {
-	query := fmt.Sprintf("select nftclass_id from %s where address=$1 and blockchain=$2", nftclassTable)
+	query := fmt.Sprintf("SELECT nftclass_id FROM %s WHERE address=$1 AND blockchain=$2", nftclassTable)
 	err = rdb.postgresClient.QueryRow(context.Background(), query, address, blockchain).Scan(&ID)
 	if err != nil {
 		return
@@ -49,7 +49,7 @@ func (rdb *RelDB) GetNFTClassID(address string, blockchain string) (ID string, e
 }
 
 func (rdb *RelDB) GetNFTClassByID(id string) (nftclass dia.NFTClass, err error) {
-	query := fmt.Sprintf("select address,symbol,name,blockchain,contract_type,category from %s where nftclass_id=$1", nftclassTable)
+	query := fmt.Sprintf("SELECT address,symbol,name,blockchain,contract_type,category FROM %s WHERE nftclass_id=$1", nftclassTable)
 	var category interface{}
 	err = rdb.postgresClient.QueryRow(context.Background(), query, id).Scan(&nftclass.Address, &nftclass.Symbol, &nftclass.Name, &nftclass.Blockchain, &nftclass.ContractType, &category)
 	if err != nil {
@@ -64,7 +64,7 @@ func (rdb *RelDB) GetNFTClassByID(id string) (nftclass dia.NFTClass, err error) 
 // GetAllNFTClasses returns all NFT classes on @blockchain.
 func (rdb *RelDB) GetAllNFTClasses(blockchain string) (nftClasses []dia.NFTClass, err error) {
 	var rows pgx.Rows
-	query := fmt.Sprintf("select address,symbol,name,blockchain,contract_type,category from %s where blockchain=$1 order by name desc", nftclassTable)
+	query := fmt.Sprintf("SELECT address,symbol,name,blockchain,contract_type,category FROM %s WHERE blockchain=$1 ORDER BY name DESC", nftclassTable)
 	rows, err = rdb.postgresClient.Query(context.Background(), query, blockchain)
 	if err != nil {
 		return
@@ -87,7 +87,7 @@ func (rdb *RelDB) GetAllNFTClasses(blockchain string) (nftClasses []dia.NFTClass
 // GetNFTClassPage returns @limit NFT classes with @offset.
 func (rdb *RelDB) GetNFTClasses(limit, offset uint64) (nftClasses []dia.NFTClass, err error) {
 
-	query := fmt.Sprintf("select address,symbol,name,blockchain,contract_type,category from %s LIMIT $1 OFFSET $2", nftclassTable)
+	query := fmt.Sprintf("SELECT address,symbol,name,blockchain,contract_type,category FROM %s LIMIT $1 OFFSET $2", nftclassTable)
 	rows, err := rdb.postgresClient.Query(context.Background(), query, limit, offset)
 	if err != nil {
 		return
@@ -109,7 +109,7 @@ func (rdb *RelDB) GetNFTClasses(limit, offset uint64) (nftClasses []dia.NFTClass
 }
 
 func (rdb *RelDB) UpdateNFTClassCategory(nftclassID string, category string) (bool, error) {
-	query := fmt.Sprintf("update %s set category=$1 where nftclass_id=$2", nftclassTable)
+	query := fmt.Sprintf("UPDATE %s SET category=$1 WHERE nftclass_id=$2", nftclassTable)
 	resp, err := rdb.postgresClient.Exec(context.Background(), query, category, nftclassID)
 	if err != nil {
 		return false, err
@@ -126,7 +126,7 @@ func (rdb *RelDB) UpdateNFTClassCategory(nftclassID string, category string) (bo
 // GetNFTCategories returns all available NFT categories.
 func (rdb *RelDB) GetNFTCategories() (categories []string, err error) {
 	var rows pgx.Rows
-	query := fmt.Sprintf("select category from %s", nftcategoryTable)
+	query := fmt.Sprintf("SELECT category FROM %s", nftcategoryTable)
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return
@@ -149,7 +149,7 @@ func (rdb *RelDB) SetNFT(nft dia.NFT) error {
 	if err != nil {
 		return err
 	}
-	query := fmt.Sprintf("insert into %s (nftclass_id,token_id,creation_time,creator_address,uri,attributes) values ($1,$2,$3,$4,$5,$6)", nftTable)
+	query := fmt.Sprintf("INSERT INTO %s (nftclass_id,token_id,creation_time,creator_address,uri,attributes) VALUES ($1,$2,$3,$4,$5,$6)", nftTable)
 	_, err = rdb.postgresClient.Exec(context.Background(), query, nftClassID, nft.TokenID, nft.CreationTime, nft.CreatorAddress, nft.URI, nft.Attributes)
 	if err != nil {
 		return err
@@ -163,7 +163,7 @@ func (rdb *RelDB) GetNFT(address string, blockchain string, tokenID string) (dia
 		address = common.HexToAddress(address).Hex()
 	}
 
-	query := fmt.Sprintf("select c.address, c.symbol, c.name, c.blockchain, c.contract_type, c.category, n.token_id, n.creation_time, n.creator_address, n.uri, n.attributes from %s n inner join %s c on(c.nftclass_id=n.nftclass_id and c.address=$1 and c.blockchain=$2) where n.token_id=$3", nftTable, nftclassTable)
+	query := fmt.Sprintf("SELECT c.address, c.symbol, c.name, c.blockchain, c.contract_type, c.category, n.token_id, n.creation_time, n.creator_address, n.uri, n.attributes FROM %s n INNER JOIN %s c ON(c.nftclass_id=n.nftclass_id AND c.address=$1 AND c.blockchain=$2) WHERE n.token_id=$3", nftTable, nftclassTable)
 
 	var classCat sql.NullString
 
@@ -193,7 +193,7 @@ func (rdb *RelDB) GetNFTID(address string, blockchain string, tokenID string) (I
 	if err != nil {
 		return
 	}
-	query := fmt.Sprintf("select nft_id from %s where nftclass_id=$1 and token_id=$2 ", nftTable)
+	query := fmt.Sprintf("SELECT nft_id FROM %s WHERE nftclass_id=$1 AND token_id=$2 ", nftTable)
 	err = rdb.postgresClient.QueryRow(context.Background(), query, nftclassID, tokenID).Scan(&ID)
 	if err != nil {
 		return
@@ -203,7 +203,7 @@ func (rdb *RelDB) GetNFTID(address string, blockchain string, tokenID string) (I
 
 // GetLastBlockheightTopshot returns the last block number before timestamp given by @upperBound.
 func (rdb *RelDB) GetLastBlockheightTopshot(upperBound time.Time) (uint64, error) {
-	query := fmt.Sprintf("select attributes from %s where nftclass_id=(select nftclass_id from %s where address='0x0b2a3299cc857e29' and blockchain='Flow') order by creation_time desc limit 1;", nftTable, nftclassTable)
+	query := fmt.Sprintf("SELECT attributes FROM %s WHERE nftclass_id=(select nftclass_id FROM %s WHERE address='0x0b2a3299cc857e29' AND blockchain='Flow') ORDER BY creation_time DESC LIMIT 1;", nftTable, nftclassTable)
 	attributes := make(map[string]interface{})
 	err := rdb.postgresClient.QueryRow(context.Background(), query).Scan(&attributes)
 	if err != nil {
@@ -225,7 +225,7 @@ func (rdb *RelDB) SetNFTTrade(trade dia.NFTTrade) error {
 	}
 	price := trade.Price.String()
 	tradeVars := "nftclass_id,nft_id,price,price_usd,transfer_from,transfer_to,currency_symbol,currency_address,currency_decimals,block_number,trade_time,tx_hash,marketplace"
-	query := fmt.Sprintf("insert into %s (%s) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)", nfttradeTable, tradeVars)
+	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)", nfttradeTable, tradeVars)
 	_, err = rdb.postgresClient.Exec(context.Background(), query, nftclassID, nftID, price, trade.PriceUSD, trade.FromAddress, trade.ToAddress, trade.CurrencySymbol, trade.CurrencyAddress, trade.CurrencyDecimals, trade.BlockNumber, trade.Timestamp, trade.TxHash, trade.Exchange)
 	if err != nil {
 		return err
@@ -235,7 +235,7 @@ func (rdb *RelDB) SetNFTTrade(trade dia.NFTTrade) error {
 
 // GetLastBlockNFTTtrade returns the last blocknumber that was scraped for trades in @nftclass.
 func (rdb *RelDB) GetLastBlockNFTTrade(nftclass dia.NFTClass) (blocknumber uint64, err error) {
-	query := fmt.Sprintf("select block_number from %s where nftclass_id=(select nftclass_id from %s where address='%s' and blockchain='%s') order by block_number desc limit 1;", nfttradeTable, nftclassTable, nftclass.Address, nftclass.Blockchain)
+	query := fmt.Sprintf("SELECT block_number FROM %s WHERE nftclass_id=(SELECT nftclass_id FROM %s WHERE address='%s' AND blockchain='%s') ORDER BY block_number DESC LIMIT 1;", nfttradeTable, nftclassTable, nftclass.Address, nftclass.Blockchain)
 	err = rdb.postgresClient.QueryRow(context.Background(), query).Scan(&blocknumber)
 	if err != nil {
 		return
@@ -248,7 +248,7 @@ func (rdb *RelDB) GetNFTTrades(address string, blockchain string, tokenID string
 	var rows pgx.Rows
 	nftID, err := rdb.GetNFTID(address, blockchain, tokenID)
 	tradeVars := "price,price_usd,transfer_from,transfer_to,currency_symbol,currency_address,currency_decimals,block_number,trade_time,tx_hash,marketplace"
-	query := fmt.Sprintf("select %s from %s where nft_id='%s' order by trade_time desc", tradeVars, nfttradeTable, nftID)
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE nft_id='%s' ORDER BY trade_time DESC", tradeVars, nfttradeTable, nftID)
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return
@@ -290,7 +290,7 @@ func (rdb *RelDB) GetNFTOffers(address string, blockchain string, tokenID string
 	var rows pgx.Rows
 	nftID, err := rdb.GetNFTID(address, blockchain, tokenID)
 	tradeVars := "start_value,end_value,duration,from_address,auction_type,currency_symbol,currency_address,currency_decimals,blocknumber,offer_time,tx_hash,marketplace"
-	query := fmt.Sprintf("select %s from %s where nft_id='%s' order by offer_time desc", tradeVars, nftofferTable, nftID)
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE nft_id='%s' ORDER BY offer_time DESC", tradeVars, nftofferTable, nftID)
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return
@@ -351,7 +351,7 @@ func (rdb *RelDB) GetNFTBids(address string, blockchain string, tokenID string) 
 	var rows pgx.Rows
 	nftID, err := rdb.GetNFTID(address, blockchain, tokenID)
 	tradeVars := "bid_value,from_address,currency_symbol,currency_address,currency_decimals,blocknumber,bid_time,tx_hash,marketplace"
-	query := fmt.Sprintf("select %s from %s where nft_id='%s' order by bid_time desc", tradeVars, nftbidTable, nftID)
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE nft_id='%s' ORDER BY bid_time DESC", tradeVars, nftbidTable, nftID)
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return
@@ -406,7 +406,7 @@ func (rdb *RelDB) SetNFTBid(bid dia.NFTBid) error {
 		return err
 	}
 	bidVars := "nft_id,bid_value,from_address,currency_symbol,currency_address,currency_decimals,blocknumber,blockposition,bid_time,tx_hash,marketplace"
-	query := fmt.Sprintf("insert into %s (%s) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)", nftbidTable, bidVars)
+	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)", nftbidTable, bidVars)
 	_, err = rdb.postgresClient.Exec(
 		context.Background(),
 		query,
@@ -441,10 +441,10 @@ func (rdb *RelDB) GetLastNFTBid(address string, blockchain string, tokenID strin
 	nftBid.NFT.TokenID = tokenID
 
 	// First fetch biggest blocknumber<=@blockNumber for given nft.
-	subquery := fmt.Sprintf("select blocknumber from %s where nft_id='%s' and blocknumber<=%d order by blocknumber desc limit 1", nftbidTable, nftID, blockNumber)
+	subquery := fmt.Sprintf("SELECT blocknumber FROM %s WHERE nft_id='%s' AND blocknumber<=%d ORDER BY blocknumber DESC LIMIT 1", nftbidTable, nftID, blockNumber)
 	// Next, restrict to largest blockPosition in this block.
 	returnVars := "bid_value,from_address,currency_symbol,currency_address,currency_decimals,blocknumber,blockposition,bid_time,tx_hash,marketplace"
-	query := fmt.Sprintf("select %s from %s where nft_id='%s' and blocknumber=(%s) order by blockposition desc limit 1", returnVars, nftbidTable, nftID, subquery)
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE nft_id='%s' AND blocknumber=(%s) ORDER BY blockposition DESC LIMIT 1", returnVars, nftbidTable, nftID, subquery)
 	var txHash sql.NullString
 	var bidTime sql.NullTime
 	var value string
@@ -506,7 +506,7 @@ func (rdb *RelDB) SetNFTOffer(offer dia.NFTOffer) error {
 		return err
 	}
 	bidVars := "nft_id,start_value,end_value,duration,from_address,auction_type,currency_symbol,currency_address,currency_decimals,blocknumber,blockposition,offer_time,tx_hash,marketplace"
-	query := fmt.Sprintf("insert into %s (%s) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)", nftofferTable, bidVars)
+	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)", nftofferTable, bidVars)
 	_, err = rdb.postgresClient.Exec(
 		context.Background(),
 		query,
@@ -544,10 +544,10 @@ func (rdb *RelDB) GetLastNFTOffer(address string, blockchain string, tokenID str
 	offer.NFT.TokenID = tokenID
 
 	// First fetch biggest blocknumber<=@blockNumber for given nft.
-	subquery := fmt.Sprintf("select blocknumber from %s where nft_id='%s' and blocknumber<=%d order by blocknumber desc limit 1", nftofferTable, nftID, blockNumber)
+	subquery := fmt.Sprintf("SELECT blocknumber FROM %s WHERE nft_id='%s' AND blocknumber<=%d ORDER BY blocknumber DESC LIMIT 1", nftofferTable, nftID, blockNumber)
 	// Next, restrict to largest blockPosition in this block.
 	returnVars := "start_value,end_value,duration,from_address,auction_type,currency_symbol,currency_address,currency_decimals,blocknumber,blockposition,offer_time,tx_hash,marketplace"
-	query := fmt.Sprintf("select %s from %s where nft_id='%s' and blocknumber=(%s) order by blockposition desc limit 1", returnVars, nftofferTable, nftID, subquery)
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE nft_id='%s' AND blocknumber=(%s) ORDER BY blockposition DESC LIMIT 1", returnVars, nftofferTable, nftID, subquery)
 	var txHash sql.NullString
 	var offerTime sql.NullTime
 	var startValue string

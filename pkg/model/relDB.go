@@ -169,7 +169,7 @@ func NewRelDataStoreWithOptions(withPostgres bool, withRedis bool) (*RelDB, erro
 
 // GetKeys returns a slice of strings holding the names of the keys of @table in postgres
 func (rdb *RelDB) GetKeys(table string) (keys []string, err error) {
-	query := fmt.Sprintf("select column_name from information_schema.columns where table_name='%s'", table)
+	query := fmt.Sprintf("SELECT column_name from information_schema.columns WHERE table_name='%s'", table)
 	rows, err := rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return
