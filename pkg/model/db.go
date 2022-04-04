@@ -394,7 +394,20 @@ func (datastore *DB) addPoint(pt *clientInfluxdb.Point) {
 	// ---------------------------------------------------------------------------------
 
 	if datastore.influxPointsInBatch >= influxMaxPointsInBatch {
-		log.Info("------ flush batch in addPoint ------")
+		log.Infof("------ flush batch in addPoint (numPoints: %v) ------", datastore.influxPointsInBatch)
+		points := datastore.influxBatchPoints.Points()
+		for _, pt := range points {
+			if _, ok := pt.Tags()["address"]; ok {
+				timestamp := pt.UnixNano()
+				tags := pt.Tags()
+				fields, err := pt.Fields()
+				if err != nil {
+					log.Error("get fields: ", err)
+				} else {
+					log.Infof("addPoint(): point in batch at time %v with value %v: filter: %s -- exchange: %s -- symbol: %s --  address: %s ", timestamp, fields["value"], tags["filter"], tags["exchange"], tags["symbol"], tags["address"])
+				}
+			}
+		}
 		err := datastore.WriteBatchInflux()
 		if err != nil {
 			log.Error("write influx batch: ", err)
