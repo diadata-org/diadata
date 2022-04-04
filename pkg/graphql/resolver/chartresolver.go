@@ -2,8 +2,10 @@ package resolver
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/graphql/utils"
 	"github.com/graph-gophers/graphql-go"
 )
 
@@ -32,4 +34,16 @@ func (qr *FilterPointResolver) Address(ctx context.Context) (*string, error) {
 
 func (qr *FilterPointResolver) Blockchain(ctx context.Context) (*string, error) {
 	return &qr.q.Asset.Blockchain, nil
+}
+func (qr *FilterPointResolver) Sign(ctx context.Context) (*string, error) {
+	su, err := utils.NewSignatureUtil()
+	if err != nil {
+		return nil, err
+	}
+	messageTosign, err := json.Marshal(qr.q)
+	if err != nil {
+		return nil, err
+	}
+	signedMessage := su.Sign(messageTosign)
+	return &signedMessage, nil
 }

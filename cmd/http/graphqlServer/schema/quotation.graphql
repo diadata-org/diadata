@@ -24,6 +24,8 @@ type Quotation {
   Source: String
   ITIN: String
   Time: Time
+  Sign: String
+
 }
 
 type Supply {
@@ -33,12 +35,14 @@ type Supply {
   Source: String
   CirculatingSupply: Float
   Time: Time
+  Sign: String
 }
 
 type ChartPoint {
   Time: Time
   Exchange: String
   Value: Float
+
 }
 
 type FilterPoint {
@@ -48,6 +52,8 @@ type FilterPoint {
   Time: Time
   Address:String
   Blockchain :String
+  Sign: String
+
 }
 
  

@@ -2,7 +2,9 @@ package resolver
 
 import (
 	"context"
+	"encoding/json"
 
+	"github.com/diadata-org/diadata/pkg/graphql/utils"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/graph-gophers/graphql-go"
 )
@@ -37,4 +39,17 @@ func (qr *QuotationResolver) Time(ctx context.Context) (*graphql.Time, error) {
 
 func (qr *QuotationResolver) MAIR(ctx context.Context) (*graphql.Time, error) {
 	return &graphql.Time{Time: qr.q.Time}, nil
+}
+
+func (qr *QuotationResolver) Sign(ctx context.Context) (*string, error) {
+	su, err := utils.NewSignatureUtil()
+	if err != nil {
+		return nil, err
+	}
+	messageTosign, err := json.Marshal(qr.q)
+	if err != nil {
+		return nil, err
+	}
+	signedMessage := su.Sign(messageTosign)
+	return &signedMessage, nil
 }
