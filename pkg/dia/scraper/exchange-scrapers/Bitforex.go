@@ -296,7 +296,6 @@ func (s *BitforexScraper) mainLoop() {
 				if pair.Verified {
 					log.Infoln("Got verified trade", trade)
 				}
-
 				select {
 				case <-s.shutdown:
 				case s.chanTrades <- trade:
@@ -307,14 +306,15 @@ func (s *BitforexScraper) mainLoop() {
 }
 
 func (s *BitforexScraper) toBitforexSymbol(foreignName string) string {
-	return strings.ToLower("coin-" + foreignName)
+	bitforexForeignName := strings.Split(foreignName, "-")[1] + "-" + strings.Split(foreignName, "-")[0]
+	return strings.ToLower("coin-" + bitforexForeignName)
 }
 
 func (s *BitforexScraper) extractSymbol(symbol string) (baseCurrency, foreignName string) {
 	ss := strings.SplitN(symbol, "-", 3)
 	baseCurrency = strings.ToUpper(ss[2])
 	foreignName = strings.ToUpper(ss[2] + "-" + ss[1])
-
+	log.Info("extract symbol: ", foreignName)
 	return baseCurrency, foreignName
 }
 
