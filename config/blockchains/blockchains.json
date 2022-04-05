@@ -72,7 +72,7 @@
             "ChainID": "Ethereum1285"
         },
         {
-            "Name": "ArbitrumOne",
+            "Name": "Arbitrum",
             "GenesisDate": 0,
             "NativeToken": {
                 "Address": ""

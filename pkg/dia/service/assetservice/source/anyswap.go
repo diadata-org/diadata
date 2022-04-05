@@ -12,7 +12,6 @@ import (
 )
 
 const (
-	// Public Solana clients.
 	anyswapAPIUrl = "https://bridgeapi.anyswap.exchange/v3/serverinfoV3?chainId=all&version=STABLEV3"
 )
 
@@ -27,13 +26,14 @@ func init() {
 	chainMap["56"] = dia.BINANCESMARTCHAIN
 	chainMap["137"] = dia.POLYGON
 	chainMap["250"] = dia.FANTOM
+	chainMap["1284"] = dia.MOONBEAM
 	chainMap["1285"] = dia.MOONRIVER
+	chainMap["42161"] = dia.ARBITRUM
 	chainMap["43114"] = dia.AVALANCHE
 
 	// chainMap["66"] = chainInfo{Name: "OKExChain", Client: ""}
 	// chainMap["128"] = chainInfo{Name: "HuobiECOChain", Client: ""}
 	// chainMap["288"] = chainInfo{Name: "Boba", Client: ""}
-	// chainMap["42161"] = chainInfo{Name: "Arbitrum", Client: ""}
 
 }
 

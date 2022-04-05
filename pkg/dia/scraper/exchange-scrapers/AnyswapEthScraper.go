@@ -105,7 +105,9 @@ func NewAnyswapScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 	chainMap["56"] = dia.BINANCESMARTCHAIN
 	chainMap["137"] = dia.POLYGON
 	chainMap["250"] = dia.FANTOM
+	chainMap["1284"] = dia.MOONBEAM
 	chainMap["1285"] = dia.MOONRIVER
+	chainMap["42161"] = dia.ARBITRUM
 	chainMap["43114"] = dia.AVALANCHE
 
 	restClientMap, wsClientMap, err = getClientMaps()
