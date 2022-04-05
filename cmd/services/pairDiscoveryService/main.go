@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -26,7 +27,8 @@ import (
 )
 
 var (
-	log *logrus.Logger
+	log               *logrus.Logger
+	writeExchangeJSON = flag.String("writeExchangeJSON", "", "write exchange pairs for exchange")
 	// updateTime = time.Second * 60 * 60
 )
 
@@ -38,6 +40,7 @@ type Task struct {
 
 func init() {
 	log = logrus.New()
+	flag.Parse()
 }
 
 func main() {
@@ -196,6 +199,14 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 					if err != nil {
 						log.Errorf("adding pairs from config file for exchange %s: %v", exchange, err)
 					}
+
+					if *writeExchangeJSON == exchange {
+						err := savePairsToFile(exchange, pairs)
+						if err != nil {
+							log.Error("write pairs to json file: ", err)
+						}
+					}
+
 					// --------- 2. Step: Try to verify all pairs collected above ---------
 
 					// 2.a Get list of symbols available on exchange and try to match to assets.
@@ -588,4 +599,31 @@ func iterateDirectory(foldername string) (files []string) {
 		log.Error(err)
 	}
 	return
+}
+
+type LocalPair struct {
+	Symbol      string `json:"Symbol"`
+	ForeignName string `json:"ForeignName"`
+	Exchange    string `json:"Exchange"`
+	Ignore      bool   `json:"Ignore"`
+}
+
+type LocalExchangePairs struct {
+	Coins []LocalPair `json:"Coins"`
+}
+
+func savePairsToFile(exchange string, pairs []dia.ExchangePair) error {
+	log.Info("savePairsToFile: ", exchange)
+
+	var localPairs []LocalPair
+
+	for _, field := range pairs {
+		localPairs = append(localPairs, LocalPair{Exchange: field.Exchange, Symbol: field.Symbol, ForeignName: field.ForeignName, Ignore: false})
+	}
+	localExchangePairs := LocalExchangePairs{Coins: localPairs}
+	b, err := json.Marshal(localExchangePairs)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile("/tmp/"+exchange+".json", b, 0644)
 }
