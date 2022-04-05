@@ -264,7 +264,7 @@ func (s *BitforexScraper) mainLoop() {
 			baseCurrency, foreignName := s.extractSymbol(res.Param.BusinessType)
 			pair, err := s.db.GetExchangePairCache(s.exchangeName, foreignName)
 			if err != nil {
-				log.Error("GetExchangePairCache", err)
+				log.Error("GetExchangePairCache: ", err)
 			}
 
 			var trades []bitForexTradeResult
@@ -314,7 +314,6 @@ func (s *BitforexScraper) extractSymbol(symbol string) (baseCurrency, foreignNam
 	ss := strings.SplitN(symbol, "-", 3)
 	baseCurrency = strings.ToUpper(ss[2])
 	foreignName = strings.ToUpper(ss[2] + "-" + ss[1])
-	log.Info("extract symbol: ", foreignName)
 	return baseCurrency, foreignName
 }
 
