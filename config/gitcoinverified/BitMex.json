@@ -1,5 +1,5 @@
 {
-    "Tokens": [  
+    "Tokens": [
         {
             "Symbol": "ETH",
             "Exchange": "BitMex",
@@ -77,7 +77,7 @@
             "Exchange": "BitMex",
             "Blockchain": "Solana",
             "Address": "0x0000000000000000000000000000000000000000"
-        }, 
+        },
         {
             "Symbol": "XRP",
             "Exchange": "BitMex",
@@ -97,4 +97,4 @@
             "Address": "0x0000000000000000000000000000000000000000"
         }
     ]
-    }
+}

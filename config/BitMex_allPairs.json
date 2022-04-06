@@ -2,6 +2,18 @@
     "Coins": [
         {
             "Symbol": "XRP",
+            "ForeignName": "XRP_H22",
+            "Exchange": "BitMex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ADA",
+            "ForeignName": "ADA_H22",
+            "Exchange": "BitMex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XRP",
             "ForeignName": "XRP_USD",
             "Exchange": "BitMex",
             "Ignore": false
@@ -163,6 +175,30 @@
             "Ignore": false
         },
         {
+            "Symbol": "XBT",
+            "ForeignName": "XBT_G22",
+            "Exchange": "BitMex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XBT",
+            "ForeignName": "XBT_H22",
+            "Exchange": "BitMex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XBT",
+            "ForeignName": "XBT_USDTH22",
+            "Exchange": "BitMex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XBT",
+            "ForeignName": "XBT_M22",
+            "Exchange": "BitMex",
+            "Ignore": false
+        },
+        {
             "Symbol": "ETH",
             "ForeignName": "ETH_USD",
             "Exchange": "BitMex",
@@ -171,6 +207,24 @@
         {
             "Symbol": "ETH",
             "ForeignName": "ETH_USDT",
+            "Exchange": "BitMex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH_H22",
+            "Exchange": "BitMex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH_USDH22",
+            "Exchange": "BitMex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETH_USDTH22",
             "Exchange": "BitMex",
             "Ignore": false
         },

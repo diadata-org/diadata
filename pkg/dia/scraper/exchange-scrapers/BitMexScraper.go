@@ -349,7 +349,10 @@ func (s *BitMexScraper) handleTrades(tradesWsResponse bitMexSubscriptionResult) 
 					}
 				}
 
-				volume := data.ForeignNotional
+				volume := data.HomeNotional
+				if data.Side == "Sell" {
+					volume = -volume
+				}
 
 				trade := &dia.Trade{
 					Symbol:         pair.Symbol,

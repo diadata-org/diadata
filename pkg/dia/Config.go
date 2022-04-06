@@ -75,6 +75,7 @@ const (
 func Exchanges() []string {
 	return []string{
 
+		BitMexExchange,
 		HuobiExchange,
 		CoinBaseExchange,
 		GateIOExchange,
@@ -118,6 +119,7 @@ func Exchanges() []string {
 		SushiSwapExchangeArbitrum,
 		SushiSwapExchangePolygon,
 		SushiSwapExchangeFantom,
+		BeetsExchange,
 		UniswapExchange,
 		UniswapExchangeV3,
 		QuickswapExchange,
@@ -133,8 +135,6 @@ func Exchanges() []string {
 		BalancerV2Exchange,
 		BancorExchange,
 		UnknownExchange,
-		BitMexExchange,
-		BeetsExchange,
 	}
 }
 
