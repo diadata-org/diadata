@@ -354,6 +354,10 @@ func (s *BitMexScraper) handleTrades(tradesWsResponse bitMexSubscriptionResult) 
 					volume = -volume
 				}
 
+				exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, pair.ForeignName)
+				if err != nil {
+					log.Error("get exchangepair from cache: ", err)
+				}
 				trade := &dia.Trade{
 					Symbol:         pair.Symbol,
 					Pair:           pair.ForeignName,
@@ -362,11 +366,11 @@ func (s *BitMexScraper) handleTrades(tradesWsResponse bitMexSubscriptionResult) 
 					Volume:         volume,
 					Source:         s.exchangeName,
 					ForeignTradeID: data.TrdMatchID,
-					VerifiedPair:   pair.Verified,
-					BaseToken:      pair.UnderlyingPair.BaseToken,
-					QuoteToken:     pair.UnderlyingPair.QuoteToken,
+					VerifiedPair:   exchangepair.Verified,
+					BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+					QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
 				}
-				if pair.Verified {
+				if exchangepair.Verified {
 					log.Infoln("Got verified trade", trade)
 				}
 
