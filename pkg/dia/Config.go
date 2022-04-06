@@ -29,6 +29,8 @@ const (
 	CoinBaseExchange          = "CoinBase"
 	HitBTCExchange            = "HitBTC"
 	HuckleberryExchange       = "Huckleberry"
+	TraderJoeExchange         = "TraderJoe"
+	PangolinExchange          = "Pangolin"
 	SimexExchange             = "Simex"
 	OKExExchange              = "OKEx"
 	HuobiExchange             = "Huobi"
@@ -104,6 +106,8 @@ func Exchanges() []string {
 		STEXExchange,
 		UniswapPolygon,
 
+		TraderJoeExchange,
+		PangolinExchange,
 		HuckleberryExchange,
 		NetswapExchange,
 		DfynNetwork,

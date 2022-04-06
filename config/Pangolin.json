@@ -1,0 +1,10 @@
+{
+    "Coins": [
+        {
+            "Symbol": "USDC.e",
+            "ForeignName": "USDC.e-WAVAX",
+            "Exchange": "Pangolin",
+            "Ignore": false
+        }
+    ]
+}

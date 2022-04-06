@@ -31,6 +31,7 @@ const (
 	restDialMoonriver = ""
 	restDialAurora    = ""
 	restDialMetis     = ""
+	restDialAvalanche = ""
 
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
@@ -43,6 +44,7 @@ const (
 	trisolarisWaitMilliseconds  = "200"
 	metisWaitMilliseconds       = "200"
 	moonriverWaitMilliseconds   = "500"
+	avalancheWaitMilliseconds   = "200"
 )
 
 type UniswapAssetSource struct {
@@ -82,6 +84,10 @@ func NewUniswapAssetSource(exchange dia.Exchange) (uas *UniswapAssetSource) {
 		uas = makeUniswapAssetSource(exchange, restDialMetis, metisWaitMilliseconds)
 	case dia.HuckleberryExchange:
 		uas = makeUniswapAssetSource(exchange, restDialMoonriver, moonriverWaitMilliseconds)
+	case dia.TraderJoeExchange:
+		uas = makeUniswapAssetSource(exchange, restDialAvalanche, avalancheWaitMilliseconds)
+	case dia.PangolinExchange:
+		uas = makeUniswapAssetSource(exchange, restDialAvalanche, avalancheWaitMilliseconds)
 	}
 
 	exchangeFactoryContractAddress = exchange.Contract.Hex()
