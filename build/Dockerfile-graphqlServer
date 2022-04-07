@@ -2,7 +2,7 @@ FROM us.icr.io/dia-registry/devops/build:latest as build
 
 WORKDIR $GOPATH/src/
 COPY ./cmd/http/graphqlServer ./
-COPY ./cmd/http/graphqlServer/schema ./schema/
+COPY ./libs/linux/* ./libs/
 
 RUN go install
 
