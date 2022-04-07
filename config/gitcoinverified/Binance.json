@@ -1,24 +1,6 @@
 {
     "Tokens": [
         {
-            "Symbol": "GLMR",
-            "Exchange": "Binance",
-            "Blockchain": "Moonbeam",
-            "Address": "0x0000000000000000000000000000000000000000"
-        },
-        {
-            "Symbol": "BNB",
-            "Exchange": "Binance",
-            "Blockchain": "BinanceSmartChain",
-            "Address": "0x0000000000000000000000000000000000000000"
-        },
-        {
-            "Symbol": "BUSD",
-            "Exchange": "Binance",
-            "Blockchain": "BinanceSmartChain",
-            "Address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
-        },
-        {
             "Symbol": "ADX",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -61,6 +43,12 @@
             "Address": "0x27054b13b1B798B345b591a4d22e6562d47eA75a"
         },
         {
+            "Symbol": "ASTR",
+            "Exchange": "Binance",
+            "Blockchain": "Astar",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "AXS",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -79,10 +67,22 @@
             "Address": "0x1c4481750daa5Ff521A2a7490d9981eD46465Dbd"
         },
         {
+            "Symbol": "BNB",
+            "Exchange": "Binance",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "BQX",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0x5Af2Be193a6ABCa9c8817001F45744777Db30756"
+        },
+        {
+            "Symbol": "BUSD",
+            "Exchange": "Binance",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
         },
         {
             "Symbol": "CDT",
@@ -197,6 +197,12 @@
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0x3F382DbD960E3a9bbCeaE22651E88158d2791550"
+        },
+        {
+            "Symbol": "GLMR",
+            "Exchange": "Binance",
+            "Blockchain": "Moonbeam",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "GO",
@@ -449,6 +455,12 @@
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0x08f5a9235B08173b7569F83645d2c7fB55e8cCD8"
+        },
+        {
+            "Symbol": "UST",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD"
         },
         {
             "Symbol": "VIB",

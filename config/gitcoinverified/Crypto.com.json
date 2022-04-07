@@ -1,5 +1,23 @@
 {
-    "Tokens": [  
+    "Tokens": [
+        {
+            "Symbol": "DAI",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+        },
+        {
+            "Symbol": "LUNA",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Terra",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "SDN",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Shiden",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
         {
             "Symbol": "WBTC",
             "Exchange": "Crypto.com",

@@ -1,6 +1,12 @@
 {
   "Coins": [
     {
+      "Symbol": "NEAR",
+      "ForeignName": "NEARUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
       "Symbol": "YGG",
       "ForeignName": "YGGUSDT",
       "Exchange": "HitBTC",
@@ -1695,12 +1701,6 @@
     {
       "Symbol": "APPC",
       "ForeignName": "APPCBTC",
-      "Exchange": "HitBTC",
-      "Ignore": false
-    },
-    {
-      "Symbol": "DAI",
-      "ForeignName": "DAIEOSDT",
       "Exchange": "HitBTC",
       "Ignore": false
     },

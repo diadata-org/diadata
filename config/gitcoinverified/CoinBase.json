@@ -1,5 +1,5 @@
 {
-    "Tokens": [  
+    "Tokens": [
         {
             "Symbol": "WBTC",
             "Exchange": "CoinBase",
@@ -11,6 +11,12 @@
             "Exchange": "CoinBase",
             "Blockchain": "Fiat",
             "Address": "840"
+        },
+        {
+            "Symbol": "DAI",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
         },
         {
             "Symbol": "EUR",
@@ -65,6 +71,12 @@
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
             "Address": "0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"
+        },
+        {
+            "Symbol": "UST",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD"
         }
     ]
 }

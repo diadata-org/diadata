@@ -632,6 +632,12 @@
     },
     {
       "Exchange": "ZB",
+      "ForeignName": "sdnusdt",
+      "Ignore": false,
+      "Symbol": "SDN"
+    },
+    {
+      "Exchange": "ZB",
       "ForeignName": "sltbtc",
       "Ignore": false,
       "Symbol": "SLT"

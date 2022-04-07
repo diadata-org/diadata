@@ -1,10 +1,16 @@
 {
-    "Tokens": [  
+    "Tokens": [
         {
             "Symbol": "USD",
             "Exchange": "ByBit",
             "Blockchain": "Fiat",
             "Address": "840"
+        },
+        {
+            "Symbol": "UST",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD"
         },
         {
             "Symbol": "BTC",
@@ -59,7 +65,7 @@
             "Exchange": "ByBit",
             "Blockchain": "Solana",
             "Address": "0x0000000000000000000000000000000000000000"
-        },     
+        },
         {
             "Symbol": "UNI",
             "Exchange": "ByBit",

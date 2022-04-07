@@ -13,6 +13,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "ASTR",
+            "Exchange": "OKEx",
+            "Blockchain": "Astar",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "AXS",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
@@ -121,6 +127,12 @@
             "Address": "0xBBbbCA6A901c926F240b89EacB641d8Aec7AEafD"
         },
         {
+            "Symbol": "LUNA",
+            "Exchange": "OKEx",
+            "Blockchain": "Terra",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "METIS",
             "Exchange": "OKEx",
             "Blockchain": "Metis",
@@ -197,6 +209,12 @@
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
             "Address": "0x8B40761142B9aa6dc8964e61D0585995425C3D94"
+        },
+        {
+            "Symbol": "UST",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD"
         },
         {
             "Symbol": "VIB",

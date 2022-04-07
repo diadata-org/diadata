@@ -379,6 +379,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "ASTR",
+            "ForeignName": "ASTR-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "EOS",
             "ForeignName": "EOS-KCS",
             "Exchange": "KuCoin",
@@ -2127,6 +2133,18 @@
         {
             "Symbol": "XDB",
             "ForeignName": "XDB-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SDN",
+            "ForeignName": "SDN-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NEAR",
+            "ForeignName": "NEAR-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
         },

@@ -553,6 +553,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "UST",
+            "ForeignName": "USTUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "VET",
             "ForeignName": "VETUSDT",
             "Exchange": "ByBit",

@@ -187,6 +187,12 @@
             "Address": "0xBe428c3867F05deA2A89Fc76a102b544eaC7f772"
         },
         {
+            "Symbol": "DAI",
+            "Exchange": "HitBTC",
+            "Blockchain": "Ethereum",
+            "Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+        },
+        {
             "Symbol": "DATA",
             "Exchange": "HitBTC",
             "Blockchain": "Ethereum",

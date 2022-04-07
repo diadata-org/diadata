@@ -2,6 +2,18 @@
     "Coins": [
         {
             "Exchange": "Binance",
+            "ForeignName": "USTBTC",
+            "Ignore": false,
+            "Symbol": "UST"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "ASTRUSDT",
+            "Ignore": false,
+            "Symbol": "ASTR"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "WBTCBTC",
             "Ignore": false,
             "Symbol": "WBTC"

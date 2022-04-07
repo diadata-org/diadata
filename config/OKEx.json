@@ -74,6 +74,12 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "LUNA-USDT",
+      "Ignore": false,
+      "Symbol": "LUNA"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "NEAR-USDT",
       "Ignore": false,
       "Symbol": "NEAR"
@@ -257,6 +263,12 @@
       "ForeignName": "AST-USDT",
       "Ignore": false,
       "Symbol": "AST"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "ASTR-USDT",
+      "Ignore": false,
+      "Symbol": "ASTR"
     },
     {
       "Exchange": "OKEx",
@@ -2495,6 +2507,12 @@
       "ForeignName": "USDC-USDT",
       "Ignore": false,
       "Symbol": "USDC"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "UST-USDT",
+      "Ignore": false,
+      "Symbol": "UST"
     },
     {
       "Exchange": "OKEx",

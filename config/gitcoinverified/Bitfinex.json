@@ -1,5 +1,5 @@
 {
-    "Tokens": [  
+    "Tokens": [
         {
             "Symbol": "ADA",
             "Exchange": "Bitfinex",
@@ -37,6 +37,12 @@
             "Address": "0xBBbbCA6A901c926F240b89EacB641d8Aec7AEafD"
         },
         {
+            "Symbol": "LUNA",
+            "Exchange": "Bitfinex",
+            "Blockchain": "Terra",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "PAX",
             "Exchange": "Bitfinex",
             "Blockchain": "Ethereum",
@@ -47,7 +53,7 @@
             "Exchange": "Bitfinex",
             "Blockchain": "Solana",
             "Address": "0x0000000000000000000000000000000000000000"
-        },     
+        },
         {
             "Symbol": "UNI",
             "Exchange": "Bitfinex",

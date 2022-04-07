@@ -32,6 +32,18 @@
     },
     {
       "Exchange": "CoinBase",
+      "ForeignName": "DAI-USD",
+      "Ignore": false,
+      "Symbol": "DAI"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "UST-USD",
+      "Ignore": false,
+      "Symbol": "UST"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "RARI-USD",
       "Ignore": false,
       "Symbol": "RARI"

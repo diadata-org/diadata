@@ -157,6 +157,18 @@
             "Ignore": false
         },
         {
+            "Symbol": "DAI",
+            "ForeignName": "DAI/USD",
+            "Exchange": "FTX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI/USDT",
+            "Exchange": "FTX",
+            "Ignore": false
+        },
+        {
             "Symbol": "DOGE",
             "ForeignName": "DOGE/BTC",
             "Exchange": "FTX",
@@ -429,6 +441,12 @@
         {
             "Symbol": "USDT",
             "ForeignName": "USDT/USD",
+            "Exchange": "FTX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UST",
+            "ForeignName": "UST/USD",
             "Exchange": "FTX",
             "Ignore": false
         },

@@ -19,6 +19,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "LUNA",
+      "ForeignName": "LUNAUSD",
+      "Exchange": "Bitfinex",
+      "Ignore": false
+    },
+    {
       "Symbol": "ETH",
       "ForeignName": "ETHUSD",
       "Exchange": "Bitfinex",

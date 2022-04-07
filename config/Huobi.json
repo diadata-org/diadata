@@ -68,9 +68,21 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "LUNAUSDT",
+      "Ignore": false,
+      "Symbol": "LUNA"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "NEARUSDT",
       "Ignore": false,
       "Symbol": "NEAR"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "USTUSDT",
+      "Ignore": false,
+      "Symbol": "UST"
     },
     {
       "Exchange": "Huobi",

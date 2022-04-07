@@ -314,6 +314,12 @@
     },
     {
       "Exchange": "LBank",
+      "ForeignName": "LUNA_USDT",
+      "Ignore": false,
+      "Symbol": "LUNA"
+    },
+    {
+      "Exchange": "LBank",
       "ForeignName": "MAN_ETH",
       "Ignore": false,
       "Symbol": "MAN"

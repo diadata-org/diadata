@@ -23,7 +23,7 @@ const (
 	POLYGON                                 = "Polygon"
 	CELO                                    = "Celo"
 	FANTOM                                  = "Fantom"
-	NEAR                                    = "Near"
+	NEAR                                    = "NEAR"
 	AURORA                                  = "Aurora"
 	SOLANA                                  = "Solana"
 	FLOW                                    = "Flow"

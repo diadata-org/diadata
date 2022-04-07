@@ -50,6 +50,12 @@
     },
     {
       "Exchange": "Kraken",
+      "ForeignName": "DAIUSD",
+      "Ignore": false,
+      "Symbol": "DAI"
+    },
+    {
+      "Exchange": "Kraken",
       "ForeignName": "DASHXBT",
       "Ignore": false,
       "Symbol": "DASH"

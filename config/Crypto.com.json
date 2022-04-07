@@ -181,6 +181,18 @@
             "Ignore": false
         },
         {
+            "Symbol": "DAI",
+            "ForeignName": "DAI_USDC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAI_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
             "Symbol": "DOGE",
             "ForeignName": "DOGE_BTC",
             "Exchange": "Crypto.com",
@@ -423,6 +435,18 @@
         {
             "Symbol": "LTC",
             "ForeignName": "LTC_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LUNA",
+            "ForeignName": "LUNA_USDC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LUNA",
+            "ForeignName": "LUNA_USDT",
             "Exchange": "Crypto.com",
             "Ignore": false
         },

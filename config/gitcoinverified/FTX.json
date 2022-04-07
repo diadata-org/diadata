@@ -1,5 +1,5 @@
 {
-    "Tokens": [ 
+    "Tokens": [
         {
             "Symbol": "AXS",
             "Exchange": "FTX",
@@ -43,6 +43,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "DAI",
+            "Exchange": "FTX",
+            "Blockchain": "Ethereum",
+            "Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+        },
+        {
             "Symbol": "FTM",
             "Exchange": "FTX",
             "Blockchain": "Fantom",
@@ -59,7 +65,7 @@
             "Exchange": "FTX",
             "Blockchain": "Solana",
             "Address": "0x0000000000000000000000000000000000000000"
-        },     
+        },
         {
             "Symbol": "UNI",
             "Exchange": "FTX",
@@ -71,6 +77,12 @@
             "Exchange": "FTX",
             "Blockchain": "Ethereum",
             "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+        },
+        {
+            "Symbol": "UST",
+            "Exchange": "FTX",
+            "Blockchain": "Ethereum",
+            "Address": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD"
         },
         {
             "Symbol": "XRP",

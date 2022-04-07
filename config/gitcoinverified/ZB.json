@@ -67,6 +67,12 @@
             "Address": "0xF970b8E36e23F7fC3FD752EeA86f8Be8D83375A6"
         },
         {
+            "Symbol": "SDN",
+            "Exchange": "ZB",
+            "Blockchain": "Shiden",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "SNT",
             "Exchange": "ZB",
             "Blockchain": "Ethereum",

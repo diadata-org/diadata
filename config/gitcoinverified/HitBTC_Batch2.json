@@ -31,6 +31,12 @@
             "Address": "0xfa05A73FfE78ef8f1a739473e462c54bae6567D9"
         },
         {
+            "Symbol": "LUNA",
+            "Exchange": "HitBTC",
+            "Blockchain": "Terra",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "MITX",
             "Exchange": "HitBTC",
             "Blockchain": "Ethereum",
@@ -65,6 +71,12 @@
             "Exchange": "HitBTC",
             "Blockchain": "Ethereum",
             "Address": "0x9E46A38F5DaaBe8683E10793b06749EEF7D733d1"
+        },
+        {
+            "Symbol": "NEAR",
+            "Exchange": "HitBTC",
+            "Blockchain": "NEAR",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "NEBL",
@@ -347,6 +359,12 @@
             "Exchange": "HitBTC",
             "Blockchain": "Fiat",
             "Address": "840"
+        },
+        {
+            "Symbol": "USDC",
+            "Exchange": "HitBTC",
+            "Blockchain": "Ethereum",
+            "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
         },
         {
             "Symbol": "USE",

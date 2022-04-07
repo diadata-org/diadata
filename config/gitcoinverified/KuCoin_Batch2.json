@@ -67,6 +67,12 @@
             "Address": "0x8a77e40936BbC27e80E9a3F526368C967869c86D"
         },
         {
+            "Symbol": "NEAR",
+            "Exchange": "KuCoin",
+            "Blockchain": "NEAR",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "NEBL",
             "Exchange": "KuCoin",
             "Blockchain": "Neblio",
@@ -203,6 +209,12 @@
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
             "Address": "0x3845badAde8e6dFF049820680d1F14bD3903a5d0"
+        },
+        {
+            "Symbol": "SDN",
+            "Exchange": "KuCoin",
+            "Blockchain": "Shiden",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "SKEY",
