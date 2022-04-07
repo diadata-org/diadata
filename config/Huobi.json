@@ -50,6 +50,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "FUSEUSDT",
+      "Ignore": false,
+      "Symbol": "FUSE"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "GRTUSDT",
       "Ignore": false,
       "Symbol": "GRT"

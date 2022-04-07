@@ -343,6 +343,12 @@
             "Address": "0xF411903cbC70a74d22900a5DE66A2dda66507255"
         },
         {
+            "Symbol": "WBTC",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
+        },
+        {
             "Symbol": "WOM",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

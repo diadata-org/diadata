@@ -37,6 +37,12 @@
             "Address": "0xF17e65822b568B3903685a7c9F496CF7656Cc6C2"
         },
         {
+            "Symbol": "BNB",
+            "Exchange": "Bitforex",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "BTC",
             "Exchange": "Bitforex",
             "Blockchain": "Bitcoin",

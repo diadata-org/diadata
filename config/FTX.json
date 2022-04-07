@@ -433,6 +433,18 @@
             "Ignore": false
         },
         {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC/BTC",
+            "Exchange": "FTX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC/USD",
+            "Exchange": "FTX",
+            "Ignore": false
+        },
+        {
             "Symbol": "XRP",
             "ForeignName": "XRP/BTC",
             "Exchange": "FTX",

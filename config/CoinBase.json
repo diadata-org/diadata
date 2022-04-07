@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "CoinBase",
+      "ForeignName": "WBTC-BTC",
+      "Ignore": false,
+      "Symbol": "WBTC"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "DIA-USD",
       "Ignore": false,
       "Symbol": "DIA"

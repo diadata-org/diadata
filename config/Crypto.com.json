@@ -613,6 +613,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC_BTC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
             "Symbol": "XRP",
             "ForeignName": "XRP_USDC",
             "Exchange": "Crypto.com",

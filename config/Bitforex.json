@@ -49,6 +49,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "BNB",
+            "ForeignName": "BNB-BTC",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
             "Symbol": "BTC",
             "ForeignName": "BTC-USDT",
             "Exchange": "Bitforex",

@@ -7,6 +7,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "BNB",
+            "Exchange": "Binance",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "BUSD",
             "Exchange": "Binance",
             "Blockchain": "BinanceSmartChain",
@@ -461,6 +467,12 @@
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0x286BDA1413a2Df81731D4930ce2F862a35A609fE"
+        },
+        {
+            "Symbol": "WBTC",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
         },
         {
             "Symbol": "WINGS",

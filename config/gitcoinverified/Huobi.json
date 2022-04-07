@@ -49,6 +49,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "FUSE",
+      "Exchange": "Huobi",
+      "Blockchain": "Fuse",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "LSK",
       "Exchange": "Huobi",
       "Blockchain": "Lisk",

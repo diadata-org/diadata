@@ -205,6 +205,12 @@
             "Address": "0x2C974B2d0BA1716E644c1FC59982a89DDD2fF724"
         },
         {
+            "Symbol": "WBTC",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
+        },
+        {
             "Symbol": "WTC",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",

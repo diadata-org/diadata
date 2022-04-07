@@ -1,6 +1,12 @@
 {
     "Tokens": [  
         {
+            "Symbol": "WBTC",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
+        },
+        {
             "Symbol": "BTC",
             "Exchange": "Crypto.com",
             "Blockchain": "Bitcoin",
