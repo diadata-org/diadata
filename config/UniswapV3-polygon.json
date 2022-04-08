@@ -3,7 +3,7 @@
         {
             "Symbol": "USDC",
             "ForeignName": "USDC-ETH",
-            "Exchange": "UniswapV3",
+            "Exchange": "UniswapV3-Polygon",
             "Ignore": false
         }
     ]

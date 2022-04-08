@@ -44,6 +44,7 @@ const (
 	BancorExchange            = "Bancor"
 	UniswapExchange           = "Uniswap"
 	UniswapExchangeV3         = "UniswapV3"
+	UniswapExchangeV3Polygon  = "UniswapV3-polygon"
 	LoopringExchange          = "Loopring"
 	CurveFIExchange           = "Curvefi"
 	MakerExchange             = "Maker"
@@ -51,7 +52,6 @@ const (
 	SushiSwapExchange         = "SushiSwap"
 	SushiSwapExchangeArbitrum = "SushiSwap-arbitrum"
 	SushiSwapExchangePolygon  = "SushiSwap-polygon"
-	UniswapPolygon            = "Uniswap-polygon"
 	SushiSwapExchangeFantom   = "SushiSwap-fantom"
 	PanCakeSwap               = "PanCakeSwap"
 	DforceExchange            = "Dforce"
@@ -104,7 +104,7 @@ func Exchanges() []string {
 		FTXExchange,
 		CREX24Exchange,
 		STEXExchange,
-		UniswapPolygon,
+		UniswapExchangeV3Polygon,
 
 		TraderJoeExchange,
 		PangolinExchange,

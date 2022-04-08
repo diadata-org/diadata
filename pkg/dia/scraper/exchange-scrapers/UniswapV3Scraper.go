@@ -4,6 +4,8 @@ import (
 	"errors"
 	"math"
 	"math/big"
+	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -45,47 +47,72 @@ type UniswapV3Scraper struct {
 	pairScrapers map[string]*UniswapPairV3Scraper
 	pairRecieved chan *UniswapPair
 
-	exchangeName string
-	chanTrades   chan *dia.Trade
+	exchangeName           string
+	startBlock             uint64
+	waitTime               int
+	listenByAddress        bool
+	chanTrades             chan *dia.Trade
+	factoryContractAddress common.Address
 }
 
 // NewUniswapV3Scraper returns a new UniswapV3Scraper
 func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool) *UniswapV3Scraper {
 	log.Info("NewUniswapScraper ", exchange.Name)
-	log.Info("NewUniswapScraper Address ", exchange.Contract.Hash().String())
+	log.Info("NewUniswapScraper Address ", exchange.Contract.Hex())
 
-	var wsClient, restClient *ethclient.Client
-	var err error
+	var s *UniswapV3Scraper
 
 	switch exchange.Name {
 	case dia.UniswapExchangeV3:
-		exchangeFactoryContractAddress = exchange.Contract.String()
-		wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDialEth))
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDialEth))
-		if err != nil {
-			log.Fatal(err)
-		}
+		s = makeUniswapV3Scraper(exchange, false, "", "", "200", uint64(12369621))
+	case dia.UniswapExchangeV3Polygon:
+		s = makeUniswapV3Scraper(exchange, false, "", "", "200", uint64(22757913))
 	}
-
-	s := &UniswapV3Scraper{
-		shutdown:     make(chan nothing),
-		shutdownDone: make(chan nothing),
-		pairScrapers: make(map[string]*UniswapPairV3Scraper),
-		exchangeName: exchange.Name,
-		pairRecieved: make(chan *UniswapPair),
-		error:        nil,
-		chanTrades:   make(chan *dia.Trade),
-	}
-
-	s.WsClient = wsClient
-	s.RestClient = restClient
 
 	if scrape {
 		go s.mainLoop()
+	}
+	return s
+}
+
+// makeUniswapV3Scraper returns a uniswap scraper as used in NewUniswapV3Scraper.
+func makeUniswapV3Scraper(exchange dia.Exchange, listenByAddress bool, restDial string, wsDial string, waitMilliseconds string, startBlock uint64) *UniswapV3Scraper {
+	var restClient, wsClient *ethclient.Client
+	var err error
+	var s *UniswapV3Scraper
+
+	log.Infof("Init rest and ws client for %s.", exchange.BlockChain.Name)
+	restClient, err = ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_REST", restDial))
+	if err != nil {
+		log.Fatal("init rest client: ", err)
+	}
+	wsClient, err = ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_WS", wsDial))
+	if err != nil {
+		log.Fatal("init ws client: ", err)
+	}
+
+	var waitTime int
+	waitTimeString := utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_WAIT_TIME", waitMilliseconds)
+	waitTime, err = strconv.Atoi(waitTimeString)
+	if err != nil {
+		log.Error("could not parse wait time: ", err)
+		waitTime = 500
+	}
+
+	s = &UniswapV3Scraper{
+		WsClient:               wsClient,
+		RestClient:             restClient,
+		shutdown:               make(chan nothing),
+		shutdownDone:           make(chan nothing),
+		pairScrapers:           make(map[string]*UniswapPairV3Scraper),
+		exchangeName:           exchange.Name,
+		pairRecieved:           make(chan *UniswapPair),
+		error:                  nil,
+		chanTrades:             make(chan *dia.Trade),
+		waitTime:               waitTime,
+		listenByAddress:        listenByAddress,
+		startBlock:             startBlock,
+		factoryContractAddress: exchange.Contract,
 	}
 	return s
 }
@@ -156,14 +183,14 @@ func (s *UniswapV3Scraper) mainLoop() {
 						Symbol:     pair.Token0.Symbol,
 						Name:       pair.Token0.Name,
 						Decimals:   pair.Token0.Decimals,
-						Blockchain: dia.ETHEREUM,
+						Blockchain: Exchanges[s.exchangeName].BlockChain.Name,
 					}
 					token1 := dia.Asset{
 						Address:    pair.Token1.Address.Hex(),
 						Symbol:     pair.Token1.Symbol,
 						Name:       pair.Token1.Name,
 						Decimals:   pair.Token1.Decimals,
-						Blockchain: dia.ETHEREUM,
+						Blockchain: Exchanges[s.exchangeName].BlockChain.Name,
 					}
 
 					t := &dia.Trade{
@@ -224,16 +251,8 @@ func (s *UniswapV3Scraper) GetSwapsChannel(pairAddress common.Address) (chan *Un
 }
 
 func (s *UniswapV3Scraper) getSwapData(swap UniswapV3Swap) (price float64, volume float64) {
-	if swap.Amount0 > float64(0) {
-		// Amount0In is positive
-		volume = swap.Amount0
-		price = swap.Amount1 / swap.Amount0
-	} else {
-		// Amount0In is Negative
-		volume = swap.Amount0
-		price = swap.Amount1 / swap.Amount0
-	}
-	price = math.Abs(price)
+	volume = swap.Amount0
+	price = math.Abs(swap.Amount1 / swap.Amount0)
 	return
 }
 
@@ -416,20 +435,27 @@ func (s *UniswapV3Scraper) getAllPairs() (pairs []UniswapPair, err error) {
 
 	// filter from contract created https://etherscan.io/tx/0x1e20cd6d47d7021ae7e437792823517eeadd835df09dde17ab45afd7a5df4603
 
+	log.Info("get pool creations from address: ", s.factoryContractAddress.Hex())
 	poolsCount := 0
-	contract, err := uniswapcontractv3.NewUniswapV3Filterer(common.HexToAddress(exchangeFactoryContractAddress), s.WsClient)
+	contract, err := uniswapcontractv3.NewUniswapV3Filterer(s.factoryContractAddress, s.WsClient)
 	if err != nil {
 		log.Error(err)
 	}
 
-	startBlock := uint64(12369621)
-
-	poolCreated, err := contract.FilterPoolCreated(&bind.FilterOpts{Start: startBlock}, []common.Address{}, []common.Address{}, []*big.Int{})
+	tInit := time.Now()
+	poolCreated, err := contract.FilterPoolCreated(
+		&bind.FilterOpts{Start: s.startBlock},
+		[]common.Address{},
+		[]common.Address{},
+		[]*big.Int{},
+	)
 	if err != nil {
 		return nil, err
 	}
+	log.Info("time spent for filter pool created: ", time.Since(tInit))
 	for poolCreated.Next() {
 		poolsCount++
+		log.Info("pools count: ", poolsCount)
 		pair, _ := s.GetPairData(poolCreated.Event)
 		pairs = append(pairs, pair)
 		s.pairRecieved <- &pair
