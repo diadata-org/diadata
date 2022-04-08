@@ -1,11 +1,10 @@
 FROM us.icr.io/dia-registry/devops/build:latest as build
 
 WORKDIR $GOPATH/src/
-COPY ./cmd/http/graphqlServer ./
-COPY ./cmd/http/graphqlServer/libs/linux* ./libs/
-ENV LD_LIBRARY_PATH=./libs
-ENV CGO_LDFLAGS=-L./libs
-RUN CGO_LDFLAGS="-L./libs" go build
+COPY ./cmd/http/graphqlServer/ ./
+COPY ./libs/linux/* ./libs/
+
+RUN go install
 
 FROM gcr.io/distroless/base
 
