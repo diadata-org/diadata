@@ -25,6 +25,12 @@
             "Address": "0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b"
         },
         {
+            "Symbol": "BADGER",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x3472A5A71965499acd81997a54BBA8D852C6E53d"
+        },
+        {
             "Symbol": "CHAT",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
@@ -113,6 +119,12 @@
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
             "Address": "0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44"
+        },
+        {
+            "Symbol": "KSM",
+            "Exchange": "OKEx",
+            "Blockchain": "Kusama",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "LET",

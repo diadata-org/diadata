@@ -158,6 +158,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "KSM_USDT",
+      "Ignore": false,
+      "Symbol": "KSM"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "PERP_USDT",
       "Ignore": false,
       "Symbol": "PERP"

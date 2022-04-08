@@ -50,6 +50,12 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "BADGERUSDT",
+            "Ignore": false,
+            "Symbol": "BADGER"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "BUSDUSDT",
             "Ignore": false,
             "Symbol": "BUSD"
@@ -1061,6 +1067,12 @@
             "ForeignName": "KMDETH",
             "Ignore": false,
             "Symbol": "KMD"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "KSMUSDT",
+            "Ignore": false,
+            "Symbol": "KSM"
         },
         {
             "Exchange": "Binance",

@@ -325,9 +325,9 @@
             "Address": "0xdeFA4e8a7bcBA345F687a2f1456F5Edd9CE97202"
         },
         {
-            "Symbol": "SDN",
+            "Symbol": "KSM",
             "Exchange": "Crypto.com",
-            "Blockchain": "Shiden",
+            "Blockchain": "Kusama",
             "Address": "0x0000000000000000000000000000000000000000"
         }
     ]

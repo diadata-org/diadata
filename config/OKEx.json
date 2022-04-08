@@ -32,6 +32,18 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "BADGER-USDT",
+      "Ignore": false,
+      "Symbol": "BADGER"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "KSM-USDT",
+      "Ignore": false,
+      "Symbol": "KSM"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "GLM-USDT",
       "Ignore": false,
       "Symbol": "GLM"

@@ -55,6 +55,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "KSM",
+      "Exchange": "Huobi",
+      "Blockchain": "Kusama",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "LSK",
       "Exchange": "Huobi",
       "Blockchain": "Lisk",

@@ -31,6 +31,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "KSM",
+      "ForeignName": "KSMUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
       "Symbol": "LEO",
       "ForeignName": "LEOUSD",
       "Exchange": "HitBTC",

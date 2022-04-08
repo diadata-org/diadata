@@ -308,6 +308,12 @@
     },
     {
       "Exchange": "LBank",
+      "ForeignName": "KSM_USDT",
+      "Ignore": false,
+      "Symbol": "KSM"
+    },
+    {
+      "Exchange": "LBank",
       "ForeignName": "LTC_BTC",
       "Ignore": false,
       "Symbol": "LTC"

@@ -289,6 +289,12 @@
             "Address": "0x824a50dF33AC1B41Afc52f4194E2e8356C17C3aC"
         },
         {
+            "Symbol": "KSM",
+            "Exchange": "GateIO",
+            "Blockchain": "Kusama",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "LBA",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",

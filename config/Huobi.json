@@ -68,6 +68,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "KSMUSDT",
+      "Ignore": false,
+      "Symbol": "KSM"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "LUNAUSDT",
       "Ignore": false,
       "Symbol": "LUNA"

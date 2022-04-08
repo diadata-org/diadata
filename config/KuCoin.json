@@ -2143,6 +2143,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "KSM",
+            "ForeignName": "KSM-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "NEAR",
             "ForeignName": "NEAR-USDT",
             "Exchange": "KuCoin",

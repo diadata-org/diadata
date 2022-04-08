@@ -391,6 +391,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "KSM",
+            "ForeignName": "KSM_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
             "Symbol": "LINK",
             "ForeignName": "LINK_USDC",
             "Exchange": "Crypto.com",

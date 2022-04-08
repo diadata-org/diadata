@@ -13,6 +13,12 @@
             "Address": "0x4618519de4C304F3444ffa7f812dddC2971cc688"
         },
         {
+            "Symbol": "KSM",
+            "Exchange": "HitBTC",
+            "Blockchain": "Kusama",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "LRC",
             "Exchange": "HitBTC",
             "Blockchain": "Ethereum",
