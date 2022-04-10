@@ -17,6 +17,7 @@ import (
 	"github.com/diadata-org/diadata/config/nftContracts/erc721"
 	"github.com/diadata-org/diadata/config/nftContracts/opensea"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -458,6 +459,12 @@ func (s *OpenSeaScraper) notifyTrade(ev *opensea.ContractOrdersMatched, transfer
 		return err
 	}
 
+	// Get block time.
+	timestamp, err := ethhelper.GetBlockTimeEth(int64(ev.Raw.BlockNumber), s.tradeScraper.datastore, s.tradeScraper.ethConnection)
+	if err != nil {
+		log.Errorf("getting block time: %+v", err)
+	}
+
 	trade := dia.NFTTrade{
 		NFT:              *nft,
 		Price:            price,
@@ -468,6 +475,7 @@ func (s *OpenSeaScraper) notifyTrade(ev *opensea.ContractOrdersMatched, transfer
 		CurrencyAddress:  currAddr.Hex(),
 		CurrencyDecimals: priceDec.Exponent(),
 		BlockNumber:      ev.Raw.BlockNumber,
+		Timestamp:        timestamp,
 		TxHash:           ev.Raw.TxHash.Hex(),
 		Exchange:         OpenSea,
 	}
