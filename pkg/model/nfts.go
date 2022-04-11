@@ -165,6 +165,7 @@ func (rdb *RelDB) GetNFT(address string, blockchain string, tokenID string) (dia
 
 	query := fmt.Sprintf("SELECT c.address, c.symbol, c.name, c.blockchain, c.contract_type, c.category, n.token_id, n.creation_time, n.creator_address, n.uri, n.attributes FROM %s n INNER JOIN %s c ON(c.nftclass_id=n.nftclass_id AND c.address=$1 AND c.blockchain=$2) WHERE n.token_id=$3", nftTable, nftclassTable)
 
+	var contractType sql.NullString
 	var classCat sql.NullString
 
 	err := rdb.postgresClient.QueryRow(context.Background(), query, address, blockchain, tokenID).Scan(
@@ -172,7 +173,7 @@ func (rdb *RelDB) GetNFT(address string, blockchain string, tokenID string) (dia
 		&nft.NFTClass.Symbol,
 		&nft.NFTClass.Name,
 		&nft.NFTClass.Blockchain,
-		&nft.NFTClass.ContractType,
+		&contractType,
 		&classCat,
 		&nft.TokenID,
 		&nft.CreationTime,
@@ -181,6 +182,9 @@ func (rdb *RelDB) GetNFT(address string, blockchain string, tokenID string) (dia
 		&nft.Attributes,
 	)
 
+	if contractType.Valid {
+		nft.NFTClass.ContractType = contractType.String
+	}
 	if classCat.Valid {
 		nft.NFTClass.Category = classCat.String
 	}
