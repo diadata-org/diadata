@@ -47,6 +47,7 @@ func main() {
 	if !strings.HasPrefix(urlFolderPrefix, "/") {
 		urlFolderPrefix = "/" + urlFolderPrefix
 	}
+	log.Info("listening on folder prefix", urlFolderPrefix+"/")
 	mux.Handle(urlFolderPrefix+"/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, err := w.Write(page)
 		if err != nil {
@@ -57,7 +58,7 @@ func main() {
 	mux.Handle(urlFolderPrefix+"/query", &relay.Handler{Schema: diaSchema})
 
 	log.WithFields(log.Fields{"time": time.Now()}).Info("starting server")
-	log.Fatal(http.ListenAndServe(utils.Getenv("LISTEN_PORT", ":1111"), logged(mux)))
+	log.Info(http.ListenAndServe(utils.Getenv("LISTEN_PORT", ":1111"), logged(mux)))
 }
 
 var page = []byte(`
