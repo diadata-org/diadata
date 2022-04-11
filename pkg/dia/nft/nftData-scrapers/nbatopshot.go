@@ -118,7 +118,6 @@ func (scraper *NBATopshotScraper) FetchData() error {
 		log.Error("fetch last topshot block: ", err)
 	}
 	// Scraper is stuck at block no. 13574427 -> increment manually as hotfix.
-	startheight = uint64(13574500)
 	if startheight == uint64(0) {
 		// No last block in db. Start from genesis block.
 		startheight = flowhelper.RootHeight1
@@ -172,6 +171,10 @@ func (scraper *NBATopshotScraper) FetchData() error {
 			}
 
 			// Increase start height and reset numQueriedBlocks to default.
+			if numQueriedBlocks == uint64(0) {
+				log.Info("numQueriedBlocks = 0. Set to 1.")
+				numQueriedBlocks = 1
+			}
 			startheight += numQueriedBlocks
 			numQueriedBlocks = flowhelper.RequestLimit
 			log.Info("current startheight: ", startheight)
