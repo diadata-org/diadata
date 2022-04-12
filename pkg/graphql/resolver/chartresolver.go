@@ -3,6 +3,7 @@ package resolver
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/graphql/utils"
@@ -14,7 +15,7 @@ type FilterPointResolver struct {
 }
 
 type SignedFilterPoint struct {
-	Asset Asset
+	Asset dia.Asset
 	Value float64
 	Name  string
 	Time  time.Time
