@@ -158,9 +158,21 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "KILT_USDT",
+      "Ignore": false,
+      "Symbol": "KILT"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "KSM_USDT",
       "Ignore": false,
       "Symbol": "KSM"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "MANA_USDT",
+      "Ignore": false,
+      "Symbol": "MANA"
     },
     {
       "Exchange": "GateIO",

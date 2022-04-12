@@ -85,6 +85,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "ANT",
+            "ForeignName": "ANT-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "SNT",
             "ForeignName": "SNT-ETH",
             "Exchange": "KuCoin",

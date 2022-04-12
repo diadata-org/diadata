@@ -391,6 +391,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "GLM",
+            "Exchange": "HitBTC",
+            "Blockchain": "Ethereum",
+            "Address": "0x7DD9c5Cba05E151C895FDe1CF355C9A1D5DA6429"
+        },
+        {
             "Symbol": "GNO",
             "Exchange": "HitBTC",
             "Blockchain": "Ethereum",

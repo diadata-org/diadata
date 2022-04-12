@@ -329,6 +329,12 @@
             "Exchange": "Crypto.com",
             "Blockchain": "Kusama",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "RARI",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0xFca59Cd816aB1eaD66534D82bc21E7515cE441CF"
         }
     ]
 }

@@ -73,10 +73,22 @@
             "Address": "0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"
         },
         {
+            "Symbol": "GLM",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x7DD9c5Cba05E151C895FDe1CF355C9A1D5DA6429"
+        },
+        {
             "Symbol": "UST",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
             "Address": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD"
+        },
+        {
+            "Symbol": "MANA",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942"
         }
     ]
 }

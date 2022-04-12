@@ -145,6 +145,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "ILV",
+            "ForeignName": "ILV-USDT",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
             "Symbol": "LINK",
             "ForeignName": "LINK-ETH",
             "Exchange": "Bitforex",

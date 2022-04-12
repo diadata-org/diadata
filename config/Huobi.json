@@ -62,6 +62,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "GLMUSDT",
+      "Ignore": false,
+      "Symbol": "GLM"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "AKROUSDT",
       "Ignore": false,
       "Symbol": "AKRO"

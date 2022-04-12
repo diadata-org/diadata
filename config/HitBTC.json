@@ -31,6 +31,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "GLM",
+      "ForeignName": "GLMUSD",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
       "Symbol": "KSM",
       "ForeignName": "KSMUSD",
       "Exchange": "HitBTC",

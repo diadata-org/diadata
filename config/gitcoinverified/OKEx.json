@@ -7,6 +7,12 @@
             "Address": "0xB98d4C97425d9908E66E53A6fDf673ACcA0BE986"
         },
         {
+            "Symbol": "ANT",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0xa117000000f279D81A1D3cc75430fAA017FA5A2e"
+        },
+        {
             "Symbol": "ARK",
             "Exchange": "OKEx",
             "Blockchain": "Ark",

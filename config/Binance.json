@@ -1184,6 +1184,12 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "MANAUSDT",
+            "Ignore": false,
+            "Symbol": "MANA"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "MANABTC",
             "Ignore": false,
             "Symbol": "MANA"

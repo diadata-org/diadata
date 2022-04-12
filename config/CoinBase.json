@@ -32,6 +32,12 @@
     },
     {
       "Exchange": "CoinBase",
+      "ForeignName": "GLM-USD",
+      "Ignore": false,
+      "Symbol": "GLM"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "DAI-USD",
       "Ignore": false,
       "Symbol": "DAI"
@@ -83,6 +89,12 @@
       "ForeignName": "LTC-USD",
       "Ignore": false,
       "Symbol": "LTC"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "MANA-USD",
+      "Ignore": false,
+      "Symbol": "MANA"
     }
   ]
 }

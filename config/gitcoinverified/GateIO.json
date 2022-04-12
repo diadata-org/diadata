@@ -289,6 +289,12 @@
             "Address": "0x824a50dF33AC1B41Afc52f4194E2e8356C17C3aC"
         },
         {
+            "Symbol": "KILT",
+            "Exchange": "GateIO",
+            "Blockchain": "Kilt",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "KSM",
             "Exchange": "GateIO",
             "Blockchain": "Kusama",
@@ -341,6 +347,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0xc690F7C7FcfFA6a82b79faB7508c466FEfdfc8c5"
+        },
+        {
+            "Symbol": "MANA",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942"
         },
         {
             "Symbol": "METIS",

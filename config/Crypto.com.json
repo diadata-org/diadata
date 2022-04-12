@@ -523,6 +523,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "RARI",
+            "ForeignName": "RARI_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
             "Symbol": "REN",
             "ForeignName": "REN_USDT",
             "Exchange": "Crypto.com",

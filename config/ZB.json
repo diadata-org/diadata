@@ -596,6 +596,12 @@
     },
     {
       "Exchange": "ZB",
+      "ForeignName": "rariusdt",
+      "Ignore": false,
+      "Symbol": "RARI"
+    },
+    {
+      "Exchange": "ZB",
       "ForeignName": "rcnbtc",
       "Ignore": false,
       "Symbol": "RCN"
