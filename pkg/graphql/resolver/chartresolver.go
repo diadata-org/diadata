@@ -13,6 +13,13 @@ type FilterPointResolver struct {
 	q dia.FilterPoint
 }
 
+type SignedFilterPoint struct {
+	Asset Asset
+	Value float64
+	Name  string
+	Time  time.Time
+}
+
 func (qr *FilterPointResolver) Name(ctx context.Context) (*string, error) {
 	return &qr.q.Name, nil
 }
@@ -40,13 +47,16 @@ func (qr *FilterPointResolver) Sign(ctx context.Context) (*string, error) {
 	if err != nil {
 		return nil, err
 	}
-	messageTosign, err := json.Marshal(qr.q)
+
+	sfp := SignedFilterPoint{Asset: qr.q.Asset, Value: qr.q.Value, Time: qr.q.Time, Name: qr.q.Name}
+	log.Println("sfp", sfp)
+	messageTosign, err := json.Marshal(sfp)
 	if err != nil {
 		return nil, err
 	}
 
 	log.Println("messageTosign", messageTosign)
-	log.Println("messageTosign", qr.q)
+	log.Println("qr.q", qr.q)
 
 	signedMessage := su.Sign(messageTosign)
 	log.Println("signedMessage", signedMessage)
