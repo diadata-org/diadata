@@ -46,7 +46,7 @@ func (qr *QuotationResolver) Sign(ctx context.Context) (*string, error) {
 	if err != nil {
 		return nil, err
 	}
-	messageTosign, err := json.Marshal(qr.q)
+	messageTosign, err := json.Marshal(&qr.q)
 	if err != nil {
 		return nil, err
 	}
