@@ -40,7 +40,7 @@ func (qr *FilterPointResolver) Sign(ctx context.Context) (*string, error) {
 	if err != nil {
 		return nil, err
 	}
-	messageTosign, err := json.Marshal(&qr.q.Time)
+	messageTosign, err := json.Marshal(qr.q)
 	if err != nil {
 		return nil, err
 	}
@@ -49,5 +49,7 @@ func (qr *FilterPointResolver) Sign(ctx context.Context) (*string, error) {
 	log.Println("messageTosign", qr.q)
 
 	signedMessage := su.Sign(messageTosign)
+	log.Println("signedMessage", signedMessage)
+
 	return &signedMessage, nil
 }
