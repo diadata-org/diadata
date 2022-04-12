@@ -44,6 +44,8 @@ func (qr *FilterPointResolver) Sign(ctx context.Context) (*string, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	log.Println("messageTosign", messageTosign)
 	signedMessage := su.Sign(messageTosign)
 	return &signedMessage, nil
 }

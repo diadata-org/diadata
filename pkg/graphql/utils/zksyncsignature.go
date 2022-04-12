@@ -12,7 +12,7 @@ type SignatureUtil struct {
 }
 
 func NewSignatureUtil() (*SignatureUtil, error) {
-	pk := os.Getenv("privatekey")
+	pk := os.Getenv("PRIVATE_KEY")
 
 	privateKey, err := zkscrypto.NewPrivateKey([]byte(pk)[0:32])
 	if err != nil {
