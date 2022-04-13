@@ -52,17 +52,13 @@ func (qr *FilterPointResolver) Sign(ctx context.Context) (*string, error) {
 	}
 
 	sfp := SignedFilterPoint{Symbol: qr.q.Asset.Symbol, Address: qr.q.Asset.Address, Value: qr.q.Value, Time: qr.q.Time, Name: qr.q.Name}
-	log.Println("sfp", sfp)
+
 	messageTosign, err := json.Marshal(sfp)
 	if err != nil {
 		return nil, err
 	}
 
-	log.Println("messageTosign", messageTosign)
-	log.Println("qr.q", qr.q)
-
 	signedMessage := su.Sign(messageTosign)
-	log.Println("signedMessage", signedMessage)
 
 	return &signedMessage, nil
 }
