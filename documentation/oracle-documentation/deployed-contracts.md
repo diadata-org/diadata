@@ -226,6 +226,16 @@ __
 {% endtab %}
 {% endtabs %}
 
+### Velas
+
+{% tabs %}
+{% tab title="EVM Mainnet" %}
+| Published Assets                     | Smart Contract Address                                                                            | Oracle Type                                                                                                                           |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x0A7d...8856](https://evmexplorer.velas.com/address/0x0A7dC648C44e31636252be2267B86e0d9E1F8856) | [Key/Value Oracle V2](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract-v2) |
+{% endtab %}
+{% endtabs %}
+
 ### Celo
 
 | Contract Name | Contract Address                                                                              |
