@@ -46,9 +46,19 @@ func main() {
 
 	addresses := []string{
 		"0x6Fc9383486c163fA48becdEC79d6058f984f62cA",//USDB (Fantom)
+		"0x6B175474E89094C44Da98b954EedeAC495271d0F",//DAI
+		"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",//USDC
+		"0xdAC17F958D2ee523a2206206994597C13D831ec7",//USDT
+		"0x0000000000000000000000000000000000000000",//FTM
+		"0x98878B06940aE243284CA214f92Bb71a2b032B8A",//WMOVR
 	}
 	blockchains := []string{
-		"Fantom",
+		"Fantom", //USDB (Fantom)
+		"Ethereum",//DAI
+		"Ethereum",//USDC
+		"Ethereum",//USDT
+		"Fantom",//FTM
+		"Moonriver",//WMOVR
 	}
 	vwapAddresses := []string{
 		"0xfa1FBb8Ef55A4855E5688C0eE13aC3f202486286",//FHM (Fantom)

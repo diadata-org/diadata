@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -18,6 +19,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
+	gql "github.com/machinebox/graphql"
 )
 
 func main() {
@@ -98,19 +100,18 @@ func main() {
 func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string) (float64, error) {
 
 	// Get quotation for token and update Oracle
-	rawQ, err := getAssetQuotationFromDia(blockchain, address)
+	rawPrice, symbol, err := getGraphqlAssetQuotationFromDia(blockchain, address, 60)
 	if err != nil {
 		log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
 		return oldPrice, err
 	}
-	rawQ.Name = rawQ.Symbol
 
 	// Check for deviation
-	newPrice := rawQ.Price
+	newPrice := rawPrice
 
 	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
 		log.Println("Entering deviation based update zone")
-		err = updateQuotation(rawQ, auth, contract, conn)
+		err = updateGraphqlQuotation(rawPrice, symbol, auth, contract, conn)
 		if err != nil {
 			log.Fatalf("Failed to update DIA Oracle: %v", err)
 			return oldPrice, err
@@ -147,6 +148,19 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 func updateQuotation(quotation *models.Quotation, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client) error {
 	symbol := quotation.Symbol + "/USD"
 	price := quotation.Price
+	timestamp := time.Now().Unix()
+	err := updateOracle(conn, contract, auth, symbol, int64(price*100000000), timestamp)
+	if err != nil {
+		log.Fatalf("Failed to update Oracle: %v", err)
+		return err
+	}
+
+	return nil
+}
+
+func updateGraphqlQuotation(value float64, name string, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client) error {
+	symbol := name + "/USD"
+	price := value
 	timestamp := time.Now().Unix()
 	err := updateOracle(conn, contract, auth, symbol, int64(price*100000000), timestamp)
 	if err != nil {
@@ -213,4 +227,45 @@ func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, er
 		return nil, err
 	}
 	return &quotation, nil
+}
+
+func getGraphqlAssetQuotationFromDia(blockchain, address string, blockDuration int) (float64, string, error) {
+	currentTime := time.Now()
+	starttime := currentTime.Add(time.Duration(-blockDuration * 2) * time.Second)
+	type Response struct {
+		GetChart []struct {
+			Name   string    `json:"Name"`
+			Symbol string    `json:"Symbol"`
+			Time   time.Time `json:"Time"`
+			Value  float64   `json:"Value"`
+		} `json:"GetChart"`
+	}
+	client := gql.NewClient("https://api.diadata.org/graphql/query")
+	req := gql.NewRequest(`
+    query  {
+		 GetChart(
+		 	filter: "mair", 
+			Symbol:"Asset",
+			BlockDurationSeconds: ` + strconv.Itoa(blockDuration) + `, 
+			BlockShiftSeconds: ` + strconv.Itoa(blockDuration) + `,
+			StartTime: ` + strconv.FormatInt(starttime.Unix(), 10) + `, 
+			EndTime: ` + strconv.FormatInt(currentTime.Unix(), 10) + `, 
+			Address: "` + address + `", 
+			BlockChain: "` + blockchain + `") {
+				Name
+				Symbol
+				Time
+				Value
+	  	}
+		}`)
+
+	ctx := context.Background()
+	var r Response
+	if err := client.Run(ctx, req, &r); err != nil {
+		return 0.0, "", err
+	}
+	if len(r.GetChart) == 0 {
+		return 0.0, "", errors.New("no results")
+	}
+	return r.GetChart[len(r.GetChart)-1].Value, r.GetChart[len(r.GetChart)-1].Symbol, nil
 }
