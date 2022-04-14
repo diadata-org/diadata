@@ -78,6 +78,8 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 		return source.NewUniswapAssetSource(exchanges[dia.TraderJoeExchange])
 	case dia.PangolinExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.PangolinExchange])
+	case dia.TethysExchange:
+		return source.NewUniswapAssetSource(exchanges[dia.TethysExchange])
 	case "assetlists":
 		return source.NewJSONReader(exchange, secret)
 	default:

@@ -11,6 +11,7 @@ import (
 
 const (
 	NetswapExchange           = "Netswap"
+	TethysExchange            = "Tethys"
 	AnyswapExchange           = "Anyswap"
 	BalancerExchange          = "Balancer"
 	BalancerV2Exchange        = "BalancerV2"
@@ -106,6 +107,7 @@ func Exchanges() []string {
 		STEXExchange,
 		UniswapExchangeV3Polygon,
 
+		TethysExchange,
 		TraderJoeExchange,
 		PangolinExchange,
 		HuckleberryExchange,

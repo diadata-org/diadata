@@ -54,8 +54,8 @@ const (
 	restDialAurora = ""
 	wsDialAurora   = ""
 
-	restDialMetis = ""
-	wsDialMetis   = ""
+	restDialMetis = "https://andromeda.metis.io/?owner=1088"
+	wsDialMetis   = "wss://andromeda-ws.metis.io/"
 
 	restDialAvalanche = ""
 	wsDialAvalanche   = ""
@@ -176,6 +176,9 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 	case dia.PangolinExchange:
 		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialAvalanche, wsDialAvalanche, avalancheWaitMilliseconds)
+	case dia.TethysExchange:
+		listenByAddress = false
+		s = makeUniswapScraper(exchange, listenByAddress, restDialMetis, wsDialMetis, metisWaitMilliseconds)
 	}
 
 	if scrape {
