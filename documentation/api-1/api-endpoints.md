@@ -8,111 +8,24 @@ description: >-
 
 Digital Assets
 
-{% swagger baseUrl="https://api.diadata.org" path="/v1/symbols" method="get" summary="Symbols" %}
-{% swagger-description %}
-Get a list of all available symbols for cryptocurrencies.
-
-\
 
 
-
-
-_Example_
-
-:
-
-\
-
-
-https://api.diadata.org/v1/symbols
-
-\
-
-
-
-
-\
-
-
-Get symbols restricted to an exchange using the query parameter. (For the moment only for centralized exchanges).
-
-\
-
-
-
-
-_Example_
-
-:
-
-\
-
-
-https://api.diadata.org/v1/symbols?exchange=Kraken
-
-\
-
-
-
-{% endswagger-description %}
-
-{% swagger-parameter in="query" name="exchange" type="string" %}
-Name of the crypto exchange.
-{% endswagger-parameter %}
-
-{% swagger-response status="200" description="Successful retrieval of available symbols for cryptocurrencies. Shown below is an exerpt of the full response." %}
-```
-{"Symbols":["EOS","QTUM","BCH","BFT","FLDC","NXS","BLOCK","GAM","GLD","LOOM",...
-```
-{% endswagger-response %}
-{% endswagger %}
-
-{% swagger baseUrl="https://api.diadata.org" path="/v1/quotation/:symbol" method="get" summary="Quotation" %}
-{% swagger-description %}
-Get most recent information on the currency corresponding to symbol.
-
-\
-
-
-
-
-_Example_
-
-:
-
-\
-
-
-https://api.diadata.org/v1/quotation/BTC
-{% endswagger-description %}
-
-{% swagger-parameter in="path" name="symbol" type="string" %}
-Which symbol to get a quotation for, e.g., BTC.
-{% endswagger-parameter %}
-
-{% swagger-response status="200" description="Successful retrieval of the BTC symbol." %}
-```
-{"Symbol":"BTC","Name":"Bitcoin","Price":9777.19339776667,"PriceYesterday":9574.416265039981,"VolumeYesterdayUSD":298134760.8811487,"Source":"diadata.org","Time":"2020-05-19T08:41:12.499645584Z","ITIN":"DXVPYDQC3"}
-```
-{% endswagger-response %}
-{% endswagger %}
-
-{% swagger method="get" path="/v1/assetQuotation" baseUrl="https://api.diadata.org" summary="Asset Quotation" %}
+{% swagger method="get" path="v1/assetQuotation/:blockchain/:asset" baseUrl="https://api.diadata.org/" summary="Asset Quotation" %}
 {% swagger-description %}
 Returns the quotation for a fully qualified asset (i.e. distinguished by blockchain and address).
 
-Example: https://api.diadata.org/v1/assetQuotation/Bitcoin/0x000000000000000000000000000000000000000
+_Example:_ [_https://api.diadata.org/v1/assetQuotation/Bitcoin/0x0000000000000000000000000000000000000000_](https://api.diadata.org/v1/assetQuotation/Bitcoin/0x0000000000000000000000000000000000000000)__
 {% endswagger-description %}
 
 {% swagger-parameter in="path" name="blockchain" required="true" %}
 Name of the blockchain for requested asset
 {% endswagger-parameter %}
 
-{% swagger-parameter in="path" name="address" required="true" %}
+{% swagger-parameter in="path" name="asset" required="true" %}
 Address of the requested asset
 {% endswagger-parameter %}
 
-{% swagger-response status="200: OK" description="Asset quotation with details about price, 24h volume, last update time, address, and blockchain." %}
+{% swagger-response status="200: OK" description="Return of asset price action information" %}
 ```javascript
 {
     // Response
@@ -121,28 +34,11 @@ Address of the requested asset
 {% endswagger-response %}
 {% endswagger %}
 
-{% swagger baseUrl="https://api.diadata.org" path="/v1/exchanges" method="get" summary="Exchanges" %}
-{% swagger-description %}
-Get a list of all available crypto exchanges.
-
-\
-
-
-https://api.diadata.org/v1/exchanges
-{% endswagger-description %}
-
-{% swagger-response status="200" description="Successful retrieval of available exchanges." %}
-```
-["KuCoin","Uniswap","Balancer","Maker","Gnosis","Curvefi","Binance","BitBay","Bitfinex","Bittrex","CoinBase","GateIO","HitBTC","Huobi","Kraken","LBank","OKEx","Quoine","Simex","ZB","Bancor","Loopring","SushiSwap","Dforce","0x","Kyber","Bitmax","PanCakeSwap","CREX24","STEX"]
-```
-{% endswagger-response %}
-{% endswagger %}
-
-{% swagger method="get" path="/v1/assetMarkets" baseUrl="https://api.diadata.org" summary="Asset Markets" %}
+{% swagger method="get" path="/v1/assetMarkets/:blockchain/:address" baseUrl="https://api.diadata.org" summary="Asset Markets" %}
 {% swagger-description %}
 Returns all observed volumes in the last 24h for a specified asset.
 
-Example: https://api.diadata.org/v1/assetMarkets/Bitcoin/0x000000000000000000000000000000000000000
+_Example:_ [_https://api.diadata.org/v1/assetMarkets/Bitcoin/0x000000000000000000000000000000000000000_](https://api.diadata.org/v1/assetMarkets/Bitcoin/0x000000000000000000000000000000000000000)__
 {% endswagger-description %}
 
 {% swagger-parameter in="path" name="blockchain" required="true" %}
@@ -160,74 +56,199 @@ Address of the requested asset
 {% endswagger-response %}
 {% endswagger %}
 
-{% swagger baseUrl="https://api.diadata.org" path="/v1/chartPoints/:filter/:exchange/:symbol" method="get" summary="Chart Points" %}
+{% swagger baseUrl="https://api.diadata.org" path="/v1/assetChartPoints/:filter/:blockchain/:address" method="get" summary="Asset Chart Points" %}
+{% swagger-description %}
+Get asset details for all exchanges.
+
+_Example_:\
+[https://api.diadata.org/v1/assetChartPoints/MA120/Bitcoin/0x0000000000000000000000000000000000000000](https://api.diadata.org/v1/assetChartPoints/MA120/Bitcoin/0x0000000000000000000000000000000000000000)
+
+\
+_Remark:_ Careful! Successful responses can be rather large.
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="filter" type="string" required="true" %}
+Which filter should be applied (Available options: MA120, MEDIR120, VOL120 and MAIR120).
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="blockchain" type="string" required="true" %}
+A valid blockchain from GET /v1/blockchains, e.g., Bitcoin.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="address" required="true" %}
+A valid asset address from GET /v1/token/:symbol, e.g., 0x000000000000000000000000000000000000000 for BTC.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="starttime" type="integer" %}
+Unix timestamp setting the start of the return array
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="endtime" type="integer" %}
+Unix timestamp setting the end of the return array
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="scale" type="string" %}
+Which scale the graph points distance should have. Available options: 5m 30m 1h 4h 1d 1w
+{% endswagger-parameter %}
+
+{% swagger-response status="200" description="Successful retrieval of a chart points for an asset" %}
+```
+{"DataPoints":[{"Series":[{"name":"filters","columns":["time","exchange","filter","symbol","value"],"values":[["2020-05-19T08:17:59Z",null,"MEDIR120","EOS",2.6236194301032314]]}],"Messages":null}]}
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger method="get" path="/v1/lastTradesAsset/:blockchain/:address" baseUrl="https://api.diadata.org" summary="Asset Last Trades" %}
+{% swagger-description %}
+Get last trades for an asset.
+
+_Example:_ [https://api.diadata.org/v1/lastTradesAsset/Bitcoin/0x0000000000000000000000000000000000000000](https://api.diadata.org/v1/lastTradesAsset/Bitcoin/0x0000000000000000000000000000000000000000)
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="blockchain" required="true" %}
+A valid blockchain from GET /v1/blockchains, e.g., Bitcoin.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="address" required="true" %}
+A valid asset address from GET /v1/token/:symbol, e.g., 0x000000000000000000000000000000000000000 for BTC.
+{% endswagger-parameter %}
+
+{% swagger-response status="200: OK" description="Succesful retrieval of last trades for an asset" %}
+```javascript
+{
+    // Response
+}
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger method="get" path="/v1/assetSupply/Ethereum/:address" baseUrl="https://api.diadata.org" summary="Asset Supply" %}
+{% swagger-description %}
+Get circulating and total supply for an asset.
+
+_Example:_ [https://api.diadata.org/v1/assetSupply/Ethereum/0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9](https://api.diadata.org/v1/assetSupply/Ethereum/0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9)
+
+_Note: Currently supports assets only from Ethereum blockchain_
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="address" %}
+A valid asset address from GET /v1/token/:symbol, e.g., 0x000000000000000000000000000000000000000 for BTC.
+{% endswagger-parameter %}
+{% endswagger %}
+
+{% swagger method="get" path="/v1/blockchains" baseUrl="https://api.diadata.org" summary="Blockchains" %}
+{% swagger-description %}
+Get a list of all available blockchains.
+{% endswagger-description %}
+
+{% swagger-response status="200: OK" description="" %}
+```javascript
+{
+    // Response
+}
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger baseUrl="https://api.diadata.org" path="/v1/exchanges" method="get" summary="Exchanges" %}
+{% swagger-description %}
+Get a list of all available crypto exchanges.
+{% endswagger-description %}
+
+{% swagger-response status="200" description="Successful retrieval of available exchanges." %}
+```
+["KuCoin","Uniswap","Balancer","Maker","Gnosis","Curvefi","Binance","BitBay","Bitfinex","Bittrex","CoinBase","GateIO","HitBTC","Huobi","Kraken","LBank","OKEx","Quoine","Simex","ZB","Bancor","Loopring","SushiSwap","Dforce","0x","Kyber","Bitmax","PanCakeSwap","CREX24","STEX"]
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger baseUrl="https://api.diadata.org" path="/v1/symbols" method="get" summary="Symbols" %}
+{% swagger-description %}
+Get a list of all available symbols for cryptocurrencies.\
+\
+Get symbols restricted to an exchange using the query parameter. (For the moment only for centralized exchanges).
+
+_Example_: [https://api.diadata.org/v1/symbols?exchange=Kraken](https://api.diadata.org/v1/symbols?exchange=Kraken)\
+
+{% endswagger-description %}
+
+{% swagger-parameter in="query" name="exchange" type="string" %}
+Name of the crypto exchange.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="substring" %}
+Search for coins that match a string, e.g. 
+
+_BTC_
+
+ will return BTC, BTCB and other assets that start with 
+
+_BTC_
+
+ letters.
+{% endswagger-parameter %}
+
+{% swagger-response status="200" description="Successful retrieval of available symbols for cryptocurrencies. Shown below is an exerpt of the full response." %}
+```
+{"Symbols":["EOS","QTUM","BCH","BFT","FLDC","NXS","BLOCK","GAM","GLD","LOOM",...
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger baseUrl="https://api.diadata.org" path="/v1/quotation/:symbol" method="get" summary="Quotation" %}
+{% swagger-description %}
+Get most recent information on the currency corresponding to symbol.
+
+_Example_: [https://api.diadata.org/v1/quotation/BTC](https://api.diadata.org/v1/quotation/BTC)
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="symbol" type="string" %}
+Which symbol to get a quotation for, e.g., BTC.
+{% endswagger-parameter %}
+
+{% swagger-response status="200" description="Successful retrieval of the BTC symbol." %}
+```
+{"Symbol":"BTC","Name":"Bitcoin","Price":9777.19339776667,"PriceYesterday":9574.416265039981,"VolumeYesterdayUSD":298134760.8811487,"Source":"diadata.org","Time":"2020-05-19T08:41:12.499645584Z","ITIN":"DXVPYDQC3"}
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger method="get" path="/token/:symbol" baseUrl="https://api.diadata.org" summary="Tokens list" %}
+{% swagger-description %}
+Get a list of blockchains and addresses for all tokens that match the symbol
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="symbol" required="true" %}
+Which symbol to get a quotation for, e.g., BTC.
+{% endswagger-parameter %}
+
+{% swagger-response status="200: OK" description="" %}
+```javascript
+{
+    // Response
+}
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger baseUrl="https://api.diadata.org" path="/v1/chartPoints/:filter/:exchange/:symbol" method="get" summary="Exchange Chart Points" %}
 {% swagger-description %}
 Get chart points for an exchange.
 
+_Example_: [https://api.diadata.org/v1/chartPoints/MEDIR120/Binance/BTC](https://api.diadata.org/v1/chartPoints/MEDIR120/Binance/BTC)\
 \
-
-
-https://api.diadata.org/v1/chartPoints/MEDIR120/Binance/BTC
-
-\
-
-
-
-
-\
-
-
-For a list of available exchanges see:
-
-\
-
-
-https://docs.diadata.org/documentation/api-1#api-access
-
-\
-
-
-or:
-
-\
-
-
-https://docs.diadata.org/documentation/api-1/api-endpoints#exchanges
-
-\
-
-
-
-
-\
-
-
-
-
-\
-
-
-
-
-\
-
-
-
-
-_Remark_
-
-: Successful responses can be rather large.
+_Note_: Successful responses can be rather large.
 {% endswagger-description %}
 
-{% swagger-parameter in="path" name="filter" type="string" %}
-Which filter should be applied (Available options: MEDIR120 and MAIR120).
+{% swagger-parameter in="path" name="filter" type="string" required="true" %}
+Which filter should be applied (Available options: MA120, VOL120, MEDIR120 and MAIR120).
 {% endswagger-parameter %}
 
-{% swagger-parameter in="path" name="exchange" type="string" %}
-Which exchange to use.
+{% swagger-parameter in="path" name="exchange" type="string" required="true" %}
+A valid exchange from GET /v1/exchanges, e.g., Binance
 {% endswagger-parameter %}
 
-{% swagger-parameter in="path" name="symbol" type="string" %}
+{% swagger-parameter in="path" name="symbol" type="string" required="true" %}
 A valid symbol from GET /v1/coins, e.g., BTC.
 {% endswagger-parameter %}
 
@@ -242,86 +263,14 @@ Which scale the graph points distance should have. Available options: 5m 30m 1h 
 {% endswagger-response %}
 {% endswagger %}
 
-{% swagger baseUrl="https://api.diadata.org" path="/v1/chartPointsAllExchanges/:filter/:symbol" method="get" summary="Chart Points for all Exchanges" %}
-{% swagger-description %}
-Get symbol details for all exchanges.
-
-\
-
-
-
-
-_Example_
-
-:
-
-\
-
-
-https://api.diadata.org/v1/chartPointsAllExchanges/MEDIR120/EOS
-
-\
-
-
-
-
-\
-
-
-
-
-_Remark:_
-
- Careful! Successful responses can be rather large.
-{% endswagger-description %}
-
-{% swagger-parameter in="path" name="starttime" type="integer" %}
-Unix timestamp setting the start of the return array
-{% endswagger-parameter %}
-
-{% swagger-parameter in="path" name="endtime" type="integer" %}
-Unix timestamp setting the end of the return array
-{% endswagger-parameter %}
-
-{% swagger-parameter in="path" name="filter" type="string" %}
-Which filter should be applied (Available options: MEDIR120 and MAIR120).
-{% endswagger-parameter %}
-
-{% swagger-parameter in="path" name="symbol" type="string" %}
-A valid symbol from GET /v1/coins, e.g., BTC.
-{% endswagger-parameter %}
-
-{% swagger-parameter in="query" name="scale" type="string" %}
-Which scale the graph points distance should have. Available options: 5m 30m 1h 4h 1d 1w
-{% endswagger-parameter %}
-
-{% swagger-response status="200" description="Successful retrieval of a chart point for all exchanges." %}
-```
-{"DataPoints":[{"Series":[{"name":"filters","columns":["time","exchange","filter","symbol","value"],"values":[["2020-05-19T08:17:59Z",null,"MEDIR120","EOS",2.6236194301032314]]}],"Messages":null}]}
-```
-{% endswagger-response %}
-{% endswagger %}
-
 {% swagger baseUrl="https://api.diadata.org" path="/v1/supply/:symbol" method="get" summary="Supply" %}
 {% swagger-description %}
 Get the current circulating supply for the token corresponding to symbol.
 
-\
-
-
-
-
-_Example_
-
-:
-
-\
-
-
-https://api.diadata.org/v1/supply/BTC
+_Example_: [https://api.diadata.org/v1/supply/BTC](https://api.diadata.org/v1/supply/BTC)
 {% endswagger-description %}
 
-{% swagger-parameter in="path" name="symbol" type="string" %}
+{% swagger-parameter in="path" name="symbol" type="string" required="true" %}
 Which symbol to get the supply for, e.g., BTC
 {% endswagger-parameter %}
 
@@ -336,51 +285,15 @@ Which symbol to get the supply for, e.g., BTC
 {% swagger-description %}
 Get all recorded supply values for the token corresponding to symbol.
 
+_Example_: [https://api.diadata.org/v1/supplies/BTC](https://api.diadata.org/v1/supplies/BTC)\
 \
-
-
-
-
-_Example_
-
-:
-
-\
-
-
-https://api.diadata.org/v1/supplies/BTC
-
-\
-
-
-
-
-\
-
-
 Get supply values for a time range using the query parameters.
 
-\
-
-
-
-
-_Example_
-
-:
-
-\
-
-
-https://api.diadata.org/v1/supplies/BTC?starttime=1602232273&endtime=1602318673
-
-\
-
-
+_Example_: [https://api.diadata.org/v1/supplies/BTC?starttime=1647349656\&endtime=1650028056](https://api.diadata.org/v1/supplies/BTC?starttime=1647349656\&endtime=1650028056)\
 
 {% endswagger-description %}
 
-{% swagger-parameter in="path" name="symbol" type="string" %}
+{% swagger-parameter in="path" name="symbol" type="string" required="true" %}
 Which symbol to get the supply fot, e.g., BTC
 {% endswagger-parameter %}
 
@@ -399,130 +312,15 @@ Unix timestamp setting the end of the return array
 {% endswagger-response %}
 {% endswagger %}
 
-{% swagger baseUrl="https://api.diadata.org" path="/v1/symbol/:symbol" method="get" summary="Symbol" %}
-{% swagger-description %}
-Get extensive information on the cryptocurrency corresponding to symbol on various exchanges.
-{% endswagger-description %}
-
-{% swagger-parameter in="path" name="symbol" type="string" %}
-Which symbol to get the details on, e.g., BTC
-{% endswagger-parameter %}
-
-{% swagger-response status="200" description="Information on the cryptocurrency organized by "Change", "Coin", "Rank", "Exchanges" and "Gfx1"  (filtered data). Shown below is an excerpt of a successful response of symbol = BTC." %}
-```
-"Change":{"USD":[{"Symbol":"EUR","Rate":0.8995232526760818,"RateYesterday":0.8995232526760818},...
-
-"Coin":{"Symbol":"BTC","Name":"Bitcoin","Price":9780.807149999986,"PriceYesterday":9574.416265039981,"VolumeYesterdayUSD":354341949.0902907,"Time":"2020-05-19T10:13:22.895692183Z","CirculatingSupply":17655550},...
-
-"Rank":1
-
-"Exchanges":[{"Name":"Huobi","Price":9776.344026379707,"PriceYesterday":9566.082031390646,"VolumeYesterdayUSD":182131794.24870485,"Time":"2020-05-19T10:07:59Z","LastTrades":...
-
-"Gfx1":{"DataPoints":[{"Series":[{"name":"filters","columns":["time","exchange","filter","symbol","value"],"values":[["2020-05-19T10:08:00Z",null,"MA120","BTC",9780.807149999986],...
-```
-{% endswagger-response %}
-{% endswagger %}
-
-{% swagger baseUrl="https://api.diadata.org" path="/v1/coins" method="get" summary="Coins" %}
-{% swagger-description %}
-Get a list of all available coins.
-{% endswagger-description %}
-
-{% swagger-response status="200" description="Successful retrieval of available coins along with actual information on prices. Shown below is an exerpt of the full response." %}
-```
-"CompleteCoinList":[{"Symbol":"BTC","Name":"Bitcoin"},{"Symbol":"ETH","Name":"Ethereum"},...
-
-"Change":{"USD":[{"Symbol":"EUR","Rate":0.8995232526760818,"RateYesterday":0.8995232526760818},...
-
-"Coins":[{"Symbol":"BTC","Name":"Bitcoin","Price":9773.78345474998,"PriceYesterday":9574.416265039981,"VolumeYesterdayUSD":352085287.0431704,"Time":"2020-05-19T10:05:53.191886175Z","CirculatingSupply":17655550},...
-```
-{% endswagger-response %}
-{% endswagger %}
-
-{% swagger baseUrl="https://api.diadata.org" path="/v1/volume/:symbol" method="get" summary="Trade Volume" %}
-{% swagger-description %}
-Get the trading volume of the specified symbol in a defined time span.
-{% endswagger-description %}
-
-{% swagger-parameter in="path" name="symbol" type="string" %}
-Which symbol to retrieve the volume of (e.g. BTC)
-{% endswagger-parameter %}
-
-{% swagger-parameter in="query" name="starttime" type="integer" %}
-Start of the timespan (Unix time in seconds)
-{% endswagger-parameter %}
-
-{% swagger-parameter in="query" name="endtime" type="integer" %}
-End of the timespan (Unix time in seconds)
-{% endswagger-parameter %}
-
-{% swagger-response status="200" description="An example response when querying a BTC volume for a typical day." %}
-```
-1431527525.7309263
-```
-{% endswagger-response %}
-{% endswagger %}
-
-{% swagger baseUrl="https://api.diadata.org" path="/v1/cviIndex" method="get" summary="CVI Index " %}
-{% swagger-description %}
-Get all values of the Crypto Volatility Index.
-
-\
-
-
-
-
-_Example_
-
-:
-
-\
-
-
-https://api.diadata.org/v1/cviIndex
-
-\
-
-
-
-
-\
-
-
-
-
-_Example_
-
- with query parameters:
-
-\
-
-
-https://api.diadata.org/v1/cviIndex?starttime=1589829000&endtime=1589830000
-{% endswagger-description %}
-
-{% swagger-parameter in="query" name="starttime" type="integer" %}
-Unix timestamp setting the start of the return array
-{% endswagger-parameter %}
-
-{% swagger-parameter in="query" name="endtime" type="integer" %}
-Unix timestamp setting the end of the return array
-{% endswagger-parameter %}
-
-{% swagger-response status="200" description="Successful retrieval of CVI Index value for starttime=1589829000 and endtime=1589830000" %}
-```
-[{"Timestamp":"2020-05-18T19:12:43Z","Value":142.28101897342574},{"Timestamp":"2020-05-18T19:17:48Z","Value":142.29282246717017},{"Timestamp":"2020-05-18T19:22:51Z","Value":142.3025697159107}]
-```
-{% endswagger-response %}
-{% endswagger %}
-
 {% swagger baseUrl="https://api.diadata.org" path="/v1/index/:symbol" method="get" summary="Crypto Index" %}
 {% swagger-description %}
 Returns information about the cryptoindex indicated by its symbol. This included price and market data, as well as a list of its constituents.
+
+_Example_: [https://api.diadata.org/v1/index/SCIFI](https://api.diadata.org/v1/index/SCIFI)
 {% endswagger-description %}
 
-{% swagger-parameter in="path" name="symbol" type="string" %}
-Symbol of the index
+{% swagger-parameter in="path" name="symbol" type="string" required="true" %}
+Symbol of the index. GBI or SCIFI
 {% endswagger-parameter %}
 
 {% swagger-parameter in="path" name="starttime" type="integer" %}
@@ -540,26 +338,14 @@ Unix timestamp setting the end of the return array
 {% endswagger-response %}
 {% endswagger %}
 
-{% swagger baseUrl="https://api.diadata.org/v1/" path="foreignSymbols/:source" method="get" summary="Guest Symbols" %}
+{% swagger baseUrl="https://api.diadata.org" path="/v1/foreignSymbols/:source" method="get" summary="Guest Symbols" %}
 {% swagger-description %}
 Get the list of available symbols along with their ITIN for guest quotations.
 
-\
-
-
-
-
-_Example_
-
-:
-
-\
-
-
-https://api.diadata.org/v1/foreignSymbols/Coingecko
+_Example_: [https://api.diadata.org/v1/foreignSymbols/Coingecko](https://api.diadata.org/v1/foreignSymbols/Coingecko)
 {% endswagger-description %}
 
-{% swagger-parameter in="path" name="source" type="string" %}
+{% swagger-parameter in="path" name="source" type="string" required="true" %}
 source of the quotation
 {% endswagger-parameter %}
 
@@ -569,64 +355,26 @@ source of the quotation
 {% endswagger-response %}
 {% endswagger %}
 
-{% swagger baseUrl="https://api.diadata.org/v1/foreignQuotation/:source/:symbol" path="" method="get" summary="Guest Quotation" %}
+{% swagger baseUrl="https://api.diadata.org" path="/v1/foreignQuotation/:source/:symbol" method="get" summary="Guest Quotation" %}
 {% swagger-description %}
 Get the latest quotation for a token from a guest source.
 
+_Example_: [https://api.diadata.org/v1/foreignQuotation/CoinMarketCap/BTC](https://api.diadata.org/v1/foreignQuotation/CoinMarketCap/BTC)\
 \
-
-
-
-
-_Example_
-
-:
+Use the query parameter time in order to get the latest quotation before the specified timestamp
 
 \
-
-
-https://api.diadata.org/v1/foreignQuotation/CoinMarketCap/BTC
-
+_Example_: [https://api.diadata.org/v1/foreignQuotation/Coingecko/BTC?time=1647349656](https://api.diadata.org/v1/foreignQuotation/Coingecko/BTC?time=1647349656)\
 \
-
-
-
-
 \
-
-
-Use the query parameter time in order to get the latest quotation before the specified timestamp.
-
-\
-
-
-
-
-_Example_
-
-:
-
-\
-
-
-https://api.diadata.org/v1/foreignQuotation/Coingecko/BTC?time=1601351679
-
-\
-
-
-
-
-\
-
-
 
 {% endswagger-description %}
 
-{% swagger-parameter in="path" name="source" type="string" %}
+{% swagger-parameter in="path" name="source" type="string" required="true" %}
 source of the quotation
 {% endswagger-parameter %}
 
-{% swagger-parameter in="path" name="symbol" type="string" %}
+{% swagger-parameter in="path" name="symbol" type="string" required="true" %}
 Which symbol to get a quotation for, e.g. BTC
 {% endswagger-parameter %}
 
@@ -642,497 +390,6 @@ Unix timestamp.
 
 ## Traditional Assets
 
-{% swagger baseUrl="https://api.diadata.org/v1/stockQuotation/:" path="source/:symbol/:time" method="get" summary="Stock Quotation" %}
-{% swagger-description %}
-Get a stock quotation.
-
-\
-
-
-
-
-_Example_
-
-:
-
-\
-
-
-https://api.diadata.org/v1/stockQuotation/Finage/AAPL
-
-\
-
-
-
-
-\
-
-
-Get stock quotations for a time range using the query parameters.
-
-\
-
-
-
-
-_Example_
-
-:
-
-\
-
-
-https://api.diadata.org/v1/stockQuotation/Finage/AAPL?dateInit=1633343956&dateFinal=1633345556
-{% endswagger-description %}
-
-{% swagger-parameter in="path" name="source" type="string" %}
-Data source of the quotation.
-{% endswagger-parameter %}
-
-{% swagger-parameter in="path" name="symbol" type="string" %}
-Symbol of the stock, see stockSymbols endpoint below.
-
-\
-
-
-
-{% endswagger-parameter %}
-
-{% swagger-parameter in="query" name="dateInit" type="integer" %}
-Initial timestamp for range queries.
-
-\
-
-
-Format: Unix timestamp.
-{% endswagger-parameter %}
-
-{% swagger-parameter in="query" name="dateFinal" type="integer" %}
-Final timestamp for range queries.
-
-\
-
-
-Format: Unix timestamp.
-{% endswagger-parameter %}
-
-{% swagger-response status="200" description="Successful retrieval of the latest stock quotation for Apple stock on Finage." %}
-```
-{"Symbol":"AAPL","Name":"APPLE","PriceAsk":141.55,"PriceBid":141.52,"SizeAskLot":2,"SizeBidLot":10,"Source":"Finage","Time":"2021-10-04T11:47:42Z","ISIN":"US0378331005"}
-```
-{% endswagger-response %}
-{% endswagger %}
-
-{% swagger baseUrl="https://api.diadata.org/v1/stockSymbols" path="" method="get" summary="Stocks" %}
-{% swagger-description %}
-Get a list of stocks available for quotation. The field source shows for which source the stock's quotations are available.
-{% endswagger-description %}
-
-{% swagger-parameter in="path" name="" type="string" %}
-
-{% endswagger-parameter %}
-
-{% swagger-response status="200" description="Successful retrieval of stocks available for quotation." %}
-```
-[{"Stock":{"Symbol":"MSFT","Name":"MICROSOFT CORP","ISIN":"US5949181045"},"Source":"Finage"},{"Stock":{"Symbol":"AAPL","Name":"APPLE","ISIN":"US0378331005"},"Source":"Finage"}]
-```
-{% endswagger-response %}
-{% endswagger %}
-
-{% swagger baseUrl="https://api.diadata.org" path="/v1/interestrates" method="get" summary="Interest Rates" %}
-{% swagger-description %}
-Get a list of all available interest rates along with metadata on the rates such as first publication date and issuing entity.
-
-\
-
-
-https://api.diadata.org/v1/interestrates
-{% endswagger-description %}
-
-{% swagger-response status="200" description="Successful retrieval of meta information on available interest rates." %}
-```
-[{"Symbol":"ESTER","FirstDate":"2019-10-01T00:00:00Z","Issuer":"ECB"},{"Symbol":"SOFR90","FirstDate":"2020-03-02T00:00:00Z","Issuer":"FED"},{"Symbol":"SONIA","FirstDate":"1997-01-02T00:00:00Z","Issuer":"BOE"},{"Symbol":"SAFR","FirstDate":"2020-03-02T00:00:00Z","Issuer":"FED"},{"Symbol":"SOFR","FirstDate":"2018-04-02T00:00:00Z","Issuer":"FED"},{"Symbol":"SOFR180","FirstDate":"2020-03-02T00:00:00Z","Issuer":"FED"},{"Symbol":"SOFR30","FirstDate":"2020-03-02T00:00:00Z","Issuer":"FED"}]
-```
-{% endswagger-response %}
-{% endswagger %}
-
-{% swagger baseUrl="https://api.diadata.org" path="/v1/interestrate/:rateType" method="get" summary="Interest Rate" %}
-{% swagger-description %}
-Get value for a certain rate type.
-
-\
-
-
-
-
-_Example_
-
-:
-
-\
-
-
-https://api.diadata.org/v1/interestrate/ESTER/2020-04-20​
-
-\
-
-
-
-
-\
-
-
-Get rate values for a range of timestamps using optional query parameters.
-
-\
-
-
-
-
-_Example_
-
-:
-
-\
-
-
-https://api.diadata.org/v1/interestrate/ESTER?dateInit=2020-02-20&dateFinal=2020-04-16
-{% endswagger-description %}
-
-{% swagger-parameter in="path" name="rateType" type="string" %}
-Symbol name for a rate.
-{% endswagger-parameter %}
-
-{% swagger-parameter in="path" name="date" type="string" %}
-Return the rate for the specified date. Default date is the latest available date. Format: yyyy-mm-dd
-{% endswagger-parameter %}
-
-{% swagger-parameter in="query" name="dateInit" type="string" %}
-Initial date for range queries. Format yyyy-mm-dd
-{% endswagger-parameter %}
-
-{% swagger-parameter in="query" name="dateFinal" type="string" %}
-Final date for range queries. Format: yyyy-mm-dd
-{% endswagger-parameter %}
-
-{% swagger-response status="200" description="Successful retrieval of an interest rate." %}
-```
-{"Symbol":"ESTER","Value":-0.542,"PublicationTime":"2020-05-19T07:15:07Z","EffectiveDate":"2020-05-18T00:00:00Z","Source":"ECB"}
-```
-{% endswagger-response %}
-{% endswagger %}
-
-{% swagger baseUrl="https://api.diadata.org" path="/v1/compoundedRate/:rateType/:dpy/:date" method="get" summary="Compounded Index" %}
-{% swagger-description %}
-Get the value of an index compounded since its first publication date.
-
-\
-
-
-
-
-\
-
-
-
-
-_Example_
-
-:
-
-\
-
-
-https://api.diadata.org/v1/compoundedRate/SOFR/360/2020-05-14
-
-\
-
-
-
-
-\
-
-
-Get the compounded index for a range of dates using the query parameters.
-
-\
-
-
-
-
-_Example_
-
-:
-
-\
-
-
-https://api.diadata.org/v1/compoundedRate/SOFR/360?dateInit=2020-04-24&dateFinal=2020-05-14
-
-\
-
-
-
-
-\
-
-
-For the methodology of compounded rates see:
-
-\
-
-
-https://docs.diadata.org/documentation/methodology/traditional-assets/compounded-rates#standard-methodology
-{% endswagger-description %}
-
-{% swagger-parameter in="path" name="rateType" type="string" %}
-Symbol for a rate name
-{% endswagger-parameter %}
-
-{% swagger-parameter in="path" name="dpy" type="integer" %}
-Business day convention for the number of days per year
-{% endswagger-parameter %}
-
-{% swagger-parameter in="path" name="date" type="string" %}
-Return the compounded index for the date specified in the format yyyy-mm-dd
-{% endswagger-parameter %}
-
-{% swagger-parameter in="query" name="dateInit" type="string" %}
-Initial date for range queries. Format: yyyy-mm-dd
-{% endswagger-parameter %}
-
-{% swagger-parameter in="query" name="dateFinal" type="string" %}
-Final date for range queries. Format: yyyy-mm-dd
-{% endswagger-parameter %}
-
-{% swagger-response status="200" description="Successful retrieval of the SOFR Index." %}
-```
-{"Symbol":"SOFR_compounded_by_DIA","Value":1.0414032009923273,"PublicationTime":"0001-01-01T00:00:00Z","EffectiveDate":"2020-05-14T00:00:00Z","Source":"FED"}
-```
-{% endswagger-response %}
-{% endswagger %}
-
-{% swagger baseUrl="https://api.diadata.org" path="/v1/compoundedAvg/:rateType/:period/:dpy/:date" method="get" summary="Compounded Average" %}
-{% swagger-description %}
-Get the average value of a given interest rate compounded over a period of time.
-
-\
-
-
-
-
-_Example_
-
-:
-
-\
-
-
-https://api.diadata.org/v1/compoundedAvg/SOFR/30/360/2020-05-14
-
-\
-
-
-
-
-\
-
-
-Get the compounded averages for a range of dates using the query parameters.
-
-\
-
-
-
-
-_Example_
-
-:
-
-\
-
-
-https://api.diadata.org/v1/compoundedAvg/SOFR/30/360?dateInit=2020-04-24&dateFinal=2020-05-14
-
-\
-
-
-
-
-\
-
-
-For the methodology see:
-
-\
-
-
-https://docs.diadata.org/documentation/methodology/traditional-assets/compounded-rates#standard-methodology
-
-\
-
-
-
-
-\
-
-
-
-
-_Remark_
-
-: This Get method requires an API key. Please contact us for more information:
-
-\
-
-
-https://docs.google.com/forms/d/e/1FAIpQLSePxDwbEURjes4nw8GUzaT-XfYttRw_6F2xAR607FKACsn7ew/viewform
-
-\
-
-
-
-{% endswagger-description %}
-
-{% swagger-parameter in="path" name="rateType" type="string" %}
-Symbol for a rate name
-{% endswagger-parameter %}
-
-{% swagger-parameter in="path" name="period" type="integer" %}
-Rate is compounded over period days
-{% endswagger-parameter %}
-
-{% swagger-parameter in="path" name="dpy" type="integer" %}
-Business day convention for the number of days per year
-{% endswagger-parameter %}
-
-{% swagger-parameter in="path" name="date" type="string" %}
-Return the compounded rate for the date specified in the format yyyy-mm-dd
-{% endswagger-parameter %}
-
-{% swagger-parameter in="query" name="dateInit" type="string" %}
-Initial date for range queries. Format: yyyy-mm-dd
-{% endswagger-parameter %}
-
-{% swagger-parameter in="query" name="dateFinal" type="string" %}
-Final date for range queries. Format: yyyy-mm-dd
-{% endswagger-parameter %}
-
-{% swagger-response status="200" description="Successful retrieval of a compounded average of the SOFR over an interest period of 30 calendar days." %}
-```
-{"Symbol":"SOFR30_compounded_by_DIA","Value":0.035667157687857554,"PublicationTime":"0001-01-01T00:00:00Z","EffectiveDate":"2020-05-14T00:00:00Z","Source":"FED"}
-```
-{% endswagger-response %}
-{% endswagger %}
-
-{% swagger baseUrl="https://api.diadata.org" path="/v1/compoundedAvgDIA/:rateType/:period/:dpy/:date" method="get" summary="Compounded Average using DIA Method" %}
-{% swagger-description %}
-Get the average value of an interest rate compounded over a period of time. Here, we use the DIA methodology for compounding the rate, i.e. interest is compounded for non-business days as well. For details see:
-
-\
-
-
-https://docs.diadata.org/documentation/methodology/traditional-assets/compounded-rates#dia-methodology
-
-\
-
-
-
-
-\
-
-
-
-
-_Example_
-
-:
-
-\
-
-
-https://api.diadata.org/v1/compoundedAvgDIA/SOFR/30/360/2020-05-14
-
-\
-
-
-
-
-\
-
-
-Get the compounded average for a range of dates using the query parameters. 
-
-\
-
-
-
-
-_Example_
-
-:
-
-\
-
-
-https://api.diadata.org/v1/compoundedAvgDIA/SOFR/30/360?dateInit=2020-04-24&dateFinal=2020-05-14
-
-\
-
-
-
-
-\
-
-
-
-
-_Remark_
-
-: This Get method requires an API key. Please contact us for more information:
-
-\
-
-
-https://docs.google.com/forms/d/e/1FAIpQLSePxDwbEURjes4nw8GUzaT-XfYttRw_6F2xAR607FKACsn7ew/viewform
-
-\
-
-
-
-{% endswagger-description %}
-
-{% swagger-parameter in="path" name="rateType" type="string" %}
-Symbol for a rate name
-{% endswagger-parameter %}
-
-{% swagger-parameter in="path" name="period" type="integer" %}
-Rate is compounded over period days
-{% endswagger-parameter %}
-
-{% swagger-parameter in="path" name="dpy" type="integer" %}
-Business convention for the number of days per year
-{% endswagger-parameter %}
-
-{% swagger-parameter in="path" name="date" type="string" %}
-Return the compounded rate for the date specified in the format yyyy-mm-dd
-{% endswagger-parameter %}
-
-{% swagger-parameter in="query" name="dateInit" type="string" %}
-Initial date for range queries. Format: yyyy-mm-dd
-{% endswagger-parameter %}
-
-{% swagger-parameter in="query" name="dateFinal" type="string" %}
-Final date for range queries. Format: yyyy-mm-dd
-{% endswagger-parameter %}
-
-{% swagger-response status="200" description="Successful retrieval of the compounded average of SOFR over an interest period of 30 calendar days." %}
-```
-[{"Symbol":"SOFR30_compounded_by_DIA","Value":0.035667175187725775,"PublicationTime":"0001-01-01T00:00:00Z","EffectiveDate":"2020-05-14T00:00:00Z","Source":"FED"}]
-```
-{% endswagger-response %}
-{% endswagger %}
-
 {% swagger baseUrl="https://api.diadata.org/v1/" path="fiatQuotations" method="get" summary="Fiat Currency Exchange Rates" %}
 {% swagger-description %}
 Get a list of exchange rates for several fiat currencies vs US Dollar.
@@ -1144,18 +401,6 @@ Get a list of exchange rates for several fiat currencies vs US Dollar.
 
 {% swagger-response status="200" description="" %}
 ```
-```
-{% endswagger-response %}
-{% endswagger %}
-
-{% swagger baseUrl="https://api.diadata.org/v1/" path="goldPaxgGrams" method="get" summary="Gold price in Gram" %}
-{% swagger-description %}
-Gold price for 1g of Gold measured by the PAXG commodity token.
-{% endswagger-description %}
-
-{% swagger-response status="200" description="" %}
-```
-{"Symbol":"PAXG-gram","Name":"PAXG-gram","Price":59.69023528449715,"PriceYesterday":57.93549261152835,"VolumeYesterdayUSD":0,"Source":"diadata.org","Time":"2020-11-25T11:22:31.146028646Z","ITIN":"undefined"}
 ```
 {% endswagger-response %}
 {% endswagger %}
