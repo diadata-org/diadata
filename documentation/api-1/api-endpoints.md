@@ -6,9 +6,7 @@ description: >-
 
 # API Endpoints
 
-Digital Assets
-
-
+## Digital Assets
 
 {% swagger method="get" path="v1/assetQuotation/:blockchain/:asset" baseUrl="https://api.diadata.org/" summary="Asset Quotation" %}
 {% swagger-description %}
