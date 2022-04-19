@@ -1,10 +1,6 @@
 {
   "Tokens": [
     {
-      "Address": "0x6Fc9383486c163fA48becdEC79d6058f984f62cA",
-      "Symbol": "USDB"
-    },
-    {
       "Address": "0x6c021Ae822BEa943b2E66552bDe1D2696a53fbB7",
       "Symbol": "TOMB"
     }
