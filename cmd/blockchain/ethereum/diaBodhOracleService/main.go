@@ -39,8 +39,18 @@ func main() {
 	}
 
 	//BTC,ETH,USDC,NEAR
-	symbols := []string{"0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", "0x0000000000000000000000000000000000000000"}
-	blockchains := []string{"Bitcoin", "Ethereum", "Ethereum", "NEAR"}
+	symbols := []string{
+		"0x0000000000000000000000000000000000000000",
+		"0x0000000000000000000000000000000000000000",
+		"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+		"0x0000000000000000000000000000000000000000",
+	}
+	blockchains := []string{
+		"Bitcoin",
+		"Ethereum",
+		"Ethereum",
+		"NEAR",
+	}
 
 	/*
 	 * Setup connection to contract, deploy if necessary
@@ -84,7 +94,7 @@ func main() {
 	select {}
 }
 
-func periodicOracleUpdateHelper(auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, symbol string) (error) {
+func periodicOracleUpdateHelper(auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, symbol string) error {
 	// Get quotation for token and update Oracle
 	rawQ, err := getAssetQuotationFromDia(blockchain, symbol)
 	if err != nil {

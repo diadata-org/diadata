@@ -42,9 +42,19 @@ func main() {
 		log.Fatalf("Failed to parse deviationPermille: %v")
 	}
 
-	//METIS,NETT,TETHYS,WOW
-	addresses := []string{"0x9E32b13ce7f2E80A01932B42553652E053D6ed8e", "0x90fE084F877C65e1b577c7b2eA64B8D8dd1AB278", "0x69fdb77064ec5c84FA2F21072973eB28441F43F3", "0x4DA996C5Fe84755C80e108cf96Fe705174c5e36A"}
-	blockchains := []string{"Ethereum", "Metis", "Metis", "BinanceSmartChain"}
+	addresses := []string{
+		"0x9E32b13ce7f2E80A01932B42553652E053D6ed8e", //METIS
+		"0x90fE084F877C65e1b577c7b2eA64B8D8dd1AB278", //NETT
+		"0x69fdb77064ec5c84FA2F21072973eB28441F43F3", //TETHYS
+		"0x4DA996C5Fe84755C80e108cf96Fe705174c5e36A", //WOW
+	}
+	blockchains := []string{
+		"Ethereum",
+		"Metis",
+		"Metis",
+		"BinanceSmartChain",
+	}
+
 	oldPrices := make(map[int]float64)
 
 	/*

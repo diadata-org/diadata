@@ -38,9 +38,22 @@ func main() {
 		log.Fatalf("Failed to parse chainId: %v")
 	}
 
-	//WBTC,ETH,USDC,CELO,UBE,MOBI
-	symbols := []string{"0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", "0x0000000000000000000000000000000000000000", "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", "0x471EcE3750Da237f93B8E339c536989b8978a438", "0x00Be915B9dCf56a3CBE739D9B9c202ca692409EC", "0x73a210637f6F6B7005512677Ba6B3C96bb4AA44B"}
-	blockchains := []string{"Ethereum", "Ethereum", "Ethereum", "Celo", "Celo", "Celo"}
+	symbols := []string{
+		"0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", //WBTC
+		"0x0000000000000000000000000000000000000000", //ETH
+		"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", //USDC
+		"0x471EcE3750Da237f93B8E339c536989b8978a438", //CELO
+		"0x00Be915B9dCf56a3CBE739D9B9c202ca692409EC", //UBE
+		"0x73a210637f6F6B7005512677Ba6B3C96bb4AA44B", //MOBI
+	}
+	blockchains := []string{
+		"Ethereum",
+		"Ethereum",
+		"Ethereum",
+		"Celo",
+		"Celo",
+		"Celo",
+	}
 
 	/*
 	 * Setup connection to contract, deploy if necessary
@@ -84,7 +97,7 @@ func main() {
 	select {}
 }
 
-func periodicOracleUpdateHelper(auth *bind.TransactOpts, contract *diaOracleService.DIAOracle, conn *ethclient.Client, blockchain string, symbol string) (error) {
+func periodicOracleUpdateHelper(auth *bind.TransactOpts, contract *diaOracleService.DIAOracle, conn *ethclient.Client, blockchain string, symbol string) error {
 	// Get quotation for token and update Oracle
 	rawQ, err := getAssetQuotationFromDia(blockchain, symbol)
 	if err != nil {

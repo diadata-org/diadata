@@ -38,9 +38,14 @@ func main() {
 		log.Fatalf("Failed to parse chainId: %v")
 	}
 
-	//METIS,NETT
-	symbols := []string{"0x9E32b13ce7f2E80A01932B42553652E053D6ed8e","0x90fE084F877C65e1b577c7b2eA64B8D8dd1AB278"}
-	blockchains := []string{"Ethereum","Metis"}
+	symbols := []string{
+		"0x9E32b13ce7f2E80A01932B42553652E053D6ed8e", //METIS
+		"0x90fE084F877C65e1b577c7b2eA64B8D8dd1AB278", //NETT
+	}
+	blockchains := []string{
+		"Ethereum",
+		"Metis",
+	}
 
 	/*
 	 * Setup connection to contract, deploy if necessary
@@ -84,7 +89,7 @@ func main() {
 	select {}
 }
 
-func periodicOracleUpdateHelper(auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, symbol string) (error) {
+func periodicOracleUpdateHelper(auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, symbol string) error {
 	// Get quotation for token and update Oracle
 	rawQ, err := getAssetQuotationFromDia(blockchain, symbol)
 	if err != nil {
