@@ -90,6 +90,8 @@ func NewUniswapAssetSource(exchange dia.Exchange) (uas *UniswapAssetSource) {
 		uas = makeUniswapAssetSource(exchange, restDialAvalanche, avalancheWaitMilliseconds)
 	case dia.TethysExchange:
 		uas = makeUniswapAssetSource(exchange, restDialMetis, metisWaitMilliseconds)
+	case dia.HermesExchange:
+		uas = makeUniswapAssetSource(exchange, restDialMetis, metisWaitMilliseconds)
 	}
 
 	exchangeFactoryContractAddress = exchange.Contract.Hex()

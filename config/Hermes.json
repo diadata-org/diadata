@@ -1,0 +1,10 @@
+{
+    "Coins": [
+        {
+            "Symbol": "UST",
+            "ForeignName": "UST-m.USDT",
+            "Exchange": "Hermes",
+            "Ignore": false
+        }
+    ]
+}
