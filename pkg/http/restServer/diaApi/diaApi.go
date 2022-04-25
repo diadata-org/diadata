@@ -1819,7 +1819,10 @@ func (env *Env) PostIndexRebalance(c *gin.Context) {
 	}
 
 	var newIndex models.CryptoIndex
-	newIndex.Asset.Name = indexSymbol
+	newIndex.Asset.Name = currIndex[0].Asset.Name
+	newIndex.Asset.Symbol = indexSymbol
+	newIndex.Asset.Blockchain = currIndex[0].Asset.Blockchain
+	newIndex.Asset.Address = currIndex[0].Asset.Address
 	newIndex.Constituents = constituents
 	newIndex.Value = newIndexRawValue
 	newIndex.Price = currIndex[0].Price
