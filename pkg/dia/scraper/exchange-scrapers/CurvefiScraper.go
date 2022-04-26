@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"math/big"
+	"strings"
 	"sync"
 	"time"
 
@@ -13,6 +14,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/curvefi/curvepool"
 	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/curvefi/token"
 	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/curvefimeta"
+	"github.com/diadata-org/diadata/pkg/utils"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -110,16 +112,18 @@ func NewCurveFIScraper(exchange dia.Exchange, scrape bool) *CurveFIScraper {
 		},
 	}
 
-	wsClient, err := ethclient.Dial(curveWsDial)
+	log.Infof("Init rest and ws client for %s.", exchange.BlockChain.Name)
+	restClient, err := ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_REST", curveRestDial))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("init rest client: ", err)
 	}
-	scraper.WsClient = wsClient
-	restClient, err := ethclient.Dial(curveRestDial)
+	wsClient, err := ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_WS", curveWsDial))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("init ws client: ", err)
 	}
+
 	scraper.RestClient = restClient
+	scraper.WsClient = wsClient
 
 	// Load meta pools.
 	err = scraper.loadPoolsAndCoins(common.HexToAddress(curveFiMetaPoolsFactory))
