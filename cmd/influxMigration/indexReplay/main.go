@@ -238,6 +238,9 @@ func processIndexVals(timeInit, timeFinal time.Time, stepSize int64, indexSymbol
 				log.Infof("set constituent at time %v: %v", oldIndexVals[i].CalculationTime, constituents[j])
 			}
 
+			// Set divisor:
+			oldIndexVals[i].Divisor = float64(48484560.111721102)
+
 			// Compute new index value.
 			indexValue := models.GetIndexValue(index.Symbol, constituents)
 			index := indexValueCalculation(constituents, oldIndexVals[i], indexValue, ds)
@@ -248,7 +251,7 @@ func processIndexVals(timeInit, timeFinal time.Time, stepSize int64, indexSymbol
 			// 	log.Error(err)
 			// }
 			log.Infof("set crypto index at calculation time %v: value, divisor, price -- %v, %v, %v ", index.CalculationTime, index.Value, index.Divisor, index.Price)
-			log.Infof("set crypto index at calculation time %v: value/divisor -- %v, %v, %v ", index.CalculationTime, index.Value/index.Divisor)
+			log.Infof("set crypto index at calculation time %v: value/divisor -- %v,", index.CalculationTime, index.Value/index.Divisor)
 
 			// log.Infof("successfully set index %s at time %v with value %v.", index.Asset.Symbol, index.CalculationTime, index.Value)
 
