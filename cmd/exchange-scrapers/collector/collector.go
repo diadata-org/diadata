@@ -7,6 +7,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
+	"github.com/diadata-org/diadata/pkg/utils"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
@@ -15,7 +16,12 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var log *logrus.Logger
+var (
+	log                  *logrus.Logger
+	swapTradesOnExchange = []string{
+		dia.CurveFIExchange,
+	}
+)
 
 func init() {
 	log = logrus.New()
@@ -43,9 +49,24 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, ds *mo
 			// Trades are sent to the tradesblockservice through a kafka channel - either through trades topic
 			// or historical trades topic.
 			if mode == "current" || mode == "historical" || mode == "estimation" {
+
+				// Write trade to Kafka.
 				err := kafkaHelper.WriteMessage(w, t)
 				if err != nil {
 					log.Error(err)
+				}
+
+				// Write reversed trade to Kafka as well for some exchanges.
+				if utils.Contains(&swapTradesOnExchange, t.Source) {
+					tSwapped, err := dia.SwapTrade(*t)
+					if err != nil {
+						log.Error("swap trade: ", err)
+					} else {
+						err := kafkaHelper.WriteMessage(w, &tSwapped)
+						if err != nil {
+							log.Error(err)
+						}
+					}
 				}
 			}
 			// Trades are just saved in influx - not sent to the tradesblockservice through a kafka channel.
