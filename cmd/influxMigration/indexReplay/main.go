@@ -65,30 +65,33 @@ func init() {
 	symbolsMap["YFI"] = "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
 	symbolsMap["Yf-DAI"] = "0xf4CD3d3Fda8d7Fd6C5a500203e38640A70Bf9577"
 	symbolsMap["wNXM"] = "0x0d438F3b5175Bebc262bF23753C1E53d03432bDE"
+	symbolsMap["DYDX"] = "0x92D6C1e31e14520e676a687F0a93788B716BEff5"
 
 	cappingMap = make(map[string]float64)
-	cappingMap["0x6B3595068778DD592e39A122f4f5a5cF09C90fE2"] = float64(0.8481712413)
-	cappingMap["0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"] = float64(1.829351993)
-	cappingMap["0x1fDaB294EDA5112B7d066ED8F2E4E562D5bCc664"] = float64(1111.932789)
-	cappingMap["0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671"] = float64(0.8501919544)
-	cappingMap["0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44"] = float64(0.8474172955)
-	cappingMap["0xD533a949740bb3306d119CC777fa900bA034cd52"] = float64(0.8452712665)
-	cappingMap["0xbC396689893D065F41bc2C6EcbeE5e0085233447"] = float64(0.8496875939)
-	cappingMap["0x4E15361FD6b4BB609Fa63C81A2be19d873717870"] = float64(0.5305555209)
-	cappingMap["0xba100000625a3754423978a60c9317c58a424e3D"] = float64(0.8494870174)
-	cappingMap["0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9"] = float64(0.6908255324)
+	cappingMap["0x6B3595068778DD592e39A122f4f5a5cF09C90fE2"] = float64(0.9431359284) //SUSHI
+	cappingMap["0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"] = float64(3.755361355)  //DIA
+	cappingMap["0x1fDaB294EDA5112B7d066ED8F2E4E562D5bCc664"] = float64(312.7304176)  //SPICE
+	cappingMap["0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671"] = float64(2.706248609)  //NMR
+	cappingMap["0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44"] = float64(0)            //KP3R
+	cappingMap["0xD533a949740bb3306d119CC777fa900bA034cd52"] = float64(0.8580163936) //CRV
+	cappingMap["0xbC396689893D065F41bc2C6EcbeE5e0085233447"] = float64(1.261183279)  //PERP
+	cappingMap["0x4E15361FD6b4BB609Fa63C81A2be19d873717870"] = float64(0.7144275848) //FTM
+	cappingMap["0xba100000625a3754423978a60c9317c58a424e3D"] = float64(1.758661974)  //BAL
+	cappingMap["0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9"] = float64(0.3818142305) //FTX Token
+	cappingMap["0x92D6C1e31e14520e676a687F0a93788B716BEff5"] = float64(1.012708052)  //DYDX
 
 	numBaseTokensMap = make(map[string]float64)
-	numBaseTokensMap["0x6B3595068778DD592e39A122f4f5a5cF09C90fE2"] = float64(34969303170127981)
-	numBaseTokensMap["0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"] = float64(8067221838047583)
-	numBaseTokensMap["0x1fDaB294EDA5112B7d066ED8F2E4E562D5bCc664"] = float64(382922797228701943)
-	numBaseTokensMap["0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671"] = float64(1610484614974134)
-	numBaseTokensMap["0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44"] = float64(47725897426893)
-	numBaseTokensMap["0xD533a949740bb3306d119CC777fa900bA034cd52"] = float64(127432811325197740)
-	numBaseTokensMap["0xbC396689893D065F41bc2C6EcbeE5e0085233447"] = float64(4920853921311107)
-	numBaseTokensMap["0x4E15361FD6b4BB609Fa63C81A2be19d873717870"] = float64(234454930204332481)
-	numBaseTokensMap["0xba100000625a3754423978a60c9317c58a424e3D"] = float64(3941681400720949)
-	numBaseTokensMap["0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9"] = float64(16635301231735492)
+	numBaseTokensMap["0x6B3595068778DD592e39A122f4f5a5cF09C90fE2"] = float64(37797207999999917)  //SUSHI
+	numBaseTokensMap["0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"] = float64(51379834865159387)  //DIA
+	numBaseTokensMap["0x1fDaB294EDA5112B7d066ED8F2E4E562D5bCc664"] = float64(382922797228701943) //SPICE
+	numBaseTokensMap["0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671"] = float64(3361186871535841)   //NMR
+	numBaseTokensMap["0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44"] = float64(0)                  //KP3R
+	numBaseTokensMap["0xD533a949740bb3306d119CC777fa900bA034cd52"] = float64(70012500963470730)  //CRV
+	numBaseTokensMap["0xbC396689893D065F41bc2C6EcbeE5e0085233447"] = float64(18048421219648912)  //PERP
+	numBaseTokensMap["0x4E15361FD6b4BB609Fa63C81A2be19d873717870"] = float64(379373047240090089) //FTM
+	numBaseTokensMap["0xba100000625a3754423978a60c9317c58a424e3D"] = float64(3941681400720949)   //BAL
+	numBaseTokensMap["0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9"] = float64(10930128743763109)  //FTX Token
+	numBaseTokensMap["0x92D6C1e31e14520e676a687F0a93788B716BEff5"] = float64(19850773894870749)  //DYDX
 
 	numBaseTokensGBIMap = make(map[string]float64)
 	numBaseTokensGBIMap["0x0000000000000000000000000000000000000000"] = float64(33027773221964)
@@ -134,7 +137,7 @@ func main() {
 	}
 	timeInit := time.Unix(timeInitInt, 0)
 
-	timeFinalString := utils.Getenv("TIME_FINAL", "1645182000")
+	timeFinalString := utils.Getenv("TIME_FINAL", "1645468113")
 	timeFinalInt, err := strconv.ParseInt(timeFinalString, 10, 64)
 	if err != nil {
 		log.Error("parse timeFinal: ", err)
@@ -143,7 +146,7 @@ func main() {
 	log.Info("timeInit: ", timeInit)
 	log.Info("timeFinal: ", timeFinal)
 
-	numRangesString := utils.Getenv("NUM_RANGES", "6")
+	numRangesString := utils.Getenv("NUM_RANGES", "2")
 	numRanges, err := strconv.Atoi(numRangesString)
 	if err != nil {
 		log.Error("parse num ranges: ", err)
@@ -198,6 +201,14 @@ func processIndexVals(timeInit, timeFinal time.Time, stepSize int64, indexSymbol
 
 			constituents := oldIndexVals[i].Constituents
 			for j := range constituents {
+				// 0. Add KP3R with DYDX
+				if constituents[j].Asset.Address == "0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44" {
+					constituents[j].Asset.Address = "0x92D6C1e31e14520e676a687F0a93788B716BEff5"
+					constituents[j].Asset.Blockchain = dia.ETHEREUM
+					constituents[j].Asset.Name = "dYdX"
+					constituents[j].Asset.Symbol = "DYDX"
+					constituents[j].Asset.Decimals = uint8(18)
+				}
 				// 1. Substitute cappingFactor
 				constituents[j].CappingFactor = cappingMap[constituents[j].Asset.Address]
 				// 2. Substitute numBaseTokens
@@ -219,10 +230,11 @@ func processIndexVals(timeInit, timeFinal time.Time, stepSize int64, indexSymbol
 			currIndexValue := models.GetIndexValue(indexSymbol, constituents)
 			computePercentages(indexSymbol, &constituents, currIndexValue)
 			for j := range constituents {
-				err = ds.SetCryptoIndexConstituent(&constituents[j], oldIndexVals[i].Asset, oldIndexVals[i].CalculationTime)
-				if err != nil {
-					log.Error("set crypto index constituent: ", err)
-				}
+				// err = ds.SetCryptoIndexConstituent(&constituents[j], oldIndexVals[i].Asset, oldIndexVals[i].CalculationTime)
+				// if err != nil {
+				// 	log.Error("set crypto index constituent: ", err)
+				// }
+
 				log.Infof("set constituent at time %v: %v", oldIndexVals[i].CalculationTime, constituents[j])
 			}
 
@@ -231,10 +243,10 @@ func processIndexVals(timeInit, timeFinal time.Time, stepSize int64, indexSymbol
 			index := indexValueCalculation(constituents, oldIndexVals[i], indexValue, ds)
 
 			// Save index.
-			err = ds.SetCryptoIndex(&index)
-			if err != nil {
-				log.Error(err)
-			}
+			// err = ds.SetCryptoIndex(&index)
+			// if err != nil {
+			// 	log.Error(err)
+			// }
 			log.Infof("set crypto index at calculation time %v: value, divisor, price -- %v, %v, %v ", index.CalculationTime, index.Value, index.Divisor, index.Price)
 
 			// log.Infof("successfully set index %s at time %v with value %v.", index.Asset.Symbol, index.CalculationTime, index.Value)
