@@ -248,6 +248,7 @@ func processIndexVals(timeInit, timeFinal time.Time, stepSize int64, indexSymbol
 			// 	log.Error(err)
 			// }
 			log.Infof("set crypto index at calculation time %v: value, divisor, price -- %v, %v, %v ", index.CalculationTime, index.Value, index.Divisor, index.Price)
+			log.Infof("set crypto index at calculation time %v: value/divisor -- %v, %v, %v ", index.CalculationTime, index.Value/index.Divisor)
 
 			// log.Infof("successfully set index %s at time %v with value %v.", index.Asset.Symbol, index.CalculationTime, index.Value)
 
