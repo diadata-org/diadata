@@ -193,6 +193,12 @@ __
 ### Evmos
 
 {% tabs %}
+{% tab title="Mainnet" %}
+| Published Assets                     | Smart Contract Address                                                                    | Oracle Type                                                                                                                           |
+| ------------------------------------ | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0x5d60...E6ed](https://evm.evmos.org/address/0x5d60C36A600391C3dFc5d76ad18959163613E6ed) | [Key/Value Oracle V2](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract-v2) |
+{% endtab %}
+
 {% tab title="Testnet" %}
 | Published Assets                     | Smart Contract Address                                                                    | Oracle Type                                                                                                                           |
 | ------------------------------------ | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
