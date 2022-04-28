@@ -20,6 +20,7 @@ var (
 	log                  *logrus.Logger
 	swapTradesOnExchange = []string{
 		dia.CurveFIExchange,
+		dia.OmniDexExchange,
 	}
 )
 
