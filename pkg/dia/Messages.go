@@ -37,6 +37,7 @@ const (
 	KILT                                    = "Kilt"
 	FETCH                                   = "Fetch"
 	FUSE                                    = "Fuse"
+	TELOS                                   = "Telos"
 	FIAT                                    = "Fiat"
 )
 
@@ -216,6 +217,41 @@ type ExchangeVolume struct {
 	Volume   float64 `json:"Volume"`
 }
 
+type ExchangeVolumesList struct {
+	Volumes   []ExchangeVolume `json:"Volumes"`
+	Timestamp time.Time        `json:"Timestamp"`
+}
+
+type PairVolume struct {
+	Pair   Pair    `json:"Pair"`
+	Volume float64 `json:"Volume"`
+}
+
+type PairVolumesList struct {
+	Volumes   []PairVolume `json:"Volumes"`
+	Timestamp time.Time    `json:"Timestamp"`
+}
+
+type AggregatedVolume struct {
+	Pair             Pair      `json:"Pair"`
+	Volume           float64   `json:"Volume"`
+	Exchange         string    `json:"ExchangeVolumes"`
+	TimeRangeSeconds int64     `json:"TimeRangeSeconds"`
+	Timestamp        time.Time `json:"Timestamp"`
+}
+
+type TradesDistribution struct {
+	Asset            Asset     `json:"Asset"`
+	NumTradesTotal   int       `json:"NumTradesTotal"`
+	NumLowBins       int       `json:"NumberLowBins"`
+	Threshold        int       `json:"Threshold"`
+	SizeBinSeconds   int64     `json:"SizeBin"`
+	AvgNumPerBin     float64   `json:"AverageNumberPerBin"`
+	StdDeviation     float64   `json:"StandardDeviation"`
+	TimeRangeSeconds int64     `json:"TimeRangeSeconds"`
+	Timestamp        time.Time `json:"Timestamp"`
+}
+
 type EthereumBlockData struct {
 	GasLimit    uint64             `json:"gas_limit"`
 	GasUsed     uint64             `json:"gas_used"`
@@ -273,8 +309,8 @@ type BlockChain struct {
 
 // Pair substitues the old dia.Pair. It includes the new asset type.
 type Pair struct {
-	BaseToken  Asset
 	QuoteToken Asset
+	BaseToken  Asset
 }
 
 // ForeignName returns the foreign name of the pair @p, i.e. the string Quotetoken-Basetoken

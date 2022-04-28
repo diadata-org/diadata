@@ -1,6 +1,12 @@
 {
     "Tokens": [
         {
+            "Symbol": "TLOS",
+            "Exchange": "GateIO",
+            "Blockchain": "Telos",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "GLMR",
             "Exchange": "GateIO",
             "Blockchain": "Moonbeam",

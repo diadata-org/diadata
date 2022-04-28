@@ -118,7 +118,7 @@
       "Decimals": 8,
       "Blockchain": "Tron",
       "Address": "TWcDDx1Q6QEoBrJi9qehtZnD4vcXXuVLer"
-  },
+    },
     {
       "Symbol": "TRX",
       "Name": "Tron",
@@ -467,6 +467,13 @@
       "Name": "Fuse",
       "Decimals": 18,
       "Blockchain": "Fuse",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "TLOS",
+      "Name": "Telos",
+      "Decimals": 18,
+      "Blockchain": "Telos",
       "Address": "0x0000000000000000000000000000000000000000"
     }
   ]

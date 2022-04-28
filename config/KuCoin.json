@@ -1,6 +1,18 @@
 {
     "Coins": [
         {
+            "Symbol": "TLOS",
+            "ForeignName": "TLOS-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TLOS",
+            "ForeignName": "TLOS-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "WBTC",
             "ForeignName": "WBTC-BTC",
             "Exchange": "KuCoin",
