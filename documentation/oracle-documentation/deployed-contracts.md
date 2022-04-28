@@ -248,8 +248,18 @@ __
 | ------------- | --------------------------------------------------------------------------------------------- |
 | DIA Oracle    | [0xCd8E...C687](https://explorer.celo.org/address/0xCd8E18890E416Aa7ab09aa793b406C187747C687) |
 
-### NEAR Testnet
+### NEAR
 
-| Contract Name      | Contract Address                                                                                   |
-| ------------------ | -------------------------------------------------------------------------------------------------- |
-| DIA Request Oracle | [@contract.dia-test.testnet](https://explorer.testnet.near.org/accounts/contract.dia-test.testnet) |
+{% tabs %}
+{% tab title="Mainnet" %}
+| Published Assets                                                                   | Oracle Address                                                                             | Oracle Type                                   |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | --------------------------------------------- |
+| [DIA Assets](https://docs.diadata.org/documentation/api-1/api-endpoints#quotation) | [@contract.diadata.near](https://explorer.mainnet.near.org/accounts/contract.diadata.near) | [NEAR Request Oracle](near-request-oracle.md) |
+{% endtab %}
+
+{% tab title="Testnet" %}
+| Published Assets                                                                   | Oracle Address                                                                                     | Oracle Type                                   |
+| ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| [DIA Assets](https://docs.diadata.org/documentation/api-1/api-endpoints#quotation) | [@contract.dia-test.testnet](https://explorer.testnet.near.org/accounts/contract.dia-test.testnet) | [NEAR Request Oracle](near-request-oracle.md) |
+{% endtab %}
+{% endtabs %}
