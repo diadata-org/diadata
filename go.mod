@@ -6,7 +6,6 @@ require (
 	github.com/Kucoin/kucoin-go-sdk v1.2.7
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/adshao/go-binance v0.0.0-20200724005944-6a0c3995d85c
-	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/anaskhan96/soup v1.1.1
 	github.com/beldur/kraken-go-api-client v0.0.0-20200330152217-ed78f31b987e
 	github.com/bep/debounce v1.2.0
@@ -23,20 +22,15 @@ require (
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
 	github.com/gin-gonic/gin v1.7.0
 	github.com/go-ole/go-ole v1.2.4 // indirect
-	github.com/go-openapi/spec v0.19.9 // indirect
-	github.com/go-openapi/swag v0.19.9 // indirect
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/gorilla/websocket v1.4.2
 	github.com/graarh/golang-socketio v0.0.0-20170510162725-2c44953b9b5f
 	github.com/graph-gophers/graphql-go v1.1.0
 	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab
-	github.com/jackc/fake v0.0.0-20150926172116-812a484cc733 // indirect
 	github.com/jackc/pgtype v1.7.0
-	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
 	github.com/lib/pq v1.9.0 // indirect
-	github.com/mailru/easyjson v0.7.2 // indirect
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
 	github.com/mr-tron/base58 v1.2.0
 	github.com/onflow/cadence v0.15.0
@@ -52,16 +46,14 @@ require (
 	github.com/shopspring/decimal v1.2.0
 	github.com/sirupsen/logrus v1.7.0
 	github.com/status-im/keycard-go v0.0.0-20200402102358-957c09536969 // indirect
-	github.com/stretchr/testify v1.7.0
-	github.com/swaggo/gin-swagger v1.2.0
 	github.com/streamingfast/binary v0.0.0-20210928223119-44fc44e4a0b5
 	github.com/streamingfast/solana-go v0.3.0
 	github.com/stretchr/testify v1.7.0
-	github.com/swaggo/swag v1.6.7
 	github.com/tidwall/gjson v1.12.1 // indirect
 	github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
+	github.com/zksync-sdk/zksync-sdk-go v0.0.0-20211119083613-58613b4d3d77 // indirect
 	go.uber.org/ratelimit v0.2.0
 	go.uber.org/zap v1.19.1
 	golang.org/x/crypto v0.0.0-20211117183948-ae814b36b871
