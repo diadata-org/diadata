@@ -26,10 +26,12 @@ func Start(liveness probe, readiness probe) {
 	engine.GET("/ready", execReadiness)
 	engine.GET("/live", execLiveness)
 	// This environment variable is either set in docker-compose or empty
-	err := engine.Run(utils.Getenv("LISTEN_PORT_PROBES", ":2345"))
-	if err != nil {
-		log.Error(err)
-	}
+	go func() {
+		err := engine.Run(utils.Getenv("LISTEN_PORT_PROBES", ":2345"))
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 	log.Infoln("Ready and Live probes starting")
 }
 
