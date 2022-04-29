@@ -63,11 +63,13 @@ func main() {
 
 	// Initial run.
 	updateStats(assets, time.Now(), numRanges, datastore, relDB)
+	log.Info("...update done.")
 
 	for {
 		select {
 		case tFinal := <-ticker.C:
 			updateStats(assets, tFinal, numRanges, datastore, relDB)
+			log.Info("...update done.")
 		}
 	}
 
@@ -81,15 +83,20 @@ func updateStats(assets []dia.Asset, tFinal time.Time, numRanges int, datastore 
 
 	for _, asset := range assets {
 		// 1. Fetch trades for @asset in batches.
+		log.Infof("collect trades for: %s - %s ...", asset.Address, asset.Blockchain)
 		trades, err := datastore.GetTradesByExchangesBatchedFull(asset, []string{}, true, starttimes, endtimes)
 		if err != nil {
 			log.Fatal("GetTradesByExchangesBatched: ", err)
 		}
+		log.Info("...done collecting trades.")
 
 		// 2. Get volumes per exchange and per pair.
 		aggVolumes := computePairStats(asset, trades, tFinal)
 		for _, pv := range aggVolumes {
 			err = relDB.SetAggregatedVolume(pv)
+			if err != nil {
+				log.Errorf("SetAggregatedVolume for %s - %s: %v", asset.Address, asset.Blockchain, err)
+			}
 		}
 
 		// 3. Get statistics on trades' frequency and distribution
@@ -98,8 +105,9 @@ func updateStats(assets []dia.Asset, tFinal time.Time, numRanges int, datastore 
 		tradesFreq := computeTradesFrequency(asset, trades, binDuration, starttime, tFinal)
 		err = relDB.SetTradesDistribution(tradesFreq)
 		if err != nil {
-			log.Error("set trades distribution: ", err)
+			log.Error("set trades distributionfor %s - %s: %v", asset.Address, asset.Blockchain, err)
 		}
+
 	}
 }
 

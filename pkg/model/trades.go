@@ -111,9 +111,7 @@ func (datastore *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, s
 	query := fmt.Sprintf("SELECT time,estimatedUSDPrice,verified,foreignTradeID,pair,price,symbol,volume,verified,basetokenblockchain,basetokenaddress FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' %s AND estimatedUSDPrice > 0 AND time >= %d AND time <= %d ", influxDbTradesTable, asset.Address, asset.Blockchain, subQuery, startTime.UnixNano(), endTime.UnixNano())
 
 	log.Infoln("GetTradesByExchanges Query", query)
-	timeStart := time.Now()
 	res, err := queryInfluxDB(datastore.influxClient, query)
-	timeEnd := time.Now()
 	if err != nil {
 		return r, err
 	}
@@ -129,7 +127,6 @@ func (datastore *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, s
 		log.Errorf("Empty response GetTradesByExchanges for %s \n", asset.Symbol)
 		return nil, fmt.Errorf("no trades found")
 	}
-	log.Infoln(fmt.Sprintf("Started at: %s, ended at: %s, finalized at: %s total trades at: %d", timeStart, timeEnd, time.Now(), len(r)))
 	return r, nil
 }
 
@@ -158,10 +155,7 @@ func (datastore *DB) GetTradesByExchangesBatchedFull(asset dia.Asset, exchanges 
 		query = query + fmt.Sprintf("SELECT time,estimatedUSDPrice,exchange,foreignTradeID,pair,price,symbol,volume,verified,basetokenblockchain,basetokenaddress  FROM %s WHERE quotetokenaddress='%s' AND quotetokenblockchain='%s' %s AND estimatedUSDPrice > 0 AND time > %d AND time <= %d ;", influxDbTradesTable, asset.Address, asset.Blockchain, subQuery, startTimes[i].UnixNano(), endTimes[i].UnixNano())
 	}
 
-	// log.Infoln("GetTradesByExchangesBatched Queries:", query)
-	timeStart := time.Now()
 	res, err := queryInfluxDB(datastore.influxClient, query)
-	timeEnd := time.Now()
 	if err != nil {
 		return r, err
 	}
@@ -181,7 +175,7 @@ func (datastore *DB) GetTradesByExchangesBatchedFull(asset dia.Asset, exchanges 
 		log.Errorf("Empty response GetTradesByExchangesBatched for %s \n", asset.Symbol)
 		return nil, fmt.Errorf("no trades found")
 	}
-	log.Infoln(fmt.Sprintf("Started at: %s, ended at: %s, finalized at: %s", timeStart, timeEnd, time.Now()))
+
 	return r, nil
 }
 
