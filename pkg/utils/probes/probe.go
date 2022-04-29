@@ -13,7 +13,7 @@ type probe func() bool
 var livenessProbe probe
 var readinessProbe probe
 
-func main(liveness probe, readiness probe) {
+func Start(liveness probe, readiness probe) {
 
 	livenessProbe = liveness
 	readinessProbe = readiness
