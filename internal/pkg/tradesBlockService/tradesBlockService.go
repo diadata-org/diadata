@@ -12,6 +12,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/sirupsen/logrus"
 )
 
@@ -129,7 +130,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				// price, err = s.datastore.GetAssetPriceUSDLatest(t.BaseToken)
 
 				basetoken := t.BaseToken
-				// Tmp solution for prices on Solana, Metis and Fantom:------
+				// Tmp solution for prices on Solana, Metis, Fantom and Telos:------
 				if basetoken.Blockchain == dia.SOLANA && t.Source == dia.SerumExchange && basetoken.Address == "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" {
 					basetoken = dia.Asset{
 						Symbol:     "USDC",
@@ -149,6 +150,13 @@ func (s *TradesBlockService) process(t dia.Trade) {
 						Symbol:     "FTM",
 						Address:    "0x0000000000000000000000000000000000000000",
 						Blockchain: "Fantom",
+					}
+				}
+				if basetoken.Blockchain == dia.TELOS && (t.Source == dia.OmniDexExchange) && basetoken.Address == common.HexToAddress("0xd102ce6a4db07d247fcc28f366a623df0938ca9e").Hex() {
+					basetoken = dia.Asset{
+						Symbol:     "TLOS",
+						Address:    "0x0000000000000000000000000000000000000000",
+						Blockchain: "Telos",
 					}
 				}
 
