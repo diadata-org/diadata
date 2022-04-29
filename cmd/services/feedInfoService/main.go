@@ -121,7 +121,7 @@ func computePairStats(asset dia.Asset, trades []dia.Trade, timestamp time.Time) 
 	for _, trade := range trades {
 		basetoken, err := getBasetoken(basetokenMap, trade.BaseToken, relDB)
 		if err != nil {
-			log.Error("get basetoken: ", err)
+			log.Errorf("get basetoken %v: %v", trade.BaseToken, err)
 		}
 		pair := dia.Pair{
 			QuoteToken: quotetoken,
