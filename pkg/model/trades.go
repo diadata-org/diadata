@@ -108,7 +108,7 @@ func (datastore *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, s
 		}
 		subQuery = "and exchange =~ /" + strings.TrimRight(subQuery, "|") + "/"
 	}
-	query := fmt.Sprintf("SELECT time,estimatedUSDPrice,verified,foreignTradeID,pair,price,symbol,volume,verified, basetokenblockchain,basetokenaddress FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' %s and estimatedUSDPrice > 0 and time >= %d AND time <= %d ", influxDbTradesTable, asset.Address, asset.Blockchain, subQuery, startTime.UnixNano(), endTime.UnixNano())
+	query := fmt.Sprintf("SELECT time,estimatedUSDPrice,verified,foreignTradeID,pair,price,symbol,volume,verified,basetokenblockchain,basetokenaddress FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' %s AND estimatedUSDPrice > 0 AND time >= %d AND time <= %d ", influxDbTradesTable, asset.Address, asset.Blockchain, subQuery, startTime.UnixNano(), endTime.UnixNano())
 
 	log.Infoln("GetTradesByExchanges Query", query)
 	timeStart := time.Now()
@@ -136,6 +136,12 @@ func (datastore *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, s
 // GetTradesByExchangesBatched executes multiple select queries on the trades table in one batch.
 // The time ranges of the queries are given by the intervals [startTimes[i], endTimes[i]].
 func (datastore *DB) GetTradesByExchangesBatched(asset dia.Asset, exchanges []string, startTimes, endTimes []time.Time) ([]dia.Trade, error) {
+	return datastore.GetTradesByExchangesBatchedFull(asset, exchanges, false, startTimes, endTimes)
+}
+
+// GetTradesByExchangesBatchedFull executes multiple select queries on the trades table in one batch.
+// The time ranges of the queries are given by the intervals [startTimes[i], endTimes[i]].
+func (datastore *DB) GetTradesByExchangesBatchedFull(asset dia.Asset, exchanges []string, returnBasetoken bool, startTimes, endTimes []time.Time) ([]dia.Trade, error) {
 	var r []dia.Trade
 	if len(startTimes) != len(endTimes) {
 		return []dia.Trade{}, errors.New("number of start times must equal number of end times.")
@@ -149,10 +155,10 @@ func (datastore *DB) GetTradesByExchangesBatched(asset dia.Asset, exchanges []st
 			}
 			subQuery = "and exchange =~ /" + strings.TrimRight(subQuery, "|") + "/"
 		}
-		query = query + fmt.Sprintf("SELECT time, estimatedUSDPrice, exchange, foreignTradeID, pair, price,symbol, volume,verified, basetokenblockchain,basetokenaddress  FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' %s and estimatedUSDPrice > 0 and time >= %d AND time <= %d ;", influxDbTradesTable, asset.Address, asset.Blockchain, subQuery, startTimes[i].UnixNano(), endTimes[i].UnixNano())
+		query = query + fmt.Sprintf("SELECT time,estimatedUSDPrice,exchange,foreignTradeID,pair,price,symbol,volume,verified,basetokenblockchain,basetokenaddress  FROM %s WHERE quotetokenaddress='%s' AND quotetokenblockchain='%s' %s AND estimatedUSDPrice > 0 AND time > %d AND time <= %d ;", influxDbTradesTable, asset.Address, asset.Blockchain, subQuery, startTimes[i].UnixNano(), endTimes[i].UnixNano())
 	}
 
-	log.Infoln("GetTradesByExchangesBatched Queries:", query)
+	// log.Infoln("GetTradesByExchangesBatched Queries:", query)
 	timeStart := time.Now()
 	res, err := queryInfluxDB(datastore.influxClient, query)
 	timeEnd := time.Now()
@@ -164,7 +170,7 @@ func (datastore *DB) GetTradesByExchangesBatched(asset dia.Asset, exchanges []st
 		for i := range res {
 			if len(res[i].Series) > 0 {
 				for _, row := range res[i].Series[0].Values {
-					t := parseTrade(row, false)
+					t := parseTrade(row, returnBasetoken)
 					if t != nil {
 						r = append(r, *t)
 					}

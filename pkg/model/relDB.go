@@ -31,6 +31,11 @@ type RelDatastore interface {
 	SetAssetVolume24H(asset dia.Asset, volume float64) error
 	GetAssetVolume24H(asset dia.Asset) (float64, error)
 	GetAssetsWithVOL(numAssets int64, substring string) ([]dia.Asset, error)
+	SetAggregatedVolume(aggVol dia.AggregatedVolume) error
+	GetAggregatedVolumes(asset dia.Asset, starttime time.Time, endtime time.Time) ([]dia.AggregatedVolume, error)
+	GetAggVolumesByExchange(asset dia.Asset, starttime time.Time, endtime time.Time) ([]dia.ExchangeVolume, error)
+	SetTradesDistribution(tradesDist dia.TradesDistribution) error
+	GetTradesDistribution(asset dia.Asset, starttime time.Time, endtime time.Time) ([]dia.TradesDistribution, error)
 
 	// --------------- asset methods for exchanges ---------------
 	SetExchangePair(exchange string, pair dia.ExchangePair, cache bool) error
@@ -104,11 +109,13 @@ type RelDatastore interface {
 const (
 
 	// postgres tables
-	assetTable          = "asset"
-	exchangepairTable   = "exchangepair"
-	exchangesymbolTable = "exchangesymbol"
-	blockchainTable     = "blockchain"
-	assetVolumeTable    = "assetvolume"
+	assetTable              = "asset"
+	exchangepairTable       = "exchangepair"
+	exchangesymbolTable     = "exchangesymbol"
+	blockchainTable         = "blockchain"
+	assetVolumeTable        = "assetvolume"
+	aggregatedVolumeTable   = "aggregatedvolume"
+	tradesDistributionTable = "tradesdistribution"
 
 	// cache keys
 	keyAssetCache        = "dia_asset_"

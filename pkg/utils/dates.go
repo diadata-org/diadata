@@ -123,3 +123,18 @@ func GetTomorrow(date, layout string) string {
 	tomorrow := dateTime.AddDate(0, 0, 1)
 	return tomorrow.Format(layout)
 }
+
+// MakeTimeRanges returns @numRanges start- and endtimes partitioning [@timeInit, @timeFinal] in intervals of identical size.
+func MakeTimeRanges(timeInit, timeFinal time.Time, numRanges int) (starttimes, endtimes []time.Time) {
+	a := timeInit
+	b := timeFinal
+	totalSize := b.Sub(a)
+	sizeRange := totalSize / time.Duration(numRanges)
+	starttime := timeInit
+	for k := 0; k < numRanges; k++ {
+		starttimes = append(starttimes, starttime)
+		endtimes = append(endtimes, starttime.Add(sizeRange))
+		starttime = starttime.Add(sizeRange)
+	}
+	return
+}
