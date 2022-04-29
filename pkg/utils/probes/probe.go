@@ -15,6 +15,7 @@ var readinessProbe probe
 
 func Start(liveness probe, readiness probe) {
 
+	log.Infoln("Ready and Live probes loading")
 	livenessProbe = liveness
 	readinessProbe = readiness
 
@@ -29,6 +30,7 @@ func Start(liveness probe, readiness probe) {
 	if err != nil {
 		log.Error(err)
 	}
+	log.Infoln("Ready and Live probes starting")
 }
 
 func execReadiness(context *gin.Context) {
@@ -40,8 +42,9 @@ func execLiveness(context *gin.Context) {
 }
 
 func executeProbe(context *gin.Context, fn probe) bool {
+	log.Infoln("probe has been started")
 	if fn() {
-		context.JSON(200, gin.H{"message": "success"})
+		context.JSON(http.StatusOK, gin.H{"message": "success"})
 		return true
 	}
 	restApi.SendError(context, http.StatusInternalServerError, nil)
