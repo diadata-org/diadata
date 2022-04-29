@@ -27,11 +27,11 @@ func InfluxState() (state config.State) {
 }
 
 func RedisState() (state config.State) {
-	return getServiceState("Redis", "redis-master")
+	return getServiceState("Redis", "redis-dia-master")
 }
 
 func PostgresState() (state config.State) {
-	return getServiceState("Postgres", "postgres-postgresql")
+	return getServiceState("Postgres", "postgresql")
 }
 
 func KafkaState() (state config.State) {
