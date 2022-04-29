@@ -10,10 +10,11 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
 
-var ZBSocketURL string = "wss://api.zb.cafe/websocket"
+var ZBSocketURL string = "wss://api.zb.live/websocket"
 
 type ZBSubscribe struct {
 	Event   string `json:"event"`
@@ -63,8 +64,11 @@ func NewZBScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *ZBSc
 		chanTrades:   make(chan *dia.Trade),
 		db:           relDB,
 	}
+
+	ZBWsURL := utils.Getenv("ZB_WS_URL", ZBSocketURL)
+
 	var wsDialer ws.Dialer
-	SwConn, _, err := wsDialer.Dial(ZBSocketURL, nil)
+	SwConn, _, err := wsDialer.Dial(ZBWsURL, nil)
 	if err != nil {
 		println(err.Error())
 	}
