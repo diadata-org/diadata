@@ -175,4 +175,32 @@ CREATE TABLE assetpriceident (
     rank_in_group numeric not null,
     UNIQUE(asset_id),
     UNIQUE(group_id, rank_in_group)
-)
+);
+
+CREATE TABLE aggregatedvolume (
+    aggregatedvolume_id UUID DEFAULT gen_random_uuid(),
+    quotetoken_id uuid REFERENCES asset(asset_id),
+    basetoken_id uuid REFERENCES asset(asset_id),
+    volume numeric,
+    exchange text,
+    time_range_seconds numeric not null,
+    compute_time timestamp not null
+);
+
+CREATE TABLE tradesdistribution (
+    tradesdistribution_id UUID DEFAULT gen_random_uuid(),
+    asset_id uuid REFERENCES asset(asset_id),
+    -- total number of trades in [compute_time-time_range_seconds, compute_time]
+	num_trades_total numeric,
+    -- number of bins with less than @threshold trades
+	num_low_bins numeric,
+	threshold numeric,
+	size_bin_seconds numeric,
+    avg_num_per_bin numeric,
+	std_deviation numeric,
+    -- total time range under consideration (for instance 24h = 86400s)
+    time_range_seconds numeric not null,
+    compute_time timestamp
+);
+
+
