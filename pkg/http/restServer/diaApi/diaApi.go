@@ -1966,13 +1966,102 @@ func (env *Env) GetNFTPrice30Days(c *gin.Context) {
 	c.JSON(http.StatusOK, avgPrice)
 }
 
-func (env *Env) GetVolumePerExchange(c *gin.Context) {
+func (env *Env) GetFeedStats(c *gin.Context) {
+
 	blockchain := c.Param("blockchain")
-	address := common.HexToAddress(c.Param("address")).Hex()
-	exchangeVolume, err := env.DataStore.Get24HVolumePerExchange(dia.Asset{Blockchain: blockchain, Address: address})
+	address := c.Param("address")
+	starttimeStr := c.Query("starttime")
+	endtimeStr := c.Query("endtime")
+	var starttime time.Time
+	var endtime time.Time
+
+	if endtimeStr == "" {
+		endtime = time.Now()
+	} else {
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	}
+	if starttimeStr == "" {
+		starttime = endtime.AddDate(0, 0, -1)
+	} else {
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+	}
+
+	asset, err := env.RelDB.GetAsset(address, blockchain)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
 	}
 
-	c.JSON(http.StatusOK, exchangeVolume)
+	exchVolumes, err := env.RelDB.GetAggVolumesByExchange(asset, starttime, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+
+	pairVolumes, err := env.RelDB.GetAggVolumesByPair(asset, starttime, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+
+	tradesDist, err := env.RelDB.GetTradesDistribution(asset, starttime, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+
+	type localDistType struct {
+		NumTradesTotal   int     `json:"NumTradesTotal"`
+		NumLowBins       int     `json:"NumberLowBins"`
+		Threshold        int     `json:"Threshold"`
+		SizeBinSeconds   int64   `json:"SizeBin"`
+		AvgNumPerBin     float64 `json:"AverageNumberPerBin"`
+		StdDeviation     float64 `json:"StandardDeviation"`
+		TimeRangeSeconds int64   `json:"TimeRangeSeconds"`
+	}
+	var tradesDistReduced []localDistType
+	for _, val := range tradesDist {
+		tradesDistReduced = append(tradesDistReduced, localDistType{
+			NumTradesTotal:   val.NumTradesTotal,
+			NumLowBins:       val.NumLowBins,
+			Threshold:        val.Threshold,
+			SizeBinSeconds:   val.SizeBinSeconds,
+			AvgNumPerBin:     val.AvgNumPerBin,
+			StdDeviation:     val.StdDeviation,
+			TimeRangeSeconds: val.TimeRangeSeconds,
+		})
+	}
+
+	type localReturn struct {
+		ExchangeVolumes    []dia.ExchangeVolume
+		PairVolumes        []dia.PairVolume
+		TradesDistribution localDistType
+		Timestamp          time.Time
+	}
+
+	var retVal []localReturn
+
+	for i := range exchVolumes {
+		var l localReturn
+		l.ExchangeVolumes = exchVolumes[i].Volumes
+		l.PairVolumes = pairVolumes[i].Volumes
+		l.Timestamp = exchVolumes[i].Timestamp
+		if len(tradesDistReduced) > i {
+			l.TradesDistribution = tradesDistReduced[i]
+		}
+		retVal = append(retVal, l)
+	}
+	if endtimeStr == "" && starttimeStr == "" {
+		if len(retVal) > 0 {
+			c.JSON(http.StatusOK, retVal[0])
+		}
+	} else {
+		c.JSON(http.StatusOK, retVal)
+	}
 }

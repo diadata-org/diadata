@@ -33,7 +33,8 @@ type RelDatastore interface {
 	GetAssetsWithVOL(numAssets int64, substring string) ([]dia.Asset, error)
 	SetAggregatedVolume(aggVol dia.AggregatedVolume) error
 	GetAggregatedVolumes(asset dia.Asset, starttime time.Time, endtime time.Time) ([]dia.AggregatedVolume, error)
-	GetAggVolumesByExchange(asset dia.Asset, starttime time.Time, endtime time.Time) ([]dia.ExchangeVolume, error)
+	GetAggVolumesByExchange(asset dia.Asset, starttime time.Time, endtime time.Time) ([]dia.ExchangeVolumesList, error)
+	GetAggVolumesByPair(asset dia.Asset, starttime time.Time, endtime time.Time) ([]dia.PairVolumesList, error)
 	SetTradesDistribution(tradesDist dia.TradesDistribution) error
 	GetTradesDistribution(asset dia.Asset, starttime time.Time, endtime time.Time) ([]dia.TradesDistribution, error)
 

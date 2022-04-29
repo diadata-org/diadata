@@ -152,7 +152,7 @@ func (datastore *DB) GetTradesByExchangesBatchedFull(asset dia.Asset, exchanges 
 			}
 			subQuery = "and exchange =~ /" + strings.TrimRight(subQuery, "|") + "/"
 		}
-		query = query + fmt.Sprintf("SELECT time,estimatedUSDPrice,exchange,foreignTradeID,pair,price,symbol,volume,verified,basetokenblockchain,basetokenaddress  FROM %s WHERE quotetokenaddress='%s' AND quotetokenblockchain='%s' %s AND estimatedUSDPrice > 0 AND time > %d AND time <= %d ;", influxDbTradesTable, asset.Address, asset.Blockchain, subQuery, startTimes[i].UnixNano(), endTimes[i].UnixNano())
+		query = query + fmt.Sprintf("SELECT time,estimatedUSDPrice,exchange,foreignTradeID,pair,price,symbol,volume,verified,basetokenblockchain,basetokenaddress FROM %s WHERE quotetokenaddress='%s' AND quotetokenblockchain='%s' %s AND estimatedUSDPrice > 0 AND time > %d AND time <= %d ;", influxDbTradesTable, asset.Address, asset.Blockchain, subQuery, startTimes[i].UnixNano(), endTimes[i].UnixNano())
 	}
 
 	res, err := queryInfluxDB(datastore.influxClient, query)
