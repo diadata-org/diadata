@@ -2018,6 +2018,7 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 
 	type localDistType struct {
 		NumTradesTotal   int     `json:"NumTradesTotal"`
+		NumBins          int     `json:"NumBins"`
 		NumLowBins       int     `json:"NumberLowBins"`
 		Threshold        int     `json:"Threshold"`
 		SizeBinSeconds   int64   `json:"SizeBin"`
@@ -2029,6 +2030,7 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 	for _, val := range tradesDist {
 		tradesDistReduced = append(tradesDistReduced, localDistType{
 			NumTradesTotal:   val.NumTradesTotal,
+			NumBins:          int(val.TimeRangeSeconds) / int(val.SizeBinSeconds),
 			NumLowBins:       val.NumLowBins,
 			Threshold:        val.Threshold,
 			SizeBinSeconds:   val.SizeBinSeconds,
@@ -2040,6 +2042,8 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 
 	type localReturn struct {
 		Timestamp          time.Time
+		TotalVolume        float64
+		Price              float64
 		ExchangeVolumes    []dia.ExchangeVolume
 		PairVolumes        []dia.PairVolume
 		TradesDistribution localDistType
@@ -2047,16 +2051,30 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 
 	var retVal []localReturn
 
+	// Fill local return type.
 	for i := range exchVolumes {
 		var l localReturn
+		var price float64
 		l.ExchangeVolumes = exchVolumes[i].Volumes
+		// Compute total volume.
+		for _, vol := range l.ExchangeVolumes {
+			l.TotalVolume += vol.Volume
+		}
 		l.PairVolumes = pairVolumes[i].Volumes
 		l.Timestamp = exchVolumes[i].Timestamp
+		// Get Price.
+		price, err = env.DataStore.GetAssetPriceUSD(asset, l.Timestamp)
+		if err != nil {
+			log.New().Errorf("get price usd for asset %v: %v", asset, err)
+		}
+		l.Price = price
 		if len(tradesDistReduced) > i {
 			l.TradesDistribution = tradesDistReduced[i]
 		}
 		retVal = append(retVal, l)
 	}
+
+	// If no time-range is given, don't return a slice of length 1.
 	if endtimeStr == "" && starttimeStr == "" {
 		if len(retVal) > 0 {
 			c.JSON(http.StatusOK, retVal[0])
@@ -2064,4 +2082,5 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, retVal)
 	}
+
 }
