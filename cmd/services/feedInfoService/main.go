@@ -20,8 +20,6 @@ var (
 	relDB     *models.RelDB
 	err       error
 	// local caches for pair-exchange and basetokens
-	pairMap            = make(map[string]struct{})
-	pairExchangeMap    = make(map[string]struct{})
 	pairExchangeVolMap = make(map[dia.Pair]map[string]float64)
 	basetokenMap       = make(map[string]dia.Asset)
 	assets             []dia.Asset
@@ -113,6 +111,11 @@ func updateStats(assets []dia.Asset, tFinal time.Time, numRanges int, datastore 
 
 // computePairStats takes a slice of trades with @asset as quotetoken asset. It returns a slice of aggregated volumes.
 func computePairStats(asset dia.Asset, trades []dia.Trade, timestamp time.Time) (pairVolumes []dia.AggregatedVolume) {
+	var (
+		pairMap         = make(map[string]struct{})
+		pairExchangeMap = make(map[string]struct{})
+	)
+
 	quotetoken, err := relDB.GetAsset(asset.Address, asset.Blockchain)
 	if err != nil {
 		log.Fatal("get quotetoken: ", err)
@@ -137,11 +140,11 @@ func computePairStats(asset dia.Asset, trades []dia.Trade, timestamp time.Time) 
 			pairMap[pairID] = struct{}{}
 		} else {
 			if _, ok := pairExchangeMap[pairExchangeID]; !ok {
-				// Pair is registered, but not on this exchange yet
+				// Pair is registered, but not on this exchange yet.
 				pairExchangeVolMap[pair][trade.Source] = trade.EstimatedUSDPrice * math.Abs(trade.Volume)
 				pairExchangeMap[pairExchangeID] = struct{}{}
 			} else {
-				// Pair is already registered for given exchange
+				// Pair is already registered for given exchange.
 				pairExchangeVolMap[pair][trade.Source] += trade.EstimatedUSDPrice * math.Abs(trade.Volume)
 			}
 		}
