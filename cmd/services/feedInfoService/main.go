@@ -134,10 +134,12 @@ func computePairStats(asset dia.Asset, trades []dia.Trade, timestamp time.Time) 
 			// Pair is not registered yet.
 			pairExchangeVolMap[pair] = make(map[string]float64)
 			pairExchangeVolMap[pair][trade.Source] = trade.EstimatedUSDPrice * math.Abs(trade.Volume)
+			pairMap[pairID] = struct{}{}
 		} else {
 			if _, ok := pairExchangeMap[pairExchangeID]; !ok {
 				// Pair is registered, but not on this exchange yet
 				pairExchangeVolMap[pair][trade.Source] = trade.EstimatedUSDPrice * math.Abs(trade.Volume)
+				pairExchangeMap[pairExchangeID] = struct{}{}
 			} else {
 				// Pair is already registered for given exchange
 				pairExchangeVolMap[pair][trade.Source] += trade.EstimatedUSDPrice * math.Abs(trade.Volume)

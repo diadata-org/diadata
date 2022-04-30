@@ -358,6 +358,9 @@ func (rdb *RelDB) GetAggVolumesByPair(asset dia.Asset, starttime time.Time, endt
 		if symbol.Valid {
 			pair.BaseToken.Symbol = symbol.String
 		}
+		if name.Valid {
+			pair.BaseToken.Name = name.String
+		}
 		decimals, err = strconv.Atoi(decimalsString)
 		if err != nil {
 			return

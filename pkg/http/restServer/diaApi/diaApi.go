@@ -2039,10 +2039,10 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 	}
 
 	type localReturn struct {
+		Timestamp          time.Time
 		ExchangeVolumes    []dia.ExchangeVolume
 		PairVolumes        []dia.PairVolume
 		TradesDistribution localDistType
-		Timestamp          time.Time
 	}
 
 	var retVal []localReturn
