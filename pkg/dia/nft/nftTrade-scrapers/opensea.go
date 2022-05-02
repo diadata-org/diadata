@@ -9,7 +9,6 @@ import (
 	"io"
 	"math/big"
 	"net/http"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -283,13 +282,13 @@ func (s *OpenSeaScraper) FetchTrades() error {
 		return err
 	}
 
-	// Start at later block in order to fetch recent trades parallel to historical scraper.
-	blockNumString := utils.Getenv("LAST_BLOCK_NUMBER", "14497342")
-	blockNum, err := strconv.ParseUint(blockNumString, 10, 64)
-	if err != nil {
-		log.Error("parse block number: ", err)
-	}
-	s.state.LastBlockNum = uint64(blockNum)
+	// // Start at later block in order to fetch recent trades parallel to historical scraper.
+	// blockNumString := utils.Getenv("LAST_BLOCK_NUMBER", "14497342")
+	// blockNum, err := strconv.ParseUint(blockNumString, 10, 64)
+	// if err != nil {
+	// 	log.Error("parse block number: ", err)
+	// }
+	// s.state.LastBlockNum = uint64(blockNum)
 
 	log.Infof("fetching opensea trade transactions from block %d(+%d)", s.state.LastBlockNum, s.conf.BatchSize)
 
