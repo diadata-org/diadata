@@ -9,6 +9,7 @@ import (
 	"io"
 	"math/big"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -33,7 +34,7 @@ const (
 	// we assume all of the NFTs traded on OpenSea are ERC721(1155 is an extension of it)
 	openSeaNFTContractType = "ERC721"
 
-	OpenSea = "OpenSea"
+	OpenSea = "OpenSeacurr"
 )
 
 type OpenSeaScraperConfig struct {
@@ -173,7 +174,7 @@ func NewOpenSeaScraper(rdb *models.RelDB) *OpenSeaScraper {
 			shutdownDone:  make(chan nothing),
 			datastore:     rdb,
 			chanTrade:     make(chan dia.NFTTrade),
-			source:        OpenSea,
+			source:        "OpenSea",
 			ethConnection: eth,
 		},
 	}
@@ -281,6 +282,14 @@ func (s *OpenSeaScraper) FetchTrades() error {
 		log.Warnf("unable to load scraper state: %s", err.Error())
 		return err
 	}
+
+	// Start at later block in order to fetch recent trades parallel to historical scraper.
+	blockNumString := utils.Getenv("LAST_BLOCK_NUMBER", "14497342")
+	blockNum, err := strconv.ParseUint(blockNumString, 10, 64)
+	if err != nil {
+		log.Error("parse block number: ", err)
+	}
+	s.state.LastBlockNum = uint64(blockNum)
 
 	log.Infof("fetching opensea trade transactions from block %d(+%d)", s.state.LastBlockNum, s.conf.BatchSize)
 
@@ -477,7 +486,7 @@ func (s *OpenSeaScraper) notifyTrade(ev *opensea.ContractOrdersMatched, transfer
 		BlockNumber:      ev.Raw.BlockNumber,
 		Timestamp:        timestamp,
 		TxHash:           ev.Raw.TxHash.Hex(),
-		Exchange:         OpenSea,
+		Exchange:         "OpenSea",
 	}
 
 	fmt.Println("found trade: ", trade)

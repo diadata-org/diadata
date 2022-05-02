@@ -79,6 +79,7 @@ type RelDatastore interface {
 
 	// NFT trading and bidding methods
 	SetNFTTrade(trade dia.NFTTrade) error
+	SetNFTTradeToTable(trade dia.NFTTrade, table string) error
 	GetNFTTrades(address string, blockchain string, tokenID string) ([]dia.NFTTrade, error)
 	GetNFTOffers(address string, blockchain string, tokenID string) ([]dia.NFTOffer, error)
 	GetNFTBids(address string, blockchain string, tokenID string) ([]dia.NFTBid, error)
@@ -122,14 +123,15 @@ const (
 	keyAssetCache        = "dia_asset_"
 	keyExchangePairCache = "dia_exchangepair_"
 
-	blockdataTable   = "blockdata"
-	nftcategoryTable = "nftcategory"
-	nftclassTable    = "nftclass"
-	nftTable         = "nft"
-	nfttradeTable    = "nfttrade"
-	nftbidTable      = "nftbid"
-	nftofferTable    = "nftoffer"
-	scrapersTable    = "scrapers"
+	blockdataTable    = "blockdata"
+	nftcategoryTable  = "nftcategory"
+	nftclassTable     = "nftclass"
+	nftTable          = "nft"
+	nfttradeTable     = "nfttrade"
+	NfttradeCurrTable = "nfttradecurrent"
+	nftbidTable       = "nftbid"
+	nftofferTable     = "nftoffer"
+	scrapersTable     = "scrapers"
 
 	// time format for blockchain genesis dates
 	// timeFormatBlockchain = "2006-01-02"

@@ -217,8 +217,13 @@ func (rdb *RelDB) GetLastBlockheightTopshot(upperBound time.Time) (uint64, error
 	return currentBlock, nil
 }
 
-// SetNFTTTrade stores @trade.
+//SetNFTTTrade is a wrapper for SetNFTTradeToTable that stores @trade into the main nfttrade table.
 func (rdb *RelDB) SetNFTTrade(trade dia.NFTTrade) error {
+	return rdb.SetNFTTradeToTable(trade, nfttradeTable)
+}
+
+//  SetNFTTradeToTable  stores into @table.
+func (rdb *RelDB) SetNFTTradeToTable(trade dia.NFTTrade, table string) error {
 	nftclassID, err := rdb.GetNFTClassID(trade.NFT.NFTClass.Address, trade.NFT.NFTClass.Blockchain)
 	if err != nil {
 		return err
@@ -229,7 +234,7 @@ func (rdb *RelDB) SetNFTTrade(trade dia.NFTTrade) error {
 	}
 	price := trade.Price.String()
 	tradeVars := "nftclass_id,nft_id,price,price_usd,transfer_from,transfer_to,currency_symbol,currency_address,currency_decimals,block_number,trade_time,tx_hash,marketplace"
-	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)", nfttradeTable, tradeVars)
+	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)", table, tradeVars)
 	_, err = rdb.postgresClient.Exec(context.Background(), query, nftclassID, nftID, price, trade.PriceUSD, trade.FromAddress, trade.ToAddress, trade.CurrencySymbol, trade.CurrencyAddress, trade.CurrencyDecimals, trade.BlockNumber, trade.Timestamp, trade.TxHash, trade.Exchange)
 	if err != nil {
 		return err
