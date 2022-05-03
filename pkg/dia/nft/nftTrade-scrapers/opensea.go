@@ -123,7 +123,7 @@ var (
 		WaitPeriod:      5 * time.Second,
 		FollowDist:      2,
 		UseArchiveNode:  false,
-		MaxRetry:        10,
+		MaxRetry:        5,
 		SkipOnErr:       true,
 		MaxMetadataSize: 50 * 1024,
 		MetadataTimeout: 30 * time.Second,
@@ -282,14 +282,6 @@ func (s *OpenSeaScraper) FetchTrades() error {
 		return err
 	}
 
-	// // Start at later block in order to fetch recent trades parallel to historical scraper.
-	// blockNumString := utils.Getenv("LAST_BLOCK_NUMBER", "14497342")
-	// blockNum, err := strconv.ParseUint(blockNumString, 10, 64)
-	// if err != nil {
-	// 	log.Error("parse block number: ", err)
-	// }
-	// s.state.LastBlockNum = uint64(blockNum)
-
 	log.Infof("fetching opensea trade transactions from block %d(+%d)", s.state.LastBlockNum, s.conf.BatchSize)
 
 	// fetch trade transactions
@@ -316,6 +308,7 @@ func (s *OpenSeaScraper) FetchTrades() error {
 		s.state.LastBlockNum = tx.BlockNum
 		s.state.LastTxIndex = tx.TXIndex
 		s.state.LastErr = ""
+		log.Info("current state.ErrCounter: ", s.state.ErrCounter)
 
 		skipped, err := s.processTx(ctx, tx)
 		if err != nil {
@@ -324,6 +317,11 @@ func (s *OpenSeaScraper) FetchTrades() error {
 			if s.state.ErrCounter <= s.conf.MaxRetry {
 				s.state.LastErr = fmt.Sprintf("unable to process trade transaction(%s): %s", tx.TXHash.Hex(), err.Error())
 				log.Error(s.state.LastErr)
+				// store state
+				if err := s.storeState(ctx); err != nil {
+					log.Warnf("unable to store scraper state: %s", err.Error())
+					return err
+				}
 				return err
 			}
 
@@ -370,6 +368,7 @@ func (s *OpenSeaScraper) processTx(ctx context.Context, tx *utils.EthFilteredTx)
 
 	marketContract, err := opensea.NewContract(tx.Logs[0].Address, s.tradeScraper.ethConnection)
 	if err != nil {
+		log.Errorf("unable to make new market contract for address: %s", tx.Logs[0].Address.Hex())
 		return false, err
 	}
 
