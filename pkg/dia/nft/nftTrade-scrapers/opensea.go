@@ -436,6 +436,11 @@ func (s *OpenSeaScraper) processTx(ctx context.Context, tx *utils.EthFilteredTx)
 		return true, nil
 	}
 
+	if transfers[0].NFTAddress == common.HexToAddress("0xA5c807A62CD6774d6BF518dD2dEc0aE17446Ad8d") {
+		log.Warnf("skip class %s because of decoding error.", "0xA5c807A62CD6774d6BF518dD2dEc0aE17446Ad8d")
+		return true, nil
+	}
+
 	normPrice := decimal.NewFromBigInt(ev.Price, 0).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(int64(currDecimals))))
 
 	usdPrice, err := s.calcUSDPrice(ev.Raw.BlockNumber, currAddr, currSymbol, normPrice)
