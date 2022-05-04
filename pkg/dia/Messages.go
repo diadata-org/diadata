@@ -38,6 +38,7 @@ const (
 	FETCH                                   = "Fetch"
 	FUSE                                    = "Fuse"
 	TELOS                                   = "Telos"
+	EVMOS                                   = "Evmos"
 	FIAT                                    = "Fiat"
 )
 

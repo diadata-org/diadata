@@ -21,6 +21,7 @@ var (
 	swapTradesOnExchange = []string{
 		dia.CurveFIExchange,
 		dia.OmniDexExchange,
+		dia.DiffusionExchange,
 	}
 )
 

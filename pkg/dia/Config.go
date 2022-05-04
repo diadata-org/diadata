@@ -10,6 +10,7 @@ import (
 )
 
 const (
+	DiffusionExchange         = "Diffusion"
 	OmniDexExchange           = "OmniDex"
 	NetswapExchange           = "Netswap"
 	TethysExchange            = "Tethys"

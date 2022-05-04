@@ -135,28 +135,35 @@ func (s *TradesBlockService) process(t dia.Trade) {
 					basetoken = dia.Asset{
 						Symbol:     "USDC",
 						Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-						Blockchain: "Ethereum",
+						Blockchain: dia.ETHEREUM,
 					}
 				}
 				if basetoken.Blockchain == dia.METIS && (t.Source == dia.NetswapExchange || t.Source == dia.TethysExchange || t.Source == dia.HermesExchange) && basetoken.Address == "0xEA32A96608495e54156Ae48931A7c20f0dcc1a21" {
 					basetoken = dia.Asset{
 						Symbol:     "USDC",
 						Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-						Blockchain: "Ethereum",
+						Blockchain: dia.ETHEREUM,
 					}
 				}
 				if basetoken.Blockchain == dia.FANTOM && (t.Source == dia.SpookyswapExchange || t.Source == dia.SpiritswapExchange || t.Source == dia.BeetsExchange) && basetoken.Address == "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83" {
 					basetoken = dia.Asset{
 						Symbol:     "FTM",
 						Address:    "0x0000000000000000000000000000000000000000",
-						Blockchain: "Fantom",
+						Blockchain: dia.FANTOM,
 					}
 				}
 				if basetoken.Blockchain == dia.TELOS && (t.Source == dia.OmniDexExchange) && basetoken.Address == common.HexToAddress("0xd102ce6a4db07d247fcc28f366a623df0938ca9e").Hex() {
 					basetoken = dia.Asset{
 						Symbol:     "TLOS",
 						Address:    "0x0000000000000000000000000000000000000000",
-						Blockchain: "Telos",
+						Blockchain: dia.TELOS,
+					}
+				}
+				if basetoken.Blockchain == dia.EVMOS && t.Source == dia.DiffusionExchange && basetoken.Address == common.HexToAddress("0x51e44FfaD5C2B122C8b635671FCC8139dc636E82").Hex() {
+					basetoken = dia.Asset{
+						Symbol:     "USDC",
+						Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+						Blockchain: dia.ETHEREUM,
 					}
 				}
 

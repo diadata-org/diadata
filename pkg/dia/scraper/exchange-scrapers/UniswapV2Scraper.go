@@ -63,6 +63,9 @@ const (
 	restDialTelos = ""
 	wsDialTelos   = ""
 
+	restDialEvmos = ""
+	wsDialEvmos   = ""
+
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
 	pancakeswapWaitMilliseconds = "200"
@@ -76,6 +79,7 @@ const (
 	moonriverWaitMilliseconds   = "500"
 	avalancheWaitMilliseconds   = "200"
 	telosWaitMilliseconds       = "400"
+	evmosWaitMilliseconds       = "400"
 )
 
 type UniswapToken struct {
@@ -189,6 +193,9 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 	case dia.OmniDexExchange:
 		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialTelos, wsDialTelos, telosWaitMilliseconds)
+	case dia.DiffusionExchange:
+		listenByAddress = false
+		s = makeUniswapScraper(exchange, listenByAddress, restDialEvmos, wsDialEvmos, evmosWaitMilliseconds)
 	}
 
 	if scrape {

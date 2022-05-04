@@ -47,6 +47,7 @@ func init() {
 	blockchains[dia.FETCH] = dia.BlockChain{Name: dia.FETCH, NativeToken: dia.Asset{Symbol: "FET"}, VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.FUSE] = dia.BlockChain{Name: dia.FUSE, NativeToken: dia.Asset{Symbol: "FUSE"}, VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.TELOS] = dia.BlockChain{Name: dia.TELOS, NativeToken: dia.Asset{Symbol: "TLOS"}, VerificationMechanism: dia.PROOF_OF_STAKE}
+	blockchains[dia.EVMOS] = dia.BlockChain{Name: dia.EVMOS, NativeToken: dia.Asset{Symbol: "EVMOS"}, VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.FIAT] = dia.BlockChain{Name: dia.FIAT}
 
 	Exchanges = make(map[string]dia.Exchange)
@@ -105,6 +106,7 @@ func init() {
 	Exchanges[dia.TethysExchange] = dia.Exchange{Name: dia.TethysExchange, Centralized: false, BlockChain: blockchains[dia.METIS], Contract: common.HexToAddress("0x2CdFB20205701FF01689461610C9F321D1d00F80"), WatchdogDelay: watchdogDelayLong}
 	Exchanges[dia.HermesExchange] = dia.Exchange{Name: dia.HermesExchange, Centralized: false, BlockChain: blockchains[dia.METIS], Contract: common.HexToAddress("0x633a093C9e94f64500FC8fCBB48e90dd52F6668F"), WatchdogDelay: watchdogDelayLong}
 	Exchanges[dia.OmniDexExchange] = dia.Exchange{Name: dia.OmniDexExchange, Centralized: false, BlockChain: blockchains[dia.TELOS], Contract: common.HexToAddress("0x7a2A35706f5d1CeE2faa8A254dd6F6D7d7Becc25"), WatchdogDelay: watchdogDelayLong}
+	Exchanges[dia.DiffusionExchange] = dia.Exchange{Name: dia.DiffusionExchange, Centralized: false, BlockChain: blockchains[dia.EVMOS], Contract: common.HexToAddress("0x6aBdDa34Fb225be4610a2d153845e09429523Cd2"), WatchdogDelay: watchdogDelayLong}
 	Exchanges[dia.BitMexExchange] = dia.Exchange{Name: dia.BitMexExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 
 	Exchanges[dia.SushiSwapExchangePolygon] = dia.Exchange{Name: dia.SushiSwapExchangePolygon, Centralized: false, BlockChain: blockchains[dia.POLYGON], Contract: common.HexToAddress("0xc35dadb65012ec5796536bd9864ed8773abc74c4"), WatchdogDelay: watchdogDelay}
@@ -269,6 +271,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapScraper(Exchanges[dia.HermesExchange], scrape)
 	case dia.OmniDexExchange:
 		return NewUniswapScraper(Exchanges[dia.OmniDexExchange], scrape)
+	case dia.DiffusionExchange:
+		return NewUniswapScraper(Exchanges[dia.DiffusionExchange], scrape)
 	// case dia.FinageForex:
 	// 	return NewFinageForexScraper(Exchanges[dia.FinageForex], scrape, relDB, key, secret)
 
