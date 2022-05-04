@@ -1,6 +1,11 @@
 {
   "Tokens": [
     {
+      "Symbol": "WEVMOS",
+      "Address": "0xD4949664cD82660AaE99bEdc034a0deA8A0bd517",
+      "Blockchain": "Evmos"
+    },
+    {
       "Symbol": "ASTR",
       "Address": "0x0000000000000000000000000000000000000000",
       "Blockchain": "Astar"
