@@ -45,17 +45,20 @@ func main() {
 
 	switch *scraperType {
 	case "CryptoPunks":
-		log.Println("NFT Data Scraper: Start scraping trades from Cryptopunks")
+		log.Println("NFT Trades Scraper: Start scraping trades from Cryptopunks")
 		scraper = nfttradescrapers.NewCryptoPunkScraper(rdb)
 	case "CryptoKitties":
-		log.Println("NFT Data Scraper: Start scraping trades from CryptoKitties")
+		log.Println("NFT Trades Scraper: Start scraping trades from CryptoKitties")
 		scraper = nfttradescrapers.NewCryptoKittiesScraper(rdb)
 	case "Topshot":
-		log.Println("NFT Data Scraper: Start scraping trades from NBA Topshot")
+		log.Println("NFT Trades Scraper: Start scraping trades from NBA Topshot")
 		scraper = nfttradescrapers.NewNBATopshotScraper(rdb)
 	case "Opensea":
-		log.Println("NFT Data Scraper: Start scraping trades from Opensea")
+		log.Println("NFT Trades Scraper: Start scraping trades from Opensea")
 		scraper = nfttradescrapers.NewOpenSeaScraper(rdb)
+	case "OpenseaBAYC":
+		log.Println("NFT Trades Scraper: Start scraping trades from Opensea")
+		scraper = nfttradescrapers.NewOpenSeaBAYCScraper(rdb)
 	default:
 		for {
 			time.Sleep(24 * time.Hour)
@@ -81,7 +84,8 @@ func handleData(tradeChannel chan dia.NFTTrade, wg *sync.WaitGroup, rdb *models.
 			log.Info("got trade: %s -> (%s) -> %s for %s (%.4f USD) \n", trade.FromAddress, trade.NFT.NFTClass.Name, trade.ToAddress, trade.CurrencySymbol, trade.PriceUSD)
 		}
 
-		err := rdb.SetNFTTradeToTable(trade, models.NfttradeCurrTable)
+		// err := rdb.SetNFTTradeToTable(trade, models.NfttradeCurrTable)
+		err := rdb.SetNFTTradeToTable(trade, models.NfttradeSumeriaTable)
 		if err != nil {
 			var pgErr *pgconn.PgError
 			if errors.As(err, &pgErr) {
