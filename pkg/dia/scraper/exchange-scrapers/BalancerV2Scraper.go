@@ -26,9 +26,9 @@ import (
 
 const (
 	balancerV2RateLimitPerSec = 50
-	balancerV2FilterPageSize  = 50000
-	balancerV2RestDial        = "https://rpc.ftm.tools/"
-	balancerV2WSDial          = "wss://wsapi.fantom.network/"
+	balancerV2FilterPageSize  = 5000
+	balancerV2RestDial        = ""
+	balancerV2WSDial          = ""
 )
 
 var (
@@ -92,10 +92,8 @@ func NewBalancerV2Scraper(exchange dia.Exchange, scrape bool) *BalancerV2Scraper
 	switch exchange.Name {
 	case dia.BalancerV2Exchange:
 		balancerV2StartBlockPoolRegister = 12272146
-		break
 	case dia.BeetsExchange:
 		balancerV2StartBlockPoolRegister = 16896080
-		break
 	}
 
 	ws, err := ethclient.Dial(utils.Getenv("ETH_URI_WS", balancerV2WSDial))
@@ -142,7 +140,7 @@ func (s *BalancerV2Scraper) mainLoop() {
 	pairs, err := s.FetchAvailablePairs()
 	if err != nil {
 		s.setError(err)
-		log.Fatalf("BalancerV2Scraper: Cannot fetch avaiable pairs ,err=%s", err.Error())
+		log.Fatalf("%s: Cannot fetch available pairs ,err=%s", s.exchangeName, err.Error())
 	}
 
 	for _, pair := range pairs {
@@ -155,20 +153,20 @@ func (s *BalancerV2Scraper) mainLoop() {
 	filterer, err := balancervault.NewBalancerVaultFilterer(common.HexToAddress(balancerV2VaultContract), s.ws)
 	if err != nil {
 		s.setError(err)
-		log.Fatal("BalancerV2Scraper: Cannot create vault filter, err=%s", err.Error())
+		log.Fatalf("%s: Cannot create vault filter, err=%s", s.exchangeName, err.Error())
 	}
 
 	currBlock, err := s.rest.BlockNumber(context.Background())
 	if err != nil {
 		s.setError(err)
-		log.Fatal("BalancerV2Scraper: Cannot get a current block number, err=%s", err.Error())
+		log.Fatalf("%s: Cannot get a current block number, err=%s", s.exchangeName, err.Error())
 	}
 
 	sink := make(chan *balancervault.BalancerVaultSwap)
 	sub, err := filterer.WatchSwap(&bind.WatchOpts{Start: &currBlock}, sink, nil, nil, nil)
 	if err != nil {
 		s.setError(err)
-		log.Fatal("BalancerV2Scraper: Cannot watch swap events, err=%s", err.Error())
+		log.Fatalf("%s: Cannot watch swap events, err=%s", s.exchangeName, err.Error())
 	}
 
 	defer sub.Unsubscribe()
@@ -185,7 +183,7 @@ func (s *BalancerV2Scraper) mainLoop() {
 			if !ok {
 				asset, err := s.assetFromToken(event.TokenIn)
 				if err != nil {
-					log.Warnf("BalancerV2Scraper: Retrieving asset-in %s, err=%s", event.TokenIn.Hex(), err.Error())
+					log.Warnf("%s: Retrieving asset-in %s, err=%s", s.exchangeName, event.TokenIn.Hex(), err.Error())
 
 					continue
 				}
@@ -197,7 +195,7 @@ func (s *BalancerV2Scraper) mainLoop() {
 			if !ok {
 				asset, err := s.assetFromToken(event.TokenOut)
 				if err != nil {
-					log.Warnf("BalancerV2Scraper: Retrieving asset-out %s, err=%s", event.TokenOut.Hex(), err.Error())
+					log.Warnf("%s: Retrieving asset-out %s, err=%s", s.exchangeName, event.TokenOut.Hex(), err.Error())
 
 					continue
 				}
@@ -297,10 +295,11 @@ func (s *BalancerV2Scraper) ScrapePair(pair dia.ExchangePair) (PairScraper, erro
 func (s *BalancerV2Scraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	pools, err := s.listPools()
 	if err != nil {
-		return nil, err
+		log.Warn("list pools: ", err)
+		// return nil, err
 	}
 
-	log.Info("BalancerV2Scraper: Total pools are ", len(pools))
+	log.Infof("%s: Total pools are %v", s.exchangeName, len(pools))
 
 	pp, err := s.listPairs(pools)
 	if err != nil {
@@ -317,7 +316,7 @@ func (s *BalancerV2Scraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err
 		}
 	}
 
-	log.Info("BalancerV2Scraper: Total pairs are ", len(pairs))
+	log.Infof("%s: Total pairs are %v", s.exchangeName, len(pairs))
 
 	return
 }
@@ -437,6 +436,7 @@ func (s *BalancerV2Scraper) listPools() ([][]common.Address, error) {
 			s.rl.Take()
 			pool, err := caller.GetPoolTokens(&bind.CallOpts{}, evt.PoolId)
 			if err != nil {
+				log.Warn("get pool tokens: ", err)
 				return err
 			}
 

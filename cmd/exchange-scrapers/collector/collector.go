@@ -22,6 +22,8 @@ var (
 		dia.CurveFIExchange,
 		dia.OmniDexExchange,
 		dia.DiffusionExchange,
+		dia.BalancerV2Exchange,
+		dia.BeetsExchange,
 	}
 )
 
