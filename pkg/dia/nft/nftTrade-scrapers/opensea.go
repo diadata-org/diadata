@@ -9,6 +9,7 @@ import (
 	"io"
 	"math/big"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -32,8 +33,6 @@ import (
 const (
 	// we assume all of the NFTs traded on OpenSea are ERC721(1155 is an extension of it)
 	openSeaNFTContractType = "ERC721"
-
-	OpenSea = "OpenSeacurr"
 )
 
 type OpenSeaScraperConfig struct {
@@ -118,7 +117,8 @@ var (
 	// default values are valid for the first run which is it saves
 	// these configs to the DB
 	defOpenSeaConf = &OpenSeaScraperConfig{
-		ContractAddr:    "0x7be8076f4ea4a4ad08075c2508e481d6c946d12b",
+		// ContractAddr:    "0x7be8076f4ea4a4ad08075c2508e481d6c946d12b", // Wyvern V1
+		ContractAddr:    "0x7f268357A8c2552623316e2562D90e642bB538E5", // Wyvern V2
 		BatchSize:       5000,
 		WaitPeriod:      5 * time.Second,
 		FollowDist:      2,
@@ -129,9 +129,16 @@ var (
 		MetadataTimeout: 30 * time.Second,
 	}
 
-	// OpenSea market contract has been deployed on the mainnet at
-	// block num 5774644, so scraper starts from this block
-	defOpenSeaState = &OpenSeaScraperState{LastBlockNum: 5774644}
+	// // OpenSea V1 market contract has been deployed on the mainnet at
+	// // block num 5774644, so scraper starts from this block
+	// defOpenSeaState = &OpenSeaScraperState{LastBlockNum: 5774644}
+
+	// OpenSea market V2 contract has been deployed on the mainnet at
+	// block num 14120913, so scraper starts from this block.
+	defOpenSeaState = &OpenSeaScraperState{LastBlockNum: 14120913}
+
+	// This string is the identifier of the scraper in conf and state fields in postgres.
+	OpenSea = ""
 
 	openSeaABI abi.ABI
 	erc20ABI   abi.ABI
@@ -155,6 +162,17 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+
+	OpenSea = utils.Getenv("SCRAPER_NAME_STATE", "")
+
+	// If scraper state is not set yet, start from this block
+	initBlockNumString := utils.Getenv("LAST_BLOCK_NUM", "14120913")
+	initBlockNum, err := strconv.ParseInt(initBlockNumString, 10, 64)
+	if err != nil {
+		log.Error("parse timeFinal: ", err)
+	}
+	defOpenSeaState.LastBlockNum = uint64(initBlockNum)
+
 }
 
 func NewOpenSeaScraper(rdb *models.RelDB) *OpenSeaScraper {
@@ -183,6 +201,8 @@ func NewOpenSeaScraper(rdb *models.RelDB) *OpenSeaScraper {
 		return nil
 	}
 
+	log.Info("scraper %s starts at block: %s", OpenSea, s.state.LastBlockNum)
+	time.Sleep(2 * time.Minute)
 	go s.mainLoop()
 
 	return s
