@@ -985,13 +985,13 @@
       "Ignore": false
     },
     {
-      "Symbol": "TER",
+      "Symbol": "TERRAUST",
       "ForeignName": "TERRAUST:USD",
       "Exchange": "Bitfinex",
       "Ignore": false
     },
     {
-      "Symbol": "TER",
+      "Symbol": "TERRAUST",
       "ForeignName": "TERRAUST:UST",
       "Exchange": "Bitfinex",
       "Ignore": false
