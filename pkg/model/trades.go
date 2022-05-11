@@ -163,12 +163,14 @@ func (datastore *DB) GetTradesByExchangesBatchedFull(asset dia.Asset, exchanges 
 	if len(res) > 0 {
 		for i := range res {
 			if len(res[i].Series) > 0 {
+				log.Infof("parse %v trades...", len(res[i].Series[0].Values))
 				for _, row := range res[i].Series[0].Values {
 					t := parseTrade(row, returnBasetoken)
 					if t != nil {
 						r = append(r, *t)
 					}
 				}
+				log.Info("...done parsing.")
 			}
 		}
 	} else {
