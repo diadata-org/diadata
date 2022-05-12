@@ -3,7 +3,7 @@ cover: .gitbook/assets/1_dZqpEo-3_IlZsrZ_J9X7Xw.png
 coverY: 0
 ---
 
-# 🤔 What is DIA?
+# 🏃 Get Started
 
 ## What is DIA?&#x20;
 
@@ -12,6 +12,8 @@ coverY: 0
 The DIA platform enables the sourcing, validation and sharing of transparent and verified data feeds for traditional and digital financial applications. DIA’s institutional-grade data feeds cover asset prices, metaverse data, lending rates and more.
 
 DIA’s data is directly sourced from a broad array of on-chain and off-chain sources at individual a trade-level. This allows DIA feeds to be fully customised with regards to the mix of sources and methodologies, resulting in tailor-made, high resilience feeds, setting a new paradigm for oracles.
+
+[![API Status](https://badgen.net/uptime-robot/status/m784441379-1bdbacd4cd81bf46c13bdb1f?label=API)](https://docs.diadata.org/api/docs/api) [![Pull Requests](https://badgen.net/github/prs/diadata-org/diadata?label=Pull%20Requests)](https://github.com/diadata-org/diadata/pulls)
 
 ## The DIA Ecosystem
 
@@ -74,10 +76,27 @@ Oracles can be customised to trigger updates based on:
   * **Methodology**: custom
   * **Sources**: custom
 
-## Support
-
-[![image-text](https://content.diadata.org/wp-content/uploads/2022/02/SP-technical.svg)](https://discord.gg/zFmXtPFgQj)[![image-text](https://content.diadata.org/wp-content/uploads/2022/02/SP-Custom-Oracle.svg)](https://medium.com/dia-insights/how-to-submit-a-dia-custom-delivery-request-cdr-in-5-minutes-6f88b0a4ca56)
-
 ## Contribute
 
-[![image-text](https://content.diadata.org/wp-content/uploads/2022/02/CB-Product.svg)](https://gitcoin.co/diadata-org)[![image-text](https://content.diadata.org/wp-content/uploads/2022/02/CB-Ecosystem.svg)](https://app.dework.xyz/dia-dao)
+DIA through its DAO operations is working towards building the biggest open-source data platform of Web3. To reach this goal, DIA leverages the power of communities and decentralisation on many levels to scale its product developmet and growth.&#x20;
+
+Contribute to the DAO through the two verticals below:
+
+{% content-ref url="contribute/product-development.md" %}
+[product-development.md](contribute/product-development.md)
+{% endcontent-ref %}
+
+{% content-ref url="contribute/ecosystem-growth.md" %}
+[ecosystem-growth.md](contribute/ecosystem-growth.md)
+{% endcontent-ref %}
+
+## Support
+
+{% content-ref url="support/discord.md" %}
+[discord.md](support/discord.md)
+{% endcontent-ref %}
+
+{% content-ref url="support/request-a-custom-oracle.md" %}
+[request-a-custom-oracle.md](support/request-a-custom-oracle.md)
+{% endcontent-ref %}
+

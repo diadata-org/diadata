@@ -4,9 +4,9 @@ description: >-
   Web3.
 ---
 
-# 🏃 Get Started
+# Old homepage
 
-[![API Status](https://badgen.net/uptime-robot/status/m784441379-1bdbacd4cd81bf46c13bdb1f?label=API)](https://docs.diadata.org/api/docs/api) [![Pull Requests](https://badgen.net/github/prs/diadata-org/diadata?label=Pull%20Requests)](https://github.com/diadata-org/diadata/pulls)
+
 
 ## Get started right away
 

@@ -2,8 +2,7 @@
 
 ## Introduction
 
-* [🤔 What is DIA?](README.md)
-* [🏃 Get Started](<README (1).md>)
+* [🏃 Get Started](README.md)
 
 ## Documentation
 
@@ -73,3 +72,4 @@
 * [🐛 Security Bounty Program](security-bounty-program.md)
 * [🤝 Licence Agreement](licence-agreement.md)
 * [ℹ Disclaimer](disclaimer.md)
+* [Old homepage](extra/old-homepage.md)
