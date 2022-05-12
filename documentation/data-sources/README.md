@@ -1,4 +1,4 @@
-# Data sources
+# 🔎 Data sources
 
 On one hand, DIA’s direct integration into centralised and decentralised marketplaces enables single trade data sourcing, resulting in a broad and highly granular and customizable data offering.&#x20;
 
