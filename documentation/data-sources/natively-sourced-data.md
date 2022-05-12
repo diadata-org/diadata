@@ -1,5 +1,5 @@
 ---
-layout: landing
+layout: editorial
 ---
 
 # Natively Sourced Data
