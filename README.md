@@ -73,3 +73,11 @@ Oracles can be customised to trigger updates based on:
   * **Update frequency**: custom
   * **Methodology**: custom
   * **Sources**: custom
+
+## Support
+
+[![image-text](https://content.diadata.org/wp-content/uploads/2022/02/SP-technical.svg)](https://discord.gg/zFmXtPFgQj)[![image-text](https://content.diadata.org/wp-content/uploads/2022/02/SP-Custom-Oracle.svg)](https://medium.com/dia-insights/how-to-submit-a-dia-custom-delivery-request-cdr-in-5-minutes-6f88b0a4ca56)
+
+## Contribute
+
+[![image-text](https://content.diadata.org/wp-content/uploads/2022/02/CB-Product.svg)](https://gitcoin.co/diadata-org)[![image-text](https://content.diadata.org/wp-content/uploads/2022/02/CB-Ecosystem.svg)](https://app.dework.xyz/dia-dao)
