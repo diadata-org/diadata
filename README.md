@@ -74,27 +74,10 @@ Oracles can be customised to trigger updates based on:
   * **Methodology**: custom
   * **Sources**: custom
 
-## Contribute
-
-DIA through its DAO operations is working towards building the biggest open-source data platform of Web3. To reach this goal, DIA leverages the power of communities and decentralisation on many levels to scale its product developmet and growth.&#x20;
-
-Contribute to the DAO through the two verticals below:
-
-{% content-ref url="contribute/product-development.md" %}
-[product-development.md](contribute/product-development.md)
-{% endcontent-ref %}
-
-{% content-ref url="contribute/ecosystem-growth.md" %}
-[ecosystem-growth.md](contribute/ecosystem-growth.md)
-{% endcontent-ref %}
-
 ## Support
 
-{% content-ref url="support/discord.md" %}
-[discord.md](support/discord.md)
-{% endcontent-ref %}
+[![image-text](https://content.diadata.org/wp-content/uploads/2022/02/SP-technical.svg)](https://discord.gg/zFmXtPFgQj)[![image-text](https://content.diadata.org/wp-content/uploads/2022/02/SP-Custom-Oracle.svg)](https://medium.com/dia-insights/how-to-submit-a-dia-custom-delivery-request-cdr-in-5-minutes-6f88b0a4ca56)
 
-{% content-ref url="support/request-a-custom-oracle.md" %}
-[request-a-custom-oracle.md](support/request-a-custom-oracle.md)
-{% endcontent-ref %}
+## Contribute
 
+[![image-text](https://content.diadata.org/wp-content/uploads/2022/02/CB-Product.svg)](https://gitcoin.co/diadata-org)[![image-text](https://content.diadata.org/wp-content/uploads/2022/02/CB-Ecosystem.svg)](https://app.dework.xyz/dia-dao)
