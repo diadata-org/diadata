@@ -4,7 +4,7 @@ description: For the usage of DIA's data and services
 
 # 🤝 Licence Agreement
 
-![ Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)](.gitbook/assets/ccbyncsa40.png)
+![ Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)](../.gitbook/assets/ccbyncsa40.png)
 
 &#x20;This is a human-readable summary of (and not a substitute for) the [license](https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode). [Disclaimer](https://creativecommons.org/licenses/by-nc-sa/4.0/#).
 
