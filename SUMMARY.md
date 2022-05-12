@@ -59,7 +59,7 @@
 
 ## Support
 
-* [👾 Talk to a dev on Discord](support/talk-to-a-dev-on-discord.md)
+* [👾 Talk to a dev on Discord](support/discord.md)
 * [🤝 Request a custom oracle](support/request-a-custom-oracle.md)
 
 ## Contribute
@@ -69,7 +69,7 @@
 
 ## Extra
 
-* [📔 Contributor Covenant Code of Conduct](extra/code\_of\_conduct.md)
-* [🐛 Security Bounty Program](extra/security-bounty-program.md)
-* [🤝 Licence Agreement](extra/licence-agreement.md)
-* [ℹ Disclaimer](extra/disclaimer.md)
+* [📔 Contributor Covenant Code of Conduct](code\_of\_conduct.md)
+* [🐛 Security Bounty Program](security-bounty-program.md)
+* [🤝 Licence Agreement](licence-agreement.md)
+* [ℹ Disclaimer](disclaimer.md)

@@ -90,8 +90,8 @@ Contribute to the DAO through the two verticals below:
 
 ## Support
 
-{% content-ref url="support/talk-to-a-dev-on-discord.md" %}
-[talk-to-a-dev-on-discord.md](support/talk-to-a-dev-on-discord.md)
+{% content-ref url="support/discord.md" %}
+[discord.md](support/discord.md)
 {% endcontent-ref %}
 
 {% content-ref url="support/request-a-custom-oracle.md" %}
