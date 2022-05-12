@@ -6,4 +6,10 @@ On the other hand, DIA acts as a connectivity layer for high relevance data sour
 
 Explore DIA's data sources:
 
-[![image-text](https://content.diadata.org/wp-content/uploads/2022/03/natively-aggregated.svg)](natively-sourced-data.md)[![image-text](https://content.diadata.org/wp-content/uploads/2022/03/premium-data.svg)](premium-providers.md)
+{% content-ref url="natively-sourced-data.md" %}
+[natively-sourced-data.md](natively-sourced-data.md)
+{% endcontent-ref %}
+
+{% content-ref url="premium-providers.md" %}
+[premium-providers.md](premium-providers.md)
+{% endcontent-ref %}

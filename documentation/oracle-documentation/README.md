@@ -1,4 +1,4 @@
-# ⛓ Oracle Documentation
+# Oracle Documentation
 
 {% content-ref url="deployed-contracts.md" %}
 [deployed-contracts.md](deployed-contracts.md)

@@ -1,4 +1,4 @@
-# 📖 Overview of Data Points
+# Overview of Data Points
 
 ## Digital assets
 
