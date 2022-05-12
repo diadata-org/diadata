@@ -8,10 +8,6 @@ description: >-
 
 [![API Status](https://badgen.net/uptime-robot/status/m784441379-1bdbacd4cd81bf46c13bdb1f?label=API)](https://docs.diadata.org/api/docs/api) [![Pull Requests](https://badgen.net/github/prs/diadata-org/diadata?label=Pull%20Requests)](https://github.com/diadata-org/diadata/pulls)
 
-## What is DIA about?
-
-Welcome to the [DIAdata.org](https://diadata.org) platform. DIA is an ecosystem for open financial data in a financial smart contract ecosystem. The target of DIA is to bring together data analysts, data providers and data users. In general, DIA provides a reliable and verifiable bridge between off-chain data from various sources and on-chain smart contracts that can be used to build a variety of financial dApps.
-
 ## Get started right away
 
 [Tutorials for contributors](https://docs.diadata.org/documentation/tutorials)

@@ -1,5 +1,5 @@
 ---
-cover: .gitbook/assets/Cover Photo Twitter Big DApps.svg
+cover: .gitbook/assets/1_dZqpEo-3_IlZsrZ_J9X7Xw.png
 coverY: 0
 ---
 
