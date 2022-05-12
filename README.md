@@ -13,6 +13,8 @@ The DIA platform enables the sourcing, validation and sharing of transparent and
 
 DIA’s data is directly sourced from a broad array of on-chain and off-chain sources at individual a trade-level. This allows DIA feeds to be fully customised with regards to the mix of sources and methodologies, resulting in tailor-made, high resilience feeds, setting a new paradigm for oracles.
 
+Links: [Homepage](https://diadata.org) | [Medium Blog](https://medium.com/dia-insights) | [Github](https://github.com/diadata-org) | [Twitter](https://twitter.com/DIAdata\_org) | [Discord](https://discord.gg/zFmXtPFgQj) | [Telegram](https://t.me/DIAdata\_org)
+
 [![API Status](https://badgen.net/uptime-robot/status/m784441379-1bdbacd4cd81bf46c13bdb1f?label=API)](https://docs.diadata.org/api/docs/api) [![Pull Requests](https://badgen.net/github/prs/diadata-org/diadata?label=Pull%20Requests)](https://github.com/diadata-org/diadata/pulls)
 
 ## The DIA Ecosystem
