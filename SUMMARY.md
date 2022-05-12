@@ -2,7 +2,8 @@
 
 ## Introduction
 
-* [🏃 Get Started](README.md)
+* [🤔 What is DIA?](README.md)
+* [🏃 Get Started](<README (1).md>)
 
 ## Documentation
 

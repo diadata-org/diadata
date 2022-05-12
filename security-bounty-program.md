@@ -1,4 +1,4 @@
-# Security Bounty Program
+# 🐛 Security Bounty Program
 
 If you report security issues within our backend, smart contracts, and operations, we offer a security bounty program. To be eligible for a bounty, be sure to follow these requirements:
 
