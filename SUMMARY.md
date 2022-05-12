@@ -6,7 +6,7 @@
 
 ## Documentation
 
-* [👋 Introduction](documentation/documentation.md)
+* [👋 Introduction](documentation/README.md)
 * [⚙ DIA Technical Structure](documentation/dia-technical-structure.md)
 * [⛓ Oracle Documentation](documentation/oracle-documentation/README.md)
   * [Deployed Contracts](documentation/oracle-documentation/deployed-contracts.md)
@@ -58,7 +58,8 @@
 
 ## Support
 
-* [📔 Contributor Covenant Code of Conduct](support/code\_of\_conduct.md)
-* [🐛 Security Bounty Program](support/security-bounty-program.md)
-* [🤝 Licence Agreement](support/licence-agreement.md)
-* [ℹ Disclaimer](support/disclaimer.md)
+* [👾 Discord](support/discord.md)
+* [📔 Contributor Covenant Code of Conduct](code\_of\_conduct.md)
+* [🐛 Security Bounty Program](security-bounty-program.md)
+* [🤝 Licence Agreement](licence-agreement.md)
+* [ℹ Disclaimer](disclaimer.md)
