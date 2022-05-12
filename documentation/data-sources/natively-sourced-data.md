@@ -1,7 +1,3 @@
----
-layout: editorial
----
-
 # Natively Sourced Data
 
 Find below an updated list of all exchanges DIA is pulling data from, filtered by market type and network they operate on. Additionally, by leveraging the crowd, the DIA DAO is progressively validating each of the data sources. To learn more about the price data collection go [here](../methodology/digital-assets/cryptocurrency-trading-data.md).
