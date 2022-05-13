@@ -100,6 +100,10 @@ func parseTrade(row []interface{}, fullBasetoken bool) *dia.Trade {
 }
 
 func (datastore *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, startTime, endTime time.Time) ([]dia.Trade, error) {
+	return datastore.GetTradesByExchangesFull(asset, exchanges, false, startTime, endTime)
+}
+
+func (datastore *DB) GetTradesByExchangesFull(asset dia.Asset, exchanges []string, returnBasetoken bool, startTime, endTime time.Time) ([]dia.Trade, error) {
 	var r []dia.Trade
 	subQuery := ""
 	if len(exchanges) > 0 {
@@ -110,7 +114,6 @@ func (datastore *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, s
 	}
 	query := fmt.Sprintf("SELECT time,estimatedUSDPrice,verified,foreignTradeID,pair,price,symbol,volume,verified,basetokenblockchain,basetokenaddress FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' %s AND estimatedUSDPrice > 0 AND time >= %d AND time <= %d ", influxDbTradesTable, asset.Address, asset.Blockchain, subQuery, startTime.UnixNano(), endTime.UnixNano())
 
-	log.Infoln("GetTradesByExchanges Query", query)
 	res, err := queryInfluxDB(datastore.influxClient, query)
 	if err != nil {
 		return r, err
@@ -118,13 +121,12 @@ func (datastore *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, s
 
 	if len(res) > 0 && len(res[0].Series) > 0 {
 		for _, row := range res[0].Series[0].Values {
-			t := parseTrade(row, false)
+			t := parseTrade(row, returnBasetoken)
 			if t != nil {
 				r = append(r, *t)
 			}
 		}
 	} else {
-		log.Errorf("Empty response GetTradesByExchanges for %s \n", asset.Symbol)
 		return nil, fmt.Errorf("no trades found")
 	}
 	return r, nil
