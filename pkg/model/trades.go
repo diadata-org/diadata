@@ -112,8 +112,7 @@ func (datastore *DB) GetTradesByExchangesFull(asset dia.Asset, exchanges []strin
 		}
 		subQuery = "and exchange =~ /" + strings.TrimRight(subQuery, "|") + "/"
 	}
-	query := fmt.Sprintf("SELECT time,estimatedUSDPrice,verified,foreignTradeID,pair,price,symbol,volume,verified,basetokenblockchain,basetokenaddress FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' %s AND estimatedUSDPrice > 0 AND time >= %d AND time <= %d ", influxDbTradesTable, asset.Address, asset.Blockchain, subQuery, startTime.UnixNano(), endTime.UnixNano())
-
+	query := fmt.Sprintf("SELECT time,estimatedUSDPrice,exchange,foreignTradeID,pair,price,symbol,volume,verified,basetokenblockchain,basetokenaddress FROM %s WHERE quotetokenaddress='%s' and quotetokenblockchain='%s' %s AND estimatedUSDPrice > 0 AND time >= %d AND time <= %d ", influxDbTradesTable, asset.Address, asset.Blockchain, subQuery, startTime.UnixNano(), endTime.UnixNano())
 	res, err := queryInfluxDB(datastore.influxClient, query)
 	if err != nil {
 		return r, err

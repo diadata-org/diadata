@@ -79,6 +79,8 @@ func main() {
 
 func updateStatsPerAsset(asset dia.Asset, tFinal time.Time, numRanges int, datastore *models.DB, relDB *models.RelDB) {
 
+	log.Info("start processing data for %s -- %s....", asset.Blockchain, asset.Address)
+
 	tInit := tFinal.Add(-time.Duration(LOOKBACK_SECONDS * time.Second))
 	// Make time ranges for batching the trades getter.
 	starttimes, endtimes := utils.MakeTimeRanges(tInit, tFinal, numRanges)
@@ -117,7 +119,7 @@ func updateStatsPerAsset(asset dia.Asset, tFinal time.Time, numRanges int, datas
 		// 1. Fetch trades for @asset in batches.
 		trades, err := datastore.GetTradesByExchangesFull(asset, []string{}, true, starttimes[i], endtimes[i])
 		if err != nil {
-			log.Warnf("GetTradesByExchangesBatched in time range %v -- %v: %v", starttimes[i], endtimes[i], err)
+			log.Warnf("GetTradesByExchangesFull for asset %s in time range %v -- %v: %v", asset.Address, starttimes[i], endtimes[i], err)
 		}
 
 		// 2. Get volumes per exchange and per pair.
@@ -164,6 +166,8 @@ func updateStatsPerAsset(asset dia.Asset, tFinal time.Time, numRanges int, datas
 			log.Errorf("SetAggregatedVolume for %s - %s: %v", asset.Address, asset.Blockchain, err)
 		}
 	}
+	log.Info("...done processing.")
+
 }
 
 // computeBinMap returns the mapping of a time bin of size BIN_DURATION_SECONDS to the number of trades in this bin.
