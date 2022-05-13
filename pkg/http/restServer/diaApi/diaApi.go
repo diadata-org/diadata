@@ -2044,9 +2044,9 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 		Timestamp          time.Time
 		TotalVolume        float64
 		Price              float64
+		TradesDistribution localDistType
 		ExchangeVolumes    []dia.ExchangeVolume
 		PairVolumes        []dia.PairVolume
-		TradesDistribution localDistType
 	}
 
 	var retVal []localReturn
@@ -2055,11 +2055,13 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 	for i := range exchVolumes {
 		var l localReturn
 		var price float64
+		sort.Slice(exchVolumes[i].Volumes, func(m, n int) bool { return exchVolumes[i].Volumes[m].Volume > exchVolumes[i].Volumes[n].Volume })
 		l.ExchangeVolumes = exchVolumes[i].Volumes
 		// Compute total volume.
 		for _, vol := range l.ExchangeVolumes {
 			l.TotalVolume += vol.Volume
 		}
+		sort.Slice(pairVolumes[i].Volumes, func(m, n int) bool { return pairVolumes[i].Volumes[m].Volume > pairVolumes[i].Volumes[n].Volume })
 		l.PairVolumes = pairVolumes[i].Volumes
 		l.Timestamp = exchVolumes[i].Timestamp
 		// Get Price.

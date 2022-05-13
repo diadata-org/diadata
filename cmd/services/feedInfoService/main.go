@@ -79,7 +79,7 @@ func main() {
 
 func updateStatsPerAsset(asset dia.Asset, tFinal time.Time, numRanges int, datastore *models.DB, relDB *models.RelDB) {
 
-	log.Info("start processing data for %s -- %s....", asset.Blockchain, asset.Address)
+	log.Infof("start processing data for %s -- %s....", asset.Blockchain, asset.Address)
 
 	tInit := tFinal.Add(-time.Duration(LOOKBACK_SECONDS * time.Second))
 	// Make time ranges for batching the trades getter.
@@ -218,6 +218,11 @@ func computePairStats(
 		basetoken, err := getBasetoken(basetokenMap, trade.BaseToken, relDB)
 		if err != nil {
 			log.Errorf("get basetoken %v: %v", trade.BaseToken, err)
+			basetoken.Address = trade.BaseToken.Address
+			basetoken.Blockchain = trade.BaseToken.Blockchain
+			basetoken.Symbol = trade.BaseToken.Symbol
+			basetoken.Name = trade.BaseToken.Name
+			basetoken.Decimals = trade.BaseToken.Decimals
 		}
 		pair := dia.Pair{
 			QuoteToken: quotetoken,
