@@ -59,6 +59,9 @@ func main() {
 	case "OpenseaBAYC":
 		log.Println("NFT Trades Scraper: Start scraping trades from Opensea")
 		scraper = nfttradescrapers.NewOpenSeaBAYCScraper(rdb)
+	case "LooksRare":
+		log.Println("NFT Trades Scraper: Start scraping trades from LooksRare")
+		scraper = nfttradescrapers.NewLooksRareScraper(rdb)
 	default:
 		for {
 			time.Sleep(24 * time.Hour)

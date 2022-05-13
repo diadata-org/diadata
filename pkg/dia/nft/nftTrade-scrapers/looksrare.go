@@ -33,7 +33,7 @@ const (
 	// we assume all of the NFTs traded on LooksRare are ERC721(1155 is an extension of it)
 	looksRareNFTContractType = "ERC721"
 
-	LooksRare = "LooksRarecurr"
+	LooksRare = "LooksRare"
 )
 
 type LooksRareScraperConfig struct {
