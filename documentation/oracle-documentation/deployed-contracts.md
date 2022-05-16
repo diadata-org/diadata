@@ -8,7 +8,7 @@ DIA operates oracles on multiple blockchains. Here, we provide an overview over 
 
 DIA Development Oracle contracts are smart contracts that provide a selected range of asset prices on various blockchains for live testing on a respective Mainnet and Testnet.\
 The contracts are upgraded and exchanged on a rolling basis and are not maintained indefinitely.\
-DIA Development Oracle contracts are not intended to be integrated in a dApp. DIA deploys dedicated contracts for dApps. Please request a dedicated oracle by contacting the team on [Discord](https://discord.com/invite/zFmXtPFgQj) or the [DIA DAO Forum](https://dao.diadata.org).
+DIA Development Oracle contracts are not intended to be integrated in a dApp. DIA deploys dedicated contracts for dApps. Please request a dedicated oracle by contacting the team on [Discord](https://discord.com/invite/zFmXtPFgQj) or the [DIA DAO Forum](https://dao.diadata.org/).
 
 ### Ethereum
 
@@ -239,6 +239,16 @@ __
 | Published Assets                     | Smart Contract Address                                                                            | Oracle Type                                                                                                                           |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | [DIA Asset Prices](crypto-assets.md) | [0x0A7d...8856](https://evmexplorer.velas.com/address/0x0A7dC648C44e31636252be2267B86e0d9E1F8856) | [Key/Value Oracle V2](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract-v2) |
+{% endtab %}
+{% endtabs %}
+
+### Clover
+
+{% tabs %}
+{% tab title="Mainnet" %}
+| Published Assets                     | Smart Contract Address                                                                  | Oracle Type                                                                                                                           |
+| ------------------------------------ | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0xCd2C...17a5](https://clvscan.com/address/0xcd2ca164a2aec86b03474d1a76d25a2aa0a517a5) | [Key/Value Oracle V2](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract-v2) |
 {% endtab %}
 {% endtabs %}
 
