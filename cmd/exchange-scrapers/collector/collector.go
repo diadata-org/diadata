@@ -25,6 +25,14 @@ var (
 		dia.BalancerV2Exchange,
 		dia.BeetsExchange,
 		dia.PanCakeSwap,
+		dia.SolarbeamExchange,
+		dia.AnyswapExchange,
+		dia.HermesExchange,
+		dia.HuckleberryExchange,
+		dia.NetswapExchange,
+		dia.PangolinExchange,
+
+		dia.KuCoinExchange,
 	}
 )
 
