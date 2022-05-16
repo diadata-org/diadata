@@ -2635,30 +2635,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "BTC",
-            "ForeignName": "BTC-UST",
-            "Exchange": "KuCoin",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ETH",
-            "ForeignName": "ETH-UST",
-            "Exchange": "KuCoin",
-            "Ignore": false
-        },
-        {
-            "Symbol": "USDT",
-            "ForeignName": "USDT-UST",
-            "Exchange": "KuCoin",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LUNA",
-            "ForeignName": "LUNA-UST",
-            "Exchange": "KuCoin",
-            "Ignore": false
-        },
-        {
             "Symbol": "USDC",
             "ForeignName": "USDC-USDT",
             "Exchange": "KuCoin",
@@ -2815,50 +2791,8 @@
             "Ignore": false
         },
         {
-            "Symbol": "DOT",
-            "ForeignName": "DOT-UST",
-            "Exchange": "KuCoin",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ATOM",
-            "ForeignName": "ATOM-UST",
-            "Exchange": "KuCoin",
-            "Ignore": false
-        },
-        {
-            "Symbol": "AAVE",
-            "ForeignName": "AAVE-UST",
-            "Exchange": "KuCoin",
-            "Ignore": false
-        },
-        {
-            "Symbol": "YFI",
-            "ForeignName": "YFI-UST",
-            "Exchange": "KuCoin",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SNX",
-            "ForeignName": "SNX-UST",
-            "Exchange": "KuCoin",
-            "Ignore": false
-        },
-        {
-            "Symbol": "USDC",
-            "ForeignName": "USDC-UST",
-            "Exchange": "KuCoin",
-            "Ignore": false
-        },
-        {
             "Symbol": "MIR",
             "ForeignName": "MIR-USDT",
-            "Exchange": "KuCoin",
-            "Ignore": false
-        },
-        {
-            "Symbol": "MIR",
-            "ForeignName": "MIR-UST",
             "Exchange": "KuCoin",
             "Ignore": false
         },
@@ -3369,12 +3303,6 @@
         {
             "Symbol": "ANC",
             "ForeignName": "ANC-USDT",
-            "Exchange": "KuCoin",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ANC",
-            "ForeignName": "ANC-UST",
             "Exchange": "KuCoin",
             "Ignore": false
         },
