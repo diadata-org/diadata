@@ -14,6 +14,12 @@
     },
     {
       "Exchange": "CoinBase",
+      "ForeignName": "BUSD-USD",
+      "Ignore": false,
+      "Symbol": "BUSD"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "FET-USD",
       "Ignore": false,
       "Symbol": "FET"

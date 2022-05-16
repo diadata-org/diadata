@@ -24,6 +24,7 @@ var (
 		dia.DiffusionExchange,
 		dia.BalancerV2Exchange,
 		dia.BeetsExchange,
+		dia.PanCakeSwap,
 	}
 )
 

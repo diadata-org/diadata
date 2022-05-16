@@ -121,6 +121,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "BUSD",
+            "ForeignName": "BUSDUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "C98",
             "ForeignName": "C98USDT",
             "Exchange": "ByBit",
