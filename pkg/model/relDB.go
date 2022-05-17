@@ -81,6 +81,7 @@ type RelDatastore interface {
 	SetNFTTrade(trade dia.NFTTrade) error
 	SetNFTTradeToTable(trade dia.NFTTrade, table string) error
 	GetNFTTrades(address string, blockchain string, tokenID string) ([]dia.NFTTrade, error)
+	GetNFTTradesFromTable(address string, blockchain string, tokenID string, table string) ([]dia.NFTTrade, error)
 	GetNFTOffers(address string, blockchain string, tokenID string) ([]dia.NFTOffer, error)
 	GetNFTBids(address string, blockchain string, tokenID string) ([]dia.NFTBid, error)
 	GetNFTPrice30Days(nftclass dia.NFTClass) (float64, error)

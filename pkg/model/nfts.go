@@ -253,11 +253,11 @@ func (rdb *RelDB) GetLastBlockNFTTrade(nftclass dia.NFTClass) (blocknumber uint6
 }
 
 // GetNFTTrades returns all trades done on the nft given by @address, @blockchain and @tokenID.
-func (rdb *RelDB) GetNFTTrades(address string, blockchain string, tokenID string) (trades []dia.NFTTrade, err error) {
+func (rdb *RelDB) GetNFTTradesFromTable(address string, blockchain string, tokenID string, table string) (trades []dia.NFTTrade, err error) {
 	var rows pgx.Rows
 	nftID, err := rdb.GetNFTID(address, blockchain, tokenID)
 	tradeVars := "price,price_usd,transfer_from,transfer_to,currency_symbol,currency_address,currency_decimals,block_number,trade_time,tx_hash,marketplace"
-	query := fmt.Sprintf("SELECT %s FROM %s WHERE nft_id='%s' ORDER BY trade_time DESC", tradeVars, nfttradeTable, nftID)
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE nft_id='%s' ORDER BY trade_time DESC", tradeVars, table, nftID)
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return
@@ -292,6 +292,10 @@ func (rdb *RelDB) GetNFTTrades(address string, blockchain string, tokenID string
 		trades = append(trades, trade)
 	}
 	return
+}
+
+func (rdb *RelDB) GetNFTTrades(address string, blockchain string, tokenID string) (trades []dia.NFTTrade, err error) {
+	return rdb.GetNFTTradesFromTable(address, blockchain, tokenID, nfttradeTable)
 }
 
 // GetNFTOffers returns all offers done on the nft given by @address, @blockchain and @tokenID.

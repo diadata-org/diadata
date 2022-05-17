@@ -1950,6 +1950,20 @@ func (env *Env) GetNFTTrades(c *gin.Context) {
 	c.JSON(http.StatusOK, q)
 }
 
+// GetNFTTradesCurrent returns all recent trades of the unique NFT with given parameters.
+func (env *Env) GetNFTTradesCurrent(c *gin.Context) {
+	blockchain := c.Param("blockchain")
+	// Sanitize address
+	address := common.HexToAddress(c.Param("address")).Hex()
+	id := c.Param("id")
+
+	q, err := env.RelDB.GetNFTTradesFromTable(address, blockchain, id, models.NfttradeCurrTable)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+	c.JSON(http.StatusOK, q)
+}
+
 // GetNFTPrice30Days returns the average price of the whole nft class over the last 30 days.
 func (env *Env) GetNFTPrice30Days(c *gin.Context) {
 	blockchain := c.Param("blockchain")
