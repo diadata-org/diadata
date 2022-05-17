@@ -120,8 +120,8 @@ var (
 		// ContractAddr:    "0x7be8076f4ea4a4ad08075c2508e481d6c946d12b", // Wyvern V1
 		ContractAddr:    "0x7f268357A8c2552623316e2562D90e642bB538E5", // Wyvern V2
 		BatchSize:       5000,
-		WaitPeriod:      5 * time.Second,
-		FollowDist:      2,
+		WaitPeriod:      60 * time.Second,
+		FollowDist:      10,
 		UseArchiveNode:  false,
 		MaxRetry:        5,
 		SkipOnErr:       true,

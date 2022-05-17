@@ -122,8 +122,8 @@ var (
 	defLooksRareConf = &LooksRareScraperConfig{
 		ContractAddr:    "0x59728544B08AB483533076417FbBB2fD0B17CE3a",
 		BatchSize:       5000,
-		WaitPeriod:      5 * time.Second,
-		FollowDist:      2,
+		WaitPeriod:      60 * time.Second,
+		FollowDist:      10,
 		UseArchiveNode:  false,
 		MaxRetry:        5,
 		SkipOnErr:       true,

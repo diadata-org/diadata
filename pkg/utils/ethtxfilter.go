@@ -10,6 +10,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/prometheus/common/log"
 )
 
 // EthTxFilterCriteria used for filtering transaction records
@@ -43,7 +44,7 @@ type EthFilteredTx struct {
 
 // EthFilterTXs returns transactions filtered by log records
 func EthFilterTXs(ctx context.Context, ethClient *ethclient.Client, filter EthTxFilterCriteria) (*EthTxFilterResult, error) {
-	endBlockNum, synced, err := ethFilterTXsCalcEndBlockNum(ctx, ethClient, filter.StartBlockNum, uint64(filter.BehindHighestBlock), uint64(filter.LimitBlocks))
+	startBlockNum, endBlockNum, synced, err := ethFilterTXsCalcEndBlockNum(ctx, ethClient, filter.StartBlockNum, uint64(filter.BehindHighestBlock), uint64(filter.LimitBlocks))
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +64,7 @@ func EthFilterTXs(ctx context.Context, ethClient *ethclient.Client, filter EthTx
 	logs, err := ethClient.FilterLogs(ctx, ethereum.FilterQuery{
 		Addresses: filter.EvAddrs,
 		Topics:    topics,
-		FromBlock: new(big.Int).SetUint64(filter.StartBlockNum),
+		FromBlock: new(big.Int).SetUint64(startBlockNum),
 		ToBlock:   new(big.Int).SetUint64(endBlockNum),
 	})
 
@@ -136,15 +137,15 @@ func EthFilterTXs(ctx context.Context, ethClient *ethclient.Client, filter EthTx
 	return result, nil
 }
 
-func ethFilterTXsCalcEndBlockNum(ctx context.Context, ethClient *ethclient.Client, start, stayBehind, limit uint64) (uint64, bool, error) {
+func ethFilterTXsCalcEndBlockNum(ctx context.Context, ethClient *ethclient.Client, start, stayBehind, limit uint64) (uint64, uint64, bool, error) {
 	end, err := ethClient.BlockNumber(ctx)
 	if err != nil {
-		return 0, false, err
+		return 0, 0, false, err
 	}
 
 	syncProgress, err := ethClient.SyncProgress(ctx)
 	if err != nil {
-		return 0, false, err
+		return 0, 0, false, err
 	}
 
 	if syncProgress == nil { // means the connected node is synced
@@ -164,8 +165,9 @@ func ethFilterTXsCalcEndBlockNum(ctx context.Context, ethClient *ethclient.Clien
 	}
 
 	if start > end {
-		end = start
+		start = end
 	}
+	log.Infof("resulting start -- end: %v --- %v", start, end)
 
-	return end, synced, nil
+	return start, end, synced, nil
 }
