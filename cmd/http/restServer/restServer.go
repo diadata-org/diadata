@@ -290,6 +290,7 @@ func main() {
 		diaGroup.GET("/NFTCategories", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetNFTCategories))
 		diaGroup.GET("/NFT/:blockchain/:address/:id", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetNFT))
 		diaGroup.GET("/NFTTrades/:blockchain/:address/:id", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetNFTTrades))
+		diaGroup.GET("/NFTTradesCurrent/:blockchain/:address/:id", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetNFTTradesCurrent))
 		diaGroup.GET("/NFTPrice30Days/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetNFTPrice30Days))
 		diaGroup.GET("/feedStats/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetFeedStats))
 
