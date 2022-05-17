@@ -11,7 +11,7 @@ The oracle exists on multiple blockchains and contains information about DeFi pr
 3. The response of the call contains four values:
    1. The lending rate with a fix-comma notation of five decimals.
    2. The borrowing rate with a fix-comma notation of five decimals.
-   3. The [UNIX timestamp](https://www.unixtimestamp.com) of the last oracle update.
+   3. The [UNIX timestamp](https://www.unixtimestamp.com/) of the last oracle update.
    4. The short name of the asset/pool under consideration, e.g., `DAI` for Compound Protocol.
 
 As of now, the following list of rates is available in this oracle:

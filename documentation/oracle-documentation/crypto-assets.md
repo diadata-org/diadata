@@ -11,7 +11,7 @@ The oracle exists on various blockchains and contains information about crypto a
 3. The response of the call contains four values:
    1. The current asset price in USD with a fix-comma notation of five decimals.
    2. The current circulating supply.
-   3. The [UNIX timestamp](https://www.unixtimestamp.com) of the last oracle update.
+   3. The [UNIX timestamp](https://www.unixtimestamp.com/) of the last oracle update.
    4. The short name of the asset, e.g., `BTC` for Bitcoin.
 
 

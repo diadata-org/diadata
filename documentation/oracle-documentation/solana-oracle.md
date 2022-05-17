@@ -8,7 +8,7 @@ description: This page contains an overview over the DIA Solana oracle.
 
 A demo application has been deployed to the Solana blockchain. A simple frontend showing current asset prices is hosted as a static site and can be accessed here:
 
-[Launch Demo Application](https://diadata-solanaoracle.netlify.app)
+[Launch Demo Application](https://diadata-solanaoracle.netlify.app/)
 
 The application currently supports this set of asset prices.
 

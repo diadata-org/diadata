@@ -55,6 +55,7 @@
   * [Write your own rate scraper](documentation/tutorials/write-your-own-rate-scraper.md)
   * [Write your own blockchain scraper](documentation/tutorials/blockchainscraper.md)
   * [Write your own exchange scraper](documentation/tutorials/exchangescrapers.md)
+  * [Old homepage](documentation/tutorials/old-homepage.md)
 
 ## Support
 
@@ -72,4 +73,3 @@
 * [🐛 Security Bounty Program](security-bounty-program.md)
 * [🤝 Licence Agreement](licence-agreement.md)
 * [ℹ Disclaimer](disclaimer.md)
-* [Old homepage](extra/old-homepage.md)
