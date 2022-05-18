@@ -38,7 +38,7 @@ var (
 		"PAX":  "",
 		"BUSD": "",
 	}
-	tol              = float64(0.1)
+	tol              = float64(0.04)
 	log              *logrus.Logger
 	batchTimeString  string
 	batchTimeSeconds int
