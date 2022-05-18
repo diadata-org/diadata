@@ -244,7 +244,7 @@ func (rdb *RelDB) SetNFTTradeToTable(trade dia.NFTTrade, table string) error {
 
 // GetLastBlockNFTTtrade returns the last blocknumber that was scraped for trades in @nftclass.
 func (rdb *RelDB) GetLastBlockNFTTrade(nftclass dia.NFTClass) (blocknumber uint64, err error) {
-	query := fmt.Sprintf("SELECT block_number FROM %s WHERE nftclass_id=(SELECT nftclass_id FROM %s WHERE address='%s' AND blockchain='%s') ORDER BY block_number DESC LIMIT 1;", nfttradeTable, nftclassTable, nftclass.Address, nftclass.Blockchain)
+	query := fmt.Sprintf("SELECT block_number FROM %s WHERE nftclass_id=(SELECT nftclass_id FROM %s WHERE address='%s' AND blockchain='%s') ORDER BY block_number DESC LIMIT 1;", NfttradeCurrTable, nftclassTable, nftclass.Address, nftclass.Blockchain)
 	err = rdb.postgresClient.QueryRow(context.Background(), query).Scan(&blocknumber)
 	if err != nil {
 		return
