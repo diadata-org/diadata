@@ -58,6 +58,8 @@ const (
 	SushiSwapExchangePolygon  = "SushiSwap-polygon"
 	SushiSwapExchangeFantom   = "SushiSwap-fantom"
 	PanCakeSwap               = "PanCakeSwap"
+	ApeswapExchange           = "Apeswap"
+	BiswapExchange            = "Biswap"
 	DforceExchange            = "Dforce"
 	ZeroxExchange             = "0x"
 	KyberExchange             = "Kyber"
@@ -110,6 +112,8 @@ func Exchanges() []string {
 		STEXExchange,
 		UniswapExchangeV3Polygon,
 
+		ApeswapExchange,
+		BiswapExchange,
 		OmniDexExchange,
 		HermesExchange,
 		TethysExchange,

@@ -1,0 +1,48 @@
+{
+    "Pools": [
+        {
+            "Address": "0xaCAac9311b0096E04Dfe96b6D87dec867d3883Dc",
+            "ForeignName": "WBNB-BUSD"
+        },
+        {
+            "Address": "0xDA8ceb724A06819c0A5cDb4304ea0cB27F8304cF",
+            "ForeignName": "USDT-BUSD"
+        },
+        {
+            "Address": "0x8840C6252e2e86e545deFb6da98B2a0E26d8C1BA",
+            "ForeignName": "USDT-WBNB"
+        },
+        {
+            "Address": "0x63b30de1A998e9E64FD58A21F68D323B9BcD8F85",
+            "ForeignName": "ETH-USDT"
+        },
+        {
+            "Address": "0xa987f0b7098585c735cD943ee07544a84e923d1D",
+            "ForeignName": "USDT-BTCB"
+        },
+        {
+            "Address": "0x46492B26639Df0cda9b2769429845cb991591E0A",
+            "ForeignName": "BSW-WBNB"
+        },
+        {
+            "Address": "0x2b30c317ceDFb554Ec525F85E79538D59970BEb0",
+            "ForeignName": "USDT-BSW"
+        },
+        {
+            "Address": "0x1483767E665B3591677Fd49F724bf7430C18Bf83",
+            "ForeignName": "USDT-USDC"
+        },
+        {
+            "Address": "0x5bf6941f029424674bb93A43b79fc46bF4A67c21",
+            "ForeignName": "ETH-WBNB"
+        },
+        {
+            "Address": "0x6216E04cd40DB2c6FBEd64f1B5830A98D3A91740",
+            "ForeignName": "ETH-BTCB"
+        },
+        {
+            "Address": "0x06Cd679121Ec37B0A2FD673D4976B09d81791856",
+            "ForeignName": "USDC-WBNB"
+        }
+    ]
+}

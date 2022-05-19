@@ -84,6 +84,8 @@ func init() {
 	Exchanges[dia.KuCoinExchange] = dia.Exchange{Name: dia.KuCoinExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.SushiSwapExchange] = dia.Exchange{Name: dia.SushiSwapExchange, Centralized: false, BlockChain: blockchains[dia.ETHEREUM], Contract: common.HexToAddress("0xc0aee478e3658e2610c5f7a4a2e1777ce9e4f2ac"), WatchdogDelay: watchdogDelay}
 	Exchanges[dia.PanCakeSwap] = dia.Exchange{Name: dia.PanCakeSwap, Centralized: false, BlockChain: blockchains[dia.BINANCESMARTCHAIN], Contract: common.HexToAddress("0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73"), WatchdogDelay: watchdogDelayLong}
+	Exchanges[dia.ApeswapExchange] = dia.Exchange{Name: dia.ApeswapExchange, Centralized: false, BlockChain: blockchains[dia.BINANCESMARTCHAIN], Contract: common.HexToAddress("0x0841BD0B734E4F5853f0dD8d7Ea041c241fb0Da6"), WatchdogDelay: watchdogDelayLong}
+	Exchanges[dia.BiswapExchange] = dia.Exchange{Name: dia.BiswapExchange, Centralized: false, BlockChain: blockchains[dia.BINANCESMARTCHAIN], Contract: common.HexToAddress("0x858E3312ed3A876947EA49d572A7C42DE08af7EE"), WatchdogDelay: watchdogDelayLong}
 	Exchanges[dia.DforceExchange] = dia.Exchange{Name: dia.DforceExchange, Centralized: false, BlockChain: blockchains[dia.ETHEREUM], Contract: common.HexToAddress("0x03eF3f37856bD08eb47E2dE7ABc4Ddd2c19B60F2"), WatchdogDelay: watchdogDelayLong}
 	Exchanges[dia.ZeroxExchange] = dia.Exchange{Name: dia.ZeroxExchange, Centralized: true, WatchdogDelay: watchdogDelayLong}
 	Exchanges[dia.KyberExchange] = dia.Exchange{Name: dia.KyberExchange, Centralized: true, WatchdogDelay: watchdogDelay}
@@ -273,6 +275,10 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapScraper(Exchanges[dia.OmniDexExchange], scrape)
 	case dia.DiffusionExchange:
 		return NewUniswapScraper(Exchanges[dia.DiffusionExchange], scrape)
+	case dia.ApeswapExchange:
+		return NewUniswapScraper(Exchanges[dia.ApeswapExchange], scrape)
+	case dia.BiswapExchange:
+		return NewUniswapScraper(Exchanges[dia.BiswapExchange], scrape)
 	// case dia.FinageForex:
 	// 	return NewFinageForexScraper(Exchanges[dia.FinageForex], scrape, relDB, key, secret)
 

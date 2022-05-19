@@ -196,6 +196,12 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 	case dia.DiffusionExchange:
 		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialEvmos, wsDialEvmos, evmosWaitMilliseconds)
+	case dia.ApeswapExchange:
+		listenByAddress = true
+		s = makeUniswapScraper(exchange, listenByAddress, restDialBSC, wsDialBSC, pancakeswapWaitMilliseconds)
+	case dia.BiswapExchange:
+		listenByAddress = true
+		s = makeUniswapScraper(exchange, listenByAddress, restDialBSC, wsDialBSC, pancakeswapWaitMilliseconds)
 	}
 
 	if scrape {
