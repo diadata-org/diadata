@@ -55,6 +55,7 @@ func init() {
 	Exchanges[dia.BalancerV2Exchange] = dia.Exchange{Name: dia.BalancerV2Exchange, Centralized: false, BlockChain: blockchains[dia.ETHEREUM], Contract: common.HexToAddress("0xBA12222222228d8Ba445958a75a0704d566BF2C8"), WatchdogDelay: watchdogDelayLong}
 	Exchanges[dia.BeetsExchange] = dia.Exchange{Name: dia.BeetsExchange, Centralized: false, BlockChain: blockchains[dia.FANTOM], Contract: common.HexToAddress("0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce"), WatchdogDelay: watchdogDelayLong}
 	Exchanges[dia.BinanceExchange] = dia.Exchange{Name: dia.BinanceExchange, Centralized: true, WatchdogDelay: watchdogDelay}
+	Exchanges[dia.BinanceExchangeUS] = dia.Exchange{Name: dia.BinanceExchangeUS, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.GnosisExchange] = dia.Exchange{Name: dia.GnosisExchange, Centralized: false, Contract: common.HexToAddress("0x6F400810b62df8E13fded51bE75fF5393eaa841F"), BlockChain: blockchains[dia.ETHEREUM], WatchdogDelay: watchdogDelayLong}
 	Exchanges[dia.KrakenExchange] = dia.Exchange{Name: dia.KrakenExchange, Centralized: true, WatchdogDelay: watchdogDelay}
 	Exchanges[dia.CREX24Exchange] = dia.Exchange{Name: dia.CREX24Exchange, Centralized: true, WatchdogDelay: watchdogDelay}
@@ -162,6 +163,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 	switch exchange {
 	case dia.BinanceExchange:
 		return NewBinanceScraper(key, secret, Exchanges[dia.BinanceExchange], scrape, relDB)
+	case dia.BinanceExchangeUS:
+		return NewBinanceScraperUS(key, secret, Exchanges[dia.BinanceExchangeUS], scrape, relDB)
 	case dia.BitBayExchange:
 		return NewBitBayScraper(Exchanges[dia.BitBayExchange], scrape, relDB)
 	case dia.BitfinexExchange:
