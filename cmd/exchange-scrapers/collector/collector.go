@@ -31,8 +31,6 @@ var (
 		dia.HuckleberryExchange,
 		dia.NetswapExchange,
 		dia.PangolinExchange,
-		dia.ApeswapExchange,
-		dia.BiswapExchange,
 	}
 )
 
