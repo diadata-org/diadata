@@ -32,8 +32,7 @@ var (
 		dia.NetswapExchange,
 		dia.PangolinExchange,
 		dia.ApeswapExchange,
-		dia.BiswapExchange,
-		dia.KuCoinExchange,
+		dia.BiswapExchange
 	}
 )
 
