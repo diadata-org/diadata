@@ -24,6 +24,7 @@ const (
 	BitfinexExchange          = "Bitfinex"
 	BitforexExchange          = "Bitforex"
 	BinanceExchange           = "Binance"
+	BinanceExchangeUS         = "BinanceUS"
 	CryptoDotComExchange      = "Crypto.com"
 	FTXExchange               = "FTX"
 	Opyn                      = "OPYN"
@@ -99,6 +100,7 @@ func Exchanges() []string {
 		SimexExchange,
 
 		BinanceExchange,
+		BinanceExchangeUS,
 		LBankExchange,
 		QuoineExchange,
 

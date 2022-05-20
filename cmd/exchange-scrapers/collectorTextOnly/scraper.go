@@ -29,6 +29,14 @@ func handleTrades(c chan *dia.Trade) {
 var (
 	exchange = flag.String("exchange", "", "which exchange")
 )
+func isValidExchange(estring string) bool{
+	for _,e := range dia.Exchanges(){
+		if(e==estring){
+			return true
+		}
+	}
+	return false
+}
 
 func init() {
 	flag.Parse()
@@ -36,6 +44,9 @@ func init() {
 		flag.Usage()
 		log.Println(dia.Exchanges())
 		log.Fatal("exchange is required")
+	}
+	if(!isValidExchange(*exchange)){
+		log.Fatal("Invalid exchange string: ",*exchange)
 	}
 }
 
