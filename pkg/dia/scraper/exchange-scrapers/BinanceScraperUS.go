@@ -7,10 +7,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/adshao/go-binance"
+	"github.com/cryptwire/go-binance/v2"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
+)
+
+const (
+	BinanceUSWsURL = "wss://stream.binance.us:9443/ws"
 )
 
 type BinanceUSPairScraperSet map[*BinanceUSPairScraper]nothing
@@ -39,6 +43,7 @@ type BinanceScraperUS struct {
 
 // NewBinanceScraperUS returns a new BinanceScraperUS for the given pair
 func NewBinanceScraperUS(apiKey string, secretKey string, exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BinanceScraperUS {
+	binance.BaseWsMainURL = BinanceUSWsURL
 
 	s := &BinanceScraperUS{
 		client:       binance.NewClient(apiKey, secretKey),
@@ -183,25 +188,7 @@ func (s *BinanceScraperUS) ScrapePair(pair dia.ExchangePair) (PairScraper, error
 	return ps, err
 }
 func (s *BinanceScraperUS) normalizeSymbol(p dia.ExchangePair, foreignName string, params ...string) (pair dia.ExchangePair, err error) {
-	// symbol := p.Symbol
-	// status := params[0]
-	// if status == "TRADING" {
-	// 	if helpers.NameForSymbol(symbol) == symbol {
-	// 		if !helpers.SymbolIsName(symbol) {
-	// 			pair.Symbol = symbol
-	// 			pair, _ = s.NormalizePair(pair)
-
-	// 			return pair, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
-	// 		}
-	// 	}
-	// 	if helpers.SymbolIsBlackListed(symbol) {
-	// 		pair.Symbol = symbol
-	// 		return pair, errors.New("Symbol is black listed:" + symbol)
-	// 	}
-	// } else {
-	// 	return pair, errors.New("Symbol:" + symbol + " with foreign name:" + foreignName + " is:" + status)
-
-	// }
+	pair = p
 	return pair, nil
 }
 
@@ -217,13 +204,11 @@ func (s *BinanceScraperUS) FetchAvailablePairs() (pairs []dia.ExchangePair, err 
 	err = json.Unmarshal(data, &ar)
 	if err == nil {
 		for _, p := range ar.Symbols {
-
 			pairToNormalise := dia.ExchangePair{
-				Symbol:      p.Symbol,
+				Symbol:      p.BaseAsset,
 				ForeignName: p.Symbol,
 				Exchange:    s.exchangeName,
 			}
-
 			pair, serr := s.normalizeSymbol(pairToNormalise, p.BaseAsset, p.Status)
 			if serr == nil {
 				pairs = append(pairs, pair)
