@@ -883,12 +883,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "BTC",
-            "ForeignName": "BTCUST",
-            "Exchange": "BinanceUS",
-            "Ignore": false
-        },
-        {
             "Symbol": "BNT",
             "ForeignName": "BNTUSDT",
             "Exchange": "BinanceUS",

@@ -93,7 +93,7 @@
         {
             "Symbol": "BNB",
             "Exchange": "BinanceUS",
-            "Blockchain": "BinanceUSSmartChain",
+            "Blockchain": "BinanceSmartChain",
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
@@ -111,7 +111,7 @@
         {
             "Symbol": "BUSD",
             "Exchange": "BinanceUS",
-            "Blockchain": "BinanceUSSmartChain",
+            "Blockchain": "BinanceSmartChain",
             "Address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
         },
         {
@@ -347,6 +347,12 @@
             "Exchange": "BinanceUS",
             "Blockchain": "Ethereum",
             "Address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
+        },
+        {
+            "Symbol": "USD",
+            "Exchange": "BinanceUS",
+            "Blockchain": "Fiat",
+            "Address": "840"
         },
         {
             "Symbol": "USDC",
