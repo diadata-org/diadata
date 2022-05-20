@@ -33,7 +33,6 @@ var (
 		dia.PangolinExchange,
 		dia.ApeswapExchange,
 		dia.BiswapExchange,
-
 		dia.KuCoinExchange,
 	}
 )
@@ -108,6 +107,15 @@ var (
 	mode = flag.String("mode", "current", "either storeTrades, current, historical or estimation")
 )
 
+func isValidExchange(estring string) bool{
+	for _,e := range dia.Exchanges(){
+		if(e==estring){
+			return true
+		}
+	}
+	return false
+}
+
 func init() {
 	flag.Parse()
 	if *exchange == "" {
@@ -116,8 +124,12 @@ func init() {
 		for {
 			time.Sleep(24 * time.Hour)
 		}
-		// log.Fatal("exchange is required")
+		log.Fatal("exchange is required")
 	}
+	if(!isValidExchange(*exchange)){
+		log.Fatal("Invalid exchange string: ",*exchange)
+	}
+
 }
 
 // main manages all PairScrapers and handles incoming trade information
