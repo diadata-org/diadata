@@ -10,6 +10,7 @@ import (
 )
 
 const (
+	ArthswapExchange          = "Arthswap"
 	DiffusionExchange         = "Diffusion"
 	OmniDexExchange           = "OmniDex"
 	NetswapExchange           = "Netswap"
@@ -114,6 +115,7 @@ func Exchanges() []string {
 		STEXExchange,
 		UniswapExchangeV3Polygon,
 
+		ArthswapExchange,
 		ApeswapExchange,
 		BiswapExchange,
 		OmniDexExchange,

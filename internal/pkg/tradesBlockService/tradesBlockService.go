@@ -166,6 +166,13 @@ func (s *TradesBlockService) process(t dia.Trade) {
 						Blockchain: dia.ETHEREUM,
 					}
 				}
+				if basetoken.Blockchain == dia.ASTAR && t.Source == dia.ArthswapExchange && basetoken.Address == common.HexToAddress("0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720").Hex() {
+					basetoken = dia.Asset{
+						Symbol:     "ASTR",
+						Address:    "0x0000000000000000000000000000000000000000",
+						Blockchain: dia.ASTAR,
+					}
+				}
 
 				if _, ok = s.priceCache[basetoken]; ok {
 					price = s.priceCache[basetoken]
