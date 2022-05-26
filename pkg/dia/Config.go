@@ -115,6 +115,7 @@ func Exchanges() []string {
 		STEXExchange,
 		UniswapExchangeV3Polygon,
 
+		DiffusionExchange,
 		ArthswapExchange,
 		ApeswapExchange,
 		BiswapExchange,

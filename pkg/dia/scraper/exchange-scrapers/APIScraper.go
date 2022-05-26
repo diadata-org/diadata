@@ -48,6 +48,9 @@ func init() {
 	blockchains[dia.FUSE] = dia.BlockChain{Name: dia.FUSE, NativeToken: dia.Asset{Symbol: "FUSE"}, VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.TELOS] = dia.BlockChain{Name: dia.TELOS, NativeToken: dia.Asset{Symbol: "TLOS"}, VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.EVMOS] = dia.BlockChain{Name: dia.EVMOS, NativeToken: dia.Asset{Symbol: "EVMOS"}, VerificationMechanism: dia.PROOF_OF_STAKE}
+	blockchains[dia.KUSAMA] = dia.BlockChain{Name: dia.KUSAMA, NativeToken: dia.Asset{Symbol: "KSM"}, VerificationMechanism: dia.PROOF_OF_STAKE}
+	blockchains[dia.ACALA] = dia.BlockChain{Name: dia.ACALA, NativeToken: dia.Asset{Symbol: "ACL"}, VerificationMechanism: dia.PROOF_OF_STAKE}
+	blockchains[dia.POLKADOT] = dia.BlockChain{Name: dia.POLKADOT, NativeToken: dia.Asset{Symbol: "DOT"}, VerificationMechanism: dia.PROOF_OF_STAKE}
 	blockchains[dia.FIAT] = dia.BlockChain{Name: dia.FIAT}
 
 	Exchanges = make(map[string]dia.Exchange)

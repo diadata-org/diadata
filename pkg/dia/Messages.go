@@ -39,6 +39,9 @@ const (
 	FUSE                                    = "Fuse"
 	TELOS                                   = "Telos"
 	EVMOS                                   = "Evmos"
+	KUSAMA                                  = "Kusama"
+	ACALA                                   = "Acala"
+	POLKADOT                                = "Polkadot"
 	FIAT                                    = "Fiat"
 )
 
