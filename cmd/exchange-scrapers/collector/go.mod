@@ -10,3 +10,7 @@ require (
 	github.com/segmentio/kafka-go v0.3.7
 	github.com/sirupsen/logrus v1.8.1
 )
+
+// replace (
+// 	github.com/diadata-org/diadata => ../../../
+// )

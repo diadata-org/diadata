@@ -139,6 +139,20 @@ func NewCurveFIScraper(exchange dia.Exchange, scrape bool) *CurveFIScraper {
 	}
 	log.Infof("loaded standard pools. Now %v pools.", len(scraper.pools.pools))
 
+	// Load crypto pools.
+	// err = scraper.loadPoolsAndCoins(common.HexToAddress("0xF18056Bbd320E96A48e3Fbf8bC061322531aac99"))
+	// if err != nil {
+	// 	log.Error("loadPoolsAndCoins: ", err)
+	// }
+	// log.Infof("loaded crypto pools. Now %v pools.", len(scraper.pools.pools))
+
+	// Load cryptoswap pools.
+	err = scraper.loadPoolsAndCoins(common.HexToAddress("0x8F942C20D02bEfc377D41445793068908E2250D0"))
+	if err != nil {
+		log.Error("loadPoolsAndCoins: ", err)
+	}
+	log.Infof("loaded cryptoswap pools. Now %v pools.", len(scraper.pools.pools))
+
 	if scrape {
 		go scraper.mainLoop()
 	}
@@ -364,7 +378,7 @@ func (scraper *CurveFIScraper) watchNewPools() {
 // contract.poolList.map(contract.GetPoolCoins(pool).)
 func (scraper *CurveFIScraper) loadPoolsAndCoins(factoryAddress common.Address) (err error) {
 
-	if factoryAddress == common.HexToAddress(curveFiMetaPoolsFactory) {
+	if factoryAddress == common.HexToAddress(curveFiMetaPoolsFactory) || factoryAddress == common.HexToAddress("0xF18056Bbd320E96A48e3Fbf8bC061322531aac99") {
 		log.Info("load meta pools...")
 		var contract *curvefimeta.CurvefimetaCaller
 		var poolCount *big.Int
@@ -424,8 +438,10 @@ func (scraper *CurveFIScraper) loadPoolsAndCoins(factoryAddress common.Address) 
 func (scraper *CurveFIScraper) loadPoolData(pool string, factoryContract common.Address) error {
 	var poolCoins [8]common.Address
 	var poolCoinsMap = make(map[int]*CurveCoin)
-	if factoryContract == common.HexToAddress(curveFiMetaPoolsFactory) {
+
+	if factoryContract == common.HexToAddress(curveFiMetaPoolsFactory) || factoryContract == common.HexToAddress("0xF18056Bbd320E96A48e3Fbf8bC061322531aac99") {
 		contract, err := curvefimeta.NewCurvefimetaCaller(factoryContract, scraper.RestClient)
+
 		if err != nil {
 			log.Error("loadPoolData - NewCurvefiCaller: ", err)
 		}
@@ -450,6 +466,11 @@ func (scraper *CurveFIScraper) loadPoolData(pool string, factoryContract common.
 			log.Error("loadPoolData - GetCoins: ", err)
 		}
 		log.Info("pool coins: ", poolCoins)
+		poolName, err := contract.GetPoolName(&bind.CallOpts{}, common.HexToAddress(pool))
+		if err != nil {
+			log.Error("loadPoolData - GetPoolName: ", err)
+		}
+		log.Info("pool name: ", poolName)
 	}
 
 	var err error
@@ -458,7 +479,9 @@ func (scraper *CurveFIScraper) loadPoolData(pool string, factoryContract common.
 		var symbol string
 		var decimals *big.Int
 		var name string
-		if c == common.HexToAddress("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
+		if c == common.HexToAddress("0x0000000000000000000000000000000000000000") {
+			continue
+		} else if c == common.HexToAddress("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
 			symbol = "ETH"
 			decimals = big.NewInt(int64(18))
 			name = "Ether"
@@ -485,6 +508,7 @@ func (scraper *CurveFIScraper) loadPoolData(pool string, factoryContract common.
 				continue
 			}
 		}
+		log.Info(symbol, " ", decimals, " ", "'", name, "'", " ", c)
 
 		poolCoinsMap[cIdx] = &CurveCoin{
 			Symbol:   symbol,
