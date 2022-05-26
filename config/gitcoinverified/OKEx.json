@@ -10,7 +10,7 @@
             "Symbol": "ACA",
             "Exchange": "OKEx",
             "Blockchain": "Acala",
-            "Address": "{ Token: 'ACA' }"
+            "Address": "Token:ACA"
         },
         {
             "Symbol": "ANT",

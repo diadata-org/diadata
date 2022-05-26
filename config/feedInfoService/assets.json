@@ -12,7 +12,7 @@
     },
     {
       "Symbol": "AUSD",
-      "Address": "{ Token: 'AUSD' }",
+      "Address": "Token:AUSD",
       "Blockchain": "Acala"
     },
     {

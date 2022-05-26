@@ -4,7 +4,7 @@
             "Symbol": "ACA",
             "Exchange": "KuCoin",
             "Blockchain": "Acala",
-            "Address": "{ Token: 'ACA' }"
+            "Address": "Token:ACA"
         },
         {
             "Symbol": "ADB",
@@ -70,7 +70,7 @@
             "Symbol": "AUSD",
             "Exchange": "KuCoin",
             "Blockchain": "Acala",
-            "Address": "{ Token: 'AUSD' }"
+            "Address": "Token:AUSD"
         },
         {
             "Symbol": "BNB",

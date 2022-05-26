@@ -19,14 +19,14 @@
       "Name": "Acala",
       "Decimals": 12,
       "Blockchain": "Acala",
-      "Address": "{ Token: 'ACA' }"
+      "Address": "Token:ACA"
     },
     {
       "Symbol": "AUSD",
       "Name": "Acala USD",
       "Decimals": 12,
       "Blockchain": "Acala",
-      "Address": "{ Token: 'AUSD' }"
+      "Address": "Token:AUSD"
     },
     {
       "Symbol": "DOT",
