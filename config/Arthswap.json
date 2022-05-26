@@ -1,0 +1,10 @@
+{
+    "Coins": [
+        {
+            "Symbol": "WASTR",
+            "ForeignName": "WASTR-USDC",
+            "Exchange": "Arthswap",
+            "Ignore": false
+        }
+    ]
+}

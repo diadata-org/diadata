@@ -166,6 +166,20 @@ func (s *TradesBlockService) process(t dia.Trade) {
 						Blockchain: dia.ETHEREUM,
 					}
 				}
+				if basetoken.Blockchain == dia.ASTAR && t.Source == dia.ArthswapExchange && basetoken.Address == common.HexToAddress("0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98").Hex() {
+					basetoken = dia.Asset{
+						Symbol:     "USDC",
+						Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+						Blockchain: dia.ETHEREUM,
+					}
+				}
+				if basetoken.Blockchain == dia.ASTAR && t.Source == dia.ArthswapExchange && basetoken.Address == common.HexToAddress("0x3795C36e7D12A8c252A20C5a7B455f7c57b60283").Hex() {
+					basetoken = dia.Asset{
+						Symbol:     "USDT",
+						Address:    "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+						Blockchain: dia.ETHEREUM,
+					}
+				}
 
 				if _, ok = s.priceCache[basetoken]; ok {
 					price = s.priceCache[basetoken]

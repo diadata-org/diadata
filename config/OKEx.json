@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "OKEx",
+      "ForeignName": "ACA-USDT",
+      "Ignore": false,
+      "Symbol": "ACA"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "ANT-USDT",
       "Ignore": false,
       "Symbol": "ANT"

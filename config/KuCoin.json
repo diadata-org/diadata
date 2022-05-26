@@ -1,6 +1,18 @@
 {
     "Coins": [
         {
+            "Symbol": "ACA",
+            "ForeignName": "ACA-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AUSD",
+            "ForeignName": "AUSD-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "TLOS",
             "ForeignName": "TLOS-USDT",
             "Exchange": "KuCoin",
