@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"time"
 
+	filters "github.com/diadata-org/diadata/internal/pkg/filtersBlockService"
 	"github.com/diadata-org/diadata/internal/pkg/indexCalculationService"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -1957,7 +1958,7 @@ func (env *Env) GetNFTTradesCurrent(c *gin.Context) {
 	address := common.HexToAddress(c.Param("address")).Hex()
 	id := c.Param("id")
 
-	q, err := env.RelDB.GetNFTTradesFromTable(address, blockchain, id, models.NfttradeCurrTable)
+	q, err := env.RelDB.GetNFTTradesFromTable(address, blockchain, id, time.Time{}, time.Now(), models.NfttradeCurrTable)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
 	}
@@ -1965,19 +1966,183 @@ func (env *Env) GetNFTTradesCurrent(c *gin.Context) {
 }
 
 // GetNFTPrice30Days returns the average price of the whole nft class over the last 30 days.
-func (env *Env) GetNFTPrice30Days(c *gin.Context) {
+func (env *Env) GetNFTFloor(c *gin.Context) {
 	blockchain := c.Param("blockchain")
 	address := common.HexToAddress(c.Param("address")).Hex()
-	nftClass, err := env.RelDB.GetNFTClass(address, blockchain)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, nil)
+
+	timestampUnixString := c.Query("timestamp")
+	var timestamp time.Time
+	if timestampUnixString != "" {
+		timestampUnix, err := strconv.ParseInt(timestampUnixString, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusBadRequest, err)
+		}
+		timestamp = time.Unix(timestampUnix, 0)
+	} else {
+		timestamp = time.Now()
 	}
 
-	avgPrice, err := env.RelDB.GetNFTPrice30Days(nftClass)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, nil)
+	floorWindowSeconds := c.Query("floorWindow")
+	var floorWindow int64
+	var err error
+	if floorWindowSeconds != "" {
+		floorWindow, err = strconv.ParseInt(floorWindowSeconds, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusBadRequest, err)
+		}
+	} else {
+		// Set floor window to default 24h.
+		floorWindow = 24 * 60 * 60
 	}
-	c.JSON(http.StatusOK, avgPrice)
+
+	nftClass := dia.NFTClass{Address: address, Blockchain: blockchain}
+
+	// Look for floor price. Iterate backwards in time if no sales are found.
+	var floor float64
+	windowDuration := time.Duration(floorWindow) * time.Second
+	stepBackLimit := 40
+	floor, err = env.RelDB.GetNFTFloorRecursive(nftClass, timestamp, windowDuration, stepBackLimit)
+	if err != nil {
+		restApi.SendError(c, http.StatusBadRequest, err)
+		return
+	}
+	c.JSON(http.StatusOK, floor)
+}
+
+// GetNFTFloorMA returns the moving average floor price of the nft class over the last 30 days.
+func (env *Env) GetNFTFloorMA(c *gin.Context) {
+
+	// NFT collection.
+	blockchain := c.Param("blockchain")
+	address := common.HexToAddress(c.Param("address")).Hex()
+	nftClass := dia.NFTClass{Address: address, Blockchain: blockchain}
+
+	// lookback for MA is 30 days per default.
+	lookbackString := c.DefaultQuery("lookbackSeconds", "2592000")
+	lookbackInt, err := strconv.ParseInt(lookbackString, 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusBadRequest, nil)
+	}
+
+	// floor price window is 24h per default.
+	floorWindowString := c.DefaultQuery("floorWindow", "86400")
+	floorWindowInt, err := strconv.ParseInt(floorWindowString, 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusBadRequest, nil)
+	}
+	floorWindow := time.Duration(floorWindowInt) * time.Second
+
+	endtime := time.Now()
+	starttime := endtime.Add(-time.Duration(lookbackInt) * time.Second)
+	stepBackLimit := 120
+
+	t := time.Now()
+	floorPrices, err := env.RelDB.GetNFTFloorRange(nftClass, starttime, endtime, floorWindow, stepBackLimit)
+	log.Infof("took %v time to compute floorPrices: %v", time.Since(t), floorPrices)
+
+	cleanFloorPrices, indices := filters.RemoveOutliers(floorPrices, 1.5)
+	var floorMA float64
+	if len(indices) == 2 {
+		floorMA = utils.Average(cleanFloorPrices)
+	} else {
+		floorMA = utils.Average(floorPrices)
+	}
+	log.Info("cleaned floorPrices: ", cleanFloorPrices)
+	if len(indices) == 2 {
+		log.Info("indices: ", indices)
+		log.Info("discarded: ", floorPrices[:indices[0]], floorPrices[indices[1]-1:len(floorPrices)-1])
+	} else {
+		log.Info("nothing discarded.")
+	}
+
+	c.JSON(http.StatusOK, floorMA)
+}
+
+// GetNFTDownday returns the moving average floor price of the nft class over the last 30 days.
+func (env *Env) GetNFTDownday(c *gin.Context) {
+
+	// NFT collection.
+	blockchain := c.Param("blockchain")
+	address := common.HexToAddress(c.Param("address")).Hex()
+	nftClass := dia.NFTClass{Address: address, Blockchain: blockchain}
+
+	// lookback for MA is 90 days per default.
+	lookbackString := c.DefaultQuery("lookbackSeconds", "7776000")
+	lookbackInt, err := strconv.ParseInt(lookbackString, 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusBadRequest, nil)
+	}
+
+	// floor price window is 24h per default.
+	floorWindowString := c.DefaultQuery("floorWindow", "86400")
+	floorWindowInt, err := strconv.ParseInt(floorWindowString, 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusBadRequest, nil)
+	}
+	floorWindow := time.Duration(floorWindowInt) * time.Second
+
+	endtime := time.Now()
+	starttime := endtime.Add(-time.Duration(lookbackInt) * time.Second)
+	stepBackLimit := 120
+	floorPrices, err := env.RelDB.GetNFTFloorRange(nftClass, starttime, endtime, floorWindow, stepBackLimit)
+
+	log.Info("floorPrices: ", floorPrices)
+
+	// Compute movement time-series.
+	var movement []float64
+	var downwardMovement []float64
+	for i := range floorPrices {
+		if i == len(floorPrices)-1 {
+			break
+		}
+		if floorPrices[i] == 0 {
+			continue
+		}
+		mov := 100 * (floorPrices[i+1] - floorPrices[i]) / floorPrices[i]
+		movement = append(movement, mov)
+		if mov < 0 {
+			downwardMovement = append(downwardMovement, mov)
+		}
+	}
+	log.Info("movement: ", movement)
+
+	type Downward struct {
+		WeeklyDrawdown   float64
+		DowndayAverage   float64
+		DowndayDeviation float64
+	}
+	var response Downward
+
+	response.DowndayAverage = utils.Average(downwardMovement)
+	response.DowndayDeviation = utils.StandardDeviation(downwardMovement)
+
+	// Caution: This is only valid for 24h windows.
+	// response.WeeklyDrawdown = 0
+	// if len(movement) > 7 {
+	// 	for i := 7; i < len(movement)-1; i++ {
+	// 		diff := movement[i] - movement[i-7]
+	// 		if diff < response.WeeklyDrawdown {
+	// 			response.WeeklyDrawdown = diff
+	// 		}
+	// 	}
+	// }
+
+	var drawdowns []float64
+	if len(movement) > 7 {
+		for i := 7; i < len(movement)-1; i++ {
+			drawdowns = append(drawdowns, movement[i]-movement[i-1])
+		}
+	}
+	cleanDrawdowns, _ := filters.RemoveOutliers(drawdowns, float64(1.5))
+	min := cleanDrawdowns[0]
+	for _, x := range cleanDrawdowns {
+		if x < min {
+			min = x
+		}
+	}
+	response.WeeklyDrawdown = min
+
+	c.JSON(http.StatusOK, response)
 }
 
 func (env *Env) GetFeedStats(c *gin.Context) {

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"math"
 	"sort"
 )
 
@@ -31,4 +32,36 @@ func NewFloat64Slice(sf sort.Float64Slice) *ArgsortableSlice {
 		s.idx[i] = i
 	}
 	return s
+}
+
+// Average returns the average of @samples.
+func Average(series []float64) (average float64) {
+	length := float64(len(series))
+	if length == 0 {
+		return
+	}
+	for _, s := range series {
+		average += s
+
+	}
+	average /= length
+	return
+
+}
+
+func Variance(series []float64) (variance float64) {
+	length := float64(len(series))
+	if length == 0 {
+		return
+	}
+
+	for _, item := range series {
+		variance += math.Pow(float64(int64(item))-Average(series), float64(2))
+	}
+	variance /= length
+	return
+}
+
+func StandardDeviation(series []float64) float64 {
+	return math.Sqrt(Variance(series))
 }
