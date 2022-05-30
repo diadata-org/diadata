@@ -1,23 +1,31 @@
 # ⛓ Oracle Documentation
 
+Oracles are smart contract interfaces that bring data from an external source into a smart contract. Smart contracts run in an isolated environment in a virtual machine and can not "measure" any outside information by themselves. The only way to get external data into a smart contract is by executing a transaction with the external data as a payload. With that data, a smart contract can perform calculations and operations that depend on this data, such as calculating an interest based on the reference interest rates published by a central bank.
+
+DIA is capable of publishing financial data with such an oracle so that any smart contract can read and use it from within the Ethereum virtual machine. By generating verifiable oracle data, any user can use financial data in smart contracts. For each of our asset classes, there is an example data set available in the oracle.
+
+To learn how to interact with DIA oracle smart contracts
+
+{% content-ref url="access-the-oracle.md" %}
+[access-the-oracle.md](access-the-oracle.md)
+{% endcontent-ref %}
+
+## Multi-chain delivery
+
+DIA operates oracles on 25+ blockchains. To enable developers to test DIA's oracle services, DIA provides Development Oracles for each supported chain. These Development Oracle contracts are smart contracts that provide a selected range of asset prices on various blockchains for live testing on a respective Mainnet and Testnet.
+
+Get an overview on the following link:
+
 {% content-ref url="deployed-contracts.md" %}
 [deployed-contracts.md](deployed-contracts.md)
 {% endcontent-ref %}
 
-{% content-ref url="guest-quotations/coinmarketcap-quotations.md" %}
-[coinmarketcap-quotations.md](guest-quotations/coinmarketcap-quotations.md)
-{% endcontent-ref %}
+## Data Categories
 
-{% content-ref url="guest-quotations/coingecko-quotations.md" %}
-[coingecko-quotations.md](guest-quotations/coingecko-quotations.md)
-{% endcontent-ref %}
+### Price feeds
 
-{% content-ref url="defi-protocol-rates-and-states.md" %}
-[defi-protocol-rates-and-states.md](defi-protocol-rates-and-states.md)
-{% endcontent-ref %}
-
-{% content-ref url="broken-reference" %}
-[Broken link](broken-reference)
+{% content-ref url="crypto-assets.md" %}
+[crypto-assets.md](crypto-assets.md)
 {% endcontent-ref %}
 
 {% content-ref url="chart-points.md" %}
@@ -28,23 +36,57 @@
 [fiat-prices.md](fiat-prices.md)
 {% endcontent-ref %}
 
+### Randomness
+
+{% content-ref url="randomness-oracle.md" %}
+[randomness-oracle.md](randomness-oracle.md)
+{% endcontent-ref %}
+
+### Guest quotations
+
+DIA provides oracles for several guest quotations.
+
+{% content-ref url="guest-quotations/coingecko-quotations.md" %}
+[coingecko-quotations.md](guest-quotations/coingecko-quotations.md)
+{% endcontent-ref %}
+
+{% content-ref url="guest-quotations/coinmarketcap-quotations.md" %}
+[coinmarketcap-quotations.md](guest-quotations/coinmarketcap-quotations.md)
+{% endcontent-ref %}
+
+### Indexes
+
+{% content-ref url="crypto-index-value.md" %}
+[crypto-index-value.md](crypto-index-value.md)
+{% endcontent-ref %}
+
+### Rates
+
 {% content-ref url="interest-rates.md" %}
 [interest-rates.md](interest-rates.md)
 {% endcontent-ref %}
 
-{% content-ref url="crypto-assets.md" %}
-[crypto-assets.md](crypto-assets.md)
+{% content-ref url="defi-protocol-rates-and-states.md" %}
+[defi-protocol-rates-and-states.md](defi-protocol-rates-and-states.md)
 {% endcontent-ref %}
 
-{% content-ref url="guest-quotations/" %}
-[guest-quotations](guest-quotations/)
+## Other
+
+{% content-ref url="polkadot-offchain-worker.md" %}
+[polkadot-offchain-worker.md](polkadot-offchain-worker.md)
 {% endcontent-ref %}
 
+{% content-ref url="polkadot-medianizer.md" %}
+[polkadot-medianizer.md](polkadot-medianizer.md)
+{% endcontent-ref %}
 
+{% content-ref url="solana-oracle.md" %}
+[solana-oracle.md](solana-oracle.md)
+{% endcontent-ref %}
 
-Oracles are smart contract interfaces that bring data from an external source into a smart contract. Smart contracts run in an isolated environment in a virtual machine and can not "measure" any outside information by themselves. The only way to get external data into a smart contract is by executing a transaction with the external data as payload. With that data, a smart contract can perform calculations and operations that depend on this data, such as calculating an interest based on the reference interest rates published by a central bank.
-
-DIA is capable of publishing financial data with such an oracle so that any smart contract can read and use it from within the Ethereum virtual machine. By generating verifiable oracle data, any user can use financial data in smart contracts. For each of our asset classes there is an example data set available in the oracle.
+{% content-ref url="near-request-oracle.md" %}
+[near-request-oracle.md](near-request-oracle.md)
+{% endcontent-ref %}
 
 ## Immutable Oracle Feeds
 
