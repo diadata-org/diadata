@@ -10,6 +10,10 @@ DIA Development Oracle contracts are smart contracts that provide a selected ran
 The contracts are upgraded and exchanged on a rolling basis and are not maintained indefinitely.\
 DIA Development Oracle contracts are not intended to be integrated in a dApp. DIA deploys dedicated contracts for dApps. Please request a dedicated oracle by contacting the team on [Discord](https://discord.com/invite/zFmXtPFgQj) or the [DIA DAO Forum](https://dao.diadata.org/).
 
+The audit of our oracle smart contract can be found here:
+
+{% file src="../../.gitbook/assets/02_Smart Contract Audit_DIA_Oracle_v2.pdf" %}
+
 ### Ethereum
 
 {% tabs %}
