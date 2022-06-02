@@ -46,9 +46,11 @@ func main() {
 
 	addresses := []string{
 		"0x0000000000000000000000000000000000000000",//ASTR
+		"0x0000000000000000000000000000000000000000",//BTC
 	}
 	blockchains := []string{
-		"Astar",
+		"Astar",//ASTR
+		"Bitcoin",//BTC
 	}
 	oldPrices := make(map[int]float64)
 

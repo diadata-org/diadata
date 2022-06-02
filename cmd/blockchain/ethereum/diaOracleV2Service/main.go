@@ -42,6 +42,8 @@ func main() {
 		log.Fatalf("Failed to parse deviationPermille: %v")
 	}
 
+	var nnc big.Int
+	nnc.SetUint64(41269)
 	addresses := []string{
 		"0x0000000000000000000000000000000000000000", //BTC
 		"0x0000000000000000000000000000000000000000", //ETH
@@ -99,7 +101,7 @@ func main() {
 					blockchain := blockchains[i]
 					oldPrice := oldPrices[i]
 					log.Println("old price", oldPrice)
-					oldPrice, err = periodicOracleUpdateHelper(oldPrice, deviationPermille, auth, contract, conn, blockchain, address)
+					oldPrice, err = periodicOracleUpdateHelper(oldPrice, deviationPermille, auth, contract, conn, blockchain, address, &nnc)
 					oldPrices[i] = oldPrice
 					if err != nil {
 						log.Println(err)
@@ -112,7 +114,7 @@ func main() {
 	select {}
 }
 
-func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string) (float64, error) {
+func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string, nnc *big.Int) (float64, error) {
 
 	// Get quotation for token and update Oracle
 	rawQ, err := getAssetQuotationFromDia(blockchain, address)
@@ -127,7 +129,7 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 
 	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
 		log.Println("Entering deviation based update zone")
-		err = updateQuotation(rawQ, auth, contract, conn)
+		err = updateQuotation(rawQ, auth, contract, conn, nnc)
 		if err != nil {
 			log.Fatalf("Failed to update DIA Oracle: %v", err)
 			return oldPrice, err
@@ -161,15 +163,16 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 	return nil
 }
 
-func updateQuotation(quotation *models.Quotation, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client) error {
+func updateQuotation(quotation *models.Quotation, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, nnc *big.Int) error {
 	symbol := quotation.Symbol + "/USD"
 	price := quotation.Price
 	timestamp := time.Now().Unix()
-	err := updateOracle(conn, contract, auth, symbol, int64(price*100000000), timestamp)
+	err := updateOracle(conn, contract, auth, symbol, int64(price*100000000), timestamp, nnc)
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err
 	}
+	nnc.Add(nnc, big.NewInt(1))
 
 	return nil
 }
@@ -180,7 +183,8 @@ func updateOracle(
 	auth *bind.TransactOpts,
 	key string,
 	value int64,
-	timestamp int64) error {
+	timestamp int64,
+	nnc *big.Int) error {
 
 	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
@@ -190,21 +194,24 @@ func updateOracle(
 	// Get 110% of the gas price
 	fmt.Println(gasPrice)
 	fGas := new(big.Float).SetInt(gasPrice)
-	fGas.Mul(fGas, big.NewFloat(1.1))
+	fGas.Mul(fGas, big.NewFloat(40.0))
 	gasPrice, _ = fGas.Int(nil)
 	fmt.Println(gasPrice)
+
 	// Write values to smart contract
 	tx, err := contract.SetValue(&bind.TransactOpts{
 		From:     auth.From,
 		Signer:   auth.Signer,
-		GasLimit: 1000725,
+		//Nonce:    nnc,
 		GasPrice: gasPrice,
+		GasLimit: 1000725,
 	}, key, big.NewInt(value), big.NewInt(timestamp))
 	if err != nil {
 		return err
 	}
 	fmt.Println(tx.GasPrice())
 	log.Printf("key: %s\n", key)
+	log.Printf("Nonce: %d\n", tx.Nonce())
 	log.Printf("Tx To: %s\n", tx.To().String())
 	log.Printf("Tx Hash: 0x%x\n", tx.Hash())
 	return nil

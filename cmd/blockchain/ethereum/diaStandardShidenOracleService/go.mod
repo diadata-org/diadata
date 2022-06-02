@@ -1,4 +1,4 @@
-module github.com/diadata-org/diadata/blockchain/diaStandardOracleServiceShiden
+module github.com/diadata-org/diadata/blockchain/diaStandardShidenOracleService
 
 go 1.14
 
