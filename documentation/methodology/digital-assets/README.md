@@ -12,10 +12,10 @@
 [supplynumbers.md](supplynumbers.md)
 {% endcontent-ref %}
 
-{% content-ref url="return-rates-in-crypto-farming.md" %}
-[return-rates-in-crypto-farming.md](return-rates-in-crypto-farming.md)
+{% content-ref url="../../../extra/research/return-rates-in-crypto-farming.md" %}
+[return-rates-in-crypto-farming.md](../../../extra/research/return-rates-in-crypto-farming.md)
 {% endcontent-ref %}
 
-{% content-ref url="cvi.md" %}
-[cvi.md](cvi.md)
+{% content-ref url="../../../extra/research/cvi.md" %}
+[cvi.md](../../../extra/research/cvi.md)
 {% endcontent-ref %}

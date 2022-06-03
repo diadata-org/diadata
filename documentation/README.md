@@ -32,14 +32,14 @@ DIA is divided into three main building blocks. First, our data collection mecha
 [supplynumbers.md](methodology/digital-assets/supplynumbers.md)
 {% endcontent-ref %}
 
-{% content-ref url="methodology/digital-assets/cvi.md" %}
-[cvi.md](methodology/digital-assets/cvi.md)
+{% content-ref url="../extra/research/cvi.md" %}
+[cvi.md](../extra/research/cvi.md)
 {% endcontent-ref %}
 {% endtab %}
 
 {% tab title="Traditional Assets" %}
-{% content-ref url="methodology/traditional-assets/overnight-rates.md" %}
-[overnight-rates.md](methodology/traditional-assets/overnight-rates.md)
+{% content-ref url="broken-reference" %}
+[Broken link](broken-reference)
 {% endcontent-ref %}
 {% endtab %}
 {% endtabs %}
