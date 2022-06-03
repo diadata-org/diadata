@@ -56,8 +56,8 @@ DIA provides oracles for several guest quotations.
 
 ### Indexes
 
-{% content-ref url="crypto-index-value.md" %}
-[crypto-index-value.md](crypto-index-value.md)
+{% content-ref url="broken-reference" %}
+[Broken link](broken-reference)
 {% endcontent-ref %}
 
 ### Rates
@@ -66,8 +66,8 @@ DIA provides oracles for several guest quotations.
 [interest-rates.md](interest-rates.md)
 {% endcontent-ref %}
 
-{% content-ref url="defi-protocol-rates-and-states.md" %}
-[defi-protocol-rates-and-states.md](defi-protocol-rates-and-states.md)
+{% content-ref url="broken-reference" %}
+[Broken link](broken-reference)
 {% endcontent-ref %}
 
 ## Other

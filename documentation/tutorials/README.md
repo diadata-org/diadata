@@ -20,7 +20,3 @@ description: Develop applications and sources on top of DIA
 [exchangescrapers.md](exchangescrapers.md)
 {% endcontent-ref %}
 
-{% content-ref url="broken-reference" %}
-[Broken link](broken-reference)
-{% endcontent-ref %}
-
