@@ -2006,7 +2006,16 @@ func (env *Env) GetNFTFloor(c *gin.Context) {
 		restApi.SendError(c, http.StatusBadRequest, err)
 		return
 	}
-	c.JSON(http.StatusOK, floor)
+	type returnStruct struct {
+		Floor  float64   `json:"Floor_Price"`
+		Time   time.Time `json:"Time"`
+		Source string    `json:"Source"`
+	}
+	var resp returnStruct
+	resp.Floor = floor
+	resp.Time = timestamp
+	resp.Source = dia.Diadata
+	c.JSON(http.StatusOK, resp)
 }
 
 // GetNFTFloorMA returns the moving average floor price of the nft class over the last 30 days.
@@ -2055,7 +2064,16 @@ func (env *Env) GetNFTFloorMA(c *gin.Context) {
 		log.Info("nothing discarded.")
 	}
 
-	c.JSON(http.StatusOK, floorMA)
+	type returnStruct struct {
+		Floor  float64   `json:"Moving_Average_Floor_Price"`
+		Time   time.Time `json:"Time"`
+		Source string    `json:"Source"`
+	}
+	var resp returnStruct
+	resp.Floor = floorMA
+	resp.Time = endtime
+	resp.Source = dia.Diadata
+	c.JSON(http.StatusOK, resp)
 }
 
 // GetNFTDownday returns the moving average floor price of the nft class over the last 30 days.
@@ -2107,9 +2125,11 @@ func (env *Env) GetNFTDownday(c *gin.Context) {
 	log.Info("movement: ", movement)
 
 	type Downward struct {
-		WeeklyDrawdown   float64
-		DowndayAverage   float64
-		DowndayDeviation float64
+		WeeklyDrawdown   float64   `json:"Weekly_Drawdown"`
+		DowndayAverage   float64   `json:"Downday_Average"`
+		DowndayDeviation float64   `json:"Downday_Deviation"`
+		Time             time.Time `json:"Time"`
+		Source           string    `json:"Source"`
 	}
 	var response Downward
 
@@ -2141,6 +2161,8 @@ func (env *Env) GetNFTDownday(c *gin.Context) {
 		}
 	}
 	response.WeeklyDrawdown = min
+	response.Time = endtime
+	response.Source = dia.Diadata
 
 	c.JSON(http.StatusOK, response)
 }

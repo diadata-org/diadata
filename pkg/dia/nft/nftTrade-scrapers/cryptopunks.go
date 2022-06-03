@@ -27,6 +27,10 @@ const (
 	cryptoPunksFirstBlock  = 3918000
 )
 
+var (
+	assetCacheCryptopunk = make(map[string]dia.Asset)
+)
+
 type CryptoPunkScraper struct {
 	tradescraper    TradeScraper
 	contractAddress common.Address
@@ -207,18 +211,27 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 			}
 
 			trade := dia.NFTTrade{
-				NFT:              nft,
-				BlockNumber:      iter.Event.Raw.BlockNumber,
-				FromAddress:      iter.Event.FromAddress.Hex(),
-				ToAddress:        transferEvent.To.Hex(),
-				Exchange:         "CryptopunkMarket",
-				TxHash:           iter.Event.Raw.TxHash.Hex(),
-				Price:            price,
-				CurrencySymbol:   "ETH",
-				CurrencyDecimals: int32(18),
-				CurrencyAddress:  common.HexToAddress("0x0000000000000000000000000000000000000000").Hex(),
-				Timestamp:        time.Unix(int64(currHeader.Time), 0),
+				NFT:         nft,
+				BlockNumber: iter.Event.Raw.BlockNumber,
+				FromAddress: iter.Event.FromAddress.Hex(),
+				ToAddress:   transferEvent.To.Hex(),
+				Exchange:    "CryptopunkMarket",
+				TxHash:      iter.Event.Raw.TxHash.Hex(),
+				Price:       price,
+				Timestamp:   time.Unix(int64(currHeader.Time), 0),
 			}
+
+			if asset, ok := assetCacheCryptopunk[dia.ETHEREUM+"-"+"0x0000000000000000000000000000000000000000"]; ok {
+				trade.Currency = asset
+			} else {
+				currency, err := scraper.tradescraper.datastore.GetAsset("0x0000000000000000000000000000000000000000", dia.ETHEREUM)
+				if err != nil {
+					log.Errorf("cannot fetch asset %s -- %s", dia.ETHEREUM, "0x0000000000000000000000000000000000000000")
+				}
+				trade.Currency = currency
+				assetCacheCryptopunk[dia.ETHEREUM+"-"+"0x0000000000000000000000000000000000000000"] = currency
+			}
+
 			scraper.GetTradeChannel() <- trade
 
 			log.Info("got trade: ")
