@@ -258,9 +258,13 @@ __
 
 ### Celo
 
-| Contract Name | Contract Address                                                                              |
-| ------------- | --------------------------------------------------------------------------------------------- |
-| DIA Oracle    | [0xCd8E...C687](https://explorer.celo.org/address/0xCd8E18890E416Aa7ab09aa793b406C187747C687) |
+{% tabs %}
+{% tab title="Mainnet" %}
+| Published Assets                     | Smart Contract Address                                                                        | Oracle Type                                                                                                                           |
+| ------------------------------------ | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [DIA Asset Prices](crypto-assets.md) | [0xCd8E...C687](https://explorer.celo.org/address/0xCd8E18890E416Aa7ab09aa793b406C187747C687) | [Key/Value Oracle V2](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract-v2) |
+{% endtab %}
+{% endtabs %}
 
 ### NEAR
 
