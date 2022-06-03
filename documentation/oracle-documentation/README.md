@@ -28,8 +28,8 @@ Get an overview on the following link:
 [crypto-assets.md](crypto-assets.md)
 {% endcontent-ref %}
 
-{% content-ref url="chart-points.md" %}
-[chart-points.md](chart-points.md)
+{% content-ref url="broken-reference" %}
+[Broken link](broken-reference)
 {% endcontent-ref %}
 
 {% content-ref url="fiat-prices.md" %}
@@ -62,8 +62,8 @@ DIA provides oracles for several guest quotations.
 
 ### Rates
 
-{% content-ref url="interest-rates.md" %}
-[interest-rates.md](interest-rates.md)
+{% content-ref url="broken-reference" %}
+[Broken link](broken-reference)
 {% endcontent-ref %}
 
 {% content-ref url="broken-reference" %}
