@@ -68,7 +68,6 @@
   * [Crypto Volatility Index](extra/research/cvi.md)
 * [🤝 Licence Agreement](licence-agreement.md)
 * [ℹ Disclaimer](disclaimer.md)
-
-***
-
 * [GitHub](https://github.com/diadata-org/)
+* [Discord](https://discord.com/invite/zFmXtPFgQj)
+* [DAO forum](https://dao.diadata.org/)
