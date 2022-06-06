@@ -24,6 +24,10 @@ DIA is divided into three main building blocks. First, our data collection mecha
 
 {% tabs %}
 {% tab title="Digital Assets" %}
+{% content-ref url="methodology/digital-assets/cryptocurrency-trading-data.md" %}
+[cryptocurrency-trading-data.md](methodology/digital-assets/cryptocurrency-trading-data.md)
+{% endcontent-ref %}
+
 {% content-ref url="methodology/digital-assets/exchangeprices/" %}
 [exchangeprices](methodology/digital-assets/exchangeprices/)
 {% endcontent-ref %}
@@ -38,8 +42,8 @@ DIA is divided into three main building blocks. First, our data collection mecha
 {% endtab %}
 
 {% tab title="Traditional Assets" %}
-{% content-ref url="broken-reference" %}
-[Broken link](broken-reference)
+{% content-ref url="methodology/traditional-assets/ecb-foriegn-exchange-data.md" %}
+[ecb-foriegn-exchange-data.md](methodology/traditional-assets/ecb-foriegn-exchange-data.md)
 {% endcontent-ref %}
 {% endtab %}
 {% endtabs %}
