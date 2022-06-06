@@ -17,7 +17,6 @@ import (
 	"github.com/diadata-org/diadata/config/nftContracts/erc721"
 	"github.com/diadata-org/diadata/config/nftContracts/tofunft"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -143,10 +142,10 @@ func init() {
 		panic(err)
 	}
 
-	TofuNFT = utils.Getenv("SCRAPER_NAME_STATE", "")
+	TofuNFT = utils.Getenv("SCRAPER_NAME_STATE", "TofuNFT")
 
 	// If scraper state is not set yet, start from this block
-	initBlockNumString := utils.Getenv("LAST_BLOCK_NUM", "14120913")
+	initBlockNumString := utils.Getenv("LAST_BLOCK_NUM", "225714")
 	initBlockNum, err := strconv.ParseInt(initBlockNumString, 10, 64)
 	if err != nil {
 		log.Error("parse timeFinal: ", err)
@@ -164,8 +163,8 @@ func NewTofuNFTScraper(rdb *models.RelDB) *TofuNFTScraper {
 	}
 
 	s := &TofuNFTScraper{
-		conf:  &TofuNFTScraperConfig{},
-		state: &TofuNFTScraperState{},
+		conf:  defTofuNFTConf,
+		state: defTofuNFTState,
 		tradeScraper: TradeScraper{
 			shutdown:      make(chan nothing),
 			shutdownDone:  make(chan nothing),
@@ -181,7 +180,7 @@ func NewTofuNFTScraper(rdb *models.RelDB) *TofuNFTScraper {
 		return nil
 	}
 
-	log.Info("scraper %s starts at block: %s", TofuNFT, s.state.LastBlockNum)
+	log.Infof("scraper %s starts at block: %v", TofuNFT, s.state.LastBlockNum)
 	time.Sleep(2 * time.Minute)
 	go s.mainLoop()
 
@@ -367,6 +366,7 @@ func (s *TofuNFTScraper) processTx(ctx context.Context, tx *utils.EthFilteredTx)
 		log.Errorf("unable to read EvInventoryUpdate log from transaction(%s)", tx.TXHash)
 		return false, err
 	}
+	fmt.Printf("$$$$$$$$$$$$ ev: %v", ev)
 
 	receipt, err := s.tradeScraper.ethConnection.TransactionReceipt(ctx, tx.TXHash)
 	if err != nil {
@@ -380,33 +380,33 @@ func (s *TofuNFTScraper) processTx(ctx context.Context, tx *utils.EthFilteredTx)
 
 	transfers, err := s.findERC721Transfers(ctx, receipt)
 	if err != nil {
-		log.Errorf("unable to find transfers of the event(block: %d, tx index: %d, tx: %s): %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
+		log.Errorf("unable to find transfers of the event(block: %d, tx index: %d, tx: %s): %s", tx.BlockNum, tx.TXIndex, tx.TXHash.Hex(), err.Error())
 		return false, err
 	}
 
 	// skip if the event has no transfer
 	if len(transfers) == 0 {
-		log.Tracef("event(block: %d, tx index: %d, tx: %s) skipped due to it has no erc721 transfer log", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex())
+		log.Tracef("event(block: %d, tx index: %d, tx: %s) skipped due to it has no erc721 transfer log", tx.BlockNum, tx.TXIndex, tx.TXHash.Hex())
 		return true, nil
 	}
 
 	// skip if the event has multiple transfers due to we can't calculate the price of trade
 	if len(transfers) > 1 {
-		log.Tracef("event(block: %d, tx index: %d, tx: %s) skipped due to it has multiple erc721 transfer logs", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex())
+		log.Tracef("event(block: %d, tx index: %d, tx: %s) skipped due to it has multiple erc721 transfer logs", tx.BlockNum, tx.TXIndex, tx.TXHash.Hex())
 		return true, nil
 	}
 
 	normPrice := decimal.NewFromBigInt(ev.Inventory.Price, 0).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(int64(currDecimals))))
 
-	usdPrice, err := s.calcUSDPrice(ev.Raw.BlockNumber, currAddr, currSymbol, normPrice)
+	usdPrice, err := s.calcUSDPrice(tx.BlockNum, currAddr, currSymbol, normPrice)
 	if err != nil {
-		log.Errorf("unable to calculate usd price of the event(block: %d, log: %d, tx: %s): %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
+		log.Errorf("unable to calculate usd price of the event(block: %d, log: %d, tx: %s): %s", tx.BlockNum, tx.TXIndex, tx.TXHash.Hex(), err.Error())
 		return false, err
 	}
 
-	if err := s.notifyTrade(&ev, transfers[0], ev.Inventory.Price, normPrice, usdPrice, currSymbol, currAddr); err != nil {
+	if err := s.notifyTrade(tx, &ev, transfers[0], ev.Inventory.Price, normPrice, usdPrice, currSymbol, currAddr); err != nil {
 		if !errors.Is(err, errTofuNFTShutdownRequest) {
-			log.Warnf("event(block: %d, tx index: %d, tx: %s) couldn't processed: %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
+			log.Warnf("event(block: %d, tx index: %d, tx: %s) couldn't processed: %s", tx.BlockNum, tx.TXIndex, tx.TXHash.Hex(), err.Error())
 		}
 
 		return false, err
@@ -415,7 +415,7 @@ func (s *TofuNFTScraper) processTx(ctx context.Context, tx *utils.EthFilteredTx)
 	return false, nil
 }
 
-func (s *TofuNFTScraper) notifyTrade(ev *tofunft.TofunftEvInventoryUpdate, transfer *astarERC721Transfer, price *big.Int, priceDec decimal.Decimal, usdPrice float64, currSymbol string, currAddr common.Address) error {
+func (s *TofuNFTScraper) notifyTrade(tx *utils.EthFilteredTx, ev *tofunft.TofunftEvInventoryUpdate, transfer *astarERC721Transfer, price *big.Int, priceDec decimal.Decimal, usdPrice float64, currSymbol string, currAddr common.Address) error {
 	nftClass, err := s.createOrReadNFTClass(transfer)
 	if err != nil {
 		return err
@@ -427,9 +427,9 @@ func (s *TofuNFTScraper) notifyTrade(ev *tofunft.TofunftEvInventoryUpdate, trans
 	}
 
 	// Get block time.
-	timestamp, err := ethhelper.GetBlockTimeEth(int64(ev.Raw.BlockNumber), s.tradeScraper.datastore, s.tradeScraper.ethConnection)
+	block, err := s.tradeScraper.ethConnection.BlockByNumber(context.Background(), big.NewInt(int64(tx.BlockNum)))
 	if err != nil {
-		log.Errorf("getting block time: %+v", err)
+		log.Errorf("getting block: %+v", err)
 	}
 
 	trade := dia.NFTTrade{
@@ -441,9 +441,9 @@ func (s *TofuNFTScraper) notifyTrade(ev *tofunft.TofunftEvInventoryUpdate, trans
 		CurrencySymbol:   currSymbol,
 		CurrencyAddress:  currAddr.Hex(),
 		CurrencyDecimals: priceDec.Exponent(),
-		BlockNumber:      ev.Raw.BlockNumber,
-		Timestamp:        timestamp,
-		TxHash:           ev.Raw.TxHash.Hex(),
+		BlockNumber:      tx.BlockNum,
+		Timestamp:        time.Unix(int64(block.Time()), 0),
+		TxHash:           tx.TXHash.Hex(),
 		Exchange:         "TofuNFT",
 	}
 
@@ -650,7 +650,8 @@ func (s *TofuNFTScraper) findERC721Transfers(ctx context.Context, receipt *types
 	transfers := make([]*astarERC721Transfer, 0, 1)
 
 	for _, txLog := range receipt.Logs {
-		if len(txLog.Topics) < 1 || txLog.Topics[0] != _erc721ABI.Events["Transfer"].ID {
+		// Erc721 Transfers have 4 indexed topics.
+		if len(txLog.Topics) != 4 || txLog.Topics[0] != _erc721ABI.Events["Transfer"].ID {
 			continue
 		}
 
