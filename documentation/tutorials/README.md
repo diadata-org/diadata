@@ -4,10 +4,6 @@ description: Develop applications and sources on top of DIA
 
 # 🧑💻 Tutorials for Contributors
 
-{% content-ref url="broken-reference" %}
-[Broken link](broken-reference)
-{% endcontent-ref %}
-
 {% content-ref url="blockchainscraper.md" %}
 [blockchainscraper.md](blockchainscraper.md)
 {% endcontent-ref %}

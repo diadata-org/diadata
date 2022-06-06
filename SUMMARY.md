@@ -43,7 +43,7 @@
     * [Interbank Overnight Interest Rates](documentation/methodology/traditional-assets/overnight-rates.md)
     * [Compounded Rates](documentation/methodology/traditional-assets/compounded-rates.md)
 * [📖 Overview of Data Points](documentation/overview-of-data-points.md)
-* [🧑💻 🧑💻 Tutorials for Contributors](documentation/tutorials/README.md)
+* [🧑💻 Tutorials for Contributors](documentation/tutorials/README.md)
   * [Write your own rate scraper](documentation/tutorials/write-your-own-rate-scraper.md)
   * [Write your own blockchain scraper](documentation/tutorials/blockchainscraper.md)
   * [Write your own exchange scraper](documentation/tutorials/exchangescrapers.md)
