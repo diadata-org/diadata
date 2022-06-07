@@ -54,11 +54,11 @@ func main() {
 	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
 	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
-	sleepSeconds, err := strconv.Atoi(utils.Getenv("SLEEP_SECONDS", "120"))
+	sleepSeconds, err := strconv.Atoi(utils.Getenv("SLEEP_SECONDS", "60"))
 	if err != nil {
 		log.Fatalf("Failed to parse sleepSeconds: %v", err)
 	}
-	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "600"))
+	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "1200"))
 	if err != nil {
 		log.Fatalf("Failed to parse frequencySeconds: %v", err)
 	}
@@ -174,6 +174,8 @@ func main() {
 // 2. @update is true.
 func periodicOracleUpdateHelper(oldFloor float64, deviationPermille int, update bool, auth *bind.TransactOpts, contract *diaNFTOracleService.DIANFTOracle, conn *ethclient.Client, blockchain string, address string) (float64, error) {
 	var data SumeriaReturn
+	data.Blockchain = blockchain
+	data.Address = address
 
 	// Get floor price
 	floor, err := getFloor(blockchain, address)
