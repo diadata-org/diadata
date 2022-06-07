@@ -364,6 +364,114 @@ Unix timestamp.
 {% endswagger-response %}
 {% endswagger %}
 
+{% swagger method="get" path="" baseUrl="https://api.diadata.org/v1/NFTFloor/:blockchain/:address" summary="NFT Floor Price" %}
+{% swagger-description %}
+Returns the current floor price of a collection given by a blockchain and an address.\
+The floor price is derived from actual sales.\
+_Example:_ [https://api.diadata.org/v1/NFTFloor/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB](https://api.diadata.org/v1/NFTFloor/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB)\
+\
+Use the query parameter timestamp in order to get the latest floor price before the specified timestamp.\
+_Example:_ [https://api.diadata.org/v1/NFTFloor/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?timestamp=1649342430](https://api.diadata.org/v1/NFTFloor/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?timestamp=1649342430)
+
+Use the query parameter floorWindow in order to get the floor price with respect to all sales in the last floorWindow seconds. Default value is 86400s=24h.\
+_Example:_ [https://api.diadata.org/v1/NFTFloor/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?floorWindow=43200](https://api.diadata.org/v1/NFTFloor/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?floorWindow=43200)
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="blockchain" type="String" required="true" %}
+Blockchain name
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="address" type="String" required="true" %}
+Address of the collection
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="timestamp" type="Integer" %}
+Unix timestamp
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="floorWindow" type="Integer" %}
+Number of seconds in considered interval
+{% endswagger-parameter %}
+
+{% swagger-response status="200: OK" description="Successful retrieval of a collection's floor price." %}
+```javascript
+{"Floor_Price":74.8,"Time":"2022-06-07T14:34:35.024280719Z","Source":"diadata.org"}
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger method="get" path="" baseUrl="https://api.diadata.org/v1/NFTFloorMA/:blockchain/:address" summary="NFT Moving Average of Floor Price" %}
+{% swagger-description %}
+Returns the moving average of a collection's floor price over the past 30 days.\
+_Example:_ [https://api.diadata.org/v1/NFTFloorMA/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB](https://api.diadata.org/v1/NFTFloorMA/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB)
+
+Use the query parameter floorWindow in order to get the floor price with respect to all sales in the last floorWindow seconds. Default value is 86400s=24h.\
+_Example:_ [https://api.diadata.org/v1/NFTFloorMA/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?floorWindow=43200](https://api.diadata.org/v1/NFTFloorMA/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?floorWindow=43200)
+
+Use the query parameter lookbackSeconds in order to get the moving average over the last lookbackSeconds. Default value is 2592000s=30d.\
+_Example:_ [https://api.diadata.org/v1/NFTFloorMA/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?lookbackWindow=5184000](https://api.diadata.org/v1/NFTFloorMA/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?lookbackWindow=5184000)
+{% endswagger-description %}
+
+{% swagger-parameter in="path" required="true" name="blockchain" type="String" %}
+Blockchain name
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="address" type="String" required="true" %}
+Address of the collection
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="floorWindow" type="Integer" %}
+Number of seconds in considered  interval regarding floor price.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="lookbackSeconds" type="Integer" %}
+Number of seconds in considered interval regarding moving average.
+{% endswagger-parameter %}
+
+{% swagger-response status="200: OK" description="Successful retrieval of a collection's moving average floor price" %}
+```javascript
+{"Moving_Average_Floor_Price":49.653703703703705,"Time":"2022-06-07T14:48:14.647819158Z","Source":"diadata.org"}
+}
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger method="get" path="" baseUrl="https://api.diadata.org/v1/NFTDownday/:blockchain/:address" summary="NFT Max Weekly Drawdown and related Statistics" %}
+{% swagger-description %}
+Returns the maximal weekly drawdown in the last 90 days in percent.\
+Furthermore, the average and standard deviation of the weekly drawdown time-series is returned.\
+_Example:_ [https://api.diadata.org/v1/NFTDownday/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB](https://api.diadata.org/v1/NFTDownday/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB)
+
+Use the query parameter floorWindow in order to get the floor price with respect to all sales in the last floorWindow seconds. Default value is 86400s=24h.\
+_Example:_ [https://api.diadata.org/v1/NFTDownday/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?floorWindow=43200](https://api.diadata.org/v1/NFTDownday/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?floorWindow=43200)
+
+Use the query parameter lookbackSeconds in order to get the moving average over the last lookbackSeconds. Default value is 7776000s=90d.\
+_Example:_ [https://api.diadata.org/v1/NFTDownday/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?lookbackWindow=2592000](https://api.diadata.org/v1/NFTDownday/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?lookbackWindow=2592000)
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="blockchain" type="String" required="true" %}
+Blockchain name
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="address" type="String" %}
+Address of the collection
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="floorWindow" type="Integer" %}
+Number of seconds in considered  interval regarding floor price.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="lookbackSeconds" type="Integer" %}
+Number of seconds in considered interval regarding weekly drawdown.
+{% endswagger-parameter %}
+
+{% swagger-response status="200: OK" description="Succesful retrieval of a collection's weekly drawdown stats." %}
+```javascript
+{"Weekly_Drawdown":-18.303800719054955,"Downday_Average":-7.5472418447635405,"Downday_Deviation":11.362194930411123,"Time":"2022-06-07T15:04:08.093662489Z","Source":"diadata.org"}
+```
+{% endswagger-response %}
+{% endswagger %}
+
 ## Traditional Assets
 
 {% swagger baseUrl="https://api.diadata.org/v1/" path="fiatQuotations" method="get" summary="Fiat Currency Exchange Rates" %}
