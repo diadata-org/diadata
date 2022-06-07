@@ -367,7 +367,7 @@ Unix timestamp.
 {% swagger method="get" path="" baseUrl="https://api.diadata.org/v1/NFTFloor/:blockchain/:address" summary="NFT Floor Price" %}
 {% swagger-description %}
 Returns the current floor price of a collection given by a blockchain and an address.\
-The floor price is derived from actual sales.\
+The floor price is derived from all sales in the last 24h.\
 _Example:_ [https://api.diadata.org/v1/NFTFloor/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB](https://api.diadata.org/v1/NFTFloor/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB)\
 \
 Use the query parameter timestamp in order to get the latest floor price before the specified timestamp.\
