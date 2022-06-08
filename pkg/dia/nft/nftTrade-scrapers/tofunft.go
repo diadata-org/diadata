@@ -108,7 +108,7 @@ var (
 	defTofuNFTConf = &TofuNFTScraperConfig{
 		ContractAddr:    "0x7Cae7FeB55349FeADB8f84468F692450D92597bc", // MarketNG
 		BatchSize:       5000,
-		WaitPeriod:      60 * time.Second,
+		WaitPeriod:      20 * time.Second,
 		FollowDist:      10,
 		UseArchiveNode:  false,
 		MaxRetry:        5,
@@ -127,6 +127,8 @@ var (
 
 	tofuNFTABI abi.ABI
 	_erc721ABI abi.ABI
+
+	assetCacheTofuAstar = make(map[string]dia.Asset)
 )
 
 func init() {
@@ -142,7 +144,7 @@ func init() {
 		panic(err)
 	}
 
-	TofuNFT = utils.Getenv("SCRAPER_NAME_STATE", "TofuNFT")
+	TofuNFT = utils.Getenv("SCRAPER_NAME_STATE", "TofuNFT-Astar")
 
 	// If scraper state is not set yet, start from this block
 	initBlockNumString := utils.Getenv("LAST_BLOCK_NUM", "225714")
@@ -170,7 +172,7 @@ func NewTofuNFTScraper(rdb *models.RelDB) *TofuNFTScraper {
 			shutdownDone:  make(chan nothing),
 			datastore:     rdb,
 			chanTrade:     make(chan dia.NFTTrade),
-			source:        "TofuNFT",
+			source:        TofuNFT,
 			ethConnection: eth,
 		},
 	}
@@ -366,7 +368,6 @@ func (s *TofuNFTScraper) processTx(ctx context.Context, tx *utils.EthFilteredTx)
 		log.Errorf("unable to read EvInventoryUpdate log from transaction(%s)", tx.TXHash)
 		return false, err
 	}
-	fmt.Printf("$$$$$$$$$$$$ ev: %v", ev)
 
 	receipt, err := s.tradeScraper.ethConnection.TransactionReceipt(ctx, tx.TXHash)
 	if err != nil {
@@ -433,18 +434,26 @@ func (s *TofuNFTScraper) notifyTrade(tx *utils.EthFilteredTx, ev *tofunft.Tofunf
 	}
 
 	trade := dia.NFTTrade{
-		NFT:              *nft,
-		Price:            price,
-		PriceUSD:         usdPrice,
-		FromAddress:      transfer.From.Hex(),
-		ToAddress:        transfer.To.Hex(),
-		CurrencySymbol:   currSymbol,
-		CurrencyAddress:  currAddr.Hex(),
-		CurrencyDecimals: priceDec.Exponent(),
-		BlockNumber:      tx.BlockNum,
-		Timestamp:        time.Unix(int64(block.Time()), 0),
-		TxHash:           tx.TXHash.Hex(),
-		Exchange:         "TofuNFT",
+		NFT:         *nft,
+		Price:       price,
+		PriceUSD:    usdPrice,
+		FromAddress: transfer.From.Hex(),
+		ToAddress:   transfer.To.Hex(),
+		BlockNumber: tx.BlockNum,
+		Timestamp:   time.Unix(int64(block.Time()), 0),
+		TxHash:      tx.TXHash.Hex(),
+		Exchange:    TofuNFT,
+	}
+
+	if asset, ok := assetCacheTofuAstar[dia.ASTAR+"-"+currAddr.Hex()]; ok {
+		trade.Currency = asset
+	} else {
+		currency, err := s.tradeScraper.datastore.GetAsset(currAddr.Hex(), dia.ASTAR)
+		if err != nil {
+			log.Errorf("cannot fetch asset %s -- %s", dia.ASTAR, currAddr.Hex())
+		}
+		trade.Currency = currency
+		assetCacheTofuAstar[dia.ASTAR+"-"+currAddr.Hex()] = currency
 	}
 
 	fmt.Println("found trade: ", trade)

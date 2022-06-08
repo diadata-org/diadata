@@ -88,7 +88,7 @@ func handleData(tradeChannel chan dia.NFTTrade, wg *sync.WaitGroup, rdb *models.
 			return
 		}
 		if 1 < 0 {
-			log.Info("got trade: %s -> (%s) -> %s for %s (%.4f USD) \n", trade.FromAddress, trade.NFT.NFTClass.Name, trade.ToAddress, trade.Currency.Symbol, trade.PriceUSD)
+			log.Infof("got trade: %s -> (%s) -> %s for %s (%.4f USD) \n", trade.FromAddress, trade.NFT.NFTClass.Name, trade.ToAddress, trade.Currency.Symbol, trade.PriceUSD)
 		}
 
 		err := rdb.SetNFTTradeToTable(trade, models.NfttradeCurrTable)
