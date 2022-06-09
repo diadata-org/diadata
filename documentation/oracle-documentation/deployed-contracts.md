@@ -35,6 +35,21 @@ The audit of our oracle smart contract can be found here:
 {% endtab %}
 {% endtabs %}
 
+<details>
+
+<summary>See all available assets on the Ethereum chain oracle</summary>
+
+1. BTC / USD
+2. DIA / USD
+3. ETH / USD
+4. USDC / USD
+5. FTM / USD
+6. SDN / USD
+7. KSM / USD
+8. ASTR / USD
+
+</details>
+
 ### Binance Smart Chain
 
 {% tabs %}
@@ -54,6 +69,20 @@ The audit of our oracle smart contract can be found here:
 {% endtab %}
 {% endtabs %}
 
+<details>
+
+<summary>See all available assets on the BSC chain oracle</summary>
+
+1. BNB / USD
+2. BTC / USD
+3. DIA / USD
+4. USDC / USD
+5. ETH / USD
+6. USDT / USD
+7. XRP / USD
+
+</details>
+
 ### Polygon
 
 {% tabs %}
@@ -72,7 +101,21 @@ __
 {% endtab %}
 {% endtabs %}
 
-### xDaiChain
+<details>
+
+<summary>See all available assets on the Polygon chain oracle</summary>
+
+1. BTC / USD
+2. DIA / USD
+3. ETH / USD
+4. SDN / USD
+5. KSM / USD
+6. ASTR / USD
+7. FTM / USD
+
+</details>
+
+### Gnosis Chain
 
 {% tabs %}
 {% tab title="Mainnet" %}
@@ -89,6 +132,20 @@ __
 | [DIA Asset Prices](crypto-assets.md) | [0x45D4...5f78](https://blockscout.com/poa/sokol/address/0x45D4B75228Ed3ee068A64dD1d5b53094A5015f78) | [CoinInfo Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-coininfo-oracle-contract) |
 {% endtab %}
 {% endtabs %}
+
+<details>
+
+<summary>See all available assets on the Gnosis chain oracle</summary>
+
+1. DIA / USD
+2. USDC / USD
+3. XRP / USD
+4. USDT / USD
+5. ETH / USD
+6. BNB / USD
+7. BTC / USD
+
+</details>
 
 ### Astar/Shiden
 
@@ -112,6 +169,21 @@ __
 {% endtab %}
 {% endtabs %}
 
+<details>
+
+<summary>See all available assets on the Astar/Shiden chains oracles</summary>
+
+1. SDN / USD
+2. DIA / USD
+3. FTM / USD
+4. Metis / USD
+5. KSM / USD
+6. ASTR / USD
+7. ETH / USD
+8. BTC / USD
+
+</details>
+
 ### Avalanche
 
 {% tabs %}
@@ -125,6 +197,20 @@ __
 | [DIA Asset Prices](crypto-assets.md) | [0x1cDF...F4f4](https://cchain.explorer.avax-test.network/address/0x1cDFEfC93D97E1B09e040a1f2d04b170eb60F4f4) | [Key/Value Oracle](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract) |
 {% endtab %}
 {% endtabs %}
+
+<details>
+
+<summary>See all available assets on the Avalanche chain oracle</summary>
+
+1. SDN / USD
+2. DIA / USD
+3. ASTR / USD
+4. FTM / USD
+5. ETH / USD
+6. KSM / USD
+7. BTC / USD
+
+</details>
 
 ### Aurora
 
@@ -140,6 +226,20 @@ __
 {% endtab %}
 {% endtabs %}
 
+<details>
+
+<summary>See all available assets on the Aurora chain oracle</summary>
+
+1. ASTR / USD
+2. SDN / USD
+3. DIA / USD
+4. KSM / USD
+5. FTM / USD
+6. ETH / USD
+7. BTC / USD
+
+</details>
+
 ### Metis
 
 {% tabs %}
@@ -147,6 +247,20 @@ __
 <table><thead><tr><th>Published Assets</th><th>Smart Contract Address</th><th>Oracle Type</th><th data-type="files">Audit</th></tr></thead><tbody><tr><td><a href="crypto-assets.md">DIA Asset Prices</a></td><td><a href="https://andromeda-explorer.metis.io/address/0x6E6E633320Ca9f2c8a8722c5f4a993D9a093462E">0x6E6E...462E</a></td><td><a href="https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract">Key/Value Oracle</a></td><td></td></tr></tbody></table>
 {% endtab %}
 {% endtabs %}
+
+<details>
+
+<summary>See all available assets on the Metis chain oracle</summary>
+
+1. SDN / USD
+2. DIA / USD
+3. ASTR / USD
+4. FTM / USD
+5. ETH / USD
+6. KSM / USD
+7. BTC / USD
+
+</details>
 
 ### Moonbeam
 
@@ -168,6 +282,22 @@ __
 {% endtab %}
 {% endtabs %}
 
+<details>
+
+<summary>See all available assets on the Moonbeam chain oracle</summary>
+
+1. FTM / USD
+2. SDN / USD
+3. USDC / USD
+4. DIA / USD
+5. ETH / USD
+6. BTC / USD
+7. ASTR / USD
+8. KSM / USD
+9. MOVR / USD
+
+</details>
+
 ### Nervos
 
 {% tabs %}
@@ -178,6 +308,22 @@ __
 {% endtab %}
 {% endtabs %}
 
+<details>
+
+<summary>See all available assets on the Nervos chain oracle</summary>
+
+1. FTM / USD
+2. SDN / USD
+3. USDC / USD
+4. DIA / USD
+5. ETH / USD
+6. BTC / USD
+7. ASTR / USD
+8. KSM / USD
+9. MOVR / USD
+
+</details>
+
 ### Arbitrum
 
 {% tabs %}
@@ -186,6 +332,20 @@ __
 {% endtab %}
 {% endtabs %}
 
+<details>
+
+<summary>See all available assets on the Arbitrum chain oracle</summary>
+
+1. ASTR / USD
+2. KSM / USD
+3. FTM / USD
+4. SDN / USD
+5. DIA / USD
+6. ETH / USD
+7. BTC / USD
+
+</details>
+
 ### Fantom
 
 {% tabs %}
@@ -193,6 +353,21 @@ __
 <table><thead><tr><th>Published Assets</th><th>Smart Contract Address</th><th>Oracle Type</th><th data-type="files">Audit</th></tr></thead><tbody><tr><td><a href="crypto-assets.md">DIA Asset Prices</a></td><td><a href="https://ftmscan.com/address/0xc5ca9c52d3d8d7f9bb17beeb85c2c3d119ab504f">0xC5cA...504f</a></td><td><a href="https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract">Key/Value Oracle</a></td><td></td></tr></tbody></table>
 {% endtab %}
 {% endtabs %}
+
+<details>
+
+<summary>See all available assets on the Fantom chain oracle</summary>
+
+1. DIA / USD
+2. ASTR / USD
+3. SDN / USD
+4. ETH / USD
+5. FTM / USD
+6. KSM / USD
+7. MOVR/ USD
+8. USDC / USD
+
+</details>
 
 ### Evmos
 
@@ -210,6 +385,22 @@ __
 {% endtab %}
 {% endtabs %}
 
+<details>
+
+<summary>See all available assets on the Evmos chain oracle</summary>
+
+1. FTM / USD
+2. SDN / USD
+3. USDC / USD
+4. DIA / USD
+5. ETH / USD
+6. BTC / USD
+7. ASTR / USD
+8. KSM / USD
+9. MOVR / USD
+
+</details>
+
 ### Fuse
 
 {% tabs %}
@@ -219,6 +410,20 @@ __
 | [DIA Asset Prices](crypto-assets.md) | [0x61a5...320e](https://explorer.fuse.io/address/0x61a598Cd6340B8edcb4faE7Eabcd117Ff371320e) | [Key/Value Oracle V2](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract-v2) |
 {% endtab %}
 {% endtabs %}
+
+<details>
+
+<summary>See all available assets on the Fuse chain oracle</summary>
+
+1. ASTR / USD
+2. SDN / USD
+3. DIA / USD
+4. FTM / USD
+5. BTC / USD
+6. KSM / USD
+7. ETH / USD
+
+</details>
 
 ### Telos
 
@@ -236,6 +441,21 @@ __
 {% endtab %}
 {% endtabs %}
 
+<details>
+
+<summary>See all available assets on the Telos chain oracle</summary>
+
+1. ASTR / USD
+2. KSM / USD
+3. FTM / USD
+4. SDN / USD
+5. USDC / USD
+6. DIA / USD
+7. ETH / USD
+8. BTC / USD
+
+</details>
+
 ### Velas
 
 {% tabs %}
@@ -245,6 +465,21 @@ __
 | [DIA Asset Prices](crypto-assets.md) | [0x0A7d...8856](https://evmexplorer.velas.com/address/0x0A7dC648C44e31636252be2267B86e0d9E1F8856) | [Key/Value Oracle V2](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract-v2) |
 {% endtab %}
 {% endtabs %}
+
+<details>
+
+<summary>See all available assets on the Velas chain oracle</summary>
+
+1. ASTR / USD
+2. KSM / USD
+3. FTM / USD
+4. SDN / USD
+5. USDC / USD
+6. DIA/ USD
+7. ETH / USD
+8. BTC / USD
+
+</details>
 
 ### Clover
 
@@ -256,6 +491,21 @@ __
 {% endtab %}
 {% endtabs %}
 
+<details>
+
+<summary>See all available assets on the Clover chain oracle</summary>
+
+1. ASTR / USD
+2. KSM / USD
+3. FTM / USD
+4. SDN / USD
+5. USDC / USD
+6. DIA / USD
+7. ETH / USD
+8. BTC / USD
+
+</details>
+
 ### Celo
 
 {% tabs %}
@@ -265,6 +515,19 @@ __
 | [DIA Asset Prices](crypto-assets.md) | [0xCd8E...C687](https://explorer.celo.org/address/0xCd8E18890E416Aa7ab09aa793b406C187747C687) | [Key/Value Oracle V2](https://docs.diadata.org/documentation/oracle-documentation/access-the-oracle#dia-key-value-oracle-contract-v2) |
 {% endtab %}
 {% endtabs %}
+
+<details>
+
+<summary>See all available assets on the Celo chain oracle</summary>
+
+1. DIA / USD
+2. USDC / USD
+3. XRP / USD
+4. BTC / USD
+5. ETH / USD
+6. BNB / USD
+
+</details>
 
 ### NEAR
 
@@ -281,3 +544,22 @@ __
 | [DIA Assets](https://docs.diadata.org/documentation/api-1/api-endpoints#quotation) | [@contract.dia-test.testnet](https://explorer.testnet.near.org/accounts/contract.dia-test.testnet) | [NEAR Request Oracle](near-request-oracle.md) |
 {% endtab %}
 {% endtabs %}
+
+{% hint style="info" %}
+Asset price updates in NEAR blockchain are provided on request basis
+{% endhint %}
+
+<details>
+
+<summary>See all available assets on the Near chain oracle</summary>
+
+1. ASTR / USD
+2. KSM / USD
+3. FTM / USD
+4. SDN / USD
+5. USDC / USD
+6. DIA / USD
+7. ETH / USD
+8. BTC / USD
+
+</details>
