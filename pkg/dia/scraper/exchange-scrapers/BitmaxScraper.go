@@ -120,8 +120,8 @@ func (s *BitMaxScraper) mainLoop() {
 	for {
 		message := &BitMaxTradeResponse{}
 		if err = s.wsClient.ReadJSON(&message); err != nil {
-			log.Error(err.Error())
-			break
+			log.Error("read message: ", err.Error())
+			// break
 		}
 		switch message.M {
 
@@ -246,7 +246,7 @@ func (s *BitMaxScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 		ID: fmt.Sprint(time.Now().Unix()),
 	}
 	if err := s.wsClient.WriteJSON(a); err != nil {
-		log.Error(err.Error())
+		log.Error("write pair sub: ", err.Error())
 	}
 	log.Info("Subscribed to get trades for ", pair.ForeignName)
 	s.pairScrapers[pair.ForeignName] = ps
