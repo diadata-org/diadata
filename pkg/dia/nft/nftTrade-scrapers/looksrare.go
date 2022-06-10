@@ -138,6 +138,8 @@ var (
 	looksRareABI       abi.ABI
 	looksRareErc20ABI  abi.ABI
 	looksRareErc721ABI abi.ABI
+
+	assetCacheLooksrare = make(map[string]dia.Asset)
 )
 
 func init() {
@@ -502,18 +504,26 @@ func (s *LooksRareScraper) notifyTrade(ev *looksRareTakerBidAskEvent, erc721 *er
 	}
 
 	trade := dia.NFTTrade{
-		NFT:              *nft,
-		Price:            price,
-		PriceUSD:         usdPrice,
-		FromAddress:      ev.From.Hex(),
-		ToAddress:        ev.To.Hex(),
-		CurrencySymbol:   currSymbol,
-		CurrencyAddress:  currAddr.Hex(),
-		CurrencyDecimals: priceDec.Exponent(),
-		BlockNumber:      ev.Raw.BlockNumber,
-		Timestamp:        timestamp,
-		TxHash:           ev.Raw.TxHash.Hex(),
-		Exchange:         "LooksRare",
+		NFT:         *nft,
+		Price:       price,
+		PriceUSD:    usdPrice,
+		FromAddress: ev.From.Hex(),
+		ToAddress:   ev.To.Hex(),
+		BlockNumber: ev.Raw.BlockNumber,
+		Timestamp:   timestamp,
+		TxHash:      ev.Raw.TxHash.Hex(),
+		Exchange:    "LooksRare",
+	}
+
+	if asset, ok := assetCacheLooksrare[dia.ETHEREUM+"-"+currAddr.Hex()]; ok {
+		trade.Currency = asset
+	} else {
+		currency, err := s.tradeScraper.datastore.GetAsset(currAddr.Hex(), dia.ETHEREUM)
+		if err != nil {
+			log.Errorf("cannot fetch asset %s -- %s", dia.ETHEREUM, currAddr.Hex())
+		}
+		trade.Currency = currency
+		assetCacheLooksrare[dia.ETHEREUM+"-"+currAddr.Hex()] = currency
 	}
 
 	fmt.Println("found trade: ", trade)

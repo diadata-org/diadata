@@ -18,17 +18,25 @@ type Filter interface {
 	save(ds models.Datastore) error
 }
 
-// RemoveOutliers Cleans a data set it accordance to the acceptable range within interquartile range.
-// It returns the cleaned data slice plus a slice of lower and upper index bounds.
+func RemoveOutliers(samples []float64, scale float64) ([]float64, []int) {
+	return removeOutliersScaled(samples, scale)
+}
+
 func removeOutliers(samples []float64) ([]float64, []int) {
+	return removeOutliersScaled(samples, float64(1.5))
+}
+
+// RemoveOutliersScaled Cleans a data set it accordance to the acceptable range within interquartile range.
+// It returns the cleaned data slice plus a slice of lower and upper index bounds.
+func removeOutliersScaled(samples []float64, scale float64) ([]float64, []int) {
 	var indexBounds []int
 	if len(samples) == 0 || len(samples) == 1 {
 		return samples, indexBounds
 	}
 	Q1, Q3 := computeQuartiles(samples)
 	IQR := Q3 - Q1
-	lowerBound := Q1 - 1.5*IQR
-	upperBound := Q3 + 1.5*IQR
+	lowerBound := Q1 - scale*IQR
+	upperBound := Q3 + scale*IQR
 	lowerIndex := 0
 	upperIndex := len(samples)
 	for index, value := range samples {

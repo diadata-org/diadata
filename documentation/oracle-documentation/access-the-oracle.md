@@ -49,6 +49,10 @@ contract DIAOracleV2 {
 
 Version 2 of the Key/Value oracle can be added as an interface in other contracts using all current Solidity versions with the visibility change of the `getValue()` function from `public` to `external`.
 
+The smart contract is audited and the audit can be found here:
+
+{% file src="../../.gitbook/assets/02_Smart Contract Audit_DIA_Oracle_v2.pdf" %}
+
 ### DIA Key-Value Oracle Contract
 
 ```

@@ -3,7 +3,9 @@ package models
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
+	"math"
 	"math/big"
 	"strings"
 	"time"
@@ -13,6 +15,8 @@ import (
 	"github.com/jackc/pgtype"
 	"github.com/jackc/pgx/v4"
 )
+
+var currencyCache = make(map[string]dia.Asset)
 
 // SetNFTClass stores @nftClass in postgres.
 func (rdb *RelDB) SetNFTClass(nftClass dia.NFTClass) error {
@@ -26,15 +30,15 @@ func (rdb *RelDB) SetNFTClass(nftClass dia.NFTClass) error {
 
 func (rdb *RelDB) GetNFTClass(address string, blockchain string) (nftclass dia.NFTClass, err error) {
 	query := fmt.Sprintf("SELECT symbol,name,contract_type,category FROM %s WHERE address=$1 AND blockchain=$2", nftclassTable)
-	var category interface{}
+	var category sql.NullString
 	err = rdb.postgresClient.QueryRow(context.Background(), query, address, blockchain).Scan(&nftclass.Symbol, &nftclass.Name, &nftclass.ContractType, &category)
 	if err != nil {
 		return
 	}
 	nftclass.Address = address
 	nftclass.Blockchain = blockchain
-	if category != nil {
-		nftclass.Category = category.(string)
+	if category.Valid {
+		nftclass.Category = category.String
 	}
 	return
 }
@@ -219,7 +223,7 @@ func (rdb *RelDB) GetLastBlockheightTopshot(upperBound time.Time) (uint64, error
 
 //SetNFTTTrade is a wrapper for SetNFTTradeToTable that stores @trade into the main nfttrade table.
 func (rdb *RelDB) SetNFTTrade(trade dia.NFTTrade) error {
-	return rdb.SetNFTTradeToTable(trade, nfttradeTable)
+	return rdb.SetNFTTradeToTable(trade, NfttradeCurrTable)
 }
 
 //  SetNFTTradeToTable  stores into @table.
@@ -232,10 +236,14 @@ func (rdb *RelDB) SetNFTTradeToTable(trade dia.NFTTrade, table string) error {
 	if err != nil {
 		return err
 	}
+	currencyID, err := rdb.GetAssetID(trade.Currency)
+	if err != nil {
+		log.Error("get currency ID: ", err)
+	}
 	price := trade.Price.String()
-	tradeVars := "nftclass_id,nft_id,price,price_usd,transfer_from,transfer_to,currency_symbol,currency_address,currency_decimals,block_number,trade_time,tx_hash,marketplace"
-	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)", table, tradeVars)
-	_, err = rdb.postgresClient.Exec(context.Background(), query, nftclassID, nftID, price, trade.PriceUSD, trade.FromAddress, trade.ToAddress, trade.CurrencySymbol, trade.CurrencyAddress, trade.CurrencyDecimals, trade.BlockNumber, trade.Timestamp, trade.TxHash, trade.Exchange)
+	tradeVars := "nftclass_id,nft_id,price,price_usd,transfer_from,transfer_to,currency_id,block_number,trade_time,tx_hash,marketplace"
+	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)", table, tradeVars)
+	_, err = rdb.postgresClient.Exec(context.Background(), query, nftclassID, nftID, price, trade.PriceUSD, trade.FromAddress, trade.ToAddress, currencyID, trade.BlockNumber, trade.Timestamp, trade.TxHash, trade.Exchange)
 	if err != nil {
 		return err
 	}
@@ -253,28 +261,32 @@ func (rdb *RelDB) GetLastBlockNFTTrade(nftclass dia.NFTClass) (blocknumber uint6
 }
 
 // GetNFTTrades returns all trades done on the nft given by @address, @blockchain and @tokenID.
-func (rdb *RelDB) GetNFTTradesFromTable(address string, blockchain string, tokenID string, table string) (trades []dia.NFTTrade, err error) {
+func (rdb *RelDB) GetNFTTradesFromTable(address string, blockchain string, tokenID string, starttime time.Time, endtime time.Time, table string) (trades []dia.NFTTrade, err error) {
 	var rows pgx.Rows
 	nftID, err := rdb.GetNFTID(address, blockchain, tokenID)
-	tradeVars := "price,price_usd,transfer_from,transfer_to,currency_symbol,currency_address,currency_decimals,block_number,trade_time,tx_hash,marketplace"
-	query := fmt.Sprintf("SELECT %s FROM %s WHERE nft_id='%s' ORDER BY trade_time DESC", tradeVars, table, nftID)
+	if err != nil {
+		return
+	}
+	tradeVars := "price,price_usd,transfer_from,transfer_to,currency_id,block_number,trade_time,tx_hash,marketplace"
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE nft_id='%s' AND trade_time>to_timestamp(%v) AND trade_time<to_timestamp(%v) ORDER BY trade_time DESC", tradeVars, table, nftID, starttime.Unix(), endtime.Unix())
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return
 	}
 	defer rows.Close()
 
+	log.Info("query: ", query)
+
 	for rows.Next() {
 		var trade dia.NFTTrade
 		var price string
+		var currencyID sql.NullString
 		err := rows.Scan(
 			&price,
 			&trade.PriceUSD,
 			&trade.FromAddress,
 			&trade.ToAddress,
-			&trade.CurrencySymbol,
-			&trade.CurrencyAddress,
-			&trade.CurrencyDecimals,
+			&currencyID,
 			&trade.BlockNumber,
 			&trade.Timestamp,
 			&trade.TxHash,
@@ -289,13 +301,109 @@ func (rdb *RelDB) GetNFTTradesFromTable(address string, blockchain string, token
 			return []dia.NFTTrade{}, err
 		}
 		trade.Price = n
+
+		if currencyID.Valid {
+			if asset, ok := currencyCache[currencyID.String]; ok {
+				trade.Currency = asset
+			} else {
+				asset, err := rdb.GetAssetByID(currencyID.String)
+				if err != nil {
+					log.Errorf("cannot fetch asset with postgres id %s", currencyID.String)
+				}
+				trade.Currency = asset
+				currencyCache[currencyID.String] = asset
+			}
+		}
+
 		trades = append(trades, trade)
 	}
 	return
 }
 
 func (rdb *RelDB) GetNFTTrades(address string, blockchain string, tokenID string) (trades []dia.NFTTrade, err error) {
-	return rdb.GetNFTTradesFromTable(address, blockchain, tokenID, nfttradeTable)
+	return rdb.GetNFTTradesFromTable(address, blockchain, tokenID, time.Time{}, time.Now(), NfttradeCurrTable)
+}
+
+// GetNFTFloor returns the floor price of @nftclass w.r.t. the last 24h.
+func (rdb *RelDB) GetNFTFloor(nftclass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration) (floor float64, err error) {
+	query := fmt.Sprintf("SELECT min(tr.price::numeric) FROM %s tr INNER JOIN %s n ON tr.nftclass_id=n.nftclass_id WHERE tr.trade_time<=to_timestamp(%d) AND tr.trade_time>to_timestamp(%d) AND tr.price::numeric>0 AND n.address='%s' and n.blockchain='%s'",
+		NfttradeCurrTable,
+		nftclassTable,
+		timestamp.Unix(),
+		timestamp.Add(-floorWindowSeconds).Unix(),
+		nftclass.Address,
+		nftclass.Blockchain,
+	)
+
+	var floorFloat sql.NullFloat64
+	err = rdb.postgresClient.QueryRow(context.Background(), query).Scan(&floorFloat)
+	if err != nil {
+		return
+	}
+
+	// var f *big.Float
+	if floorFloat.Valid {
+		// f = big.NewFloat(0).SetFloat64(floorFloat.Float64)
+		floor, _ = new(big.Float).Quo(big.NewFloat(0).SetFloat64(floorFloat.Float64), new(big.Float).SetFloat64(math.Pow10(18))).Float64()
+	} else {
+		err = errors.New("no result in given time-range")
+		return
+	}
+
+	return
+}
+
+// GetNFTFloorRecursive returns the floor price of @nftclass. If necessary, it iterates back in time until it finds a floor price.
+func (rdb *RelDB) GetNFTFloorRecursive(nftClass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, stepBackLimit int) (floor float64, err error) {
+	count := 0
+	foundFloor := false
+
+	for !foundFloor && count < stepBackLimit {
+		floor, err = rdb.GetNFTFloor(nftClass, timestamp, floorWindowSeconds)
+		if err != nil {
+			if strings.Contains(err.Error(), "no result") {
+				count++
+				timestamp = timestamp.Add(-floorWindowSeconds)
+				continue
+			} else {
+				return
+			}
+		} else {
+			foundFloor = true
+		}
+	}
+	return
+}
+
+// GetNFTFloorRange returns a slice of floor prices in the given time range @starttime -- @endtime.
+func (rdb *RelDB) GetNFTFloorRange(nftClass dia.NFTClass, starttime time.Time, endtime time.Time, floorWindowSeconds time.Duration, stepBackLimit int) (floorPrices []float64, err error) {
+
+	// Find initial floor price by going back in time if necessary.
+	floor, err := rdb.GetNFTFloorRecursive(nftClass, starttime, floorWindowSeconds, stepBackLimit)
+	if err != nil {
+		if strings.Contains(err.Error(), "no result") {
+			log.Warn("could not find initial floor price.")
+		} else {
+			return
+		}
+	}
+	floorPrices = append(floorPrices, floor)
+	starttime = starttime.Add(floorWindowSeconds)
+
+	// Continue filling floor prices. If none is found add the last one.
+	for starttime.Before(endtime) {
+		floor, err := rdb.GetNFTFloor(nftClass, starttime, floorWindowSeconds)
+		if err != nil {
+			if len(floorPrices) > 0 {
+				floorPrices = append(floorPrices, floorPrices[len(floorPrices)-1])
+			}
+		} else {
+			floorPrices = append(floorPrices, floor)
+		}
+		starttime = starttime.Add(floorWindowSeconds)
+	}
+
+	return
 }
 
 // GetNFTOffers returns all offers done on the nft given by @address, @blockchain and @tokenID.
@@ -404,12 +512,6 @@ func (rdb *RelDB) GetNFTBids(address string, blockchain string, tokenID string) 
 		bids = append(bids, bid)
 	}
 	return
-}
-
-// GetNFTPrice30Days returns the average price of all NFTs in @nftclass over the last 30 days.
-func (rdb *RelDB) GetNFTPrice30Days(nftclass dia.NFTClass) (float64, error) {
-	// TO DO
-	return 0, nil
 }
 
 // SetNFTBid stores @bid.

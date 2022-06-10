@@ -115,18 +115,16 @@ func (n *NFT) UnmarshalBinary(data []byte) error {
 }
 
 type NFTTrade struct {
-	NFT              NFT
-	Price            *big.Int
-	PriceUSD         float64
-	FromAddress      string
-	ToAddress        string
-	CurrencySymbol   string
-	CurrencyAddress  string
-	CurrencyDecimals int32
-	BlockNumber      uint64
-	Timestamp        time.Time
-	TxHash           string
-	Exchange         string
+	NFT         NFT
+	Price       *big.Int
+	PriceUSD    float64
+	FromAddress string
+	ToAddress   string
+	Currency    Asset
+	BlockNumber uint64
+	Timestamp   time.Time
+	TxHash      string
+	Exchange    string
 }
 
 // MarshalBinary for DefiProtocolState
