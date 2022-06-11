@@ -8,15 +8,15 @@ Now, let's assume you want to scrape a data source that provides trade informati
 
 ```go
 type APIScraper interface {
-	io.Closer
-	// ScrapePair returns a PairScraper that continuously scrapes trades for a
-	// single pair from this APIScraper
-	ScrapePair(pair dia.Pair) (PairScraper, error)
-	// FetchAvailablePairs returns a list with all available trade pairs (usually
-	// fetched from an exchange's API)
-	FetchAvailablePairs() (pairs []dia.Pair, err error)
-	// Channel returns a channel that can be used to receive trades
-	Channel() chan *dia.Trade
+ io.Closer
+ // ScrapePair returns a PairScraper that continuously scrapes trades for a
+ // single pair from this APIScraper
+ ScrapePair(pair dia.Pair) (PairScraper, error)
+ // FetchAvailablePairs returns a list with all available trade pairs (usually
+ // fetched from an exchange's API)
+ FetchAvailablePairs() (pairs []dia.Pair, err error)
+ // Channel returns a channel that can be used to receive trades
+ Channel() chan *dia.Trade
 }
 ```
 
@@ -27,15 +27,27 @@ Also, please take care of proper error handling and cleanup. More precisely, you
 Furthermore, in order for our system to see your scraper, add a reference to it in `Config.go`  in the dia package, and to the switch statement in `APIScraper.go`  in the scrapers package:
 
 ```go
+# pkg/dia/scraper/exchange-scraper/APIScraper.go
 func NewAPIScraper(exchange string, key string, secret string) APIScraper {
-	switch exchange {
-	case dia.MySourceExchange:
-		return NewMySourceScraper(key, secret, dia.MySourceExchange)
-	}
+ switch exchange {
+ case dia.MySourceExchange:
+  return NewMySourceScraper(key, secret, dia.MySourceExchange)
+ }
 }
 ```
 
+Also, if your want to get data from contract, install `abigen` and generate the code from exchanger provided abi.
+
+```sh
+go install github.com/ethereum/go-ethereum/cmd/abigen@latest
+
+abigen --abi myexchange/myexchange.abi --pkg myexchange --type MyExchange --out myexchange/myexchange.go
+```
+
+Please put your abi file and generated code into a folder under the `exchange-scrapers/` and name it with the exchange name.
+
 ## Steps to run a scraper locally
+
 1. Navigate to the `deployments/local/exchange-scraper` directory of the project.
 2. Run the required services using `docker-compose up -d`, this will run and prepare Redis, PostgreSQL, and InfluxDB databases.
 3. Set the required environment variables using the following commands:
@@ -54,6 +66,15 @@ export REDISURL=localhost:6379
 
 Or simple by sourcing the `local.env` inside the `deployments/local/exchange-scraper` directory.
 
+Also don't forget to set your Ethereum Node API Key.
+
+```sh
+export ETHEREUM_URL_REST=${YOUR_API_REST_ENDPOINT}
+export ETHEREUM_URL_WS=${YOUR_API_WS_ENDPOINT}
+```
+
+Tips: Find you favourite node api provider at [EthereumNodes](https://ethereumnodes.com)
+
 4. Execute `main.go` from `cmd/services/pairDiscoveryServices` for fetching the available pairs and setting them in the Redis database.
 5. Finally, run the scraping executable flagged as follows:
 
@@ -63,4 +84,3 @@ go run collector.go -exchange MySource
 ```
 
 For an illustration you can have a look at the `KrakenScraper.go`.
-
