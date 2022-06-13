@@ -36,6 +36,30 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 }
 ```
 
+If you are working on ethereum chain with the decentralized exchange, you can get your node api key from environment variant.
+
+```go
+func NewAPIScraper() *APIScraper {
+    // some initial stuff...
+
+    log.Infof("Init rest and ws client for %s.", exchange.BlockChain.Name)
+    restClient, err := ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_REST", curveRestDial))
+    if err != nil {
+       log.Fatal("init rest client: ", err)
+    }
+    wsClient, err := ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_WS", curveWsDial))
+    if err != nil {
+      log.Fatal("init ws client: ", err)
+    }
+    // other stuff here...
+}
+
+```
+
+There's no limit to use your own method to connect with blockchain, you can make your own connection.
+
+For centralized exchange you should check the provider document. Then do your own connection with that.
+
 Also, if your want to get data from contract, install `abigen` and generate the code from exchanger provided abi.
 
 ```sh
@@ -44,7 +68,7 @@ go install github.com/ethereum/go-ethereum/cmd/abigen@latest
 abigen --abi myexchange/myexchange.abi --pkg myexchange --type MyExchange --out myexchange/myexchange.go
 ```
 
-Please put your abi file and generated code into a folder under the `exchange-scrapers/` and name it with the exchange name.
+Put your abi file and generated code into a folder under the `exchange-scrapers/` and name it with the exchange name.
 
 ## Steps to run a scraper locally
 
@@ -66,7 +90,7 @@ export REDISURL=localhost:6379
 
 Or simple by sourcing the `local.env` inside the `deployments/local/exchange-scraper` directory.
 
-Also don't forget to set your Ethereum Node API Key. (If you are working on ethereum chain.)
+If you are working on ethereum chain, export your node api key from terminal.
 
 ```sh
 export ETHEREUM_URL_REST=${YOUR_API_REST_ENDPOINT}
@@ -75,24 +99,7 @@ export ETHEREUM_URL_WS=${YOUR_API_WS_ENDPOINT}
 
 Tips: Find you favourite ethereum node api provider at [EthereumNodes](https://ethereumnodes.com)
 
-If you are working on another ethereum-compatible chain, replace `ETHEREUM` prefix with your chain name and get them from env.
-
-```go
-func NewAPIScraper() *APIScraper {
-    // some initial stuff...
-    log.Infof("Init rest and ws client for %s.", exchange.BlockChain.Name)
-    restClient, err := ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_REST", curveRestDial))
-    if err != nil {
-       log.Fatal("init rest client: ", err)
-    }
-    wsClient, err := ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_WS", curveWsDial))
-    if err != nil {
-      log.Fatal("init ws client: ", err)
-    }
-    // other stuff here...
-}
-
-```
+Also if you are working on another ethereum-compatible chain, simply replace `ETHEREUM` prefix with your chain name and get them from code.
 
 4. Execute `main.go` from `cmd/services/pairDiscoveryServices` for fetching the available pairs and setting them in the Redis database.
 5. Finally, run the scraping executable flagged as follows:
