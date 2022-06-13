@@ -1,6 +1,6 @@
 # Write your own rate scraper
 
-These instructions concern writing scrapers for single units characterised by a \(floating point\) number. For scrapers describing the relation between pairs of units, i.e. exchange rates see the instructions in exchangescrapers.md.
+These instructions concern writing scrapers for single units characterised by a \(floating point\) number. For scrapers describing the relation between pairs of units, i.e. exchange rates see the instructions in [exchangescrapers.md](exchangescrapers.md).
 
 ## Instructions for the addition of a rate scraper
 
@@ -46,4 +46,3 @@ type InterestRate struct {
 ```
 
 and sent to the channel `chanInterestRate` of `s`. In order to write a new scraper, it is not imperative to understand the architecture of the pathway from top to bottom, but it might be helpful. For a first impression you can have a look at the following [diagram](https://github.com/diadata-org/diadata/tree/master/documentation/tutorials/rate_scraper_diagram_down.pdf).
-

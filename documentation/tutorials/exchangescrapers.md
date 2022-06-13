@@ -66,19 +66,38 @@ export REDISURL=localhost:6379
 
 Or simple by sourcing the `local.env` inside the `deployments/local/exchange-scraper` directory.
 
-Also don't forget to set your Ethereum Node API Key.
+Also don't forget to set your Ethereum Node API Key. (If you are working on ethereum chain.)
 
 ```sh
 export ETHEREUM_URL_REST=${YOUR_API_REST_ENDPOINT}
 export ETHEREUM_URL_WS=${YOUR_API_WS_ENDPOINT}
 ```
 
-Tips: Find you favourite node api provider at [EthereumNodes](https://ethereumnodes.com)
+Tips: Find you favourite ethereum node api provider at [EthereumNodes](https://ethereumnodes.com)
+
+If you are working on another ethereum-compatible chain, replace `ETHEREUM` prefix with your chain name and get them from env.
+
+```go
+func NewAPIScraper() *APIScraper {
+    // some initial stuff...
+    log.Infof("Init rest and ws client for %s.", exchange.BlockChain.Name)
+    restClient, err := ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_REST", curveRestDial))
+    if err != nil {
+       log.Fatal("init rest client: ", err)
+    }
+    wsClient, err := ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_WS", curveWsDial))
+    if err != nil {
+      log.Fatal("init ws client: ", err)
+    }
+    // other stuff here...
+}
+
+```
 
 4. Execute `main.go` from `cmd/services/pairDiscoveryServices` for fetching the available pairs and setting them in the Redis database.
 5. Finally, run the scraping executable flagged as follows:
 
-```text
+```sh
 cd cmd/exchange-scrapers/collector
 go run collector.go -exchange MySource
 ```
