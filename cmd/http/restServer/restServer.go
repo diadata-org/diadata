@@ -238,10 +238,6 @@ func main() {
 
 		diaGroup.GET("/blockchains", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetAllBlockchains))
 
-		diaGroup.GET("/FarmingPools", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetFarmingPools))
-		diaGroup.GET("/FarmingPoolData/:protocol/:poolID", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetFarmingPoolData))
-		diaGroup.GET("/FarmingPoolData/:protocol/:poolID/:time", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetFarmingPoolData))
-
 		diaGroup.GET("CryptoDerivatives/:type/:name", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetCryptoDerivative))
 
 		// Endpoints for interestrates
