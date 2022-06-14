@@ -39,9 +39,8 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 If you are working on ethereum chain with the decentralized exchange, you can get your node api key from environment variant.
 
 ```go
-func NewAPIScraper() *APIScraper {
+func NewMySourceScraper(exchangeName string) *MySourceScraper {
     // some initial stuff...
-
     log.Infof("Init rest and ws client for %s.", exchange.BlockChain.Name)
     restClient, err := ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_REST", curveRestDial))
     if err != nil {
@@ -58,7 +57,9 @@ func NewAPIScraper() *APIScraper {
 
 There's no limit to use your own method to connect with blockchain, you can make your own connection.
 
-For centralized exchange you should check the provider document. Then do your own connection with that.
+For a working example, check out `CurvefiScraper.go` or other decentralized exchange scrapers.
+
+For centralized exchange, you should follow the CEX provider documents. Then do your own connection. For an illustration you can have a look at the `KrakenScraper.go`.
 
 Also, if your want to get data from contract, install `abigen` and generate the code from exchanger provided abi.
 
@@ -108,5 +109,3 @@ Also if you are working on another ethereum-compatible chain, simply replace `ET
 cd cmd/exchange-scrapers/collector
 go run collector.go -exchange MySource
 ```
-
-For an illustration you can have a look at the `KrakenScraper.go`.
