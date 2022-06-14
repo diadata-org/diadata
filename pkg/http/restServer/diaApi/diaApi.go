@@ -435,16 +435,6 @@ func (env *Env) Get24hVolume(c *gin.Context) {
 	c.JSON(http.StatusOK, v)
 }
 
-// GetPairs returns all pairs
-func (env *Env) GetPairs(c *gin.Context) {
-	p, err := env.RelDB.GetPairs("")
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-	} else {
-		c.JSON(http.StatusOK, &models.Pairs{Pairs: p})
-	}
-}
-
 // GetExchanges is the delegate method for fetching all
 // available trading places.
 func (env *Env) GetExchanges(c *gin.Context) {

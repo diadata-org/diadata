@@ -12,7 +12,7 @@ import (
 )
 
 // GetExchanges returns all available trading places.
-// Comment: Think about getting the exchanges from redis.
+// TO DO: Switch to postgres method asap.
 func (datastore *DB) GetExchanges() (allExchanges []string) {
 	listExch := dia.Exchanges()
 	for _, exchange := range listExch {
@@ -79,35 +79,6 @@ func (rdb *RelDB) GetExchangesForSymbol(symbol string) (exchanges []string, err 
 	}
 	return
 }
-
-// Deprecating
-// func (db *DB) GetExchangesForSymbol(symbol string) ([]string, error) { // TOFIX. use influx db trades on 24 hours
-// 	var result []string
-// 	var cursor uint64
-// 	key := "dia_" + dia.FilterKing + "_" + symbol
-// 	for {
-// 		var keys []string
-// 		var err error
-// 		keys, cursor, err = db.redisClient.Scan(cursor, key+"*", 15).Result()
-// 		log.Debug("GetExchangesForSymbol ", key+"*", cursor)
-// 		if err != nil {
-// 			log.Error("GetPairs err", err)
-// 			return result, err
-// 		}
-// 		for _, value := range keys {
-// 			log.Debug("GetExchangesForSymbol ", value)
-// 			filteredKey := strings.Replace(strings.Replace(value, key, "", 1), "_ZSET", "", 1)
-// 			s := strings.Split(strings.Replace(filteredKey, key, "", 1), "_")
-// 			if len(s) == 2 {
-// 				result = append(result, s[1])
-// 			}
-// 		}
-// 		if cursor == 0 {
-// 			log.Debugf("GetExchangesForSymbol %v returns %v", key, result)
-// 			return result, nil
-// 		}
-// 	}
-// }
 
 // SetAvailablePairs stores @pairs in redis
 // TO DO: Setter and getter should act on RelDB

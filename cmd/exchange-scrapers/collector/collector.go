@@ -106,7 +106,7 @@ var (
 )
 
 func isValidExchange(estring string) bool {
-	for _, e := range dia.Exchanges() {
+	for e := range scrapers.Exchanges {
 		if e == estring {
 			return true
 		}
@@ -118,7 +118,9 @@ func init() {
 	flag.Parse()
 	if *exchange == "" {
 		flag.Usage()
-		log.Println(dia.Exchanges())
+		for e := range scrapers.Exchanges {
+			log.Info("exchange: ", e)
+		}
 		for {
 			time.Sleep(24 * time.Hour)
 		}

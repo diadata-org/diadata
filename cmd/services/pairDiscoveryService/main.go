@@ -105,7 +105,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 	if !toggle {
 
 		log.Info("GetConfigTogglePairDiscovery = false, using values from config files")
-		for _, exchange := range dia.Exchanges() {
+		for exchange := range scrapers.Exchanges {
 
 			if exchange == "Unknown" {
 				continue
@@ -157,7 +157,7 @@ func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.Ver
 		fetchAvlPairsExchanges := strings.Split(fetchAvlPairsExchangesString, ",")
 
 		exchangeMap := scrapers.Exchanges
-		for _, exchange := range dia.Exchanges() {
+		for exchange := range scrapers.Exchanges {
 
 			// Make exchange API Scraper in order to fetch pairs
 			log.Info("Updating exchange ", exchange)

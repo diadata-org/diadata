@@ -219,8 +219,7 @@ func main() {
 		diaGroup.GET("/symbols/:substring", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetAllSymbols))
 		diaGroup.GET("/volume/:symbol", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetVolume))
 		diaGroup.GET("/volume24/:exchange", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.Get24hVolume))
-		// Deprectated: diaGroup.GET("/coins", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetCoins))
-		diaGroup.GET("/pairs", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetPairs))
+
 		diaGroup.GET("/exchanges", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetExchanges))
 		diaGroup.GET("/defiLendingProtocols", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetLendingProtocols))
 		diaGroup.GET("/chartPoints/:filter/:exchange/:symbol", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetChartPoints))
