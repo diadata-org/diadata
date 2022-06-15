@@ -29,6 +29,7 @@
 * [📜 Methodology](documentation/methodology/README.md)
   * [Digital Assets](documentation/methodology/digital-assets/README.md)
     * [Cryptocurrency Data Collection](documentation/methodology/digital-assets/cryptocurrency-trading-data.md)
+    * [NFT Data Collection](documentation/methodology/digital-assets/nft-data-collection.md)
     * [Pricing Methodology of Crypto Exchange Quotations](documentation/methodology/digital-assets/exchangeprices/README.md)
       * [IR: Interquartile Range Filter](documentation/methodology/digital-assets/exchangeprices/ir-interquartile-range-filter.md)
       * [MA: Moving average](documentation/methodology/digital-assets/exchangeprices/ma-moving-average.md)
