@@ -61,7 +61,7 @@ func NewUniswapHistoryScraper(exchange dia.Exchange, scrape bool, relDB *models.
 	log.Info("NewUniswapHistoryScraper: ", exchange.Name)
 	var s *UniswapHistoryScraper
 	var listenByAddress bool
-	exchangeFactoryContractAddress = exchange.Contract.Hex()
+	exchangeFactoryContractAddress = exchange.Contract
 
 	switch exchange.Name {
 	case dia.UniswapExchange:

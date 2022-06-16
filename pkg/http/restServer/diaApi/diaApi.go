@@ -438,8 +438,8 @@ func (env *Env) Get24hVolume(c *gin.Context) {
 // GetExchanges is the delegate method for fetching all
 // available trading places.
 func (env *Env) GetExchanges(c *gin.Context) {
-	q := env.DataStore.GetExchanges()
-	if len(q) == 0 {
+	q, err := env.RelDB.GetExchangeNames()
+	if len(q) == 0 || err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
 	}
 	c.JSON(http.StatusOK, q)
@@ -1786,7 +1786,7 @@ func (env *Env) GetAssetExchanges(c *gin.Context) {
 }
 
 func (env *Env) GetAllBlockchains(c *gin.Context) {
-	blockchains, err := env.RelDB.GetAllBlockchains()
+	blockchains, err := env.RelDB.GetAllAssetsBlockchains()
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	} else {

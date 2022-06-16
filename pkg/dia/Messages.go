@@ -273,11 +273,15 @@ type EthereumBlockData struct {
 }
 
 type Exchange struct {
-	Name          string         `json:"Name"`
-	Centralized   bool           `json:"Centralized"`
-	Contract      common.Address `json:"Contract"`
-	BlockChain    BlockChain     `json:"BlockChain"`
-	WatchdogDelay int            `json:"WatchdogDelay"`
+	Name          string     `json:"Name"`
+	Centralized   bool       `json:"Centralized"`
+	Bridge        bool       `json:"Bridge"`
+	Contract      string     `json:"Contract"`
+	BlockChain    BlockChain `json:"BlockChain"`
+	RestAPI       string     `json:"RestAPI"`
+	WsAPI         string     `json:"WsAPI"`
+	PairsAPI      string     `json:"PairsAPI"`
+	WatchdogDelay int        `json:"WatchdogDelay"`
 }
 
 type Supply struct {

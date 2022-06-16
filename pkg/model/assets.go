@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"strconv"
@@ -519,7 +520,6 @@ func (rdb *RelDB) SetExchangePair(exchange string, pair dia.ExchangePair, cache 
 // -------------------------------------------------------------
 
 func (rdb *RelDB) SetBlockchain(blockchain dia.BlockChain) (err error) {
-	log.Info("address: ", blockchain.NativeToken.Address)
 	fields := fmt.Sprintf("INSERT INTO %s (name,genesisdate,nativetoken_id,verificationmechanism,chain_id) VALUES ", blockchainTable)
 	values := "($1,$2,(SELECT asset_id FROM asset WHERE address=$3 AND blockchain=$1),$4,NULLIF($5,''))"
 	conflict := " ON CONFLICT (name) DO UPDATE SET genesisdate=$2,verificationmechanism=$4,chain_id=NULLIF($5,''),nativetoken_id=(SELECT asset_id FROM asset WHERE address=$3 AND blockchain=$1) "
@@ -554,8 +554,89 @@ func (rdb *RelDB) GetBlockchain(name string) (blockchain dia.BlockChain, err err
 	return
 }
 
-// GetAllBlockchains returns all blockchain names existent in the asset table.
-func (rdb *RelDB) GetAllBlockchains() ([]string, error) {
+// GetAllBlockchains returns all blockchains from the blockchain table.
+// If fullAsset=true it returns the complete native token as asset, otherwise only its symbol string.
+func (rdb *RelDB) GetAllBlockchains(fullAsset bool) ([]dia.BlockChain, error) {
+	var blockchains []dia.BlockChain
+	var query string
+	if fullAsset {
+		queryString := "SELECT b.name,b.genesisdate,a.Symbol,a.Name,a.Address,a.Decimals,b.verificationmechanism,b.chain_id FROM %s b LEFT JOIN %s a ON nativetoken_id = a.asset_id"
+		query = fmt.Sprintf(queryString, blockchainTable, assetTable)
+	} else {
+		query = fmt.Sprintf("SELECT b.name,b.genesisdate,a.Symbol,b.verificationmechanism,b.chain_id FROM %s b LEFT JOIN %s a ON nativetoken_id = a.asset_id", blockchainTable, assetTable)
+	}
+	rows, err := rdb.postgresClient.Query(context.Background(), query)
+	if err != nil {
+		return []dia.BlockChain{}, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var blockchain dia.BlockChain
+		var genDate sql.NullFloat64
+		var symbol sql.NullString
+		var verifMechanism sql.NullString
+		var chainID sql.NullString
+		//  fullAsset
+		var name sql.NullString
+		var address sql.NullString
+		var decimals sql.NullInt64
+
+		if fullAsset {
+			err = rows.Scan(
+				&blockchain.Name,
+				&genDate,
+				&symbol,
+				&name,
+				&address,
+				&decimals,
+				&verifMechanism,
+				&chainID,
+			)
+		} else {
+			err = rows.Scan(
+				&blockchain.Name,
+				&genDate,
+				&symbol,
+				&verifMechanism,
+				&chainID,
+			)
+		}
+		if err != nil {
+			return []dia.BlockChain{}, err
+		}
+		if genDate.Valid {
+			blockchain.GenesisDate = int64(genDate.Float64)
+		}
+		if symbol.Valid {
+			blockchain.NativeToken.Symbol = symbol.String
+		}
+		if verifMechanism.Valid {
+			blockchain.VerificationMechanism = dia.VerificationMechanism(verifMechanism.String)
+		}
+		if chainID.Valid {
+			blockchain.ChainID = chainID.String
+		}
+		if fullAsset {
+			if name.Valid {
+				blockchain.NativeToken.Name = name.String
+			}
+			if address.Valid {
+				blockchain.NativeToken.Address = address.String
+			}
+			if decimals.Valid {
+				blockchain.NativeToken.Decimals = uint8(decimals.Int64)
+			}
+			blockchain.NativeToken.Blockchain = blockchain.Name
+		}
+		blockchains = append(blockchains, blockchain)
+	}
+
+	return blockchains, nil
+}
+
+// GetAllAssetsBlockchains returns all blockchain names existent in the asset table.
+func (rdb *RelDB) GetAllAssetsBlockchains() ([]string, error) {
 	var blockchains []string
 	query := fmt.Sprintf("SELECT DISTINCT blockchain FROM %s ORDER BY blockchain ASC", assetTable)
 	rows, err := rdb.postgresClient.Query(context.Background(), query)

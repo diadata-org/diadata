@@ -49,10 +49,17 @@ type RelDatastore interface {
 	VerifyExchangeSymbol(exchange string, symbol string, assetID string) (bool, error)
 	GetExchangeSymbolAssetID(exchange string, symbol string) (string, bool, error)
 
+	// ----------------- exchange methods -------------------
+	SetExchange(exchange dia.Exchange) error
+	GetExchange(name string) (dia.Exchange, error)
+	GetAllExchanges() ([]dia.Exchange, error)
+	GetExchangeNames() ([]string, error)
+
 	// ----------------- blockchain methods -------------------
 	SetBlockchain(blockchain dia.BlockChain) error
 	GetBlockchain(name string) (dia.BlockChain, error)
-	GetAllBlockchains() ([]string, error)
+	GetAllAssetsBlockchains() ([]string, error)
+	GetAllBlockchains(fullAsset bool) ([]dia.BlockChain, error)
 
 	// ------ Caching ------
 	SetAssetCache(asset dia.Asset) error
@@ -117,6 +124,7 @@ const (
 	assetTable              = "asset"
 	exchangepairTable       = "exchangepair"
 	exchangesymbolTable     = "exchangesymbol"
+	exchangeTable           = "exchange"
 	blockchainTable         = "blockchain"
 	assetVolumeTable        = "assetvolume"
 	aggregatedVolumeTable   = "aggregatedvolume"

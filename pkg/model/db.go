@@ -40,7 +40,6 @@ type Datastore interface {
 	SetDiaCirculatingSupply(circulatingSupply float64) error
 	GetDiaCirculatingSupply() (float64, error)
 
-	// Deprecating: GetPairs(exchange string) ([]dia.ExchangePair, error)
 	GetSymbols(exchange string) ([]string, error)
 	// Deprecating: GetExchangesForSymbol(symbol string) ([]string, error)
 	// Deprecating: GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolExchangeDetails, error)
@@ -73,7 +72,6 @@ type Datastore interface {
 	SetCurrencyChange(cc *Change) error
 	GetCurrencyChange() (*Change, error)
 
-	GetExchanges() []string
 	SetOptionMeta(optionMeta *dia.OptionMeta) error
 	GetOptionMeta(baseCurrency string) ([]dia.OptionMeta, error)
 	SaveCVIInflux(float64, time.Time) error

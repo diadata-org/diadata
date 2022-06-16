@@ -78,7 +78,7 @@ type BalancerV2Scraper struct {
 
 // NewBalancerV2Scraper returns a Balancer V2 scraper
 func NewBalancerV2Scraper(exchange dia.Exchange, scrape bool) *BalancerV2Scraper {
-	balancerV2VaultContract = exchange.Contract.Hex()
+	balancerV2VaultContract = exchange.Contract
 	scraper := &BalancerV2Scraper{
 		exchangeName: exchange.Name,
 		err:          nil,

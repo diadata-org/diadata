@@ -90,7 +90,7 @@ func NewAnyswapScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 
 	switch exchange.Name {
 	case dia.AnyswapExchange:
-		exchangeFactoryContractAddress = exchange.Contract.Hex()
+		exchangeFactoryContractAddress = exchange.Contract
 		waitTimeString := utils.Getenv("UNISWAP_WAIT_TIME", anyswapWaitMilliseconds)
 		waitTime, err = strconv.Atoi(waitTimeString)
 		if err != nil {

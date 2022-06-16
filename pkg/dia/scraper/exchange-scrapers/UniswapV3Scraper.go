@@ -58,7 +58,7 @@ type UniswapV3Scraper struct {
 // NewUniswapV3Scraper returns a new UniswapV3Scraper
 func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool) *UniswapV3Scraper {
 	log.Info("NewUniswapScraper ", exchange.Name)
-	log.Info("NewUniswapScraper Address ", exchange.Contract.Hex())
+	log.Info("NewUniswapScraper Address ", exchange.Contract)
 
 	var s *UniswapV3Scraper
 
@@ -112,7 +112,7 @@ func makeUniswapV3Scraper(exchange dia.Exchange, listenByAddress bool, restDial 
 		waitTime:               waitTime,
 		listenByAddress:        listenByAddress,
 		startBlock:             startBlock,
-		factoryContractAddress: exchange.Contract,
+		factoryContractAddress: common.HexToAddress(exchange.Contract),
 	}
 	return s
 }

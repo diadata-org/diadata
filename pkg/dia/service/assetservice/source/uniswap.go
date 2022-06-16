@@ -106,7 +106,7 @@ func NewUniswapAssetSource(exchange dia.Exchange) (uas *UniswapAssetSource) {
 		uas = makeUniswapAssetSource(exchange, restDialAstar, astarWaitMilliseconds)
 	}
 
-	exchangeFactoryContractAddress = exchange.Contract.Hex()
+	exchangeFactoryContractAddress = exchange.Contract
 
 	go func() {
 		uas.fetchAssets()
