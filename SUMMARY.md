@@ -20,6 +20,7 @@
   * [Polkadot Offchain Worker](documentation/oracle-documentation/polkadot-offchain-worker.md)
   * [Solana Oracle](documentation/oracle-documentation/solana-oracle.md)
   * [NEAR Request Oracle](documentation/oracle-documentation/near-request-oracle.md)
+  * [NFT Oracle](documentation/oracle-documentation/nft-oracle.md)
   * [Randomness Oracle](documentation/oracle-documentation/randomness-oracle.md)
 * [💻 API Documentation](documentation/api-1/README.md)
   * [API Endpoints](documentation/api-1/api-endpoints.md)
