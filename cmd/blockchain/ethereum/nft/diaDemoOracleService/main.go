@@ -48,6 +48,9 @@ func main() {
 	key := utils.Getenv("PRIVATE_KEY", "")
 	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
 	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
+	log.Info("psswd: ", key_password)
+	log.Info("key: ", key)
+
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
 	sleepSeconds, err := strconv.Atoi(utils.Getenv("SLEEP_SECONDS", "60"))
 	if err != nil {
