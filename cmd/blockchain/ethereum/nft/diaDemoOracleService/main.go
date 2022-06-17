@@ -48,9 +48,6 @@ func main() {
 	key := utils.Getenv("PRIVATE_KEY", "")
 	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
 	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
-	log.Info("psswd: ", key_password)
-	log.Info("key: ", key)
-
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
 	sleepSeconds, err := strconv.Atoi(utils.Getenv("SLEEP_SECONDS", "60"))
 	if err != nil {
@@ -191,6 +188,7 @@ func updateNFTData(data FloorReturn, auth *bind.TransactOpts, contract *diaNFTOr
 	var values []uint64
 	values = append(values, uint64(data.Floor*100000000))
 	values = append(values, uint64(data.FloorMA*100000000))
+	values = append(values, []uint64{0, 0, 0}...)
 
 	err := updateOracle(conn, contract, auth, symbol, values, timestamp)
 	if err != nil {
