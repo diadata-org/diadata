@@ -16,3 +16,14 @@ For the current deployed demo version you can access a collection's latest floor
    2. The 30-day moving average of the floor price (see [API endpoint](https://docs.diadata.org/documentation/api-1/api-endpoints#nft-moving-average-of-floor-price)).
    3. The [UNIX timestamp](https://www.unixtimestamp.com/) of the last oracle update.
 
+<details>
+
+<summary>See the list of collections available on the oracle</summary>
+
+* Bored Ape Yacht Club - 0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d
+* CryptoPunks - 0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb
+* Moonbirds - 0x23581767a106ae21c074b2276d25e5c3e136a68b
+* Doodles - 0x8a90cab2b38dba80c64b7734e58ee1db38b8992e
+* Otherdeed - 0x34d85c9cdeb23fa97cb08333b511ac86e1c4e258
+
+</details>
