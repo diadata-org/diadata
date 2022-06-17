@@ -8,6 +8,8 @@ description: >-
 
 ## Digital Assets
 
+### Coins data
+
 {% swagger method="get" path="v1/assetQuotation/:blockchain/:asset" baseUrl="https://api.diadata.org/" summary="Asset Quotation" %}
 {% swagger-description %}
 Returns the quotation for a fully qualified asset (i.e. distinguished by blockchain and address).
@@ -189,7 +191,7 @@ Which symbol to get a quotation for, e.g., BTC.
 {% endswagger-response %}
 {% endswagger %}
 
-{% swagger method="get" path="/token/:symbol" baseUrl="https://api.diadata.org" summary="Tokens list" %}
+{% swagger method="get" path="/v1/token/:symbol" baseUrl="https://api.diadata.org" summary="Tokens list" %}
 {% swagger-description %}
 Get a list of blockchains and addresses for all tokens that match the symbol
 {% endswagger-description %}
@@ -363,6 +365,8 @@ Unix timestamp.
 ```
 {% endswagger-response %}
 {% endswagger %}
+
+### NFT data
 
 {% swagger method="get" path="" baseUrl="https://api.diadata.org/v1/NFTFloor/:blockchain/:address" summary="NFT Floor Price" %}
 {% swagger-description %}
