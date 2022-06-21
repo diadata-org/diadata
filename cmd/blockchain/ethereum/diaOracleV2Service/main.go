@@ -53,7 +53,7 @@ func main() {
 		"0x0000000000000000000000000000000000000000", //FTM
 		"0x0000000000000000000000000000000000000000", //KSM
 		"0x0000000000000000000000000000000000000000", //ASTR
-		"0x9E32b13ce7f2E80A01932B42553652E053D6ed8e", //Metis
+		"0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000", //Metis
 	}
 	blockchains := []string{
 		"Bitcoin",
@@ -64,7 +64,7 @@ func main() {
 		"Fantom",
 		"Kusama",
 		"Astar",
-		"Ethereum",
+		"Metis",
 	}
 
 	oldPrices := make(map[int]float64)
@@ -194,7 +194,7 @@ func updateOracle(
 	// Get 110% of the gas price
 	fmt.Println(gasPrice)
 	fGas := new(big.Float).SetInt(gasPrice)
-	fGas.Mul(fGas, big.NewFloat(40.0))
+	fGas.Mul(fGas, big.NewFloat(1.1))
 	gasPrice, _ = fGas.Int(nil)
 	fmt.Println(gasPrice)
 
@@ -203,8 +203,8 @@ func updateOracle(
 		From:     auth.From,
 		Signer:   auth.Signer,
 		//Nonce:    nnc,
-		GasPrice: gasPrice,
-		GasLimit: 1000725,
+		//GasPrice: gasPrice,
+		//GasLimit: 1000725,
 	}, key, big.NewInt(value), big.NewInt(timestamp))
 	if err != nil {
 		return err
