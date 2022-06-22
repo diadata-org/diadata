@@ -113,6 +113,7 @@ const (
 
 	// postgres tables
 	assetTable              = "asset"
+	assetIdent              = "assetIdent"
 	exchangepairTable       = "exchangepair"
 	exchangesymbolTable     = "exchangesymbol"
 	blockchainTable         = "blockchain"

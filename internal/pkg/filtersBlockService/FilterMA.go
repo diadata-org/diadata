@@ -23,6 +23,8 @@ type FilterMA struct {
 	value       float64
 	modified    bool
 	filterName  string
+	max         float64
+	min         float64
 }
 
 // NewFilterMA returns a moving average filter.
@@ -112,6 +114,12 @@ func (filter *FilterMA) finalCompute(t time.Time) float64 {
 	}
 	if totalVolume > 0 {
 		filter.value = totalPrice / totalVolume
+		if filter.max < filter.value {
+			filter.max = filter.value
+		}
+		if filter.min > filter.value {
+			filter.min = filter.value
+		}
 	}
 	if len(filter.prices) > 0 && len(filter.volumes) > 0 {
 		filter.prices = []float64{filter.lastTrade.EstimatedUSDPrice}

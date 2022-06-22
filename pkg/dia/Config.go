@@ -75,12 +75,14 @@ const (
 	TrisolarisExchange        = "Trisolaris"
 	ByBitExchange             = "ByBit"
 	BitMexExchange            = "BitMex"
+	MultiChain                = "MultiChain"
+
 	// FinageForex        = "FinageForex"
 )
 
 func Exchanges() []string {
 	return []string{
-
+		MultiChain,
 		BitfinexExchange,
 		BitMexExchange,
 		HuobiExchange,
