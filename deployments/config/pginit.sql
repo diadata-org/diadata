@@ -41,6 +41,21 @@ CREATE TABLE exchangesymbol (
     asset_id uuid REFERENCES asset(asset_id)
 );
 
+CREATE TABLE exchange (
+    exchange_id UUID DEFAULT gen_random_uuid(),
+    name text not null,
+    centralized boolean default false,
+    bridge boolean default false,
+    contract text,
+    blockchain text,
+    rest_api text,
+    ws_api text,
+    pairs_api text,
+    watchdog_delay numeric not null,
+    UNIQUE(exchange_id),
+    UNIQUE (name)
+);
+
 -- blockchain table stores all blockchains available in our databases
 CREATE TABLE blockchain (
     blockchain_id UUID DEFAULT gen_random_uuid(),
@@ -49,6 +64,7 @@ CREATE TABLE blockchain (
     nativetoken_id UUID REFERENCES asset(asset_id),
 	verificationmechanism text,
     chain_id text,
+    UNIQUE(blockchain_id),
     UNIQUE(name)
 );
 

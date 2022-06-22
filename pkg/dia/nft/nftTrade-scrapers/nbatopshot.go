@@ -29,6 +29,10 @@ type NBATopshotScraper struct {
 	address      string
 }
 
+var (
+	assetCacheTopshot = make(map[string]dia.Asset)
+)
+
 func NewNBATopshotScraper(rdb *models.RelDB) *NBATopshotScraper {
 	flowClient, err := client.New(flowhelper.FlowAPICurrent, grpc.WithInsecure())
 	if err != nil {
@@ -129,18 +133,26 @@ func (scraper *NBATopshotScraper) FetchTrades() (err error) {
 		recipientAddress := recipientsMap[tokenId+","+BlockNumber]
 
 		trade := dia.NFTTrade{
-			NFT:              nft,
-			BlockNumber:      blocknumbers[i],
-			FromAddress:      e.Seller().Hex(),
-			ToAddress:        recipientAddress,
-			Exchange:         "NBATopshotMarket",
-			TxHash:           moment.TransactionID.Hex(),
-			PriceUSD:         e.Price(),
-			CurrencySymbol:   "USD",
-			CurrencyDecimals: int32(18),
-			CurrencyAddress:  "",
-			Timestamp:        timestamps[i],
+			NFT:         nft,
+			BlockNumber: blocknumbers[i],
+			FromAddress: e.Seller().Hex(),
+			ToAddress:   recipientAddress,
+			Exchange:    "NBATopshotMarket",
+			TxHash:      moment.TransactionID.Hex(),
+			PriceUSD:    e.Price(),
+			Timestamp:   timestamps[i],
 		}
+		if asset, ok := assetCacheTopshot[dia.FIAT+"-"+"840"]; ok {
+			trade.Currency = asset
+		} else {
+			currency, err := scraper.tradescraper.datastore.GetAsset("840", dia.FIAT)
+			if err != nil {
+				log.Errorf("cannot fetch asset %s -- %s", dia.FIAT, "840")
+			}
+			trade.Currency = currency
+			assetCacheTopshot[dia.FIAT+"-"+"840"] = currency
+		}
+
 		scraper.GetTradeChannel() <- trade
 
 	}

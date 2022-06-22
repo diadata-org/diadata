@@ -12,7 +12,7 @@ services:
     links:
       - influxdb
     image: influxdb:2.0
-    entrypoint: influx setup --bucket test_bucket -t test_token -o test_org --username=test --password=test --host=http://influxdb:8086 -f
+    entrypoint: influx setup --bucket test_bucket -t test_token -o test_org --username test --password testtest --host http://127.0.0.1:8086 -f
     restart: on-failure:20
     depends_on:
       - influxdb

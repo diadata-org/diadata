@@ -62,6 +62,10 @@ func main() {
 	case "LooksRare":
 		log.Println("NFT Trades Scraper: Start scraping trades from LooksRare")
 		scraper = nfttradescrapers.NewLooksRareScraper(rdb)
+	case "TofuNFT":
+		log.Println("NFT Trades Scraper: Start scraping trades from TofuNFT")
+		scraper = nfttradescrapers.NewTofuNFTScraper(rdb)
+
 	default:
 		for {
 			time.Sleep(24 * time.Hour)
@@ -84,7 +88,7 @@ func handleData(tradeChannel chan dia.NFTTrade, wg *sync.WaitGroup, rdb *models.
 			return
 		}
 		if 1 < 0 {
-			log.Info("got trade: %s -> (%s) -> %s for %s (%.4f USD) \n", trade.FromAddress, trade.NFT.NFTClass.Name, trade.ToAddress, trade.CurrencySymbol, trade.PriceUSD)
+			log.Infof("got trade: %s -> (%s) -> %s for %s (%.4f USD) \n", trade.FromAddress, trade.NFT.NFTClass.Name, trade.ToAddress, trade.Currency.Symbol, trade.PriceUSD)
 		}
 
 		err := rdb.SetNFTTradeToTable(trade, models.NfttradeCurrTable)

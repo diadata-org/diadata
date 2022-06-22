@@ -1,0 +1,823 @@
+{
+    "Exchanges": [
+        {
+            "Name": "0x",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": "Ethereum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "Anyswap",
+            "Centralized": false,
+            "Bridge": true,
+            "Contract": "0x6b7a87899490EcE95443e979cA9485CBE7E71522",
+            "Blockchain": {
+                "Name": "Ethereum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "Apeswap",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x0841BD0B734E4F5853f0dD8d7Ea041c241fb0Da6",
+            "Blockchain": {
+                "Name": "BinanceSmartChain"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "Arthswap",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0xA9473608514457b4bF083f9045fA63ae5810A03E",
+            "Blockchain": {
+                "Name": "Astar"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "Balancer",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd",
+            "Blockchain": {
+                "Name": "Ethereum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "BalancerV2",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
+            "Blockchain": {
+                "Name": "Ethereum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "Bancor",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": "Ethereum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "Beets",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce",
+            "Blockchain": {
+                "Name": "Fantom"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "Binance",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "",
+            "WsAPI": "wss://stream.binance.com:9443/ws",
+            "pairsAPI": "https://api.binance.com/api/v1/exchangeInfo",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "BinanceUS",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "",
+            "WsAPI": "wss://stream.binance.us:9443/ws",
+            "pairsAPI": "https://api.binance.us/api/v1/exchangeInfo",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "Biswap",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x858E3312ed3A876947EA49d572A7C42DE08af7EE",
+            "Blockchain": {
+                "Name": "BinanceSmartChain"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "BitBay",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "",
+            "WsAPI": "wss://api.zonda.exchange/websocket/",
+            "pairsAPI": "https://api.zonda.exchange/rest/trading/ticker",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "Bitfinex",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "",
+            "WsAPI": "wss://api-pub.bitfinex.com/ws/2",
+            "pairsAPI": "https://api.bitfinex.com/v1/symbols",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "Bitmax",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "https://ascendex.com/api/pro/v1",
+            "WsAPI": "wss://ascendex.com/0/api/pro/v1/stream",
+            "pairsAPI": "https://ascendex.com/api/pro/v1/products",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "BitMex",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "https://www.bitMex.com/api/v1",
+            "WsAPI": "wss://ws.bitMex.com/realtime",
+            "pairsAPI": "https://www.bitMex.com/api/v1/instruments",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "Bittrex",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "Bitforex",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "https://api.bitforex.com/api/v1",
+            "WsAPI": "wss://www.bitforex.com/mkapi/coinGroup1/ws",
+            "pairsAPI": "https://api.bitforex.com/api/v1/market/symbols",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "ByBit",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "https://api.bybit.com/v2",
+            "WsAPI": "wss://stream.bybit.com/realtime",
+            "pairsAPI": "https://api.bybit.com/v2/public/symbols",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "CoinBase",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "",
+            "WsAPI": "wss://ws-feed.pro.coinbase.com",
+            "pairsAPI": "https://api.pro.coinbase.com/products",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "CREX24",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "",
+            "WsAPI": "api.crex24.com",
+            "pairsAPI": "https://api.crex24.com/v2/public/instruments",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "Crypto.com",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "https://api.crypto.com/v2",
+            "WsAPI": "wss://stream.crypto.com/v2/market",
+            "pairsAPI": "https://api.crypto.com/v2/public/get-instruments",
+            "WatchdogDelay": 180
+        },
+        {
+            "Name": "Curvefi",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x90E00ACe148ca3b23Ac1bC8C240C2a7Dd9c2d7f5",
+            "Blockchain": {
+                "Name": "Ethereum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "Dforce",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x03eF3f37856bD08eb47E2dE7ABc4Ddd2c19B60F2",
+            "Blockchain": {
+                "Name": "Ethereum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "Diffusion",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x6aBdDa34Fb225be4610a2d153845e09429523Cd2",
+            "Blockchain": {
+                "Name": "Evmos"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "DFYN",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0xe7fb3e833efe5f9c441105eb65ef8b261266423b",
+            "Blockchain": {
+                "Name": "Polygon"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "FTX",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "https://ftx.com/api",
+            "WsAPI": "wss://ftx.com/ws",
+            "pairsAPI": "https://otc.ftx.com/api/otc/pairs",
+            "WatchdogDelay": 180
+        },
+        {
+            "Name": "GateIO",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "",
+            "WsAPI": "wss://api.gateio.ws/ws/v4/",
+            "pairsAPI": "https://data.gate.io/api2/1/pairs",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "Hermes",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x633a093C9e94f64500FC8fCBB48e90dd52F6668F",
+            "Blockchain": {
+                "Name": "Metis"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "HitBTC",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "",
+            "WsAPI": "wss://api.hitbtc.com/api/2/ws",
+            "pairsAPI": "https://api.hitbtc.com/api/2/public/symbol",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "Huckleberry",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x017603C8f29F7f6394737628a93c57ffBA1b7256",
+            "Blockchain": {
+                "Name": "Moonriver"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "Huobi",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "",
+            "WsAPI": "wss://api.huobi.pro/ws",
+            "pairsAPI": "http://api.huobi.pro/v1/common/symbols",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "Kraken",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "https://api.kraken.com",
+            "WsAPI": "wss://ws.kraken.com",
+            "pairsAPI": "https://api.kraken.com/0/public/AssetPairs",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "KuCoin",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "https://api.kucoin.com",
+            "WsAPI": "wss://push1-v2.kucoin.com/endpoint",
+            "pairsAPI": "https://api.kucoin.com/api/v1/market/allTickers",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "Kyber",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x9AAb3f75489902f3a48495025729a0AF77d4b11e",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "LBank",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "",
+            "WsAPI": "wss://api.lbkex.com/ws/V2/",
+            "pairsAPI": "https://api.lbkex.com/v1/currencyPairs.do",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "Loopring",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "https://api3.loopring.io/api/v3",
+            "WsAPI": "wss://ws.api3.loopring.io/v3/ws",
+            "pairsAPI": "https://api3.loopring.io/api/v3/exchange/markets",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "Maker",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": "Ethereum"
+            },
+            "RestAPI": "https://api.oasisdex.com/v2",
+            "WsAPI": "",
+            "pairsAPI": "https://api.oasisdex.com/v2/pairs",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "Netswap",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x70f51d68D16e8f9e418441280342BD43AC9Dff9f",
+            "Blockchain": {
+                "Name": "Metis"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "OKEx",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "https://aws.okex.com/api/v5/public/instruments?instType=SPOT",
+            "WsAPI": "wss://ws.okex.com:8443/ws/v5/public",
+            "pairsAPI": "https://www.okex.com/api/spot/v3/products",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "OmniDex",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x7a2A35706f5d1CeE2faa8A254dd6F6D7d7Becc25",
+            "Blockchain": {
+                "Name": "Telos"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "PanCakeSwap",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
+            "Blockchain": {
+                "Name": "BinanceSmartChain"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "Pangolin",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0xefa94DE7a4656D787667C749f7E1223D71E9FD88",
+            "Blockchain": {
+                "Name": "Avalanche"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "Quickswap",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32",
+            "Blockchain": {
+                "Name": "Polygon"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "Quoine",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "http://api.liquid.com",
+            "WsAPI": "wss://tap.liquid.com/app/LiquidTapClient",
+            "pairsAPI": "http://api.liquid.com/products",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "Serum",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin",
+            "Blockchain": {
+                "Name": "Solana"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "Simex",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "https://simex.global/api",
+            "WsAPI": "",
+            "pairsAPI": "https://simex.global/api/pairs",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "Solarbeam",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x049581aEB6Fe262727f290165C29BDAB065a1B68",
+            "Blockchain": {
+                "Name": "Moonriver"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 180
+        },
+        {
+            "Name": "Spiritswap",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0xef45d134b73241eda7703fa787148d9c9f4950b0",
+            "Blockchain": {
+                "Name": "Fantom"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "Spookyswap",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x152ee697f2e276fa89e96742e9bb9ab1f2e61be3",
+            "Blockchain": {
+                "Name": "Fantom"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "STEX",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "https://api3.stex.com/public",
+            "WsAPI": "socket.stex.com",
+            "pairsAPI": "https://api3.stex.com/public/currency_pairs/list/ALL",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "SushiSwap",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0xc0aee478e3658e2610c5f7a4a2e1777ce9e4f2ac",
+            "Blockchain": {
+                "Name": "Ethereum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "SusiSwap-arbitrum",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506",
+            "Blockchain": {
+                "Name": "Arbitrum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "SushiSwap-fantom",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506",
+            "Blockchain": {
+                "Name": "Fantom"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "SushiSwap-polygon",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0xc35dadb65012ec5796536bd9864ed8773abc74c4",
+            "Blockchain": {
+                "Name": "Polygon"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "Tethys",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x2CdFB20205701FF01689461610C9F321D1d00F80",
+            "Blockchain": {
+                "Name": "Metis"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "TraderJoe",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x9Ad6C38BE94206cA50bb0d90783181662f0Cfa10",
+            "Blockchain": {
+                "Name": "Avalanche"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "Trisolaris",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0xc66F594268041dB60507F00703b152492fb176E7",
+            "Blockchain": {
+                "Name": "Aurora"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "Ubeswap",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x62d5b84bE28a183aBB507E125B384122D2C25fAE",
+            "Blockchain": {
+                "Name": "Celo"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "Uniswap",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
+            "Blockchain": {
+                "Name": "Ethereum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "UniswapV3",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x1F98431c8aD98523631AE4a59f267346ea31F984",
+            "Blockchain": {
+                "Name": "Ethereum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "UniswapV3-polygon",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x1F98431c8aD98523631AE4a59f267346ea31F984",
+            "Blockchain": {
+                "Name": "Polygon"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "Unkown",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "ZB",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "",
+            "WsAPI": "wss://api.zb.live/websocket",
+            "pairsAPI": "",
+            "WatchdogDelay": 1200
+        }
+    ]
+}

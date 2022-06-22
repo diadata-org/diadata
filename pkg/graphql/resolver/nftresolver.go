@@ -62,18 +62,18 @@ func (tr *NFTTradeResolver) Price(ctx context.Context) (*string, error) {
 	return &price, nil
 }
 
-func (tr *NFTTradeResolver) CurrencyAddress(ctx context.Context) (*string, error) {
-	return &tr.trade.CurrencyAddress, nil
-}
+// func (tr *NFTTradeResolver) CurrencyAddress(ctx context.Context) (*string, error) {
+// 	return &tr.trade.CurrencyAddress, nil
+// }
 
-func (tr *NFTTradeResolver) CurrencySymbol(ctx context.Context) (*string, error) {
-	return &tr.trade.CurrencySymbol, nil
-}
+// func (tr *NFTTradeResolver) CurrencySymbol(ctx context.Context) (*string, error) {
+// 	return &tr.trade.CurrencySymbol, nil
+// }
 
-func (tr *NFTTradeResolver) CurrencyDecimals(ctx context.Context) (*int32, error) {
-	decimals := tr.trade.CurrencyDecimals
-	return &decimals, nil
-}
+// func (tr *NFTTradeResolver) CurrencyDecimals(ctx context.Context) (*int32, error) {
+// 	decimals := tr.trade.CurrencyDecimals
+// 	return &decimals, nil
+// }
 
 func (tr *NFTTradeResolver) FromAddress(ctx context.Context) (*string, error) {
 	return &tr.trade.FromAddress, nil

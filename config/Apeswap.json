@@ -1,0 +1,10 @@
+{
+    "Coins": [
+        {
+            "Symbol": "WBNB",
+            "ForeignName": "WBNB-BUSD",
+            "Exchange": "Apeswap",
+            "Ignore": false
+        }
+    ]
+}

@@ -11,6 +11,11 @@
       "Blockchain": "Astar"
     },
     {
+      "Symbol": "AUSD",
+      "Address": "Token:AUSD",
+      "Blockchain": "Acala"
+    },
+    {
       "Symbol": "BNB",
       "Address": "0x0000000000000000000000000000000000000000",
       "Blockchain": "BinanceSmartChain"
@@ -54,6 +59,11 @@
       "Symbol": "ETH",
       "Address": "0x0000000000000000000000000000000000000000",
       "Blockchain": "Ethereum"
+    },
+    {
+      "Symbol": "DOT",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "Polkadot"
     },
     {
       "Symbol": "DOWS",

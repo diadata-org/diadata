@@ -1,10 +1,13 @@
 # Traditional Assets
 
-{% page-ref page="ecb-foriegn-exchange-data.md" %}
+{% content-ref url="ecb-foriegn-exchange-data.md" %}
+[ecb-foriegn-exchange-data.md](ecb-foriegn-exchange-data.md)
+{% endcontent-ref %}
 
-{% page-ref page="overnight-rates.md" %}
+{% content-ref url="overnight-rates.md" %}
+[overnight-rates.md](overnight-rates.md)
+{% endcontent-ref %}
 
-{% page-ref page="compounded-rates.md" %}
-
-
-
+{% content-ref url="compounded-rates.md" %}
+[compounded-rates.md](compounded-rates.md)
+{% endcontent-ref %}

@@ -40,7 +40,6 @@ type Datastore interface {
 	SetDiaCirculatingSupply(circulatingSupply float64) error
 	GetDiaCirculatingSupply() (float64, error)
 
-	// Deprecating: GetPairs(exchange string) ([]dia.ExchangePair, error)
 	GetSymbols(exchange string) ([]string, error)
 	// Deprecating: GetExchangesForSymbol(symbol string) ([]string, error)
 	// Deprecating: GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolExchangeDetails, error)
@@ -73,7 +72,6 @@ type Datastore interface {
 	SetCurrencyChange(cc *Change) error
 	GetCurrencyChange() (*Change, error)
 
-	GetExchanges() []string
 	SetOptionMeta(optionMeta *dia.OptionMeta) error
 	GetOptionMeta(baseCurrency string) ([]dia.OptionMeta, error)
 	SaveCVIInflux(float64, time.Time) error
@@ -113,11 +111,6 @@ type Datastore interface {
 	GetCompoundedAvg(symbol string, date time.Time, calDays, daysPerYear int, rounding int) (*InterestRate, error)
 	GetCompoundedAvgRange(symbol string, dateInit, dateFinal time.Time, calDays, daysPerYear int, rounding int) ([]*InterestRate, error)
 	GetCompoundedAvgDIARange(symbol string, dateInit, dateFinal time.Time, calDays, daysPerYear int, rounding int) ([]*InterestRate, error)
-
-	// Pool  methods
-	SetFarmingPool(pr *FarmingPool) error
-	GetFarmingPoolData(starttime, endtime time.Time, protocol, poolID string) ([]FarmingPool, error)
-	GetFarmingPools() ([]FarmingPoolType, error)
 
 	// Itin methods
 	SetItinData(token dia.ItinToken) error
@@ -204,7 +197,7 @@ const (
 	influxDbSupplyTable                  = "supplies"
 	influxDbDefiRateTable                = "defiRate"
 	influxDbDefiStateTable               = "defiState"
-	influxDbPoolTable                    = "defiPools"
+	influxDbDEXPoolTable                 = "DEXPools"
 	influxDbCryptoIndexTable             = "cryptoindex"
 	influxDbCryptoIndexConstituentsTable = "cryptoindexconstituents"
 	influxDbGithubCommitTable            = "githubcommits"
@@ -710,144 +703,6 @@ func (datastore *DB) GetOptionOrderbookDataInflux(t dia.OptionMeta) (dia.OptionO
 		return retval, nil
 	}
 	return retval, nil
-}
-
-func (datastore *DB) SetFarmingPool(pool *FarmingPool) error {
-	fields := map[string]interface{}{
-		"rate":        pool.Rate,
-		"balance":     pool.Balance,
-		"blockNumber": pool.BlockNumber,
-	}
-	inputAssetBytes, err := json.Marshal(pool.InputAsset)
-	if err != nil {
-		return err
-	}
-	outputAssetBytes, err := json.Marshal(pool.OutputAsset)
-	if err != nil {
-		return err
-	}
-	tags := map[string]string{
-		"inputAssets":  string(inputAssetBytes),
-		"outputAssets": string(outputAssetBytes),
-		"protocol":     pool.ProtocolName,
-		"poolID":       pool.PoolID,
-	}
-	pt, err := clientInfluxdb.NewPoint(influxDbPoolTable, tags, fields, pool.TimeStamp)
-	if err != nil {
-		log.Errorln("SetPoolInfo:", err)
-	} else {
-		datastore.addPoint(pt)
-	}
-
-	err = datastore.WriteBatchInflux()
-	if err != nil {
-		log.Errorln("SetPoolInfo", err)
-	}
-
-	return err
-}
-
-// GetFarmingPools returns all farming pool states in the given time range
-// time, balance, blocknumber, inputAssets, outputAssets, poolID, protocol, rate
-func (datastore *DB) GetFarmingPools() ([]FarmingPoolType, error) {
-	var retval []FarmingPoolType
-	// First get all protocols
-	qProtocol := fmt.Sprintf("SHOW TAG VALUES FROM %s with key=%s", influxDbPoolTable, "protocol")
-	fmt.Println("protocol query: ", qProtocol)
-	resProtocols, err := queryInfluxDB(datastore.influxClient, qProtocol)
-	if err != nil {
-		return retval, err
-	}
-
-	if len(resProtocols) > 0 && len(resProtocols[0].Series) > 0 {
-		for i := 0; i < len(resProtocols[0].Series[0].Values); i++ {
-			protocolName := resProtocols[0].Series[0].Values[i][1].(string)
-			// For each protocol, get available pools by ID
-			qPoolIDs := fmt.Sprintf("SHOW TAG VALUES FROM %s with key=%s where protocol='%s'", influxDbPoolTable, "poolID", protocolName)
-			resPoolIDs, err := queryInfluxDB(datastore.influxClient, qPoolIDs)
-			if err != nil {
-				return retval, err
-			}
-			if len(resPoolIDs) > 0 && len(resPoolIDs[0].Series) > 0 {
-				for k := 0; k < len(resPoolIDs[0].Series[0].Values); k++ {
-					poolType := FarmingPoolType{}
-					poolType.ProtocolName = protocolName
-					poolType.PoolID = resPoolIDs[0].Series[0].Values[k][1].(string)
-					// Get input assets of pool
-					qAssets := fmt.Sprintf("SHOW TAG VALUES FROM %s with key=%s where protocol='%s' and poolID='%s'", influxDbPoolTable, "inputAssets", protocolName, poolType.PoolID)
-					resAssets, err := queryInfluxDB(datastore.influxClient, qAssets)
-					if err != nil {
-						return retval, err
-					}
-					inputAssets := []string{}
-					err = json.Unmarshal([]byte(resAssets[0].Series[0].Values[0][1].(string)), &inputAssets)
-					if err != nil {
-						return retval, err
-					}
-					poolType.InputAsset = inputAssets
-
-					retval = append(retval, poolType)
-				}
-			}
-		}
-	} else {
-		return retval, errors.New("parsing farming pool from Database")
-	}
-	return retval, nil
-
-}
-
-// GetFarmingPoolData returns all farming pool states in the given time range
-// time, balance, blocknumber, inputAssets, outputAssets, poolID, protocol, rate
-func (datastore *DB) GetFarmingPoolData(starttime, endtime time.Time, protocol, poolID string) ([]FarmingPool, error) {
-	retval := []FarmingPool{}
-	influxQuery := "SELECT balance,blockNumber,\"inputAssets\",\"outputAssets\",\"poolID\",\"protocol\",rate FROM %s WHERE time > %d and time <= %d and protocol = '%s' and poolID='%s' order by desc"
-	q := fmt.Sprintf(influxQuery, influxDbPoolTable, starttime.UnixNano(), endtime.UnixNano(), protocol, poolID)
-	res, err := queryInfluxDB(datastore.influxClient, q)
-	if err != nil {
-		return retval, err
-	}
-	if len(res) > 0 && len(res[0].Series) > 0 {
-		for i := 0; i < len(res[0].Series[0].Values); i++ {
-			pool := FarmingPool{}
-			pool.TimeStamp, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
-			if err != nil {
-				return retval, err
-			}
-			pool.Balance, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
-			if err != nil {
-				return retval, err
-			}
-			pool.BlockNumber, err = res[0].Series[0].Values[i][2].(json.Number).Int64()
-			if err != nil {
-				return retval, err
-			}
-			inputAssets := []string{}
-			err = json.Unmarshal([]byte(res[0].Series[0].Values[i][3].(string)), &inputAssets)
-			if err != nil {
-				return retval, err
-			}
-			pool.InputAsset = inputAssets
-			outputAssets := []string{}
-			err = json.Unmarshal([]byte(res[0].Series[0].Values[i][4].(string)), &outputAssets)
-			if err != nil {
-				return retval, err
-			}
-			pool.OutputAsset = outputAssets
-			pool.PoolID = res[0].Series[0].Values[i][5].(string)
-			pool.ProtocolName = res[0].Series[0].Values[i][6].(string)
-			pool.Rate, err = res[0].Series[0].Values[i][7].(json.Number).Float64()
-			if err != nil {
-				return retval, err
-			}
-
-			retval = append(retval, pool)
-		}
-	} else {
-		return retval, errors.New("parsing farming pool from database")
-	}
-	return retval, nil
-
 }
 
 func (datastore *DB) SetDefiRateInflux(rate *dia.DefiRate) error {

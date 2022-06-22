@@ -39,6 +39,9 @@ const (
 	FUSE                                    = "Fuse"
 	TELOS                                   = "Telos"
 	EVMOS                                   = "Evmos"
+	KUSAMA                                  = "Kusama"
+	ACALA                                   = "Acala"
+	POLKADOT                                = "Polkadot"
 	FIAT                                    = "Fiat"
 )
 
@@ -112,18 +115,16 @@ func (n *NFT) UnmarshalBinary(data []byte) error {
 }
 
 type NFTTrade struct {
-	NFT              NFT
-	Price            *big.Int
-	PriceUSD         float64
-	FromAddress      string
-	ToAddress        string
-	CurrencySymbol   string
-	CurrencyAddress  string
-	CurrencyDecimals int32
-	BlockNumber      uint64
-	Timestamp        time.Time
-	TxHash           string
-	Exchange         string
+	NFT         NFT
+	Price       *big.Int
+	PriceUSD    float64
+	FromAddress string
+	ToAddress   string
+	Currency    Asset
+	BlockNumber uint64
+	Timestamp   time.Time
+	TxHash      string
+	Exchange    string
 }
 
 // MarshalBinary for DefiProtocolState
@@ -272,11 +273,15 @@ type EthereumBlockData struct {
 }
 
 type Exchange struct {
-	Name          string         `json:"Name"`
-	Centralized   bool           `json:"Centralized"`
-	Contract      common.Address `json:"Contract"`
-	BlockChain    BlockChain     `json:"BlockChain"`
-	WatchdogDelay int            `json:"WatchdogDelay"`
+	Name          string     `json:"Name"`
+	Centralized   bool       `json:"Centralized"`
+	Bridge        bool       `json:"Bridge"`
+	Contract      string     `json:"Contract"`
+	BlockChain    BlockChain `json:"BlockChain"`
+	RestAPI       string     `json:"RestAPI"`
+	WsAPI         string     `json:"WsAPI"`
+	PairsAPI      string     `json:"PairsAPI"`
+	WatchdogDelay int        `json:"WatchdogDelay"`
 }
 
 type Supply struct {

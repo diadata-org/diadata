@@ -1,6 +1,12 @@
 {
     "Tokens": [
         {
+            "Symbol": "ACA",
+            "Exchange": "KuCoin",
+            "Blockchain": "Acala",
+            "Address": "Token:ACA"
+        },
+        {
             "Symbol": "ADB",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
@@ -58,6 +64,18 @@
             "Symbol": "ASTR",
             "Exchange": "KuCoin",
             "Blockchain": "Astar",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "AUSD",
+            "Exchange": "KuCoin",
+            "Blockchain": "Acala",
+            "Address": "Token:AUSD"
+        },
+        {
+            "Symbol": "BCHSV",
+            "Exchange": "KuCoin",
+            "Blockchain": "BitcoinSV",
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {

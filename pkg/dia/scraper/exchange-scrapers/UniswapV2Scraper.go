@@ -66,6 +66,9 @@ const (
 	restDialEvmos = ""
 	wsDialEvmos   = ""
 
+	restDialAstar = ""
+	wsDialAstar   = ""
+
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
 	pancakeswapWaitMilliseconds = "200"
@@ -80,6 +83,7 @@ const (
 	avalancheWaitMilliseconds   = "200"
 	telosWaitMilliseconds       = "400"
 	evmosWaitMilliseconds       = "400"
+	astarWaitMilliseconds       = "1000"
 )
 
 type UniswapToken struct {
@@ -133,7 +137,7 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 	log.Info("NewUniswapScraper: ", exchange.Name)
 	var s *UniswapScraper
 	var listenByAddress bool
-	exchangeFactoryContractAddress = exchange.Contract.Hex()
+	exchangeFactoryContractAddress = exchange.Contract
 
 	switch exchange.Name {
 	case dia.UniswapExchange:
@@ -196,6 +200,15 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 	case dia.DiffusionExchange:
 		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialEvmos, wsDialEvmos, evmosWaitMilliseconds)
+	case dia.ApeswapExchange:
+		listenByAddress = true
+		s = makeUniswapScraper(exchange, listenByAddress, restDialBSC, wsDialBSC, pancakeswapWaitMilliseconds)
+	case dia.BiswapExchange:
+		listenByAddress = true
+		s = makeUniswapScraper(exchange, listenByAddress, restDialBSC, wsDialBSC, pancakeswapWaitMilliseconds)
+	case dia.ArthswapExchange:
+		listenByAddress = false
+		s = makeUniswapScraper(exchange, listenByAddress, restDialAstar, wsDialAstar, astarWaitMilliseconds)
 	}
 
 	if scrape {

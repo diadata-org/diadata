@@ -49,10 +49,17 @@ type RelDatastore interface {
 	VerifyExchangeSymbol(exchange string, symbol string, assetID string) (bool, error)
 	GetExchangeSymbolAssetID(exchange string, symbol string) (string, bool, error)
 
+	// ----------------- exchange methods -------------------
+	SetExchange(exchange dia.Exchange) error
+	GetExchange(name string) (dia.Exchange, error)
+	GetAllExchanges() ([]dia.Exchange, error)
+	GetExchangeNames() ([]string, error)
+
 	// ----------------- blockchain methods -------------------
 	SetBlockchain(blockchain dia.BlockChain) error
 	GetBlockchain(name string) (dia.BlockChain, error)
-	GetAllBlockchains() ([]string, error)
+	GetAllAssetsBlockchains() ([]string, error)
+	GetAllBlockchains(fullAsset bool) ([]dia.BlockChain, error)
 
 	// ------ Caching ------
 	SetAssetCache(asset dia.Asset) error
@@ -81,10 +88,12 @@ type RelDatastore interface {
 	SetNFTTrade(trade dia.NFTTrade) error
 	SetNFTTradeToTable(trade dia.NFTTrade, table string) error
 	GetNFTTrades(address string, blockchain string, tokenID string) ([]dia.NFTTrade, error)
-	GetNFTTradesFromTable(address string, blockchain string, tokenID string, table string) ([]dia.NFTTrade, error)
+	GetNFTTradesFromTable(address string, blockchain string, tokenID string, starttime time.Time, endtime time.Time, table string) ([]dia.NFTTrade, error)
 	GetNFTOffers(address string, blockchain string, tokenID string) ([]dia.NFTOffer, error)
 	GetNFTBids(address string, blockchain string, tokenID string) ([]dia.NFTBid, error)
-	GetNFTPrice30Days(nftclass dia.NFTClass) (float64, error)
+	GetNFTFloor(nftclass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration) (float64, error)
+	GetNFTFloorRecursive(nftClass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, stepBackLimit int) (float64, error)
+	GetNFTFloorRange(nftClass dia.NFTClass, starttime time.Time, endtime time.Time, floorWindowSeconds time.Duration, stepBackLimit int) ([]float64, error)
 	GetLastBlockheightTopshot(upperBound time.Time) (uint64, error)
 	SetNFTBid(bid dia.NFTBid) error
 	GetLastNFTBid(address string, blockchain string, tokenID string, blockNumber uint64, blockPosition uint) (dia.NFTBid, error)
@@ -116,6 +125,7 @@ const (
 	assetIdent              = "assetIdent"
 	exchangepairTable       = "exchangepair"
 	exchangesymbolTable     = "exchangesymbol"
+	exchangeTable           = "exchange"
 	blockchainTable         = "blockchain"
 	assetVolumeTable        = "assetvolume"
 	aggregatedVolumeTable   = "aggregatedvolume"

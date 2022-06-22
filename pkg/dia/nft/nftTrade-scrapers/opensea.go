@@ -143,6 +143,8 @@ var (
 	openSeaABI abi.ABI
 	erc20ABI   abi.ABI
 	erc721ABI  abi.ABI
+
+	assetCacheOpensea = make(map[string]dia.Asset)
 )
 
 func init() {
@@ -498,18 +500,26 @@ func (s *OpenSeaScraper) notifyTrade(ev *opensea.ContractOrdersMatched, transfer
 	}
 
 	trade := dia.NFTTrade{
-		NFT:              *nft,
-		Price:            price,
-		PriceUSD:         usdPrice,
-		FromAddress:      transfer.From.Hex(),
-		ToAddress:        transfer.To.Hex(),
-		CurrencySymbol:   currSymbol,
-		CurrencyAddress:  currAddr.Hex(),
-		CurrencyDecimals: priceDec.Exponent(),
-		BlockNumber:      ev.Raw.BlockNumber,
-		Timestamp:        timestamp,
-		TxHash:           ev.Raw.TxHash.Hex(),
-		Exchange:         "OpenSea",
+		NFT:         *nft,
+		Price:       price,
+		PriceUSD:    usdPrice,
+		FromAddress: transfer.From.Hex(),
+		ToAddress:   transfer.To.Hex(),
+		BlockNumber: ev.Raw.BlockNumber,
+		Timestamp:   timestamp,
+		TxHash:      ev.Raw.TxHash.Hex(),
+		Exchange:    "OpenSea",
+	}
+
+	if asset, ok := assetCacheOpensea[dia.ETHEREUM+"-"+currAddr.Hex()]; ok {
+		trade.Currency = asset
+	} else {
+		currency, err := s.tradeScraper.datastore.GetAsset(currAddr.Hex(), dia.ETHEREUM)
+		if err != nil {
+			log.Errorf("cannot fetch asset %s -- %s", dia.ETHEREUM, currAddr.Hex())
+		}
+		trade.Currency = currency
+		assetCacheOpensea[dia.ETHEREUM+"-"+currAddr.Hex()] = currency
 	}
 
 	fmt.Println("found trade: ", trade)

@@ -56,7 +56,7 @@ func NewBalancerV2AssetSource(exchange dia.Exchange) (bas *BalancerV2AssetSource
 		bas.RestClient = rest
 	}
 
-	bas.exchangeFactoryContractAddress = exchange.Contract.Hex()
+	bas.exchangeFactoryContractAddress = exchange.Contract
 	bas.rl = ratelimit.New(balancerV2RateLimitPerSec)
 	bas.blockchain = exchange.BlockChain.Name
 	bas.exchangeName = exchange.Name
