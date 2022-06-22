@@ -7,11 +7,11 @@ CREATE EXTENSION "pgcrypto";
 -- Otherwise it must be as defined in the underlying contract.
 CREATE TABLE asset (
     asset_id UUID DEFAULT gen_random_uuid(),
-    symbol text not null,
-    name text not null,
+    symbol text NOT NULL,
+    name text NOT NULL,
     decimals text,
     blockchain text,
-    address text not null,
+    address text NOT NULL,
     UNIQUE (asset_id),
     UNIQUE (address, blockchain)
 );
@@ -21,9 +21,9 @@ CREATE TABLE asset (
 -- for the pair scrapers to be able to scrape trading data from the API.
 CREATE TABLE exchangepair (
     exchangepair_id UUID DEFAULT gen_random_uuid(),
-    symbol text not null,
-    foreignname text not null,
-    exchange text not null,
+    symbol text NOT NULL,
+    foreignname text NOT NULL,
+    exchange text NOT NULL,
     UNIQUE (foreignname, exchange),
     -- These fields reference asset table and should be verified by pairdiscoveryservice.
     -- Only trades with verified pairs are processed further and thereby enter price calculation.
@@ -34,8 +34,8 @@ CREATE TABLE exchangepair (
 
 CREATE TABLE exchangesymbol (
     exchangesymbol_id UUID DEFAULT gen_random_uuid(),
-    symbol text not null,
-    exchange text not null,
+    symbol text NOT NULL,
+    exchange text NOT NULL,
     UNIQUE (symbol,exchange),
     verified boolean default false,
     asset_id uuid REFERENCES asset(asset_id)
@@ -43,7 +43,7 @@ CREATE TABLE exchangesymbol (
 
 CREATE TABLE exchange (
     exchange_id UUID DEFAULT gen_random_uuid(),
-    name text not null,
+    name text NOT NULL,
     centralized boolean default false,
     bridge boolean default false,
     contract text,
@@ -51,15 +51,33 @@ CREATE TABLE exchange (
     rest_api text,
     ws_api text,
     pairs_api text,
-    watchdog_delay numeric not null,
+    watchdog_delay numeric NOT NULL,
     UNIQUE(exchange_id),
     UNIQUE (name)
+);
+
+CREATE TABLE pool (
+    pool_id UUID DEFAULT gen_random_uuid(),
+    exchange text NOT NULL,
+    blockchain text NOT NULL,
+    address text NOT NULL,
+    UNIQUE (pool_id),
+    UNIQUE (blockchain,address)
+);
+
+CREATE TABLE poolasset (
+    poolasset_id UUID DEFAULT gen_random_uuid(),
+    pool_id UUID REFERENCES pool(pool_id) NOT NULL,
+    asset_id UUID REFERENCES asset(asset_id) NOT NULL, 
+    liquidity numeric,
+    UNIQUE (poolasset_id),
+    UNIQUE(pool_id,asset_id)
 );
 
 -- blockchain table stores all blockchains available in our databases
 CREATE TABLE blockchain (
     blockchain_id UUID DEFAULT gen_random_uuid(),
-    name text not null,
+    name text NOT NULL,
     genesisdate numeric,
     nativetoken_id UUID REFERENCES asset(asset_id),
 	verificationmechanism text,
@@ -80,7 +98,7 @@ CREATE TABLE assetvolume (
 -- collect all possible categories for nfts
 CREATE TABLE nftcategory (
     category_id UUID DEFAULT gen_random_uuid(),
-    category text not null,
+    category text NOT NULL,
     UNIQUE(category)
 );
 
@@ -88,7 +106,7 @@ CREATE TABLE nftcategory (
 -- referring to the blockchain on which the nft was minted.
 CREATE TABLE nftclass (
     nftclass_id UUID DEFAULT gen_random_uuid(),
-    address text not null,
+    address text NOT NULL,
     symbol text,
     name text,
     blockchain text REFERENCES blockchain(name),
@@ -103,7 +121,7 @@ CREATE TABLE nftclass (
 CREATE TABLE nft (
     nft_id UUID DEFAULT gen_random_uuid(),
     nftclass_id uuid REFERENCES nftclass(nftclass_id),
-    token_id text not null,
+    token_id text NOT NULL,
     creation_time timestamp,
     creator_address text,
     uri text,
@@ -177,8 +195,8 @@ CREATE TABLE IF NOT EXISTS scrapers (
 
 CREATE TABLE blockdata (
     blockdata_id UUID DEFAULT gen_random_uuid(),
-    blockchain text not null,
-    block_number numeric not null,
+    blockchain text NOT NULL,
+    block_number numeric NOT NULL,
     block_data jsonb,
     UNIQUE(blockchain, block_number),
     UNIQUE(blockdata_id)
@@ -187,8 +205,8 @@ CREATE TABLE blockdata (
 CREATE TABLE assetpriceident (
     priceident_id UUID DEFAULT gen_random_uuid(),
     asset_id uuid REFERENCES asset(asset_id),
-    group_id numeric not null,
-    rank_in_group numeric not null,
+    group_id numeric NOT NULL,
+    rank_in_group numeric NOT NULL,
     UNIQUE(asset_id),
     UNIQUE(group_id, rank_in_group)
 );
@@ -199,8 +217,8 @@ CREATE TABLE aggregatedvolume (
     basetoken_id uuid REFERENCES asset(asset_id),
     volume numeric,
     exchange text,
-    time_range_seconds numeric not null,
-    compute_time timestamp not null
+    time_range_seconds numeric NOT NULL,
+    compute_time timestamp NOT NULL
 );
 
 CREATE TABLE tradesdistribution (
@@ -215,7 +233,7 @@ CREATE TABLE tradesdistribution (
     avg_num_per_bin numeric,
 	std_deviation numeric,
     -- total time range under consideration (for instance 24h = 86400s)
-    time_range_seconds numeric not null,
+    time_range_seconds numeric NOT NULL,
     compute_time timestamp
 );
 

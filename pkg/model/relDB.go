@@ -55,6 +55,10 @@ type RelDatastore interface {
 	GetAllExchanges() ([]dia.Exchange, error)
 	GetExchangeNames() ([]string, error)
 
+	// ----------------- pool methods -------------------
+	SetPool(pool dia.Pool) error
+	GetAllPoolAddrsExchange(exchange string) ([]string, error)
+
 	// ----------------- blockchain methods -------------------
 	SetBlockchain(blockchain dia.BlockChain) error
 	GetBlockchain(name string) (dia.BlockChain, error)
@@ -125,6 +129,8 @@ const (
 	assetIdent              = "assetIdent"
 	exchangepairTable       = "exchangepair"
 	exchangesymbolTable     = "exchangesymbol"
+	poolTable               = "pool"
+	poolassetTable          = "poolasset"
 	exchangeTable           = "exchange"
 	blockchainTable         = "blockchain"
 	assetVolumeTable        = "assetvolume"
