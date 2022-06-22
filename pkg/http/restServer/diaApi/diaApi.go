@@ -2079,6 +2079,74 @@ func (env *Env) GetNFTDownday(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// GetNFTFloorVola returns the volatility of the moving average floor price of the nft class over the last 90 days.
+func (env *Env) GetNFTFloorVola(c *gin.Context) {
+
+	// NFT collection.
+	blockchain := c.Param("blockchain")
+	address := c.Param("address")
+	nftClass := dia.NFTClass{Address: address, Blockchain: blockchain}
+
+	// Parse query parameter time.
+	endtimeString := c.Query("time")
+	var endtime time.Time
+	if endtimeString != "" {
+		endtimeInt, err := strconv.ParseInt(endtimeString, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	} else {
+		endtime = time.Now()
+	}
+
+	// lookback for volatility is 90 days per default.
+	lookbackString := c.DefaultQuery("lookbackSeconds", "7776000")
+	lookbackInt, err := strconv.ParseInt(lookbackString, 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusBadRequest, nil)
+	}
+
+	// floor price window is 24h per default.
+	floorWindowString := c.DefaultQuery("floorWindow", "86400")
+	floorWindowInt, err := strconv.ParseInt(floorWindowString, 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusBadRequest, nil)
+	}
+	floorWindow := time.Duration(floorWindowInt) * time.Second
+
+	starttime := endtime.Add(-time.Duration(lookbackInt) * time.Second)
+	stepBackLimit := 120
+	floorPrices, err := env.RelDB.GetNFTFloorRange(nftClass, starttime, endtime, floorWindow, stepBackLimit)
+	if err != nil {
+		log.Error("get nft floor range: ", err)
+	}
+
+	// Get collection name.
+	nftClass, err = env.RelDB.GetNFTClass(nftClass.Address, nftClass.Blockchain)
+	if err != nil {
+		log.Error("get nft class: ", err)
+	}
+
+	type FloorStats struct {
+		FloorAverage    float64   `json:"Floor_Average"`
+		FloorVolatility float64   `json:"Floor_Volatility"`
+		Collection      string    `json:"Collection"`
+		Time            time.Time `json:"Time"`
+		Source          string    `json:"Source"`
+	}
+	var response FloorStats
+
+	response.FloorAverage = utils.Average(floorPrices)
+	response.FloorVolatility = utils.StandardDeviation(floorPrices)
+	response.Time = endtime
+	response.Collection = nftClass.Name
+	response.Source = dia.Diadata
+
+	c.JSON(http.StatusOK, response)
+}
+
 func (env *Env) GetFeedStats(c *gin.Context) {
 
 	blockchain := c.Param("blockchain")

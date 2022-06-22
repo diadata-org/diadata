@@ -219,6 +219,7 @@ func main() {
 		diaGroup.GET("/symbols/:substring", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetAllSymbols))
 		diaGroup.GET("/volume/:symbol", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetVolume))
 		diaGroup.GET("/volume24/:exchange", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.Get24hVolume))
+		diaGroup.GET("/feedStats/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetFeedStats))
 
 		diaGroup.GET("/exchanges", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetExchanges))
 		diaGroup.GET("/defiLendingProtocols", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetLendingProtocols))
@@ -289,7 +290,7 @@ func main() {
 		diaGroup.GET("/NFTFloor/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetNFTFloor))
 		diaGroup.GET("/NFTFloorMA/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetNFTFloorMA))
 		diaGroup.GET("/NFTDownday/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetNFTDownday))
-		diaGroup.GET("/feedStats/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetFeedStats))
+		diaGroup.GET("/NFTVolatility/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetNFTFloorVola))
 
 	}
 
