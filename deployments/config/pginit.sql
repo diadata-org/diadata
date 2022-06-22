@@ -74,6 +74,14 @@ CREATE TABLE poolasset (
     UNIQUE(pool_id,asset_id)
 );
 
+CREATE TABLE chainconfig (
+    chain_config_id UUID DEFAULT gen_random_uuid(),
+    rpcurl text NOT NULL,
+    wsurl text NOT NULL,
+    chainID text NOT NULL,
+    UNIQUE (chainID)
+);
+
 -- blockchain table stores all blockchains available in our databases
 CREATE TABLE blockchain (
     blockchain_id UUID DEFAULT gen_random_uuid(),

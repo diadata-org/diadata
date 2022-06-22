@@ -73,7 +73,7 @@ type BridgeSwapScraper struct {
 	relDB           *models.RelDB
 }
 
-type ChainConfig struct {
+type MultiChainConfig struct {
 	restURL                string
 	wsURL                  string
 	contractAddress        string
@@ -81,9 +81,9 @@ type ChainConfig struct {
 }
 
 var (
-	restClients  map[string]*ethclient.Client
-	wsClients    map[string]*ethclient.Client
-	chainconfigs map[string]ChainConfig
+	restClients       map[string]*ethclient.Client
+	wsClients         map[string]*ethclient.Client
+	multichainconfigs map[string]MultiChainConfig
 )
 
 const (
@@ -168,10 +168,12 @@ const (
 func NewBridgeSwapScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BridgeSwapScraper {
 	var s *BridgeSwapScraper
 	// var waitgroup sync.WaitGroup
-	chainconfigs = make(map[string]ChainConfig)
+	multichainconfigs = make(map[string]MultiChainConfig)
 
-	chainconfigs["56"] = ChainConfig{restURL: "https://bsc-dataseed2.defibit.io/", wsURL: "wss://ws-nd-594-480-745.p2pify.com/8ee9eed18f71941db1c22db8b7ec62fb", contratDeployedAtBlock: 7910338, contractAddress: "0xd1c5966f9f5ee6881ff6b261bbeda45972b1b5f3"}
-	chainconfigs["250"] = ChainConfig{restURL: "https://rpc.ftm.tools/", wsURL: "wss://wsapi.fantom.network/", contratDeployedAtBlock: 8475644, contractAddress: "0x1ccca1ce62c62f7be95d4a67722a8fdbed6eecb4"}
+	log.Println("chainConfigs", chainConfigs)
+
+	multichainconfigs["56"] = MultiChainConfig{restURL: chainConfigs["56"].RestURL, wsURL: chainConfigs["56"].WSURL, contratDeployedAtBlock: 7910338, contractAddress: "0xd1c5966f9f5ee6881ff6b261bbeda45972b1b5f3"}
+	multichainconfigs["250"] = MultiChainConfig{restURL: chainConfigs["250"].RestURL, wsURL: chainConfigs["250"].WSURL, contratDeployedAtBlock: 8475644, contractAddress: "0x1ccca1ce62c62f7be95d4a67722a8fdbed6eecb4"}
 
 	log.Info("NewBridgeSwapScraper: ", exchange.Name)
 	log.Infof("Init rest and ws client for %s.", exchange.BlockChain.Name)
@@ -486,7 +488,7 @@ func InitialiseRestClientsMap() {
 	if err != nil {
 		log.Fatal("init rest client: ", err)
 	}
-	restClients["56"], err = ethclient.Dial(chainconfigs["56"].restURL)
+	restClients["56"], err = ethclient.Dial(multichainconfigs["56"].restURL)
 	if err != nil {
 		log.Fatal("init rest client: ", err)
 	}
@@ -503,7 +505,7 @@ func InitialiseWsClientsMap() {
 
 	wsClients = make(map[string]*ethclient.Client)
 
-	for chainID, chainconfig := range chainconfigs {
+	for chainID, chainconfig := range multichainconfigs {
 		wsClients[chainID], err = ethclient.Dial(chainconfig.wsURL)
 		if err != nil {
 			log.Fatal("init ws client: ", err)
@@ -518,7 +520,7 @@ func getFilteredEvents() chan types.Log {
 	var channels []chan types.Log
 	out := make(chan types.Log)
 
-	for chainID, config := range chainconfigs {
+	for chainID, config := range multichainconfigs {
 
 		//filter query by block number
 		query := ethereum.FilterQuery{

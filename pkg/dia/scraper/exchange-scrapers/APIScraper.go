@@ -21,7 +21,10 @@ type nothing struct{}
 
 var Exchanges = make(map[string]dia.Exchange)
 
-// var blockchains map[string]dia.BlockChain
+var blockchains map[string]dia.BlockChain
+var chainConfigs map[string]dia.ChainConfig
+
+var evmID map[string]string
 
 func init() {
 
@@ -36,6 +39,30 @@ func init() {
 	}
 	for _, exchange := range exchanges {
 		Exchanges[exchange.Name] = exchange
+	}
+
+	evmID = make(map[string]string)
+	evmID["137"] = dia.POLYGON
+	evmID["1"] = dia.ETHEREUM
+	evmID["250"] = dia.FANTOM
+	evmID["56"] = dia.BINANCESMARTCHAIN
+
+	chains, err := relDB.GetAllBlockchains(false)
+	if err != nil {
+		log.Fatal("get all chains: ", err)
+	}
+	blockchains = make(map[string]dia.BlockChain)
+	for _, chain := range chains {
+		blockchains[chain.Name] = chain
+	}
+
+	chainconfigurations, err := relDB.GetAllChainConfig()
+	if err != nil {
+		log.Fatal("get all chains: ", err)
+	}
+	chainConfigs = make(map[string]dia.ChainConfig)
+	for _, chainconfig := range chainconfigurations {
+		chainConfigs[chainconfig.ChainID] = chainconfig
 	}
 
 	// blockchains = make(map[string]dia.BlockChain)
@@ -297,8 +324,11 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapScraper(Exchanges[dia.BiswapExchange], scrape)
 	case dia.ArthswapExchange:
 		return NewUniswapScraper(Exchanges[dia.ArthswapExchange], scrape)
-	// case dia.FinageForex:
-	// 	return NewFinageForexScraper(Exchanges[dia.FinageForex], scrape, relDB, key, secret)
+		// case dia.FinageForex:
+		// 	return NewFinageForexScraper(Exchanges[dia.FinageForex], scrape, relDB, key, secret)
+
+	case dia.MultiChain:
+		return NewBridgeSwapScraper(Exchanges[dia.MultiChain], scrape, relDB)
 
 	case "Influx":
 		return NewInfluxScraper(scrape)

@@ -132,6 +132,7 @@ const (
 	poolTable               = "pool"
 	poolassetTable          = "poolasset"
 	exchangeTable           = "exchange"
+	chainconfigTable        = "chainconfig"
 	blockchainTable         = "blockchain"
 	assetVolumeTable        = "assetvolume"
 	aggregatedVolumeTable   = "aggregatedvolume"
