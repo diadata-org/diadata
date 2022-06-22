@@ -324,6 +324,19 @@ func (p *Pair) ForeignName() string {
 	return p.QuoteToken.Symbol + "-" + p.BaseToken.Symbol
 }
 
+// Pool is the container for liquidity pools on DEXes.
+type Pool struct {
+	Exchange   Exchange
+	Blockchain BlockChain
+	Address    string
+	// Assetvolumes map[Asset]float64
+	Assetvolumes []struct {
+		Asset  Asset
+		Volume float64
+	}
+	Time time.Time
+}
+
 // MarshalBinary is a custom marshaller for BlockChain type
 func (bc *BlockChain) MarshalBinary() ([]byte, error) {
 	return json.Marshal(bc)

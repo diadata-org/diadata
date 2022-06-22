@@ -98,6 +98,10 @@ type Datastore interface {
 	GetTopAssetByVolume(symbol string, relDB *RelDB) (topAsset dia.Asset, err error)
 	GetAssetsWithVOLInflux(timeInit time.Time) ([]dia.Asset, error)
 
+	// DEX Pool  methods
+	SavePoolInflux(p dia.Pool) error
+	GetPoolInflux(poolAddress string, starttime time.Time, endtime time.Time) ([]dia.Pool, error)
+
 	// Market Measures
 	GetAssetsMarketCap(asset dia.Asset) (float64, error)
 
