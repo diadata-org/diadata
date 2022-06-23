@@ -476,6 +476,48 @@ Number of seconds in considered interval regarding weekly drawdown.
 {% endswagger-response %}
 {% endswagger %}
 
+{% swagger method="get" path="" baseUrl="https://api.diadata.org/v1/NFTVolatility/:blockchain/:address" summary="NFT Volatility of Floor Price" %}
+{% swagger-description %}
+Returns the average and volatility of the floor price in the last 90 days.\
+_Example:_ [https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D](https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D)
+
+Use the parameter time in order to get the floor price at a previous time.\
+_Example:_ [https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D?time=1655027598](https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D?time=1655027598)
+
+Use the query parameter floorWindow in order to get the floor price with respect to all sales in the last floorWindow seconds. Default value is 86400s=24h.\
+_Example:_[ __ ](https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D?time=1655027598) [https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D?floorWindow=43200](https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D?time=1655027598)
+
+Use the query parameter lookbackSeconds in order to get the moving average over the last lookbackSeconds. Default value is 7776000s=90d.\
+_Example:_  [https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D?lookbackSeconds=25920000](https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D?time=1655027598)
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="blockchain" type="String" required="true" %}
+Blockchain name
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="address" type="String" required="true" %}
+Address of the collection
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="time" type="Integer" %}
+Unix timestamp (in seconds) of the volatility.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="floorWindow" type="Integer" %}
+Number of seconds in considered  interval regarding floor price.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="lookBackSeconds" type="Integer" %}
+Number of seconds in considered interval regarding the volatility.
+{% endswagger-parameter %}
+
+{% swagger-response status="200: OK" description="Successful retrieval of the volatility of a collection's floor price." %}
+```javascript
+{"Floor_Average":97.25344982682456,"Floor_Volatility":14.00764101575502,"Collection":"BoredApeYachtClub","Time":"2022-06-23T10:11:34.571288736Z","Source":"diadata.org"}
+```
+{% endswagger-response %}
+{% endswagger %}
+
 ## Traditional Assets
 
 {% swagger baseUrl="https://api.diadata.org/v1/" path="fiatQuotations" method="get" summary="Fiat Currency Exchange Rates" %}
