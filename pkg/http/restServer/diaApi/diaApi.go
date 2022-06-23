@@ -2084,7 +2084,7 @@ func (env *Env) GetNFTFloorVola(c *gin.Context) {
 
 	// NFT collection.
 	blockchain := c.Param("blockchain")
-	address := c.Param("address")
+	address := common.HexToAddress(c.Param("address")).Hex()
 	nftClass := dia.NFTClass{Address: address, Blockchain: blockchain}
 
 	// Parse query parameter time.
