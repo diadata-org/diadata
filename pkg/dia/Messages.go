@@ -518,6 +518,8 @@ type FilterPoint struct {
 	Value float64
 	Name  string
 	Time  time.Time
+	Max   float64
+	Min   float64
 }
 
 type IndexBlock struct {

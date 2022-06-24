@@ -38,6 +38,7 @@ func NewFilterMA(asset dia.Asset, exchange string, currentTime time.Time, memory
 		currentTime: currentTime,
 		memory:      memory,
 		filterName:  "MA" + strconv.Itoa(memory),
+		min:         -1,
 	}
 	return filter
 }
@@ -117,9 +118,10 @@ func (filter *FilterMA) finalCompute(t time.Time) float64 {
 		if filter.max < filter.value {
 			filter.max = filter.value
 		}
-		if filter.min > filter.value {
+		if filter.min > filter.value || filter.min == -1 {
 			filter.min = filter.value
 		}
+
 	}
 	if len(filter.prices) > 0 && len(filter.volumes) > 0 {
 		filter.prices = []float64{filter.lastTrade.EstimatedUSDPrice}
@@ -134,6 +136,8 @@ func (filter *FilterMA) FilterPointForBlock() *dia.FilterPoint {
 		Value: filter.value,
 		Name:  "MA" + strconv.Itoa(filter.memory),
 		Time:  filter.currentTime,
+		Max:   filter.max,
+		Min:   filter.min,
 	}
 }
 
