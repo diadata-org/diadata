@@ -313,6 +313,12 @@ type BlockChain struct {
 	ChainID string `json:"ChainID"`
 }
 
+type ChainConfig struct {
+	RestURL string `json:"restURL"`
+	WSURL   string `json:"wsURL"`
+	ChainID string `json:"ChainID"`
+}
+
 // Pair substitues the old dia.Pair. It includes the new asset type.
 type Pair struct {
 	QuoteToken Asset
@@ -512,6 +518,8 @@ type FilterPoint struct {
 	Value float64
 	Name  string
 	Time  time.Time
+	Max   float64
+	Min   float64
 }
 
 type IndexBlock struct {

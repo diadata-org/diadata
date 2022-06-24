@@ -1,0 +1,15 @@
+{
+    "ChainConfigs": [
+        {
+            "restURL": "https://bsc-dataseed2.defibit.io/",
+            "wsURL": "wss://ws-nd-594-480-745.p2pify.com/8ee9eed18f71941db1c22db8b7ec62fb",
+            "chainID": "56"
+        },
+        {
+            "restURL": "https://rpc.ftm.tools/",
+            "wsURL": "wss://wsapi.fantom.network/",
+            "chainID": "250"
+        }
+    
+    ]
+}

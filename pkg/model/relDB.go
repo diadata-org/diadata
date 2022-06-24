@@ -126,11 +126,13 @@ const (
 
 	// postgres tables
 	assetTable              = "asset"
+	assetIdent              = "assetIdent"
 	exchangepairTable       = "exchangepair"
 	exchangesymbolTable     = "exchangesymbol"
 	poolTable               = "pool"
 	poolassetTable          = "poolasset"
 	exchangeTable           = "exchange"
+	chainconfigTable        = "chainconfig"
 	blockchainTable         = "blockchain"
 	assetVolumeTable        = "assetvolume"
 	aggregatedVolumeTable   = "aggregatedvolume"

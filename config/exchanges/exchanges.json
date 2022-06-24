@@ -27,6 +27,19 @@
             "WatchdogDelay": 7200
         },
         {
+            "Name": "MultiChain",
+            "Centralized": false,
+            "Bridge": true,
+            "Contract": "0x6b7a87899490EcE95443e979cA9485CBE7E71522",
+            "Blockchain": {
+                "Name": "Ethereum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
             "Name": "Apeswap",
             "Centralized": false,
             "Bridge": false,

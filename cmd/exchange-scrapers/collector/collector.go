@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"sync"
 	"time"
 
@@ -90,6 +91,12 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, ds *mo
 					log.Info("saved trade")
 				}
 			}
+
+			if mode == "assetmap" {
+
+				fmt.Println("recieved trade", t)
+
+			}
 		}
 	}
 }
@@ -102,6 +109,8 @@ var (
 	// mode==estimation:	trades are forwarded to tradesEstimationService, i.e. same as storeTrades mode
 	//						but estimatedUSDPrice is filled by tradesEstimationService.
 	// mode==historical:	trades are sent through kafka to TBS in tradesHistorical topic.
+	// mode==assetmap:   	Bridged Trades, asstes are mapped an d trades are not saved
+
 	mode = flag.String("mode", "current", "either storeTrades, current, historical or estimation")
 )
 
@@ -169,6 +178,8 @@ func main() {
 	case "historical":
 		w = kafkaHelper.NewWriter(kafkaHelper.TopicTradesHistorical)
 	case "estimation":
+		w = kafkaHelper.NewWriter(kafkaHelper.TopicTradesEstimation)
+	case "assetmap":
 		w = kafkaHelper.NewWriter(kafkaHelper.TopicTradesEstimation)
 	}
 

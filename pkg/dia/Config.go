@@ -78,6 +78,8 @@ const (
 	TrisolarisExchange        = "Trisolaris"
 	ByBitExchange             = "ByBit"
 	BitMexExchange            = "BitMex"
+	MultiChain                = "MultiChain"
+
 	// FinageForex        = "FinageForex"
 )
 

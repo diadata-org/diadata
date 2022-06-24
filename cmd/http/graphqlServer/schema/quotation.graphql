@@ -16,6 +16,10 @@ type Query {
     Address :  String
 	  BlockChain : String
   ): [FilterPoint]
+
+    
+
+
   
   GetNFT(
     Address:String!
@@ -44,6 +48,9 @@ type Query {
 }
 
 scalar Time
+
+
+
 
 type Quotation {
   Symbol: String
@@ -76,6 +83,8 @@ type FilterPoint {
   Time: Time
   Address:String
   Blockchain :String
+  Max: Float
+  Min: Float
 }
 
 type NFT {

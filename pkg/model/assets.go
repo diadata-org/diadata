@@ -54,6 +54,36 @@ func (rdb *RelDB) GetAssetID(asset dia.Asset) (ID string, err error) {
 	return
 }
 
+func (rdb *RelDB) GetAssetMap(asset_id string) (ID string, err error) {
+	query := fmt.Sprintf("SELECT group_id FROM %s WHERE asset_id=$1", assetIdent)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, asset_id).Scan(&ID)
+	if err != nil {
+		return
+	}
+	return
+}
+
+// SetAsset stores an asset into postgres.
+func (rdb *RelDB) InsertAssetMap(group_id string, asset_id string) error {
+	query := fmt.Sprintf("INSERT INTO %s (group_id,asset_id) VALUES ($1,$2)", assetIdent)
+	log.Println("query", query)
+
+	_, err := rdb.postgresClient.Exec(context.Background(), query, asset_id, group_id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (rdb *RelDB) InsertNewAssetMap(asset_id string) error {
+	query := fmt.Sprintf("INSERT INTO %s (asset_id) VALUES ($1)", assetIdent)
+	log.Println("query", query)
+	_, err := rdb.postgresClient.Exec(context.Background(), query, asset_id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 var assetCache = make(map[string]dia.Asset)
 
 // GetAsset is the standard method in order to uniquely retrieve an asset from asset table.
