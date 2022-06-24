@@ -82,6 +82,7 @@ type TofuNFTScraperState struct {
 
 type TofuNFTScraper struct {
 	tradeScraper TradeScraper
+	blockchain   string
 
 	mu    sync.Mutex
 	conf  *TofuNFTScraperConfig
@@ -106,7 +107,6 @@ var (
 	// default values are valid for the first run which is it saves
 	// these configs to the DB
 	defTofuNFTConf = &TofuNFTScraperConfig{
-		ContractAddr:    "0x7Cae7FeB55349FeADB8f84468F692450D92597bc", // MarketNG
 		BatchSize:       5000,
 		WaitPeriod:      20 * time.Second,
 		FollowDist:      10,
@@ -120,7 +120,7 @@ var (
 	// // TofuNFT MarketNG contract has been deployed on the Astar mainnet at
 	// // block num 225714, so scraper starts from this block
 	// defTofuNFTState = &TofuNFTScraperState{LastBlockNum: 225714}
-	defTofuNFTState = &TofuNFTScraperState{LastBlockNum: 225714}
+	defTofuNFTState = &TofuNFTScraperState{LastBlockNum: 11391732}
 
 	// This string is the identifier of the scraper in conf and state fields in postgres.
 	TofuNFT = ""
@@ -144,10 +144,10 @@ func init() {
 		panic(err)
 	}
 
-	TofuNFT = utils.Getenv("SCRAPER_NAME_STATE", "TofuNFT-Astar")
+	TofuNFT = utils.Getenv("SCRAPER_NAME_STATE", "")
 
 	// If scraper state is not set yet, start from this block
-	initBlockNumString := utils.Getenv("LAST_BLOCK_NUM", "225714")
+	initBlockNumString := utils.Getenv("LAST_BLOCK_NUM", "")
 	initBlockNum, err := strconv.ParseInt(initBlockNumString, 10, 64)
 	if err != nil {
 		log.Error("parse timeFinal: ", err)
@@ -156,10 +156,22 @@ func init() {
 
 }
 
-func NewTofuNFTScraper(rdb *models.RelDB) *TofuNFTScraper {
+func NewTofuNFTScraper(blockchain string, rdb *models.RelDB) (scraper *TofuNFTScraper) {
+	switch blockchain {
+	case dia.ASTAR:
+		defTofuNFTConf.ContractAddr = "0x7Cae7FeB55349FeADB8f84468F692450D92597bc"
+		scraper = makeNewTofuNFTScraper(blockchain, rdb)
+	case dia.BINANCESMARTCHAIN:
+		defTofuNFTConf.ContractAddr = "0x449D05C544601631785a7C062DCDFF530330317e"
+		scraper = makeNewTofuNFTScraper(blockchain, rdb)
+	}
+	return
+}
+
+func makeNewTofuNFTScraper(blockchain string, rdb *models.RelDB) *TofuNFTScraper {
 	ctx := context.Background()
 
-	eth, err := ethclient.Dial(utils.Getenv("ETH_URI_REST", ""))
+	eth, err := ethclient.Dial(utils.Getenv(blockchain+"_URI_REST", ""))
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}
@@ -175,6 +187,7 @@ func NewTofuNFTScraper(rdb *models.RelDB) *TofuNFTScraper {
 			source:        TofuNFT,
 			ethConnection: eth,
 		},
+		blockchain: blockchain,
 	}
 
 	if err := s.initScraper(ctx); err != nil {
@@ -183,7 +196,6 @@ func NewTofuNFTScraper(rdb *models.RelDB) *TofuNFTScraper {
 	}
 
 	log.Infof("scraper %s starts at block: %v", TofuNFT, s.state.LastBlockNum)
-	time.Sleep(2 * time.Minute)
 	go s.mainLoop()
 
 	return s
@@ -200,14 +212,14 @@ func (s *TofuNFTScraper) initScraper(ctx context.Context) error {
 
 		// use & store defaults if there is no record in the scraper table
 
-		defConf := *defTofuNFTConf // copy
+		defConf := *defTofuNFTConf
 		s.conf = &defConf
 		if err := s.tradeScraper.datastore.SetScraperConfig(ctx, TofuNFT, s.conf); err != nil {
 			log.Errorf("unable to store scraper config on rdb: %s", err.Error())
 			return err
 		}
 
-		defState := *defTofuNFTState // copy
+		defState := *defTofuNFTState
 		s.state = &defState
 		if err := s.tradeScraper.datastore.SetScraperState(ctx, TofuNFT, s.state); err != nil {
 			log.Errorf("unable to store scraper state on rdb: %s", err.Error())
@@ -376,7 +388,7 @@ func (s *TofuNFTScraper) processTx(ctx context.Context, tx *utils.EthFilteredTx)
 	}
 
 	currSymbol := "ASTR"
-	currAddr := common.Address{}
+	currAddr := ev.Inventory.Currency
 	currDecimals := 18
 
 	transfers, err := s.findERC721Transfers(ctx, receipt)
@@ -445,15 +457,15 @@ func (s *TofuNFTScraper) notifyTrade(tx *utils.EthFilteredTx, ev *tofunft.Tofunf
 		Exchange:    TofuNFT,
 	}
 
-	if asset, ok := assetCacheTofuAstar[dia.ASTAR+"-"+currAddr.Hex()]; ok {
+	if asset, ok := assetCacheTofuAstar[s.blockchain+"-"+currAddr.Hex()]; ok {
 		trade.Currency = asset
 	} else {
-		currency, err := s.tradeScraper.datastore.GetAsset(currAddr.Hex(), dia.ASTAR)
+		currency, err := s.tradeScraper.datastore.GetAsset(currAddr.Hex(), s.blockchain)
 		if err != nil {
-			log.Errorf("cannot fetch asset %s -- %s", dia.ASTAR, currAddr.Hex())
+			log.Errorf("cannot fetch asset %s -- %s", s.blockchain, currAddr.Hex())
 		}
 		trade.Currency = currency
-		assetCacheTofuAstar[dia.ASTAR+"-"+currAddr.Hex()] = currency
+		assetCacheTofuAstar[s.blockchain+"-"+currAddr.Hex()] = currency
 	}
 
 	fmt.Println("found trade: ", trade)
@@ -469,7 +481,7 @@ func (s *TofuNFTScraper) notifyTrade(tx *utils.EthFilteredTx, ev *tofunft.Tofunf
 }
 
 func (s *TofuNFTScraper) createOrReadNFTClass(transfer *astarERC721Transfer) (*dia.NFTClass, error) {
-	nftClass, err := s.tradeScraper.datastore.GetNFTClass(transfer.NFTAddress.Hex(), dia.ASTAR)
+	nftClass, err := s.tradeScraper.datastore.GetNFTClass(transfer.NFTAddress.Hex(), s.blockchain)
 	if err != nil {
 		if !errors.Is(err, pgx.ErrNoRows) {
 			log.Warnf("unable to read nftclass from reldb: %s", err.Error())
@@ -478,7 +490,7 @@ func (s *TofuNFTScraper) createOrReadNFTClass(transfer *astarERC721Transfer) (*d
 
 		nftClass = dia.NFTClass{
 			Address:      transfer.NFTAddress.Hex(),
-			Blockchain:   dia.ASTAR,
+			Blockchain:   s.blockchain,
 			ContractType: tofuNFTNFTContractType,
 		}
 
@@ -500,7 +512,7 @@ func (s *TofuNFTScraper) createOrReadNFTClass(transfer *astarERC721Transfer) (*d
 }
 
 func (s *TofuNFTScraper) createOrReadNFT(nftClass *dia.NFTClass, transfer *astarERC721Transfer) (*dia.NFT, error) {
-	nft, err := s.tradeScraper.datastore.GetNFT(nftClass.Address, dia.ASTAR, transfer.TokenID.String())
+	nft, err := s.tradeScraper.datastore.GetNFT(nftClass.Address, s.blockchain, transfer.TokenID.String())
 	if err != nil {
 		if !errors.Is(err, pgx.ErrNoRows) {
 			log.Warnf("unable to read nft from reldb: %s", err.Error())

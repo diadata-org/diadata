@@ -62,9 +62,12 @@ func main() {
 	case "LooksRare":
 		log.Println("NFT Trades Scraper: Start scraping trades from LooksRare")
 		scraper = nfttradescrapers.NewLooksRareScraper(rdb)
-	case "TofuNFT":
-		log.Println("NFT Trades Scraper: Start scraping trades from TofuNFT")
-		scraper = nfttradescrapers.NewTofuNFTScraper(rdb)
+	case "TofuNFT-Astar":
+		log.Println("NFT Trades Scraper: Start scraping trades from TofuNFT on Astar")
+		scraper = nfttradescrapers.NewTofuNFTScraper(dia.ASTAR, rdb)
+	case "TofuNFT-BinanceSmartChain":
+		log.Println("NFT Trades Scraper: Start scraping trades from TofuNFT on BinanceSmartChain")
+		scraper = nfttradescrapers.NewTofuNFTScraper(dia.BINANCESMARTCHAIN, rdb)
 
 	default:
 		for {
