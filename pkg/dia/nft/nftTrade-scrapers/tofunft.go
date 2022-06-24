@@ -171,7 +171,7 @@ func NewTofuNFTScraper(blockchain string, rdb *models.RelDB) (scraper *TofuNFTSc
 func makeNewTofuNFTScraper(blockchain string, rdb *models.RelDB) *TofuNFTScraper {
 	ctx := context.Background()
 
-	eth, err := ethclient.Dial(utils.Getenv(blockchain+"_URI_REST", ""))
+	eth, err := ethclient.Dial(utils.Getenv(strings.ToUpper(blockchain)+"_URI_REST", ""))
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}
