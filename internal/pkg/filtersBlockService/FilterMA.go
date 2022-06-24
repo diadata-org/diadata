@@ -115,12 +115,6 @@ func (filter *FilterMA) finalCompute(t time.Time) float64 {
 	}
 	if totalVolume > 0 {
 		filter.value = totalPrice / totalVolume
-		if filter.max < filter.value {
-			filter.max = filter.value
-		}
-		if filter.min > filter.value || filter.min == -1 {
-			filter.min = filter.value
-		}
 
 	}
 	if len(filter.prices) > 0 && len(filter.volumes) > 0 {
@@ -136,8 +130,6 @@ func (filter *FilterMA) FilterPointForBlock() *dia.FilterPoint {
 		Value: filter.value,
 		Name:  "MA" + strconv.Itoa(filter.memory),
 		Time:  filter.currentTime,
-		Max:   filter.max,
-		Min:   filter.min,
 	}
 }
 
