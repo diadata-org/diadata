@@ -10,8 +10,13 @@ import (
 
 var log = logrus.New()
 
-func FilterMA(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint) {
+func FilterMA(tradeBlocks []Block, asset dia.Asset, blockSize int) (result []dia.FilterPoint) {
+
+	var filterPoints []dia.FilterPoint
 	var lastfp *dia.FilterPoint
+	var max, min float64
+	min = -1
+	max = 0
 	for _, block := range tradeBlocks {
 		if len(block.Trades) > 0 {
 			maFilter := filters.NewFilterMA(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
@@ -22,6 +27,17 @@ func FilterMA(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints
 
 			maFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
 			fp := maFilter.FilterPointForBlock()
+
+			if max < fp.Value {
+				max = fp.Value
+			}
+			if min > fp.Value || min == -1 {
+				min = fp.Value
+			}
+
+			log.Errorln("max", max)
+			log.Errorln("min", min)
+			log.Errorln("fp.Value", fp.Value)
 
 			if fp != nil {
 				filterPoints = append(filterPoints, *fp)
@@ -38,9 +54,14 @@ func FilterMA(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints
 
 		}
 	}
-	return filterPoints
-}
 
+	for _, point := range filterPoints {
+		point.Max = max
+		point.Min = min
+		result = append(result, point)
+	}
+	return result
+}
 func FilterMAIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (result []dia.FilterPoint) {
 	var filterPoints []dia.FilterPoint
 	var lastfp *dia.FilterPoint
