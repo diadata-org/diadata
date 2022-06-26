@@ -108,7 +108,7 @@ func FilterVWAP(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoin
 			filterPoints = append(filterPoints, *lastfp)
 		}
 	}
-	return filterPoints
+	return
 }
 
 func FilterVWAPIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint, metadata *dia.FilterPointMetadata) {
