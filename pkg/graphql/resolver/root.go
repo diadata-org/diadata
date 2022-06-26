@@ -149,7 +149,10 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	}
 
 	log.Infoln("Asset Selected", asset)
-	var filterPoints, emaFilterPoints []dia.FilterPoint
+	var (
+		filterPoints, tmpfilterpoints, emaFilterPoints []dia.FilterPoint
+		filterMetadata                                 *dia.FilterPointMetadata
+	)
 
 	if *filter != "ema" {
 
@@ -250,36 +253,43 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	switch *filter {
 	case "ema":
 		{
-			filterPoints = queryhelper.FilterEMA(emaFilterPoints, asset, int(blockSizeSeconds))
+			filterPoints, filterMetadata = queryhelper.FilterEMA(emaFilterPoints, asset, int(blockSizeSeconds))
 		}
 	case "mair":
 		{
-			filterPoints = queryhelper.FilterMAIR(tradeBlocks, asset, int(blockSizeSeconds))
+			filterPoints, filterMetadata = queryhelper.FilterMAIR(tradeBlocks, asset, int(blockSizeSeconds))
 		}
 	case "ma":
 		{
-			filterPoints = queryhelper.FilterMA(tradeBlocks, asset, int(blockSizeSeconds))
+			filterPoints, filterMetadata = queryhelper.FilterMA(tradeBlocks, asset, int(blockSizeSeconds))
 		}
 	case "vwap":
 		{
-			filterPoints = queryhelper.FilterVWAP(tradeBlocks, asset, int(blockSizeSeconds))
+			filterPoints, filterMetadata = queryhelper.FilterVWAP(tradeBlocks, asset, int(blockSizeSeconds))
 		}
 	case "vwapir":
 		{
-			filterPoints = queryhelper.FilterVWAPIR(tradeBlocks, asset, int(blockSizeSeconds))
+			filterPoints, filterMetadata = queryhelper.FilterVWAPIR(tradeBlocks, asset, int(blockSizeSeconds))
 		}
 	case "medir":
 		{
-			filterPoints = queryhelper.FilterMEDIR(tradeBlocks, asset, int(blockSizeSeconds))
+			filterPoints, filterMetadata = queryhelper.FilterMEDIR(tradeBlocks, asset, int(blockSizeSeconds))
 		}
 	case "vol":
 		{
-			filterPoints = queryhelper.FilterVOL(tradeBlocks, asset, int(blockSizeSeconds))
+			filterPoints, filterMetadata = queryhelper.FilterVOL(tradeBlocks, asset, int(blockSizeSeconds))
 		}
 
 	}
 
 	for _, fp := range filterPoints {
+		fp.Max = filterMetadata.Max
+		fp.Min = filterMetadata.Min
+		tmpfilterpoints = append(tmpfilterpoints, fp)
+
+	}
+
+	for _, fp := range tmpfilterpoints {
 		log.Println("Filter point", fp)
 		sr = append(sr, &FilterPointResolver{q: fp})
 
