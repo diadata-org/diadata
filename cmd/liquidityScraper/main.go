@@ -50,15 +50,15 @@ func runLiquiditySource(relDB *models.RelDB, datastore *models.DB, source string
 		case receivedPool := <-scraper.Pool():
 
 			// Set time-series to Influx.
-			err := datastore.SavePoolInflux(receivedPool)
-			if err != nil {
-				log.Errorf("Error saving pool %sv on echange %s: %v", receivedPool.Address, receivedPool.Exchange.Name, err)
-			} else {
-				log.Info("successfully set pool ", receivedPool)
-			}
+			// err := datastore.SavePoolInflux(receivedPool)
+			// if err != nil {
+			// 	log.Errorf("Error saving pool %sv on echange %s: %v", receivedPool.Address, receivedPool.Exchange.Name, err)
+			// } else {
+			// 	log.Info("successfully set pool ", receivedPool)
+			// }
 
 			// Set to persistent DB.
-			err = relDB.SetPool(receivedPool)
+			err := relDB.SetPool(receivedPool)
 			if err != nil {
 				log.Errorf("Error saving pool %v: %v", receivedPool, err)
 			} else {
