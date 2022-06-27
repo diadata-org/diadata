@@ -55,7 +55,7 @@ func main() {
 		log.Info("set total supply: DIA")
 	}
 	// Set circulating supply
-	err = ds.SetDiaCirculatingSupply(float64(72401614))
+	err = ds.SetDiaCirculatingSupply(float64(80575573))
 	if err != nil {
 		log.Errorf("error setting circulating supply for %s: %v\n", "DIA", err)
 	} else {
