@@ -72,6 +72,10 @@ func NewUniswapScraper(exchange dia.Exchange) (us *UniswapScraper) {
 		us = makeUniswapPoolScraper(exchange, restDialEthereum, uniswapWaitMilliseconds)
 	case dia.SushiSwapExchange:
 		us = makeUniswapPoolScraper(exchange, restDialEthereum, sushiswapWaitMilliseconds)
+	case dia.SushiSwapExchangePolygon:
+		us = makeUniswapPoolScraper(exchange, restDialPolygon, sushiswapWaitMilliseconds)
+	case dia.SushiSwapExchangeFantom:
+		us = makeUniswapPoolScraper(exchange, restDialFantom, sushiswapWaitMilliseconds)
 	case dia.PanCakeSwap:
 		us = makeUniswapPoolScraper(exchange, restDialBSC, pancakeswapWaitMilliseconds)
 	case dia.DfynNetwork:
@@ -105,6 +109,10 @@ func NewUniswapScraper(exchange dia.Exchange) (us *UniswapScraper) {
 	case dia.DiffusionExchange:
 		us = makeUniswapPoolScraper(exchange, restDialEvmos, evmosWaitMilliseconds)
 	case dia.ArthswapExchange:
+		us = makeUniswapPoolScraper(exchange, restDialAstar, astarWaitMilliseconds)
+	case dia.ApeswapExchange:
+		us = makeUniswapPoolScraper(exchange, restDialAstar, astarWaitMilliseconds)
+	case dia.BiswapExchange:
 		us = makeUniswapPoolScraper(exchange, restDialAstar, astarWaitMilliseconds)
 	}
 
