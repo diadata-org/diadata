@@ -3,449 +3,196 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"os"
-	"os/signal"
-	"path/filepath"
-	"strconv"
 	"strings"
-	"sync"
-	"time"
-
-	"github.com/diadata-org/diadata/pkg/utils"
 
 	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
-	"github.com/diadata-org/diadata/pkg/dia/service/assetservice/verifiedTokens"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	models "github.com/diadata-org/diadata/pkg/model"
-	"github.com/jackc/pgx"
 	"github.com/sirupsen/logrus"
 	"github.com/tkanos/gonfig"
 )
 
 var (
-	log               *logrus.Logger
-	writeExchangeJSON = flag.String("writeExchangeJSON", "", "write exchange pairs for exchange")
-	// updateTime = time.Second * 60 * 60
+	log      *logrus.Logger
+	exchange string
+	exch     = flag.String("exchange", "", "which exchange")
+	mode     = flag.String("mode", "verification", "verification or remoteFetch: fetching pairs from exchange's API.")
 )
-
-type Task struct {
-	closed chan struct{}
-	wg     sync.WaitGroup
-	ticker *time.Ticker
-}
 
 func init() {
 	log = logrus.New()
 	flag.Parse()
+
+	exchange = *exch
+	exchangeStruct, ok := scrapers.Exchanges[exchange]
+	if (!exchangeStruct.Centralized || !ok) && *mode == "verification" {
+		log.Fatalf("%s cannot be found in the list of centralized exchanges.", exchange)
+	}
 }
 
 func main() {
-	var (
-		err           error
-		relDB         *models.RelDB
-		verifiedToken *verifiedTokens.VerifiedTokens
-	)
-	task := &Task{
-		closed: make(chan struct{}),
-		/// Retrieve every 4 hours
-		ticker: time.NewTicker(time.Minute * 60 * 4),
-	}
-	relDB, err = models.NewRelDataStore()
+
+	relDB, err := models.NewRelDataStore()
 	if err != nil {
-		log.Error("setting up relDB: ", err)
-		panic("Couldn't initialize relDB, error: " + err.Error())
+		log.Fatal("Unable to initialize relDB: " + err.Error())
 	}
 
-	// verifiedToken come from a tokenlist: https://uniswap.org/blog/token-lists/
-	verifiedToken, err = verifiedTokens.New()
-	if err != nil {
-		log.Error("Error Getting instance of verified tokens: ", verifiedToken)
-	}
-
-	// load gitcoin files
-	gitcoinfiles := iterateDirectory("gitcoinverified")
-	for _, file := range gitcoinfiles {
-		path := "gitcoinverified/" + file
-		gitcoinSymbols, err := readFile(path)
+	switch *mode {
+	case "verification":
+		err = updateExchangePairs(relDB)
 		if err != nil {
-			log.Errorln("Error while reading  file", path, err)
+			log.Fatalf("update exchange pairs for %s: %v", exchange, err)
+		}
+	case "remoteFetch":
+		err = fetchFromExchangeAndStore(relDB)
+		if err != nil {
+			log.Fatalf("update exchange pairs for %s: %v", exchange, err)
+		}
+	default:
+		log.Fatal("unknown mode.")
+	}
+
+}
+
+func updateExchangePairs(relDB *models.RelDB) (err error) {
+
+	// --------- Collect pairs from DB and config file ---------
+	var pairs []dia.ExchangePair
+
+	// Fetch pairs from postgres.
+	pairs, err = relDB.GetExchangePairSymbols(exchange)
+	if err != nil {
+		return
+	}
+
+	// Add pairs from config file.
+	pairs, err = addPairsFromConfig(exchange, pairs)
+	if err != nil {
+		log.Errorf("adding pairs from config file for exchange %s: %v", exchange, err)
+	}
+
+	// --------- Verify all pairs collected above ---------
+
+	// Extract list of symbols from pairs.
+	symbols, err := dia.GetAllSymbolsFromPairs(pairs)
+	if err != nil {
+		log.Error("get symbols from pairs: ", err)
+	}
+
+	// Set exchange symbol if not in table yet.
+	for _, symbol := range symbols {
+		err = relDB.SetExchangeSymbol(exchange, symbol)
+		if err != nil {
+			log.Errorf("error setting exchange symbol %s: %v", symbol, err)
+		}
+	}
+
+	// Verify symbols using the file containing verification mappings of CEX symbols.
+	gitcoinSymbols, err := readFile("gitcoinverified/" + exchange + ".json")
+	if err != nil {
+		log.Errorf("Error while reading file %s: %v", "gitcoinverified/"+exchange+".json", err)
+	}
+	setGitcoinSymbols(gitcoinSymbols, relDB)
+
+	// Verify/falsify exchange pairs using the exchangesymbol table in postgres.
+	for _, pair := range pairs {
+		var exchangepair dia.ExchangePair
+		var pairSymbols []string
+		var quotetokenID string
+		var basetokenID string
+		var quotetokenVerified bool
+		var basetokenVerified bool
+		log.Info("handle pair ", pair)
+
+		// Continue if pair is already verified.
+		exchangepair, err = relDB.GetExchangePairCache(exchange, pair.ForeignName)
+		if err != nil {
+			log.Errorf("error getting pair %s from cache", pair.ForeignName)
+		}
+		if exchangepair.Verified {
+			log.Infof("pair %s already verified. Continue.", pair.ForeignName)
 			continue
 		}
-		setGitcoinSymbols(gitcoinSymbols, relDB)
+
+		// If not yet verified, try do do so.
+		pairSymbols, err = dia.GetPairSymbols(pair)
+		if err != nil {
+			log.Errorf("error getting symbols from pair string for %s", pair.ForeignName)
+			continue
+		}
+
+		quotetokenID, quotetokenVerified, err = relDB.GetExchangeSymbolAssetID(exchange, pairSymbols[0])
+		if err != nil {
+			log.Error(err)
+		}
+		basetokenID, basetokenVerified, err = relDB.GetExchangeSymbolAssetID(exchange, pairSymbols[1])
+		if err != nil {
+			log.Error(err)
+		}
+
+		if quotetokenVerified {
+			quotetoken, err := relDB.GetAssetByID(quotetokenID)
+			if err != nil {
+				log.Error(err)
+			}
+			pair.UnderlyingPair.QuoteToken = quotetoken
+		}
+		if basetokenVerified {
+			basetoken, err := relDB.GetAssetByID(basetokenID)
+			if err != nil {
+				log.Error(err)
+			}
+			pair.UnderlyingPair.BaseToken = basetoken
+		}
+		if quotetokenVerified && basetokenVerified {
+			pair.Verified = true
+		}
+
+		// Set pair to postgres and redis cache.
+		err = relDB.SetExchangePair(exchange, pair, true)
+		if err != nil {
+			log.Errorf("setting exchangepair table for pair on exchange %s: %v", exchange, err)
+			return err
+		}
 	}
 
-	updateExchangePairs(relDB, verifiedToken)
-
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-	task.wg.Add(1)
-	go func() { defer task.wg.Done(); task.run(relDB, verifiedToken) }()
-	for range c {
-		log.Info("Received stop signal.")
-		task.stop()
-	}
+	log.Infof("updated exchange %s, closing scraper.", exchange)
+	return nil
 }
 
-// TO DO: Refactor toggle==true case.
+func fetchFromExchangeAndStore(relDB *models.RelDB) error {
+	var scraper scrapers.APIScraper
+	var pairs []dia.ExchangePair
 
-// toggle == false: fetch all exchange's trading pairs from postgres and write them into redis caching layer
-// toggle == true:  connect to all exchange's APIs and check for new pairs
-func updateExchangePairs(relDB *models.RelDB, verifiedTokens *verifiedTokens.VerifiedTokens) {
-	// TO DO: activate toggle
-	// toggle := getTogglePairDiscovery(updateTime)
-
-	toggle, err := strconv.ParseBool(utils.Getenv("PAIR_DISCOV_EXCHANGE_TOGGLE", "true"))
-	if err != nil {
-		log.Error("Wrong content for PAIR_DISCOV_EXCHANGE_TOGGLE", err)
-	}
-	if !toggle {
-
-		log.Info("GetConfigTogglePairDiscovery = false, using values from config files")
-		for exchange := range scrapers.Exchanges {
-
-			if exchange == "Unknown" {
-				continue
-			}
-			// Fetch all pairs available for @exchange from exchangepair table in postgres
-			simplePairs, err := relDB.GetExchangePairSymbols(exchange)
-			if err != nil {
-				log.Errorf("getting pairs from postgres for exchange %s: %v", exchange, err)
-				continue
-			}
-
-			// Get filled version with verification and underlying dia.Pair if existent.
-			var pairs []dia.ExchangePair
-			for _, pair := range simplePairs {
-				var fullPair dia.ExchangePair
-				fullPair, err = relDB.GetExchangePair(exchange, pair.ForeignName)
-				if err != nil {
-					log.Error("error fetching exchangepair: ", err)
-					continue
-				}
-				pairs = append(pairs, fullPair)
-			}
-
-			// Optional addition of pairs from config file
-			pairs, err = addPairsFromConfig(exchange, pairs)
-			if err != nil {
-				log.Errorf("adding pairs from config file for exchange %s: %v", exchange, err)
-			}
-			time.Sleep(20 * time.Second)
-
-			// Set pairs in postgres and redis caching layer. The collector will fetch these
-			// from the cache in order to build verified trades.
-			for _, pair := range pairs {
-				err = relDB.SetExchangePair(exchange, pair, true)
-				if err != nil {
-					log.Errorf("setting exchangepair table for pair on exchange %s: %v", exchange, err)
-				}
-			}
-			log.Infof("exchange %s updated\n", exchange)
-		}
-		log.Info("Update complete.")
-
+	// Set up scraper.
+	config, err := dia.GetConfig(exchange)
+	if err == nil {
+		scraper = scrapers.NewAPIScraper(exchange, false, config.ApiKey, config.SecretKey, relDB)
 	} else {
-
-		log.Info("GetConfigTogglePairDiscovery = true, fetch new pairs from exchange's API")
-		// Comma separated list of (centralized) exchanges for which all available pairs should
-		// be fetched from the respective API.
-		fetchAvlPairsExchangesString := utils.Getenv("FETCH_AVL_PAIRS", "")
-		fetchAvlPairsExchanges := strings.Split(fetchAvlPairsExchangesString, ",")
-
-		exchangeMap := scrapers.Exchanges
-		for exchange := range scrapers.Exchanges {
-
-			// Make exchange API Scraper in order to fetch pairs
-			log.Info("Updating exchange ", exchange)
-			var scraper scrapers.APIScraper
-			config, err := dia.GetConfig(exchange)
-			if err == nil {
-				scraper = scrapers.NewAPIScraper(exchange, false, config.ApiKey, config.SecretKey, relDB)
-			} else {
-				log.Info("No valid API config for exchange: ", exchange, " Error: ", err.Error())
-				log.Info("Proceeding with no API secrets")
-				scraper = scrapers.NewAPIScraper(exchange, false, "", "", relDB)
-			}
-
-			// If no error, fetch pairs by method implemented for each scraper resp.
-			if scraper != nil {
-				if exchangeMap[exchange].Centralized {
-
-					// --------- 1. Step: collect pairs from Exchange API, DB and config file ---------
-					// Fetch pairs using the API scraper. This is only true for exchanges in the
-					// comma-separated list given in the env variable $FETCH_AVL_PAIRS.
-					var pairs []dia.ExchangePair
-					if utils.Contains(&fetchAvlPairsExchanges, exchange) {
-						pairs, err = scraper.FetchAvailablePairs()
-						if err != nil {
-							log.Errorf("fetching pairs from API for exchange %s: %v", exchange, err)
-						}
-						log.Infof("fetched %v pairs from API of exchange %s.", len(pairs), exchange)
-						time.Sleep(5 * time.Second)
-					}
-
-					// If not in postgres yet, add fetched pairs to postgres pairs
-					pairs, err = addNewPairs(exchange, pairs, relDB)
-					if err != nil {
-						log.Errorf("adding pairs from asset DB for exchange %s: %v", exchange, err)
-					}
-
-					// Optional addition of pairs from config file.
-					pairs, err = addPairsFromConfig(exchange, pairs)
-					if err != nil {
-						log.Errorf("adding pairs from config file for exchange %s: %v", exchange, err)
-					}
-
-					if *writeExchangeJSON == exchange {
-						err := savePairsToFile(exchange, pairs)
-						if err != nil {
-							log.Error("write pairs to json file: ", err)
-						}
-					}
-
-					// --------- 2. Step: Try to verify all pairs collected above ---------
-
-					// 2.a Get list of symbols available on exchange and try to match to assets.
-					symbols, err := dia.GetAllSymbolsFromPairs(pairs)
-					if err != nil {
-						log.Error(err)
-					}
-
-					verificationCount := 0
-					for _, symbol := range symbols {
-						fmt.Printf("verifying symbol %s on exchange %s \n ", symbol, exchange)
-						var verified bool
-						var assetInfo dia.Asset
-						var assetCandidates []dia.Asset
-						var assetID string
-						var ok bool
-						// signature for this part:
-						// func matchExchangeSymbol(symbol string, exchange string, relDB *models.RelDB)
-
-						time.Sleep(200 * time.Millisecond)
-						// First set all symbols traded on the exchange. These are subsequently
-						// matched with assets from the asset table.
-
-						// Continue if symbol is already in DB and verified.
-						_, verified, err = relDB.GetExchangeSymbolAssetID(exchange, symbol)
-						if err != nil {
-							if err.Error() != pgx.ErrNoRows.Error() {
-								log.Errorf("error getting exchange symbol %s: %v", symbol, err)
-							}
-						}
-						if verified {
-							verificationCount++
-							continue
-						}
-						// Set exchange symbol if not in table yet.
-						err = relDB.SetExchangeSymbol(exchange, symbol)
-						if err != nil {
-							log.Errorf("error setting exchange symbol %s: %v", symbol, err)
-						}
-						// Gather as much information on @symbol as available on the exchange's API.
-						assetInfo, err = scraper.FillSymbolData(symbol)
-						if err != nil {
-							log.Errorf("error fetching ticker data for %s: %v", symbol, err)
-							continue
-						}
-						// Using the gathered information, find matching assets in asset table.
-						assetCandidates, err = relDB.IdentifyAsset(assetInfo)
-						if err != nil {
-							log.Errorf("error getting asset candidates for %s: %v", symbol, err)
-							continue
-						}
-						if len(assetCandidates) != 1 {
-							log.Errorf("could not uniquely identify token ticker %s on exchange %s. Please identify manually.", symbol, exchange)
-							continue
-						}
-						// In case of a unique match, verify symbol in postgres and
-						// assign it the corresponding foreign key from the asset table.
-						if len(assetCandidates) == 1 {
-							log.Infof("found asset candidate for %s on %s: %v", symbol, exchange, assetCandidates[0])
-							// Verify if this asset is in our verified asset list
-							// isVerified := verifiedTokens.IsExists(assetCandidates[0])
-							isVerified := true
-							if isVerified {
-								verificationCount++
-								assetID, err = relDB.GetAssetID(assetCandidates[0])
-								if err != nil {
-									log.Error(err)
-								}
-								ok, err = relDB.VerifyExchangeSymbol(exchange, symbol, assetID)
-								if err != nil {
-									log.Error(err)
-								}
-								if ok {
-									log.Infof("verified token ticker %s ", symbol)
-								}
-
-							}
-
-						} else {
-							log.Errorf("could not verify identify token ticker %s on verified List %s. Please identify manually.", symbol, exchange)
-						}
-					}
-					log.Infof("verification of symbols on exchange %s done. Verified %d out of %d symbols.\n", exchange, verificationCount, len(symbols))
-
-					// 2.b Verify/falsify exchange pairs using the exchangesymbol table in postgres.
-					for _, pair := range pairs {
-						var exchangepair dia.ExchangePair
-						var pairSymbols []string
-						var quotetokenID string
-						var basetokenID string
-						var quotetokenVerified bool
-						var basetokenVerified bool
-						log.Info("handle pair ", pair)
-						// time.Sleep(1 * time.Second)
-						// Continue if pair is already verified
-						exchangepair, err = relDB.GetExchangePairCache(exchange, pair.ForeignName)
-						if err != nil {
-							log.Errorf("error getting pair %s from cache", pair.ForeignName)
-						}
-						if exchangepair.Verified {
-							fmt.Printf("pair %s already verified. Continue.\n", pair.ForeignName)
-							continue
-						}
-
-						// if not yet verified, try do do so
-						pairSymbols, err = dia.GetPairSymbols(pair)
-						if err != nil {
-							log.Errorf("error getting symbols from pair string for %s", pair.ForeignName)
-							continue
-						}
-
-						quotetokenID, quotetokenVerified, err = relDB.GetExchangeSymbolAssetID(exchange, pairSymbols[0])
-						if err != nil {
-							log.Error(err)
-						}
-						basetokenID, basetokenVerified, err = relDB.GetExchangeSymbolAssetID(exchange, pairSymbols[1])
-						if err != nil {
-							log.Error(err)
-						}
-
-						if quotetokenVerified {
-							var quotetoken dia.Asset
-							quotetoken, err = relDB.GetAssetByID(quotetokenID)
-							if err != nil {
-								log.Error(err)
-							}
-							pair.UnderlyingPair.QuoteToken = quotetoken
-						}
-						if basetokenVerified {
-							var basetoken dia.Asset
-							basetoken, err = relDB.GetAssetByID(basetokenID)
-							if err != nil {
-								log.Error(err)
-							}
-							pair.UnderlyingPair.BaseToken = basetoken
-						}
-						if quotetokenVerified && basetokenVerified {
-							pair.Verified = true
-						}
-						// Set pair to postgres and redis cache.
-						err = relDB.SetExchangePair(exchange, pair, true)
-						if err != nil {
-							log.Errorf("setting exchangepair table for pair on exchange %s: %v", exchange, err)
-						}
-					}
-
-					log.Infof("updated exchange %s", exchange)
-					time.Sleep(20 * time.Second)
-					go func(s scrapers.APIScraper, exchange string) {
-						time.Sleep(5 * time.Second)
-						log.Error("Closing scraper: ", exchange)
-						err = s.Close()
-						if err != nil {
-							log.Error(err)
-						}
-					}(scraper, exchange)
-				} else {
-					// For DEXes, FetchAvailablePairs can retrieve unique information.
-					// Pairs must contain base- and quotetoken addresses, blockchains and symbols of underlying assets.
-					pairs, err := scraper.FetchAvailablePairs()
-					if err != nil {
-						log.Errorf("fetching pairs for exchange %s: %v", exchange, err)
-					}
-					for _, pair := range pairs {
-						// Set pair to postgres and redis cache
-						err = relDB.SetExchangePair(exchange, pair, true)
-						if err != nil {
-							log.Errorf("setting exchangepair table for pair on exchange %s: %v", exchange, err)
-						}
-					}
-
-					// For the sake of completeness/statistics we write the symbols into exchangesymbol table.
-					assets := dia.GetAllAssetsFromPairs(pairs)
-					if err != nil {
-						log.Error(err)
-					}
-					log.Info("number of assets from pairs: ", len(assets))
-
-					for _, asset := range assets {
-						var assetID string
-						var ok bool
-						log.Info("asset: ", asset.Symbol)
-						err = relDB.SetExchangeSymbol(exchange, asset.Symbol)
-						if err != nil {
-							log.Errorf("error setting exchange symbol %s: %v", asset.Symbol, err)
-						}
-						assetID, err = relDB.GetAssetID(asset)
-						if err != nil {
-							log.Error(err)
-						}
-						ok, err = relDB.VerifyExchangeSymbol(exchange, asset.Symbol, assetID)
-						if err != nil {
-							log.Error(err)
-						}
-						if ok {
-							log.Infof("verified token ticker %s ", asset.Symbol)
-						}
-					}
-
-					go func(s scrapers.APIScraper, exchange string) {
-						time.Sleep(5 * time.Second)
-						log.Error("Closing scraper: ", exchange)
-						err = s.Close()
-						if err != nil {
-							log.Error(err)
-						}
-					}(scraper, exchange)
-				}
-			} else {
-				log.Error("Error creating APIScraper for exchange: ", exchange)
-			}
-			// Write exchange file
-
-		}
-		log.Info("Update complete.")
-
+		log.Info("No valid API config for exchange: ", exchange, " Error: ", err.Error())
+		log.Info("Proceeding with no API secrets")
+		scraper = scrapers.NewAPIScraper(exchange, false, "", "", relDB)
 	}
-}
 
-// TO DO: activate toggle
-// getTogglePairDiscovery switches to true between midnight and midnight + duration
-// func getTogglePairDiscovery(d time.Duration) bool {
-// 	t := time.Now()
-// 	secondsAfterMidnight := t.Hour()*3600 + t.Minute()*60 + t.Second()
-// 	if float64(secondsAfterMidnight) < d.Seconds()+10 {
-// 		return true
-// 	}
-// 	return false
-// }
-
-// addNewPairs adds pair from @pairs if it's not in our postgres DB yet.
-// Equality refers to the unique identifier (exchange,foreignName).
-func addNewPairs(exchange string, pairs []dia.ExchangePair, assetDB *models.RelDB) ([]dia.ExchangePair, error) {
-	persistentPairs, err := assetDB.GetExchangePairSymbols(exchange)
+	// Fetch pairs from exchange's API.
+	pairs, err = scraper.FetchAvailablePairs()
 	if err != nil {
-		return pairs, err
+		log.Errorf("fetching pairs from API for exchange %s: %v", exchange, err)
+		return err
 	}
-	// The order counts here. persistentPairs have priority.
-	return dia.MergeExchangePairs(persistentPairs, pairs), nil
+
+	// Save pairs in json file.
+	err = savePairsToFile(exchange, pairs)
+	if err != nil {
+		log.Error("write pairs to json file: ", err)
+		return err
+	}
+	log.Infof("fetched %v pairs from API of exchange %s and wrote to %s.json in /tmp folder.", len(pairs), exchange, exchange)
+	return nil
 }
 
 // addPairsFromConfig adds pairs from the config file to @pairs, if not in there yet.
@@ -467,26 +214,6 @@ func getPairsFromConfig(exchange string) ([]dia.ExchangePair, error) {
 	var coins Pairs
 	err := gonfig.GetConf(configFileAPI, &coins)
 	return coins.Coins, err
-}
-
-func (t *Task) run(relDB *models.RelDB, verifiedTokens *verifiedTokens.VerifiedTokens) {
-	for {
-		select {
-		case <-t.closed:
-			return
-		case <-t.ticker.C:
-			updateExchangePairs(relDB, verifiedTokens)
-		}
-	}
-}
-
-func (t *Task) stop() {
-	log.Println("Stoping exchange pair update thread...")
-	close(t.closed)
-	t.wg.Wait()
-	log.Println("Thread stopped, cleaning...")
-	// Clean if required
-	log.Println("Done")
 }
 
 // ----------------------------------------------------------------------------
@@ -515,34 +242,6 @@ func (gcs *GitcoinSubmission) UnmarshalBinary(data []byte) error {
 		return err
 	}
 	return nil
-}
-
-// readFile reads a gitcoin submission json file and returns the slice of items.
-func readFile(filename string) (items GitcoinSubmission, err error) {
-	var (
-		jsonFile  *os.File
-		filebytes []byte
-	)
-	jsonFile, err = os.Open(configCollectors.ConfigFileConnectors(filename, ""))
-	if err != nil {
-		return
-	}
-	defer func() {
-		cerr := jsonFile.Close()
-		if err == nil {
-			err = cerr
-		}
-	}()
-
-	filebytes, err = ioutil.ReadAll(jsonFile)
-	if err != nil {
-		return
-	}
-	err = json.Unmarshal(filebytes, &items)
-	if err != nil {
-		log.Error(err)
-	}
-	return
 }
 
 // setGitcoinSymbols writes all mappings from submissions into exchangesymbol table.
@@ -580,21 +279,28 @@ func setGitcoinSymbols(submissions GitcoinSubmission, relDB *models.RelDB) {
 	log.Warnf("could not integrate %v out of %v gitcoin verified symbols.", errorCount, len(submissions.AllItems))
 }
 
-func iterateDirectory(foldername string) (files []string) {
-	path := configCollectors.ConfigFileConnectors(foldername, "")
-	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			log.Fatalf(err.Error())
+// readFile reads a gitcoin submission json file and returns the slice of items.
+func readFile(filename string) (items GitcoinSubmission, err error) {
+	var (
+		jsonFile  *os.File
+		filebytes []byte
+	)
+	jsonFile, err = os.Open(configCollectors.ConfigFileConnectors(filename, ""))
+	if err != nil {
+		return
+	}
+	defer func() {
+		cerr := jsonFile.Close()
+		if err == nil {
+			err = cerr
 		}
-		fileExtension := filepath.Ext(path)
+	}()
 
-		if fileExtension == ".json" {
-			files = append(files, info.Name())
-			fmt.Printf("File Name: %s\n", info.Name())
-		}
-
-		return nil
-	})
+	filebytes, err = ioutil.ReadAll(jsonFile)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(filebytes, &items)
 	if err != nil {
 		log.Error(err)
 	}
