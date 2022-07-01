@@ -295,23 +295,6 @@ func createBatchInflux() clientInfluxdb.BatchPoints {
 
 func (datastore *DB) Flush() error {
 	var err error
-
-	// // ------------ Logging for debugging influx batch flush -------------
-	// log.Info("Influx Flush called...")
-	// points := datastore.influxBatchPoints.Points()
-	// for _, pt := range points {
-	// 	if _, ok := pt.Tags()["address"]; ok {
-	// 		timestamp := pt.UnixNano()
-	// 		tags := pt.Tags()
-	// 		fields, err := pt.Fields()
-	// 		if err != nil {
-	// 			log.Error("get fields: ", err)
-	// 		} else {
-	// 			log.Infof("Flush(): point in batch at time %v with value %v: filter: %s -- exchange: %s -- symbol: %s --  address: %s ", timestamp, fields["value"], tags["filter"], tags["exchange"], tags["symbol"], tags["address"])
-	// 		}
-	// 	}
-	// }
-
 	if datastore.influxBatchPoints != nil {
 		err = datastore.WriteBatchInflux()
 	}
