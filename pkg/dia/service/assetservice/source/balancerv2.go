@@ -217,7 +217,6 @@ func (bas *BalancerV2AssetSource) getAssetsFromPools(pools [][]common.Address) {
 		}
 	}
 
-	return
 }
 
 func (bas *BalancerV2AssetSource) assetFromToken(token common.Address) (dia.Asset, error) {
