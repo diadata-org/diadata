@@ -62,10 +62,7 @@ func (bas *BalancerV2AssetSource) fetchAssets() {
 		log.Fatal("list available pools: ", err)
 	}
 
-	err = bas.getAssetsFromPools(pools)
-	if err != nil {
-		log.Fatal("list available pairs: ", err)
-	}
+	bas.getAssetsFromPools(pools)
 
 	bas.doneChannel <- true
 
@@ -203,7 +200,7 @@ func (bas *BalancerV2AssetSource) listPools() ([][]common.Address, error) {
 }
 
 // getAssetsFromPools fetches all assets from @pools and sends them into the asset channel.
-func (bas *BalancerV2AssetSource) getAssetsFromPools(pools [][]common.Address) (err error) {
+func (bas *BalancerV2AssetSource) getAssetsFromPools(pools [][]common.Address) {
 
 	checkMap := make(map[string]struct{})
 
@@ -215,9 +212,7 @@ func (bas *BalancerV2AssetSource) getAssetsFromPools(pools [][]common.Address) (
 				checkMap[tokens[i].Hex()] = struct{}{}
 			}
 			asset, err := bas.assetFromToken(tokens[i])
-			if err != nil {
-				return err
-			}
+			log.Error("get asset from token: ", err)
 			bas.assetChannel <- asset
 		}
 	}
