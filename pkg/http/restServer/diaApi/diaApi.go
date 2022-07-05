@@ -479,6 +479,10 @@ func (env *Env) GetExchanges(c *gin.Context) {
 
 	}
 
+	sort.Slice(exchangereturns, func(i, j int) bool {
+		return exchangereturns[i].Volume24h > exchangereturns[j].Volume24h
+	})
+
 	c.JSON(http.StatusOK, exchangereturns)
 }
 
@@ -743,7 +747,7 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 }
 
 func (env *Env) GetTopAssets(c *gin.Context) {
-	numAssetsString := c.DefaultQuery("numAssets", "10")
+	numAssetsString := c.Param("numAssets")
 	var (
 		numAssets    int64
 		sortedAssets []dia.AssetVolume
