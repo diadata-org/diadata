@@ -137,18 +137,6 @@ func (s *BalancerV2Scraper) mainLoop() {
 	log.Info("reverse quotetokens: ", reverseQuotetokensBalancer)
 
 	defer s.cleanup()
-	pairs, err := s.FetchAvailablePairs()
-	if err != nil {
-		s.setError(err)
-		log.Fatalf("%s: Cannot fetch available pairs ,err=%s", s.exchangeName, err.Error())
-	}
-
-	for _, pair := range pairs {
-		quoteToken := pair.UnderlyingPair.QuoteToken
-		baseToken := pair.UnderlyingPair.BaseToken
-		s.tokensMap[quoteToken.Address] = quoteToken
-		s.tokensMap[baseToken.Address] = baseToken
-	}
 
 	filterer, err := balancervault.NewBalancerVaultFilterer(common.HexToAddress(balancerV2VaultContract), s.ws)
 	if err != nil {
