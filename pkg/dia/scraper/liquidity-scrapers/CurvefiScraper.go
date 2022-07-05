@@ -235,10 +235,7 @@ func (scraper *CurveFIScraper) loadPoolData(poolAddress common.Address, factoryC
 
 	for i := range poolAssets {
 		volume, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(poolBalances[i]), new(big.Float).SetFloat64(math.Pow10(int(poolAssets[i].Decimals)))).Float64()
-		pool.Assetvolumes = append(pool.Assetvolumes, struct {
-			Asset  dia.Asset
-			Volume float64
-		}{
+		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{
 			Asset:  poolAssets[i],
 			Volume: volume,
 		})

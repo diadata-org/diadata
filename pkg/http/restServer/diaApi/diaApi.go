@@ -435,14 +435,51 @@ func (env *Env) Get24hVolume(c *gin.Context) {
 	c.JSON(http.StatusOK, v)
 }
 
-// GetExchanges is the delegate method for fetching all
-// available trading places.
+// GetExchanges is the delegate method for fetching all exchanges available in Postgres.
 func (env *Env) GetExchanges(c *gin.Context) {
-	q, err := env.RelDB.GetExchangeNames()
-	if len(q) == 0 || err != nil {
+	type exchangeReturn struct {
+		Name       string
+		Volume24h  float64
+		Trades     int64
+		Type       string
+		Blockchain string
+	}
+	var exchangereturns []exchangeReturn
+	exchanges, err := env.RelDB.GetAllExchanges()
+	if len(exchanges) == 0 || err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
 	}
-	c.JSON(http.StatusOK, q)
+	for _, exchange := range exchanges {
+
+		vol, err := env.DataStore.Sum24HoursExchange(exchange.Name)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		numTrades, err := env.DataStore.GetNumTrades(exchange.Name)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+
+		exchangereturn := exchangeReturn{
+			Name:       exchange.Name,
+			Volume24h:  vol,
+			Trades:     numTrades,
+			Blockchain: exchange.BlockChain.Name,
+		}
+		if exchange.Centralized {
+			exchangereturn.Type = "CEX"
+		} else if exchange.Bridge {
+			exchangereturn.Type = "Bridge"
+		} else {
+			exchangereturn.Type = "DEX"
+		}
+		exchangereturns = append(exchangereturns, exchangereturn)
+
+	}
+
+	c.JSON(http.StatusOK, exchangereturns)
 }
 
 // GetAssetChartPoints queries for filter points of asset given by address and blockchain.
@@ -621,7 +658,7 @@ func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 func (env *Env) GetAllSymbols(c *gin.Context) {
 	var s []string
 	var numSymbols int64
-	var sortedAssets []dia.Asset
+	var sortedAssets []dia.AssetVolume
 	var err error
 
 	substring := c.Param("substring")
@@ -650,8 +687,8 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 			log.Error("get assets with volume: ", err)
 		}
 		var sortedSymbols []string
-		for _, asset := range sortedAssets {
-			sortedSymbols = append(sortedSymbols, asset.Symbol)
+		for _, assetvol := range sortedAssets {
+			sortedSymbols = append(sortedSymbols, assetvol.Asset.Symbol)
 		}
 		sortedSymbols = utils.UniqueStrings(sortedSymbols)
 		allSymbols := utils.UniqueStrings(append(sortedSymbols, s...))
@@ -667,8 +704,8 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 			if err != nil {
 				log.Error("get assets with volume: ", err)
 			}
-			for _, asset := range sortedAssets {
-				s = append(s, asset.Symbol)
+			for _, assetvol := range sortedAssets {
+				s = append(s, assetvol.Asset.Symbol)
 			}
 			c.JSON(http.StatusOK, s)
 		} else {
@@ -686,8 +723,8 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 				log.Error("get assets with volume: ", err)
 			}
 			var sortedSymbols []string
-			for _, asset := range sortedAssets {
-				sortedSymbols = append(sortedSymbols, asset.Symbol)
+			for _, assetvol := range sortedAssets {
+				sortedSymbols = append(sortedSymbols, assetvol.Asset.Symbol)
 			}
 			sortedSymbols = utils.UniqueStrings(sortedSymbols)
 			allSymbols := utils.UniqueStrings(append(sortedSymbols, s...))
@@ -703,6 +740,25 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 		c.JSON(http.StatusOK, symbols)
 	}
 
+}
+
+func (env *Env) GetTopAssets(c *gin.Context) {
+	numAssetsString := c.DefaultQuery("numAssets", "10")
+	var (
+		numAssets    int64
+		sortedAssets []dia.AssetVolume
+		err          error
+	)
+
+	numAssets, err = strconv.ParseInt(numAssetsString, 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("number of assets must be an integer"))
+	}
+	sortedAssets, err = env.RelDB.GetAssetsWithVOL(numAssets, "")
+	if err != nil {
+		log.Error("get assets with volume: ", err)
+	}
+	c.JSON(http.StatusOK, sortedAssets)
 }
 
 // -----------------------------------------------------------------------------

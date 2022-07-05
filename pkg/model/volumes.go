@@ -92,24 +92,29 @@ func (datastore *DB) Get24HVolumePerExchange(asset dia.Asset) (exchangeVolume []
 	return
 }
 
-// Sum24HoursExchange returns 24h trade volumes summed up for all assets on @exchange,
-// using VOL120 filtered data from influx.
-// TO DO: Rewrite for assets
-func (datastore *DB) Sum24HoursExchange(exchange string) (float64, error) {
-	// allSymbols := db.GetSymbolsByExchange(exchange)
-	// filter := "VOL120"
-	// var TVL float64
-	// for _, symbol := range allSymbols {
-	// 	volumeUSD, err := db.Sum24HoursInflux(symbol, exchange, filter)
-	// 	if err != nil {
-	// 		log.Errorf("Error getting 24h trade volume of %s: %v \n", symbol, err)
-	// 		continue
-	// 	}
-	// 	TVL += *volumeUSD
-	// }
-	var TVL float64
-	return TVL, nil
+// Sum24HoursExchange returns 24h trade volume on @exchange using VOL120 filtered data from influx.
+func (datastore *DB) Sum24HoursExchange(exchange string) (volume float64, err error) {
 
+	queryString := "SELECT SUM(value) FROM %s WHERE filter='%s' AND exchange='%s' AND time > now() - 24h AND time<now()"
+	q := fmt.Sprintf(queryString, influxDbFiltersTable, "VOL120", exchange)
+
+	res, err := queryInfluxDB(datastore.influxClient, q)
+	if err != nil {
+		log.Errorln("Get24HVolumePerExchange ", err)
+		return
+	}
+
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		vol, ok := res[0].Series[0].Values[0][1].(json.Number)
+		if ok {
+			volume, err = vol.Float64()
+			if err != nil {
+				return volume, err
+			}
+		}
+	}
+
+	return
 }
 
 // GetVolumeInflux returns the trade volume of @asset in the time range @starttime - @endtime.

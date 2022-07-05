@@ -277,17 +277,11 @@ func (us *UniswapScraper) GetPoolByAddress(pairAddress common.Address) (pool dia
 
 	// assetvolumeMap[token0] = amount0
 	// assetvolumeMap[token1] = amount1
-	pool.Assetvolumes = append(pool.Assetvolumes, struct {
-		Asset  dia.Asset
-		Volume float64
-	}{
+	pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{
 		Asset:  token0,
 		Volume: amount0,
 	})
-	pool.Assetvolumes = append(pool.Assetvolumes, struct {
-		Asset  dia.Asset
-		Volume float64
-	}{
+	pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{
 		Asset:  token1,
 		Volume: amount1,
 	})

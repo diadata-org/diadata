@@ -162,10 +162,7 @@ func (scraper *BalancerV2Scraper) extractPoolInfo(poolTokens struct {
 	Tokens          []common.Address
 	Balances        []*big.Int
 	LastChangeBlock *big.Int
-}) (assetvolumes []struct {
-	Asset  dia.Asset
-	Volume float64
-}) {
+}) (assetvolumes []dia.AssetVolume) {
 	for i := range poolTokens.Tokens {
 		asset, err := scraper.assetFromToken(poolTokens.Tokens[i])
 		if err != nil {
@@ -174,10 +171,7 @@ func (scraper *BalancerV2Scraper) extractPoolInfo(poolTokens struct {
 
 		volume, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(poolTokens.Balances[i]), new(big.Float).SetFloat64(math.Pow10(int(asset.Decimals)))).Float64()
 
-		assetvolumes = append(assetvolumes, struct {
-			Asset  dia.Asset
-			Volume float64
-		}{Asset: asset, Volume: volume})
+		assetvolumes = append(assetvolumes, dia.AssetVolume{Asset: asset, Volume: volume})
 	}
 	return
 }

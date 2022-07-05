@@ -81,6 +81,7 @@ type Datastore interface {
 	// Get24VolumeExchange(exchange string) (float64, error)
 	Sum24HoursInflux(asset dia.Asset, exchange string, filter string) (*float64, error)
 	Sum24HoursExchange(exchange string) (float64, error)
+	GetNumTrades(exchange string) (int64, error)
 
 	// New Asset pricing methods: 23/02/2021
 	SetAssetPriceUSD(asset dia.Asset, price float64, timestamp time.Time) error

@@ -224,6 +224,11 @@ type ExchangeVolumesList struct {
 	Timestamp time.Time        `json:"Timestamp"`
 }
 
+type AssetVolume struct {
+	Asset  Asset   `json:"Asset"`
+	Volume float64 `json:"Volume"`
+}
+
 type PairVolume struct {
 	Pair   Pair    `json:"Pair"`
 	Volume float64 `json:"Volume"`
@@ -336,11 +341,8 @@ type Pool struct {
 	Blockchain BlockChain
 	Address    string
 	// Assetvolumes map[Asset]float64
-	Assetvolumes []struct {
-		Asset  Asset
-		Volume float64
-	}
-	Time time.Time
+	Assetvolumes []AssetVolume
+	Time         time.Time
 }
 
 // MarshalBinary is a custom marshaller for BlockChain type

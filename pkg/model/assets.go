@@ -912,24 +912,24 @@ func (rdb *RelDB) GetActiveAsset(limit, skip int) (assets []dia.Asset, assetIds 
 // GetAssetsWithVOL returns the first @numAssets assets with entry in the assetvolume table, sorted by volume in descending order.
 // If @numAssets==0, all assets are returned.
 // If @substring is not the empty string, results are filtered by the first letters being @substring.
-func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, substring string) (volumeSortedAssets []dia.Asset, err error) {
+func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, substring string) (volumeSortedAssets []dia.AssetVolume, err error) {
 	var queryString string
 	var query string
 	var rows pgx.Rows
 	if numAssets == 0 {
 		if substring == "" {
-			queryString = "SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) ORDER BY assetvolume.volume DESC"
+			queryString = "SELECT symbol,name,address,decimals,blockchain,volume FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) ORDER BY assetvolume.volume DESC"
 			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable)
 		} else {
-			queryString = "SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) WHERE symbol ILIKE '%s%%' ORDER BY assetvolume.volume DESC"
+			queryString = "SELECT symbol,name,address,decimals,blockchain,volume FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) WHERE symbol ILIKE '%s%%' ORDER BY assetvolume.volume DESC"
 			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, substring)
 		}
 	} else {
 		if substring == "" {
-			queryString = "SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) ORDER BY assetvolume.volume DESC LIMIT %d"
+			queryString = "SELECT symbol,name,address,decimals,blockchain,volume FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) ORDER BY assetvolume.volume DESC LIMIT %d"
 			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, numAssets)
 		} else {
-			queryString = "SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) WHERE symbol ILIKE '%s%%' ORDER BY assetvolume.volume DESC LIMIT %d"
+			queryString = "SELECT symbol,name,address,decimals,blockchain,volume FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) WHERE symbol ILIKE '%s%%' ORDER BY assetvolume.volume DESC LIMIT %d"
 			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, substring, numAssets)
 		}
 	}
@@ -941,10 +941,13 @@ func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, substring string) (volumeSor
 	defer rows.Close()
 
 	for rows.Next() {
-		var decimals string
-		var decimalsInt int
+		var (
+			decimals    string
+			decimalsInt int
+			volume      float64
+		)
 		asset := dia.Asset{}
-		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
+		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain, &volume)
 		if err != nil {
 			return
 		}
@@ -953,7 +956,8 @@ func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, substring string) (volumeSor
 			return
 		}
 		asset.Decimals = uint8(decimalsInt)
-		volumeSortedAssets = append(volumeSortedAssets, asset)
+		assetvolume := dia.AssetVolume{Asset: asset, Volume: volume}
+		volumeSortedAssets = append(volumeSortedAssets, assetvolume)
 	}
 	return
 }
