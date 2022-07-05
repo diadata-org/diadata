@@ -414,7 +414,6 @@ func (s *OpenSeaSeaportScraper) processTx(ctx context.Context, tx *utils.EthFilt
 
 	currSymbol := "ETH"
 	currAddr := common.Address{}
-	currDecimals := 18
 
 	// if an ERC20 token used for the trade
 	if new(big.Int).Cmp(txData.Value()) == 0 {
@@ -428,7 +427,6 @@ func (s *OpenSeaSeaportScraper) processTx(ctx context.Context, tx *utils.EthFilt
 
 		if len(tokenTransfers) == 1 {
 			currAddr = tokenTransfers[0].TokenAddr
-			currDecimals = tokenTransfers[0].Decimals
 
 			if v := tokenTransfers[0].TokenSymbol; v != nil {
 				currSymbol = *v
@@ -463,17 +461,8 @@ func (s *OpenSeaSeaportScraper) processTx(ctx context.Context, tx *utils.EthFilt
 		return true, nil
 	}
 
-	normPrice := decimal.NewFromBigInt(big.NewInt(0), 0).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(int64(currDecimals))))
-
-	usdPrice, err := s.calcUSDPrice(ev.Raw.BlockNumber, currAddr, currSymbol, normPrice)
-	if err != nil {
-		log.Errorf("unable to calculate usd price of the event(block: %d, log: %d, tx: %s): %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
-
-		return false, err
-	}
-
 	// HOW MUCH DID THE TRANSACTION COST - WHOLE VALUE? SUM?
-	if err := s.notifyTrade(ev, transfers[0], big.NewInt(0), normPrice, usdPrice, currSymbol, currAddr); err != nil {
+	if err := s.notifyTrade(ev, transfers[0], currSymbol, currAddr); err != nil {
 		if !errors.Is(err, errOpenSeaSeaportShutdownRequest) {
 			log.Warnf("event(block: %d, tx index: %d, tx: %s) couldn't processed: %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
 		}
@@ -484,7 +473,7 @@ func (s *OpenSeaSeaportScraper) processTx(ctx context.Context, tx *utils.EthFilt
 	return false, nil
 }
 
-func (s *OpenSeaSeaportScraper) notifyTrade(ev *openseaseaport.OpenseaseaportOrderFulfilled, transfer *erc721Transfer, price *big.Int, priceDec decimal.Decimal, usdPrice float64, currSymbol string, currAddr common.Address) error {
+func (s *OpenSeaSeaportScraper) notifyTrade(ev *openseaseaport.OpenseaseaportOrderFulfilled, transfer *erc721Transfer, currSymbol string, currAddr common.Address) error {
 	nftClass, err := s.createOrReadNFTClass(transfer)
 	if err != nil {
 		return err
@@ -501,36 +490,48 @@ func (s *OpenSeaSeaportScraper) notifyTrade(ev *openseaseaport.OpenseaseaportOrd
 		log.Errorf("getting block time: %+v", err)
 	}
 
-	trade := dia.NFTTrade{
-		NFT:         *nft,
-		Price:       price,
-		PriceUSD:    usdPrice,
-		FromAddress: transfer.From.Hex(),
-		ToAddress:   transfer.To.Hex(),
-		BlockNumber: ev.Raw.BlockNumber,
-		Timestamp:   timestamp,
-		TxHash:      ev.Raw.TxHash.Hex(),
-		Exchange:    "OpenSeaSeaport",
-	}
+	for _, asset := range ev.Consideration {
+		currDecimals := 18
 
-	if asset, ok := assetCacheOpensea[dia.ETHEREUM+"-"+currAddr.Hex()]; ok {
-		trade.Currency = asset
-	} else {
-		currency, err := s.tradeScraper.datastore.GetAsset(currAddr.Hex(), dia.ETHEREUM)
+		normPrice := decimal.NewFromBigInt(asset.Amount, 0).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(int64(currDecimals))))
+		usdPrice, err := s.calcUSDPrice(ev.Raw.BlockNumber, currAddr, currSymbol, normPrice)
 		if err != nil {
-			log.Errorf("cannot fetch asset %s -- %s | error: %v", dia.ETHEREUM, currAddr.Hex(), err)
+			log.Errorf("unable to calculate usd price of the event(block: %d, log: %d, tx: %s): %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
+
+			return err
 		}
-		trade.Currency = currency
-		assetCacheOpensea[dia.ETHEREUM+"-"+currAddr.Hex()] = currency
-	}
 
-	log.Infof("found trade: %v", trade)
+		trade := dia.NFTTrade{
+			NFT:         *nft,
+			Price:       normPrice.BigInt(),
+			PriceUSD:    usdPrice,
+			FromAddress: transfer.From.Hex(),
+			ToAddress:   transfer.To.Hex(),
+			BlockNumber: ev.Raw.BlockNumber,
+			Timestamp:   timestamp,
+			TxHash:      ev.Raw.TxHash.Hex(),
+			Exchange:    "OpenSeaSeaport",
+		}
 
-	// handle close request if the chanTrade not consumed immediately
-	select {
-	case s.tradeScraper.chanTrade <- trade:
-	case <-s.tradeScraper.shutdown:
-		return errOpenSeaSeaportShutdownRequest
+		if asset, ok := assetCacheOpensea[dia.ETHEREUM+"-"+currAddr.Hex()]; ok {
+			trade.Currency = asset
+		} else {
+			currency, err := s.tradeScraper.datastore.GetAsset(currAddr.Hex(), dia.ETHEREUM)
+			if err != nil {
+				log.Errorf("cannot fetch asset %s -- %s | error: %v", dia.ETHEREUM, currAddr.Hex(), err)
+			}
+			trade.Currency = currency
+			assetCacheOpensea[dia.ETHEREUM+"-"+currAddr.Hex()] = currency
+		}
+
+		log.Infof("found trade: %v", trade)
+
+		// handle close request if the chanTrade not consumed immediately
+		select {
+		case s.tradeScraper.chanTrade <- trade:
+		case <-s.tradeScraper.shutdown:
+			return errOpenSeaSeaportShutdownRequest
+		}
 	}
 
 	return nil
