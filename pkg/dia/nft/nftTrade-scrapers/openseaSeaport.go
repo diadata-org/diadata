@@ -490,8 +490,20 @@ func (s *OpenSeaSeaportScraper) notifyTrade(ev *openseaseaport.OpenseaseaportOrd
 		log.Errorf("getting block time: %+v", err)
 	}
 
+	// this approach assumes that multiple transactions between two parties can exist in the database.
+	// If not then only first returned trade will be inserted, rest - just returned.
 	for _, asset := range ev.Consideration {
-		currDecimals := 18
+		var currDecimals uint8
+
+		datastoreAsset, err := s.tradeScraper.datastore.GetAsset(asset.Token.String(), dia.ETHEREUM)
+		switch err {
+		case nil:
+			currDecimals = datastoreAsset.Decimals
+		default:
+			log.Warn("Couldn't get asset data from data store - defaulting to ETH")
+
+			currDecimals = 18
+		}
 
 		normPrice := decimal.NewFromBigInt(asset.Amount, 0).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(int64(currDecimals))))
 		usdPrice, err := s.calcUSDPrice(ev.Raw.BlockNumber, currAddr, currSymbol, normPrice)
@@ -503,6 +515,7 @@ func (s *OpenSeaSeaportScraper) notifyTrade(ev *openseaseaport.OpenseaseaportOrd
 
 		trade := dia.NFTTrade{
 			NFT:         *nft,
+			// what should be in this place? Code snippet based on opensea.go, what does this value represent?
 			Price:       normPrice.BigInt(),
 			PriceUSD:    usdPrice,
 			FromAddress: transfer.From.Hex(),
