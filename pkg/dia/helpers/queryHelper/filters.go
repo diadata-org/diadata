@@ -41,9 +41,14 @@ func FilterMA(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints
 	return filterPoints
 }
 
-func FilterMAIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint) {
+func FilterMAIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (result []dia.FilterPoint) {
+	var filterPoints []dia.FilterPoint
 	var lastfp *dia.FilterPoint
+	var max, min float64
+	min = -1
+	max = 0
 	for _, block := range tradeBlocks {
+
 		if len(block.Trades) > 0 {
 			mairFilter := filters.NewFilterMAIR(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
 
@@ -53,6 +58,14 @@ func FilterMAIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoin
 
 			mairFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
 			fp := mairFilter.FilterPointForBlock()
+
+			if max < fp.Value {
+				max = fp.Value
+			}
+			if min > fp.Value || min == -1 {
+				min = fp.Value
+			}
+
 			if fp != nil {
 				fp.Time = time.Unix(block.TimeStamp/1e9, 0)
 				filterPoints = append(filterPoints, *fp)
@@ -67,7 +80,13 @@ func FilterMAIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoin
 			filterPoints = append(filterPoints, *lastfp)
 		}
 	}
-	return filterPoints
+
+	for _, point := range filterPoints {
+		point.Max = max
+		point.Min = min
+		result = append(result, point)
+	}
+	return result
 }
 
 func FilterVWAP(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint) {

@@ -59,28 +59,16 @@ func NewConfigCollectorsIfExists(exchange string, filetype string) *ConfigCollec
 	var connectorConfig = ConfigCollectors{
 		Coins: []dia.ExchangePair{},
 	}
-	if exchange == "" {
-		for _, e := range dia.Exchanges() {
-			var c = ConfigCollectors{}
-			file := ConfigFileConnectors(e, filetype)
-			err := gonfig.GetConf(file, &c)
-			if err != nil {
-				log.Error("error loading <", file, "> ", err)
-			} else {
-				log.Printf("loaded  <%v>", file)
-				connectorConfig.Coins = append(connectorConfig.Coins, c.Coins...)
-			}
-		}
+
+	file := ConfigFileConnectors(exchange, filetype)
+	err := gonfig.GetConf(file, &connectorConfig)
+	if err != nil {
+		log.Error("error loading <", file, "> ", err)
+		return nil
 	} else {
-		file := ConfigFileConnectors(exchange, filetype)
-		err := gonfig.GetConf(file, &connectorConfig)
-		if err != nil {
-			log.Error("error loading <", file, "> ", err)
-			return nil
-		} else {
-			log.Printf("loaded  <%v>", file)
-		}
+		log.Printf("loaded  <%v>", file)
 	}
+
 	return &connectorConfig
 }
 

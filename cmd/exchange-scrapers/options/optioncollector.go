@@ -58,7 +58,6 @@ func init() {
 	flag.Parse()
 	if *exchange == "" {
 		flag.Usage()
-		log.Println(dia.Exchanges())
 		for {
 			time.Sleep(24 * time.Hour)
 		}

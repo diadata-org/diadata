@@ -30,7 +30,7 @@ type RelDatastore interface {
 	Count() (uint32, error)
 	SetAssetVolume24H(asset dia.Asset, volume float64) error
 	GetAssetVolume24H(asset dia.Asset) (float64, error)
-	GetAssetsWithVOL(numAssets int64, substring string) ([]dia.Asset, error)
+	GetAssetsWithVOL(numAssets int64, substring string) ([]dia.AssetVolume, error)
 	SetAggregatedVolume(aggVol dia.AggregatedVolume) error
 	GetAggregatedVolumes(asset dia.Asset, starttime time.Time, endtime time.Time) ([]dia.AggregatedVolume, error)
 	GetAggVolumesByExchange(asset dia.Asset, starttime time.Time, endtime time.Time) ([]dia.ExchangeVolumesList, error)
@@ -49,10 +49,21 @@ type RelDatastore interface {
 	VerifyExchangeSymbol(exchange string, symbol string, assetID string) (bool, error)
 	GetExchangeSymbolAssetID(exchange string, symbol string) (string, bool, error)
 
+	// ----------------- exchange methods -------------------
+	SetExchange(exchange dia.Exchange) error
+	GetExchange(name string) (dia.Exchange, error)
+	GetAllExchanges() ([]dia.Exchange, error)
+	GetExchangeNames() ([]string, error)
+
+	// ----------------- pool methods -------------------
+	SetPool(pool dia.Pool) error
+	GetAllPoolAddrsExchange(exchange string) ([]string, error)
+
 	// ----------------- blockchain methods -------------------
 	SetBlockchain(blockchain dia.BlockChain) error
 	GetBlockchain(name string) (dia.BlockChain, error)
-	GetAllBlockchains() ([]string, error)
+	GetAllAssetsBlockchains() ([]string, error)
+	GetAllBlockchains(fullAsset bool) ([]dia.BlockChain, error)
 
 	// ------ Caching ------
 	SetAssetCache(asset dia.Asset) error
@@ -115,8 +126,13 @@ const (
 
 	// postgres tables
 	assetTable              = "asset"
+	assetIdent              = "assetIdent"
 	exchangepairTable       = "exchangepair"
 	exchangesymbolTable     = "exchangesymbol"
+	poolTable               = "pool"
+	poolassetTable          = "poolasset"
+	exchangeTable           = "exchange"
+	chainconfigTable        = "chainconfig"
 	blockchainTable         = "blockchain"
 	assetVolumeTable        = "assetvolume"
 	aggregatedVolumeTable   = "aggregatedvolume"

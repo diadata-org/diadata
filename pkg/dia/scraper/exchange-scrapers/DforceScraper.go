@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/dforce"
-	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/dforce/token"
 	"math"
 	"math/big"
 	"sync"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/dforce"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/dforce/token"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 
@@ -57,7 +58,7 @@ type DforceScraper struct {
 
 func NewDforceScraper(exchange dia.Exchange, scrape bool) *DforceScraper {
 	scraper := &DforceScraper{
-		contract:       exchange.Contract,
+		contract:       common.HexToAddress(exchange.Contract),
 		exchangeName:   exchange.Name,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),

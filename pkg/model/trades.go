@@ -246,3 +246,25 @@ func (datastore *DB) GetLastTrades(asset dia.Asset, exchange string, maxTrades i
 	}
 	return r, nil
 }
+
+func (datastore *DB) GetNumTrades(exchange string) (numTrades int64, err error) {
+	queryString := "SELECT COUNT(*) FROM %s WHERE exchange='%s' AND time > now() - 24h AND time<now()"
+	q := fmt.Sprintf(queryString, influxDbTradesTable, exchange)
+
+	res, err := queryInfluxDB(datastore.influxClient, q)
+	if err != nil {
+		log.Errorln("Get24HVolumePerExchange ", err)
+		return
+	}
+
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		vol, ok := res[0].Series[0].Values[0][1].(json.Number)
+		if ok {
+			numTrades, err = vol.Int64()
+			if err != nil {
+				return numTrades, err
+			}
+		}
+	}
+	return
+}

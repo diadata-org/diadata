@@ -210,7 +210,12 @@ func (s *TradesBlockService) process(t dia.Trade) {
 
 			}
 			if err != nil {
-				log.Errorf("Cannot use trade %s. Can't find quotation for base token.", t.Pair)
+				log.Errorf("Can't find quotation for base token in trade %s: %v.\n Basetoken address -- blockchain:  %s --- %s",
+					t.Pair,
+					err,
+					t.BaseToken.Address,
+					t.BaseToken.Blockchain,
+				)
 			} else {
 				if price > 0.0 {
 					t.EstimatedUSDPrice = t.Price * price

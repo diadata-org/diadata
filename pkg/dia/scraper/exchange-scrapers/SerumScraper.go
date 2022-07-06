@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/mr-tron/base58"
 	bin "github.com/streamingfast/binary"
 	"github.com/streamingfast/solana-go"
@@ -17,7 +18,7 @@ import (
 )
 
 const (
-	rpcEndpointSolana         = "https://solana-api.projectserum.com"
+	rpcEndpointSolana         = ""
 	dexProgramAddress         = "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin" // refer - https://github.com/project-serum/serum-dex
 	nameServiceProgramAddress = "namesLPneVptA9Z5rqUDD9tMTWEJwofgaYwp8cawRkX"
 	dotTokenTLD               = "6NSu2tci4apRKQtt257bAVcvqYjB3zV2H1dWo56vgpa6"
@@ -85,8 +86,9 @@ type SerumScraper struct {
 }
 
 func NewSerumScraper(exchange dia.Exchange, scrape bool) *SerumScraper {
+
 	scraper := &SerumScraper{
-		solanaRpcClient: rpc.NewClient(rpcEndpointSolana),
+		solanaRpcClient: rpc.NewClient(utils.Getenv("SOLANA_URI_REST", rpcEndpointSolana)),
 		shutdown:        make(chan nothing),
 		shutdownDone:    make(chan nothing),
 		errorLock:       sync.RWMutex{},
@@ -113,12 +115,12 @@ func (s *SerumScraper) mainLoop() {
 		}
 		serumMarkets, err := s.getMarkets()
 		if err != nil {
-			log.Error(err)
+			log.Error("get markets: ", err)
 			return
 		}
 		tokenNameRegistry, err := s.getTokenNames()
 		if err != nil {
-			log.Error(err)
+			log.Error("get token names: ", err)
 			return
 		}
 		for _, market := range serumMarkets {

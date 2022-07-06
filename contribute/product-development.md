@@ -6,6 +6,6 @@ Following this ethos, the DIA open-source oracle and data platform was built wit
 
 By completing bounties, decentralised contributors across the globe have been and are continuously building new data scrapers to add new sources, new data types, data categories and many more. These bounties are publicly available on DIA’s Gitcoin Page for anybody to contribute and validate.
 
-Explore the latest DIA Gitocin tickets below:
+Explore the latest DIA Gitcoin tickets below:
 
 {% embed url="https://gitcoin.co/diadata-org" %}

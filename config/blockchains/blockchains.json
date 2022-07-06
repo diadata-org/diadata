@@ -190,6 +190,36 @@
                 "Address": "0x0000000000000000000000000000000000000000"
             },
             "VerificationMechanism": "pos"
+        },
+
+        {
+            "Name": "Kusama",
+            "GenesisDate": 1590507381,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pos"
+        },
+        {
+            "Name": "Polkadot",
+            "GenesisDate": 1590507381,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pos"
+        },
+        {
+            "Name": "Acala",
+            "GenesisDate": 1639785600,
+            "NativeToken": {
+                "Address": "Token:ACA"
+            },
+            "VerificationMechanism": "poa"
+        },
+        {
+            "Name": "Fiat",
+            "GenesisDate": 0,
+            "VerificationMechanism": "poa"
         }
     ]
 }

@@ -435,24 +435,55 @@ func (env *Env) Get24hVolume(c *gin.Context) {
 	c.JSON(http.StatusOK, v)
 }
 
-// GetPairs returns all pairs
-func (env *Env) GetPairs(c *gin.Context) {
-	p, err := env.RelDB.GetPairs("")
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-	} else {
-		c.JSON(http.StatusOK, &models.Pairs{Pairs: p})
-	}
-}
-
-// GetExchanges is the delegate method for fetching all
-// available trading places.
+// GetExchanges is the delegate method for fetching all exchanges available in Postgres.
 func (env *Env) GetExchanges(c *gin.Context) {
-	q := env.DataStore.GetExchanges()
-	if len(q) == 0 {
+	type exchangeReturn struct {
+		Name       string
+		Volume24h  float64
+		Trades     int64
+		Type       string
+		Blockchain string
+	}
+	var exchangereturns []exchangeReturn
+	exchanges, err := env.RelDB.GetAllExchanges()
+	if len(exchanges) == 0 || err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
 	}
-	c.JSON(http.StatusOK, q)
+	for _, exchange := range exchanges {
+
+		vol, err := env.DataStore.Sum24HoursExchange(exchange.Name)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		numTrades, err := env.DataStore.GetNumTrades(exchange.Name)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+
+		exchangereturn := exchangeReturn{
+			Name:       exchange.Name,
+			Volume24h:  vol,
+			Trades:     numTrades,
+			Blockchain: exchange.BlockChain.Name,
+		}
+		if exchange.Centralized {
+			exchangereturn.Type = "CEX"
+		} else if exchange.Bridge {
+			exchangereturn.Type = "Bridge"
+		} else {
+			exchangereturn.Type = "DEX"
+		}
+		exchangereturns = append(exchangereturns, exchangereturn)
+
+	}
+
+	sort.Slice(exchangereturns, func(i, j int) bool {
+		return exchangereturns[i].Volume24h > exchangereturns[j].Volume24h
+	})
+
+	c.JSON(http.StatusOK, exchangereturns)
 }
 
 // GetAssetChartPoints queries for filter points of asset given by address and blockchain.
@@ -631,7 +662,7 @@ func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 func (env *Env) GetAllSymbols(c *gin.Context) {
 	var s []string
 	var numSymbols int64
-	var sortedAssets []dia.Asset
+	var sortedAssets []dia.AssetVolume
 	var err error
 
 	substring := c.Param("substring")
@@ -660,8 +691,8 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 			log.Error("get assets with volume: ", err)
 		}
 		var sortedSymbols []string
-		for _, asset := range sortedAssets {
-			sortedSymbols = append(sortedSymbols, asset.Symbol)
+		for _, assetvol := range sortedAssets {
+			sortedSymbols = append(sortedSymbols, assetvol.Asset.Symbol)
 		}
 		sortedSymbols = utils.UniqueStrings(sortedSymbols)
 		allSymbols := utils.UniqueStrings(append(sortedSymbols, s...))
@@ -677,8 +708,8 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 			if err != nil {
 				log.Error("get assets with volume: ", err)
 			}
-			for _, asset := range sortedAssets {
-				s = append(s, asset.Symbol)
+			for _, assetvol := range sortedAssets {
+				s = append(s, assetvol.Asset.Symbol)
 			}
 			c.JSON(http.StatusOK, s)
 		} else {
@@ -696,8 +727,8 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 				log.Error("get assets with volume: ", err)
 			}
 			var sortedSymbols []string
-			for _, asset := range sortedAssets {
-				sortedSymbols = append(sortedSymbols, asset.Symbol)
+			for _, assetvol := range sortedAssets {
+				sortedSymbols = append(sortedSymbols, assetvol.Asset.Symbol)
 			}
 			sortedSymbols = utils.UniqueStrings(sortedSymbols)
 			allSymbols := utils.UniqueStrings(append(sortedSymbols, s...))
@@ -713,6 +744,25 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 		c.JSON(http.StatusOK, symbols)
 	}
 
+}
+
+func (env *Env) GetTopAssets(c *gin.Context) {
+	numAssetsString := c.Param("numAssets")
+	var (
+		numAssets    int64
+		sortedAssets []dia.AssetVolume
+		err          error
+	)
+
+	numAssets, err = strconv.ParseInt(numAssetsString, 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("number of assets must be an integer"))
+	}
+	sortedAssets, err = env.RelDB.GetAssetsWithVOL(numAssets, "")
+	if err != nil {
+		log.Error("get assets with volume: ", err)
+	}
+	c.JSON(http.StatusOK, sortedAssets)
 }
 
 // -----------------------------------------------------------------------------
@@ -905,84 +955,6 @@ func (env *Env) GetDefiState(c *gin.Context) {
 			restApi.SendError(c, http.StatusNotFound, err)
 		}
 		q, err := env.DataStore.GetDefiStateInflux(starttime, endtime, protocol)
-		if err != nil {
-			if errors.Is(err, redis.Nil) {
-				restApi.SendError(c, http.StatusNotFound, err)
-			} else {
-				restApi.SendError(c, http.StatusInternalServerError, err)
-			}
-		} else {
-			c.JSON(http.StatusOK, q)
-		}
-	}
-}
-
-// -----------------------------------------------------------------------------
-// FARMING POOLS
-// -----------------------------------------------------------------------------
-
-// GetFarmingPools is the delegate method to fetch the value(s) of
-// the farming pool information of @protocol.
-// Last value is retrieved. Otional query parameters allow to obtain data in a time range.
-func (env *Env) GetFarmingPools(c *gin.Context) {
-	q, err := env.DataStore.GetFarmingPools()
-	if err != nil {
-		if errors.Is(err, redis.Nil) {
-			restApi.SendError(c, http.StatusNotFound, err)
-		} else {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		}
-	} else {
-		c.JSON(http.StatusOK, q)
-	}
-}
-
-// GetFarmingPoolData is the delegate method to fetch the value(s) of
-// the farming pool information of @protocol.
-// Last value is retrieved. Otional query parameters allow to obtain data in a time range.
-func (env *Env) GetFarmingPoolData(c *gin.Context) {
-	protocol := c.Param("protocol")
-	poolID := c.Param("poolID")
-	date := c.Param("time")
-	// Add optional query parameters for requesting a range of values
-	dateInit := c.DefaultQuery("dateInit", "noRange")
-	dateFinal := c.Query("dateFinal")
-
-	if dateInit == "noRange" {
-		// Return most recent data point
-		endtime := time.Time{}
-		var err error
-		if date == "" {
-			endtime = time.Now()
-		} else {
-			// Convert unix time int/string to time
-			endtime, err = utils.StrToUnixtime(date)
-			if err != nil {
-				restApi.SendError(c, http.StatusNotFound, err)
-			}
-		}
-		starttime := endtime.AddDate(0, 0, -1)
-
-		q, err := env.DataStore.GetFarmingPoolData(starttime, endtime, protocol, poolID)
-		if err != nil {
-			if errors.Is(err, redis.Nil) {
-				restApi.SendError(c, http.StatusNotFound, err)
-			} else {
-				restApi.SendError(c, http.StatusInternalServerError, err)
-			}
-		} else {
-			c.JSON(http.StatusOK, q[0])
-		}
-	} else {
-		starttime, err := utils.StrToUnixtime(dateInit)
-		if err != nil {
-			restApi.SendError(c, http.StatusNotFound, err)
-		}
-		endtime, err := utils.StrToUnixtime(dateFinal)
-		if err != nil {
-			restApi.SendError(c, http.StatusNotFound, err)
-		}
-		q, err := env.DataStore.GetFarmingPoolData(starttime, endtime, protocol, poolID)
 		if err != nil {
 			if errors.Is(err, redis.Nil) {
 				restApi.SendError(c, http.StatusNotFound, err)
@@ -1874,7 +1846,7 @@ func (env *Env) GetAssetExchanges(c *gin.Context) {
 }
 
 func (env *Env) GetAllBlockchains(c *gin.Context) {
-	blockchains, err := env.RelDB.GetAllBlockchains()
+	blockchains, err := env.RelDB.GetAllAssetsBlockchains()
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	} else {
@@ -2162,6 +2134,74 @@ func (env *Env) GetNFTDownday(c *gin.Context) {
 	}
 	response.WeeklyDrawdown = min
 	response.Time = endtime
+	response.Source = dia.Diadata
+
+	c.JSON(http.StatusOK, response)
+}
+
+// GetNFTFloorVola returns the volatility of the moving average floor price of the nft class over the last 90 days.
+func (env *Env) GetNFTFloorVola(c *gin.Context) {
+
+	// NFT collection.
+	blockchain := c.Param("blockchain")
+	address := common.HexToAddress(c.Param("address")).Hex()
+	nftClass := dia.NFTClass{Address: address, Blockchain: blockchain}
+
+	// Parse query parameter time.
+	endtimeString := c.Query("time")
+	var endtime time.Time
+	if endtimeString != "" {
+		endtimeInt, err := strconv.ParseInt(endtimeString, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	} else {
+		endtime = time.Now()
+	}
+
+	// lookback for volatility is 90 days per default.
+	lookbackString := c.DefaultQuery("lookbackSeconds", "7776000")
+	lookbackInt, err := strconv.ParseInt(lookbackString, 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusBadRequest, nil)
+	}
+
+	// floor price window is 24h per default.
+	floorWindowString := c.DefaultQuery("floorWindow", "86400")
+	floorWindowInt, err := strconv.ParseInt(floorWindowString, 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusBadRequest, nil)
+	}
+	floorWindow := time.Duration(floorWindowInt) * time.Second
+
+	starttime := endtime.Add(-time.Duration(lookbackInt) * time.Second)
+	stepBackLimit := 120
+	floorPrices, err := env.RelDB.GetNFTFloorRange(nftClass, starttime, endtime, floorWindow, stepBackLimit)
+	if err != nil {
+		log.Error("get nft floor range: ", err)
+	}
+
+	// Get collection name.
+	nftClass, err = env.RelDB.GetNFTClass(nftClass.Address, nftClass.Blockchain)
+	if err != nil {
+		log.Error("get nft class: ", err)
+	}
+
+	type FloorStats struct {
+		FloorAverage    float64   `json:"Floor_Average"`
+		FloorVolatility float64   `json:"Floor_Volatility"`
+		Collection      string    `json:"Collection"`
+		Time            time.Time `json:"Time"`
+		Source          string    `json:"Source"`
+	}
+	var response FloorStats
+
+	response.FloorAverage = utils.Average(floorPrices)
+	response.FloorVolatility = utils.StandardDeviation(floorPrices)
+	response.Time = endtime
+	response.Collection = nftClass.Name
 	response.Source = dia.Diadata
 
 	c.JSON(http.StatusOK, response)

@@ -78,7 +78,7 @@ type BalancerV2Scraper struct {
 
 // NewBalancerV2Scraper returns a Balancer V2 scraper
 func NewBalancerV2Scraper(exchange dia.Exchange, scrape bool) *BalancerV2Scraper {
-	balancerV2VaultContract = exchange.Contract.Hex()
+	balancerV2VaultContract = exchange.Contract
 	scraper := &BalancerV2Scraper{
 		exchangeName: exchange.Name,
 		err:          nil,
@@ -137,18 +137,6 @@ func (s *BalancerV2Scraper) mainLoop() {
 	log.Info("reverse quotetokens: ", reverseQuotetokensBalancer)
 
 	defer s.cleanup()
-	pairs, err := s.FetchAvailablePairs()
-	if err != nil {
-		s.setError(err)
-		log.Fatalf("%s: Cannot fetch available pairs ,err=%s", s.exchangeName, err.Error())
-	}
-
-	for _, pair := range pairs {
-		quoteToken := pair.UnderlyingPair.QuoteToken
-		baseToken := pair.UnderlyingPair.BaseToken
-		s.tokensMap[quoteToken.Address] = quoteToken
-		s.tokensMap[baseToken.Address] = baseToken
-	}
 
 	filterer, err := balancervault.NewBalancerVaultFilterer(common.HexToAddress(balancerV2VaultContract), s.ws)
 	if err != nil {

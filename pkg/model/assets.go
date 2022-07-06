@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"strconv"
@@ -51,6 +52,36 @@ func (rdb *RelDB) GetAssetID(asset dia.Asset) (ID string, err error) {
 		return
 	}
 	return
+}
+
+func (rdb *RelDB) GetAssetMap(asset_id string) (ID string, err error) {
+	query := fmt.Sprintf("SELECT group_id FROM %s WHERE asset_id=$1", assetIdent)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, asset_id).Scan(&ID)
+	if err != nil {
+		return
+	}
+	return
+}
+
+// SetAsset stores an asset into postgres.
+func (rdb *RelDB) InsertAssetMap(group_id string, asset_id string) error {
+	query := fmt.Sprintf("INSERT INTO %s (group_id,asset_id) VALUES ($1,$2)", assetIdent)
+	log.Println("query", query)
+
+	_, err := rdb.postgresClient.Exec(context.Background(), query, asset_id, group_id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (rdb *RelDB) InsertNewAssetMap(asset_id string) error {
+	query := fmt.Sprintf("INSERT INTO %s (asset_id) VALUES ($1)", assetIdent)
+	log.Println("query", query)
+	_, err := rdb.postgresClient.Exec(context.Background(), query, asset_id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 var assetCache = make(map[string]dia.Asset)
@@ -519,7 +550,6 @@ func (rdb *RelDB) SetExchangePair(exchange string, pair dia.ExchangePair, cache 
 // -------------------------------------------------------------
 
 func (rdb *RelDB) SetBlockchain(blockchain dia.BlockChain) (err error) {
-	log.Info("address: ", blockchain.NativeToken.Address)
 	fields := fmt.Sprintf("INSERT INTO %s (name,genesisdate,nativetoken_id,verificationmechanism,chain_id) VALUES ", blockchainTable)
 	values := "($1,$2,(SELECT asset_id FROM asset WHERE address=$3 AND blockchain=$1),$4,NULLIF($5,''))"
 	conflict := " ON CONFLICT (name) DO UPDATE SET genesisdate=$2,verificationmechanism=$4,chain_id=NULLIF($5,''),nativetoken_id=(SELECT asset_id FROM asset WHERE address=$3 AND blockchain=$1) "
@@ -554,8 +584,89 @@ func (rdb *RelDB) GetBlockchain(name string) (blockchain dia.BlockChain, err err
 	return
 }
 
-// GetAllBlockchains returns all blockchain names existent in the asset table.
-func (rdb *RelDB) GetAllBlockchains() ([]string, error) {
+// GetAllBlockchains returns all blockchains from the blockchain table.
+// If fullAsset=true it returns the complete native token as asset, otherwise only its symbol string.
+func (rdb *RelDB) GetAllBlockchains(fullAsset bool) ([]dia.BlockChain, error) {
+	var blockchains []dia.BlockChain
+	var query string
+	if fullAsset {
+		queryString := "SELECT b.name,b.genesisdate,a.Symbol,a.Name,a.Address,a.Decimals,b.verificationmechanism,b.chain_id FROM %s b LEFT JOIN %s a ON nativetoken_id = a.asset_id"
+		query = fmt.Sprintf(queryString, blockchainTable, assetTable)
+	} else {
+		query = fmt.Sprintf("SELECT b.name,b.genesisdate,a.Symbol,b.verificationmechanism,b.chain_id FROM %s b LEFT JOIN %s a ON nativetoken_id = a.asset_id", blockchainTable, assetTable)
+	}
+	rows, err := rdb.postgresClient.Query(context.Background(), query)
+	if err != nil {
+		return []dia.BlockChain{}, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var blockchain dia.BlockChain
+		var genDate sql.NullFloat64
+		var symbol sql.NullString
+		var verifMechanism sql.NullString
+		var chainID sql.NullString
+		//  fullAsset
+		var name sql.NullString
+		var address sql.NullString
+		var decimals sql.NullInt64
+
+		if fullAsset {
+			err = rows.Scan(
+				&blockchain.Name,
+				&genDate,
+				&symbol,
+				&name,
+				&address,
+				&decimals,
+				&verifMechanism,
+				&chainID,
+			)
+		} else {
+			err = rows.Scan(
+				&blockchain.Name,
+				&genDate,
+				&symbol,
+				&verifMechanism,
+				&chainID,
+			)
+		}
+		if err != nil {
+			return []dia.BlockChain{}, err
+		}
+		if genDate.Valid {
+			blockchain.GenesisDate = int64(genDate.Float64)
+		}
+		if symbol.Valid {
+			blockchain.NativeToken.Symbol = symbol.String
+		}
+		if verifMechanism.Valid {
+			blockchain.VerificationMechanism = dia.VerificationMechanism(verifMechanism.String)
+		}
+		if chainID.Valid {
+			blockchain.ChainID = chainID.String
+		}
+		if fullAsset {
+			if name.Valid {
+				blockchain.NativeToken.Name = name.String
+			}
+			if address.Valid {
+				blockchain.NativeToken.Address = address.String
+			}
+			if decimals.Valid {
+				blockchain.NativeToken.Decimals = uint8(decimals.Int64)
+			}
+			blockchain.NativeToken.Blockchain = blockchain.Name
+		}
+		blockchains = append(blockchains, blockchain)
+	}
+
+	return blockchains, nil
+}
+
+// GetAllAssetsBlockchains returns all blockchain names existent in the asset table.
+func (rdb *RelDB) GetAllAssetsBlockchains() ([]string, error) {
 	var blockchains []string
 	query := fmt.Sprintf("SELECT DISTINCT blockchain FROM %s ORDER BY blockchain ASC", assetTable)
 	rows, err := rdb.postgresClient.Query(context.Background(), query)
@@ -801,24 +912,24 @@ func (rdb *RelDB) GetActiveAsset(limit, skip int) (assets []dia.Asset, assetIds 
 // GetAssetsWithVOL returns the first @numAssets assets with entry in the assetvolume table, sorted by volume in descending order.
 // If @numAssets==0, all assets are returned.
 // If @substring is not the empty string, results are filtered by the first letters being @substring.
-func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, substring string) (volumeSortedAssets []dia.Asset, err error) {
+func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, substring string) (volumeSortedAssets []dia.AssetVolume, err error) {
 	var queryString string
 	var query string
 	var rows pgx.Rows
 	if numAssets == 0 {
 		if substring == "" {
-			queryString = "SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) ORDER BY assetvolume.volume DESC"
+			queryString = "SELECT symbol,name,address,decimals,blockchain,volume FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) ORDER BY assetvolume.volume DESC"
 			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable)
 		} else {
-			queryString = "SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) WHERE symbol ILIKE '%s%%' ORDER BY assetvolume.volume DESC"
+			queryString = "SELECT symbol,name,address,decimals,blockchain,volume FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) WHERE symbol ILIKE '%s%%' ORDER BY assetvolume.volume DESC"
 			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, substring)
 		}
 	} else {
 		if substring == "" {
-			queryString = "SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) ORDER BY assetvolume.volume DESC LIMIT %d"
+			queryString = "SELECT symbol,name,address,decimals,blockchain,volume FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) ORDER BY assetvolume.volume DESC LIMIT %d"
 			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, numAssets)
 		} else {
-			queryString = "SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) WHERE symbol ILIKE '%s%%' ORDER BY assetvolume.volume DESC LIMIT %d"
+			queryString = "SELECT symbol,name,address,decimals,blockchain,volume FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) WHERE symbol ILIKE '%s%%' ORDER BY assetvolume.volume DESC LIMIT %d"
 			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, substring, numAssets)
 		}
 	}
@@ -830,10 +941,13 @@ func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, substring string) (volumeSor
 	defer rows.Close()
 
 	for rows.Next() {
-		var decimals string
-		var decimalsInt int
+		var (
+			decimals    string
+			decimalsInt int
+			volume      float64
+		)
 		asset := dia.Asset{}
-		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
+		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain, &volume)
 		if err != nil {
 			return
 		}
@@ -842,7 +956,8 @@ func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, substring string) (volumeSor
 			return
 		}
 		asset.Decimals = uint8(decimalsInt)
-		volumeSortedAssets = append(volumeSortedAssets, asset)
+		assetvolume := dia.AssetVolume{Asset: asset, Volume: volume}
+		volumeSortedAssets = append(volumeSortedAssets, assetvolume)
 	}
 	return
 }

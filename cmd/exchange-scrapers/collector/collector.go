@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"sync"
 	"time"
 
@@ -20,6 +21,7 @@ var (
 	log                  *logrus.Logger
 	swapTradesOnExchange = []string{
 		dia.CurveFIExchange,
+		dia.QuickswapExchange,
 		dia.OmniDexExchange,
 		dia.DiffusionExchange,
 		dia.BalancerV2Exchange,
@@ -33,13 +35,126 @@ var (
 		dia.PangolinExchange,
 		dia.ArthswapExchange,
 	}
+
+	exchange = flag.String("exchange", "", "which exchange")
+	// mode==current:		default mode. Trades are forwarded to TBS and FBS.
+	// mode==storeTrades:	trades are not forwarded to TBS and FBS and stored as raw trades in influx.
+	// mode==estimation:	trades are forwarded to tradesEstimationService, i.e. same as storeTrades mode
+	//						but estimatedUSDPrice is filled by tradesEstimationService.
+	// mode==historical:	trades are sent through kafka to TBS in tradesHistorical topic.
+	// mode==assetmap:   	Bridged Trades, asstes are mapped and trades are not saved.
+	mode = flag.String("mode", "current", "either storeTrades, current, historical or estimation.")
+
+	pairsfile = flag.Bool("pairsfile", false, "read pairs from json file in config folder.")
 )
 
 func init() {
 	log = logrus.New()
+	flag.Parse()
+	if *exchange == "" {
+		flag.Usage()
+		for e := range scrapers.Exchanges {
+			log.Info("exchange: ", e)
+		}
+		for {
+			time.Sleep(24 * time.Hour)
+		}
+	}
+	if !isValidExchange(*exchange) {
+		log.Fatal("Invalid exchange string: ", *exchange)
+	}
 }
 
-func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, ds *models.DB, exchange string, mode string) {
+// main manages all PairScrapers and handles incoming trade information
+func main() {
+
+	log.Infof("start collector for %s in %s mode...", *exchange, *mode)
+
+	relDB, err := models.NewRelDataStore()
+	if err != nil {
+		log.Errorln("NewDataStore:", err)
+	}
+
+	ds, err := models.NewDataStore()
+	if err != nil {
+		log.Fatal("datastore: ", err)
+	}
+
+	// Fetch exchange pairs from database or json file in config folder.
+	var pairsExchange []dia.ExchangePair
+	if !*pairsfile {
+		pairsExchange, err = relDB.GetExchangePairSymbols(*exchange)
+		if err != nil {
+			log.Fatal("fetch pairs from database: ", err)
+		}
+	} else {
+		log.Error("error on GetExchangePairSymbols", err)
+		cc := configCollectors.NewConfigCollectors(*exchange, ".json")
+		pairsExchange = cc.AllPairs()
+	}
+	log.Info("available exchangePairs:", len(pairsExchange))
+
+	// Make API scraper.
+	configApi, err := dia.GetConfig(*exchange)
+	if err != nil {
+		log.Warning("no config for exchange's api ", err)
+	}
+	es := scrapers.NewAPIScraper(*exchange, true, configApi.ApiKey, configApi.SecretKey, relDB)
+
+	// Set up kafka writers for various modes.
+	var (
+		w     *kafka.Writer
+		wTest *kafka.Writer
+	)
+
+	switch *mode {
+	case "current":
+		w = kafkaHelper.NewWriter(kafkaHelper.TopicTrades)
+		wTest = kafkaHelper.NewWriter(kafkaHelper.TopicTradesTest)
+	case "historical":
+		w = kafkaHelper.NewWriter(kafkaHelper.TopicTradesHistorical)
+	case "estimation":
+		w = kafkaHelper.NewWriter(kafkaHelper.TopicTradesEstimation)
+	case "assetmap":
+		w = kafkaHelper.NewWriter(kafkaHelper.TopicTradesEstimation)
+	}
+
+	defer func() {
+		err := w.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
+
+	wg := sync.WaitGroup{}
+
+	if scrapers.Exchanges[*exchange].Centralized {
+
+		// Scrape pairs for CEX scrapers.
+		for _, configPair := range pairsExchange {
+			log.Println("Adding pair:", configPair.Symbol, configPair.ForeignName, "on exchange", *exchange)
+			_, err := es.ScrapePair(dia.ExchangePair{
+				Symbol:      configPair.Symbol,
+				ForeignName: configPair.ForeignName})
+			if err != nil {
+				log.Println(err)
+			} else {
+				wg.Add(1)
+			}
+			defer wg.Wait()
+		}
+
+	} else {
+
+		// Subscription to pool events managed inside scraper for DEX and Bridge scrapers.
+		wg.Add(1)
+		defer wg.Wait()
+
+	}
+	go handleTrades(es.Channel(), &wg, w, wTest, ds, *exchange, *mode)
+}
+
+func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wTest *kafka.Writer, ds *models.DB, exchange string, mode string) {
 	lastTradeTime := time.Now()
 	watchdogDelay := scrapers.Exchanges[exchange].WatchdogDelay
 	t := time.NewTicker(time.Duration(watchdogDelay) * time.Second)
@@ -58,28 +173,24 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, ds *mo
 				return
 			}
 			lastTradeTime = time.Now()
-			// Trades are sent to the tradesblockservice through a kafka channel - either through trades topic
-			// or historical trades topic.
+			// Trades are sent to the tradesblockservice through a kafka channel - either
+			// through trades topic or historical trades topic.
 			if mode == "current" || mode == "historical" || mode == "estimation" {
 
-				// Write trade to Kafka.
-				err := kafkaHelper.WriteMessage(w, t)
+				// Write trade to productive Kafka.
+				err := writeTradeToKafka(w, t)
 				if err != nil {
 					log.Error(err)
 				}
 
-				// Write reversed trade to Kafka as well for some exchanges.
-				if utils.Contains(&swapTradesOnExchange, t.Source) {
-					tSwapped, err := dia.SwapTrade(*t)
+				// Write trade to test Kafka.
+				if mode == "current" {
+					err = writeTradeToKafka(wTest, t)
 					if err != nil {
-						log.Error("swap trade: ", err)
-					} else {
-						err := kafkaHelper.WriteMessage(w, &tSwapped)
-						if err != nil {
-							log.Error(err)
-						}
+						log.Error(err)
 					}
 				}
+
 			}
 			// Trades are just saved in influx - not sent to the tradesblockservice through a kafka channel.
 			if mode == "storeTrades" {
@@ -90,119 +201,43 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, ds *mo
 					log.Info("saved trade")
 				}
 			}
+
+			if mode == "assetmap" {
+
+				fmt.Println("recieved trade", t)
+
+			}
 		}
 	}
 }
 
-var (
-	exchange         = flag.String("exchange", "", "which exchange")
-	onePairPerSymbol = flag.Bool("onePairPerSymbol", false, "one Pair max Per Symbol ?")
-	// mode==current:		default mode. Trades are forwarded to TBS and FBS.
-	// mode==storeTrades:	trades are not forwarded to TBS and FBS and stored as raw trades in influx.
-	// mode==estimation:	trades are forwarded to tradesEstimationService, i.e. same as storeTrades mode
-	//						but estimatedUSDPrice is filled by tradesEstimationService.
-	// mode==historical:	trades are sent through kafka to TBS in tradesHistorical topic.
-	mode = flag.String("mode", "current", "either storeTrades, current, historical or estimation")
-)
+func writeTradeToKafka(w *kafka.Writer, t *dia.Trade) error {
+	// Write trade to Kafka.
+	err := kafkaHelper.WriteMessage(w, t)
+	if err != nil {
+		return err
+	}
+
+	// Write reversed trade to Kafka as well for some exchanges.
+	if utils.Contains(&swapTradesOnExchange, t.Source) {
+		tSwapped, err := dia.SwapTrade(*t)
+		if err != nil {
+			log.Error("swap trade: ", err)
+		} else {
+			err = kafkaHelper.WriteMessage(w, &tSwapped)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
 
 func isValidExchange(estring string) bool {
-	for _, e := range dia.Exchanges() {
+	for e := range scrapers.Exchanges {
 		if e == estring {
 			return true
 		}
 	}
 	return false
-}
-
-func init() {
-	flag.Parse()
-	if *exchange == "" {
-		flag.Usage()
-		log.Println(dia.Exchanges())
-		for {
-			time.Sleep(24 * time.Hour)
-		}
-		log.Fatal("exchange is required")
-	}
-	if !isValidExchange(*exchange) {
-		log.Fatal("Invalid exchange string: ", *exchange)
-	}
-
-}
-
-// main manages all PairScrapers and handles incoming trade information
-func main() {
-
-	log.Infof("start collector for %s in %s mode...", *exchange, *mode)
-
-	relDB, err := models.NewRelDataStore()
-	if err != nil {
-		log.Errorln("NewDataStore:", err)
-	}
-
-	ds, err := models.NewDataStore()
-	if err != nil {
-		log.Fatal("datastore: ", err)
-	}
-
-	pairsExchange, err := relDB.GetExchangePairSymbols(*exchange)
-	log.Info("available exchangePairs:", len(pairsExchange))
-
-	if err != nil || len(pairsExchange) == 0 {
-		log.Error("error on GetExchangePairSymbols", err)
-		cc := configCollectors.NewConfigCollectors(*exchange, ".json")
-		pairsExchange = cc.AllPairs()
-	}
-
-	configApi, err := dia.GetConfig(*exchange)
-	if err != nil {
-		log.Warning("no config for exchange's api ", err)
-	}
-	es := scrapers.NewAPIScraper(*exchange, true, configApi.ApiKey, configApi.SecretKey, relDB)
-
-	var w *kafka.Writer
-	switch *mode {
-	case "current":
-		w = kafkaHelper.NewWriter(kafkaHelper.TopicTrades)
-	case "historical":
-		w = kafkaHelper.NewWriter(kafkaHelper.TopicTradesHistorical)
-	case "estimation":
-		w = kafkaHelper.NewWriter(kafkaHelper.TopicTradesEstimation)
-	}
-
-	defer func() {
-		err := w.Close()
-		if err != nil {
-			log.Error(err)
-		}
-	}()
-
-	wg := sync.WaitGroup{}
-
-	exchangePairs := make(map[string]string)
-
-	// TO DO: Add check for new pairs. i.e. put a ticker around the following loop
-	// and add a control whether new pairs are there.
-	for _, configPair := range pairsExchange {
-		dontAddPair := false
-		if *onePairPerSymbol {
-			_, dontAddPair = exchangePairs[configPair.Symbol]
-			exchangePairs[configPair.Symbol] = configPair.Symbol
-		}
-		if dontAddPair {
-			log.Println("Skipping pair:", configPair.Symbol, configPair.ForeignName, "on exchange", *exchange)
-		} else {
-			log.Println("Adding pair:", configPair.Symbol, configPair.ForeignName, "on exchange", *exchange)
-			_, err := es.ScrapePair(dia.ExchangePair{
-				Symbol:      configPair.Symbol,
-				ForeignName: configPair.ForeignName})
-			if err != nil {
-				log.Println(err)
-			} else {
-				wg.Add(1)
-			}
-		}
-		defer wg.Wait()
-	}
-	go handleTrades(es.Channel(), &wg, w, ds, *exchange, *mode)
 }

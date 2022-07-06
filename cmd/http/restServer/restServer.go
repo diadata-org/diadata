@@ -215,12 +215,13 @@ func main() {
 		diaGroup.GET("/supplies/:symbol", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetSupplies))
 		//  Deprectated - > split up in specific endpoints
 		// diaGroup.GET("/symbol/:symbol", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetSymbolDetails))
+		diaGroup.GET("/topAssets/:numAssets", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetTopAssets))
 		diaGroup.GET("/symbols", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetAllSymbols))
 		diaGroup.GET("/symbols/:substring", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetAllSymbols))
 		diaGroup.GET("/volume/:symbol", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetVolume))
 		diaGroup.GET("/volume24/:exchange", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.Get24hVolume))
-		// Deprectated: diaGroup.GET("/coins", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetCoins))
-		diaGroup.GET("/pairs", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetPairs))
+		diaGroup.GET("/feedStats/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetFeedStats))
+
 		diaGroup.GET("/exchanges", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetExchanges))
 		diaGroup.GET("/defiLendingProtocols", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetLendingProtocols))
 		diaGroup.GET("/chartPoints/:filter/:exchange/:symbol", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetChartPoints))
@@ -237,10 +238,6 @@ func main() {
 		diaGroup.GET("/tokenexchanges/:symbol", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetAssetExchanges))
 
 		diaGroup.GET("/blockchains", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetAllBlockchains))
-
-		diaGroup.GET("/FarmingPools", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetFarmingPools))
-		diaGroup.GET("/FarmingPoolData/:protocol/:poolID", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetFarmingPoolData))
-		diaGroup.GET("/FarmingPoolData/:protocol/:poolID/:time", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetFarmingPoolData))
 
 		diaGroup.GET("CryptoDerivatives/:type/:name", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetCryptoDerivative))
 
@@ -294,7 +291,7 @@ func main() {
 		diaGroup.GET("/NFTFloor/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetNFTFloor))
 		diaGroup.GET("/NFTFloorMA/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetNFTFloorMA))
 		diaGroup.GET("/NFTDownday/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetNFTDownday))
-		diaGroup.GET("/feedStats/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetFeedStats))
+		diaGroup.GET("/NFTVolatility/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetNFTFloorVola))
 
 	}
 

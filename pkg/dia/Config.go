@@ -20,7 +20,6 @@ const (
 	BalancerExchange          = "Balancer"
 	BalancerV2Exchange        = "BalancerV2"
 	BeetsExchange             = "Beets"
-	GnosisExchange            = "Gnosis"
 	KrakenExchange            = "Kraken"
 	BitfinexExchange          = "Bitfinex"
 	BitforexExchange          = "Bitforex"
@@ -79,84 +78,85 @@ const (
 	TrisolarisExchange        = "Trisolaris"
 	ByBitExchange             = "ByBit"
 	BitMexExchange            = "BitMex"
+	MultiChain                = "MultiChain"
+
 	// FinageForex        = "FinageForex"
 )
 
-func Exchanges() []string {
-	return []string{
+// func Exchanges() []string {
+// 	return []string{
 
-		BitfinexExchange,
-		BitMexExchange,
-		HuobiExchange,
-		CoinBaseExchange,
-		GateIOExchange,
-		HitBTCExchange,
-		OKExExchange,
-		BittrexExchange,
-		KrakenExchange,
-		KuCoinExchange,
-		BitBayExchange,
-		LoopringExchange,
-		BitforexExchange,
-		SimexExchange,
+// 		BitfinexExchange,
+// 		BitMexExchange,
+// 		HuobiExchange,
+// 		CoinBaseExchange,
+// 		GateIOExchange,
+// 		HitBTCExchange,
+// 		OKExExchange,
+// 		BittrexExchange,
+// 		KrakenExchange,
+// 		KuCoinExchange,
+// 		BitBayExchange,
+// 		LoopringExchange,
+// 		BitforexExchange,
+// 		SimexExchange,
 
-		BinanceExchange,
-		BinanceExchangeUS,
-		LBankExchange,
-		QuoineExchange,
+// 		BinanceExchange,
+// 		BinanceExchangeUS,
+// 		LBankExchange,
+// 		QuoineExchange,
 
-		// FinageForex,
-		ByBitExchange,
-		BitMaxExchange,
-		CryptoDotComExchange,
-		ZBExchange,
-		FTXExchange,
-		CREX24Exchange,
-		STEXExchange,
-		UniswapExchangeV3Polygon,
+// 		// FinageForex,
+// 		ByBitExchange,
+// 		BitMaxExchange,
+// 		CryptoDotComExchange,
+// 		ZBExchange,
+// 		FTXExchange,
+// 		CREX24Exchange,
+// 		STEXExchange,
+// 		UniswapExchangeV3Polygon,
 
-		DiffusionExchange,
-		ArthswapExchange,
-		ApeswapExchange,
-		BiswapExchange,
-		OmniDexExchange,
-		HermesExchange,
-		TethysExchange,
-		TraderJoeExchange,
-		PangolinExchange,
-		HuckleberryExchange,
-		NetswapExchange,
-		DfynNetwork,
-		UbeswapExchange,
-		SpookyswapExchange,
-		SpiritswapExchange,
-		SerumExchange,
-		SolarbeamExchange,
-		TrisolarisExchange,
-		AnyswapExchange,
+// 		DiffusionExchange,
+// 		ArthswapExchange,
+// 		ApeswapExchange,
+// 		BiswapExchange,
+// 		OmniDexExchange,
+// 		HermesExchange,
+// 		TethysExchange,
+// 		TraderJoeExchange,
+// 		PangolinExchange,
+// 		HuckleberryExchange,
+// 		NetswapExchange,
+// 		DfynNetwork,
+// 		UbeswapExchange,
+// 		SpookyswapExchange,
+// 		SpiritswapExchange,
+// 		SerumExchange,
+// 		SolarbeamExchange,
+// 		TrisolarisExchange,
+// 		AnyswapExchange,
 
-		SushiSwapExchange,
-		SushiSwapExchangeArbitrum,
-		SushiSwapExchangePolygon,
-		SushiSwapExchangeFantom,
-		BeetsExchange,
-		UniswapExchange,
-		UniswapExchangeV3,
-		QuickswapExchange,
-		PanCakeSwap,
+// 		SushiSwapExchange,
+// 		SushiSwapExchangeArbitrum,
+// 		SushiSwapExchangePolygon,
+// 		SushiSwapExchangeFantom,
+// 		BeetsExchange,
+// 		UniswapExchange,
+// 		UniswapExchangeV3,
+// 		QuickswapExchange,
+// 		PanCakeSwap,
 
-		CurveFIExchange,
-		GnosisExchange,
-		DforceExchange,
-		KyberExchange,
-		MakerExchange,
-		ZeroxExchange,
-		BalancerExchange,
-		BalancerV2Exchange,
-		BancorExchange,
-		UnknownExchange,
-	}
-}
+// 		CurveFIExchange,
+// 		DforceExchange,
+// 		KyberExchange,
+// 		MakerExchange,
+// 		ZeroxExchange,
+// 		BalancerExchange,
+// 		BalancerV2Exchange,
+// 		BancorExchange,
+// 		UnknownExchange,
+// 	}
+// }
 
 type ConfigApi struct {
 	ApiKey    string

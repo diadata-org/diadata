@@ -137,7 +137,7 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 	log.Info("NewUniswapScraper: ", exchange.Name)
 	var s *UniswapScraper
 	var listenByAddress bool
-	exchangeFactoryContractAddress = exchange.Contract.Hex()
+	exchangeFactoryContractAddress = exchange.Contract
 
 	switch exchange.Name {
 	case dia.UniswapExchange:

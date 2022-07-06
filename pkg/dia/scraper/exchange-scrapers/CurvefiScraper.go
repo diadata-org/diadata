@@ -98,7 +98,7 @@ type CurveFIScraper struct {
 func NewCurveFIScraper(exchange dia.Exchange, scrape bool) *CurveFIScraper {
 	scraper := &CurveFIScraper{
 		exchangeName:   exchange.Name,
-		contract:       exchange.Contract,
+		contract:       common.HexToAddress(exchange.Contract),
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),

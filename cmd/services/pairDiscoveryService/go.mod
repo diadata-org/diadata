@@ -5,7 +5,7 @@ go 1.14
 require (
 	github.com/adshao/go-binance/v2 v2.3.5 // indirect
 	github.com/cryptwire/go-binance/v2 v2.2.3 // indirect
-	github.com/diadata-org/diadata v1.4.1-rc-190
+	github.com/diadata-org/diadata v1.4.1-rc-221
 	github.com/jackc/fake v0.0.0-20150926172116-812a484cc733 // indirect
 	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/sirupsen/logrus v1.8.1

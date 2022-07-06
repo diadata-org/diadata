@@ -224,6 +224,11 @@ type ExchangeVolumesList struct {
 	Timestamp time.Time        `json:"Timestamp"`
 }
 
+type AssetVolume struct {
+	Asset  Asset   `json:"Asset"`
+	Volume float64 `json:"Volume"`
+}
+
 type PairVolume struct {
 	Pair   Pair    `json:"Pair"`
 	Volume float64 `json:"Volume"`
@@ -273,11 +278,15 @@ type EthereumBlockData struct {
 }
 
 type Exchange struct {
-	Name          string         `json:"Name"`
-	Centralized   bool           `json:"Centralized"`
-	Contract      common.Address `json:"Contract"`
-	BlockChain    BlockChain     `json:"BlockChain"`
-	WatchdogDelay int            `json:"WatchdogDelay"`
+	Name          string     `json:"Name"`
+	Centralized   bool       `json:"Centralized"`
+	Bridge        bool       `json:"Bridge"`
+	Contract      string     `json:"Contract"`
+	BlockChain    BlockChain `json:"BlockChain"`
+	RestAPI       string     `json:"RestAPI"`
+	WsAPI         string     `json:"WsAPI"`
+	PairsAPI      string     `json:"PairsAPI"`
+	WatchdogDelay int        `json:"WatchdogDelay"`
 }
 
 type Supply struct {
@@ -309,6 +318,12 @@ type BlockChain struct {
 	ChainID string `json:"ChainID"`
 }
 
+type ChainConfig struct {
+	RestURL string `json:"restURL"`
+	WSURL   string `json:"wsURL"`
+	ChainID string `json:"ChainID"`
+}
+
 // Pair substitues the old dia.Pair. It includes the new asset type.
 type Pair struct {
 	QuoteToken Asset
@@ -318,6 +333,16 @@ type Pair struct {
 // ForeignName returns the foreign name of the pair @p, i.e. the string Quotetoken-Basetoken
 func (p *Pair) ForeignName() string {
 	return p.QuoteToken.Symbol + "-" + p.BaseToken.Symbol
+}
+
+// Pool is the container for liquidity pools on DEXes.
+type Pool struct {
+	Exchange   Exchange
+	Blockchain BlockChain
+	Address    string
+	// Assetvolumes map[Asset]float64
+	Assetvolumes []AssetVolume
+	Time         time.Time
 }
 
 // MarshalBinary is a custom marshaller for BlockChain type
@@ -495,6 +520,8 @@ type FilterPoint struct {
 	Value float64
 	Name  string
 	Time  time.Time
+	Max   float64
+	Min   float64
 }
 
 type IndexBlock struct {

@@ -8,6 +8,8 @@ description: >-
 
 ## Digital Assets
 
+### Coins data
+
 {% swagger method="get" path="v1/assetQuotation/:blockchain/:asset" baseUrl="https://api.diadata.org/" summary="Asset Quotation" %}
 {% swagger-description %}
 Returns the quotation for a fully qualified asset (i.e. distinguished by blockchain and address).
@@ -189,7 +191,7 @@ Which symbol to get a quotation for, e.g., BTC.
 {% endswagger-response %}
 {% endswagger %}
 
-{% swagger method="get" path="/token/:symbol" baseUrl="https://api.diadata.org" summary="Tokens list" %}
+{% swagger method="get" path="/v1/token/:symbol" baseUrl="https://api.diadata.org" summary="Tokens list" %}
 {% swagger-description %}
 Get a list of blockchains and addresses for all tokens that match the symbol
 {% endswagger-description %}
@@ -364,7 +366,9 @@ Unix timestamp.
 {% endswagger-response %}
 {% endswagger %}
 
-{% swagger method="get" path="" baseUrl="https://api.diadata.org/v1/NFTFloor/:blockchain/:address" summary="NFT Floor Price" %}
+### NFT data
+
+{% swagger method="get" path="/v1/NFTFloor/:blockchain/:address" baseUrl="https://api.diadata.org" summary="NFT Floor Price" %}
 {% swagger-description %}
 Returns the current floor price of a collection given by a blockchain and an address.\
 The floor price is derived from all sales in the last 24h.\
@@ -400,7 +404,7 @@ Number of seconds in considered interval
 {% endswagger-response %}
 {% endswagger %}
 
-{% swagger method="get" path="" baseUrl="https://api.diadata.org/v1/NFTFloorMA/:blockchain/:address" summary="NFT Moving Average of Floor Price" %}
+{% swagger method="get" path="/v1/NFTFloorMA/:blockchain/:address" baseUrl="https://api.diadata.org" summary="NFT Moving Average of Floor Price" %}
 {% swagger-description %}
 Returns the moving average of a collection's floor price over the past 30 days.\
 _Example:_ [https://api.diadata.org/v1/NFTFloorMA/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB](https://api.diadata.org/v1/NFTFloorMA/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB)
@@ -436,7 +440,7 @@ Number of seconds in considered interval regarding moving average.
 {% endswagger-response %}
 {% endswagger %}
 
-{% swagger method="get" path="" baseUrl="https://api.diadata.org/v1/NFTDownday/:blockchain/:address" summary="NFT Max Weekly Drawdown and related Statistics" %}
+{% swagger method="get" path="/v1/NFTDownday/:blockchain/:address" baseUrl="https://api.diadata.org" summary="NFT Max Weekly Drawdown and related Statistics" %}
 {% swagger-description %}
 Returns the maximal weekly drawdown in the last 90 days in percent.\
 Furthermore, the average and standard deviation of the weekly drawdown time-series is returned.\
@@ -470,6 +474,80 @@ Number of seconds in considered interval regarding weekly drawdown.
 {"Weekly_Drawdown":-18.303800719054955,"Downday_Average":-7.5472418447635405,"Downday_Deviation":11.362194930411123,"Time":"2022-06-07T15:04:08.093662489Z","Source":"diadata.org"}
 ```
 {% endswagger-response %}
+{% endswagger %}
+
+{% swagger method="get" path="/v1/NFTVolatility/:blockchain/:address" baseUrl="https://api.diadata.org" summary="NFT Volatility of Floor Price" %}
+{% swagger-description %}
+Returns the average and volatility of the floor price in the last 90 days.\
+_Example:_ [https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D](https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D)
+
+Use the parameter time in order to get the floor price at a previous time.\
+_Example:_ [https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D?time=1655027598](https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D?time=1655027598)
+
+Use the query parameter floorWindow in order to get the floor price with respect to all sales in the last floorWindow seconds. Default value is 86400s=24h.\
+_Example:_[ __ ](https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D?time=1655027598) [https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D?floorWindow=43200](https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D?time=1655027598)
+
+Use the query parameter lookbackSeconds in order to get the moving average over the last lookbackSeconds. Default value is 7776000s=90d.\
+_Example:_  [https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D?lookbackSeconds=25920000](https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D?time=1655027598)
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="blockchain" type="String" required="true" %}
+Blockchain name
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="address" type="String" required="true" %}
+Address of the collection
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="time" type="Integer" %}
+Unix timestamp (in seconds) of the volatility.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="floorWindow" type="Integer" %}
+Number of seconds in considered  interval regarding floor price.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="lookBackSeconds" type="Integer" %}
+Number of seconds in considered interval regarding the volatility.
+{% endswagger-parameter %}
+
+{% swagger-response status="200: OK" description="Successful retrieval of the volatility of a collection's floor price." %}
+```javascript
+{"Floor_Average":97.25344982682456,"Floor_Volatility":14.00764101575502,"Collection":"BoredApeYachtClub","Time":"2022-06-23T10:11:34.571288736Z","Source":"diadata.org"}
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger method="connect" path="/ws/nft" baseUrl="ws://api.diadata.org" summary="Listen to live NFT deploy and mint events" %}
+{% swagger-description %}
+Connecting to NFT web-socket API will allow to retrieve live mint and deploy events happening on the Ethereum blockchain.
+
+To retrieve live NFT mints use:
+
+`{"Channel": "nftmint"}`
+
+For getting newly deployed NFT collections use:
+
+`{"Channel": "nftdeploy"}`
+
+The connection requires pinging the server or it will timeout after 50 seconds of inactivity.
+
+For pinging use:
+
+`{"Channel": "ping"}`
+{% endswagger-description %}
+
+{% swagger-parameter in="body" required="true" type="String" name="Channel" %}
+Select channel to connect to (
+
+`nftmint`
+
+ or 
+
+`nftdeploy`
+
+)
+{% endswagger-parameter %}
 {% endswagger %}
 
 ## Traditional Assets

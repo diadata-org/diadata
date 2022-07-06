@@ -33,3 +33,9 @@ func (qr *FilterPointResolver) Address(ctx context.Context) (*string, error) {
 func (qr *FilterPointResolver) Blockchain(ctx context.Context) (*string, error) {
 	return &qr.q.Asset.Blockchain, nil
 }
+func (qr *FilterPointResolver) Max(ctx context.Context) (*float64, error) {
+	return &qr.q.Max, nil
+}
+func (qr *FilterPointResolver) Min(ctx context.Context) (*float64, error) {
+	return &qr.q.Min, nil
+}

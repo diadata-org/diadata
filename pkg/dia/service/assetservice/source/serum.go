@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/mr-tron/base58"
 	"github.com/streamingfast/solana-go"
 	"github.com/streamingfast/solana-go/programs/serum"
@@ -20,9 +21,7 @@ type SerumPair struct {
 
 const (
 	// Public Solana clients.
-	wsDialSolana              = "http://192.168.1.88:8900"
-	restDialSolana            = "http://192.168.1.88:8899"
-	rpcEndpointSolana         = "https://solana-api.projectserum.com"
+	rpcEndpointSolana         = ""
 	dexProgramAddress         = "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin" // refer - https://github.com/project-serum/serum-dex
 	nameServiceProgramAddress = "namesLPneVptA9Z5rqUDD9tMTWEJwofgaYwp8cawRkX"
 	dotTokenTLD               = "6NSu2tci4apRKQtt257bAVcvqYjB3zV2H1dWo56vgpa6"
@@ -46,7 +45,7 @@ func NewSerumAssetSource(exchange dia.Exchange) *SerumAssetSource {
 	exchangeFactoryContractAddress = ""
 
 	sas = &SerumAssetSource{
-		solanaRpcClient: rpc.NewClient(rpcEndpointSolana),
+		solanaRpcClient: rpc.NewClient(utils.Getenv("SOLANA_URI_REST", rpcEndpointSolana)),
 		assetChannel:    assetChannel,
 		doneChannel:     doneChannel,
 		blockchain:      dia.SOLANA,
