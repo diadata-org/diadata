@@ -42,7 +42,7 @@ type RelDatastore interface {
 	SetExchangePair(exchange string, pair dia.ExchangePair, cache bool) error
 	GetExchangePair(exchange string, foreignname string) (exchangepair dia.ExchangePair, err error)
 	GetExchangePairSymbols(exchange string) ([]dia.ExchangePair, error)
-	GetPairs(exchange string) ([]dia.ExchangePair, error)
+	GetNumPairs(exchange dia.Exchange) (int, error)
 	SetExchangeSymbol(exchange string, symbol string) error
 	GetExchangeSymbols(exchange string, substring string) ([]string, error)
 	GetUnverifiedExchangeSymbols(exchange string) ([]string, error)
