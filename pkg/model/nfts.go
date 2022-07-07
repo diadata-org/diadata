@@ -406,6 +406,74 @@ func (rdb *RelDB) GetNFTFloorRange(nftClass dia.NFTClass, starttime time.Time, e
 	return
 }
 
+// GetTopNFTsEth returns a list of @numCollections NFT collections sorted by trading volume in [@starttime, @endtime]
+// in descending order. Only takes into account trades done with ETH.
+func (rdb *RelDB) GetTopNFTsEth(numCollections int, starttime time.Time, endtime time.Time) (nftVolumes []struct {
+	Name       string
+	Address    string
+	Blockchain string
+	Volume     float64
+}, err error) {
+
+	var rows pgx.Rows
+	query := fmt.Sprintf("SELECT nc.name,nc.address,nc.blockchain,SUM(price::numeric) FROM %s INNER JOIN %s nc ON nfttradecurrent.nftclass_id=nc.nftclass_id WHERE trade_time>to_timestamp(%v) AND trade_time<=to_timestamp(%v) AND currency_id=(SELECT asset_id FROM %s WHERE blockchain='%s' AND address='%s') GROUP BY nc.name,nc.address,nc.blockchain ORDER BY sum(price::numeric) DESC LIMIT %d",
+		NfttradeCurrTable,
+		nftclassTable,
+		starttime.Unix(),
+		endtime.Unix(),
+		assetTable,
+		dia.ETHEREUM,
+		"0x0000000000000000000000000000000000000000",
+		numCollections,
+	)
+
+	rows, err = rdb.postgresClient.Query(context.Background(), query)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			name       string
+			address    string
+			blockchain string
+			volume     float64
+		)
+		err = rows.Scan(
+			&name,
+			&address,
+			&blockchain,
+			&volume,
+		)
+		if err != nil {
+			return
+		}
+
+		nftVolumes = append(nftVolumes, struct {
+			Name       string
+			Address    string
+			Blockchain string
+			Volume     float64
+		}{Name: name, Address: address, Blockchain: blockchain, Volume: volume * 10e-18})
+	}
+	return
+}
+
+// GetNumNFTTrades returns the number of trades recorded in [@starttime,@endtime] on the collection on @blockchain with @address.
+func (rdb *RelDB) GetNumNFTTrades(address string, blockchain string, starttime time.Time, endtime time.Time) (numTrades int, err error) {
+	query := fmt.Sprintf("SELECT count(*) FROM %s INNER JOIN %s nc ON nfttradecurrent.nftclass_id=nc.nftclass_id WHERE trade_time>to_timestamp(%v) AND trade_time<to_timestamp(%v) AND nc.address='%s' AND nc.blockchain='%s'",
+		NfttradeCurrTable,
+		nftclassTable,
+		starttime.Unix(),
+		endtime.Unix(),
+		address,
+		blockchain,
+	)
+	err = rdb.postgresClient.QueryRow(context.Background(), query).Scan(&numTrades)
+	return
+}
+
 // GetNFTOffers returns all offers done on the nft given by @address, @blockchain and @tokenID.
 func (rdb *RelDB) GetNFTOffers(address string, blockchain string, tokenID string) (offers []dia.NFTOffer, err error) {
 	var rows pgx.Rows

@@ -28,8 +28,8 @@ CREATE TABLE exchangepair (
     -- These fields reference asset table and should be verified by pairdiscoveryservice.
     -- Only trades with verified pairs are processed further and thereby enter price calculation.
     verified boolean default false,
-    id_quotetoken uuid REFERENCES asset(asset_id),
-    id_basetoken uuid REFERENCES asset(asset_id)
+    id_quotetoken UUID REFERENCES asset(asset_id),
+    id_basetoken UUID REFERENCES asset(asset_id)
 );
 
 CREATE TABLE exchangesymbol (
@@ -38,7 +38,7 @@ CREATE TABLE exchangesymbol (
     exchange text NOT NULL,
     UNIQUE (symbol,exchange),
     verified boolean default false,
-    asset_id uuid REFERENCES asset(asset_id)
+    asset_id UUID REFERENCES asset(asset_id)
 );
 
 CREATE TABLE exchange (
@@ -128,7 +128,7 @@ CREATE TABLE nftclass (
 -- identified by the pair (address(on blockchain), token_id)
 CREATE TABLE nft (
     nft_id UUID DEFAULT gen_random_uuid(),
-    nftclass_id uuid REFERENCES nftclass(nftclass_id),
+    nftclass_id UUID REFERENCES nftclass(nftclass_id),
     token_id text NOT NULL,
     creation_time timestamp,
     creator_address text,
@@ -140,8 +140,8 @@ CREATE TABLE nft (
 
 CREATE TABLE nfttrade (
     sale_id UUID DEFAULT gen_random_uuid(),
-    nftclass_id uuid REFERENCES nftclass(nftclass_id),
-    nft_id uuid REFERENCES nft(nft_id),
+    nftclass_id UUID REFERENCES nftclass(nftclass_id),
+    nft_id UUID REFERENCES nft(nft_id),
     price text,
     price_usd numeric,
     transfer_from text,
@@ -149,6 +149,7 @@ CREATE TABLE nfttrade (
     currency_symbol text,
     currency_address text,
     currency_decimals numeric,
+    currency_id UUID REFERENCES asset(asset_id),
     block_number numeric,
     trade_time timestamp,
     tx_hash text,    
@@ -159,7 +160,7 @@ CREATE TABLE nfttrade (
 
 CREATE TABLE nftbid (
     bid_id UUID DEFAULT gen_random_uuid(),
-    nft_id uuid REFERENCES nft(nft_id),
+    nft_id UUID REFERENCES nft(nft_id),
     bid_value text,
     from_address text,
     currency_symbol text,
@@ -176,7 +177,7 @@ CREATE TABLE nftbid (
 
 CREATE TABLE nftoffer (
     offer_id UUID DEFAULT gen_random_uuid(),
-    nft_id uuid REFERENCES nft(nft_id),
+    nft_id UUID REFERENCES nft(nft_id),
     start_value text,
     end_value text,
     duration numeric,
@@ -212,7 +213,7 @@ CREATE TABLE blockdata (
 
 CREATE TABLE assetpriceident (
     priceident_id UUID DEFAULT gen_random_uuid(),
-    asset_id uuid REFERENCES asset(asset_id),
+    asset_id UUID REFERENCES asset(asset_id),
     group_id numeric NOT NULL,
     rank_in_group numeric NOT NULL,
     UNIQUE(asset_id),
@@ -221,8 +222,8 @@ CREATE TABLE assetpriceident (
 
 CREATE TABLE aggregatedvolume (
     aggregatedvolume_id UUID DEFAULT gen_random_uuid(),
-    quotetoken_id uuid REFERENCES asset(asset_id),
-    basetoken_id uuid REFERENCES asset(asset_id),
+    quotetoken_id UUID REFERENCES asset(asset_id),
+    basetoken_id UUID REFERENCES asset(asset_id),
     volume numeric,
     exchange text,
     time_range_seconds numeric NOT NULL,
@@ -231,7 +232,7 @@ CREATE TABLE aggregatedvolume (
 
 CREATE TABLE tradesdistribution (
     tradesdistribution_id UUID DEFAULT gen_random_uuid(),
-    asset_id uuid REFERENCES asset(asset_id),
+    asset_id UUID REFERENCES asset(asset_id),
     -- total number of trades in [compute_time-time_range_seconds, compute_time]
 	num_trades_total numeric,
     -- number of bins with less than @threshold trades

@@ -213,3 +213,13 @@ func (rdb *RelDB) GetExchangeNames() (allExchanges []string, err error) {
 	sort.Strings(allExchanges)
 	return
 }
+
+func GetExchangeType(exchange dia.Exchange) string {
+	if exchange.Centralized {
+		return "CEX"
+	} else if exchange.Bridge {
+		return "Bridge"
+	} else {
+		return "DEX"
+	}
+}

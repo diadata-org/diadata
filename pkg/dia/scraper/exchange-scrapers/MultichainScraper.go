@@ -591,7 +591,7 @@ func (ps *BridgeSwapScraper) Channel() chan *dia.Trade {
 }
 
 func (s *BridgeSwapScraper) FillSymbolData(symbol string) (dia.Asset, error) {
-	return dia.Asset{}, nil
+	return dia.Asset{Symbol: symbol}, nil
 }
 
 func (up *BridgeSwapScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {

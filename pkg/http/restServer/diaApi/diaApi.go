@@ -441,6 +441,7 @@ func (env *Env) GetExchanges(c *gin.Context) {
 		Name       string
 		Volume24h  float64
 		Trades     int64
+		Pairs      int
 		Type       string
 		Blockchain string
 	}
@@ -461,20 +462,20 @@ func (env *Env) GetExchanges(c *gin.Context) {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 			return
 		}
+		numPairs, err := env.RelDB.GetNumPairs(exchange)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
 
 		exchangereturn := exchangeReturn{
 			Name:       exchange.Name,
 			Volume24h:  vol,
 			Trades:     numTrades,
+			Pairs:      numPairs,
 			Blockchain: exchange.BlockChain.Name,
 		}
-		if exchange.Centralized {
-			exchangereturn.Type = "CEX"
-		} else if exchange.Bridge {
-			exchangereturn.Type = "Bridge"
-		} else {
-			exchangereturn.Type = "DEX"
-		}
+		exchangereturn.Type = models.GetExchangeType(exchange)
 		exchangereturns = append(exchangereturns, exchangereturn)
 
 	}
@@ -2205,6 +2206,77 @@ func (env *Env) GetNFTFloorVola(c *gin.Context) {
 	response.Source = dia.Diadata
 
 	c.JSON(http.StatusOK, response)
+}
+
+func (env *Env) GetTopNFTClasses(c *gin.Context) {
+
+	type localReturn struct {
+		Collection string
+		Volume     float64
+		Trades     int
+		Address    string
+		Blockchain string
+		Time       time.Time
+		Source     string
+	}
+	var (
+		starttime   time.Time
+		endtime     time.Time
+		returnValue []localReturn
+	)
+
+	numCollections, err := strconv.Atoi(c.Param("numCollections"))
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	endtimeString := c.Query("endtime")
+	if endtimeString != "" {
+		endtimeInt, err := strconv.ParseInt(endtimeString, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	} else {
+		endtime = time.Now()
+	}
+	starttimeString := c.Query("starttime")
+	if starttimeString != "" {
+		starttimeInt, err := strconv.ParseInt(starttimeString, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+	} else {
+		starttime = endtime.AddDate(0, 0, -1)
+	}
+
+	nftVolumes, err := env.RelDB.GetTopNFTsEth(numCollections, starttime, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+	for _, nftvolume := range nftVolumes {
+		numTrades, err := env.RelDB.GetNumNFTTrades(nftvolume.Address, nftvolume.Blockchain, starttime, endtime)
+		if err != nil {
+			log.Error("get number of nft trades: ", err)
+		}
+		var l localReturn
+		l.Collection = nftvolume.Name
+		l.Volume = nftvolume.Volume
+		l.Trades = numTrades
+		l.Address = nftvolume.Address
+		l.Blockchain = nftvolume.Blockchain
+		l.Time = endtime
+		l.Source = dia.Diadata
+		returnValue = append(returnValue, l)
+	}
+
+	c.JSON(http.StatusOK, returnValue)
+
 }
 
 func (env *Env) GetFeedStats(c *gin.Context) {
