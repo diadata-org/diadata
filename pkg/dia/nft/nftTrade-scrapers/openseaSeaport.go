@@ -237,9 +237,6 @@ func (s *OpenSeaSeaportScraper) mainLoop() {
 		close(s.tradeScraper.shutdownDone)
 	}()
 
-	c := defOpenSeaSeaportConf
-	s.conf = &c
-
 	log.Infof("opensea scraper has been started (batch: %d, period: %s)", s.conf.BatchSize, s.conf.WaitPeriod.String())
 
 	for stop := false; !stop; {
@@ -285,9 +282,6 @@ func (s *OpenSeaSeaportScraper) FetchTrades() error {
 
 		return err
 	}
-
-	c := defOpenSeaSeaportConf
-	s.conf = &c
 
 	log.Infof("fetching opensea trade transactions from block %d(+%d)", s.state.LastBlockNum, s.conf.BatchSize)
 
@@ -514,10 +508,16 @@ func (s *OpenSeaSeaportScraper) notifyTrade(ev *openseaseaport.OpenseaseaportOrd
 		}
 
 		trade := dia.NFTTrade{
-			NFT:         *nft,
-			// what should be in this place? Code snippet based on opensea.go, what does this value represent?
-			Price:       normPrice.BigInt(),
-			PriceUSD:    usdPrice,
+			NFT:      *nft,
+			Price:    asset.Amount,
+			PriceUSD: usdPrice,
+			Currency: dia.Asset{
+				Symbol:     *transfer.Symbol,
+				Name:       *transfer.Name,
+				Address:    transfer.NFTAddress.String(),
+				Decimals:   currDecimals,
+				Blockchain: datastoreAsset.Blockchain,
+			},
 			FromAddress: transfer.From.Hex(),
 			ToAddress:   transfer.To.Hex(),
 			BlockNumber: ev.Raw.BlockNumber,
