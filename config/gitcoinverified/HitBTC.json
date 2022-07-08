@@ -577,6 +577,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "NMR",
+            "Exchange": "HitBTC",
+            "Blockchain": "Ethereum",
+            "Address": "0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671"
+        },
+        {
             "Symbol": "OAX",
             "Exchange": "HitBTC",
             "Blockchain": "Ethereum",
