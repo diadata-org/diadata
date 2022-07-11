@@ -460,8 +460,27 @@ func (rdb *RelDB) GetTopNFTsEth(numCollections int, starttime time.Time, endtime
 	return
 }
 
+// GetNFTVolume returns the trade volume of a collection in the time-range (@starttime, @endtime].
+func (rdb *RelDB) GetNFTVolume(address string, blockchain string, starttime time.Time, endtime time.Time) (float64, error) {
+	query := fmt.Sprintf("SELECT SUM(price::numeric) FROM %s INNER JOIN %s nc ON nfttradecurrent.nftclass_id=nc.nftclass_id WHERE trade_time>to_timestamp(%v) AND trade_time<=to_timestamp(%v) AND nc.address='%s' AND nc.blockchain='%s'",
+		NfttradeCurrTable,
+		nftclassTable,
+		starttime.Unix(),
+		endtime.Unix(),
+		address,
+		blockchain,
+	)
+	// TO DO: address currency issue.
+	var volume sql.NullFloat64
+	err := rdb.postgresClient.QueryRow(context.Background(), query).Scan(&volume)
+	if volume.Valid {
+		return volume.Float64 / 1e18, nil
+	}
+	return 0, err
+}
+
 // GetNumNFTTrades returns the number of trades recorded in [@starttime,@endtime] on the collection on @blockchain with @address.
-func (rdb *RelDB) GetNumNFTTrades(address string, blockchain string, starttime time.Time, endtime time.Time) (numTrades int, err error) {
+func (rdb *RelDB) GetNumNFTTrades(address string, blockchain string, starttime time.Time, endtime time.Time) (int, error) {
 	query := fmt.Sprintf("SELECT count(*) FROM %s INNER JOIN %s nc ON nfttradecurrent.nftclass_id=nc.nftclass_id WHERE trade_time>to_timestamp(%v) AND trade_time<to_timestamp(%v) AND nc.address='%s' AND nc.blockchain='%s'",
 		NfttradeCurrTable,
 		nftclassTable,
@@ -470,8 +489,12 @@ func (rdb *RelDB) GetNumNFTTrades(address string, blockchain string, starttime t
 		address,
 		blockchain,
 	)
-	err = rdb.postgresClient.QueryRow(context.Background(), query).Scan(&numTrades)
-	return
+	var numTrades sql.NullInt64
+	err := rdb.postgresClient.QueryRow(context.Background(), query).Scan(&numTrades)
+	if numTrades.Valid {
+		return int(numTrades.Int64), nil
+	}
+	return 0, err
 }
 
 // GetNFTOffers returns all offers done on the nft given by @address, @blockchain and @tokenID.

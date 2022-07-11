@@ -2211,13 +2211,16 @@ func (env *Env) GetNFTFloorVola(c *gin.Context) {
 func (env *Env) GetTopNFTClasses(c *gin.Context) {
 
 	type localReturn struct {
-		Collection string
-		Volume     float64
-		Trades     int
-		Address    string
-		Blockchain string
-		Time       time.Time
-		Source     string
+		Collection   string
+		Floor        float64
+		Volume       float64
+		Trades       int
+		VolumeChange float64
+		TradesChange float64
+		Address      string
+		Blockchain   string
+		Time         time.Time
+		Source       string
 	}
 	var (
 		starttime   time.Time
@@ -2253,21 +2256,49 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 	} else {
 		starttime = endtime.AddDate(0, 0, -1)
 	}
+	timeWindow := endtime.Sub(starttime)
 
 	nftVolumes, err := env.RelDB.GetTopNFTsEth(numCollections, starttime, endtime)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 		return
 	}
+
 	for _, nftvolume := range nftVolumes {
+		floor, err := env.RelDB.GetNFTFloor(
+			dia.NFTClass{Address: nftvolume.Address, Blockchain: nftvolume.Blockchain},
+			endtime,
+			timeWindow,
+		)
+		if err != nil {
+			restApi.SendError(c, http.StatusBadRequest, err)
+			return
+		}
+
 		numTrades, err := env.RelDB.GetNumNFTTrades(nftvolume.Address, nftvolume.Blockchain, starttime, endtime)
 		if err != nil {
 			log.Error("get number of nft trades: ", err)
 		}
+		numTradesYesterday, err := env.RelDB.GetNumNFTTrades(nftvolume.Address, nftvolume.Blockchain, starttime.Add(-timeWindow), endtime.Add(-timeWindow))
+		if err != nil {
+			log.Error("get number of nft trades yesterday: ", err)
+		}
+		volumeYesterday, err := env.RelDB.GetNFTVolume(nftvolume.Address, nftvolume.Blockchain, starttime.Add(-timeWindow), endtime.Add(-timeWindow))
+		if err != nil {
+			log.Error("get number of nft trades: ", err)
+		}
+
 		var l localReturn
 		l.Collection = nftvolume.Name
+		l.Floor = floor
 		l.Volume = nftvolume.Volume
+		if volumeYesterday > 0 {
+			l.VolumeChange = (nftvolume.Volume - volumeYesterday) / volumeYesterday * 100
+		}
 		l.Trades = numTrades
+		if numTradesYesterday > 0 {
+			l.TradesChange = float64(numTrades-numTradesYesterday) / float64(numTradesYesterday) * 100
+		}
 		l.Address = nftvolume.Address
 		l.Blockchain = nftvolume.Blockchain
 		l.Time = endtime
