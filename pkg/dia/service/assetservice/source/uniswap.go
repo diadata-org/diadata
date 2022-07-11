@@ -117,11 +117,14 @@ func NewUniswapAssetSource(exchange dia.Exchange) (uas *UniswapAssetSource) {
 
 // makeUniswapAssetSource returns an asset source as used in NewUniswapAssetSource.
 func makeUniswapAssetSource(exchange dia.Exchange, restDial string, waitMilliseconds string) *UniswapAssetSource {
-	var restClient *ethclient.Client
-	var err error
-	var assetChannel = make(chan dia.Asset)
-	var doneChannel = make(chan bool)
-	var uas *UniswapAssetSource
+	var (
+		restClient   *ethclient.Client
+		err          error
+		assetChannel = make(chan dia.Asset)
+		doneChannel  = make(chan bool)
+		uas          *UniswapAssetSource
+	)
+
 	log.Infof("Init rest client for %s.", exchange.BlockChain.Name)
 	restClient, err = ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_REST", restDial))
 	if err != nil {

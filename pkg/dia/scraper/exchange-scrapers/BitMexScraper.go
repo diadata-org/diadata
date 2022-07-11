@@ -260,8 +260,7 @@ func (s *BitMexScraper) mainLoop() {
 	for {
 		select {
 		case <-s.shutdown:
-			log.Println("BitMexScraper: Shutting down main loop")
-			return
+			log.Warn("BitMexScraper: Shutting down main loop")
 		default:
 		}
 
