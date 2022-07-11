@@ -81,7 +81,6 @@ func main() {
 	wg.Add(1)
 	go handleData(scraper.GetTradeChannel(), &wg, rdb)
 	defer wg.Wait()
-
 }
 
 func handleData(tradeChannel chan dia.NFTTrade, wg *sync.WaitGroup, rdb *models.RelDB) {
