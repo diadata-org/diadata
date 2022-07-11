@@ -93,12 +93,28 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	Address              graphql.NullString
 	BlockChain           graphql.NullString
 }) (*[]*FilterPointResolver, error) {
+	fpr, _ := r.GetChartMeta(ctx, args)
+
+	return fpr.fpr, nil
+}
+
+func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
+	Filter               graphql.NullString
+	BlockDurationSeconds graphql.NullInt
+	BlockShiftSeconds    graphql.NullInt
+	Symbol               graphql.NullString
+	StartTime            graphql.NullTime
+	EndTime              graphql.NullTime
+	Exchanges            *[]graphql.NullString
+	Address              graphql.NullString
+	BlockChain           graphql.NullString
+}) (*FilterPointMetaResolver, error) {
 	var (
 		blockShiftSeconds int64
 		tradeBlocks       []queryhelper.Block
 		blockchain        string
 		address           string
-		sr                []*FilterPointResolver
+		sr                *FilterPointMetaResolver
 	)
 	filter := args.Filter.Value
 	blockSizeSeconds := int64(*args.BlockDurationSeconds.Value)
@@ -133,14 +149,14 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 		asset, err = r.RelDB.GetAsset(address, blockchain)
 		if err != nil {
 			log.Errorln("Asset not found with address %s and blockchain %s ", address, blockchain)
-			return &sr, err
+			return sr, err
 		}
 
 	} else {
 		assets, err := r.RelDB.GetTopAssetByVolume(symbol)
 		if err != nil {
 			log.Errorln("Asset not found with symbol %s ", symbol)
-			return &sr, err
+			return sr, err
 		}
 
 		log.Infoln("All assets having same symbol", assets)
@@ -149,7 +165,10 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	}
 
 	log.Infoln("Asset Selected", asset)
-	var filterPoints, emaFilterPoints []dia.FilterPoint
+	var (
+		filterPoints, emaFilterPoints []dia.FilterPoint
+		filterMetadata                *dia.FilterPointMetadata
+	)
 
 	if *filter != "ema" {
 
@@ -165,7 +184,7 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 
 			trades, err := r.DS.GetTradesByExchanges(asset, exchangesString, starttime, endtime)
 			if err != nil {
-				return &sr, err
+				return sr, err
 			}
 			tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateSize(blockSizeSeconds)
 		} else {
@@ -183,7 +202,7 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 			if blockShiftSeconds <= blockSizeSeconds {
 				trades, err = r.DS.GetTradesByExchanges(asset, exchangesString, starttime, endtime)
 				if err != nil {
-					return &sr, err
+					return sr, err
 				}
 			} else {
 				// In this case, fetch trades by time window and batch the Influx API requests.
@@ -250,45 +269,44 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	switch *filter {
 	case "ema":
 		{
-			filterPoints = queryhelper.FilterEMA(emaFilterPoints, asset, int(blockSizeSeconds))
+			filterPoints, filterMetadata = queryhelper.FilterEMA(emaFilterPoints, asset, int(blockSizeSeconds))
 		}
 	case "mair":
 		{
-			filterPoints = queryhelper.FilterMAIR(tradeBlocks, asset, int(blockSizeSeconds))
+			filterPoints, filterMetadata = queryhelper.FilterMAIR(tradeBlocks, asset, int(blockSizeSeconds))
 		}
 	case "ma":
 		{
-			filterPoints = queryhelper.FilterMA(tradeBlocks, asset, int(blockSizeSeconds))
+			filterPoints, filterMetadata = queryhelper.FilterMA(tradeBlocks, asset, int(blockSizeSeconds))
 		}
 	case "vwap":
 		{
-			filterPoints = queryhelper.FilterVWAP(tradeBlocks, asset, int(blockSizeSeconds))
+			filterPoints, filterMetadata = queryhelper.FilterVWAP(tradeBlocks, asset, int(blockSizeSeconds))
 		}
 	case "vwapir":
 		{
-			filterPoints = queryhelper.FilterVWAPIR(tradeBlocks, asset, int(blockSizeSeconds))
+			filterPoints, filterMetadata = queryhelper.FilterVWAPIR(tradeBlocks, asset, int(blockSizeSeconds))
 		}
 	case "medir":
 		{
-			filterPoints = queryhelper.FilterMEDIR(tradeBlocks, asset, int(blockSizeSeconds))
+			filterPoints, filterMetadata = queryhelper.FilterMEDIR(tradeBlocks, asset, int(blockSizeSeconds))
 		}
 	case "vol":
 		{
-			filterPoints = queryhelper.FilterVOL(tradeBlocks, asset, int(blockSizeSeconds))
+			filterPoints, filterMetadata = queryhelper.FilterVOL(tradeBlocks, asset, int(blockSizeSeconds))
 		}
 
 	}
 
+	var fpr []*FilterPointResolver
+
 	for _, fp := range filterPoints {
 		log.Println("Filter point", fp)
-		sr = append(sr, &FilterPointResolver{q: fp})
+		fpr = append(fpr, &FilterPointResolver{q: fp})
 
 	}
 
-	// log.Println("Start Time", trades[len(trades)-1].Time)
-	// log.Println("End Time", trades[0].Time)
-
-	return &sr, nil
+	return &FilterPointMetaResolver{fpr: &fpr, min: filterMetadata.Min, max: filterMetadata.Max}, nil
 }
 
 // GetNFT returns an NFT by address, blockchain and token_id.

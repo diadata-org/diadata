@@ -570,6 +570,24 @@ type SuppliesBlockData struct {
 	Supplies []Supply
 }
 
+type FilterPointMetadata struct {
+	Max float64
+	Min float64
+}
+
+func NewFilterPointMetadata() *FilterPointMetadata {
+	return &FilterPointMetadata{Max: 0, Min: -1}
+}
+
+func (fp *FilterPointMetadata) AddPoint(value float64) {
+	if fp.Max < value {
+		fp.Max = value
+	}
+	if fp.Min > value || fp.Min == -1 {
+		fp.Min = value
+	}
+}
+
 // MarshalBinary for DefiProtocolState
 func (e *DefiProtocolState) MarshalBinary() ([]byte, error) {
 	return json.Marshal(e)
