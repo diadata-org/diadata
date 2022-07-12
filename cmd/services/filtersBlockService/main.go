@@ -17,6 +17,7 @@ import (
 var (
 	replayInflux          = flag.Bool("replayInflux", false, "replayInflux ?")
 	historical            = flag.Bool("historical", false, "digest historical or current trades")
+	testing               = flag.Bool("testing", false, "set true for testing environment")
 	filtersBlockTopic     int
 	tradesBlockTopic      int
 	filtersblockDoneTopic int
@@ -29,10 +30,15 @@ func init() {
 	if !*historical {
 		filtersBlockTopic = kafkaHelper.TopicFiltersBlock
 		tradesBlockTopic = kafkaHelper.TopicTradesBlock
-	} else {
+	}
+	if *historical {
 		filtersBlockTopic = kafkaHelper.TopicFiltersBlockHistorical
 		tradesBlockTopic = kafkaHelper.TopicTradesBlockHistorical
 		filtersblockDoneTopic = kafkaHelper.TopicFiltersBlockDone
+	}
+	if *testing {
+		filtersBlockTopic = kafkaHelper.TopicFiltersBlockTest
+		tradesBlockTopic = kafkaHelper.TopicTradesBlockTest
 	}
 }
 

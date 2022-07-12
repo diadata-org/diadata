@@ -49,7 +49,7 @@ func TestVwap(t *testing.T) {
 	blocks := setupGeneratorSizeShift()
 	fmt.Printf("t: %v\n", blocks)
 
-	r := FilterVWAPIR(blocks, dia.Asset{Symbol: "DIA"}, 120)
+	r, _ := FilterVWAPIR(blocks, dia.Asset{Symbol: "DIA"}, 120)
 	for _, v := range r {
 		fmt.Printf("%v\n", v)
 	}

@@ -33,14 +33,20 @@ func init() {
 	if !*historical {
 		tradesBlockTopic = kafkaHelper.TopicTradesBlock
 		tradesTopic = kafkaHelper.TopicTrades
-	} else {
+	}
+	if *historical {
 		tradesBlockTopic = kafkaHelper.TopicTradesBlockHistorical
 		tradesTopic = kafkaHelper.TopicTradesHistorical
+	}
+	if *testing {
+		tradesBlockTopic = kafkaHelper.TopicTradesBlockTest
+		tradesTopic = kafkaHelper.TopicTradesTest
 	}
 }
 
 var (
 	historical       = flag.Bool("historical", false, "digest current or historical trades")
+	testing          = flag.Bool("testing", false, "set true for testing environment")
 	tradesBlockTopic int
 	tradesTopic      int
 )
