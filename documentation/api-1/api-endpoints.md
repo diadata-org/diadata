@@ -518,36 +518,67 @@ Number of seconds in considered interval regarding the volatility.
 {% endswagger-response %}
 {% endswagger %}
 
-{% swagger method="connect" path="/ws/nft" baseUrl="ws://api.diadata.org" summary="Listen to live NFT deploy and mint events" %}
+{% swagger method="get" path="" baseUrl="https://api.diadata.org/v1/topNFT/:numCollections" summary="Top NFT Collections by Volume" %}
 {% swagger-description %}
-Connecting to NFT web-socket API will allow to retrieve live mint and deploy events happening on the Ethereum blockchain.
+Returns the top collections sorted by volume. Change rates are in %.\
+_Example:_ [https://api.diadata.org/v1/topNFT/10](https://api.diadata.org/v1/topNFT/10)
 
-To retrieve live NFT mints use:
-
-`{"Channel": "nftmint"}`
-
-For getting newly deployed NFT collections use:
-
-`{"Channel": "nftdeploy"}`
-
-The connection requires pinging the server or it will timeout after 50 seconds of inactivity.
-
-For pinging use:
-
-`{"Channel": "ping"}`
+Use the parameters starttime and endtime in order to get the top collections in the respective time-range.\
+_Example:_ [https://api.diadata.org/v1/topNFT/10?starttime=1649322827\&endtime=1649495627](https://api.diadata.org/v1/topNFT/10?starttime=1649322827\&endtime=1649495627)
 {% endswagger-description %}
 
-{% swagger-parameter in="body" required="true" type="String" name="Channel" %}
-Select channel to connect to (
-
-`nftmint`
-
- or 
-
-`nftdeploy`
-
-)
+{% swagger-parameter in="path" name="numCollections" type="Integer" required="true" %}
+Number of returned top collections.
 {% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="starttime" type="Integer" %}
+Unix timestamp (in seconds). Starting time of the considered time-range.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="endtime" type="Integer" %}
+Unix timestamp (in seconds). Final time of the considered time-range.
+{% endswagger-parameter %}
+
+{% swagger-response status="200: OK" description="Successful retrieval of the top collections volume stats." %}
+```javascript
+{
+ "0": {"Collection":"Terraforms","Floor":0.555,"Volume":23170.95,"Trades",9,"FloorChange":-28.846153846153843,"VolumeChange":835.4894060269371,"TradesChange":125,"Address":"0x4E1f41613c9084FdB9E34E11fAE9412427480e56","Blockchain":"Ethereum","Time":"2022-07-12T14:40:47.80480586Z","Source":"diadata.org"},
+ "1": {"Collection":"CATGIRL ACADEMIA","Floor":235.017,"Volume":14840.440000000002,"Trades":6,"FloorChange":6.557094602253401,"VolumeChange":965.5731701800581,"TradesChange":0,"Address":"0xa5D37c0364b9E6D96EE37E03964E7aD2b33a93F4","Blockchain":"Ethereum","Time":"2022-07-12T14:40:47.80480586Z","Source":"diadata.org"}
+}
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger method="get" path="" baseUrl="https://api.diadata.org/v1/NFTVolume/:blockchain/:address" summary="NFT Volume Statistics" %}
+{% swagger-description %}
+Returns statistics on a collection's trading volume.\
+_Example:_ [https://api.diadata.org/v1/NFTVolume/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB](https://api.diadata.org/v1/NFTVolume/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB)
+
+Use the parameters starttime and endtime in order to get the collection's volume statistics in the respective time-range.\
+_Example:_ [https://api.diadata.org/v1/NFTVolume/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?starttime=1649322827\&endtime=1649495627](https://api.diadata.org/v1/NFTVolume/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?starttime=1649322827\&endtime=1649495627)
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="blockchain" type="String" required="true" %}
+Blockchain name
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="address" type="String" required="true" %}
+Address of the collection
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="starttime" type="Integer" %}
+Unix timestamp (in seconds). Starting time of the considered time-range.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="endtime" type="Integer" %}
+Unix timestamp (in seconds). Final time of the considered time-range.
+{% endswagger-parameter %}
+
+{% swagger-response status="200: OK" description="Successful retrieval of a collection's volume statistics." %}
+```javascript
+{"Collection":"CryptoPunks","Floor":76.69,"Volume":2051.25,"Trades":9,"FloorChange":-0.3249285157265402,"VolumeChange":0,"TradesChange":-68.96551724137932,"Address":"0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB","Blockchain":"Ethereum","Time":"2022-07-12T14:52:35.145653827Z","Source":"diadata.org"}
+```
+{% endswagger-response %}
 {% endswagger %}
 
 ## Traditional Assets
