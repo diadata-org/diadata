@@ -414,8 +414,6 @@ func (s *OpenSeaSeaportScraper) processTx(ctx context.Context, tx *utils.EthFilt
 
 	// if an ERC20 token used for the trade
 	if new(big.Int).Cmp(txData.Value()) == 0 {
-		log.Infof("Looking for ERC20 tokens in trade with consideration %v", ev.Consideration)
-
 		var tokenTransfers []*erc20Transfer
 		tokenTransfers, err = s.findERC20Transfers(ctx, receipt, big.NewInt(1))
 		if err != nil {
@@ -424,7 +422,6 @@ func (s *OpenSeaSeaportScraper) processTx(ctx context.Context, tx *utils.EthFilt
 			return false, err
 		}
 
-		log.Infof("FOUND %v ERC20 token transfers", len(tokenTransfers))
 		for _, tokenTransfer := range tokenTransfers {
 			if tokenTransfer.From == ev.Offerer {
 				currSymbol = *tokenTransfer.TokenSymbol
@@ -433,10 +430,6 @@ func (s *OpenSeaSeaportScraper) processTx(ctx context.Context, tx *utils.EthFilt
 				erc20amount = tokenTransfer.Amount
 			}
 		}
-	}
-
-	if currSymbol != "ETH" {
-		log.Warn("NOT ETH!@!!!!!!!!!!!!!!!!!!!!!")
 	}
 
 	transfers, err := s.findERC721Transfers(ctx, receipt)
@@ -527,6 +520,12 @@ func (s *OpenSeaSeaportScraper) notifyTrade(ev *openseaseaport.OpenseaseaportOrd
 				log.Errorf("unable to calculate usd price of the event(block: %d, log: %d, tx: %s): %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
 
 				return err
+			}
+
+			if transfer.Symbol == nil || transfer.Name == nil {
+				log.Warn("Insufficient NFT data - skipping")
+
+				continue
 			}
 
 			trade := dia.NFTTrade{
