@@ -368,19 +368,19 @@ func (s *OpenSeaSeaportScraper) FetchTrades() error {
 func (s *OpenSeaSeaportScraper) processTx(ctx context.Context, tx *utils.EthFilteredTx) (bool, error) {
 	log.Tracef("process tx -> block: %d, tx index: %d, tx hash: %s", tx.BlockNum, tx.TXIndex, tx.TXHash.Hex())
 
-	// skip if the transaction has multiple OrdersMatched logs
+	// skip if the transaction has multiple OrderFulfilled logs
 	if len(tx.Logs) != 1 {
 		return true, nil
 	}
 
-	marketContractNew, err := openseaseaport.NewOpenseaseaport(tx.Logs[0].Address, s.tradeScraper.ethConnection)
+	marketContract, err := openseaseaport.NewOpenseaseaport(tx.Logs[0].Address, s.tradeScraper.ethConnection)
 	if err != nil {
 		log.Errorf("unable to make new market contract for address: %s", tx.Logs[0].Address.Hex())
 
 		return false, err
 	}
 
-	ev, err := marketContractNew.ParseOrderFulfilled(tx.Logs[0])
+	ev, err := marketContract.ParseOrderFulfilled(tx.Logs[0])
 	if err != nil {
 		log.Errorf("unable to decode opensea seaport OrderFulfilled event(tx: %s, logIndex: %d) (SKIPPED!): %s", tx.TXHash, tx.Logs[0].Index, err.Error())
 
@@ -407,14 +407,17 @@ func (s *OpenSeaSeaportScraper) processTx(ctx context.Context, tx *utils.EthFilt
 		return false, err
 	}
 
+	var erc20amount *big.Int
 	currSymbol := "ETH"
 	currAddr := common.Address{}
+	currDecimals := 18
 
 	// if an ERC20 token used for the trade
 	if new(big.Int).Cmp(txData.Value()) == 0 {
-		log.Info("Looking for ERC20 tokens in trade")
+		log.Infof("Looking for ERC20 tokens in trade with consideration %v", ev.Consideration)
+
 		var tokenTransfers []*erc20Transfer
-		tokenTransfers, err = s.findERC20Transfers(ctx, receipt, big.NewInt(0))
+		tokenTransfers, err = s.findERC20Transfers(ctx, receipt, big.NewInt(1))
 		if err != nil {
 			log.Errorf("unable to find erc20 transfers for transaction(%s): %s", tx.TXHash, err.Error())
 
@@ -426,8 +429,14 @@ func (s *OpenSeaSeaportScraper) processTx(ctx context.Context, tx *utils.EthFilt
 			if tokenTransfer.From == ev.Offerer {
 				currSymbol = *tokenTransfer.TokenSymbol
 				currAddr = tokenTransfer.TokenAddr
+				currDecimals = tokenTransfer.Decimals
+				erc20amount = tokenTransfer.Amount
 			}
 		}
+	}
+
+	if currSymbol != "ETH" {
+		log.Warn("NOT ETH!@!!!!!!!!!!!!!!!!!!!!!")
 	}
 
 	transfers, err := s.findERC721Transfers(ctx, receipt)
@@ -450,7 +459,7 @@ func (s *OpenSeaSeaportScraper) processTx(ctx context.Context, tx *utils.EthFilt
 		return true, nil
 	}
 
-	if err := s.notifyTrade(ev, transfers, currSymbol, currAddr); err != nil {
+	if err := s.notifyTrade(ev, transfers, currSymbol, currAddr, currDecimals, erc20amount); err != nil {
 		if !errors.Is(err, errOpenSeaSeaportShutdownRequest) {
 			log.Warnf("event(block: %d, tx index: %d, tx: %s) couldn't processed: %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
 		}
@@ -461,102 +470,102 @@ func (s *OpenSeaSeaportScraper) processTx(ctx context.Context, tx *utils.EthFilt
 	return false, nil
 }
 
-func (s *OpenSeaSeaportScraper) notifyTrade(ev *openseaseaport.OpenseaseaportOrderFulfilled, erc721Transfers []*erc721Transfer, currSymbol string, currAddr common.Address) error {
-	if len(erc721Transfers) > 1 {
-		log.Warn("--------------------------- MORE THAN 1 TRANSFER!!!!!!!!!!!1 ---------------------")
-		for i, trans := range erc721Transfers {
-			log.Infof("=========== TRANSFER NR %v: FROM: %s, TO: %s, ID: %v", i+1, trans.From.String(), trans.To.String(), trans.TokenID)
-		}
-		log.Warnf("------------------------- TRANSFERS: %v", erc721Transfers)
-	}
+func (s *OpenSeaSeaportScraper) notifyTrade(ev *openseaseaport.OpenseaseaportOrderFulfilled, erc721Transfers []*erc721Transfer, currSymbol string, currAddr common.Address, currDecimals int, erc20price *big.Int) error {
+	//log.Warnf("ITERATIONS: %v", len(ev.Consideration)*len(erc721Transfers))
+	//for i, t := range erc721Transfers {
+	//	log.Infof("TRANSFER %v: %v", i, t)
+	//}
+	//log.Infof("TRANSACTION: %v", ev.Raw.TxHash.String())
+	//log.Infof("EV FROM: %v, TO: %v", ev.Offerer, ev.Recipient)
+	//log.Infof("CONSIDERATION: %v", ev.Consideration)
 
-	for _ = range ev.Offer {
-		for _, asset := range ev.Consideration {
-			for i, transfer := range erc721Transfers {
-				if transfer.To != ev.Recipient || transfer.From != ev.Offerer {
-					log.Warn("SKIPPING - IRRELEVANT")
+	for _, asset := range ev.Consideration {
+		for _, transfer := range erc721Transfers {
+			if erc20price != nil && (transfer.From != ev.Recipient || transfer.To != ev.Offerer) {
+				continue
+			}
 
-					continue
-				}
-				log.Infof("=========== TRANSFER NR %v: FROM: %s, TO: %s, ID: %v", i+1, transfer.From.String(), transfer.To.String(), transfer.TokenID)
+			if erc20price == nil && (transfer.From != ev.Offerer || transfer.To != ev.Recipient) {
+				continue
+			}
+			if asset.Recipient != ev.Offerer {
 
-				nftClass, err := s.createOrReadNFTClass(transfer)
+				continue
+			}
+			if transfer.NFTAddress == currAddr { // skip in case erc20 is fetched as erc721
+				continue
+			}
+
+			nftClass, err := s.createOrReadNFTClass(transfer)
+			if err != nil {
+				return err
+			}
+
+			nft, err := s.createOrReadNFT(nftClass, transfer)
+			if err != nil {
+				return err
+			}
+
+			// Get block time.
+			timestamp, err := ethhelper.GetBlockTimeEth(int64(ev.Raw.BlockNumber), s.tradeScraper.datastore, s.tradeScraper.ethConnection)
+			if err != nil {
+				log.Errorf("getting block time: %+v", err)
+			}
+
+			var amount *big.Int
+
+			switch currSymbol {
+			case "ETH":
+				amount = asset.Amount
+			default:
+				amount = erc20price
+			}
+
+			normPrice := decimal.NewFromBigInt(amount, 0).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(int64(currDecimals))))
+			usdPrice, err := s.calcUSDPrice(ev.Raw.BlockNumber, currAddr, currSymbol, normPrice)
+			if err != nil {
+				log.Errorf("unable to calculate usd price of the event(block: %d, log: %d, tx: %s): %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
+
+				return err
+			}
+
+			trade := dia.NFTTrade{
+				NFT:      *nft,
+				Price:    big.NewInt(0).Div(amount, big.NewInt(int64(len(ev.Offer)))),
+				PriceUSD: usdPrice / float64(len(ev.Offer)),
+				Currency: dia.Asset{
+					Symbol:     *transfer.Symbol,
+					Name:       *transfer.Name,
+					Address:    transfer.NFTAddress.String(),
+					Decimals:   uint8(currDecimals),
+					Blockchain: dia.ETHEREUM,
+				},
+				FromAddress: transfer.From.Hex(),
+				ToAddress:   transfer.To.Hex(),
+				BlockNumber: ev.Raw.BlockNumber,
+				Timestamp:   timestamp,
+				TxHash:      ev.Raw.TxHash.Hex(),
+				Exchange:    "OpenSeaSeaport",
+			}
+
+			if asset, ok := assetCacheOpensea[dia.ETHEREUM+"-"+currAddr.Hex()]; ok {
+				trade.Currency = asset
+			} else {
+				currency, err := s.tradeScraper.datastore.GetAsset(currAddr.Hex(), dia.ETHEREUM)
 				if err != nil {
-					return err
+					log.Errorf("cannot fetch asset %s -- %s | error: %v", dia.ETHEREUM, currAddr.Hex(), err)
 				}
+				trade.Currency = currency
+				assetCacheOpensea[dia.ETHEREUM+"-"+currAddr.Hex()] = currency
+			}
 
-				nft, err := s.createOrReadNFT(nftClass, transfer)
-				if err != nil {
-					return err
-				}
+			//log.Infof("found trade: %v", trade)
 
-				// Get block time.
-				timestamp, err := ethhelper.GetBlockTimeEth(int64(ev.Raw.BlockNumber), s.tradeScraper.datastore, s.tradeScraper.ethConnection)
-				if err != nil {
-					log.Errorf("getting block time: %+v", err)
-				}
-				if asset.Recipient != ev.Offerer { // ignore fees
-					continue
-				}
-
-				var currDecimals uint8
-
-				datastoreAsset, err := s.tradeScraper.datastore.GetAsset(asset.Token.String(), dia.ETHEREUM)
-				switch err {
-				case nil:
-					currDecimals = datastoreAsset.Decimals
-				default:
-					log.Warn("Couldn't get asset data from data store - defaulting to ETH")
-
-					currDecimals = 18
-				}
-
-				normPrice := decimal.NewFromBigInt(asset.Amount, 0).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(int64(currDecimals))))
-				usdPrice, err := s.calcUSDPrice(ev.Raw.BlockNumber, currAddr, currSymbol, normPrice)
-				if err != nil {
-					log.Errorf("unable to calculate usd price of the event(block: %d, log: %d, tx: %s): %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
-
-					return err
-				}
-
-				trade := dia.NFTTrade{
-					NFT:      *nft,
-					Price:    big.NewInt(0).Div(asset.Amount, big.NewInt(int64(len(ev.Offer)))),
-					PriceUSD: usdPrice / float64(len(ev.Offer)),
-					Currency: dia.Asset{
-						Symbol:     *transfer.Symbol,
-						Name:       *transfer.Name,
-						Address:    transfer.NFTAddress.String(),
-						Decimals:   currDecimals,
-						Blockchain: datastoreAsset.Blockchain,
-					},
-					FromAddress: transfer.From.Hex(),
-					ToAddress:   transfer.To.Hex(),
-					BlockNumber: ev.Raw.BlockNumber,
-					Timestamp:   timestamp,
-					TxHash:      ev.Raw.TxHash.Hex(),
-					Exchange:    "OpenSeaSeaport",
-				}
-
-				if asset, ok := assetCacheOpensea[dia.ETHEREUM+"-"+currAddr.Hex()]; ok {
-					trade.Currency = asset
-				} else {
-					currency, err := s.tradeScraper.datastore.GetAsset(currAddr.Hex(), dia.ETHEREUM)
-					if err != nil {
-						log.Errorf("cannot fetch asset %s -- %s | error: %v", dia.ETHEREUM, currAddr.Hex(), err)
-					}
-					trade.Currency = currency
-					assetCacheOpensea[dia.ETHEREUM+"-"+currAddr.Hex()] = currency
-				}
-
-				log.Infof("found trade: %v", trade)
-
-				// handle close request if the chanTrade not consumed immediately
-				select {
-				case s.tradeScraper.chanTrade <- trade:
-				case <-s.tradeScraper.shutdown:
-					return errOpenSeaSeaportShutdownRequest
-				}
+			// handle close request if the chanTrade not consumed immediately
+			select {
+			case s.tradeScraper.chanTrade <- trade:
+			case <-s.tradeScraper.shutdown:
+				return errOpenSeaSeaportShutdownRequest
 			}
 		}
 	}
@@ -778,7 +787,6 @@ func (s *OpenSeaSeaportScraper) findERC20Transfers(ctx context.Context, receipt 
 
 		token, err := erc20.NewERC20(txLog.Address, s.tradeScraper.ethConnection)
 		if err != nil {
-			log.Warnf("unable to bind erc720 contract at address %s: %s", txLog.Address.Hex(), err.Error())
 			continue
 		}
 
@@ -788,7 +796,7 @@ func (s *OpenSeaSeaportScraper) findERC20Transfers(ctx context.Context, receipt 
 			continue
 		}
 
-		if filterAmount != nil && filterAmount.Cmp(ev.Value) != 0 {
+		if filterAmount == nil {
 			continue
 		}
 
