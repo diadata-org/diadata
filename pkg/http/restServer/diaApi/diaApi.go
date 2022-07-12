@@ -2393,7 +2393,7 @@ func (env *Env) GetNFTVolume(c *gin.Context) {
 		restApi.SendError(c, http.StatusBadRequest, err)
 		return
 	}
-	volume, err := env.RelDB.GetNFTVolume(address, blockchain, starttime.Add(-timeWindow), endtime.Add(-timeWindow))
+	volume, err := env.RelDB.GetNFTVolume(address, blockchain, starttime, endtime)
 	if err != nil {
 		log.Error("get number of nft trades: ", err)
 	}
