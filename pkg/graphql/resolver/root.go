@@ -211,7 +211,7 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 				starttime = maxStartTime
 			}
 
-			trades, err := r.DS.GetTradesByExchanges(asset, exchangesString, starttime, endtime)
+			trades, err := r.DS.baseAssets(asset, baseAssets, exchangesString, starttime, endtime)
 			if err != nil {
 				return sr, err
 			}
@@ -229,7 +229,7 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 
 			var trades []dia.Trade
 			if blockShiftSeconds <= blockSizeSeconds {
-				trades, err = r.DS.GetTradesByExchanges(asset, exchangesString, starttime, endtime)
+				trades, err = r.DS.GetTradesByExchangesAndBaseAssets(asset, baseAssets, exchangesString, starttime, endtime)
 				if err != nil {
 					return sr, err
 				}
