@@ -544,7 +544,7 @@ func (s *OpenSeaSeaportScraper) notifyTrade(ev *openseaseaport.OpenseaseaportOrd
 				BlockNumber: ev.Raw.BlockNumber,
 				Timestamp:   timestamp,
 				TxHash:      ev.Raw.TxHash.Hex(),
-				Exchange:    "OpenSeaSeaport",
+				Exchange:    "OpenSea",
 			}
 
 			if asset, ok := assetCacheOpensea[dia.ETHEREUM+"-"+currAddr.Hex()]; ok {
