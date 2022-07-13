@@ -211,7 +211,7 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 				starttime = maxStartTime
 			}
 
-			trades, err := r.DS.baseAssets(asset, baseAssets, exchangesString, starttime, endtime)
+			trades, err := r.DS.GetTradesByExchangesAndBaseAssets(asset, baseAssets, exchangesString, starttime, endtime)
 			if err != nil {
 				return sr, err
 			}
