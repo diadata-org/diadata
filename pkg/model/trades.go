@@ -120,11 +120,12 @@ func (datastore *DB) GetTradesByExchangesFull(asset dia.Asset, baseassets []dia.
 		if len(baseassets) > 0 {
 			for i, baseasset := range baseassets {
 				if i == 0 {
-					subQueryBase = subQueryBase + fmt.Sprintf(` and (basetokenaddress='%s' and basetokenblockchain='%s')`, baseasset.Address, baseasset.Blockchain)
+					subQueryBase = subQueryBase + fmt.Sprintf(` and ((basetokenaddress='%s' and basetokenblockchain='%s')`, baseasset.Address, baseasset.Blockchain)
 
 				} else {
 					subQueryBase = subQueryBase + fmt.Sprintf(` or (basetokenaddress='%s' and basetokenblockchain='%s')`, baseasset.Address, baseasset.Blockchain)
 				}
+				subQueryBase = subQueryBase + ") "
 			}
 			//(basetokenaddress='0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' and basetokenblockchain='Ethereum')
 		}
@@ -179,11 +180,13 @@ func (datastore *DB) GetTradesByExchangesBatchedFull(quoteasset dia.Asset, basea
 		if len(baseassets) > 0 {
 			for i, baseasset := range baseassets {
 				if i == 0 {
-					subQueryBase = subQueryBase + fmt.Sprintf(` and (basetokenaddress='%s' and basetokenblockchain='%s')`, baseasset.Address, baseasset.Blockchain)
+					subQueryBase = subQueryBase + fmt.Sprintf(` and ((basetokenaddress='%s' and basetokenblockchain='%s')`, baseasset.Address, baseasset.Blockchain)
 
 				} else {
 					subQueryBase = subQueryBase + fmt.Sprintf(` or (basetokenaddress='%s' and basetokenblockchain='%s')`, baseasset.Address, baseasset.Blockchain)
 				}
+				subQueryBase = subQueryBase + ") "
+
 			}
 		}
 		log.Errorln("subQueryBase", subQueryBase)
