@@ -59,6 +59,9 @@ func main() {
 	case "OpenseaBAYC":
 		log.Println("NFT Trades Scraper: Start scraping trades from Opensea")
 		scraper = nfttradescrapers.NewOpenSeaBAYCScraper(rdb)
+	case "OpenseaSeaport":
+		log.Println("NFT Trades Scraper: Start scraping trades from Opensea Seaport contract")
+		scraper = nfttradescrapers.NewOpenSeaSeaportScraper(rdb)
 	case "LooksRare":
 		log.Println("NFT Trades Scraper: Start scraping trades from LooksRare")
 		scraper = nfttradescrapers.NewLooksRareScraper(rdb)
@@ -78,7 +81,6 @@ func main() {
 	wg.Add(1)
 	go handleData(scraper.GetTradeChannel(), &wg, rdb)
 	defer wg.Wait()
-
 }
 
 func handleData(tradeChannel chan dia.NFTTrade, wg *sync.WaitGroup, rdb *models.RelDB) {
@@ -90,11 +92,10 @@ func handleData(tradeChannel chan dia.NFTTrade, wg *sync.WaitGroup, rdb *models.
 			log.Error("error")
 			return
 		}
-		if 1 < 0 {
-			log.Infof("got trade: %s -> (%s) -> %s for %s (%.4f USD) \n", trade.FromAddress, trade.NFT.NFTClass.Name, trade.ToAddress, trade.Currency.Symbol, trade.PriceUSD)
-		}
 
-		err := rdb.SetNFTTradeToTable(trade, models.NfttradeCurrTable)
+		log.Infof("got trade: %s -> (%s) -> %s for %s (%.4f USD) \n", trade.FromAddress, trade.NFT.NFTClass.Name, trade.ToAddress, trade.Currency.Symbol, trade.PriceUSD)
+
+		err := rdb.SetNFTTradeToTable(trade, models.NfttradeTable)
 		// err := rdb.SetNFTTradeToTable(trade, models.NfttradeSumeriaTable)
 		if err != nil {
 			var pgErr *pgconn.PgError
