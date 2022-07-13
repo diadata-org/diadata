@@ -176,7 +176,7 @@ type RelDB struct {
 
 // NewRelDataStore returns a datastore with postgres client and redis cache.
 func NewRelDataStore() (*RelDB, error) {
-	log.Info("new rel datastore-------------------------")
+	log.Info("NewRelDataStore: Initialised")
 	return NewRelDataStoreWithOptions(true, true)
 }
 

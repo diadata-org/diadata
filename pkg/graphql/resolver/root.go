@@ -82,6 +82,16 @@ type TradeBlock struct {
 	Trades []dia.Trade
 }
 
+type BaseAssetInput struct {
+	Address    graphql.NullString
+	BlockChain graphql.NullString
+}
+
+type BaseAsset struct {
+	Address    string
+	BlockChain string
+}
+
 func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	Filter               graphql.NullString
 	BlockDurationSeconds graphql.NullInt
@@ -92,6 +102,7 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	Exchanges            *[]graphql.NullString
 	Address              graphql.NullString
 	BlockChain           graphql.NullString
+	BaseAsset            *[]BaseAssetInput
 }) (*[]*FilterPointResolver, error) {
 	fpr, _ := r.GetChartMeta(ctx, args)
 
@@ -108,6 +119,7 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 	Exchanges            *[]graphql.NullString
 	Address              graphql.NullString
 	BlockChain           graphql.NullString
+	BaseAsset            *[]BaseAssetInput
 }) (*FilterPointMetaResolver, error) {
 	var (
 		blockShiftSeconds int64
@@ -139,11 +151,28 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 			exchangesString = append(exchangesString, *v.Value)
 		}
 	}
-
 	var (
-		asset dia.Asset
-		err   error
+		asset      dia.Asset
+		err        error
+		baseAssets []dia.Asset
 	)
+
+	argsbaseasset := args.BaseAsset
+
+	if argsbaseasset != nil {
+		for _, baseasset := range *argsbaseasset {
+
+			asset, err = r.RelDB.GetAsset(*baseasset.Address.Value, *baseasset.BlockChain.Value)
+			if err != nil {
+				log.Errorln("Asset not found with address %s and blockchain %s ", address, blockchain)
+				continue
+			}
+
+			baseAssets = append(baseAssets, asset)
+		}
+	}
+
+	log.Errorln("baseAssets", baseAssets)
 
 	if address != "" && blockchain != "" {
 		asset, err = r.RelDB.GetAsset(address, blockchain)
@@ -234,7 +263,7 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 					var err error
 					lowerIndex := i * batchSize
 					upperIndex := (i + 1) * batchSize
-					tradesBatch, err = r.DS.GetTradesByExchangesBatched(asset, exchangesString, startTimes[lowerIndex:upperIndex], endTimes[lowerIndex:upperIndex])
+					tradesBatch, err = r.DS.GetTradesByExchangesBatched(asset, baseAssets, exchangesString, startTimes[lowerIndex:upperIndex], endTimes[lowerIndex:upperIndex])
 					if err != nil {
 						log.Error("fetch trades batch from influx: ", err)
 					}
@@ -246,7 +275,7 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 					var err error
 					lowerIndex := numBatches * (batchSize)
 					upperIndex := len(startTimes)
-					tradesBatch, err = r.DS.GetTradesByExchangesBatched(asset, exchangesString, startTimes[lowerIndex:upperIndex], endTimes[lowerIndex:upperIndex])
+					tradesBatch, err = r.DS.GetTradesByExchangesBatched(asset, baseAssets, exchangesString, startTimes[lowerIndex:upperIndex], endTimes[lowerIndex:upperIndex])
 					if err != nil {
 						log.Error("fetch trades batch from influx: ", err)
 					}
