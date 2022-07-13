@@ -100,9 +100,10 @@ func parseTrade(row []interface{}, fullBasetoken bool) *dia.Trade {
 }
 
 func (datastore *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, startTime, endTime time.Time) ([]dia.Trade, error) {
-	return datastore.GetTradesByExchangesFull(asset, exchanges, false, startTime, endTime)
+	var baseassets []dia.Asset
+	return datastore.GetTradesByExchangesFull(asset, baseassets, exchanges, false, startTime, endTime)
 }
-func (datastore *DB) GetTradesByExchangesAndBaseAssets(asset dia.Asset, exchanges []string, startTime, endTime time.Time) ([]dia.Trade, error) {
+func (datastore *DB) GetTradesByExchangesAndBaseAssets(asset dia.Asset, baseassets []dia.Asset, exchanges []string, startTime, endTime time.Time) ([]dia.Trade, error) {
 	return datastore.GetTradesByExchangesFull(asset, exchanges, false, startTime, endTime)
 }
 
