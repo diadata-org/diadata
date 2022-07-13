@@ -125,8 +125,10 @@ func (datastore *DB) GetTradesByExchangesFull(asset dia.Asset, baseassets []dia.
 				} else {
 					subQueryBase = subQueryBase + fmt.Sprintf(` or (basetokenaddress='%s' and basetokenblockchain='%s')`, baseasset.Address, baseasset.Blockchain)
 				}
-				subQueryBase = subQueryBase + ") "
 			}
+
+			subQueryBase = subQueryBase + ") "
+
 			//(basetokenaddress='0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' and basetokenblockchain='Ethereum')
 		}
 		log.Errorln("subQueryBase", subQueryBase)
@@ -185,9 +187,10 @@ func (datastore *DB) GetTradesByExchangesBatchedFull(quoteasset dia.Asset, basea
 				} else {
 					subQueryBase = subQueryBase + fmt.Sprintf(` or (basetokenaddress='%s' and basetokenblockchain='%s')`, baseasset.Address, baseasset.Blockchain)
 				}
-				subQueryBase = subQueryBase + ") "
 
 			}
+			subQueryBase = subQueryBase + ") "
+
 		}
 		log.Errorln("subQueryBase", subQueryBase)
 		query = query + fmt.Sprintf("SELECT time,estimatedUSDPrice,exchange,foreignTradeID,pair,price,symbol,volume,verified,basetokenblockchain,basetokenaddress FROM %s WHERE (quotetokenaddress='%s' AND quotetokenblockchain='%s') %s %s AND estimatedUSDPrice > 0 AND time > %d AND time <= %d ;", influxDbTradesTable, quoteasset.Address, quoteasset.Blockchain, subQuery, subQueryBase, startTimes[i].UnixNano(), endTimes[i].UnixNano())
