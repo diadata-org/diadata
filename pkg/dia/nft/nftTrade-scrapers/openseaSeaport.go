@@ -166,7 +166,7 @@ func NewOpenSeaSeaportScraper(rdb *models.RelDB) *OpenSeaSeaportScraper {
 			shutdownDone:  make(chan nothing),
 			datastore:     rdb,
 			chanTrade:     make(chan dia.NFTTrade),
-			source:        "OpenSeaSeaport",
+			source:        "OpenSea",
 			ethConnection: eth,
 		},
 	}
