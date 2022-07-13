@@ -104,7 +104,7 @@ func (datastore *DB) GetTradesByExchanges(asset dia.Asset, exchanges []string, s
 	return datastore.GetTradesByExchangesFull(asset, baseassets, exchanges, false, startTime, endTime)
 }
 func (datastore *DB) GetTradesByExchangesAndBaseAssets(asset dia.Asset, baseassets []dia.Asset, exchanges []string, startTime, endTime time.Time) ([]dia.Trade, error) {
-	return datastore.GetTradesByExchangesFull(asset, exchanges, false, startTime, endTime)
+	return datastore.GetTradesByExchangesFull(asset, baseassets, exchanges, false, startTime, endTime)
 }
 
 func (datastore *DB) GetTradesByExchangesFull(asset dia.Asset, baseassets []dia.Asset, exchanges []string, returnBasetoken bool, startTime, endTime time.Time) ([]dia.Trade, error) {
