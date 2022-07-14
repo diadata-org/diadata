@@ -9,10 +9,6 @@
             "ForeignName": "USDT-WBNB"
         },
         {
-            "Address": "0x8FA59693458289914dB0097F5F366d771B7a7C3F",
-            "ForeignName": "MBOX-WBNB"
-        },
-        {
             "Address": "0xED2eC734193626282e105A4A44bf39C1F6B44d78",
             "ForeignName": "FGD-WBNB"
         },
@@ -73,10 +69,6 @@
             "ForeignName": "BTCB-BUSD"
         },
         {
-            "Address": "0x6615CE60D71513aA4849269dD63821D324A23F8C",
-            "ForeignName": "WBNB-pCWS"
-        },
-        {
             "Address": "0x4eF5C01c4ceCD87CfdC604edA447e5890a0c1b9E",
             "ForeignName": "D100-WBNB"
         },
@@ -97,16 +89,16 @@
             "ForeignName": "DAI-USDT"
         },
         {
-            "Address": "0x8FA59693458289914dB0097F5F366d771B7a7C3F",
-            "ForeignName": "MBOX-WBNB"
-        },
-        {
             "Address": "0xA99b9bCC6a196397DA87FA811aEd293B1b488f44",
             "ForeignName": "WOW-BUSD"
         },
         {
             "Address": "0x73cAbBe6E05290A09B9432eb765521941C870E4D",
             "ForeignName": "WOW-WBNB"
+        },
+        {
+            "Address": "0x8b2E483216fbA34F0080d3cA1123C811775c80eD",
+            "ForeignName": "NFTY-WBNB"
         }
     ]
 }

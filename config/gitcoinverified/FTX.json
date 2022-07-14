@@ -7,16 +7,40 @@
             "Address": "0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b"
         },
         {
-            "Symbol": "USD",
+            "Symbol": "CAD",
             "Exchange": "FTX",
             "Blockchain": "Fiat",
-            "Address": "840"
+            "Address": "124"
+        },
+        {
+            "Symbol": "CHF",
+            "Exchange": "FTX",
+            "Blockchain": "Fiat",
+            "Address": "756"
         },
         {
             "Symbol": "EUR",
             "Exchange": "FTX",
             "Blockchain": "Fiat",
             "Address": "978"
+        },
+        {
+            "Symbol": "GBP",
+            "Exchange": "FTX",
+            "Blockchain": "Fiat",
+            "Address": "826"
+        },
+        {
+            "Symbol": "USD",
+            "Exchange": "FTX",
+            "Blockchain": "Fiat",
+            "Address": "840"
+        },
+        {
+            "Symbol": "JPY",
+            "Exchange": "FTX",
+            "Blockchain": "Fiat",
+            "Address": "392"
         },
         {
             "Symbol": "BTC",

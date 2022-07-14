@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "NFTY_USDT",
+      "Ignore": false,
+      "Symbol": "NFTY"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "TLOS_USDT",
       "Ignore": false,
       "Symbol": "TLOS"

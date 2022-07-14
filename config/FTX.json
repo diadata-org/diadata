@@ -121,6 +121,18 @@
             "Ignore": false
         },
         {
+            "Symbol": "CAD",
+            "ForeignName": "CAD/USD",
+            "Exchange": "FTX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CHF",
+            "ForeignName": "CHF/USD",
+            "Exchange": "FTX",
+            "Ignore": false
+        },
+        {
             "Symbol": "CHR",
             "ForeignName": "CHR/USD",
             "Exchange": "FTX",
@@ -247,8 +259,20 @@
             "Ignore": false
         },
         {
+            "Symbol": "GBP",
+            "ForeignName": "GBP/USD",
+            "Exchange": "FTX",
+            "Ignore": false
+        },
+        {
             "Symbol": "GRT",
             "ForeignName": "GRT/USD",
+            "Exchange": "FTX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "JPY",
+            "ForeignName": "JPY/USD",
             "Exchange": "FTX",
             "Ignore": false
         },

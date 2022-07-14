@@ -179,6 +179,18 @@
       "ForeignName": "XZECXXBT",
       "Ignore": false,
       "Symbol": "ZEC"
+    },
+    {
+      "Exchange": "Kraken",
+      "ForeignName": "ZEURZUSD",
+      "Ignore": false,
+      "Symbol": "EUR"
+    },
+    {
+      "Exchange": "Kraken",
+      "ForeignName": "ZGBPZUSD",
+      "Ignore": false,
+      "Symbol": "GBP"
     }
   ]
 }
