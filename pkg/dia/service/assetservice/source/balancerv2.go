@@ -9,7 +9,6 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	balancervault "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/balancerv2/vault"
 	"go.uber.org/ratelimit"
-	"golang.org/x/sync/errgroup"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -157,10 +156,6 @@ func (bas *BalancerV2AssetSource) allRegisteredPools() ([]*balancervault.Balance
 
 // listPools returns a list of pools given by the addresses of the underlying assets.
 func (bas *BalancerV2AssetSource) listPools() ([][]common.Address, error) {
-	var (
-		g  errgroup.Group
-		mu sync.Mutex
-	)
 
 	events, err := bas.allRegisteredPools()
 	if err != nil {
@@ -174,26 +169,11 @@ func (bas *BalancerV2AssetSource) listPools() ([][]common.Address, error) {
 
 	pools := make([][]common.Address, len(events))
 	for idx, evt := range events {
-		idx := idx
-		evt := evt
-		g.Go(func() error {
-			bas.rl.Take()
-			pool, err := caller.GetPoolTokens(&bind.CallOpts{}, evt.PoolId)
-			if err != nil {
-				return err
-			}
-
-			mu.Lock()
-			defer mu.Unlock()
-
-			pools[idx] = pool.Tokens
-
-			return nil
-		})
-	}
-
-	if err := g.Wait(); err != nil {
-		return nil, err
+		pool, err := caller.GetPoolTokens(&bind.CallOpts{}, evt.PoolId)
+		if err != nil {
+			log.Errorf("fetch pool %s: %v", evt.PoolAddress.Hex(), err)
+		}
+		pools[idx] = pool.Tokens
 	}
 
 	return pools, nil
@@ -212,7 +192,9 @@ func (bas *BalancerV2AssetSource) getAssetsFromPools(pools [][]common.Address) {
 				checkMap[tokens[i].Hex()] = struct{}{}
 			}
 			asset, err := bas.assetFromToken(tokens[i])
-			log.Error("get asset from token: ", err)
+			if err != nil {
+				log.Error("get asset from token: ", err)
+			}
 			bas.assetChannel <- asset
 		}
 	}
