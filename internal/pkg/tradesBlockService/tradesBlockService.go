@@ -20,7 +20,7 @@ type nothing struct{}
 
 func init() {
 	log = logrus.New()
-	batchTimeString = utils.Getenv("BATCH_TIME_SECONDS", "30")
+	batchTimeString := utils.Getenv("BATCH_TIME_SECONDS", "30")
 	var err error
 	batchTimeSeconds, err = strconv.Atoi(batchTimeString)
 	if err != nil {
@@ -38,10 +38,12 @@ var (
 		"PAX":  "",
 		"BUSD": "",
 	}
-	tol              = float64(0.04)
-	log              *logrus.Logger
-	batchTimeString  string
-	batchTimeSeconds int
+	tol                 = float64(0.04)
+	log                 *logrus.Logger
+	batchTimeSeconds    int
+	volumeUpdateSeconds = 60 * 60 * 6
+	volumeThreshold     = float64(10000)
+	smallX              = float64(10)
 )
 
 type TradesBlockService struct {
@@ -56,10 +58,13 @@ type TradesBlockService struct {
 	BlockDuration    int64
 	currentBlock     *dia.TradesBlock
 	priceCache       map[dia.Asset]float64
+	volumeCache      map[dia.Asset]float64
 	datastore        models.Datastore
+	relDB            models.RelDB
 	historical       bool
 	writeMeasurement string
 	batchTicker      *time.Ticker
+	volumeTicker     *time.Ticker
 }
 
 func NewTradesBlockService(datastore models.Datastore, blockDuration int64, historical bool) *TradesBlockService {
@@ -73,9 +78,11 @@ func NewTradesBlockService(datastore models.Datastore, blockDuration int64, hist
 		currentBlock:    nil,
 		BlockDuration:   blockDuration,
 		priceCache:      make(map[dia.Asset]float64),
+		volumeCache:     make(map[dia.Asset]float64),
 		datastore:       datastore,
 		historical:      historical,
 		batchTicker:     time.NewTicker(time.Duration(batchTimeSeconds) * time.Second),
+		volumeTicker:    time.NewTicker(time.Duration(volumeUpdateSeconds) * time.Second),
 	}
 	if historical {
 		s.writeMeasurement = utils.Getenv("INFLUX_MEASUREMENT_WRITE", "tradesTmp")
@@ -83,7 +90,9 @@ func NewTradesBlockService(datastore models.Datastore, blockDuration int64, hist
 	log.Info("write measurement: ", s.writeMeasurement)
 	log.Info("historical: ", s.historical)
 	log.Info("batch ticker time: ", batchTimeSeconds)
+	s.loadVolumes()
 	go s.mainLoop()
+	go s.loadVolumesLoop()
 	return s
 }
 
@@ -96,7 +105,16 @@ func (s *TradesBlockService) mainLoop() {
 			s.cleanup(nil)
 			return
 		case t := <-s.chanTrades:
-			s.process(*t)
+			tSwapped, err := dia.SwapTrade(*t)
+			if err != nil {
+				log.Error("swap trade: ", err)
+			}
+			if s.checkTrade(*t) {
+				s.process(*t)
+			}
+			if s.checkTrade(tSwapped) {
+				s.process(tSwapped)
+			}
 		case <-s.batchTicker.C:
 			err := s.datastore.Flush()
 			if err != nil {
@@ -104,6 +122,21 @@ func (s *TradesBlockService) mainLoop() {
 			}
 		}
 	}
+}
+
+// checkTrade determines whether a trade should be taken into account for price determination.
+func (s *TradesBlockService) checkTrade(t dia.Trade) bool {
+	if baseVolume, ok := s.volumeCache[t.BaseToken]; ok {
+		if quoteVolume, ok := s.volumeCache[t.QuoteToken]; ok {
+			if baseVolume < volumeThreshold {
+				// For small volume assets, quote asset must be a small volume asset too.
+				return smallX*baseVolume > quoteVolume
+			}
+		}
+		// Base asset has enough volume or quote asset has no volume yet.
+		return true
+	}
+	return false
 }
 
 func (s *TradesBlockService) process(t dia.Trade) {
@@ -118,13 +151,12 @@ func (s *TradesBlockService) process(t dia.Trade) {
 			t.EstimatedUSDPrice = t.Price
 			verifiedTrade = true
 		} else {
-			// Get price of base token.
-			// This can be switched to GetAssetPriceUSD(asset, timestamp) when switching to historical scrapers.
-			// val, err := s.datastore.GetAssetPriceUSDCache(t.BaseToken)
-			var quotation *models.AssetQuotation
-			var price float64
-			var ok bool
-			var err error
+			var (
+				quotation *models.AssetQuotation
+				price     float64
+				ok        bool
+				err       error
+			)
 			if !s.historical {
 				// Get latest price from cache.
 				// price, err = s.datastore.GetAssetPriceUSDLatest(t.BaseToken)
@@ -281,6 +313,25 @@ func (s *TradesBlockService) process(t dia.Trade) {
 		s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
 	} else {
 		log.Debugf("ignore trade  %v", t)
+	}
+}
+
+func (s *TradesBlockService) loadVolumes() map[dia.Asset]float64 {
+	// Clean asset volumes
+	volumeCache := make(map[dia.Asset]float64)
+	assets, err := s.relDB.GetAssetsWithVOL(int64(0), "")
+	if err != nil {
+		log.Error("could not load asset with volume: ", err)
+	}
+	for _, asset := range assets {
+		volumeCache[asset.Asset] = asset.Volume
+	}
+	return volumeCache
+}
+
+func (s *TradesBlockService) loadVolumesLoop() {
+	for range s.volumeTicker.C {
+		s.volumeCache = s.loadVolumes()
 	}
 }
 
