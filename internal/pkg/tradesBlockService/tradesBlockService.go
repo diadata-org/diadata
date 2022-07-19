@@ -319,7 +319,8 @@ func (s *TradesBlockService) process(t dia.Trade) {
 func (s *TradesBlockService) loadVolumes() map[dia.Asset]float64 {
 	// Clean asset volumes
 	volumeCache := make(map[dia.Asset]float64)
-	assets, err := s.relDB.GetAssetsWithVOL(int64(0), "")
+	endtime := time.Now()
+	assets, err := s.relDB.GetAssetsWithVOLRange(endtime.AddDate(0, 0, -1), endtime)
 	if err != nil {
 		log.Error("could not load asset with volume: ", err)
 	}
