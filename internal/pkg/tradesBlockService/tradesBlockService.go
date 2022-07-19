@@ -60,14 +60,14 @@ type TradesBlockService struct {
 	priceCache       map[dia.Asset]float64
 	volumeCache      map[dia.Asset]float64
 	datastore        models.Datastore
-	relDB            models.RelDB
+	relDB            models.RelDatastore
 	historical       bool
 	writeMeasurement string
 	batchTicker      *time.Ticker
 	volumeTicker     *time.Ticker
 }
 
-func NewTradesBlockService(datastore models.Datastore, blockDuration int64, historical bool) *TradesBlockService {
+func NewTradesBlockService(datastore models.Datastore, relDB models.RelDatastore, blockDuration int64, historical bool) *TradesBlockService {
 	s := &TradesBlockService{
 		shutdown:        make(chan nothing),
 		shutdownDone:    make(chan nothing),
@@ -80,6 +80,7 @@ func NewTradesBlockService(datastore models.Datastore, blockDuration int64, hist
 		priceCache:      make(map[dia.Asset]float64),
 		volumeCache:     make(map[dia.Asset]float64),
 		datastore:       datastore,
+		relDB:           relDB,
 		historical:      historical,
 		batchTicker:     time.NewTicker(time.Duration(batchTimeSeconds) * time.Second),
 		volumeTicker:    time.NewTicker(time.Duration(volumeUpdateSeconds) * time.Second),

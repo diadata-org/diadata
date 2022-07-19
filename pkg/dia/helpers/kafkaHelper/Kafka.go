@@ -80,6 +80,7 @@ func getTopic(topic int) string {
 
 func init() {
 	KafkaConfig.KafkaUrl = []string{os.Getenv("KAFKAURL")}
+	// KafkaConfig.KafkaUrl = []string{"localhost:9092"}
 }
 
 // WithRetryOnError
