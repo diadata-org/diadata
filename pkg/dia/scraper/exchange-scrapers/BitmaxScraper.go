@@ -181,7 +181,7 @@ func (s *BitMaxScraper) FillSymbolData(symbol string) (asset dia.Asset, err erro
 			response BitMaxAssets
 			data     []byte
 		)
-		data, _, err = utils.GetRequest("https://bitmax.io/api/pro/v1/assets")
+		data, _, err = utils.GetRequest("https://ascendex.com/api/pro/v1/assets")
 		if err != nil {
 			return
 		}
