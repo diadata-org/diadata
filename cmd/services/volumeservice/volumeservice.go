@@ -55,7 +55,7 @@ func fetchAndUpdateVolume() {
 		if err != nil {
 			log.Errorf("get volume of asset %s, %s", asset.Symbol, err.Error())
 		} else {
-			err = relDB.SetAssetVolume24H(asset, *volume)
+			err = relDB.SetAssetVolume24H(asset, *volume, time.Now())
 			if err != nil {
 				log.Error("set asset volume: ", err)
 			}

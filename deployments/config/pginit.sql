@@ -96,7 +96,8 @@ CREATE TABLE blockchain (
 
 CREATE TABLE assetvolume (
     asset_id UUID primary key,
-    volume decimal
+    volume decimal,
+    time_stamp timestamp
 );
 
 ---------------------------------------
