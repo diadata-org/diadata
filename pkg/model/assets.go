@@ -63,6 +63,35 @@ func (rdb *RelDB) GetAssetMap(asset_id string) (ID string, err error) {
 	return
 }
 
+func (rdb *RelDB) GetAssetByGroupID(group_id string) (assets []dia.Asset, err error) {
+	var rows pgx.Rows
+
+	query := fmt.Sprintf("SELECT symbol,name,address,blockchain,decimals FROM %s WHERE asset_id in (select asset_id from %s where group_id=$1)", assetTable, assetIdent)
+
+	rows, err = rdb.postgresClient.Query(context.Background(), query, group_id)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	var decimals string
+	for rows.Next() {
+		var asset dia.Asset
+		err := rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &asset.Blockchain, &decimals)
+		if err != nil {
+			log.Error(err)
+		}
+		decimalsInt, err := strconv.Atoi(decimals)
+		if err != nil {
+			continue
+		}
+		asset.Decimals = uint8(decimalsInt)
+		// asset.Blockchain = blockchain
+		assets = append(assets, asset)
+	}
+	return
+}
+
 // SetAsset stores an asset into postgres.
 func (rdb *RelDB) InsertAssetMap(group_id string, asset_id string) error {
 	query := fmt.Sprintf("INSERT INTO %s (group_id,asset_id) VALUES ($1,$2)", assetIdent)

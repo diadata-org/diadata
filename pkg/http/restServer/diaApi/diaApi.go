@@ -204,6 +204,75 @@ func (env *Env) GetQuotation(c *gin.Context) {
 
 	c.JSON(http.StatusOK, quotationExtended)
 }
+func (env *Env) GetAssetMap(c *gin.Context) {
+	address := c.Param("address")
+	blockchain := c.Param("blockchain")
+
+	timestamp := time.Now()
+	var quotations []models.AssetQuotationFull
+	// Fetch underlying assets for symbol
+	asset, err := env.RelDB.GetAsset(address, blockchain)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, err)
+		return
+	}
+
+	// get assetid
+
+	assetid, err := env.RelDB.GetAssetID(asset)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, err)
+		return
+	}
+
+	// get groupId
+
+	group_id, err := env.RelDB.GetAssetMap(assetid)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, err)
+		return
+	}
+
+	assets, err := env.RelDB.GetAssetByGroupID(group_id)
+
+	log.Info("num assets: ", len(assets))
+	if len(assets) == 0 {
+		restApi.SendError(c, http.StatusNotFound, errors.New("no quotation available"))
+		return
+	}
+	log.Info("num assets: ", len(assets))
+
+	for _, topAsset := range assets {
+		var quotationExtended models.AssetQuotationFull
+
+		quotation, err := env.DataStore.GetAssetQuotation(topAsset, timestamp)
+		if err != nil {
+			log.Warn("get quotation: ", err)
+		}
+		quotationYesterday, err := env.DataStore.GetAssetQuotation(topAsset, timestamp.AddDate(0, 0, -1))
+		if err != nil {
+			log.Warn("get quotation yesterday: ", err)
+		} else {
+			quotationExtended.PriceYesterday = quotationYesterday.Price
+		}
+		volumeYesterday, err := env.RelDB.GetAssetVolume24H(topAsset)
+		if err != nil {
+			log.Warn("get volume yesterday: ", err)
+		} else {
+			quotationExtended.VolumeYesterdayUSD = volumeYesterday
+		}
+		quotationExtended.Symbol = topAsset.Symbol
+		quotationExtended.Name = topAsset.Name
+		quotationExtended.Address = topAsset.Address
+		quotationExtended.Blockchain = topAsset.Blockchain
+		quotationExtended.Price = quotation.Price
+		quotationExtended.Time = quotation.Time
+		quotationExtended.Source = quotation.Source
+		quotations = append(quotations, quotationExtended)
+	}
+
+	c.JSON(http.StatusOK, quotations)
+}
 
 func (env *Env) GetPaxgQuotationOunces(c *gin.Context) {
 	q, err := env.DataStore.GetPaxgQuotationOunces()
