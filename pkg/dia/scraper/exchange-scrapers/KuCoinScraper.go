@@ -175,7 +175,14 @@ func (s *KuCoinScraper) mainLoop() {
 				asset := strings.Split(t.Symbol, "-")
 				f64Price, _ := strconv.ParseFloat(t.Price, 64)
 				f64Volume, _ := strconv.ParseFloat(t.Size, 64)
-				timeOrder, _ := strconv.ParseInt(t.Time, 10, 64)
+				timeOrder, err := strconv.ParseInt(t.Time, 10, 64)
+				if err != nil {
+					log.Error("parse trade time: ", err)
+				}
+				// WS returns different lengths of Unix timestamps. Adjust to nanoseconds if returns milliseconds.
+				if len(t.Time) == 13 {
+					timeOrder *= 1e6
+				}
 
 				if t.Side == "sell" {
 					f64Volume = -f64Volume
@@ -198,10 +205,9 @@ func (s *KuCoinScraper) mainLoop() {
 					QuoteToken:   exchangepair.UnderlyingPair.QuoteToken,
 				}
 				if exchangepair.Verified {
-					log.Infoln("Got verified trade", trade)
+					log.Info("Got verified trade from stream 1: ", trade)
 				}
 				s.chanTrades <- trade
-				log.Println("Got trade stream1: ", trade)
 
 			case msg = <-client2DownStream:
 				if msg == nil {
@@ -215,7 +221,14 @@ func (s *KuCoinScraper) mainLoop() {
 				asset := strings.Split(t.Symbol, "-")
 				f64Price, _ := strconv.ParseFloat(t.Price, 64)
 				f64Volume, _ := strconv.ParseFloat(t.Size, 64)
-				timeOrder, _ := strconv.ParseInt(t.Time, 10, 64)
+				timeOrder, err := strconv.ParseInt(t.Time, 10, 64)
+				if err != nil {
+					log.Error("parse trade time: ", err)
+				}
+				// WS returns different lengths of Unix timestamps. Adjust to nanoseconds if returns milliseconds.
+				if len(t.Time) == 13 {
+					timeOrder *= 1e6
+				}
 
 				if t.Side == "sell" {
 					f64Volume = -f64Volume
@@ -237,10 +250,9 @@ func (s *KuCoinScraper) mainLoop() {
 					QuoteToken:   exchangepair.UnderlyingPair.QuoteToken,
 				}
 				if exchangepair.Verified {
-					log.Infoln("Got verified trade", trade)
+					log.Info("Got verified trade from stream 2: ", trade)
 				}
 				s.chanTrades <- trade
-				log.Println("Got trade stream2: ", trade)
 
 			case msg = <-client3DownStream:
 				if msg == nil {
@@ -254,7 +266,14 @@ func (s *KuCoinScraper) mainLoop() {
 				asset := strings.Split(t.Symbol, "-")
 				f64Price, _ := strconv.ParseFloat(t.Price, 64)
 				f64Volume, _ := strconv.ParseFloat(t.Size, 64)
-				timeOrder, _ := strconv.ParseInt(t.Time, 10, 64)
+				timeOrder, err := strconv.ParseInt(t.Time, 10, 64)
+				if err != nil {
+					log.Error("parse trade time: ", err)
+				}
+				// WS returns different lengths of Unix timestamps. Adjust to nanoseconds if returns milliseconds.
+				if len(t.Time) == 13 {
+					timeOrder *= 1e6
+				}
 
 				if t.Side == "sell" {
 					f64Volume = -f64Volume
@@ -276,10 +295,9 @@ func (s *KuCoinScraper) mainLoop() {
 					QuoteToken:   exchangepair.UnderlyingPair.QuoteToken,
 				}
 				if exchangepair.Verified {
-					log.Infoln("Got verified trade", trade)
+					log.Info("Got verified trade from stream 3: ", trade)
 				}
 				s.chanTrades <- trade
-				log.Println("Got trade stream3: ", trade)
 
 			case <-s.shutdown: // user requested shutdown
 				log.Println("KuCoin shutting down")
