@@ -10,6 +10,7 @@ import (
 
 	"github.com/cnf/structhash"
 	"github.com/diadata-org/diadata/pkg/dia"
+	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/common"
@@ -38,10 +39,11 @@ var (
 		"PAX":  "",
 		"BUSD": "",
 	}
-	tol                 = float64(0.04)
-	log                 *logrus.Logger
-	batchTimeSeconds    int
-	volumeUpdateSeconds = 60 * 60 * 6
+	tol              = float64(0.04)
+	log              *logrus.Logger
+	batchTimeSeconds int
+	// volumeUpdateSeconds = 60 * 60 * 6
+	volumeUpdateSeconds = 60 * 10
 	volumeThreshold     = float64(10000)
 	smallX              = float64(10)
 )
@@ -57,8 +59,8 @@ type TradesBlockService struct {
 	started          bool
 	BlockDuration    int64
 	currentBlock     *dia.TradesBlock
-	priceCache       map[dia.Asset]float64
-	volumeCache      map[dia.Asset]float64
+	priceCache       map[string]float64
+	volumeCache      map[string]float64
 	datastore        models.Datastore
 	relDB            models.RelDatastore
 	historical       bool
@@ -77,8 +79,8 @@ func NewTradesBlockService(datastore models.Datastore, relDB models.RelDatastore
 		started:         false,
 		currentBlock:    nil,
 		BlockDuration:   blockDuration,
-		priceCache:      make(map[dia.Asset]float64),
-		volumeCache:     make(map[dia.Asset]float64),
+		priceCache:      make(map[string]float64),
+		volumeCache:     make(map[string]float64),
 		datastore:       datastore,
 		relDB:           relDB,
 		historical:      historical,
@@ -91,7 +93,9 @@ func NewTradesBlockService(datastore models.Datastore, relDB models.RelDatastore
 	log.Info("write measurement: ", s.writeMeasurement)
 	log.Info("historical: ", s.historical)
 	log.Info("batch ticker time: ", batchTimeSeconds)
-	s.loadVolumes()
+	s.volumeCache = s.loadVolumes()
+	log.Info("...done loading volumes.")
+
 	go s.mainLoop()
 	go s.loadVolumesLoop()
 	return s
@@ -99,6 +103,15 @@ func NewTradesBlockService(datastore models.Datastore, relDB models.RelDatastore
 
 // runs in a goroutine until s is closed
 func (s *TradesBlockService) mainLoop() {
+	var (
+		acceptCount        int
+		acceptCountCEX     int
+		acceptCountDEX     int
+		acceptCountSwapCEX int
+		acceptCountSwapDEX int
+		totalCount         int
+		logTicker          = *time.NewTicker(120 * time.Second)
+	)
 	for {
 		select {
 		case <-s.shutdown:
@@ -110,25 +123,59 @@ func (s *TradesBlockService) mainLoop() {
 			if err != nil {
 				log.Error("swap trade: ", err)
 			}
-			if s.checkTrade(*t) {
+			tradeOk := s.checkTrade(*t)
+			swapppedTradeOk := s.checkTrade(tSwapped)
+			if tradeOk {
 				s.process(*t)
 			}
-			if s.checkTrade(tSwapped) {
+			if swapppedTradeOk {
 				s.process(tSwapped)
 			}
+			if tradeOk {
+				if scrapers.Exchanges[t.Source].Centralized {
+					acceptCountCEX++
+				} else {
+					acceptCountDEX++
+				}
+			}
+			if swapppedTradeOk {
+				if scrapers.Exchanges[t.Source].Centralized {
+					acceptCountSwapCEX++
+				} else {
+					acceptCountSwapDEX++
+				}
+			}
+			if tradeOk || swapppedTradeOk {
+				acceptCount++
+			}
+			totalCount++
+
 		case <-s.batchTicker.C:
 			err := s.datastore.Flush()
 			if err != nil {
 				log.Error("flush influx batch: ", err)
 			}
+		case <-logTicker.C:
+			log.Info("accepted trades CEX: ", acceptCountCEX)
+			log.Info("accepted swapped trades CEX: ", acceptCountSwapCEX)
+			log.Info("accepted trades DEX: ", acceptCountDEX)
+			log.Info("accepted swapped trades DEX: ", acceptCountSwapDEX)
+			log.Info("discarded trades: ", totalCount-acceptCount)
 		}
 	}
 }
 
 // checkTrade determines whether a trade should be taken into account for price determination.
 func (s *TradesBlockService) checkTrade(t dia.Trade) bool {
-	if baseVolume, ok := s.volumeCache[t.BaseToken]; ok {
-		if quoteVolume, ok := s.volumeCache[t.QuoteToken]; ok {
+	if t.BaseToken.Blockchain == dia.FIAT {
+		return true
+	}
+	if t.QuoteToken.Blockchain == dia.FIAT {
+		return false
+	}
+
+	if baseVolume, ok := s.volumeCache[assetIdentifier(t.BaseToken)]; ok {
+		if quoteVolume, ok := s.volumeCache[assetIdentifier(t.QuoteToken)]; ok {
 			if baseVolume < volumeThreshold {
 				// For small volume assets, quote asset must be a small volume asset too.
 				return smallX*baseVolume > quoteVolume
@@ -214,28 +261,29 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				// 	}
 				// }
 
-				if _, ok = s.priceCache[basetoken]; ok {
-					price = s.priceCache[basetoken]
+				if _, ok = s.priceCache[assetIdentifier(basetoken)]; ok {
+					price = s.priceCache[assetIdentifier(basetoken)]
 				} else {
 					quotation, err = s.datastore.GetAssetQuotationCache(basetoken)
 					price = quotation.Price
-					s.priceCache[basetoken] = price
+					s.priceCache[assetIdentifier(basetoken)] = price
 					log.Infof("quotation for %s from redis cache: %v", basetoken.Symbol, price)
 				}
 
 			} else {
 
+				basetoken := t.BaseToken
 				// Look for historic price of base token at trade time.
-				if _, ok = s.priceCache[t.BaseToken]; ok {
-					price = s.priceCache[t.BaseToken]
+				if _, ok = s.priceCache[assetIdentifier(basetoken)]; ok {
+					price = s.priceCache[assetIdentifier(basetoken)]
 				} else {
 					price, err = s.datastore.GetAssetPriceUSD(t.BaseToken, t.Time)
-					s.priceCache[t.BaseToken] = price
+					s.priceCache[assetIdentifier(basetoken)] = price
 					if t.BaseToken.Address == "0x0000000000000000000000000000000000000000" {
-						if t.BaseToken.Blockchain == "Bitcoin" {
+						if basetoken.Blockchain == "Bitcoin" {
 							log.Infof("quotation for BTC from influx: %v", price)
 						}
-						if t.BaseToken.Blockchain == "Ethereum" {
+						if basetoken.Blockchain == "Ethereum" {
 							log.Infof("quotation for ETH from influx: %v", price)
 						}
 					}
@@ -262,7 +310,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 
 	// // If estimated price for stablecoin diverges too much ignore trade
 	if _, ok := stablecoins[t.Symbol]; ok {
-		if math.Abs(t.EstimatedUSDPrice-1) > tol {
+		if math.Abs(t.EstimatedUSDPrice-1) > tol && t.EstimatedUSDPrice > 0 {
 			log.Errorf("price for stablecoin %s diverges by %v", t.Symbol, math.Abs(t.EstimatedUSDPrice-1))
 			verifiedTrade = false
 		}
@@ -292,7 +340,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 		if s.currentBlock == nil || s.currentBlock.TradesBlockData.EndTime.Before(t.Time) {
 			if s.currentBlock != nil {
 				s.finaliseCurrentBlock()
-				s.priceCache = make(map[dia.Asset]float64)
+				s.priceCache = make(map[string]float64)
 			}
 
 			b := &dia.TradesBlock{
@@ -317,16 +365,16 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	}
 }
 
-func (s *TradesBlockService) loadVolumes() map[dia.Asset]float64 {
+func (s *TradesBlockService) loadVolumes() map[string]float64 {
 	// Clean asset volumes
-	volumeCache := make(map[dia.Asset]float64)
+	volumeCache := make(map[string]float64)
 	endtime := time.Now()
-	assets, err := s.relDB.GetAssetsWithVOLRange(endtime.AddDate(0, 0, -1), endtime)
+	assets, err := s.relDB.GetAssetsWithVOLRange(endtime.AddDate(0, 0, -7), endtime)
 	if err != nil {
 		log.Error("could not load asset with volume: ", err)
 	}
 	for _, asset := range assets {
-		volumeCache[asset.Asset] = asset.Volume
+		volumeCache[assetIdentifier(asset.Asset)] = asset.Volume
 	}
 	return volumeCache
 }
@@ -335,6 +383,11 @@ func (s *TradesBlockService) loadVolumesLoop() {
 	for range s.volumeTicker.C {
 		s.volumeCache = s.loadVolumes()
 	}
+}
+
+// assetIdentifier returns the unique identifier blockchain-address for an asset.
+func assetIdentifier(asset dia.Asset) string {
+	return asset.Blockchain + "-" + asset.Address
 }
 
 func (s *TradesBlockService) finaliseCurrentBlock() {
