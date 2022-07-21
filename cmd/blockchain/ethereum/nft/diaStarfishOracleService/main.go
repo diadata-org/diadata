@@ -118,8 +118,8 @@ func main() {
 				blockchain := blockchains[i]
 				oldFloor := oldFloors[address]
 				log.Println("old floor", oldFloor)
-				newFloorMA, err := periodicOracleUpdateHelper(oldFloor, deviationPermille, auth, contract, conn, blockchain, address)
-				oldFloors[address] = newFloorMA
+				newFloor, err := periodicOracleUpdateHelper(oldFloor, deviationPermille, auth, contract, conn, blockchain, address)
+				oldFloors[address] = newFloor
 				if err != nil {
 					log.Println(err)
 				}
@@ -177,6 +177,7 @@ func updateNFTData(data StarfishReturn, auth *bind.TransactOpts, contract *diaNF
 	var values []uint64
 	values = append(values, uint64(data.Floor*100000000))
 	values = append(values, uint64(data.FloorMA*100000000))
+	values = append(values, []uint64{0, 0, 0}...)
 
 	err := updateOracle(conn, contract, auth, symbol, values, timestamp)
 	if err != nil {
