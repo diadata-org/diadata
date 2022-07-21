@@ -151,6 +151,7 @@ CREATE TABLE nfttrade (
     currency_address text,
     currency_decimals numeric,
     currency_id UUID REFERENCES asset(asset_id),
+    bundle_sale boolean default false,
     block_number numeric,
     trade_time timestamp,
     tx_hash text,    

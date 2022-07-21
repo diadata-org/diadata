@@ -1968,13 +1968,20 @@ func (env *Env) GetNFTFloor(c *gin.Context) {
 		floorWindow = 24 * 60 * 60
 	}
 
+	// Exclude bundle sales by default.
+	bundlesString := c.DefaultQuery("bundles", "false")
+	bundles, err := strconv.ParseBool(bundlesString)
+	if err != nil {
+		log.Error("parse bundles string: ", err)
+	}
+
 	nftClass := dia.NFTClass{Address: address, Blockchain: blockchain}
 
 	// Look for floor price. Iterate backwards in time if no sales are found.
 	var floor float64
 	windowDuration := time.Duration(floorWindow) * time.Second
 	stepBackLimit := 40
-	floor, err = env.RelDB.GetNFTFloorRecursive(nftClass, timestamp, windowDuration, stepBackLimit)
+	floor, err = env.RelDB.GetNFTFloorRecursive(nftClass, timestamp, windowDuration, stepBackLimit, !bundles)
 	if err != nil {
 		restApi.SendError(c, http.StatusBadRequest, err)
 		return

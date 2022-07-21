@@ -96,9 +96,9 @@ type RelDatastore interface {
 	GetNFTTradesFromTable(address string, blockchain string, tokenID string, starttime time.Time, endtime time.Time, table string) ([]dia.NFTTrade, error)
 	GetNFTOffers(address string, blockchain string, tokenID string) ([]dia.NFTOffer, error)
 	GetNFTBids(address string, blockchain string, tokenID string) ([]dia.NFTBid, error)
-	GetNFTFloor(nftclass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration) (float64, error)
-	GetNFTFloorRecursive(nftClass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, stepBackLimit int) (float64, error)
-	GetNFTFloorRange(nftClass dia.NFTClass, starttime time.Time, endtime time.Time, floorWindowSeconds time.Duration, stepBackLimit int) ([]float64, error)
+	GetNFTFloor(nftclass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, noBundles bool) (float64, error)
+	GetNFTFloorRecursive(nftClass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, stepBackLimit int, noBundles bool) (float64, error)
+	GetNFTFloorRange(nftClass dia.NFTClass, starttime time.Time, endtime time.Time, floorWindowSeconds time.Duration, stepBackLimit int, noBundles bool) ([]float64, error)
 	GetLastBlockheightTopshot(upperBound time.Time) (uint64, error)
 	SetNFTBid(bid dia.NFTBid) error
 	GetLastNFTBid(address string, blockchain string, tokenID string, blockNumber uint64, blockPosition uint) (dia.NFTBid, error)

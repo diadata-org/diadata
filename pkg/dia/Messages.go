@@ -121,6 +121,7 @@ type NFTTrade struct {
 	FromAddress string
 	ToAddress   string
 	Currency    Asset
+	BundleSale  bool
 	BlockNumber uint64
 	Timestamp   time.Time
 	TxHash      string
