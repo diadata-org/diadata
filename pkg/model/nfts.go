@@ -430,23 +430,26 @@ func (rdb *RelDB) GetNFTFloorRange(nftClass dia.NFTClass, starttime time.Time, e
 
 // GetTopNFTsEth returns a list of @numCollections NFT collections sorted by trading volume in [@starttime, @endtime]
 // in descending order. Only takes into account trades done with ETH.
-func (rdb *RelDB) GetTopNFTsEth(numCollections int, starttime time.Time, endtime time.Time) (nftVolumes []struct {
+func (rdb *RelDB) GetTopNFTsEth(numCollections int, exchanges []string, starttime time.Time, endtime time.Time) (nftVolumes []struct {
 	Name       string
 	Address    string
 	Blockchain string
 	Volume     float64
 }, err error) {
 
-	var rows pgx.Rows
+	var (
+		rows          pgx.Rows
+		exchangeQuery string
+	)
+
 	query := fmt.Sprintf(`
 	SELECT nc.name,nc.address,nc.blockchain,SUM(price::numeric) 
 	FROM %s INNER JOIN %s nc 
 	ON nfttradecurrent.nftclass_id=nc.nftclass_id 
 	WHERE trade_time>to_timestamp(%v) 
 	AND trade_time<=to_timestamp(%v) 
-	AND currency_id=(SELECT asset_id FROM %s WHERE blockchain='%s' AND address='%s') 
-	GROUP BY nc.name,nc.address,nc.blockchain 
-	ORDER BY sum(price::numeric) DESC LIMIT %d`,
+	AND (currency_id=(SELECT asset_id FROM %s WHERE blockchain='%s' AND address='%s') 
+	OR currency_id=(SELECT asset_id FROM %s WHERE blockchain='%s' AND address='%s') ) `,
 		NfttradeCurrTable,
 		nftclassTable,
 		starttime.Unix(),
@@ -454,6 +457,26 @@ func (rdb *RelDB) GetTopNFTsEth(numCollections int, starttime time.Time, endtime
 		assetTable,
 		dia.ETHEREUM,
 		"0x0000000000000000000000000000000000000000",
+		assetTable,
+		dia.ETHEREUM,
+		"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+	)
+
+	for i, exchange := range exchanges {
+		if i == 0 {
+			exchangeQuery += fmt.Sprintf(" AND (marketplace='%s' ", exchange)
+			continue
+		}
+		exchangeQuery += fmt.Sprintf(" OR marketplace='%s' ", exchange)
+	}
+	if len(exchanges) > 0 {
+		exchangeQuery += ") "
+		query += exchangeQuery
+	}
+
+	query += fmt.Sprintf(`
+	GROUP BY nc.name,nc.address,nc.blockchain
+	ORDER BY sum(price::numeric) DESC LIMIT %d`,
 		numCollections,
 	)
 

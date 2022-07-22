@@ -109,7 +109,7 @@ type RelDatastore interface {
 	GetLastNFTOffer(address string, blockchain string, tokenID string, blockNumber uint64, blockPosition uint) (offer dia.NFTOffer, err error)
 
 	// NFT stats
-	GetTopNFTsEth(numCollections int, starttime time.Time, endtime time.Time) ([]struct {
+	GetTopNFTsEth(numCollections int, exchanges []string, starttime time.Time, endtime time.Time) ([]struct {
 		Name       string
 		Address    string
 		Blockchain string

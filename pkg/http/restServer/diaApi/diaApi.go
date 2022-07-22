@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	filters "github.com/diadata-org/diadata/internal/pkg/filtersBlockService"
@@ -2356,6 +2357,12 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 	}
 	timeWindow := endtime.Sub(starttime)
 
+	exchangesString := c.Query("exchanges")
+	var exchanges []string
+	if exchangesString != "" {
+		exchanges = strings.Split(exchangesString, ",")
+	}
+
 	// Exclude bundle sales by default.
 	bundlesString := c.DefaultQuery("bundles", "false")
 	bundles, err := strconv.ParseBool(bundlesString)
@@ -2363,7 +2370,7 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 		log.Error("parse bundles string: ", err)
 	}
 
-	nftVolumes, err := env.RelDB.GetTopNFTsEth(numCollections, starttime, endtime)
+	nftVolumes, err := env.RelDB.GetTopNFTsEth(numCollections, exchanges, starttime, endtime)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 		return
