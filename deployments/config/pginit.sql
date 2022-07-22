@@ -139,7 +139,7 @@ CREATE TABLE nft (
     UNIQUE(nft_id)
 );
 
-CREATE TABLE nfttrade (
+CREATE TABLE nfttradecurrent (
     sale_id UUID DEFAULT gen_random_uuid(),
     nftclass_id UUID REFERENCES nftclass(nftclass_id),
     nft_id UUID REFERENCES nft(nft_id),
@@ -151,6 +151,7 @@ CREATE TABLE nfttrade (
     currency_address text,
     currency_decimals numeric,
     currency_id UUID REFERENCES asset(asset_id),
+    bundle_sale boolean default false,
     block_number numeric,
     trade_time timestamp,
     tx_hash text,    
