@@ -342,10 +342,15 @@ func (rdb *RelDB) GetNFTFloor(nftclass dia.NFTClass, timestamp time.Time, floorW
 		nftclass.Blockchain,
 	)
 	if nftclass.Blockchain == dia.ETHEREUM {
-		query += fmt.Sprintf(" AND currency_id=(SELECT asset_id FROM %s WHERE blockchain='%s' AND address='%s')",
+		query += fmt.Sprintf(" AND (currency_id=(SELECT asset_id FROM %s WHERE blockchain='%s' AND address='%s') OR ",
 			assetTable,
 			dia.ETHEREUM,
 			"0x0000000000000000000000000000000000000000",
+		)
+		query += fmt.Sprintf(" currency_id=(SELECT asset_id FROM %s WHERE blockchain='%s' AND address='%s'))",
+			assetTable,
+			dia.ETHEREUM,
+			"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
 		)
 	}
 	if noBundles {
