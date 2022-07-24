@@ -498,6 +498,26 @@ func InitialiseRestClientsMap() {
 		log.Fatal("init rest client: ", err)
 	}
 
+	restClients["43114"], err = ethclient.Dial("https://rpc.ankr.com/avalanche")
+	if err != nil {
+		log.Fatal("init rest client: ", err)
+	}
+
+	restClients["10"], err = ethclient.Dial("https://mainnet.optimism.io")
+	if err != nil {
+		log.Fatal("init rest client: ", err)
+	}
+
+	restClients["1285"], err = ethclient.Dial("https://rpc.api.moonriver.moonbeam.network")
+	if err != nil {
+		log.Fatal("init rest client: ", err)
+	}
+
+	restClients["1285"], err = ethclient.Dial("https://exchainrpc.okex.org")
+	if err != nil {
+		log.Fatal("init rest client: ", err)
+	}
+
 }
 
 func InitialiseWsClientsMap() {
@@ -508,7 +528,7 @@ func InitialiseWsClientsMap() {
 	for chainID, chainconfig := range multichainconfigs {
 		wsClients[chainID], err = ethclient.Dial(chainconfig.wsURL)
 		if err != nil {
-			log.Fatal("init ws client: ", err)
+			log.Errorln("init ws client: ", err)
 		}
 
 	}
