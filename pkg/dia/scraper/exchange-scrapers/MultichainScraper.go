@@ -344,8 +344,8 @@ func (s *BridgeSwapScraper) mapasset(t dia.Trade) {
 		log.Errorln("quotetoken not exists", quoteToken_id)
 	} else if quote_group_id != "" {
 		log.Errorln("InsertAssetMap1 ", quote_group_id, baseToken_id)
-
-		s.relDB.InsertAssetMap(quote_group_id, baseToken_id)
+		err := s.relDB.InsertAssetMap(quote_group_id, baseToken_id)
+		log.Errorln("err InsertAssetMap1", err)
 		return
 	}
 
@@ -354,12 +354,15 @@ func (s *BridgeSwapScraper) mapasset(t dia.Trade) {
 		log.Errorln("base does not exists ")
 	} else if quote_group_id != "" {
 		log.Errorln("InsertAssetMap2 ", quote_group_id, baseToken_id)
-		s.relDB.InsertAssetMap(base_group_id, quoteToken_id)
+		err := s.relDB.InsertAssetMap(base_group_id, quoteToken_id)
+		log.Errorln("err InsertAssetMap2", err)
+
 		return
 	}
 	log.Errorln("InsertAssetMap3 ", quoteToken_id)
 
-	s.relDB.InsertNewAssetMap(quoteToken_id)
+	err := s.relDB.InsertNewAssetMap(quoteToken_id)
+	log.Errorln("err InsertAssetMap3", err)
 
 	gpid, err := s.relDB.GetAssetMap(quoteToken_id)
 	if err != nil {
