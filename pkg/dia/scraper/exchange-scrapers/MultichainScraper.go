@@ -361,7 +361,7 @@ func (s *BridgeSwapScraper) mapasset(t dia.Trade) {
 	}
 	log.Errorln("InsertAssetMap3 ", quoteToken_id)
 
-	err := s.relDB.InsertNewAssetMap(quoteToken_id)
+	err = s.relDB.InsertNewAssetMap(quoteToken_id)
 	log.Errorln("err InsertAssetMap3", err)
 
 	gpid, err := s.relDB.GetAssetMap(quoteToken_id)
