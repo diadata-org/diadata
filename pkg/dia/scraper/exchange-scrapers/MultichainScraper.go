@@ -368,7 +368,7 @@ func (s *BridgeSwapScraper) mapasset(t dia.Trade) {
 	if err != nil {
 		log.Errorln("gpid generated err ", err)
 	}
-	s.relDB.InsertAssetMap(baseToken_id, gpid)
+	s.relDB.InsertAssetMap(gpid, baseToken_id)
 	log.Infoln("quote_group_id, base_group_id", baseToken_id, gpid)
 }
 
