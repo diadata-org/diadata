@@ -46,6 +46,11 @@ func init() {
 	evmID["1"] = dia.ETHEREUM
 	evmID["250"] = dia.FANTOM
 	evmID["56"] = dia.BINANCESMARTCHAIN
+	evmID["43114"] = dia.BINANCESMARTCHAIN
+	evmID["1284"] = dia.MOONBEAM
+	evmID["1285"] = dia.MOONRIVER
+	evmID["42161"] = dia.ARBITRUM
+	evmID["43114"] = dia.AVALANCHE
 
 	chains, err := relDB.GetAllBlockchains(false)
 	if err != nil {

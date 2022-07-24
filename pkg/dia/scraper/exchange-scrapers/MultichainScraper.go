@@ -343,6 +343,8 @@ func (s *BridgeSwapScraper) mapasset(t dia.Trade) {
 	if err != nil {
 		log.Errorln("quotetoken not exists", quoteToken_id)
 	} else if quote_group_id != "" {
+		log.Errorln("InsertAssetMap1 ", quote_group_id, baseToken_id)
+
 		s.relDB.InsertAssetMap(quote_group_id, baseToken_id)
 		return
 	}
@@ -351,9 +353,11 @@ func (s *BridgeSwapScraper) mapasset(t dia.Trade) {
 	if err != nil {
 		log.Errorln("base does not exists ")
 	} else if quote_group_id != "" {
+		log.Errorln("InsertAssetMap2 ", quote_group_id, baseToken_id)
 		s.relDB.InsertAssetMap(base_group_id, quoteToken_id)
 		return
 	}
+	log.Errorln("InsertAssetMap3 ", quoteToken_id)
 
 	s.relDB.InsertNewAssetMap(quoteToken_id)
 
@@ -362,7 +366,7 @@ func (s *BridgeSwapScraper) mapasset(t dia.Trade) {
 		log.Errorln("gpid generated err ", err)
 	}
 	s.relDB.InsertAssetMap(baseToken_id, gpid)
-	log.Infoln("quote_group_id, base_group_id", quote_group_id, base_group_id)
+	log.Infoln("quote_group_id, base_group_id", baseToken_id, gpid)
 }
 
 func GetDecimals(tokenAddress common.Address, chainid string) (decimals uint8, err error) {
@@ -513,7 +517,7 @@ func InitialiseRestClientsMap() {
 		log.Fatal("init rest client: ", err)
 	}
 
-	restClients["1285"], err = ethclient.Dial("https://exchainrpc.okex.org")
+	restClients["66"], err = ethclient.Dial("https://exchainrpc.okex.org")
 	if err != nil {
 		log.Fatal("init rest client: ", err)
 	}
