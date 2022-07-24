@@ -97,7 +97,7 @@ func (rdb *RelDB) InsertAssetMap(group_id string, asset_id string) error {
 	query := fmt.Sprintf("INSERT INTO %s (group_id,asset_id) VALUES ($1,$2)", assetIdent)
 	log.Println("query", query)
 
-	_, err := rdb.postgresClient.Exec(context.Background(), query, asset_id, group_id)
+	_, err := rdb.postgresClient.Exec(context.Background(), query, group_id, asset_id)
 	if err != nil {
 		return err
 	}
