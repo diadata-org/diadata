@@ -2495,33 +2495,33 @@ func (env *Env) GetNFTVolume(c *gin.Context) {
 		return
 	}
 
-	floor, err := env.RelDB.GetNFTFloor(
+	floor, err := env.RelDB.GetNFTFloorRecursive(
 		dia.NFTClass{Address: address, Blockchain: blockchain},
 		endtime,
 		timeWindow,
+		10,
 		!bundles,
 	)
 	if err != nil {
-		restApi.SendError(c, http.StatusBadRequest, err)
-		return
+		log.Error("get floor: ", err)
 	}
-	floorYesterday, err := env.RelDB.GetNFTFloor(
+	floorYesterday, err := env.RelDB.GetNFTFloorRecursive(
 		dia.NFTClass{Address: address, Blockchain: blockchain},
 		endtime.Add(-timeWindow),
 		timeWindow,
+		10,
 		!bundles,
 	)
 	if err != nil {
-		restApi.SendError(c, http.StatusBadRequest, err)
-		return
+		log.Error("get floor yesterday: ", err)
 	}
 	volume, err := env.RelDB.GetNFTVolume(address, blockchain, starttime, endtime)
 	if err != nil {
-		log.Error("get number of nft trades: ", err)
+		log.Error("get volume: ", err)
 	}
 	volumeYesterday, err := env.RelDB.GetNFTVolume(address, blockchain, starttime.Add(-timeWindow), endtime.Add(-timeWindow))
 	if err != nil {
-		log.Error("get number of nft trades: ", err)
+		log.Error("get volume yesterday: ", err)
 	}
 	numTrades, err := env.RelDB.GetNumNFTTrades(address, blockchain, starttime, endtime)
 	if err != nil {
