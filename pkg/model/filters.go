@@ -92,14 +92,6 @@ func (datastore *DB) GetFilterPoints(filter string, exchange string, symbol stri
 	}, err
 }
 
-type FilterPoint struct {
-	Time     time.Time
-	Exchange string
-	Filter   string
-	Symbol   string
-	Value    float64
-}
-
 func (datastore *DB) GetFilter(filter string, topAsset dia.Asset, scale string, starttime time.Time, endtime time.Time) ([]dia.FilterPoint, error) {
 	var allFilters []dia.FilterPoint
 	table := ""

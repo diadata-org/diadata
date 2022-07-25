@@ -118,6 +118,14 @@ type FilterPoint {
   Time: Time
   Address:String
   Blockchain :String
+  FirstTrade: Trade
+  LastTrade: Trade
+
+}
+
+type Trade {
+  Price:Float
+  Pair:String
 }
 
 type NFT {

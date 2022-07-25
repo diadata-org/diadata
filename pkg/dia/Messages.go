@@ -517,12 +517,14 @@ type FiltersBlockData struct {
 
 // FilterPoint contains the resulting value of a filter applied to an asset.
 type FilterPoint struct {
-	Asset Asset
-	Value float64
-	Name  string
-	Time  time.Time
-	Max   float64
-	Min   float64
+	Asset      Asset
+	Value      float64
+	Name       string
+	Time       time.Time
+	Max        float64
+	Min        float64
+	FirstTrade Trade
+	LastTrade  Trade
 }
 
 type IndexBlock struct {
