@@ -921,7 +921,7 @@ func (rdb *RelDB) GetActiveAssetCount() (count int, err error) {
 func (rdb *RelDB) GetActiveAsset(limit, skip int) (assets []dia.Asset, assetIds []string, err error) {
 	query := fmt.Sprintf("SELECT asset.asset_id,asset.symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON asset.asset_id = exchangesymbol.asset_id ORDER BY exchangesymbol.asset_id DESC LIMIT $1 OFFSET $2  ", assetTable, exchangesymbolTable)
 	var rows pgx.Rows
-	log.Errorln("query", query)
+	// log.Errorln("query", query)
 	rows, err = rdb.postgresClient.Query(context.Background(), query, limit, skip)
 	if err != nil {
 		return
