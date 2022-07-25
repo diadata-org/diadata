@@ -2,9 +2,9 @@ type Query {
   GetQuotation(symbol: String!): Quotation
 
   GetSupply(symbol: String!): Supply
-  
+
   GetSupplies(symbol: String!): [Supply]
-  
+
   GetChart(
     filter: String!
     BlockDurationSeconds: Int!
@@ -13,27 +13,10 @@ type Query {
     StartTime: Time!
     EndTime: Time!
     Exchanges: [String!]
-    Address :  String
-	  BlockChain : String
+    Address: String
+    BlockChain: String
+    BaseAsset: [BaseAsset!]
   ): [FilterPoint]
-
-    GetChart(
-    filter: String!
-    BlockDurationSeconds: Int!
-    BlockShiftSeconds: Int
-    Symbol: String!
-    StartTime: Time!
-    EndTime: Time!
-    Exchanges: [String!]
-    Address :  String
-	  BlockChain : String
-  ): [FilterPoint]
-
-
-
-    
-
-
 
   GetChartMeta(
     filter: String!
@@ -43,49 +26,40 @@ type Query {
     StartTime: Time!
     EndTime: Time!
     Exchanges: [String!]
-    Address :  String
-	  BlockChain : String
+    Address: String
+    BlockChain: String
+    BaseAsset: [BaseAsset!]
   ): FilterPointMeta
 
+  GetNFT(Address: String!, Blockchain: String!, TokenID: String!): NFT
 
-  
-  GetNFT(
-    Address:String!
-    Blockchain:String!
-    TokenID:String!
-  ): NFT
-  
   GetNFTTrades(
-    Address:String!
-    Blockchain:String!
-    TokenID:String!
+    Address: String!
+    Blockchain: String!
+    TokenID: String!
   ): [NFTTrade]
 
   GetNFTOffers(
-    Address:String!
-    Blockchain:String!
-    TokenID:String!
+    Address: String!
+    Blockchain: String!
+    TokenID: String!
   ): [NFTOffer]
 
-  GetNFTBids(
-    Address:String!
-    Blockchain:String!
-    TokenID:String!
-  ): [NFTBid]
-
+  GetNFTBids(Address: String!, Blockchain: String!, TokenID: String!): [NFTBid]
 }
 
 scalar Time
-
 
 type FilterPointMeta {
   Max: Float
   Min: Float
   Points: [FilterPoint]
- 
 }
 
-
+input BaseAsset {
+  Address: String
+  BlockChain: String
+}
 
 type Quotation {
   Symbol: String
@@ -111,6 +85,9 @@ type ChartPoint {
   Value: Float
 }
 
+
+
+
 type FilterPoint {
   Symbol: String
   Value: Float
@@ -129,61 +106,59 @@ type Trade {
 }
 
 type NFT {
-  Address:String
-  Blockchain:String
-  CreationTime:Time
-  CreatorAddress:String
-  URI:String
-  TokenID:String
+  Address: String
+  Blockchain: String
+  CreationTime: Time
+  CreatorAddress: String
+  URI: String
+  TokenID: String
 }
 
 type NFTTrade {
-  Address:String
-  Blockchain:String
-  TokenID:String
-  Price:String
-  FromAddress:String
-  ToAddress:String
-  CurrencyAddress:String
-  CurrencySymbol:String
-  CurrencyDecimals:Int
-  BlockNumber:Int
-  Timestamp:Time
-  TxHash:String
-  Exchange:String
+  Address: String
+  Blockchain: String
+  TokenID: String
+  Price: String
+  FromAddress: String
+  ToAddress: String
+  CurrencyAddress: String
+  CurrencySymbol: String
+  CurrencyDecimals: Int
+  BlockNumber: Int
+  Timestamp: Time
+  TxHash: String
+  Exchange: String
 }
 
 type NFTOffer {
-  Address:String
-  Blockchain:String
-  TokenID:String
-  StartValue:String
-  EndValue:String
-  Duration:Int
-  AuctionType:String
-  FromAddress:String
-  CurrencyAddress:String
-  CurrencySymbol:String
-  CurrencyDecimals:Int
-  Blocknumber:Int
-  Timestamp:Time
-  TxHash:String
-  Exchange:String
+  Address: String
+  Blockchain: String
+  TokenID: String
+  StartValue: String
+  EndValue: String
+  Duration: Int
+  AuctionType: String
+  FromAddress: String
+  CurrencyAddress: String
+  CurrencySymbol: String
+  CurrencyDecimals: Int
+  Blocknumber: Int
+  Timestamp: Time
+  TxHash: String
+  Exchange: String
 }
-
 
 type NFTBid {
-  Address:String
-  Blockchain:String
-  TokenID:String
-  BidValue:String
-  FromAddress:String
-  CurrencyAddress:String
-  CurrencySymbol:String
-  CurrencyDecimals:Int
-  Blocknumber:Int
-  Timestamp:Time
-  TxHash:String
-  Exchange:String
+  Address: String
+  Blockchain: String
+  TokenID: String
+  BidValue: String
+  FromAddress: String
+  CurrencyAddress: String
+  CurrencySymbol: String
+  CurrencyDecimals: Int
+  Blocknumber: Int
+  Timestamp: Time
+  TxHash: String
+  Exchange: String
 }
- 
