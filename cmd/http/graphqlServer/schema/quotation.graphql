@@ -85,13 +85,28 @@ type ChartPoint {
   Value: Float
 }
 
+
+
+
 type FilterPoint {
   Symbol: String
   Value: Float
   Name: String
   Time: Time
-  Address: String
-  Blockchain: String
+  Address:String
+  Blockchain :String
+  FirstTrade: Trade
+  LastTrade: Trade
+
+}
+
+type Trade {
+  Price:Float
+  Pair:String
+  Volume: Float
+  Symbol: String
+  EstimatedUSDPrice: Float
+
 }
 
 type NFT {

@@ -10,6 +10,9 @@ import (
 type FilterPointResolver struct {
 	q dia.FilterPoint
 }
+type TradeResolver struct {
+	q dia.Trade
+}
 
 func (qr *FilterPointResolver) Name(ctx context.Context) (*string, error) {
 	return &qr.q.Name, nil
@@ -32,4 +35,29 @@ func (qr *FilterPointResolver) Address(ctx context.Context) (*string, error) {
 
 func (qr *FilterPointResolver) Blockchain(ctx context.Context) (*string, error) {
 	return &qr.q.Asset.Blockchain, nil
+}
+
+func (qr *FilterPointResolver) FirstTrade(ctx context.Context) (*TradeResolver, error) {
+	return &TradeResolver{q: qr.q.FirstTrade}, nil
+}
+func (qr *FilterPointResolver) LastTrade(ctx context.Context) (*TradeResolver, error) {
+	return &TradeResolver{q: qr.q.LastTrade}, nil
+}
+
+func (qr *TradeResolver) Price(ctx context.Context) (*float64, error) {
+	return &qr.q.Price, nil
+}
+func (qr *TradeResolver) Pair(ctx context.Context) (*string, error) {
+	return &qr.q.Pair, nil
+}
+
+func (qr *TradeResolver) Volume(ctx context.Context) (*float64, error) {
+	return &qr.q.Volume, nil
+}
+func (qr *TradeResolver) Symbol(ctx context.Context) (*string, error) {
+	return &qr.q.Symbol, nil
+}
+
+func (qr *TradeResolver) EstimatedUSDPrice(ctx context.Context) (*float64, error) {
+	return &qr.q.EstimatedUSDPrice, nil
 }
