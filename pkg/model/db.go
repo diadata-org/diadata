@@ -144,19 +144,6 @@ type Datastore interface {
 	// Gold token methods
 	GetPaxgQuotationOunces() (*Quotation, error)
 	GetPaxgQuotationGrams() (*Quotation, error)
-	// Crypto Index methods
-	GetCryptoIndexTime(starttime, endtime time.Time, symbol string) (time.Time, error)
-	GetCryptoIndex(time.Time, time.Time, string, int) ([]CryptoIndex, error)
-	SetCryptoIndex(index *CryptoIndex) error
-	GetCryptoIndexValues(starttime time.Time, endtime time.Time, symbol string, maxResults int) ([]CryptoIndex, error)
-	GetCryptoIndexValuesSpaced(starttime time.Time, endtime time.Time, symbol string, frequency string) ([]CryptoIndex, error)
-	GetCryptoIndexConstituents(time.Time, time.Time, dia.Asset, string) ([]CryptoIndexConstituent, error)
-	SetCryptoIndexConstituent(*CryptoIndexConstituent, dia.Asset, time.Time) error
-	GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error)
-	GetIndexPrice(asset dia.Asset, time time.Time, window time.Duration) (*dia.Trade, error)
-	GetCurrentIndexCompositionForIndex(index dia.Asset) []CryptoIndexConstituent
-	IndexValueCalculation(currentConstituents []CryptoIndexConstituent, indexAsset dia.Asset, indexValue float64) CryptoIndex
-	UpdateConstituentsMarketData(index string, currentConstituents *[]CryptoIndexConstituent) error
 
 	SaveIndexEngineTimeInflux(map[string]string, map[string]interface{}, time.Time) error
 	GetBenchmarkedIndexValuesInflux(string, time.Time, time.Time) (BenchmarkedIndex, error)

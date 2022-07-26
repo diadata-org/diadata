@@ -199,7 +199,6 @@ func main() {
 	diaAuth.Use(authMiddleware.MiddlewareFunc())
 	{
 		diaAuth.POST("/supply", diaApiEnv.PostSupply)
-		diaAuth.POST("/indexRebalance/:symbol", diaApiEnv.PostIndexRebalance)
 		diaAuth.POST("/quotation", diaApiEnv.SetQuotation)
 	}
 
@@ -273,8 +272,6 @@ func main() {
 		diaGroup.GET("/goldPaxgGrams", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationGrams))
 
 		// Index
-		diaGroup.GET("/index/:symbol", diaApiEnv.GetCryptoIndex)
-		diaGroup.GET("/indexValue/:symbol", diaApiEnv.GetCryptoIndexValues)
 		diaGroup.GET("/benchmarkedIndexValue/:symbol", diaApiEnv.GetBenchmarkedIndexValue)
 
 		// External supply reports
