@@ -50,3 +50,14 @@ func (qr *TradeResolver) Price(ctx context.Context) (*float64, error) {
 func (qr *TradeResolver) Pair(ctx context.Context) (*string, error) {
 	return &qr.q.Pair, nil
 }
+
+func (qr *TradeResolver) Volume(ctx context.Context) (*float64, error) {
+	return &qr.q.Volume, nil
+}
+func (qr *TradeResolver) Symbol(ctx context.Context) (*string, error) {
+	return &qr.q.Symbol, nil
+}
+
+func (qr *TradeResolver) EstimatedUSDPrice(ctx context.Context) (*float64, error) {
+	return &qr.q.EstimatedUSDPrice, nil
+}

@@ -103,6 +103,10 @@ type FilterPoint {
 type Trade {
   Price:Float
   Pair:String
+  Volume: Float
+  Symbol: String
+  EstimatedUSDPrice: Float
+
 }
 
 type NFT {
