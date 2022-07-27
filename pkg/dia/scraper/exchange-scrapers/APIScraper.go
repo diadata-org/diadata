@@ -226,6 +226,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapScraper(Exchanges[dia.BiswapExchange], scrape)
 	case dia.ArthswapExchange:
 		return NewUniswapScraper(Exchanges[dia.ArthswapExchange], scrape)
+	case dia.StellaswapExchange:
+		return NewUniswapScraper(Exchanges[dia.StellaswapExchange], scrape)
 		// case dia.FinageForex:
 		// 	return NewFinageForexScraper(Exchanges[dia.FinageForex], scrape, relDB, key, secret)
 

@@ -651,6 +651,19 @@
             "WatchdogDelay": 7200
         },
         {
+            "Name": "Stellaswap",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x68A384D826D3678f78BB9FB1533c7E9577dACc0E",
+            "Blockchain": {
+                "Name": "Moonbeam"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 180
+        },
+        {
             "Name": "STEX",
             "Centralized": true,
             "Bridge": false,

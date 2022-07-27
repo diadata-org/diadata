@@ -166,6 +166,14 @@ func (s *TradesBlockService) process(t dia.Trade) {
 						Blockchain: dia.ETHEREUM,
 					}
 				}
+				if t.Source == dia.StellaswapExchange && basetoken.Blockchain == dia.MOONBEAM && basetoken.Address == common.HexToAddress("0xAcc15dC74880C9944775448304B263D191c6077F").Hex() {
+					basetoken = dia.Asset{
+						Symbol:     "GLMR",
+						Address:    "0x0000000000000000000000000000000000000000",
+						Blockchain: dia.MOONBEAM,
+					}
+				}
+
 				// if basetoken.Blockchain == dia.ASTAR && t.Source == dia.ArthswapExchange && basetoken.Address == common.HexToAddress("0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98").Hex() {
 				// 	basetoken = dia.Asset{
 				// 		Symbol:     "USDC",

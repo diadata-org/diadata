@@ -36,6 +36,7 @@ const (
 	restDialTelos     = ""
 	restDialEvmos     = ""
 	restDialAstar     = ""
+	restDialMoonbeam  = ""
 
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
@@ -52,6 +53,7 @@ const (
 	telosWaitMilliseconds       = "400"
 	evmosWaitMilliseconds       = "400"
 	astarWaitMilliseconds       = "1000"
+	moonbeamWaitMilliseconds    = "1000"
 )
 
 type UniswapScraper struct {
@@ -114,6 +116,8 @@ func NewUniswapScraper(exchange dia.Exchange) (us *UniswapScraper) {
 		us = makeUniswapPoolScraper(exchange, restDialAstar, astarWaitMilliseconds)
 	case dia.BiswapExchange:
 		us = makeUniswapPoolScraper(exchange, restDialAstar, astarWaitMilliseconds)
+	case dia.StellaswapExchange:
+		us = makeUniswapPoolScraper(exchange, restDialMoonbeam, moonbeamWaitMilliseconds)
 	}
 
 	exchangeFactoryContractAddress = exchange.Contract
