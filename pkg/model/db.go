@@ -52,7 +52,7 @@ type Datastore interface {
 	SaveFilterInflux(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error
 	GetLastTrades(asset dia.Asset, exchange string, maxTrades int, fullAsset bool) ([]dia.Trade, error)
 	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
-	GetTradesByExchanges(asset dia.Asset, exchange []string, startTime, endTime time.Time) ([]dia.Trade, error)
+	GetTradesByExchanges(asset dia.Asset, baseAssets []dia.Asset, exchange []string, startTime, endTime time.Time) ([]dia.Trade, error)
 	GetTradesByExchangesFull(asset dia.Asset, baseAssets []dia.Asset, exchanges []string, returnBasetoken bool, startTime, endTime time.Time) ([]dia.Trade, error)
 	GetTradesByExchangesBatched(asset dia.Asset, baseAssets []dia.Asset, exchanges []string, startTimes, endTimes []time.Time) ([]dia.Trade, error)
 	GetTradesByExchangesBatchedFull(asset dia.Asset, baseAssets []dia.Asset, exchanges []string, returnBasetoken bool, startTimes, endTimes []time.Time) ([]dia.Trade, error)
@@ -178,25 +178,23 @@ type DB struct {
 }
 
 const (
-	influxDbName                         = "dia"
-	influxDbOldTradesTable               = "oldTrades"
-	influxDbTradesTable                  = "trades"
-	influxDbFiltersTable                 = "filters"
-	influxDbFiatQuotationsTable          = "fiat"
-	influxDbOptionsTable                 = "options"
-	influxDbCVITable                     = "cvi"
-	influxDbETHCVITable                  = "cviETH"
-	influxDbSupplyTable                  = "supplies"
-	influxDbDefiRateTable                = "defiRate"
-	influxDbDefiStateTable               = "defiState"
-	influxDbDEXPoolTable                 = "DEXPools"
-	influxDbCryptoIndexTable             = "cryptoindex"
-	influxDbCryptoIndexConstituentsTable = "cryptoindexconstituents"
-	influxDbGithubCommitTable            = "githubcommits"
-	influxDbStockQuotationsTable         = "stockquotations"
-	influxDBAssetQuotationsTable         = "assetQuotations"
-	influxDbBenchmarkedIndexTableName    = "benchmarkedIndexValues"
-	influxDbVwapFireflyTable             = "vwapFirefly"
+	influxDbName                      = "dia"
+	influxDbOldTradesTable            = "oldTrades"
+	influxDbTradesTable               = "trades"
+	influxDbFiltersTable              = "filters"
+	influxDbFiatQuotationsTable       = "fiat"
+	influxDbOptionsTable              = "options"
+	influxDbCVITable                  = "cvi"
+	influxDbETHCVITable               = "cviETH"
+	influxDbSupplyTable               = "supplies"
+	influxDbDefiRateTable             = "defiRate"
+	influxDbDefiStateTable            = "defiState"
+	influxDbDEXPoolTable              = "DEXPools"
+	influxDbGithubCommitTable         = "githubcommits"
+	influxDbStockQuotationsTable      = "stockquotations"
+	influxDBAssetQuotationsTable      = "assetQuotations"
+	influxDbBenchmarkedIndexTableName = "benchmarkedIndexValues"
+	influxDbVwapFireflyTable          = "vwapFirefly"
 
 	influxDBDefaultURL = "http://influxdb:8086"
 )

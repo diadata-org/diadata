@@ -31,6 +31,16 @@ type Query {
     BaseAsset: [BaseAsset!]
   ): FilterPointMeta
 
+  GetVWALP(
+    Quotetokenblockchain: String!
+	  Quotetokenaddress: String!
+	  BaseAssets: [BaseAsset!]
+	  Exchanges: [String]
+	  BlockDurationSeconds: Int!
+	  EndTime: Time
+	  BasisPoints: Int!
+  ): VWALP
+
   GetNFT(Address: String!, Blockchain: String!, TokenID: String!): NFT
 
   GetNFTTrades(
@@ -45,7 +55,14 @@ type Query {
     TokenID: String!
   ): [NFTOffer]
 
-  GetNFTBids(Address: String!, Blockchain: String!, TokenID: String!): [NFTBid]
+  GetNFTBids(
+    Address: String!,
+    Blockchain: String!,
+    TokenID: String!
+  ): [NFTBid]
+
+
+
 }
 
 scalar Time
@@ -83,6 +100,12 @@ type ChartPoint {
   Time: Time
   Exchange: String
   Value: Float
+}
+
+type VWALP {
+  Symbol: String
+  Value: Float
+  Time: Time
 }
 
 

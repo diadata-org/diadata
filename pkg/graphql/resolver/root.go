@@ -6,6 +6,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	queryhelper "github.com/diadata-org/diadata/pkg/dia/helpers/queryHelper"
+	"github.com/diadata-org/diadata/pkg/utils"
 
 	models "github.com/diadata-org/diadata/pkg/model"
 	graphql "github.com/graph-gophers/graphql-go"
@@ -336,6 +337,100 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 	}
 
 	return &FilterPointMetaResolver{fpr: &fpr, min: filterMetadata.Min, max: filterMetadata.Max}, nil
+}
+
+func (r *DiaResolver) GetVWALP(ctx context.Context, args struct {
+	Quotetokenblockchain graphql.NullString
+	Quotetokenaddress    graphql.NullString
+	BaseAssets           *[]BaseAssetInput
+	Exchanges            *[]graphql.NullString
+	BlockDurationSeconds graphql.NullInt
+	EndTime              graphql.NullTime
+	BasisPoints          graphql.NullInt
+}) (*VWALPResolver, error) {
+
+	// --- Parse input data ---
+	var vr *VWALPResolver
+
+	quoteAsset, err := r.RelDB.GetAsset(*args.Quotetokenaddress.Value, *args.Quotetokenblockchain.Value)
+	if err != nil {
+		log.Error("GetAsset: ", err)
+	}
+
+	var baseAssets []dia.Asset
+	if len(*args.BaseAssets) > 0 {
+		for i := range *args.BaseAssets {
+			baseAssets = append(baseAssets, dia.Asset{Address: *(*args.BaseAssets)[i].Address.Value, Blockchain: *(*args.BaseAssets)[i].BlockChain.Value})
+		}
+	}
+
+	var exchanges []string
+	if len(*args.Exchanges) > 0 {
+		for i := range *args.Exchanges {
+			exchanges = append(exchanges, *(*args.Exchanges)[i].Value)
+		}
+	}
+
+	BlockDurationSeconds := *args.BlockDurationSeconds.Value
+	basisPoints := *args.BasisPoints.Value
+	endtime := time.Now()
+	if args.EndTime.Set {
+		endtime = args.EndTime.Value.Time
+	}
+	//  -----------------------
+
+	// Fetch trades from Influx.
+	trades, err := r.DS.GetTradesByExchanges(
+		quoteAsset,
+		baseAssets,
+		exchanges,
+		endtime.Add(-time.Duration(BlockDurationSeconds)*time.Second),
+		endtime,
+	)
+	if err != nil {
+		return vr, err
+	}
+
+	tradesByExchange := make(map[string][]dia.Trade)
+	for _, trade := range trades {
+		tradesByExchange[trade.Source] = append(tradesByExchange[trade.Source], trade)
+	}
+
+	// Get last trades and volumes.
+	var lastPrices []float64
+	var volumes []float64
+	for exchange := range tradesByExchange {
+		block := queryhelper.Block{Trades: tradesByExchange[exchange], TimeStamp: endtime.UnixNano()}
+		filterPoints, _ := queryhelper.FilterVOL([]queryhelper.Block{block}, quoteAsset, int(BlockDurationSeconds))
+		if len(filterPoints) > 0 {
+			lastPrices = append(lastPrices, filterPoints[0].LastTrade.EstimatedUSDPrice)
+			volumes = append(volumes, filterPoints[0].Value)
+		}
+	}
+
+	// Outlier detection.
+	prices, volumes, _, err := utils.DiscardOutliers(lastPrices, volumes, float64(basisPoints))
+	if err != nil {
+		log.Error("DiscardOutliers: ", err)
+	}
+
+	// Build vwap.
+	var vwap float64
+	var volTotal float64
+	for i := range prices {
+		vwap += prices[i] * volumes[i]
+		volTotal += volumes[i]
+	}
+	if volTotal > 0 {
+		vwap /= volTotal
+	}
+
+	var response vwalp
+	response.Symbol = quoteAsset.Symbol
+	response.Value = vwap
+	response.Time = endtime
+
+	return &VWALPResolver{q: response}, nil
 }
 
 // GetNFT returns an NFT by address, blockchain and token_id.
