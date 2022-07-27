@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"math"
+	"math/big"
 	"net/http"
 	"sort"
 	"strconv"
@@ -1740,26 +1742,73 @@ func (env *Env) GetNFTTrades(c *gin.Context) {
 	// Sanitize address
 	address := common.HexToAddress(c.Param("address")).Hex()
 	id := c.Param("id")
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*30)*time.Hour)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+		return
+	}
 
-	q, err := env.RelDB.GetNFTTrades(address, blockchain, id)
+	q, err := env.RelDB.GetNFTTrades(address, blockchain, id, starttime, endtime)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
 	}
 	c.JSON(http.StatusOK, q)
 }
 
-// GetNFTTradesCurrent returns all recent trades of the unique NFT with given parameters.
-func (env *Env) GetNFTTradesCurrent(c *gin.Context) {
+// GetNFTTradesCollection returns all trades of the collection with given parameters.
+func (env *Env) GetNFTTradesCollection(c *gin.Context) {
 	blockchain := c.Param("blockchain")
-	// Sanitize address
 	address := common.HexToAddress(c.Param("address")).Hex()
-	id := c.Param("id")
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*30)*time.Hour)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+		return
+	}
 
-	q, err := env.RelDB.GetNFTTradesFromTable(address, blockchain, id, time.Time{}, time.Now(), models.NfttradeCurrTable)
+	q, err := env.RelDB.GetNFTTradesCollection(address, blockchain, starttime, endtime)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
 	}
-	c.JSON(http.StatusOK, q)
+
+	// Amend output.
+	nftClass, err := env.RelDB.GetNFTClass(address, blockchain)
+	if err != nil {
+		log.Error("get nft class: ", err)
+	}
+
+	type nftTradesCollReturn struct {
+		Name        string
+		Price       float64
+		NFTid       string
+		FromAddress string
+		ToAddress   string
+		BundleSale  bool
+		BlockNumber uint64
+		Timestamp   time.Time
+		TxHash      string
+		Exchange    string
+		Currency    dia.Asset
+	}
+
+	var r []nftTradesCollReturn
+	for _, trade := range q {
+		var t nftTradesCollReturn
+		t.Name = nftClass.Name
+		price, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(trade.Price), new(big.Float).SetFloat64(math.Pow10(int(trade.Currency.Decimals)))).Float64()
+		t.Price = price
+		t.Currency = trade.Currency
+		t.NFTid = trade.NFT.TokenID
+		t.FromAddress = trade.FromAddress
+		t.ToAddress = trade.ToAddress
+		t.BundleSale = trade.BundleSale
+		t.BlockNumber = trade.BlockNumber
+		t.Timestamp = trade.Timestamp
+		t.TxHash = trade.TxHash
+		t.Exchange = trade.Exchange
+		r = append(r, t)
+	}
+
+	c.JSON(http.StatusOK, r)
 }
 
 // GetNFTFloor returns the last floor price of a collection before @timestamp.

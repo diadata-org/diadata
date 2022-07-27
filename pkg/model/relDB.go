@@ -92,8 +92,8 @@ type RelDatastore interface {
 	// NFT trading and bidding methods
 	SetNFTTrade(trade dia.NFTTrade) error
 	SetNFTTradeToTable(trade dia.NFTTrade, table string) error
-	GetNFTTrades(address string, blockchain string, tokenID string) ([]dia.NFTTrade, error)
-	GetNFTTradesFromTable(address string, blockchain string, tokenID string, starttime time.Time, endtime time.Time, table string) ([]dia.NFTTrade, error)
+	GetNFTTrades(address string, blockchain string, tokenID string, starttime time.Time, endtime time.Time) ([]dia.NFTTrade, error)
+	GetNFTTradesCollection(address string, blockchain string, starttime time.Time, endtime time.Time) ([]dia.NFTTrade, error)
 	GetNFTOffers(address string, blockchain string, tokenID string) ([]dia.NFTOffer, error)
 	GetNFTBids(address string, blockchain string, tokenID string) ([]dia.NFTBid, error)
 	GetNFTFloor(nftclass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, noBundles bool) (float64, error)
@@ -157,7 +157,6 @@ const (
 	nftcategoryTable     = "nftcategory"
 	nftclassTable        = "nftclass"
 	nftTable             = "nft"
-	nfttradeTable        = "nfttrade"
 	NfttradeCurrTable    = "nfttradecurrent"
 	NfttradeSumeriaTable = "nfttradesumeria"
 	nftbidTable          = "nftbid"

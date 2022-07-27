@@ -456,7 +456,7 @@ func (r *DiaResolver) GetNFTTrades(ctx context.Context, args struct {
 }) (*[]*NFTTradeResolver, error) {
 
 	var tr []*NFTTradeResolver
-	trades, err := r.RelDB.GetNFTTrades(*args.Address.Value, *args.Blockchain.Value, *args.TokenID.Value)
+	trades, err := r.RelDB.GetNFTTrades(*args.Address.Value, *args.Blockchain.Value, *args.TokenID.Value, time.Time{}, time.Now())
 	if err != nil {
 		return nil, err
 	}

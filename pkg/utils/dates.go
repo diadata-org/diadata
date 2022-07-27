@@ -138,3 +138,45 @@ func MakeTimeRanges(timeInit, timeFinal time.Time, numRanges int) (starttimes, e
 	}
 	return
 }
+
+// MakeTimerange parses Unix timestamps given as strings. In case one of the two is empty,
+// it returns a time-range based on @timeRange.
+func MakeTimerange(starttimeString string, endtimeString string, timeRange time.Duration) (starttime time.Time, endtime time.Time, err error) {
+
+	var (
+		starttimeInt int64
+		endtimeInt   int64
+	)
+
+	if starttimeString == "" && endtimeString == "" {
+		endtime = time.Now()
+		starttime = endtime.Add(-timeRange)
+	} else if starttimeString == "" && endtimeString != "" {
+		// zero time if not given
+		endtimeInt, err = strconv.ParseInt(endtimeString, 10, 64)
+		if err != nil {
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+		starttime = endtime.Add(-timeRange)
+	} else if starttimeString != "" && endtimeString == "" {
+		starttimeInt, err = strconv.ParseInt(starttimeString, 10, 64)
+		if err != nil {
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+		endtime = starttime.Add(timeRange)
+	} else {
+		starttimeInt, err = strconv.ParseInt(starttimeString, 10, 64)
+		if err != nil {
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+		endtimeInt, err = strconv.ParseInt(endtimeString, 10, 64)
+		if err != nil {
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	}
+	return starttime, endtime, nil
+}
