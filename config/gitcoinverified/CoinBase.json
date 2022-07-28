@@ -1,0 +1,100 @@
+{
+    "Tokens": [
+        {
+            "Symbol": "WBTC",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
+        },
+        {
+            "Symbol": "USD",
+            "Exchange": "CoinBase",
+            "Blockchain": "Fiat",
+            "Address": "840"
+        },
+        {
+            "Symbol": "DAI",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+        },
+        {
+            "Symbol": "EUR",
+            "Exchange": "CoinBase",
+            "Blockchain": "Fiat",
+            "Address": "978"
+        },
+        {
+            "Symbol": "GBP",
+            "Exchange": "CoinBase",
+            "Blockchain": "Fiat",
+            "Address": "826"
+        },
+        {
+            "Symbol": "GTC",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xDe30da39c46104798bB5aA3fe8B9e0e1F348163F"
+        },
+        {
+            "Symbol": "GRT",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xc944E90C64B2c07662A292be6244BDf05Cda44a7"
+        },
+        {
+            "Symbol": "USDT",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+        },
+        {
+            "Symbol": "RARI",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xFca59Cd816aB1eaD66534D82bc21E7515cE441CF"
+        },
+        {
+            "Symbol": "AXS",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b"
+        },
+        {
+            "Symbol": "FET",
+            "Exchange": "CoinBase",
+            "Blockchain": "Fetch",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "DIA",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"
+        },
+        {
+            "Symbol": "GLM",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x7DD9c5Cba05E151C895FDe1CF355C9A1D5DA6429"
+        },
+        {
+            "Symbol": "UST",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD"
+        },
+        {
+            "Symbol": "MANA",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942"
+        },
+        {
+            "Symbol": "BUSD",
+            "Exchange": "CoinBase",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+        }
+    ]
+}

@@ -6,1061 +6,595 @@ description: >-
 
 # API Endpoints
 
-Digital Assets
+## Digital Assets
 
-{% api-method method="get" host="https://api.diadata.org" path="/v1/symbols" %}
-{% api-method-summary %}
-Symbols
-{% endapi-method-summary %}
+### Coins data
 
-{% api-method-description %}
-Get a list of all available symbols for cryptocurrencies.  
-Example:  
-https://api.diadata.org/v1/symbols  
-  
-Get symbols restricted to an exchange using the query parameter. \(For the moment only for centralized exchanges\).  
-Example:  
-https://api.diadata.org/v1/symbols?exchange=Kraken  
-{% endapi-method-description %}
+{% swagger method="get" path="v1/assetQuotation/:blockchain/:asset" baseUrl="https://api.diadata.org/" summary="Asset Quotation" %}
+{% swagger-description %}
+Returns the quotation for a fully qualified asset (i.e. distinguished by blockchain and address).
 
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-query-parameters %}
-{% api-method-parameter name="exchange" type="string" required=false %}
-Name of the crypto exchange.
-{% endapi-method-parameter %}
-{% endapi-method-query-parameters %}
-{% endapi-method-request %}
+_Example:_ [_https://api.diadata.org/v1/assetQuotation/Bitcoin/0x0000000000000000000000000000000000000000_](https://api.diadata.org/v1/assetQuotation/Bitcoin/0x0000000000000000000000000000000000000000)__
+{% endswagger-description %}
 
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of available symbols for cryptocurrencies. Shown below is an exerpt of the full response.
-{% endapi-method-response-example-description %}
+{% swagger-parameter in="path" name="blockchain" required="true" %}
+Name of the blockchain for requested asset
+{% endswagger-parameter %}
 
+{% swagger-parameter in="path" name="asset" required="true" %}
+Address of the requested asset
+{% endswagger-parameter %}
+
+{% swagger-response status="200: OK" description="Return of asset price action information" %}
+```javascript
+{
+    // Response
+}
 ```
-{"Symbols":["EOS","QTUM","BCH","BFT","FLDC","NXS","BLOCK","GAM","GLD","LOOM",...
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
+{% endswagger-response %}
+{% endswagger %}
 
-{% api-method method="get" host="https://api.diadata.org" path="/v1/quotation/:symbol" %}
-{% api-method-summary %}
-Quotation
-{% endapi-method-summary %}
+{% swagger baseUrl="https://api.diadata.org" path="/v1/assetChartPoints/:filter/:blockchain/:address" method="get" summary="Asset Chart Points" %}
+{% swagger-description %}
+Get asset details for all exchanges.
 
-{% api-method-description %}
-Get most recent information on the currency corresponding to symbol.  
-Example: https://api.diadata.org/v1/quotation/BTC
-{% endapi-method-description %}
+_Example_:\
+[https://api.diadata.org/v1/assetChartPoints/MA120/Bitcoin/0x0000000000000000000000000000000000000000](https://api.diadata.org/v1/assetChartPoints/MA120/Bitcoin/0x0000000000000000000000000000000000000000)
 
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="symbol" type="string" required=true %}
-Which symbol to get a quotation for, e.g., BTC.
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-{% endapi-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of the BTC symbol.
-{% endapi-method-response-example-description %}
-
-```
-{"Symbol":"BTC","Name":"Bitcoin","Price":9777.19339776667,"PriceYesterday":9574.416265039981,"VolumeYesterdayUSD":298134760.8811487,"Source":"diadata.org","Time":"2020-05-19T08:41:12.499645584Z","ITIN":"DXVPYDQC3"}
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org" path="/v1/exchanges" %}
-{% api-method-summary %}
-Exchanges
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get a list of all available crypto exchanges.  
-https://api.diadata.org/v1/exchanges
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of available exchanges.
-{% endapi-method-response-example-description %}
-
-```
-["Binance","Bitfinex","Bittrex","CoinBase","GateIO","HitBTC","Huobi","Kraken","LBank","OKEx","Quoine","Simex","ZB"]
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org/v1/FarmingPools" path="" %}
-{% api-method-summary %}
-Farming Pools
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get a list of all available farming pools.
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Succesful retrieval of available farming pools.
-{% endapi-method-response-example-description %}
-
-```
-[{"ProtocolName":"YFI","InputAsset":["3crv"],"PoolID":"3crv"},{"ProtocolName":"YFI","InputAsset":["DAI"],"PoolID":"DAI"}]
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org/v1/FarmingPoolData/:protocol/:poolID" path="" %}
-{% api-method-summary %}
-Farming Pool Data
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get the most recent information on a specific farming pool, such as pool rate and pool balance. Available pools can be found in the FarmingPools endpoint  
-https://docs.diadata.org/documentation/api-1/api-endpoints\#farming-pools  
-  
-Example:  
-https://api.diadata.org/v1/FarmingPoolData/YFI/USDT  
-  
-Get information for a time range using the query parameters.  
-Example:  
-https://api.diadata.org/v1/FarmingPoolData/YFI/USDT?dateInit=1603886821&dateFinal=1603887121  
-  
-_Remark_: Due to different mechanics of farming, the meaning of pool rate can differ between protocols. The value in the field \`Rate\` has the following meaning:  
-- Pool rate: _Balancer, CVault, YFI_  
-- Total debt: _Synthetix_  
-- Total reward: _Loopring_  
-- Virtual price: _Curve Finance_  
-For a detailed explanation of these quantities, see:  
-https://docs.diadata.org/documentation/methodology/digital-assets/return-rates-in-crypto-farming
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="protocol" type="string" required=true %}
-The name of the protocol in capital letters.
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="poolID" type="string" required=true %}
-Unique identifier of the pool.
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-
-{% api-method-query-parameters %}
-{% api-method-parameter name="dateInit" type="integer" required=false %}
-Unix timestamp. Initial date for range queries.
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="dateFinal" type="integer" required=false %}
-Unix timestamp. Final date for range queries.
-{% endapi-method-parameter %}
-{% endapi-method-query-parameters %}
-{% endapi-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-
-{% endapi-method-response-example-description %}
-
-```
-[{"Rate":0.03660467237864349,"Balance":1716667.854526,"ProtocolName":"YFI","BlockNumber":11145033,"PoolID":"USDT","TimeStamp":"2020-10-28T12:11:38Z","OutputAsset":["USDT"],"InputAsset":["USDT"]},{"Rate":0.03660460740229476,"Balance":1716667.746922,"ProtocolName":"YFI","BlockNumber":11145029,"PoolID":"USDT","TimeStamp":"2020-10-28T12:10:38Z","OutputAsset":["USDT"],"InputAsset":["USDT"]},{"Rate":0.036604532499305786,"Balance":1716667.622879,"ProtocolName":"YFI","BlockNumber":11145024,"PoolID":"USDT","TimeStamp":"2020-10-28T12:09:38Z","OutputAsset":["USDT"],"InputAsset":["USDT"]}]
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org" path="/v1/chartPoints/:filter/:exchange/:symbol" %}
-{% api-method-summary %}
-Chart Points
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get chart points for an exchange.  
-https://api.diadata.org/v1/chartPoints/MEDIR120/Binance/BTC  
-  
-For a list of available exchanges see:  
-https://docs.diadata.org/documentation/api-1\#api-access  
-or:  
-https://docs.diadata.org/documentation/api-1/api-endpoints\#exchanges  
-  
-  
-  
-_Remark_: Successful responses can be rather large.
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="filter" type="string" required=true %}
-Which filter should be applied \(Available options: MEDIR120 and MAIR120\).
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="exchange" type="string" required=true %}
-Which exchange to use.
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="symbol" type="string" required=true %}
-A valid symbol from GET /v1/coins, e.g., BTC.
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-
-{% api-method-query-parameters %}
-{% api-method-parameter name="scale" type="string" %}
-Which scale the graph points distance should have. Available options: 5m 30m 1h 4h 1d 1w.
-{% endapi-method-parameter %}
-{% endapi-method-query-parameters %}
-{% endapi-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of a chart point.
-{% endapi-method-response-example-description %}
-
-```
-{"DataPoints":[{"Series":[{"name":"filters","columns":["time","exchange","filter","symbol","value"],"values":[["2020-05-19T08:02:09Z","GateIO","MEDIR120","EOS",2.6218717017500084]]}],"Messages":null}]}
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org" path="/v1/chartPointsAllExchanges/:filter/:symbol" %}
-{% api-method-summary %}
-Chart Points for all Exchanges
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get symbol details for all exchanges.  
-Example: https://api.diadata.org/v1/chartPointsAllExchanges/MEDIR120/EOS  
-  
+\
 _Remark:_ Careful! Successful responses can be rather large.
-{% endapi-method-description %}
+{% endswagger-description %}
 
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="filter" type="string" required=true %}
-Which filter should be applied \(Available options: MEDIR120 and MAIR120\).
-{% endapi-method-parameter %}
+{% swagger-parameter in="path" name="filter" type="string" required="true" %}
+Which filter should be applied (Available options: MA120, MEDIR120, VOL120 and MAIR120).
+{% endswagger-parameter %}
 
-{% api-method-parameter name="symbol" type="string" required=true %}
-A valid symbol from GET /v1/coins, e.g., BTC.
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
+{% swagger-parameter in="path" name="blockchain" type="string" required="true" %}
+A valid blockchain from GET /v1/blockchains, e.g., Bitcoin.
+{% endswagger-parameter %}
 
-{% api-method-query-parameters %}
-{% api-method-parameter name="scale" type="string" required=false %}
+{% swagger-parameter in="path" name="address" required="true" %}
+A valid asset address from GET /v1/token/:symbol, e.g., 0x000000000000000000000000000000000000000 for BTC.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="starttime" type="integer" %}
+Unix timestamp setting the start of the return array
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="endtime" type="integer" %}
+Unix timestamp setting the end of the return array
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="scale" type="string" %}
 Which scale the graph points distance should have. Available options: 5m 30m 1h 4h 1d 1w
-{% endapi-method-parameter %}
-{% endapi-method-query-parameters %}
-{% endapi-method-request %}
+{% endswagger-parameter %}
 
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of a chart point for all exchanges.
-{% endapi-method-response-example-description %}
-
+{% swagger-response status="200" description="Successful retrieval of a chart points for an asset" %}
 ```
 {"DataPoints":[{"Series":[{"name":"filters","columns":["time","exchange","filter","symbol","value"],"values":[["2020-05-19T08:17:59Z",null,"MEDIR120","EOS",2.6236194301032314]]}],"Messages":null}]}
 ```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
+{% endswagger-response %}
+{% endswagger %}
 
-{% api-method method="get" host="https://api.diadata.org" path="/v1/supply/:symbol" %}
-{% api-method-summary %}
-Supply
-{% endapi-method-summary %}
+{% swagger method="get" path="/v1/lastTradesAsset/:blockchain/:address" baseUrl="https://api.diadata.org" summary="Asset Last Trades" %}
+{% swagger-description %}
+Get last trades for an asset.
 
-{% api-method-description %}
-Get the current circulating supply for the token corresponding to symbol.  
-Example: https://api.diadata.org/v1/supply/BTC
-{% endapi-method-description %}
+_Example:_ [https://api.diadata.org/v1/lastTradesAsset/Bitcoin/0x0000000000000000000000000000000000000000](https://api.diadata.org/v1/lastTradesAsset/Bitcoin/0x0000000000000000000000000000000000000000)
+{% endswagger-description %}
 
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="symbol" type="string" required=true %}
+{% swagger-parameter in="path" name="blockchain" required="true" %}
+A valid blockchain from GET /v1/blockchains, e.g., Bitcoin.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="address" required="true" %}
+A valid asset address from GET /v1/token/:symbol, e.g., 0x000000000000000000000000000000000000000 for BTC.
+{% endswagger-parameter %}
+
+{% swagger-response status="200: OK" description="Succesful retrieval of last trades for an asset" %}
+```javascript
+{
+    // Response
+}
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger method="get" path="/v1/assetSupply/Ethereum/:address" baseUrl="https://api.diadata.org" summary="Asset Supply" %}
+{% swagger-description %}
+Get circulating and total supply for an asset.
+
+_Example:_ [https://api.diadata.org/v1/assetSupply/Ethereum/0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9](https://api.diadata.org/v1/assetSupply/Ethereum/0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9)
+
+_Note: Currently supports assets only from Ethereum blockchain_
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="address" %}
+A valid asset address from GET /v1/token/:symbol, e.g., 0x000000000000000000000000000000000000000 for BTC.
+{% endswagger-parameter %}
+{% endswagger %}
+
+{% swagger method="get" path="/v1/blockchains" baseUrl="https://api.diadata.org" summary="Blockchains" %}
+{% swagger-description %}
+Get a list of all available blockchains.
+{% endswagger-description %}
+
+{% swagger-response status="200: OK" description="" %}
+```javascript
+{
+    // Response
+}
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger baseUrl="https://api.diadata.org" path="/v1/exchanges" method="get" summary="Exchanges" %}
+{% swagger-description %}
+Get a list of all available crypto exchanges.
+{% endswagger-description %}
+
+{% swagger-response status="200" description="Successful retrieval of available exchanges." %}
+```
+["KuCoin","Uniswap","Balancer","Maker","Gnosis","Curvefi","Binance","BitBay","Bitfinex","Bittrex","CoinBase","GateIO","HitBTC","Huobi","Kraken","LBank","OKEx","Quoine","Simex","ZB","Bancor","Loopring","SushiSwap","Dforce","0x","Kyber","Bitmax","PanCakeSwap","CREX24","STEX"]
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger baseUrl="https://api.diadata.org" path="/v1/symbols" method="get" summary="Symbols" %}
+{% swagger-description %}
+Get a list of all available symbols for cryptocurrencies.\
+\
+Get symbols restricted to an exchange using the query parameter. (For the moment only for centralized exchanges).
+
+_Example_: [https://api.diadata.org/v1/symbols?exchange=Kraken](https://api.diadata.org/v1/symbols?exchange=Kraken)\
+
+{% endswagger-description %}
+
+{% swagger-parameter in="query" name="exchange" type="string" %}
+Name of the crypto exchange.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="substring" %}
+Search for coins that match a string, e.g. 
+
+_BTC_
+
+ will return BTC, BTCB and other assets that start with 
+
+_BTC_
+
+ letters.
+{% endswagger-parameter %}
+
+{% swagger-response status="200" description="Successful retrieval of available symbols for cryptocurrencies. Shown below is an exerpt of the full response." %}
+```
+{"Symbols":["EOS","QTUM","BCH","BFT","FLDC","NXS","BLOCK","GAM","GLD","LOOM",...
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger baseUrl="https://api.diadata.org" path="/v1/quotation/:symbol" method="get" summary="Quotation" %}
+{% swagger-description %}
+Get most recent information on the currency corresponding to symbol.
+
+_Example_: [https://api.diadata.org/v1/quotation/BTC](https://api.diadata.org/v1/quotation/BTC)
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="symbol" type="string" %}
+Which symbol to get a quotation for, e.g., BTC.
+{% endswagger-parameter %}
+
+{% swagger-response status="200" description="Successful retrieval of the BTC symbol." %}
+```
+{"Symbol":"BTC","Name":"Bitcoin","Price":9777.19339776667,"PriceYesterday":9574.416265039981,"VolumeYesterdayUSD":298134760.8811487,"Source":"diadata.org","Time":"2020-05-19T08:41:12.499645584Z","ITIN":"DXVPYDQC3"}
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger method="get" path="/v1/token/:symbol" baseUrl="https://api.diadata.org" summary="Tokens list" %}
+{% swagger-description %}
+Get a list of blockchains and addresses for all tokens that match the symbol
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="symbol" required="true" %}
+Which symbol to get a quotation for, e.g., BTC.
+{% endswagger-parameter %}
+
+{% swagger-response status="200: OK" description="" %}
+```javascript
+{
+    // Response
+}
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger baseUrl="https://api.diadata.org" path="/v1/chartPoints/:filter/:exchange/:symbol" method="get" summary="Exchange Chart Points" %}
+{% swagger-description %}
+Get chart points for an exchange.
+
+_Example_: [https://api.diadata.org/v1/chartPoints/MEDIR120/Binance/BTC](https://api.diadata.org/v1/chartPoints/MEDIR120/Binance/BTC)\
+\
+_Note_: Successful responses can be rather large.
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="filter" type="string" required="true" %}
+Which filter should be applied (Available options: MA120, VOL120, MEDIR120 and MAIR120).
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="exchange" type="string" required="true" %}
+A valid exchange from GET /v1/exchanges, e.g., Binance
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="symbol" type="string" required="true" %}
+A valid symbol from GET /v1/coins, e.g., BTC.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="scale" type="string" %}
+Which scale the graph points distance should have. Available options: 5m 30m 1h 4h 1d 1w.
+{% endswagger-parameter %}
+
+{% swagger-response status="200" description="Successful retrieval of a chart point." %}
+```
+{"DataPoints":[{"Series":[{"name":"filters","columns":["time","exchange","filter","symbol","value"],"values":[["2020-05-19T08:02:09Z","GateIO","MEDIR120","EOS",2.6218717017500084]]}],"Messages":null}]}
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger baseUrl="https://api.diadata.org" path="/v1/supply/:symbol" method="get" summary="Supply" %}
+{% swagger-description %}
+Get the current circulating supply for the token corresponding to symbol.
+
+_Example_: [https://api.diadata.org/v1/supply/BTC](https://api.diadata.org/v1/supply/BTC)
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="symbol" type="string" required="true" %}
 Which symbol to get the supply for, e.g., BTC
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-{% endapi-method-request %}
+{% endswagger-parameter %}
 
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of BTC supply.
-{% endapi-method-response-example-description %}
-
+{% swagger-response status="200" description="Successful retrieval of BTC supply." %}
 ```
 {"Symbol":"BTC","Name":"Bitcoin","CirculatingSupply":17655550,"Source":"diadata.org","Time":"2019-04-20T08:44:25.748170404Z","Block":0}
 ```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
+{% endswagger-response %}
+{% endswagger %}
 
-{% api-method method="get" host="https://api.diadata.org" path="/v1/supplies/:symbol" %}
-{% api-method-summary %}
-Supplies
-{% endapi-method-summary %}
+{% swagger baseUrl="https://api.diadata.org" path="/v1/supplies/:symbol" method="get" summary="Supplies" %}
+{% swagger-description %}
+Get all recorded supply values for the token corresponding to symbol.
 
-{% api-method-description %}
-Get all recorded supply values for the token corresponding to symbol.  
-Example:  
-https://api.diadata.org/v1/supplies/BTC  
-  
-Get supply values for a time range using the query parameters.  
-Example:  
-https://api.diadata.org/v1/supplies/BTC?starttime=1602232273&endtime=1602318673  
-{% endapi-method-description %}
+_Example_: [https://api.diadata.org/v1/supplies/BTC](https://api.diadata.org/v1/supplies/BTC)\
+\
+Get supply values for a time range using the query parameters.
 
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="symbol" type="string" required=true %}
+_Example_: [https://api.diadata.org/v1/supplies/BTC?starttime=1647349656\&endtime=1650028056](https://api.diadata.org/v1/supplies/BTC?starttime=1647349656\&endtime=1650028056)\
+
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="symbol" type="string" required="true" %}
 Which symbol to get the supply fot, e.g., BTC
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
+{% endswagger-parameter %}
 
-{% api-method-query-parameters %}
-{% api-method-parameter name="starttime" type="integer" required=false %}
+{% swagger-parameter in="query" name="starttime" type="integer" %}
 Unix timestamp setting the start of the return array
-{% endapi-method-parameter %}
+{% endswagger-parameter %}
 
-{% api-method-parameter name="endtime" type="integer" required=false %}
+{% swagger-parameter in="query" name="endtime" type="integer" %}
 Unix timestamp setting the end of the return array
-{% endapi-method-parameter %}
-{% endapi-method-query-parameters %}
-{% endapi-method-request %}
+{% endswagger-parameter %}
 
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of two supply values for Bitcoin \(BTC\) between timestamps 1591700000 and 1591883936.
-{% endapi-method-response-example-description %}
-
+{% swagger-response status="200" description="Successful retrieval of two supply values for Bitcoin (BTC) between timestamps 1591700000 and 1591883936." %}
 ```
 [{"Symbol":"BTC","Name":"Bitcoin","CirculatingSupply":18399687,"Source":"diadata.org","Time":"2020-06-09T23:59:59Z","Block":0},{"Symbol":"BTC","Name":"Bitcoin","CirculatingSupply":18400712,"Source":"diadata.org","Time":"2020-06-10T23:59:59Z","Block":0}]
 ```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
+{% endswagger-response %}
+{% endswagger %}
 
-{% api-method method="get" host="https://api.diadata.org" path="/v1/symbol/:symbol" %}
-{% api-method-summary %}
-Symbol
-{% endapi-method-summary %}
+{% swagger baseUrl="https://api.diadata.org" path="/v1/index/:symbol" method="get" summary="Crypto Index" %}
+{% swagger-description %}
+Returns information about the cryptoindex indicated by its symbol. This included price and market data, as well as a list of its constituents.
 
-{% api-method-description %}
-Get extensive information on the cryptocurrency corresponding to symbol on various exchanges.
-{% endapi-method-description %}
+_Example_: [https://api.diadata.org/v1/index/SCIFI](https://api.diadata.org/v1/index/SCIFI)
+{% endswagger-description %}
 
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="symbol" type="string" required=true %}
-Which symbol to get the details on, e.g., BTC
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-{% endapi-method-request %}
+{% swagger-parameter in="path" name="symbol" type="string" required="true" %}
+Symbol of the index. GBI or SCIFI
+{% endswagger-parameter %}
 
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Information on the cryptocurrency organized by "Change", "Coin", "Rank", "Exchanges" and "Gfx1"  \(filtered data\). Shown below is an excerpt of a successful response of symbol = BTC.
-{% endapi-method-response-example-description %}
-
-```
-"Change":{"USD":[{"Symbol":"EUR","Rate":0.8995232526760818,"RateYesterday":0.8995232526760818},...
-
-"Coin":{"Symbol":"BTC","Name":"Bitcoin","Price":9780.807149999986,"PriceYesterday":9574.416265039981,"VolumeYesterdayUSD":354341949.0902907,"Time":"2020-05-19T10:13:22.895692183Z","CirculatingSupply":17655550},...
-
-"Rank":1
-
-"Exchanges":[{"Name":"Huobi","Price":9776.344026379707,"PriceYesterday":9566.082031390646,"VolumeYesterdayUSD":182131794.24870485,"Time":"2020-05-19T10:07:59Z","LastTrades":...
-
-"Gfx1":{"DataPoints":[{"Series":[{"name":"filters","columns":["time","exchange","filter","symbol","value"],"values":[["2020-05-19T10:08:00Z",null,"MA120","BTC",9780.807149999986],...
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org" path="/v1/coins" %}
-{% api-method-summary %}
-Coins
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get a list of all available coins.  
-https://api.diadata.org/v1/coins
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of available coins along with actual information on prices. Shown below is an exerpt of the full response.
-{% endapi-method-response-example-description %}
-
-```
-"CompleteCoinList":[{"Symbol":"BTC","Name":"Bitcoin"},{"Symbol":"ETH","Name":"Ethereum"},...
-
-"Change":{"USD":[{"Symbol":"EUR","Rate":0.8995232526760818,"RateYesterday":0.8995232526760818},...
-
-"Coins":[{"Symbol":"BTC","Name":"Bitcoin","Price":9773.78345474998,"PriceYesterday":9574.416265039981,"VolumeYesterdayUSD":352085287.0431704,"Time":"2020-05-19T10:05:53.191886175Z","CirculatingSupply":17655550},...
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org" path="/v1/volume/:symbol" %}
-{% api-method-summary %}
-Trade Volume
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get the trading volume of the specified symbol in a defined time span.
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="symbol" type="string" required=true %}
-Which symbol to retrieve the volume of \(e.g. BTC\)
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-
-{% api-method-query-parameters %}
-{% api-method-parameter name="starttime" type="integer" required=false %}
-Start of the timespan \(Unix time in seconds\)
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="endtime" type="integer" required=false %}
-End of the timespan \(Unix time in seconds\)
-{% endapi-method-parameter %}
-{% endapi-method-query-parameters %}
-{% endapi-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-An example response when querying a BTC volume for a typical day.
-{% endapi-method-response-example-description %}
-
-```
-1431527525.7309263
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org" path="/kafka/tradesBlock" %}
-{% api-method-summary %}
-Raw crypto trades
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get a list of all trades that comprised the last block that was used to calculate the latest information on crypto asset pricing.
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="offset" type="integer" required=false %}
-Get historical blocks \(use the current offset returned in a response to calculate the offset you want to get\)
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-{% endapi-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-A list of trades wrapped into a block with additional meta information like the time span of this specific block.
-{% endapi-method-response-example-description %}
-
-```
-{"Result":{"offset":433850,"messages":[[{"BlockHash":"v1_4d7b1e936e7e0808d9ab17a43ec5ef8a","TradesBlockData":{"BeginTime":"2020-05-20T12:24:00Z","EndTime":"2020-05-20T12:26:00Z","TradesNumber":5674,"Trades":[{"Symbol":"EOS","Pair":"EOS_ETH","Price":0.01243882,"Volume":0.0325,"Time":"2020-05-20T12:24:00.050719107Z","ForeignTradeID":"c0d40b32","EstimatedUSDPrice":2.649370741608955,"Source":"LBank"}]}}]]}}
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org" path="/v1/cviIndex" %}
-{% api-method-summary %}
-CVI Index 
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get all values of the Crypto Volatility Index.  
-Example: https://api.diadata.org/v1/cviIndex  
-  
-Example with query parameters:  
-https://api.diadata.org/v1/cviIndex?starttime=1589829000&endtime=1589830000
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-query-parameters %}
-{% api-method-parameter name="starttime" type="integer" required=false %}
+{% swagger-parameter in="path" name="starttime" type="integer" %}
 Unix timestamp setting the start of the return array
-{% endapi-method-parameter %}
+{% endswagger-parameter %}
 
-{% api-method-parameter name="endtime" type="integer" required=false %}
+{% swagger-parameter in="path" name="endtime" type="string" %}
 Unix timestamp setting the end of the return array
-{% endapi-method-parameter %}
-{% endapi-method-query-parameters %}
-{% endapi-method-request %}
+{% endswagger-parameter %}
 
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of CVI Index value for starttime=1589829000 and endtime=1589830000
-{% endapi-method-response-example-description %}
-
+{% swagger-response status="200" description="Successful retrieval of the index value for the GBI index" %}
 ```
-[{"Timestamp":"2020-05-18T19:12:43Z","Value":142.28101897342574},{"Timestamp":"2020-05-18T19:17:48Z","Value":142.29282246717017},{"Timestamp":"2020-05-18T19:22:51Z","Value":142.3025697159107}]
+[{"Name":"GBI","Value":97.50947578961045,"Price":1.00778406966601,"Price1h":1.00778406966601,"Price24h":1.0051799695772836,"Price7d":0.9673670995027654,"Price14d":1.0893058979363988,"Price30d":0,"Volume24hUSD":0,"CirculatingSupply":345195.6232478934,"Divisor":1,"CalculationTime":"2021-03-05T13:14:45Z","Constituents":[{"Name":"WBTC","Symbol":"WBTC","Address":"-","Price":47979.76523333797,"PriceYesterday":49023.163422260404,"PriceYesterweek":46756.5210539339,"CirculatingSupply":58722.018321489995,"Weight":0.1392857142857143,"Percentage":0.15142956928279822,"CappingFactor":0,"NumBaseTokens":3077509414229.555},{"Name":"Ethereum","Symbol":"ETH","Address":"-","Price":1487.6297917225763,"PriceYesterday":1554.7081046080527,"PriceYesterweek":1472.0938093047234,"CirculatingSupply":111297265,"Weight":0.1392857142857143,"Percentage":0.12197452878400614,"CappingFactor":0,"NumBaseTokens":79950485178446.9},{"Name":"YFI","Symbol":"YFI","Address":"-","Price":31607.277099187264,"PriceYesterday":32633.133137109693,"PriceYesterweek":31803.892866435,"CirculatingSupply":36666,"Weight":0.1392857142857143,"Percentage":0.12016254448793848,"CappingFactor":0,"NumBaseTokens":3707053500937.577},{"Name":"Uniswap","Symbol":"UNI","Address":"-","Price":27.55576312916283,"PriceYesterday":29.00379988760186,"PriceYesterweek":22.688371324999938,"CirculatingSupply":591130752.8153942,"Weight":0.1392857142857143,"Percentage":0.19239736694689585,"CappingFactor":0,"NumBaseTokens":6808218776724222},{"Name":"Compound Coin","Symbol":"COMP","Address":"-","Price":455.71303136656303,"PriceYesterday":476.00878227409333,"PriceYesterweek":394.35936478768855,"CirculatingSupply":4347413.630491343,"Weight":0.1392857142857143,"Percentage":0.13561391266087963,"CappingFactor":0,"NumBaseTokens":290174750844543.1},{"Name":"Maker","Symbol":"MKR","Address":"-","Price":2127.71418543,"PriceYesterday":2146.1291527178396,"PriceYesterweek":2014.4420156976037,"CirculatingSupply":902135,"Weight":0.1392857142857143,"Percentage":0.12093671724782111,"CappingFactor":0,"NumBaseTokens":55423214185923.1},{"Name":"Chainlink","Symbol":"LINK","Address":"-","Price":26.807735407371414,"PriceYesterday":28.994353119130064,"PriceYesterweek":25.14386537072962,"CirculatingSupply":410509556.43444455,"Weight":0.1392857142857143,"Percentage":0.1391510991421949,"CappingFactor":0,"NumBaseTokens":5061431160340588},{"Name":"SPICE","Symbol":"SPICE","Address":"-","Price":1.2979738789219422,"PriceYesterday":1.5297308326069865,"PriceYesterweek":0.8919250424836395,"CirculatingSupply":1945426.8,"Weight":0.025,"Percentage":0.018334261447465704,"CappingFactor":0,"NumBaseTokens":13773499234182648}]}]
 ```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
+{% endswagger-response %}
+{% endswagger %}
 
-{% api-method method="get" host="https://api.diadata.org" path="/v1/defiLendingRate/:protocol/:asset" %}
-{% api-method-summary %}
-Defi Interest Rate
-{% endapi-method-summary %}
+{% swagger baseUrl="https://api.diadata.org" path="/v1/foreignSymbols/:source" method="get" summary="Guest Symbols" %}
+{% swagger-description %}
+Get the list of available symbols along with their ITIN for guest quotations.
 
-{% api-method-description %}
-Get information about a Defi protocol's lending and borrowing rates.  
-Time parameter is optional. If omitted, the most recent rate is returned.  
-  
-Example: https://api.diadata.org/v1/defiLendingRate/COMPOUND/USDC  
-  
-Get rates for a range of timestamps using optional query parameters.  
-https://api.diadata.org/v1/defiLendingRate/COMPOUND/USDC?dateInit=1591646100&dateFinal=1595246100  
-{% endapi-method-description %}
+_Example_: [https://api.diadata.org/v1/foreignSymbols/Coingecko](https://api.diadata.org/v1/foreignSymbols/Coingecko)
+{% endswagger-description %}
 
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="protocol" type="string" required=true %}
-Name of the protocol, in uppercase
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="asset" type="string" required=true %}
-Asset short name, e.g. ETH for Ether
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="time" type="integer" required=false %}
-Unix timestamp. Default is the latest available rate
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-
-{% api-method-query-parameters %}
-{% api-method-parameter name="dateInit" type="integer" required=false %}
-Initial Unix timestamp for range queries
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="dateFinal" type="integer" required=false %}
-Final Unix timestamp for range queries
-{% endapi-method-parameter %}
-{% endapi-method-query-parameters %}
-{% endapi-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of a Defi interest rate.
-{% endapi-method-response-example-description %}
-
-```
-{"Timestamp":"2020-07-20T11:54:56Z","LendingRate":1.250020254710238,"BorrowingRate":4.856778356760549,"Asset":"USDC","Protocol":{"Name":"COMPOUND","Address":"0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b","UnderlyingBlockchain":"Ethereum","Token":""}}
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org" path="/v1/defiLendingState/:protocol" %}
-{% api-method-summary %}
-Defi Lending Protocol
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get meta information about a defi lending protocol such as the underlying blockchain, its name and its currently locked value in USD and ETH.  
-  
-An example request can look like this: https://api.diadata.org/v1/defiLendingState/COMPOUND
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="protocol" type="string" required=true %}
-Name of the protocol, e.g. COMPOUND
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-{% endapi-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful response containing locking volume, the timestamp of data recording and protocol meta information such as name and the underlying blockchain.
-{% endapi-method-response-example-description %}
-
-```
-{"TotalUSD":13048619504.89947,"TotalETH":52570793.80784482,"Timestamp":"2020-07-22T16:27:31Z","Protocol":{"Name":"COMPOUND","Address":"0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b","UnderlyingBlockchain":"Ethereum","Token":""}}
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org/v1/" path="foreignSymbols/:source" %}
-{% api-method-summary %}
-Guest Symbols
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get the list of available symbols along with their ITIN for guest quotations.  
-Example:  
-https://api.diadata.org/v1/foreignSymbols/Coingecko
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="source" type="string" required=true %}
+{% swagger-parameter in="path" name="source" type="string" required="true" %}
 source of the quotation
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-{% endapi-method-request %}
+{% endswagger-parameter %}
 
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-
-{% endapi-method-response-example-description %}
-
+{% swagger-response status="200" description="" %}
 ```
-
 ```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
+{% endswagger-response %}
+{% endswagger %}
 
-{% api-method method="get" host="https://api.diadata.org/v1/foreignQuotation/:source/:symbol" path="" %}
-{% api-method-summary %}
-Guest Quotation
-{% endapi-method-summary %}
+{% swagger baseUrl="https://api.diadata.org" path="/v1/foreignQuotation/:source/:symbol" method="get" summary="Guest Quotation" %}
+{% swagger-description %}
+Get the latest quotation for a token from a guest source.
 
-{% api-method-description %}
-Get the latest quotation for a token from a guest source.  
-Example:  
-https://api.diadata.org/v1/foreignQuotation/CoinMarketCap/BTC  
-  
-Use the query parameter time in order to get the latest quotation before the specified timestamp.  
-Example:  
-https://api.diadata.org/v1/foreignQuotation/Coingecko/BTC?time=1601351679  
-  
-{% endapi-method-description %}
+_Example_: [https://api.diadata.org/v1/foreignQuotation/CoinMarketCap/BTC](https://api.diadata.org/v1/foreignQuotation/CoinMarketCap/BTC)\
+\
+Use the query parameter time in order to get the latest quotation before the specified timestamp
 
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="source" type="string" required=true %}
+\
+_Example_: [https://api.diadata.org/v1/foreignQuotation/Coingecko/BTC?time=1647349656](https://api.diadata.org/v1/foreignQuotation/Coingecko/BTC?time=1647349656)\
+\
+\
+
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="source" type="string" required="true" %}
 source of the quotation
-{% endapi-method-parameter %}
+{% endswagger-parameter %}
 
-{% api-method-parameter name="symbol" type="string" required=true %}
+{% swagger-parameter in="path" name="symbol" type="string" required="true" %}
 Which symbol to get a quotation for, e.g. BTC
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
+{% endswagger-parameter %}
 
-{% api-method-query-parameters %}
-{% api-method-parameter name="time" type="number" required=false %}
+{% swagger-parameter in="query" name="time" type="number" %}
 Unix timestamp.
-{% endapi-method-parameter %}
-{% endapi-method-query-parameters %}
-{% endapi-method-request %}
+{% endswagger-parameter %}
 
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-
-{% endapi-method-response-example-description %}
-
+{% swagger-response status="200" description="" %}
 ```
-
 ```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
+{% endswagger-response %}
+{% endswagger %}
+
+### NFT data
+
+{% swagger method="get" path="/v1/NFTFloor/:blockchain/:address" baseUrl="https://api.diadata.org" summary="NFT Floor Price" %}
+{% swagger-description %}
+Returns the current floor price of a collection given by a blockchain and an address.\
+The floor price is derived from all sales in the last 24h.\
+_Example:_ [https://api.diadata.org/v1/NFTFloor/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB](https://api.diadata.org/v1/NFTFloor/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB)\
+\
+Use the query parameter timestamp in order to get the latest floor price before the specified timestamp.\
+_Example:_ [https://api.diadata.org/v1/NFTFloor/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?timestamp=1649342430](https://api.diadata.org/v1/NFTFloor/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?timestamp=1649342430)
+
+Use the query parameter floorWindow in order to get the floor price with respect to all sales in the last floorWindow seconds. Default value is 86400s=24h.\
+_Example:_ [https://api.diadata.org/v1/NFTFloor/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?floorWindow=43200](https://api.diadata.org/v1/NFTFloor/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?floorWindow=43200)
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="blockchain" type="String" required="true" %}
+Blockchain name
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="address" type="String" required="true" %}
+Address of the collection
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="timestamp" type="Integer" %}
+Unix timestamp
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="floorWindow" type="Integer" %}
+Number of seconds in considered interval
+{% endswagger-parameter %}
+
+{% swagger-response status="200: OK" description="Successful retrieval of a collection's floor price." %}
+```javascript
+{"Floor_Price":74.8,"Time":"2022-06-07T14:34:35.024280719Z","Source":"diadata.org"}
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger method="get" path="/v1/NFTFloorMA/:blockchain/:address" baseUrl="https://api.diadata.org" summary="NFT Moving Average of Floor Price" %}
+{% swagger-description %}
+Returns the moving average of a collection's floor price over the past 30 days.\
+_Example:_ [https://api.diadata.org/v1/NFTFloorMA/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB](https://api.diadata.org/v1/NFTFloorMA/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB)
+
+Use the query parameter floorWindow in order to get the floor price with respect to all sales in the last floorWindow seconds. Default value is 86400s=24h.\
+_Example:_ [https://api.diadata.org/v1/NFTFloorMA/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?floorWindow=43200](https://api.diadata.org/v1/NFTFloorMA/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?floorWindow=43200)
+
+Use the query parameter lookbackSeconds in order to get the moving average over the last lookbackSeconds. Default value is 2592000s=30d.\
+_Example:_ [https://api.diadata.org/v1/NFTFloorMA/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?lookbackWindow=5184000](https://api.diadata.org/v1/NFTFloorMA/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?lookbackWindow=5184000)
+{% endswagger-description %}
+
+{% swagger-parameter in="path" required="true" name="blockchain" type="String" %}
+Blockchain name
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="address" type="String" required="true" %}
+Address of the collection
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="floorWindow" type="Integer" %}
+Number of seconds in considered  interval regarding floor price.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="lookbackSeconds" type="Integer" %}
+Number of seconds in considered interval regarding moving average.
+{% endswagger-parameter %}
+
+{% swagger-response status="200: OK" description="Successful retrieval of a collection's moving average floor price" %}
+```javascript
+{"Moving_Average_Floor_Price":49.653703703703705,"Time":"2022-06-07T14:48:14.647819158Z","Source":"diadata.org"}
+}
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger method="get" path="/v1/NFTDownday/:blockchain/:address" baseUrl="https://api.diadata.org" summary="NFT Max Weekly Drawdown and related Statistics" %}
+{% swagger-description %}
+Returns the maximal weekly drawdown in the last 90 days in percent.\
+Furthermore, the average and standard deviation of the weekly drawdown time-series is returned.\
+_Example:_ [https://api.diadata.org/v1/NFTDownday/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB](https://api.diadata.org/v1/NFTDownday/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB)
+
+Use the query parameter floorWindow in order to get the floor price with respect to all sales in the last floorWindow seconds. Default value is 86400s=24h.\
+_Example:_ [https://api.diadata.org/v1/NFTDownday/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?floorWindow=43200](https://api.diadata.org/v1/NFTDownday/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?floorWindow=43200)
+
+Use the query parameter lookbackSeconds in order to get the moving average over the last lookbackSeconds. Default value is 7776000s=90d.\
+_Example:_ [https://api.diadata.org/v1/NFTDownday/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?lookbackWindow=2592000](https://api.diadata.org/v1/NFTDownday/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?lookbackWindow=2592000)
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="blockchain" type="String" required="true" %}
+Blockchain name
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="address" type="String" %}
+Address of the collection
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="floorWindow" type="Integer" %}
+Number of seconds in considered  interval regarding floor price.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="lookbackSeconds" type="Integer" %}
+Number of seconds in considered interval regarding weekly drawdown.
+{% endswagger-parameter %}
+
+{% swagger-response status="200: OK" description="Succesful retrieval of a collection's weekly drawdown stats." %}
+```javascript
+{"Weekly_Drawdown":-18.303800719054955,"Downday_Average":-7.5472418447635405,"Downday_Deviation":11.362194930411123,"Time":"2022-06-07T15:04:08.093662489Z","Source":"diadata.org"}
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger method="get" path="/v1/NFTVolatility/:blockchain/:address" baseUrl="https://api.diadata.org" summary="NFT Volatility of Floor Price" %}
+{% swagger-description %}
+Returns the average and volatility of the floor price in the last 90 days.\
+_Example:_ [https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D](https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D)
+
+Use the parameter time in order to get the floor price at a previous time.\
+_Example:_ [https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D?time=1655027598](https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D?time=1655027598)
+
+Use the query parameter floorWindow in order to get the floor price with respect to all sales in the last floorWindow seconds. Default value is 86400s=24h.\
+_Example:_[ __ ](https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D?time=1655027598) [https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D?floorWindow=43200](https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D?time=1655027598)
+
+Use the query parameter lookbackSeconds in order to get the moving average over the last lookbackSeconds. Default value is 7776000s=90d.\
+_Example:_  [https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D?lookbackSeconds=25920000](https://api.diadata.org/v1/NFTVolatility/Ethereum/0xbC4CA0EdA7647A8aB7C2061c2E118A18a936f13D?time=1655027598)
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="blockchain" type="String" required="true" %}
+Blockchain name
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="address" type="String" required="true" %}
+Address of the collection
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="time" type="Integer" %}
+Unix timestamp (in seconds) of the volatility.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="floorWindow" type="Integer" %}
+Number of seconds in considered  interval regarding floor price.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="lookBackSeconds" type="Integer" %}
+Number of seconds in considered interval regarding the volatility.
+{% endswagger-parameter %}
+
+{% swagger-response status="200: OK" description="Successful retrieval of the volatility of a collection's floor price." %}
+```javascript
+{"Floor_Average":97.25344982682456,"Floor_Volatility":14.00764101575502,"Collection":"BoredApeYachtClub","Time":"2022-06-23T10:11:34.571288736Z","Source":"diadata.org"}
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger method="get" path="" baseUrl="https://api.diadata.org/v1/topNFT/:numCollections" summary="Top NFT Collections by Volume" %}
+{% swagger-description %}
+Returns the top collections sorted by volume. Change rates are in %.\
+_Example:_ [https://api.diadata.org/v1/topNFT/10](https://api.diadata.org/v1/topNFT/10)
+
+Use the parameters starttime and endtime in order to get the top collections in the respective time-range.\
+_Example:_ [https://api.diadata.org/v1/topNFT/10?starttime=1649322827\&endtime=1649495627](https://api.diadata.org/v1/topNFT/10?starttime=1649322827\&endtime=1649495627)
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="numCollections" type="Integer" required="true" %}
+Number of returned top collections.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="starttime" type="Integer" %}
+Unix timestamp (in seconds). Starting time of the considered time-range.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="endtime" type="Integer" %}
+Unix timestamp (in seconds). Final time of the considered time-range.
+{% endswagger-parameter %}
+
+{% swagger-response status="200: OK" description="Successful retrieval of the top collections volume stats." %}
+```javascript
+{
+ "0": {"Collection":"Terraforms","Floor":0.555,"Volume":23170.95,"Trades",9,"FloorChange":-28.846153846153843,"VolumeChange":835.4894060269371,"TradesChange":125,"Address":"0x4E1f41613c9084FdB9E34E11fAE9412427480e56","Blockchain":"Ethereum","Time":"2022-07-12T14:40:47.80480586Z","Source":"diadata.org"},
+ "1": {"Collection":"CATGIRL ACADEMIA","Floor":235.017,"Volume":14840.440000000002,"Trades":6,"FloorChange":6.557094602253401,"VolumeChange":965.5731701800581,"TradesChange":0,"Address":"0xa5D37c0364b9E6D96EE37E03964E7aD2b33a93F4","Blockchain":"Ethereum","Time":"2022-07-12T14:40:47.80480586Z","Source":"diadata.org"}
+}
+```
+{% endswagger-response %}
+{% endswagger %}
+
+{% swagger method="get" path="" baseUrl="https://api.diadata.org/v1/NFTVolume/:blockchain/:address" summary="NFT Volume Statistics" %}
+{% swagger-description %}
+Returns statistics on a collection's trading volume.\
+_Example:_ [https://api.diadata.org/v1/NFTVolume/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB](https://api.diadata.org/v1/NFTVolume/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB)
+
+Use the parameters starttime and endtime in order to get the collection's volume statistics in the respective time-range.\
+_Example:_ [https://api.diadata.org/v1/NFTVolume/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?starttime=1649322827\&endtime=1649495627](https://api.diadata.org/v1/NFTVolume/Ethereum/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB?starttime=1649322827\&endtime=1649495627)
+{% endswagger-description %}
+
+{% swagger-parameter in="path" name="blockchain" type="String" required="true" %}
+Blockchain name
+{% endswagger-parameter %}
+
+{% swagger-parameter in="path" name="address" type="String" required="true" %}
+Address of the collection
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="starttime" type="Integer" %}
+Unix timestamp (in seconds). Starting time of the considered time-range.
+{% endswagger-parameter %}
+
+{% swagger-parameter in="query" name="endtime" type="Integer" %}
+Unix timestamp (in seconds). Final time of the considered time-range.
+{% endswagger-parameter %}
+
+{% swagger-response status="200: OK" description="Successful retrieval of a collection's volume statistics." %}
+```javascript
+{"Collection":"CryptoPunks","Floor":76.69,"Volume":2051.25,"Trades":9,"FloorChange":-0.3249285157265402,"VolumeChange":0,"TradesChange":-68.96551724137932,"Address":"0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB","Blockchain":"Ethereum","Time":"2022-07-12T14:52:35.145653827Z","Source":"diadata.org"}
+```
+{% endswagger-response %}
+{% endswagger %}
 
 ## Traditional Assets
 
-{% api-method method="get" host="https://api.diadata.org" path="/v1/interestrates" %}
-{% api-method-summary %}
-Interest Rates
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get a list of all available interest rates along with metadata on the rates such as first publication date and issuing entity.  
-https://api.diadata.org/v1/interestrates
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of meta information on available interest rates.
-{% endapi-method-response-example-description %}
-
-```
-[{"Symbol":"ESTER","FirstDate":"2019-10-01T00:00:00Z","Issuer":"ECB"},{"Symbol":"SOFR90","FirstDate":"2020-03-02T00:00:00Z","Issuer":"FED"},{"Symbol":"SONIA","FirstDate":"1997-01-02T00:00:00Z","Issuer":"BOE"},{"Symbol":"SAFR","FirstDate":"2020-03-02T00:00:00Z","Issuer":"FED"},{"Symbol":"SOFR","FirstDate":"2018-04-02T00:00:00Z","Issuer":"FED"},{"Symbol":"SOFR180","FirstDate":"2020-03-02T00:00:00Z","Issuer":"FED"},{"Symbol":"SOFR30","FirstDate":"2020-03-02T00:00:00Z","Issuer":"FED"}]
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org" path="/v1/interestrate/:rateType" %}
-{% api-method-summary %}
-Interest Rate
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get value for a certain rate type.  
-Example: https://api.diadata.org/v1/interestrate/ESTER/2020-04-20​  
-  
-Get rate values for a range of timestamps using optional query parameters.  
-Example: https://api.diadata.org/v1/interestrate/ESTER?dateInit=2020-02-20&dateFinal=2020-04-16
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="rateType" type="string" required=true %}
-Symbol name for a rate.
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="date" type="string" required=false %}
-Return the rate for the specified date. Default date is the latest available date. Format: yyyy-mm-dd
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-
-{% api-method-query-parameters %}
-{% api-method-parameter name="dateInit" type="string" required=false %}
-Initial date for range queries. Format yyyy-mm-dd
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="dateFinal" type="string" required=false %}
-Final date for range queries. Format: yyyy-mm-dd
-{% endapi-method-parameter %}
-{% endapi-method-query-parameters %}
-{% endapi-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of an interest rate.
-{% endapi-method-response-example-description %}
-
-```
-{"Symbol":"ESTER","Value":-0.542,"PublicationTime":"2020-05-19T07:15:07Z","EffectiveDate":"2020-05-18T00:00:00Z","Source":"ECB"}
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org" path="/v1/compoundedRate/:rateType/:dpy/:date" %}
-{% api-method-summary %}
-Compounded Index
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get the value of an index compounded since its first publication date.  
-  
-Example:  
-https://api.diadata.org/v1/compoundedRate/SOFR/360/2020-05-14  
-  
-Get the compounded index for a range of dates using the query parameters.  
-Example:  
-https://api.diadata.org/v1/compoundedRate/SOFR/360?dateInit=2020-04-24&dateFinal=2020-05-14  
-  
-For the methodology of compounded rates see:  
-https://docs.diadata.org/documentation/methodology/traditional-assets/compounded-rates\#standard-methodology
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="rateType" type="string" required=true %}
-Symbol for a rate name
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="dpy" type="integer" required=true %}
-Business day convention for the number of days per year
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="date" type="string" required=true %}
-Return the compounded index for the date specified in the format yyyy-mm-dd
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-
-{% api-method-query-parameters %}
-{% api-method-parameter name="dateInit" type="string" required=false %}
-Initial date for range queries. Format: yyyy-mm-dd
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="dateFinal" type="string" required=false %}
-Final date for range queries. Format: yyyy-mm-dd
-{% endapi-method-parameter %}
-{% endapi-method-query-parameters %}
-{% endapi-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of the SOFR Index.
-{% endapi-method-response-example-description %}
-
-```
-{"Symbol":"SOFR_compounded_by_DIA","Value":1.0414032009923273,"PublicationTime":"0001-01-01T00:00:00Z","EffectiveDate":"2020-05-14T00:00:00Z","Source":"FED"}
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org" path="/v1/compoundedAvg/:rateType/:period/:dpy/:date" %}
-{% api-method-summary %}
-Compounded Average
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get the average value of a given interest rate compounded over a period of time.  
-Example:  
-https://api.diadata.org/v1/compoundedAvg/SOFR/30/360/2020-05-14  
-  
-Get the compounded averages for a range of dates using the query parameters.  
-Example:  
-https://api.diadata.org/v1/compoundedAvg/SOFR/30/360?dateInit=2020-04-24&dateFinal=2020-05-14  
-  
-For the methodology see:  
-https://docs.diadata.org/documentation/methodology/traditional-assets/compounded-rates\#standard-methodology  
-  
-Remark: This Get method requires an API key. Please contact us for more information:  
-https://docs.google.com/forms/d/e/1FAIpQLSePxDwbEURjes4nw8GUzaT-XfYttRw\_6F2xAR607FKACsn7ew/viewform  
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="rateType" type="string" required=true %}
-Symbol for a rate name
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="period" type="integer" required=true %}
-Rate is compounded over period days
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="dpy" type="integer" required=true %}
-Business day convention for the number of days per year
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="date" type="string" required=true %}
-Return the compounded rate for the date specified in the format yyyy-mm-dd
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-
-{% api-method-query-parameters %}
-{% api-method-parameter name="dateInit" type="string" required=false %}
-Initial date for range queries. Format: yyyy-mm-dd
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="dateFinal" type="string" required=false %}
-Final date for range queries. Format: yyyy-mm-dd
-{% endapi-method-parameter %}
-{% endapi-method-query-parameters %}
-{% endapi-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of a compounded average of the SOFR over an interest period of 30 calendar days.
-{% endapi-method-response-example-description %}
-
-```
-{"Symbol":"SOFR30_compounded_by_DIA","Value":0.035667157687857554,"PublicationTime":"0001-01-01T00:00:00Z","EffectiveDate":"2020-05-14T00:00:00Z","Source":"FED"}
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org" path="/v1/compoundedAvgDIA/:rateType/:period/:dpy/:date" %}
-{% api-method-summary %}
-Compounded Average using DIA Method
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Get the average value of an interest rate compounded over a period of time. Here, we use the DIA methodology for compounding the rate, i.e. interest is compounded for non-business days as well. For details see:  
-https://docs.diadata.org/documentation/methodology/traditional-assets/compounded-rates\#dia-methodology  
-  
-Example:  
-https://api.diadata.org/v1/compoundedAvgDIA/SOFR/30/360/2020-05-14  
-  
-Get the compounded average for a range of dates using the query parameters.   
-Example:  
-https://api.diadata.org/v1/compoundedAvgDIA/SOFR/30/360?dateInit=2020-04-24&dateFinal=2020-05-14  
-  
-_Remark_: This Get method requires an API key. Please contact us for more information:  
-https://docs.google.com/forms/d/e/1FAIpQLSePxDwbEURjes4nw8GUzaT-XfYttRw\_6F2xAR607FKACsn7ew/viewform  
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="rateType" type="string" required=true %}
-Symbol for a rate name
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="period" type="integer" required=true %}
-Rate is compounded over period days
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="dpy" type="integer" required=true %}
-Business convention for the number of days per year
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="date" type="string" required=true %}
-Return the compounded rate for the date specified in the format yyyy-mm-dd
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-
-{% api-method-query-parameters %}
-{% api-method-parameter name="dateInit" type="string" required=false %}
-Initial date for range queries. Format: yyyy-mm-dd
-{% endapi-method-parameter %}
-
-{% api-method-parameter name="dateFinal" type="string" required=false %}
-Final date for range queries. Format: yyyy-mm-dd
-{% endapi-method-parameter %}
-{% endapi-method-query-parameters %}
-{% endapi-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-Successful retrieval of the compounded average of SOFR over an interest period of 30 calendar days.
-{% endapi-method-response-example-description %}
-
-```
-[{"Symbol":"SOFR30_compounded_by_DIA","Value":0.035667175187725775,"PublicationTime":"0001-01-01T00:00:00Z","EffectiveDate":"2020-05-14T00:00:00Z","Source":"FED"}]
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org/v1/" path="fiatQuotations" %}
-{% api-method-summary %}
-Fiat Currency Exchange Rates
-{% endapi-method-summary %}
-
-{% api-method-description %}
+{% swagger baseUrl="https://api.diadata.org/v1/" path="fiatQuotations" method="get" summary="Fiat Currency Exchange Rates" %}
+{% swagger-description %}
 Get a list of exchange rates for several fiat currencies vs US Dollar.
-{% endapi-method-description %}
+{% endswagger-description %}
 
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="" type="string" required=false %}
+{% swagger-parameter in="path" name="" type="string" %}
 
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-{% endapi-method-request %}
+{% endswagger-parameter %}
 
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-
-{% endapi-method-response-example-description %}
-
+{% swagger-response status="200" description="" %}
 ```
-
 ```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-{% api-method method="get" host="https://api.diadata.org/v1/" path="goldPaxgGrams" %}
-{% api-method-summary %}
-Gold price in Gram
-{% endapi-method-summary %}
-
-{% api-method-description %}
-Gold price for 1g of Gold measured by the PAXG commodity token.
-{% endapi-method-description %}
-
-{% api-method-spec %}
-{% api-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-
-{% endapi-method-response-example-description %}
-
-```
-{"Symbol":"PAXG-gram","Name":"PAXG-gram","Price":59.69023528449715,"PriceYesterday":57.93549261152835,"VolumeYesterdayUSD":0,"Source":"diadata.org","Time":"2020-11-25T11:22:31.146028646Z","ITIN":"undefined"}
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
-
-
+{% endswagger-response %}
+{% endswagger %}
 

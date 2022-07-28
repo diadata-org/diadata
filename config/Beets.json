@@ -1,0 +1,10 @@
+{
+    "Coins": [
+        {
+            "Symbol": "DPI",
+            "ForeignName": "DPI-WBTC",
+            "Exchange": "BeetsExchange",
+            "Ignore": false
+        }
+    ]
+}

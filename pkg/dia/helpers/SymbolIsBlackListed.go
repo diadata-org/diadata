@@ -13,6 +13,22 @@ func SymbolIsBlackListed(symbol string) bool {
 	switch symbol {
 	case "UNI-V2":
 		return true
+	case "BSC":
+		return true
+	case "ENG":
+		return true
+	case "MOON":
+		return true
+	case "VRA":
+		return true
+	case "COIN":
+		return true
+	case "XFI":
+		return true
+	case "DIP":
+		return true
+	case "CND":
+		return true
 	case "VET":
 		return true
 	case "ACC":
@@ -159,6 +175,16 @@ func SymbolIsBlackListed(symbol string) bool {
 // AddressIsBlacklisted returns true if a token address is blacklisted
 func AddressIsBlacklisted(address common.Address) bool {
 	switch strings.ToLower(address.Hex()) {
+	case "0x8e11ff9a74ae97b295e14f8d9d48e3a3d72ce890":
+		return true
+	case "0x8d7d3409881b51466b483b11ea1b8a03cded89ae":
+		return true
+	case "0x9b6db7597a74602a5a806e33408e7e2dafa58193":
+		return true
+	case "0x5dc02ea99285e17656b8350722694c35154db1e8":
+		return true
+	case "0xb2a9a0f34e3140de9b9a489b33fc049102a1808e":
+		return true
 	case "0x3e191a6ef96f87092fe8dce0d3f01977b08d6acf":
 		return true
 	case "0x8870f11b5d16f1fd4ce26aff514566621dca4828":

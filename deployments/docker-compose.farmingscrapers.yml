@@ -15,6 +15,20 @@ services:
       options:
         max-size: "50m"
 
+  barnbridgescraper:
+    depends_on: [genericfarmingscraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericfarmingscraper:latest
+    command: /bin/farmingpools -type=BARNBRIDGE
+    networks:
+      - kafka-network
+      - influxdb-network
+      - redis-network
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
   curvefiscraper:
     depends_on: [genericfarmingscraper]
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericfarmingscraper:latest

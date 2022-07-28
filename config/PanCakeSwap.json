@@ -1,0 +1,64 @@
+{
+    "Coins": [
+        {
+            "Symbol": "INJ",
+            "ForeignName": "INJ-WBNB",
+            "Exchange": "PanCakeSwap",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WBNB",
+            "ForeignName": "WBNB-pCWS",
+            "Exchange": "PanCakeSwap",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WOW",
+            "ForeignName": "WOW-WBNB",
+            "Exchange": "PanCakeSwap",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WOW",
+            "ForeignName": "WOW-BUSD",
+            "Exchange": "PanCakeSwap",
+            "Ignore": false
+        },
+        {
+            "Symbol": "D100",
+            "ForeignName": "D100-WBNB",
+            "Exchange": "PanCakeSwap",
+            "Ignore": false
+        },
+        {
+            "Symbol": "D100",
+            "ForeignName": "D100-BUSD",
+            "Exchange": "PanCakeSwap",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BAKE",
+            "ForeignName": "BAKE-BUSD",
+            "Exchange": "PanCakeSwap",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SYRUP",
+            "ForeignName": "SYRUP-ETH",
+            "Exchange": "PanCakeSwap",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ROMS",
+            "ForeignName": "ROMS-ETH",
+            "Exchange": "PanCakeSwap",
+            "Ignore": false
+        },
+        {
+            "Symbol": "Cake",
+            "ForeignName": "Cake-DAI",
+            "Exchange": "PanCakeSwap",
+            "Ignore": false
+        }
+    ]
+}

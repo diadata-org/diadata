@@ -1,23 +1,19 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"encoding/json"
-	"flag"
 	"fmt"
-	"io/ioutil"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaCoingeckoOracleService"
 	"log"
 	"math/big"
-	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/diadata-org/diadata/internal/pkg/blockchain-scrapers/blockchains/ethereum/diaCoingeckoOracleService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -25,76 +21,72 @@ import (
 )
 
 func main() {
-	/*
-	 * Read in Oracle address
-	 */
-	var deployedContract = flag.String("deployedContract", "", "Address of the deployed oracle contract")
-	var numCoins = flag.Int("numCoins", 100, "Number of coins to push with the oracle")
-	flag.Parse()
-
-	/*
-	 * Read secrets for unlocking the ETH account
-	 */
-	var lines []string
-	file, err := os.Open("/run/secrets/oracle_keys") // Read in key information
+	key := utils.Getenv("PRIVATE_KEY", "")
+	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
+	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
+	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
+	sleepSeconds, err := strconv.Atoi(utils.Getenv("SLEEP_SECONDS", "120"))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to parse sleepSeconds: %v")
 	}
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "120"))
+	if err != nil {
+		log.Fatalf("Failed to parse frequencySeconds: %v")
 	}
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
+	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "1"), 10, 64)
+	if err != nil {
+		log.Fatalf("Failed to parse chainId: %v")
 	}
-	if len(lines) != 2 {
-		log.Fatal("Secrets file should have exactly two lines")
+	numCoins, err := strconv.Atoi(utils.Getenv("NUM_COINS", "50"))
+	if err != nil {
+		log.Fatalf("Failed to parse numCoins: %v")
 	}
-	key := lines[0]
-	key_password := lines[1]
 
 	/*
 	 * Setup connection to contract, deploy if necessary
 	 */
 
-	conn, err := ethclient.Dial("http://159.69.120.42:8545/")
+	conn, err := ethclient.Dial(blockchainNode)
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
 	}
 
-	auth, err := bind.NewTransactor(strings.NewReader(key), key_password)
+	auth, err := bind.NewTransactorWithChainID(strings.NewReader(key), key_password, big.NewInt(chainId))
 	if err != nil {
 		log.Fatalf("Failed to create authorized transactor: %v", err)
 	}
 
 	var contract *diaCoingeckoOracleService.DIACoingeckoOracle
-	err = deployOrBindContract(*deployedContract, conn, auth, &contract)
+	err = deployOrBindContract(deployedContract, conn, auth, &contract)
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
-	periodicOracleUpdateHelper(numCoins, auth, contract, conn)
+	err = periodicOracleUpdateHelper(numCoins, sleepSeconds, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("failed periodic update: %v", err)
+	}
 	/*
 	 * Update Oracle periodically with top coins
 	 */
-	ticker := time.NewTicker(24 * time.Hour)
+	ticker := time.NewTicker(time.Duration(frequencySeconds) * time.Second)
 	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				periodicOracleUpdateHelper(numCoins, auth, contract, conn)
+		for range ticker.C {
+			err = periodicOracleUpdateHelper(numCoins, sleepSeconds, auth, contract, conn)
+			if err != nil {
+				log.Fatalf("failed periodic update: %v", err)
 			}
 		}
 	}()
 	select {}
 }
 
-func periodicOracleUpdateHelper(numCoins *int, auth *bind.TransactOpts, contract *diaCoingeckoOracleService.DIACoingeckoOracle, conn *ethclient.Client) error {
+func periodicOracleUpdateHelper(numCoins int, sleepSeconds int, auth *bind.TransactOpts, contract *diaCoingeckoOracleService.DIACoingeckoOracle, conn *ethclient.Client) error {
 
-	topCoins, err := getTopCoinsFromCoingecko(*numCoins)
+	topCoins, err := getTopCoinsFromCoingecko(numCoins)
 	if err != nil {
 		log.Fatalf("Failed to get top %d coins from Coingecko: %v", numCoins, err)
 	}
+
 	// Get quotation for topCoins and update Oracle
 	for _, symbol := range topCoins {
 		rawQuot, err := getForeignQuotationFromDia("Coingecko", symbol)
@@ -107,7 +99,7 @@ func periodicOracleUpdateHelper(numCoins *int, auth *bind.TransactOpts, contract
 			log.Fatalf("Failed to update Coingecko Oracle: %v", err)
 			return err
 		}
-		time.Sleep(5 * time.Minute)
+		time.Sleep(time.Duration(sleepSeconds) * time.Second)
 	}
 
 	return nil
@@ -128,18 +120,9 @@ func updateForeignQuotation(foreignQuotation *models.ForeignQuotation, auth *bin
 
 // getTopCoinsFromCoingecko returns the symbols of the top @numCoins assets from coingecko by market cap
 func getTopCoinsFromCoingecko(numCoins int) ([]string, error) {
-	response, err := http.Get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=" + strconv.Itoa(numCoins) + "&page=1&sparkline=false")
+	contents, statusCode, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=" + strconv.Itoa(numCoins) + "&page=1&sparkline=false")
 	if err != nil {
-		return nil, err
-	}
-
-	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return nil, fmt.Errorf("Error on coingecko api with return code %d", response.StatusCode)
-	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
+		return []string{}, fmt.Errorf("error on dia api with return code %d", statusCode)
 	}
 	type aux struct {
 		Symbol string `json:"symbol"`
@@ -147,7 +130,7 @@ func getTopCoinsFromCoingecko(numCoins int) ([]string, error) {
 	var quotations []aux
 	err = json.Unmarshal(contents, &quotations)
 	if err != nil {
-		return []string{}, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+		return []string{}, fmt.Errorf("error on dia api with return code %d", statusCode)
 	}
 	var symbols []string
 	for _, quotation := range quotations {
@@ -157,19 +140,11 @@ func getTopCoinsFromCoingecko(numCoins int) ([]string, error) {
 }
 
 func getForeignQuotationFromDia(source, symbol string) (*models.ForeignQuotation, error) {
-	response, err := http.Get(dia.BaseUrl + "/v1/foreignQuotation/" + strings.Title(strings.ToLower(source)) + "/" + strings.ToUpper(symbol))
+	contents, _, err := utils.GetRequest(dia.BaseUrl + "v1/foreignQuotation/" + strings.Title(strings.ToLower(source)) + "/" + strings.ToUpper(symbol))
 	if err != nil {
 		return nil, err
 	}
 
-	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
-	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
 	var quotation models.ForeignQuotation
 	err = quotation.UnmarshalBinary(contents)
 	if err != nil {
@@ -236,3 +211,91 @@ func updateOracle(
 	log.Printf("Tx Hash: 0x%x\n", tx.Hash())
 	return nil
 }
+
+// ------------------------------------------------------------
+// Methods for getting additional foreign quotations by address
+// ------------------------------------------------------------
+
+// type CoinData struct {
+// 	Prices     [][]float64 `json:"prices"`
+// 	MarketCaps [][]float64 `json:"market_caps"`
+// 	Volumes    [][]float64 `json:"total_volumes"`
+// }
+
+// type BasicTokenInfo struct {
+// 	Name   string `json:"name"`
+// 	Symbol string `json:"symbol"`
+// }
+
+// func getCoinInfoByAddress(address string) (name, symbol string, err error) {
+// 	// Pull and unmarshall data from coingecko API
+// 	response, _, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/ethereum/contract/" + address)
+// 	if err != nil {
+// 		return
+// 	}
+// 	var tokenInfo BasicTokenInfo
+// 	err = json.Unmarshal(response, &tokenInfo)
+// 	if err != nil {
+// 		return
+// 	}
+// 	name = tokenInfo.Name
+// 	symbol = tokenInfo.Symbol
+// 	return
+// }
+
+// func getForeignQuotationByAddress(address string) (*models.ForeignQuotation, error) {
+// 	// Pull and unmarshall data from coingecko API
+// 	response, _, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/ethereum/contract/" + address + "/market_chart/?vs_currency=usd&days=2")
+// 	if err != nil {
+// 		return &models.ForeignQuotation{}, err
+// 	}
+// 	var coin CoinData
+// 	err = json.Unmarshal(response, &coin)
+// 	if err != nil {
+// 		return &models.ForeignQuotation{}, err
+// 	}
+
+// 	// Get index of most recent timestamp
+// 	prices := coin.Prices
+// 	latestTimestamp := time.Time{}
+// 	indexLatestTimestamp := 0
+// 	for i, price := range prices {
+// 		tm := time.Unix(int64(price[0]/1000), 0)
+// 		if latestTimestamp.Before(tm) {
+// 			latestTimestamp = tm
+// 			indexLatestTimestamp = i
+// 		}
+// 	}
+
+// 	// Get index of timestamp closest to latestTimestamp-24h
+// 	indexYesterday := 0
+// 	yesterday := latestTimestamp.AddDate(0, 0, -1)
+// 	minDuration := time.Duration(int64(1e16))
+// 	for i, price := range prices {
+// 		tm := time.Unix(int64(price[0]/1000), 0)
+// 		diff := yesterday.Sub(tm)
+// 		if diff < 0 {
+// 			diff = tm.Sub(yesterday)
+// 		}
+// 		if diff < minDuration {
+// 			minDuration = diff
+// 			indexYesterday = i
+// 		}
+// 	}
+
+// 	// Get name and symbol by address from coingecko
+// 	name, symbol, err := getCoinInfoByAddress(address)
+// 	if err != nil {
+// 		return &models.ForeignQuotation{}, err
+// 	}
+
+// 	var fq models.ForeignQuotation
+// 	fq.Symbol = strings.ToUpper(symbol)
+// 	fq.Name = name
+// 	fq.Price = prices[indexLatestTimestamp][1]
+// 	fq.PriceYesterday = prices[indexYesterday][1]
+// 	fq.VolumeYesterdayUSD = coin.Volumes[indexYesterday][1]
+// 	fq.Source = "Coingecko"
+// 	fq.Time = latestTimestamp
+// 	return &fq, nil
+// }

@@ -2,11 +2,11 @@ package main
 
 import (
 	"flag"
+	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/foreign-scrapers"
 	"sync"
 
 	models "github.com/diadata-org/diadata/pkg/model"
 
-	scrapers "github.com/diadata-org/diadata/internal/pkg/foreign-scrapers"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -30,6 +30,8 @@ func main() {
 	case "CoinMarketCap":
 		log.Println("Foreign Scraper: Start scraping data from CoinMarketCap")
 		sc = scrapers.NewCoinMarketCapScraper(ds)
+	default:
+		sc = scrapers.NewGenericForeignScraper()
 	}
 
 	wg.Add(1)
@@ -48,7 +50,10 @@ func handleQuotation(quotation chan *models.ForeignQuotation, wg *sync.WaitGroup
 			return
 		}
 
-		ds.SaveForeignQuotationInflux(*fq)
+		err := ds.SaveForeignQuotationInflux(*fq)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 
 }

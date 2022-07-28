@@ -4,9 +4,8 @@ import (
 	"time"
 
 	supplyservice "github.com/diadata-org/diadata/internal/pkg/supplyService"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
+	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
-	"github.com/ethereum/go-ethereum/ethclient"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -21,84 +20,81 @@ func main() {
 	if err != nil {
 		log.Fatal("datastore error: ", err)
 	}
-	conn, err := ethclient.Dial("http://159.69.120.42:8545/")
+
+	relDB, err := models.NewRelDataStore()
 	if err != nil {
-		log.Fatal(err)
-	}
-	// Fetch token contract addresses from json file
-	tokenAddresses, err := ethhelper.GetAddressesFromFile(tokensListFilename)
-	if err != nil {
-		log.Fatal(err)
+		log.Fatal("relational datastore error: ", err)
 	}
 
-	// Get map for locked wallets per asset
-	lockedWalletsMap, err := supplyservice.GetLockedWalletsFromConfig(lockedWalletsFilename)
+	suppliesCG, err := supplyservice.GetETHSuppliesFromCG()
 	if err != nil {
-		log.Error(err)
+		log.Error("get supplies from coingecko: ", err)
 	}
-
-	// Initial run
-	for _, address := range tokenAddresses {
-		supp, err := supplyservice.GetTotalSupplyfromMainNet(address, lockedWalletsMap[address], conn)
-		if err != nil || len(supp.Symbol) < 2 || supp.Supply < 2 {
+	for i := range suppliesCG {
+		asset, err := relDB.GetAsset(suppliesCG[i].Asset.Address, suppliesCG[i].Asset.Blockchain)
+		if err != nil {
+			// Only add supply for assets we have in our database.
 			continue
 		}
-		// Hardcoded hotfix for some supplies:
-		if supp.Symbol == "YAM" {
-			supp.CirculatingSupply = float64(13907678)
+		suppliesCG[i].Asset = asset
+		suppliesCG[i].Time = time.Now()
+		suppliesCG[i].Source = "Coingecko"
+		err = ds.SetSupply(&suppliesCG[i])
+		if err != nil {
+			log.Errorf("error setting supply for %s: %v\n", suppliesCG[i].Asset.Symbol, err)
+		} else {
+			log.Info("set supply: " + suppliesCG[i].Asset.Name + " - " + suppliesCG[i].Asset.Symbol)
 		}
-		if supp.Symbol == "CRO" {
-			supp.CirculatingSupply = float64(20631963470)
-		}
-		if supp.Symbol == "DTA" {
-			supp.CirculatingSupply = float64(21000000)
-		}
-		if supp.Symbol == "DIA" {
-			supp.CirculatingSupply = float64(25549170)
-		}
-		if supp.Symbol == "SPICE" {
-			supp.CirculatingSupply = float64(1945426.80)
-		}
-
-		ds.SetSupply(&supp)
-		log.Info("set supply: ", supp)
 	}
 
-	// Continuously update supplies once every 24h
-	ticker := time.NewTicker(24 * time.Hour)
-	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				for _, address := range tokenAddresses {
-					supp, err := supplyservice.GetTotalSupplyfromMainNet(address, lockedWalletsMap[address], conn)
-					if err != nil || len(supp.Symbol) < 2 || supp.Supply < 2 {
-						continue
-					}
-					// Hardcoded hotfix for some supplies:
-					if supp.Symbol == "YAM" {
-						supp.CirculatingSupply = float64(13907678)
-					}
-					if supp.Symbol == "CRO" {
-						supp.CirculatingSupply = float64(20631963470)
-					}
-					if supp.Symbol == "DTA" {
-						supp.CirculatingSupply = float64(21000000)
-					}
-					if supp.Symbol == "DIA" {
-						supp.CirculatingSupply = float64(25549170)
-					}
-					if supp.Symbol == "SPICE" {
-						supp.CirculatingSupply = float64(1945426.80)
-					}
+	// Save old "circulating" supply as total supply (i.e. #DIA without the burnt tokens)
+	err = ds.SetDiaTotalSupply(float64(173296236.5011769))
+	if err != nil {
+		log.Errorf("error setting total supply for %s: %v\n", "DIA", err)
+	} else {
+		log.Info("set total supply: DIA")
+	}
+	// Set circulating supply
+	err = ds.SetDiaCirculatingSupply(float64(80575573))
+	if err != nil {
+		log.Errorf("error setting circulating supply for %s: %v\n", "DIA", err)
+	} else {
+		log.Info("set circulating supply: DIA")
+	}
 
-					ds.SetSupply(&supp)
-					log.Info("set supply: ", supp)
-				}
+	xrp, err := relDB.GetAsset("0x0000000000000000000000000000000000000000", "Ripple")
+	if err != nil {
+		log.Error("get xrp: ", err)
+	}
+	supplyXRP := dia.Supply{
+		Asset:             xrp,
+		Supply:            float64(100000000000),
+		CirculatingSupply: float64(47949281138),
+		Source:            "Coingecko",
+		Time:              time.Now(),
+	}
+	err = ds.SetSupply(&supplyXRP)
+	if err != nil {
+		log.Errorf("error setting supply for %s: %v\n", supplyXRP.Asset.Symbol, err)
+	} else {
+		log.Info("set supply: " + supplyXRP.Asset.Name + " - " + supplyXRP.Asset.Symbol)
+	}
 
-			}
-		}
-	}()
-	select {}
-
+	btc, err := relDB.GetAsset("0x0000000000000000000000000000000000000000", "Bitcoin")
+	if err != nil {
+		log.Error("get bitcoin: ", err)
+	}
+	supplyBTC := dia.Supply{
+		Asset:             btc,
+		Supply:            float64(21000000),
+		CirculatingSupply: float64(18970462),
+		Source:            "Coingecko",
+		Time:              time.Now(),
+	}
+	err = ds.SetSupply(&supplyBTC)
+	if err != nil {
+		log.Errorf("error setting supply for %s: %v\n", supplyBTC.Asset.Symbol, err)
+	} else {
+		log.Info("set supply: " + supplyBTC.Asset.Name + " - " + supplyBTC.Asset.Symbol)
+	}
 }

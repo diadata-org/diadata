@@ -1,73 +1,104 @@
 ---
-description: 'Our Mission: Wikipedia for Financial Data'
+cover: .gitbook/assets/1_dZqpEo-3_IlZsrZ_J9X7Xw.png
+coverY: 0
 ---
 
-# Introduction
+# 🏃 Get Started
 
-[![API Status](https://badgen.net/uptime-robot/status/m784441379-1bdbacd4cd81bf46c13bdb1f?label=API)](https://docs.diadata.org/api/docs/api) [![Pull Requests](https://badgen.net/github/prs/diadata-org/diadata?label=Pull%20Requests)](https://github.com/diadata-org/diadata/pulls) [![Netlify Status](https://api.netlify.com/api/v1/badges/4be89751-9655-472f-9bfe-c8e57b9528b2/deploy-status)](https://coinhub.diadata.org)
+## What is DIA?&#x20;
 
-![](.gitbook/assets/180926_dia_assets-57.png)
+**DIA (Decentralised Information Asset) is a multi-chain, end-to-end, open-source data and oracle platform for Web3.**
 
-## What is DIA about?
+The DIA platform enables the sourcing, validation and sharing of transparent and verified data feeds for traditional and digital financial applications. DIA’s institutional-grade data feeds cover asset prices, metaverse data, lending rates and more.
 
-Welcome to the [DIAdata.org](https://diadata.org/) platform. DIA is an ecosystem for open financial data in a financial smart contract ecosystem. The target of DIA is to bring together data analysts, data providers and data users. In general, DIA provides a reliable and verifiable bridge between off-chain data from various sources and on-chain smart contracts that can be used to build a variety of financial dApps.
+DIA’s data is directly sourced from a broad array of on-chain and off-chain sources at individual a trade-level. This allows DIA feeds to be fully customised with regards to the mix of sources and methodologies, resulting in tailor-made, high resilience feeds, setting a new paradigm for oracles.
 
-## Get started right away
+Links: [Homepage](https://diadata.org/) | [Medium Blog](https://medium.com/dia-insights) | [Github](https://github.com/diadata-org) | [Twitter](https://twitter.com/DIAdata\_org) | [Discord](https://discord.gg/zFmXtPFgQj) | [Telegram](https://t.me/DIAdata\_org)
 
-[Tutorials for contributors](https://docs.diadata.org/documentation/tutorials)
+[![API Status](https://badgen.net/uptime-robot/status/m784441379-1bdbacd4cd81bf46c13bdb1f?label=API)](https://docs.diadata.org/api/docs/api) [![Pull Requests](https://badgen.net/github/prs/diadata-org/diadata?label=Pull%20Requests)](https://github.com/diadata-org/diadata/pulls)
 
-[API Documentation](https://docs.diadata.org/documentation/api-1)
+## The DIA Ecosystem
 
-If you want to dive into our API without further ado, feel free to take the below tables as a starting point. They present an excerpt of our API endpoints  a complete list of which can be found in our API Documentation. 
+DIA is an open-source ecosystem for financial data. The aim of DIA is to make transparent, accurate and verifiable data accessible for Web3, by bringing together data providers, users and DAO community members.
 
-### Digital Assets
+![](.gitbook/assets/Architecture.svg)
 
-| Class | Description | API Example | API Documentation | Oracle | Number of Assets |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| CoinMarketCap Quotation | Actual price of the top 50 crypto assets as listed on CMC | [DIA Price](https://api.diadata.org/v1/foreignQuotation/CoinMarketCap/DIA) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#guest-quotation) for a detailed description | [CoinMarketCap Oracle](https://etherscan.io/address/0x48760771feda4be44a6ed3bff13ecbc445159b1d) | 50 |
-| Crypto Price | Actual price of a crypto asset such as Bitcoin \(BTC\) or Ether \(ETH\) | [BTC Price](https://api.diadata.org/v1/quotation/BTC) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#quotation) for a detailed description. | Oracle for [crypto assets](https://docs.diadata.org/documentation/oracle-documentation/crypto-assets) | ~800 |
-| Supply | Actual circulating supply of a crypto asset | [BTC Supply](https://api.diadata.org/v1/supply/BTC) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#supply) for a detailed description | Oracle for [crypto assets](https://docs.diadata.org/documentation/oracle-documentation/crypto-assets) | ~150 |
-| Exchange | Centralized and decentralized crypto exchanges | [List of exchanges](https://api.diadata.org/v1/exchanges) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#exchanges) for a detailed description |  | 27 |
-| DeFi Interest Rate | Lending and borrowing rates on decentralized finance protocols | [ETH lending and borrowing rate](https://api.diadata.org/v1/defiLendingRate/DYDX/ETH) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#defi-interest-rate) for a detailed description | Oracle for [DeFi Lending](https://docs.diadata.org/documentation/oracle-documentation/defi-protocol-rates-and-states) | &gt;30 |
-| DeFi Protocol Information | Total locked value and information on lending protocol | [DYDX](https://api.diadata.org/v1/defiLendingState/DYDX) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#defi-lending-protocol) for a detailed description | Oracle for [DeFi Protocol](https://docs.diadata.org/documentation/oracle-documentation/defi-protocol-rates-and-states) | 8 |
-| Coingecko Quotation | Actual price of the top 100 crypto assets as listed on coingecko | [BTC Price](https://api.diadata.org/v1/foreignQuotation/Coingecko/BTC) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#guest-quotation) for a detailed description | [Coingecko Oracle](https://docs.diadata.org/documentation/oracle-documentation/guest-quotations) | 100 |
-| Farming Pool | Rates and balances of farming pools | [YFI - WETH Pool](https://api.diadata.org/v1/FarmingPoolData/YFI/WETH) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#farming-pool-data) for a detailed description | [Farming Pool Oracle](https://docs.diadata.org/documentation/oracle-documentation/farming-pools) | 3000 |
+<mark style="color:blue;">**Data sources:**</mark> every second, thousands of trade level data points from multiple on-chain and off-chain sources (CEXs, DEXs, DeFi, NFT, Metaverse, etc) are aggregated into the DIA Platform.
 
-### Traditional Assets
+<mark style="color:blue;">**DIA Open-Source Platform:**</mark>
 
-| Class | Description | API Example | API Documentation | Oracle | Number of Assets |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| Interest Rate | Interest rate of overnight markets such as SOFR or SONIA incl. historical data | [SOFR](https://api.diadata.org/v1/interestrate/SOFR/2020-08-03) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#interest-rate) for a detailed description | _Coming soon_: Oracle for [interest rates](https://docs.diadata.org/documentation/methodology/traditional-assets/overnight-rates) | 3 |
-| Fiat Prices | Price of fiat currencies vs USD | [List of currencies](https://api.diadata.org/v1/fiatQuotations) | Click [here](https://docs.diadata.org/documentation/api-1/api-endpoints#fiat-currency-exchange-rates) for a detailed description | Oracle for [fiat prices](https://docs.diadata.org/documentation/oracle-documentation/fiat-prices) | 10 |
+* **Open Contributors**: to collect the data, an open community of developers build scrapers to connect new data sources with the DIA open-source platform.
+* **Governors/validators:** a community of token holders discuss and vote to improve the platform; crowd-approve and validate features and govern the DIA Association.
+* **Off-chain computation:** the ingested raw data is computed and sanitised based on fully transparent methodologies to avoid temporary off-data and outliers.&#x20;
 
-## Applications
+<mark style="color:blue;">**Blockchains**</mark><mark style="color:blue;">:</mark> new data points are shipped via API or dedicated oracle smart contracts and made available to developers in 25+ layer 1 and layer 2 blockchain networks.
 
-### Product use Cases
+<mark style="color:blue;">**dApps:**</mark> DIA oracles are easy to integrate into smart contracts to power a broad range of DeFi, TradFi and Metaverse use cases, such as lending, lending, staking or stablecoins.
 
-Based on the data we collect at DIA we build products an excerpt of which can be found below.
+## DIA's data offering
 
-* [CoinHub](http://coinhub.diadata.org) - A transparent, open-source alternative to CM
-* [CVI](https://diadata.org/crypto-volatility-index/) - An interactive chart of the Crypto Volatility Index
-* [Rates Calculator](https://diadata.org/compounded-rates-calculator/) - An interactive chart for the calculation of customized indices
+### <mark style="color:blue;">Data categories</mark>
 
-### Partner Integrations
+DIA's crowd-sourcing approach to data sourcing uniquely positions DIA to utilise the broadest possible set of sources and ensure maximum coverage of asset price data. Any data feed that is publicly accessible can be sourced, regardless of whether it is listed on exchanges and what its trading volume is - there is no dependency on third-party data providers.&#x20;
 
-DIA's data feeds are being used by a range of market actors in the DeFi and CeFi space. Below is an excerpt of partners. A number of additional users are in testing phase. This list will be periodically updated.
+Here is a high-level overview of DIA's data offering:
 
-* [Gather](https://gather.network/) - A platform that allows publishers to monetize without ads, provides businesses & developers to access cheap and reliable processing power.
-* [CryptoLocally](https://cryptolocally.com/en) - A gateway for Fastest, cheapest, and easiest way to buy and sell crypto in your local currency
-* [Polkastarter](https://www.polkastarter.com/) - A DEX built for cross-chain token pools and auctions, enabling projects to raise capital on a decentralized, permissionless and interoperable environment based on Polkadot.
-* [ADD.XYZ](https://add.xyz/) - A full-stack aggregation and management platform der DeFi products.  DIA oracles supply off-chain & on-chain information.
-* [Elrond](https://elrond.com/) - A blockchain architecture, designed to bring a 1000-fold cumulative improvement in throughput and execution speed. DIA oracles supply off-chain & cross-chain information.
-* [ankr](https://www.ankr.com/) - Building an infrastructure platform and marketplace for Web3-stack deployment. DIA oracles supply off-chain & cross-chain information.
-* [Hedget](https://www.hedget.com/) - Designed to be a DeFi option trading platform. DIA supplies price feeds to value Hedget’s derivative products.
-* [SIX/F10 PSD II Sandbox](https://f10-sandbox-portal.apps.ndgit.com/#/apis) - PSD II and pricing data for FinTechs
-* [FINOA](https://finoa.io/) - Custody and asset-servicing solutions for institutional investors, corporations and HNWI
-* [Open-Source Calculation Agent](https://blockstate.com/decentral-calculation-agent/)
+![](<.gitbook/assets/Data categories.svg>)
 
-## **Feedback**
+### <mark style="color:blue;">Data sources</mark>
 
-Your feedback helps improve DIA in order for us to find data and applications that are the most useful for you and the broader developer community.
+By leveraging a community of developers and a distributed network of nodes, DIA scrapes, collects and aggregates data directly from multiple on-chain sources or Centralised Exchange APIs at individual trade levels.&#x20;
 
-Link: [Feedback Form](https://docs.google.com/forms/d/e/1FAIpQLSePxDwbEURjes4nw8GUzaT-XfYttRw_6F2xAR607FKACsn7ew/viewform)
+Here is a high-level overview of data sources DIA leverages:
+
+![to seel all data sources, visit the Data Sources section](<.gitbook/assets/Data sources.svg>)
+
+### <mark style="color:blue;">Delivery methods</mark>
+
+DIA enables users to select how they ingest data using multiple delivery methods present on a constantly growing L1 / L2 ecosystem, powered by a network of strong industry partners.
+
+#### **On-chain delivery | DIA xNode**
+
+Oracles can be customised to trigger updates based on:
+
+* **Request**: updates are triggered via a dedicated smart contract or API call.
+* **Time**: updates are triggered in predefined time intervals
+* **Deviation**: updates are triggered by a deviation from the last reported value
+
+#### **Off-chain delivery  | DIA xBase**
+
+&#x20;Data can be delivered off-chain via
+
+* **Rest API**: delivers data feeds in a predefined, standardised format
+  * **Update frequency**: 120s
+  * **Methodology**: [MAIR](documentation/methodology/digital-assets/exchangeprices/mair-moving-average-with-interquartile-range-filter.md)
+  * **Sources**: [all available](documentation/data-sources/natively-sourced-data.md)
+* **GraphQL**: enables more flexibility and direct adjustments of feed attributions
+  * **Update frequency**: custom
+  * **Methodology**: custom
+  * **Sources**: custom
+
+## Contribute
+
+DIA through its DAO operations is working towards building the biggest open-source data platform of Web3. To reach this goal, DIA leverages the power of communities and decentralisation on many levels to scale its product developmet and growth.&#x20;
+
+Contribute to the DAO through the two verticals below:
+
+{% content-ref url="contribute/product-development.md" %}
+[product-development.md](contribute/product-development.md)
+{% endcontent-ref %}
+
+{% content-ref url="contribute/ecosystem-growth.md" %}
+[ecosystem-growth.md](contribute/ecosystem-growth.md)
+{% endcontent-ref %}
+
+## Support
+
+{% content-ref url="support/discord.md" %}
+[discord.md](support/discord.md)
+{% endcontent-ref %}
+
+{% content-ref url="support/request-a-custom-oracle.md" %}
+[request-a-custom-oracle.md](support/request-a-custom-oracle.md)
+{% endcontent-ref %}
 

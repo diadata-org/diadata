@@ -1,7 +1,7 @@
 package filters
 
 import (
-	"github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
 	"testing"
 	"time"
 )
@@ -38,7 +38,7 @@ func TestMinutesInYear(t *testing.T) {
 	}
 
 	// -1 (invalid)
-	actual, err = MinutesInYear(-1)
+	_, err = MinutesInYear(-1)
 	if err == nil {
 		t.Errorf("invalid year, should throw error")
 	}
@@ -113,7 +113,7 @@ func TestMinutesUntilSettlement(t *testing.T) {
 	}
 
 	// unsuported timezone
-	m, err = MinutesUntilSettlement(scrapers.RegularOptionSettlement, "")
+	_, err = MinutesUntilSettlement(scrapers.RegularOptionSettlement, "")
 	if err == nil {
 		t.Errorf("expected an error, timezone is unsupported")
 	}

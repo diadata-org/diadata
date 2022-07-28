@@ -1,6 +1,34 @@
 {
   "Tokens": [
     {
+      "Address": "0x4e15361fd6b4bb609fa63c81a2be19d873717870",
+      "Name": "Fantom Token"
+    },
+    {
+      "Address": "0x15b7c0c907e4c6b9adaaaabc300c08991d6cea05",
+      "Name": "Gelato Network Token"
+    },
+    {
+      "Address": "0x8a2279d4a90b6fe1c4b30fa660cc9f926797baa2",
+      "Name": "Chromia"
+    },
+    {
+      "Address": "0x6c28aef8977c9b773996d0e8376d2ee379446F2f",
+      "Name": "Quickswap"
+    },
+     {
+      "Address": "0xde30da39c46104798bb5aa3fe8b9e0e1f348163f",
+      "Name": "Gitcoin"
+    },
+    {
+      "Address": "0xa2120b9e674d3fc3875f415a7df52e382f141225",
+      "Name": "Automata"
+    },
+    {
+      "Address": "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2",
+      "Name": "Maker"
+    },
+    {
       "Address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
       "Name": "Tether USD"
     },
@@ -117,6 +145,10 @@
       "Name": "Synthetix Network Token"
     },
     {
+      "Address": "0xa8c8cfb141a3bb59fea1e2ea6b79b5ecbcd7b6ca",
+      "Name": "Syntropy"
+    },
+    {
       "Address": "0xba100000625a3754423978a60c9317c58a424e3d",
       "Name": "Balancer"
     },
@@ -157,10 +189,6 @@
       "Name": "Tellor"
     },
     {
-      "Address": "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2",
-      "Name": "Maker"
-    },
-    {
       "Address": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
       "Name": "Decentraland"
     },
@@ -175,6 +203,10 @@
     {
       "Address": "0x8762db106b2c2a0bccb3a80d1ed41273552616e8",
       "Name": "Reserve Rights Token"
+    },
+    {
+      "Address": "0xc944e90c64b2c07662a292be6244bdf05cda44a7",
+      "Name": "The Graph"
     },
     {
       "Address": "0x1122b6a0e00dce0563082b6e2953f3a943855c1f",
@@ -235,6 +267,18 @@
     {
       "Address": "0xd7c49cee7e9188cca6ad8ff264c1da2e69d4cf3b",
       "Name": "Nexus Mutual"
+    },
+    {
+      "Address": "0x0d438f3b5175bebc262bf23753c1e53d03432bde",
+      "Name": "Wrapped NXM"
+    },
+    {
+      "Address": "0x3c9d6c1c73b31c837832c72e04d3152f051fc1a9",
+      "Name": "BoringDAO"
+    },
+    {
+      "Address": "0xb753428af26e81097e7fd17f40c88aaa3e04902c",
+      "Name": "Spice"
     },
     {
       "Address": "0x5d3a536e4d6dbd6114cc1ead35777bab948e3643",
@@ -1011,6 +1055,14 @@
     {
       "Address": "0x584bc13c7d411c00c01a62e8019472de68768430",
       "Name": "Hegic"
+    },
+    {
+      "Address": "0xfa5047c9c78b8877af97bdcb85db743fd7313d4a",
+      "Name": "KeeperDAO"
+    },
+    {
+      "Address": "0x111111111117dc0aa78b770fa6a738034120c302",
+      "Name": "1inch"
     },
     {
       "Address": "0x41e5560054824ea6b0732e656e3ad64e20e94e45",
@@ -2005,10 +2057,6 @@
       "Name": "AXiaL"
     },
     {
-      "Address": "0xb70835d7822ebb9426b56543e391846c107bd32c",
-      "Name": "Game"
-    },
-    {
       "Address": "0xf80d589b3dbe130c270a69f1a69d050f268786df",
       "Name": "Datamine"
     },
@@ -2301,10 +2349,6 @@
       "Name": "Yee"
     },
     {
-      "Address": "0xfc858154c0b2c4a3323046fb505811f110ebda57",
-      "Name": "NOIA Network"
-    },
-    {
       "Address": "0x8f8221afbb33998d8584a2b05749ba73c37a938a",
       "Name": "Request"
     },
@@ -2559,6 +2603,10 @@
     {
       "Address":"0x1fdab294eda5112b7d066ed8f2e4e562d5bcc664",
       "Name":"Spice"
+    },
+    {
+      "Address": "0x888888888889c00c67689029d7856aac1065ec11",
+      "Name": "Opium Governance Token"
     },
     {
       "Address": "0x3fd8f39a962efda04956981c31ab89fab5fb8bc8",
@@ -2869,6 +2917,10 @@
       "Name": "Doctors Coin"
     },
     {
+      "Address": "0x7240ac91f01233baaf8b064248e80feaa5912ba3",
+      "Name": "OctoFi"
+    },
+    {
       "Address": "0xa806b3fed6891136940cf81c4085661500aa2709",
       "Name": "Sport and Leisure"
     },
@@ -2883,6 +2935,10 @@
     {
       "Address": "0xe54b3458c47e44c37a267e7c633afef88287c294",
       "Name": "Artfinity Token"
+    },
+    {
+      "Address": "0xe28b3b32b6c345a34ff64674606124dd5aceca30",
+      "Name": "Injective Protocol"
     },
     {
       "Address": "0x51db5ad35c671a87207d88fc11d593ac0c8415bd",
@@ -5365,8 +5421,8 @@
       "Name": "Gric Coin"
     },
     {
-      "Address": "0xffc63b9146967a1ba33066fb057ee3722221acf0",
-      "Name": "Alpha Token"
+      "Address": "0xa1faa113cbe53436df28ff0aee54275c13b40975",
+      "Name": "AlphaToken"
     },
     {
       "Address": "0xc626c9e2247c8a0c863ad6daa97ed939e12786de",
@@ -6277,10 +6333,6 @@
       "Name": "Pantos"
     },
     {
-      "Address": "0x1fb6bccc7da51aa32e96118b8a33226d2ae16517",
-      "Name": "Global Rental Token"
-    },
-    {
       "Address": "0x3be6e7bf2cd8e1a0a95597e72ca6d3709bbeff76",
       "Name": "Demeter Chain"
     },
@@ -6601,10 +6653,6 @@
       "Name": "Bitfex"
     },
     {
-      "Address": "0x2730d6fdc86c95a74253beffaa8306b40fedecbb",
-      "Name": "UNICORN Token"
-    },
-    {
       "Address": "0xa063341d10054188e3cb715bfb663b37c0c1515e",
       "Name": "Diagon Coin"
     },
@@ -6783,10 +6831,6 @@
     {
       "Address": "0x6a93ae6147ada96a7459167c4d18e6613efe2994",
       "Name": "Internet Exchange Token"
-    },
-    {
-      "Address": "0xb83cd8d39462b761bb0092437d38b37812dd80a2",
-      "Name": "Golden Ratio Token"
     },
     {
       "Address": "0x90d46a9636b973f18186541d1b04ed3621a49cb0",
@@ -7099,10 +7143,6 @@
     {
       "Address": "0x92e52a1a235d9a103d970901066ce910aacefd37",
       "Name": "U.CASH"
-    },
-    {
-      "Address": "0x058391e75ee8f675c7eeca35fd6d12b11e73b4b6",
-      "Name": "SUPER"
     },
     {
       "Address": "0x4e0603e2a27a30480e5e3a4fe548e29ef12f64be",
@@ -7663,10 +7703,6 @@
     {
       "Address": "0x2e2e0a28f6585e895dd646a363bae29b77b88a31",
       "Name": "Volume Network"
-    },
-    {
-      "Address": "0xe6877ea9c28fbdec631ffbc087956d0023a76bf2",
-      "Name": "UNI COIN"
     },
     {
       "Address": "0x19c9872640ec38c2cf36c0f04d1365ef067869b3",
@@ -8327,6 +8363,30 @@
     {
       "Address": "0xfdc4a3fc36df16a78edcaf1b837d3acaaedb2cb4",
       "Name": "ScifiToken"
-    }
+    },
+    {
+      "Address": "0xcb67be5c54eab9462967ee3c03c35bfffeb801cd",
+      "Name": "GalacticBlueIndex"
+    },
+    {
+      "Address": "0xfe9a29ab92522d14fc65880d817214261d8479ae",
+      "Name": "SnowSwap"
+    },
+    {
+      "Address": "0xe53ec727dbdeb9e2d5456c3be40cff031ab40a55",
+      "Name": "SuperFarm"
+    },
+    {
+      "Address": "0xffffffff2ba8f66d4e51811c5190992176930278",
+      "Name": "Furucombo"
+    },
+    {
+      "Address": "0x50d1c9771902476076ecfc8b2a83ad6b9355a4c9",
+      "Name": "FTT"
+    },
+    {
+      "Address": "0x3a880652f47bfaa771908c07dd8673a787daed3a",
+      "Name": "DerivaDAO"
+    }    
   ]
 }

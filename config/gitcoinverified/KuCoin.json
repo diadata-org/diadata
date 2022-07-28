@@ -1,0 +1,724 @@
+{
+    "Tokens": [
+        {
+            "Symbol": "ACA",
+            "Exchange": "KuCoin",
+            "Blockchain": "Acala",
+            "Address": "Token:ACA"
+        },
+        {
+            "Symbol": "ADB",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x2baac9330Cf9aC479D819195794d79AD0c7616e3"
+        },
+        {
+            "Symbol": "AERGO",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x91Af0fBB28ABA7E31403Cb457106Ce79397FD4E6"
+        },
+        {
+            "Symbol": "AKRO",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x8Ab7404063Ec4DBcfd4598215992DC3F8EC853d7"
+        },
+        {
+            "Symbol": "ALEPH",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x27702a26126e0B3702af63Ee09aC4d1A084EF628"
+        },
+        {
+            "Symbol": "AMPL",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xD46bA6D942050d489DBd938a2C909A5d5039A161"
+        },
+        {
+            "Symbol": "ANKR",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4"
+        },
+        {
+            "Symbol": "ANT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xa117000000f279D81A1D3cc75430fAA017FA5A2e"
+        },
+        {
+            "Symbol": "AOA",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x9ab165D795019b6d8B3e971DdA91071421305e5a"
+        },
+        {
+            "Symbol": "API3",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x0b38210ea11411557c13457D4dA7dC6ea731B88a"
+        },
+        {
+            "Symbol": "ASTR",
+            "Exchange": "KuCoin",
+            "Blockchain": "Astar",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "AUSD",
+            "Exchange": "KuCoin",
+            "Blockchain": "Acala",
+            "Address": "Token:AUSD"
+        },
+        {
+            "Symbol": "BCHSV",
+            "Exchange": "KuCoin",
+            "Blockchain": "BitcoinSV",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "BNB",
+            "Exchange": "KuCoin",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "BOLT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xD5930C307d7395Ff807F2921F12C5EB82131a789"
+        },
+        {
+            "Symbol": "BOSON",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xC477D038d5420C6A9e0b031712f61c5120090de9"
+        },
+        {
+            "Symbol": "BUY",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x31Fdd1c6607F47C14a2821f599211c67AC20FA96"
+        },
+        {
+            "Symbol": "CAPP",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x04F2E7221fdb1B52A68169B25793E51478fF0329"
+        },
+        {
+            "Symbol": "CARD",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x954b890704693af242613edEf1B603825afcD708"
+        },
+        {
+            "Symbol": "CBC",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x26DB5439F651CAF491A87d48799dA81F191bDB6b"
+        },
+        {
+            "Symbol": "CHR",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x8A2279d4A90B6fe1C4B30fa660cC9f926797bAA2"
+        },
+        {
+            "Symbol": "CIX100",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x6393E822874728f8Afa7e1C9944E417D37CA5878"
+        },
+        {
+            "Symbol": "COFI",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x3136eF851592aCf49CA4C825131E364170FA32b3"
+        },
+        {
+            "Symbol": "CSP",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xA6446D655a0c34bC4F05042EE88170D056CBAf45"
+        },
+        {
+            "Symbol": "CTI",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x8c18D6a985Ef69744b9d57248a45c0861874f244"
+        },
+        {
+            "Symbol": "CUDOS",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x817bbDbC3e8A1204f3691d14bB44992841e3dB35"
+        },
+        {
+            "Symbol": "CUSD",
+            "Exchange": "KuCoin",
+            "Blockchain": "Celo",
+            "Address": "0x765DE816845861e75A25fCA122bb6898B8B1282a"
+        },
+        {
+            "Symbol": "CVC",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x41e5560054824eA6B0732E656E3Ad64E20e94E45"
+        },
+        {
+            "Symbol": "CXO",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xb6EE9668771a79be7967ee29a63D4184F8097143"
+        },
+        {
+            "Symbol": "DATX",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xaBbBB6447B68ffD6141DA77C18c7B5876eD6c5ab"
+        },
+        {
+            "Symbol": "DEGO",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x88EF27e69108B2633F8E1C184CC37940A075cC02"
+        },
+        {
+            "Symbol": "DENT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x3597bfD533a99c9aa083587B074434E61Eb0A258"
+        },
+        {
+            "Symbol": "DFYN",
+            "Exchange": "KuCoin",
+            "Blockchain": "Polygon",
+            "Address": "0xC168E40227E4ebD8C1caE80F7a55a4F0e6D66C97"
+        },
+        {
+            "Symbol": "DMG",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xEd91879919B71bB6905f23af0A68d231EcF87b14"
+        },
+        {
+            "Symbol": "DODO",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x43Dfc4159D86F3A37A5A4B3D4580b888ad7d4DDd"
+        },
+        {
+            "Symbol": "DRGN",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x419c4dB4B9e25d6Db2AD9691ccb832C8D9fDA05E"
+        },
+        {
+            "Symbol": "DSLA",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x3aFfCCa64c2A6f4e3B6Bd9c64CD2C969EFd1ECBe"
+        },
+        {
+            "Symbol": "DX",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x973e52691176d36453868D9d86572788d27041A9"
+        },
+        {
+            "Symbol": "DYP",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x961C8c0B1aaD0c0b10a51FeF6a867E3091BCef17"
+        },
+        {
+            "Symbol": "EDN",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x89020f0D5C5AF4f3407Eb5Fe185416c457B0e93e"
+        },
+        {
+            "Symbol": "ELF",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e"
+        },
+        {
+            "Symbol": "FET",
+            "Exchange": "KuCoin",
+            "Blockchain": "Fetch",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "FLOW",
+            "Exchange": "KuCoin",
+            "Blockchain": "Flow",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "FRM",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xE5CAeF4Af8780E59Df925470b050Fb23C43CA68C"
+        },
+        {
+            "Symbol": "FRONT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xf8C3527CC04340b208C854E985240c02F7B7793f"
+        },
+        {
+            "Symbol": "FTM",
+            "Exchange": "KuCoin",
+            "Blockchain": "Fantom",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "GHST",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x3F382DbD960E3a9bbCeaE22651E88158d2791550"
+        },
+        {
+            "Symbol": "GLMR",
+            "Exchange": "KuCoin",
+            "Blockchain": "Moonbeam",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "GMB",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xA0008F510fE9eE696E7E320C9e5cbf61E27791Ee"
+        },
+        {
+            "Symbol": "KAT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x14da230d6726C50F759Bc1838717F8CE6373509C"
+        },
+        {
+            "Symbol": "KEY",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x4CC19356f2D37338b9802aa8E8fc58B0373296E7"
+        },
+        {
+            "Symbol": "KSM",
+            "Exchange": "KuCoin",
+            "Blockchain": "Kusama",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "LAYER",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x0fF6ffcFDa92c53F615a4A75D982f399C989366b"
+        },
+        {
+            "Symbol": "LON",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000095413afC295d19EDeb1Ad7B71c952"
+        },
+        {
+            "Symbol": "LRC",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xBBbbCA6A901c926F240b89EacB641d8Aec7AEafD"
+        },
+        {
+            "Symbol": "LTX",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xa393473d64d2F9F026B60b6Df7859A689715d092"
+        },
+        {
+            "Symbol": "LYM",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xc690F7C7FcfFA6a82b79faB7508c466FEfdfc8c5"
+        },
+        {
+            "Symbol": "LYXE",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xA8b919680258d369114910511cc87595aec0be6D"
+        },
+        {
+            "Symbol": "MAP",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x9E976F211daea0D652912AB99b0Dc21a7fD728e4"
+        },
+        {
+            "Symbol": "MASK",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x69af81e73A73B40adF4f3d4223Cd9b1ECE623074"
+        },
+        {
+            "Symbol": "METIS",
+            "Exchange": "KuCoin",
+            "Blockchain": "Metis",
+            "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
+        },
+        {
+            "Symbol": "MITX",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x4a527d8fc13C5203AB24BA0944F4Cb14658D1Db6"
+        },
+        {
+            "Symbol": "MOVR",
+            "Exchange": "KuCoin",
+            "Blockchain": "Moonriver",
+            "Address": "0x98878B06940aE243284CA214f92Bb71a2b032B8A"
+        },
+        {
+            "Symbol": "MTC",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x905E337c6c8645263D3521205Aa37bf4d034e745"
+        },
+        {
+            "Symbol": "MTV",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x6226e00bCAc68b0Fe55583B90A1d727C14fAB77f"
+        },
+        {
+            "Symbol": "MVP",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x8a77e40936BbC27e80E9a3F526368C967869c86D"
+        },
+        {
+            "Symbol": "NEAR",
+            "Exchange": "KuCoin",
+            "Blockchain": "NEAR",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "NEBL",
+            "Exchange": "KuCoin",
+            "Blockchain": "Neblio",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "NOIA",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xa8c8CfB141A3bB59FEA1E2ea6B79b5ECBCD7b6ca"
+        },
+        {
+            "Symbol": "OCEAN",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x967da4048cD07aB37855c090aAF366e4ce1b9F48"
+        },
+        {
+            "Symbol": "OPEN",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x9D86b1B2554ec410ecCFfBf111A6994910111340"
+        },
+        {
+            "Symbol": "ORAI",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x4c11249814f11b9346808179Cf06e71ac328c1b5"
+        },
+        {
+            "Symbol": "ORBS",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xff56Cc6b1E6dEd347aA0B7676C85AB0B3D08B0FA"
+        },
+        {
+            "Symbol": "ORN",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x0258F474786DdFd37ABCE6df6BBb1Dd5dfC4434a"
+        },
+        {
+            "Symbol": "PHA",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x6c5bA91642F10282b576d91922Ae6448C9d52f4E"
+        },
+        {
+            "Symbol": "PLAY",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xE477292f1B3268687A29376116B0ED27A9c76170"
+        },
+        {
+            "Symbol": "PLU",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xD8912C10681D8B21Fd3742244f44658dBA12264E"
+        },
+        {
+            "Symbol": "PMGT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xAFFCDd96531bCd66faED95FC61e443D08F79eFEf"
+        },
+        {
+            "Symbol": "POL",
+            "Exchange": "KuCoin",
+            "Blockchain": "Tron",
+            "Address": "TWcDDx1Q6QEoBrJi9qehtZnD4vcXXuVLer"
+        },
+        {
+            "Symbol": "POLK",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xD478161C952357F05f0292B56012Cd8457F1cfbF"
+        },
+        {
+            "Symbol": "POWR",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x595832F8FC6BF59c85C527fEC3740A1b7a361269"
+        },
+        {
+            "Symbol": "PPT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xd4fa1460F537bb9085d22C7bcCB5DD450Ef28e3a"
+        },
+        {
+            "Symbol": "REAP",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x1fc5EF0337AEA85C5f9198853a6E3A579a7A6987"
+        },
+        {
+            "Symbol": "REN",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x408e41876cCCDC0F92210600ef50372656052a38"
+        },
+        {
+            "Symbol": "REQ",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x8f8221aFbB33998d8584A2B05749bA73c37a938a"
+        },
+        {
+            "Symbol": "REVV",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x557B933a7C2c45672B610F8954A3deB39a51A8Ca"
+        },
+        {
+            "Symbol": "RFOX",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xa1d6Df714F91DeBF4e0802A542E13067f31b8262"
+        },
+        {
+            "Symbol": "RLY",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xf1f955016EcbCd7321c7266BccFB96c68ea5E49b"
+        },
+        {
+            "Symbol": "RNDR",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24"
+        },
+        {
+            "Symbol": "SAND",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x3845badAde8e6dFF049820680d1F14bD3903a5d0"
+        },
+        {
+            "Symbol": "SDN",
+            "Exchange": "KuCoin",
+            "Blockchain": "Shiden",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "SKEY",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x06A01a4d579479Dd5D884EBf61A31727A3d8D442"
+        },
+        {
+            "Symbol": "SNT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x744d70FDBE2Ba4CF95131626614a1763DF805B9E"
+        },
+        {
+            "Symbol": "SNTVT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x7865af71cf0b288b4E7F654f4F7851EB46a2B7F8"
+        },
+        {
+            "Symbol": "SOLVE",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x446C9033E7516D820cc9a2ce2d0B7328b579406F"
+        },
+        {
+            "Symbol": "SPI",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x9B02dD390a603Add5c07f9fd9175b7DABE8D63B7"
+        },
+        {
+            "Symbol": "STRONG",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x990f341946A3fdB507aE7e52d17851B87168017c"
+        },
+        {
+            "Symbol": "SUTER",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xAA2ce7Ae64066175E0B90497CE7d9c190c315DB4"
+        },
+        {
+            "Symbol": "SXP",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x8CE9137d39326AD0cD6491fb5CC0CbA0e089b6A9"
+        },
+        {
+            "Symbol": "SYLO",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xf293d23BF2CDc05411Ca0edDD588eb1977e8dcd4"
+        },
+        {
+            "Symbol": "TARA",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xF001937650bb4f62b57521824B2c20f5b91bEa05"
+        },
+        {
+            "Symbol": "TIME",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x485d17A6f1B8780392d53D64751824253011A260"
+        },
+        {
+            "Symbol": "TKY",
+            "Exchange": "KuCoin",
+            "Blockchain": "Neo",
+            "Address": "132947096727c84c7f9e076c90f08fec3bc17f18"
+        },
+        {
+            "Symbol": "TLOS",
+            "Exchange": "KuCoin",
+            "Blockchain": "Telos",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "TONE",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x2Ab6Bb8408ca3199B8Fa6C92d5b455F820Af03c4"
+        },
+        {
+            "Symbol": "TRAC",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xaA7a9CA87d3694B5755f213B5D04094b8d0F0A6F"
+        },
+        {
+            "Symbol": "TRIAS",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x3A856d4effa670C54585a5D523e96513e148e95d"
+        },
+        {
+            "Symbol": "UBX",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xF5B5eFc906513b4344EbAbCF47A04901f99F09f3"
+        },
+        {
+            "Symbol": "UBXT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x8564653879a18C560E7C0Ea0E084c516C62F5653"
+        },
+        {
+            "Symbol": "UDOO",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x12f649A9E821F90BB143089a6e56846945892ffB"
+        },
+        {
+            "Symbol": "UOS",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xD13c7342e1ef687C5ad21b27c2b65D772cAb5C8c"
+        },
+        {
+            "Symbol": "UQC",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x8806926Ab68EB5a7b909DcAf6FdBe5d93271D6e2"
+        },
+        {
+            "Symbol": "UST",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD"
+        },
+        {
+            "Symbol": "VIDT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xfeF4185594457050cC9c23980d301908FE057Bb1"
+        },
+        {
+            "Symbol": "VRA",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xF411903cbC70a74d22900a5DE66A2dda66507255"
+        },
+        {
+            "Symbol": "WBTC",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
+        },
+        {
+            "Symbol": "WOM",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xBd356a39BFf2cAda8E9248532DD879147221Cf76"
+        },
+        {
+            "Symbol": "XCUR",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xE1c7E30C42C24582888C758984f6e382096786bd"
+        },
+        {
+            "Symbol": "ZEE",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x2eDf094dB69d6Dcd487f1B3dB9febE2eeC0dd4c5"
+        },
+        {
+            "Symbol": "ZEN",
+            "Exchange": "KuCoin",
+            "Blockchain": "Horizen",
+            "Address": "0x0000000000000000000000000000000000000000"
+        }
+    ]
+}

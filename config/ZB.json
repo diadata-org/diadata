@@ -38,6 +38,12 @@
     },
     {
       "Exchange": "ZB",
+      "ForeignName": "aurorausdt",
+      "Ignore": false,
+      "Symbol": "AURORA"
+    },
+    {
+      "Exchange": "ZB",
       "ForeignName": "batbtc",
       "Ignore": false,
       "Symbol": "BAT"
@@ -224,6 +230,12 @@
     },
     {
       "Exchange": "ZB",
+      "ForeignName": "diausdt",
+      "Ignore": false,
+      "Symbol": "DIA"
+    },
+    {
+      "Exchange": "ZB",
       "ForeignName": "dogebtc",
       "Ignore": false,
       "Symbol": "DOGE"
@@ -311,6 +323,12 @@
       "ForeignName": "ethusdt",
       "Ignore": false,
       "Symbol": "ETH"
+    },
+    {
+      "Exchange": "ZB",
+      "ForeignName": "fetusdt",
+      "Ignore": false,
+      "Symbol": "FET"
     },
     {
       "Exchange": "ZB",
@@ -410,6 +428,12 @@
     },
     {
       "Exchange": "ZB",
+      "ForeignName": "ilvusdt",
+      "Ignore": false,
+      "Symbol": "ILV"
+    },
+    {
+      "Exchange": "ZB",
       "ForeignName": "inkbtc",
       "Ignore": false,
       "Symbol": "INK"
@@ -431,6 +455,12 @@
       "ForeignName": "kanusdt",
       "Ignore": false,
       "Symbol": "KAN"
+    },
+    {
+      "Exchange": "ZB",
+      "ForeignName": "kiltusdt",
+      "Ignore": false,
+      "Symbol": "KILT"
     },
     {
       "Exchange": "ZB",
@@ -566,6 +596,12 @@
     },
     {
       "Exchange": "ZB",
+      "ForeignName": "rariusdt",
+      "Ignore": false,
+      "Symbol": "RARI"
+    },
+    {
+      "Exchange": "ZB",
       "ForeignName": "rcnbtc",
       "Ignore": false,
       "Symbol": "RCN"
@@ -599,6 +635,12 @@
       "ForeignName": "sbtcusdt",
       "Ignore": false,
       "Symbol": "SBTC"
+    },
+    {
+      "Exchange": "ZB",
+      "ForeignName": "sdnusdt",
+      "Ignore": false,
+      "Symbol": "SDN"
     },
     {
       "Exchange": "ZB",

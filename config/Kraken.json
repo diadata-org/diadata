@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "Kraken",
+      "ForeignName": "MOVRUSD",
+      "Ignore": false,
+      "Symbol": "MOVR"
+    },
+    {
+      "Exchange": "Kraken",
       "ForeignName": "ADAETH",
       "Ignore": false,
       "Symbol": "ADA"
@@ -44,6 +50,12 @@
     },
     {
       "Exchange": "Kraken",
+      "ForeignName": "DAIUSD",
+      "Ignore": false,
+      "Symbol": "DAI"
+    },
+    {
+      "Exchange": "Kraken",
       "ForeignName": "DASHXBT",
       "Ignore": false,
       "Symbol": "DASH"
@@ -68,9 +80,9 @@
     },
     {
       "Exchange": "Kraken",
-      "ForeignName": "QTUMETH",
+      "ForeignName": "KILTUSD",
       "Ignore": false,
-      "Symbol": "QTUM"
+      "Symbol": "KILT"
     },
     {
       "Exchange": "Kraken",
@@ -86,15 +98,15 @@
     },
     {
       "Exchange": "Kraken",
-      "ForeignName": "QTUMXBT",
-      "Ignore": false,
-      "Symbol": "QTUM"
-    },
-    {
-      "Exchange": "Kraken",
       "ForeignName": "USDTZUSD",
       "Ignore": false,
       "Symbol": "USDT"
+    },
+    {
+      "Exchange": "Kraken",
+      "ForeignName": "USDCUSD",
+      "Ignore": false,
+      "Symbol": "USDC"
     },
     {
       "Exchange": "Kraken",
@@ -167,6 +179,18 @@
       "ForeignName": "XZECXXBT",
       "Ignore": false,
       "Symbol": "ZEC"
+    },
+    {
+      "Exchange": "Kraken",
+      "ForeignName": "ZEURZUSD",
+      "Ignore": false,
+      "Symbol": "EUR"
+    },
+    {
+      "Exchange": "Kraken",
+      "ForeignName": "ZGBPZUSD",
+      "Ignore": false,
+      "Symbol": "GBP"
     }
   ]
 }

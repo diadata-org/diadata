@@ -1,0 +1,10 @@
+{
+    "Coins": [
+        {
+            "Symbol": "CELO",
+            "ForeignName": "CELO-cUSD",
+            "Exchange": "Ubeswap",
+            "Ignore": false
+        }
+    ]
+}

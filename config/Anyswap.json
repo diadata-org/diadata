@@ -1,0 +1,10 @@
+{
+    "Coins": [
+        {
+            "Exchange": "Anyswap",
+            "ForeignName": "ETHETH",
+            "Ignore": false,
+            "Symbol": "ETH"
+        }
+    ]
+}

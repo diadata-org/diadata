@@ -2,74 +2,92 @@
   "Coins": [
     {
       "Exchange": "LBank",
+      "ForeignName": "METIS_USDT",
+      "Ignore": false,
+      "Symbol": "METIS"
+    },
+    {
+      "Exchange": "LBank",
       "ForeignName": "AAA_BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "AAA"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "AAC_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "AAC"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "AAC_QTUM",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "AAC"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "ABT_BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ABT"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "ABT_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ABT"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "ALI_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ALI"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "AMO_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "AMO"
     },
     {
       "Exchange": "LBank",
+      "ForeignName": "AXS_USDT",
+      "Ignore": false,
+      "Symbol": "AXS"
+    },
+    {
+      "Exchange": "LBank",
       "ForeignName": "BCH_BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BCH"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "BCH_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BCH"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "BCH_USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BCH"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "BNB_USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BNB"
     },
     {
       "Exchange": "LBank",
+      "ForeignName": "BOSON_USDT",
+      "Ignore": false,
+      "Symbol": "BOSON"
+    },
+    {
+      "Exchange": "LBank",
       "ForeignName": "BOT_QTUM",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BOT"
     },
     {
@@ -93,7 +111,7 @@
     {
       "Exchange": "LBank",
       "ForeignName": "BTO_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "BTO"
     },
     {
@@ -110,32 +128,38 @@
     },
     {
       "Exchange": "LBank",
+      "ForeignName": "BUSD_USDT",
+      "Ignore": false,
+      "Symbol": "BUSD"
+    },
+    {
+      "Exchange": "LBank",
       "ForeignName": "CDC_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "CDC"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "CHAT_QTUM",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "CHAT"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "CPX_BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "CPX"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "CPX_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "CPX"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "CS_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "CS"
     },
     {
@@ -147,43 +171,43 @@
     {
       "Exchange": "LBank",
       "ForeignName": "DAX_BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DAX"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "DAX_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DAX"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "DBC_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DBC"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "DCT_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DCT"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "DDD_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "DDD"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "EKO_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "EKO"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "ELA_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ELA"
     },
     {
@@ -225,56 +249,68 @@
     {
       "Exchange": "LBank",
       "ForeignName": "EXT_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "EXT"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "GUSD_BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "GUSD"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "HER_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "HER"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "HT_USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "HT"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "IHT_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "IHT"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "IIC_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "IIC"
     },
     {
       "Exchange": "LBank",
+      "ForeignName": "ILV_USDT",
+      "Ignore": false,
+      "Symbol": "ILV"
+    },
+    {
+      "Exchange": "LBank",
       "ForeignName": "INC_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "INC"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "INK_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "INK"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "INK_QTUM",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "INK"
+    },
+    {
+      "Exchange": "LBank",
+      "ForeignName": "KSM_USDT",
+      "Ignore": false,
+      "Symbol": "KSM"
     },
     {
       "Exchange": "LBank",
@@ -284,32 +320,38 @@
     },
     {
       "Exchange": "LBank",
+      "ForeignName": "LUNA_USDT",
+      "Ignore": false,
+      "Symbol": "LUNA"
+    },
+    {
+      "Exchange": "LBank",
       "ForeignName": "MAN_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MAN"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "MDA_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MDA"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "MITH_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MITH"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "MITH_QTUM",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "MITH"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "NAS_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "NAS"
     },
     {
@@ -327,49 +369,49 @@
     {
       "Exchange": "LBank",
       "ForeignName": "OCN_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "OCN"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "PCH_BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "PCH"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "PCH_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "PCH"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "PCH_USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "PCH"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "PNT_BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "PNT"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "PNT_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "PNT"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "PST_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "PST"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "PTT_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "PTT"
     },
     {
@@ -393,49 +435,49 @@
     {
       "Exchange": "LBank",
       "ForeignName": "SC_BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "SC"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "SKM_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "SKM"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "SSC_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "SSC"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "TAC_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "TAC"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "TEN_USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "TEN"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "TKY_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "TKY"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "TNS_BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "TNS"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "TNS_LBCN",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "TNS"
     },
     {
@@ -447,67 +489,73 @@
     {
       "Exchange": "LBank",
       "ForeignName": "UBEX_BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "UBEX"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "UBEX_USDT",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "UBEX"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "UIP_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "UIP"
     },
     {
       "Exchange": "LBank",
+      "ForeignName": "UPS_USDT",
+      "Ignore": false,
+      "Symbol": "UPS"
+    },
+    {
+      "Exchange": "LBank",
       "ForeignName": "USDT_LBCN",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "USDT"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "USDT_TUSD",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "USDT"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "UT_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "UT"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "VTHO_BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "VTHO"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "VTHO_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "VTHO"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "WICC_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "WICC"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "XWC_BTC",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XWC"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "XWC_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "XWC"
     },
     {
@@ -531,13 +579,13 @@
     {
       "Exchange": "LBank",
       "ForeignName": "ZPT_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ZPT"
     },
     {
       "Exchange": "LBank",
       "ForeignName": "ZSC_ETH",
-      "Ignore": true,
+      "Ignore": false,
       "Symbol": "ZSC"
     }
   ]

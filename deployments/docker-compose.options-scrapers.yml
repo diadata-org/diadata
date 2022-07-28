@@ -1,18 +1,58 @@
 version: '3.2'
 services:
 
-  deribitscraper:
+  optioncollector:
     build:
       context: ../../../..
-      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-deribitScraper
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_deribitscraper:latest
-    restart: "no"
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-optioncollector
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_optioncollector:latest
+    networks:
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
+
+  okexCollector:
+    depends_on: [optioncollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_optioncollector:latest
+    command: /bin/options -exchange=OKEx
     networks:
       - influxdb-network
       - redis-network
     logging:
       options:
         max-size: "50m"
+    environment:
+      - EXEC_MODE=production
+
+  deribitCollector:
+    depends_on: [optioncollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_optioncollector:latest
+    command: /bin/options -exchange=Deribit
+    networks:
+      - influxdb-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
+
+  opynCollector:
+    depends_on: [optioncollector]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_optioncollector:latest
+    command: /bin/options -exchange=OPYN
+    networks:
+      - influxdb-network
+      - redis-network
+    logging:
+      options:
+        max-size: "50m"
+    environment:
+      - EXEC_MODE=production
+
 
 networks:
   redis-network:
@@ -21,3 +61,4 @@ networks:
   influxdb-network:
     external:
         name: influxdb_influxdb-network
+      

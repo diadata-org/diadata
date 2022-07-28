@@ -1,0 +1,18 @@
+{
+  "Tokens": [
+    {
+      "Symbol": "WBTC",
+      "Exchange": "CoinBase",
+      "Blockchain": "Ethereum",
+      "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
+      
+    },
+    {
+      "Symbol": "AAVE",
+      "Exchange": "CoinBase",
+      "Blockchain": "Ethereum",
+      "Address": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9"
+      
+    }
+  ]
+}

@@ -2,17 +2,17 @@
 description: Develop applications and sources on top of DIA
 ---
 
-# Tutorials for Contributors
+# 🧑💻 Tutorials for Contributors
 
-{% page-ref page="write-your-own-defi-lending-rate-scraper.md" %}
+{% content-ref url="write-your-own-rate-scraper.md" %}
+[write-your-own-rate-scraper.md](write-your-own-rate-scraper.md)
+{% endcontent-ref %}
 
-{% page-ref page="blockchainscraper.md" %}
+{% content-ref url="blockchainscraper.md" %}
+[blockchainscraper.md](blockchainscraper.md)
+{% endcontent-ref %}
 
-{% page-ref page="write-your-own-rate-scraper.md" %}
-
-{% page-ref page="exchangescrapers.md" %}
-
-{% page-ref page="write-your-own-crypto-farming-scraper.md" %}
-
-
+{% content-ref url="exchangescrapers.md" %}
+[exchangescrapers.md](exchangescrapers.md)
+{% endcontent-ref %}
 

@@ -1,0 +1,199 @@
+{
+  "Tokens": [
+    {
+      "Symbol": "ARGO",
+      "Address": "0x28Cca76f6e8eC81e4550ecd761f899110b060E97",
+      "Blockchain": "Ethereum"
+    },
+    {
+      "Symbol": "ASTR",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "Astar"
+    },
+    {
+      "Symbol": "AUSD",
+      "Address": "Token:AUSD",
+      "Blockchain": "Acala"
+    },
+    {
+      "Symbol": "BCT",
+      "Address": "0x2F800Db0fdb5223b3C3f354886d907A671414A7F",
+      "Blockchain": "Polygon"
+    },
+    {
+      "Symbol": "BNB",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "BinanceSmartChain"
+    },
+    {
+      "Symbol": "BUSD",
+      "Address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+      "Blockchain": "BinanceSmartChain"
+    },
+    {
+      "Symbol": "BTC",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "Bitcoin"
+    },
+    {
+      "Symbol": "CELO",
+      "Address": "0x471EcE3750Da237f93B8E339c536989b8978a438",
+      "Blockchain": "Celo"
+    },
+    {
+      "Symbol": "DAFI",
+      "Address": "0xFc979087305A826c2B2a0056cFAbA50aad3E6439",
+      "Blockchain": "Ethereum"
+    },
+    {
+      "Symbol": "DAI",
+      "Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "Blockchain": "Ethereum"
+    },
+    {
+      "Symbol": "DFYN",
+      "Address": "0xC168E40227E4ebD8C1caE80F7a55a4F0e6D66C97",
+      "Blockchain": "Polygon"
+    },
+    {
+      "Symbol": "DOT",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "Polkadot"
+    },
+    {
+      "Symbol": "DOWS",
+      "Address": "0x661Ab0Ed68000491d98C796146bcF28c20d7c559",
+      "Blockchain": "Ethereum"
+    },
+    {
+      "Symbol": "ETH",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "Ethereum"
+    },
+    {
+      "Symbol": "FHM",
+      "Address": "0xfa1FBb8Ef55A4855E5688C0eE13aC3f202486286",
+      "Blockchain": "Fantom"
+    },
+    {
+      "Symbol": "FHM",
+      "Address": "0xfa1FBb8Ef55A4855E5688C0eE13aC3f202486286",
+      "Blockchain": "Moonriver"
+    },
+    {
+      "Symbol": "FUSE",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "Fuse"
+    },
+    {
+      "Symbol": "GLMR",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "Moonbeam"
+    },
+    {
+      "Symbol": "KSM",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "Kusama"
+    },
+    {
+      "Symbol": "LUNA",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "Terra"
+    },
+    {
+      "Symbol": "METIS",
+      "Address": "0x9E32b13ce7f2E80A01932B42553652E053D6ed8e",
+      "Blockchain": "Ethereum"
+    },
+    {
+      "Symbol": "METIS",
+      "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
+      "Blockchain": "Metis"
+    },
+    {
+      "Symbol": "MOBI",
+      "Address": "0x73a210637f6F6B7005512677Ba6B3C96bb4AA44B",
+      "Blockchain": "Celo"
+    },
+    {
+      "Symbol": "NEAR",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "NEAR"
+    },
+    {
+      "Symbol": "NETT",
+      "Address": "0x90fE084F877C65e1b577c7b2eA64B8D8dd1AB278",
+      "Blockchain": "Metis"
+    },
+    {
+      "Symbol": "NFTY",
+      "Address": "0x5774B2fc3e91aF89f89141EacF76545e74265982",
+      "Blockchain": "BinanceSmartChain"
+    },
+    {
+      "Symbol": "SDN",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "Shiden"
+    },
+    {
+      "Symbol": "SOLAR",
+      "Address": "0x6bD193Ee6D2104F14F94E2cA6efefae561A4334B",
+      "Blockchain": "Moonriver"
+    },
+    {
+      "Symbol": "TETHYS",
+      "Address": "0x69fdb77064ec5c84FA2F21072973eB28441F43F3",
+      "Blockchain": "Metis"
+    },
+    {
+      "Symbol": "TOMB",
+      "Address": "0x6c021Ae822BEa943b2E66552bDe1D2696a53fbB7",
+      "Blockchain": "Fantom"
+    },
+    {
+      "Symbol": "UBE",
+      "Address": "0x00Be915B9dCf56a3CBE739D9B9c202ca692409EC",
+      "Blockchain": "Celo"
+    },
+    {
+      "Symbol": "USDB",
+      "Address": "0x6Fc9383486c163fA48becdEC79d6058f984f62cA",
+      "Blockchain": "Fantom"
+    },
+    {
+      "Symbol": "USDC",
+      "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "Blockchain": "Ethereum"
+    },
+    {
+      "Symbol": "USDT",
+      "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "Blockchain": "Ethereum"
+    },
+    {
+      "Symbol": "WBTC",
+      "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      "Blockchain": "Ethereum"
+    },
+    {
+      "Symbol": "WEVMOS",
+      "Address": "0xD4949664cD82660AaE99bEdc034a0deA8A0bd517",
+      "Blockchain": "Evmos"
+    },
+    {
+      "Symbol": "WMOVR",
+      "Address": "0x98878B06940aE243284CA214f92Bb71a2b032B8A",
+      "Blockchain": "Moonriver"
+    },
+    {
+      "Symbol": "WOW",
+      "Address": "0x4DA996C5Fe84755C80e108cf96Fe705174c5e36A",
+      "Blockchain": "BinanceSmartChain"
+    },
+    {
+      "Symbol": "WUST",
+      "Address": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD",
+      "Blockchain": "Ethereum"
+    }
+  ]
+}

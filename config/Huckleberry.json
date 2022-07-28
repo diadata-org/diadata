@@ -1,0 +1,10 @@
+{
+    "Coins": [
+        {
+            "Symbol": "SOLAR",
+            "ForeignName": "SOLAR-MOVR",
+            "Exchange": "Huckleberry",
+            "Ignore": false
+        }
+    ]
+}

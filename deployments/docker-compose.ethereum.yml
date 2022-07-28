@@ -1,12 +1,13 @@
 version: '3.2'
 
 services:
+
   geth:
     image:
-      ethereum/client-go:stable
+      ethereum/client-go:v1.10.13
     volumes:
       - /home/srv/geth:/root/.ethereum
-    command: --rpcvhosts geth --rpc --rpcaddr "0.0.0.0" --cache 1024 --rpc --syncmode "fast" --ws --ws.addr "0.0.0.0" --ws.origins "*" --ws.port 8546
+    command: --http.vhosts geth --http --http.addr "0.0.0.0" --cache 1024 --syncmode "fast" --ws --ws.addr "0.0.0.0" --ws.origins "*" --ws.port 8546 --http.api admin,db,eth,debug,miner,net,shh,txpool,personal,web3 --txpool.globalqueue 4096 --rpc.allow-unprotected-txs=true --txlookuplimit 0
     ports: 
       - mode: host
         target: 8545
@@ -17,156 +18,8 @@ services:
     logging:
       options:
         max-size: "50m"
-    networks:
-      - scrapers-network
     deploy:
       mode: global
       restart_policy:
         delay: 2s
         window: 20s
-
-  binance-token:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-binance-token
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_binance-token
-    networks:
-      - scrapers-network
-    depends_on:
-      - geth
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - api_diadata
-
-  oracleservice:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-oracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_oracleservice
-    networks:
-      - scrapers-network
-    command: --deployedContract=0xD47FDf51D61c100C447E2D4747c7126F19fa23Ef
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys
-
-  diacoingeckooracleservice:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaCoingeckoOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diacoingeckooracleservice
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x07E4120dD7411a49e091a20FA0be33a183C35d60 --numCoins=100
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys
-
-  diacoinmarketcaporacleservice:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaCoinmarketcapOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diacoinmarketcaporacleservice
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x48760771feda4be44a6ed3bff13ecbc445159b1d --numCoins=50
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys
-      - Coinmarketcap-API.key
-
-  diascifioracleservice:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-diaScifiOracleService
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_diascifioracleservice
-    networks:
-      - scrapers-network
-    command: --deployedContract=0x814712cc9fa606a4b372b87cd27775959e052d9a
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - oracle_keys
-
-  eth:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-eth
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_eth
-    networks:
-      - scrapers-network
-    depends_on:
-      - geth
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - api_diadata
-
-  maker-token:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-maker-token
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_maker-token
-    networks:
-      - scrapers-network
-    depends_on:
-      - geth
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - api_diadata
-
-  xcel-token:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-xcel-token
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_xcel-token
-    networks:
-      - scrapers-network
-    depends_on:
-      - geth
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - api_diadata
-
-  aragon-token:
-    build:
-      context: $GOPATH
-      dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-aragon-token
-    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_aragon-token
-    networks:
-      - scrapers-network
-    depends_on:
-      - geth
-    logging:
-      options:
-        max-size: "50m"
-    secrets:
-      - api_diadata
-
-secrets:
-  api_diadata:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/api_diadata.json
-  oracle_keys:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/oracle_keys.txt
-  Coinmarketcap-API.key:
-    file: $GOPATH/src/github.com/diadata-org/diadata/secrets/Coinmarketcap-API.key
-
-volumes:
-  bitcoin:
-
-networks:
-  scrapers-network:

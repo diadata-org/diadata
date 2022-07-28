@@ -1,0 +1,38 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  namespace: tekton-pipelines
+  name: deploy-application
+spec:
+  inputs:
+    resources:
+      - name: git-source
+        type: git
+    params:
+      - name: path-to-context
+        description: The path to the build context, used by Kaniko - within the workspace
+        default: .
+      - name: image-url
+        description: value should be like - us.icr.io/test_namespace/builtImageApp
+      - name: image-tag
+        description: Tag to apply to the built image
+        default: "latest"
+      - name: path-to-yaml-file
+        description: The path to the yaml file to deploy within the git source
+        default: deploy.yaml
+  steps:
+    - name: update-yaml
+      image: alpine
+      command: ["sed"]
+      args:
+        - "-i"
+        - "-e"
+        - "s;IMAGE;$(inputs.params.image-url):$(inputs.params.image-tag);g"
+        - "$(inputs.resources.git-source.path)/$(inputs.params.path-to-context)/$(inputs.params.path-to-yaml-file)"
+    - name: deploy-app
+      image: lachlanevenson/k8s-kubectl
+      command: ["kubectl"]
+      args:
+        - "apply"
+        - "-f"
+        - "$(inputs.resources.git-source.path)/$(inputs.params.path-to-context)/$(inputs.params.path-to-yaml-file)"

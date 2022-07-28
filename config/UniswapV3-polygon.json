@@ -1,0 +1,10 @@
+{
+    "Coins": [
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-ETH",
+            "Exchange": "UniswapV3-Polygon",
+            "Ignore": false
+        }
+    ]
+}

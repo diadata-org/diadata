@@ -7,13 +7,13 @@ import (
 )
 
 // SetDefiProtocol writes @protocol into redis
-func (db *DB) SetDefiProtocol(protocol dia.DefiProtocol) error {
+func (datastore *DB) SetDefiProtocol(protocol dia.DefiProtocol) error {
 	keyProtocol := "dia_DefiProtocol_" + protocol.Name
 	mProtocol, err := json.Marshal(protocol)
 	if err != nil {
 		return err
 	}
-	err = db.redisClient.Set(keyProtocol, mProtocol, TimeOutRedis).Err()
+	err = datastore.redisClient.Set(keyProtocol, mProtocol, TimeOutRedis).Err()
 	if err != nil {
 		return err
 	}
@@ -22,10 +22,10 @@ func (db *DB) SetDefiProtocol(protocol dia.DefiProtocol) error {
 }
 
 // GetDefiProtocol returns the die protocol struct by name
-func (db *DB) GetDefiProtocol(name string) (dia.DefiProtocol, error) {
+func (datastore *DB) GetDefiProtocol(name string) (dia.DefiProtocol, error) {
 	protocol := dia.DefiProtocol{}
 	key := "dia_DefiProtocol_" + name
-	err := db.redisClient.Get(key).Scan(&protocol)
+	err := datastore.redisClient.Get(key).Scan(&protocol)
 	if err != nil {
 		return protocol, err
 	}
@@ -33,13 +33,13 @@ func (db *DB) GetDefiProtocol(name string) (dia.DefiProtocol, error) {
 }
 
 // GetDefiProtocols returns a slice of all available DeFi protocols
-func (db *DB) GetDefiProtocols() ([]dia.DefiProtocol, error) {
+func (datastore *DB) GetDefiProtocols() ([]dia.DefiProtocol, error) {
 	allProtocols := []dia.DefiProtocol{}
 	pattern := "dia_DefiProtocol_*"
-	allKeys := db.redisClient.Keys(pattern).Val()
+	allKeys := datastore.redisClient.Keys(pattern).Val()
 	for _, key := range allKeys {
 		protocol := dia.DefiProtocol{}
-		err := db.redisClient.Get(key).Scan(&protocol)
+		err := datastore.redisClient.Get(key).Scan(&protocol)
 		if err != nil {
 			return []dia.DefiProtocol{}, err
 		}

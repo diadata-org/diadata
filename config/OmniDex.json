@@ -1,0 +1,10 @@
+{
+    "Coins": [
+        {
+            "Symbol": "WTLOS",
+            "ForeignName": "WTLOS-WETH",
+            "Exchange": "OmniDex",
+            "Ignore": false
+        }
+    ]
+}

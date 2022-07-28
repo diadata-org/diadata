@@ -5,8 +5,13 @@ import (
 	"strings"
 )
 
-// BaseToken returns the base token of a trading pair
-func (t *Trade) BaseToken() string {
+// GetBaseToken returns the base token of a trading pair
+// TO DO (20/11/2020): This method is no longer needed once we switch to new Token/Trade structs
+func (t *Trade) GetBaseToken() string {
+
+	if t.BaseToken.Symbol != "" {
+		return t.BaseToken.Symbol
+	}
 
 	pair := strings.ToUpper(t.Pair)
 	if len(pair) > 3 {
@@ -26,20 +31,20 @@ func (t *Trade) BaseToken() string {
 		}
 	}
 
-	second := strings.TrimPrefix(pair, t.Symbol+"_")
+	second := strings.TrimPrefix(pair, strings.ToUpper(t.Symbol)+"_")
 	if second != pair {
 		return second
 	}
-	second = strings.TrimPrefix(pair, t.Symbol+"-")
+	second = strings.TrimPrefix(pair, strings.ToUpper(t.Symbol)+"-")
 	if second != pair {
 		return second
 	}
-	second = strings.TrimPrefix(pair, t.Symbol+"/")
+	second = strings.TrimPrefix(pair, strings.ToUpper(t.Symbol)+"/")
 	if second != pair {
 		return second
 	}
 
-	return strings.TrimPrefix(pair, t.Symbol)
+	return strings.TrimPrefix(pair, strings.ToUpper(t.Symbol))
 }
 
 // SwapTrade swaps base and quote token of a trade and inverts the price accordingly
@@ -47,11 +52,10 @@ func SwapTrade(t Trade) (Trade, error) {
 	if t.Price == 0 {
 		return t, errors.New("zero price. cannot swap trade")
 	}
-	symbol := t.Symbol
-	baseToken := (&t).BaseToken()
-	t.Symbol = baseToken
-	t.Pair = baseToken + "-" + symbol
-	t.Volume = t.Price * t.Volume
+	t.BaseToken, t.QuoteToken = t.QuoteToken, t.BaseToken
+	t.Symbol = t.QuoteToken.Symbol
+	t.Pair = t.QuoteToken.Symbol + "-" + t.BaseToken.Symbol
+	t.Volume = -t.Price * t.Volume
 	t.Price = 1 / t.Price
 
 	return t, nil

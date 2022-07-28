@@ -1,0 +1,136 @@
+{
+    "Tokens": [
+        {
+            "Symbol": "ADA",
+            "Exchange": "BitMex",
+            "Blockchain": "Cardano",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "AVAX",
+            "Exchange": "BitMex",
+            "Blockchain": "Avalanche",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "AXS",
+            "Exchange": "BitMex",
+            "Blockchain": "Ethereum",
+            "Address": "0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b"
+        },
+        {
+            "Symbol": "BCH",
+            "Exchange": "BitMex",
+            "Blockchain": "BitcoinCash",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "BNB",
+            "Exchange": "BitMex",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "DOGE",
+            "Exchange": "BitMex",
+            "Blockchain": "Dogechain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "DOT",
+            "Exchange": "BitMex",
+            "Blockchain": "Polkadot",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "EOS",
+            "Exchange": "BitMex",
+            "Blockchain": "EOS.IO",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "ETH",
+            "Exchange": "BitMex",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "EUR",
+            "Exchange": "BitMex",
+            "Blockchain": "Fiat",
+            "Address": "978"
+        },
+        {
+            "Symbol": "FTM",
+            "Exchange": "BitMex",
+            "Blockchain": "Fantom",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "LINK",
+            "Exchange": "BitMex",
+            "Blockchain": "Ethereum",
+            "Address": "0x514910771AF9Ca656af840dff83E8264EcF986CA"
+        },
+        {
+            "Symbol": "LTC",
+            "Exchange": "BitMex",
+            "Blockchain": "Litecoin",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "LUNA",
+            "Exchange": "BitMex",
+            "Blockchain": "Terra",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "MANA",
+            "Exchange": "BitMex",
+            "Blockchain": "Ethereum",
+            "Address": "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942"
+        },
+        {
+            "Symbol": "MATIC",
+            "Exchange": "BitMex",
+            "Blockchain": "Polygon",
+            "Address": "0x0000000000000000000000000000000000001010"
+        },
+        {
+            "Symbol": "SAND",
+            "Exchange": "BitMex",
+            "Blockchain": "Ethereum",
+            "Address": "0x3845badAde8e6dFF049820680d1F14bD3903a5d0"
+        },
+        {
+            "Symbol": "SOL",
+            "Exchange": "BitMex",
+            "Blockchain": "Solana",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "USDT",
+            "Exchange": "BitMex",
+            "Blockchain": "Ethereum",
+            "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+        },
+        {
+            "Symbol": "USD",
+            "Exchange": "BitMex",
+            "Blockchain": "Fiat",
+            "Address": "840"
+        },
+        {
+            "Symbol": "XBT",
+            "Exchange": "BitMex",
+            "Blockchain": "Bitcoin",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "XRP",
+            "Exchange": "BitMex",
+            "Blockchain": "Ripple",
+            "Address": "0x0000000000000000000000000000000000000000"
+        }
+    ]
+}

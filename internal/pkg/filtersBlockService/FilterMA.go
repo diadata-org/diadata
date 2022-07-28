@@ -1,6 +1,7 @@
 package filters
 
 import (
+	"math"
 	"strconv"
 	"time"
 
@@ -9,111 +10,149 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// FilterMA is the struct for a moving average filter implementing
+// the Filter interface.
 type FilterMA struct {
-	symbol         string
-	exchange       string
-	currentTime    time.Time
-	previousPrices []float64
-	lastTrade      *dia.Trade
-	param          int
-	value          float64
-	modified       bool
+	asset       dia.Asset
+	exchange    string
+	currentTime time.Time
+	prices      []float64
+	volumes     []float64
+	lastTrade   dia.Trade
+	memory      int
+	value       float64
+	modified    bool
+	filterName  string
+	max         float64
+	min         float64
 }
 
-func NewFilterMA(symbol string, exchange string, currentTime time.Time, param int) *FilterMA {
-	s := &FilterMA{
-		symbol:         symbol,
-		exchange:       exchange,
-		previousPrices: []float64{},
-		currentTime:    currentTime,
-		param:          param,
+// NewFilterMA returns a moving average filter.
+// @currentTime is the begin time of the filtersBlock.
+func NewFilterMA(asset dia.Asset, exchange string, currentTime time.Time, memory int) *FilterMA {
+	filter := &FilterMA{
+		asset:       asset,
+		exchange:    exchange,
+		prices:      []float64{},
+		volumes:     []float64{},
+		currentTime: currentTime,
+		memory:      memory,
+		filterName:  "MA" + strconv.Itoa(memory),
+		min:         -1,
 	}
-	return s
-}
-func (s *FilterMA) finalCompute(t time.Time) float64 {
-	if s.lastTrade == nil {
-		return 0.0
-	} else {
-		s.fill(t, s.lastTrade.EstimatedUSDPrice)
-	}
-
-	var total float64 = 0
-	for _, v := range s.previousPrices {
-		total += v
-	}
-	div := s.param
-	if len(s.previousPrices) > 0 && len(s.previousPrices) < s.param {
-		div = len(s.previousPrices)
-	}
-	s.value = total / float64(div)
-	return s.value
+	return filter
 }
 
-func (s *FilterMA) filterPointForBlock() *dia.FilterPoint {
-	if s.exchange != "" {
-		return nil
-	} else {
-		return &dia.FilterPoint{
-			Symbol: s.symbol,
-			Value:  s.value,
-			Name:   "MA" + strconv.Itoa(s.param),
-			Time:   s.currentTime,
+func (filter *FilterMA) Compute(trade dia.Trade) {
+	filter.compute(trade)
+}
+
+func (filter *FilterMA) compute(trade dia.Trade) {
+	filter.modified = true
+	if filter.lastTrade != (dia.Trade{}) {
+		if trade.Time.Before(filter.currentTime) {
+			log.Errorln("FilterMA: Ignoring Trade out of order ", filter.currentTime, trade.Time)
+			return
 		}
 	}
+	filter.fill(trade)
+	filter.lastTrade = trade
 }
 
-func (s *FilterMA) fill(t time.Time, price float64) {
-	diff := int(t.Sub(s.currentTime).Seconds())
+// fill fills up the 120 seconds slots with trades.
+func (filter *FilterMA) fill(trade dia.Trade) {
+	// filter.currentTime is the timestamp of the last filled trade.
+	// It is initialized with begin time of tradesblock upon creation of the filter.
+	diff := int(trade.Time.Sub(filter.currentTime).Seconds())
 	if diff > 1 {
 		for diff > 1 {
-			s.previousPrices = append([]float64{price}, s.previousPrices...)
+			filter.processDataPoint(trade)
 			diff--
 		}
 	} else {
 		if diff == 0.0 {
-			if len(s.previousPrices) >= 1 {
-				s.previousPrices = s.previousPrices[1:]
+			if len(filter.prices) >= 1 {
+				/// Remove latest data point and update with newer
+				filter.prices = filter.prices[1:]
+				filter.volumes = filter.volumes[1:]
 			}
 		}
-		s.previousPrices = append([]float64{price}, s.previousPrices...)
+		filter.processDataPoint(trade)
 	}
-
-	if len(s.previousPrices) > s.param {
-		s.previousPrices = s.previousPrices[0:s.param]
-	}
-	s.currentTime = t
+	filter.currentTime = trade.Time
 }
 
-func (s *FilterMA) compute(trade dia.Trade) {
-	s.modified = true
-	if s.lastTrade != nil {
-		if trade.Time.Before(s.currentTime) {
-			log.Errorln("FilterMA: Ignoring Trade out of order ", s.currentTime, trade.Time)
-			return
-		} else {
-			s.fill(trade.Time, s.lastTrade.EstimatedUSDPrice)
+func (filter *FilterMA) processDataPoint(trade dia.Trade) {
+	/// first remove extra value from buffer if already full
+	if len(filter.prices) >= filter.memory {
+		filter.prices = filter.prices[0 : filter.memory-1]
+		filter.volumes = filter.volumes[0 : filter.memory-1]
+	}
+	filter.prices = append([]float64{trade.EstimatedUSDPrice}, filter.prices...)
+	filter.volumes = append([]float64{trade.Volume}, filter.volumes...)
+}
+
+func (filter *FilterMA) FinalCompute(t time.Time) float64 {
+	return filter.finalCompute(t)
+}
+
+func (filter *FilterMA) finalCompute(t time.Time) float64 {
+	if filter.lastTrade == (dia.Trade{}) {
+		return 0.0
+	}
+	filter.fill(filter.lastTrade)
+	var totalVolume float64
+	var totalPrice float64
+	for priceIndex, price := range filter.prices {
+		totalPrice += price * math.Abs(filter.volumes[priceIndex])
+		totalVolume += math.Abs(filter.volumes[priceIndex])
+	}
+	if filter.asset.Symbol == "USDT" || filter.asset.Symbol == "USDC" {
+		var nonweightedPrice float64
+		for _, price := range filter.prices {
+			nonweightedPrice += price
 		}
 	}
-	s.fill(trade.Time, trade.EstimatedUSDPrice)
-	s.lastTrade = &trade
+	if totalVolume > 0 {
+		filter.value = totalPrice / totalVolume
+
+	}
+	if len(filter.prices) > 0 && len(filter.volumes) > 0 {
+		filter.prices = []float64{filter.lastTrade.EstimatedUSDPrice}
+		filter.volumes = []float64{filter.lastTrade.Volume}
+	}
+	return filter.value
 }
 
-func (s *FilterMA) save(ds models.Datastore) error {
-	log.Infof("save called on symbol %s on exchange %s", s.symbol, s.exchange)
-	if s.modified {
-		s.modified = false
-		err := ds.SetPriceZSET(s.symbol, s.exchange, s.value, s.currentTime)
+func (filter *FilterMA) FilterPointForBlock() *dia.FilterPoint {
+	return &dia.FilterPoint{
+		Asset: filter.asset,
+		Value: filter.value,
+		Name:  "MA" + strconv.Itoa(filter.memory),
+		Time:  filter.currentTime,
+	}
+}
+
+func (filter *FilterMA) filterPointForBlock() *dia.FilterPoint {
+	if filter.exchange != "" || filter.filterName != dia.FilterKing {
+		return nil
+	}
+	return &dia.FilterPoint{
+		Asset: filter.asset,
+		Value: filter.value,
+		Name:  "MA" + strconv.Itoa(filter.memory),
+		Time:  filter.currentTime,
+	}
+}
+
+func (filter *FilterMA) save(ds models.Datastore) error {
+	if filter.modified {
+		filter.modified = false
+		err := ds.SetFilter(filter.filterName, filter.asset, filter.exchange, filter.value, filter.currentTime)
 		if err != nil {
 			log.Errorln("FilterMA: Error:", err)
 		}
-		if s.exchange == "" {
-			err = ds.SetPriceUSD(s.symbol, s.value)
-			if err != nil {
-				log.Errorln("FilterMA: Error:", err)
-			}
-		}
 		return err
-	} else {
-		return nil
 	}
+	return nil
 }

@@ -1,4 +1,4 @@
-# Security Bounty Program
+# 🐛 Security Bounty Program
 
 If you report security issues within our backend, smart contracts, and operations, we offer a security bounty program. To be eligible for a bounty, be sure to follow these requirements:
 
@@ -8,11 +8,10 @@ If you report security issues within our backend, smart contracts, and operation
 
 We will grade severity of reported issues and use the CVSS scale as a guideline. The ultimate decision about the severity we consider to be achieved remains in our discretion.
 
-| Severity | Payout |
-| :--- | :--- |
-| Low | 100-250 USDC |
-| Medium | 500 USDC |
-| High | 750 USDC |
+| Severity | Payout           |
+| -------- | ---------------- |
+| Low      | 1000-2500 USDC   |
+| Medium   | 5000 USDC        |
+| High     | 40000-75000 USDC |
 
 Payouts will be conducted in an established ERC20 stablecoin like USDC. Please make sure to be able to receive ERC20 tokens.
-

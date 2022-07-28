@@ -1,0 +1,10 @@
+{
+    "Coins": [
+        {
+            "Symbol": "USDC.e",
+            "ForeignName": "USDC.e-AVAX",
+            "Exchange": "TraderJoe",
+            "Ignore": false
+        }
+    ]
+}

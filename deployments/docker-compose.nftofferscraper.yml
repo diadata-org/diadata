@@ -1,0 +1,55 @@
+version: '3.2'
+services:
+
+  genericnftofferscraper:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericNFTOfferScraper
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericnftofferscraper:latest
+    restart: "no"
+    networks:
+      - postgres-network
+    secrets:
+      - postgres_credentials
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
+  cryptokittiesscraper:
+    depends_on: [genericnftofferscraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericnftofferscraper:latest
+    command: /bin/nftOffer-scrapers -nftclass=CryptoKitties
+    networks:
+      - postgres-network
+    secrets:
+      - postgres_credentials
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
+  cryptopunksscraper:
+    depends_on: [genericnftofferscraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericnftofferscraper:latest
+    command: /bin/nftOffer-scrapers -nftclass=CryptoPunks
+    networks:
+      - postgres-network
+    secrets:
+      - postgres_credentials
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
+secrets:
+  postgres_credentials:
+    file: ../secrets/postgres_credentials.txt
+
+networks:
+  postgres-network:
+    external:
+        name: postgres_postgres-network

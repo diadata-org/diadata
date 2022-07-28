@@ -1,0 +1,324 @@
+{
+    "NFTClasses": [
+        {
+            "Address": "0x4813c06eb9919db20634c431565d6b88f35501ff",
+            "Symbol": "rlesubs",
+            "Name": "Redlioneye Gazette Subscriptions",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xca008c0bf62c0421b958de86b3d45c86ecae43f1",
+            "Symbol": "DHC",
+            "Name": "DeltaHub Capital",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x929167191ca41a4753eda357bb6e5ad6f15fb89b",
+            "Symbol": "Trism",
+            "Name": "Trism Originals",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x362219d2a3a5491100d673fc899dde507c5d5534",
+            "Symbol": "PTE",
+            "Name": "Play to Earn Online Magazine",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x121a03f7b2427cc5546f4c9bf6f2dd43a36b3d01",
+            "Symbol": "INPOKE",
+            "Name": "infectedpokémon",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x53aa007decca0469576bdf5f0385c3d0eaa33a9b",
+            "Symbol": "Fomo Toys",
+            "Name": "Fomo Toys",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xccd4b56d975620a7bef48fb5b8b00e28be668780",
+            "Symbol": "PRAD2020",
+            "Name": "Pranksy Advent 2020",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x35368c20f70766d528afa8c91b1b47e2735cc7fc",
+            "Symbol": "",
+            "Name": "",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xf4680c917a873e2dd6ead72f9f433e74eb9c623c",
+            "Symbol": "TWYBGS",
+            "Name": "Twerky Bags",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xb32979486938aa9694bfc898f35dbed459f44424",
+            "Symbol": "NYAN",
+            "Name": "Nyan Cat",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xe3782b8688ad2b0d5ba42842d400f7adf310f88d",
+            "Symbol": "BCCG",
+            "Name": "BCCG",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xbccaa7acb552a2c7eb27c7eb77c2cc99580735b9",
+            "Symbol": "",
+            "Name": "",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x5c3daa7a35d7def65bfd9e99120d5fa07f63f555",
+            "Symbol": "TOYS",
+            "Name": "HEX TOYS",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xf2407e08c0b9948800d6675e7d549b2d7761443b",
+            "Symbol": "TUAC",
+            "Name": "The UA Collaboration.",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xace942e89a84c50294832ed7b24cf2db42e95127",
+            "Symbol": "",
+            "Name": "Unidentified contract",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x7920f98733b912772f89dbdd95e221bb7e6d058f",
+            "Symbol": "RLE",
+            "Name": "REDLIONEYE GAZETTE",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x4eb3a5f2458bdf2edd180e5af1cb4b71872539e6",
+            "Symbol": "Crypto ",
+            "Name": "Crypto card ",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x4392ae0ba1e06cf8d0b7f098fec016dedd85b519",
+            "Symbol": "$mishegas",
+            "Name": "Punks, Mavericks and Mishegas",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x729cd6226751279030757f61b2cac4798c949fa1",
+            "Symbol": "Lux Cards",
+            "Name": "Lux Cards",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xf4e631fcff6d79c6c343a3da2d6b4424a3f33c2b",
+            "Symbol": "KLC1F",
+            "Name": "Kings of Leon Cherrysmoke #1 Factory",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x61097cc82c503ff2d95ce11edd93e0f0cab30c59",
+            "Symbol": "DUCKSONG",
+            "Name": "Pranksy Presents: The Duck Song",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xf7ea8b80bc01986f32f2cb8f92d024b0dae3fa55",
+            "Symbol": "Sentinels",
+            "Name": "Sentinels",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x2db7417c7ae0f9e7cdc3f9344a3dacf1f394656a",
+            "Symbol": "COLL NFT",
+            "Name": "COLL NFT Ed 1",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x6fc8002029093c77e85252b3100140908d7aac85",
+            "Symbol": "KLC2F",
+            "Name": "Kings of Leon Cherrysmoke #2 Factory",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x5ceb7e1bd70690667b19bd2832ca85aef221a79a",
+            "Symbol": "EMC",
+            "Name": "ETH-MEN Comics",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x5351105753bdbc3baa908a0c04f1468535749c3d",
+            "Symbol": "RUDE",
+            "Name": "RUDE BOY'S",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x5108d8c8efbd392ec093701d6215f580380d6d18",
+            "Symbol": "P4l",
+            "Name": "P4L",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x492c0d0a51cbf9dc225a485f9c722413615fc570",
+            "Symbol": "",
+            "Name": "CITIZEN",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0x7fc878905d5159a0b58a40b6cfeb78a31b3a0cbb",
+            "Symbol": "RMLL",
+            "Name": "Richie Mason: Lone Legends",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xc805658931f959abc01133aa13ff173769133512",
+            "Symbol": "",
+            "Name": "ChonkNFT",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xd0f27dfa54fbf80b823a63470c0e693ae4a626b8",
+            "Symbol": "CKC",
+            "Name": "Crypto Kombat Collection",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0xf5b0a3efb8e8e4c201e2a935f110eaaf3ffecb8d",
+            "Symbol": "AXIE",
+            "Name": "Axie",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Gaming"
+        },
+        {
+            "Address": "0xcc9f683c2fdbed1801bc8d68a663577d4f3259cd",
+            "Symbol": "DOKI",
+            "Name": "Doki Doki Finance",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x6ae270426644c8846297a0eabe8f448534420906",
+            "Symbol": "EV",
+            "Name": "Evil Voxels",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x2d6aff6ffffb60f5fdaf5a0ef4c1096644270d37",
+            "Symbol": "Trees",
+            "Name": "Crypto Trees",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Real-world Assets"
+        },
+        {
+            "Address": "0xa5efd7a7b3bb0de53bc3f2aa59004722d1431a15",
+            "Symbol": "CG",
+            "Name": "Crypto Geishas",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x4722cd3cd807ba31056514dbcbb69d0aed936c7e",
+            "Symbol": "MHT",
+            "Name": "Mad Heidi",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x41b459f1f57f8b043a5926e9b15446adf4f1110e",
+            "Symbol": "PBOY",
+            "Name": "Pascal Boyart",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        },
+        {
+            "Address": "0xf87e31492faf9a91b02ee0deaad50d51d56d5d4d",
+            "Symbol": "LAND",
+            "Name": "Decentraland",
+            "Blockchain": "Ethereum",
+            "ContractType": "non-fungible",
+            "Category": "Collectibles"
+        },
+        {
+            "Address": "0x5b50931305b4ae11c08876431f0baeb51d8a6daa",
+            "Symbol": "SAUCYNUGS",
+            "Name": "Saucy Nugs",
+            "Blockchain": "Ethereum",
+            "ContractType": "semi-fungible",
+            "Category": "Arts"
+        }
+    ]
+}

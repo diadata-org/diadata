@@ -4,66 +4,107 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
 	"strconv"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia/helpers/db"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
-	log "github.com/sirupsen/logrus"
 )
 
 type Datastore interface {
-	SetVolume(symbol string, exchange string, volume float64, t time.Time) error
-	GetVolume(symbol string) (*float64, error)
-	SymbolsWithASupply() ([]string, error)
+	SetInfluxClient(url string)
+	Get24HVolumePerExchange(asset dia.Asset) ([]dia.ExchangeVolume, error)
+	GetVolume(asset dia.Asset) (*float64, error)
+
+	// Deprecating
 	SetPriceUSD(symbol string, price float64) error
 	SetPriceEUR(symbol string, price float64) error
 	GetPriceUSD(symbol string) (float64, error)
 	GetQuotation(symbol string) (*Quotation, error)
 	SetQuotation(quotation *Quotation) error
 	SetQuotationEUR(quotation *Quotation) error
-	GetLatestSupply(string) (*dia.Supply, error)
-	GetSupply(string, time.Time, time.Time) ([]dia.Supply, error)
+	SetBatchFiatPriceInflux(fqs []*FiatQuotation) error
+	SetSingleFiatPriceRedis(fiatQuotation *FiatQuotation) error
+
+	GetLatestSupply(string, *RelDB) (*dia.Supply, error)
+	GetSupplyCache(asset dia.Asset) (dia.Supply, error)
+	GetSupply(string, time.Time, time.Time, *RelDB) ([]dia.Supply, error)
 	SetSupply(supply *dia.Supply) error
-	SetPriceZSET(symbol string, exchange string, price float64, t time.Time) error
-	GetChartPoints7Days(symbol string) ([]Point, error)
-	GetPairs(exchange string) ([]dia.Pair, error)
+	GetSupplyInflux(dia.Asset, time.Time, time.Time) ([]dia.Supply, error)
+
+	SetDiaTotalSupply(totalSupply float64) error
+	GetDiaTotalSupply() (float64, error)
+	SetDiaCirculatingSupply(circulatingSupply float64) error
+	GetDiaCirculatingSupply() (float64, error)
+
 	GetSymbols(exchange string) ([]string, error)
-	GetExchangesForSymbol(symbol string) ([]string, error)
-	GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolExchangeDetails, error)
-	GetLastTradeTimeForExchange(symbol string, exchange string) (*time.Time, error)
-	SetLastTradeTimeForExchange(symbol string, exchange string, t time.Time) error
+	// Deprecating: GetExchangesForSymbol(symbol string) ([]string, error)
+	// Deprecating: GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolExchangeDetails, error)
+	GetLastTradeTimeForExchange(asset dia.Asset, exchange string) (*time.Time, error)
+	SetLastTradeTimeForExchange(asset dia.Asset, exchange string, t time.Time) error
+	GetFirstTradeDate(table string) (time.Time, error)
 	SaveTradeInflux(t *dia.Trade) error
-	GetTradeInflux(string, string, time.Time) (*dia.Trade, error)
-	SaveFilterInflux(filter string, symbol string, exchange string, value float64, t time.Time) error
-	GetLastTrades(symbol string, exchange string, maxTrades int) ([]dia.Trade, error)
-	GetLastTradesAllExchanges(string, int) ([]dia.Trade, error)
+	SaveTradeInfluxToTable(t *dia.Trade, table string) error
+	GetTradeInflux(dia.Asset, string, time.Time, time.Duration) (*dia.Trade, error)
+	SaveFilterInflux(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error
+	GetLastTrades(asset dia.Asset, exchange string, maxTrades int, fullAsset bool) ([]dia.Trade, error)
 	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
+	GetTradesByExchanges(asset dia.Asset, baseAssets []dia.Asset, exchange []string, startTime, endTime time.Time) ([]dia.Trade, error)
+	GetTradesByExchangesFull(asset dia.Asset, baseAssets []dia.Asset, exchanges []string, returnBasetoken bool, startTime, endTime time.Time) ([]dia.Trade, error)
+	GetTradesByExchangesBatched(asset dia.Asset, baseAssets []dia.Asset, exchanges []string, startTimes, endTimes []time.Time) ([]dia.Trade, error)
+	GetTradesByExchangesBatchedFull(asset dia.Asset, baseAssets []dia.Asset, exchanges []string, returnBasetoken bool, startTimes, endTimes []time.Time) ([]dia.Trade, error)
+	GetOldTradesFromInflux(table string, exchange string, verified bool, timeInit, timeFinal time.Time) ([]dia.Trade, error)
+	CopyInfluxMeasurements(dbOrigin string, dbDestination string, tableOrigin string, tableDestination string, timeInit time.Time, timeFinal time.Time) (int64, error)
+	DeleteInfluxMeasurement(dbName string, tableName string, timeInit time.Time, timeFinal time.Time) error
+
 	Flush() error
+	ExecuteRedisPipe() error
+	FlushRedisPipe() error
 	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
-	SetFilter(filterName string, symbol string, exchange string, value float64, t time.Time) error
-	SetAvailablePairsForExchange(exchange string, pairs []dia.Pair) error
-	GetAvailablePairsForExchange(exchange string) ([]dia.Pair, error)
+	GetFilterPointsAsset(filter string, exchange string, address string, blockchain string, starttime time.Time, endtime time.Time) (*Points, error)
+	SetFilter(filterName string, asset dia.Asset, exchange string, value float64, t time.Time) error
+	GetLastPriceBefore(asset dia.Asset, filter string, exchange string, timestamp time.Time) (Price, error)
+	SetAvailablePairs(exchange string, pairs []dia.ExchangePair) error
+	GetAvailablePairs(exchange string) ([]dia.ExchangePair, error)
 	SetCurrencyChange(cc *Change) error
 	GetCurrencyChange() (*Change, error)
-	GetAllSymbols() []string
-	GetSymbolsByExchange(string) []string
-	GetCoins() (*Coins, error)
-	GetSymbolDetails(symbol string) (*SymbolDetails, error)
-	UpdateSymbolDetails(symbol string, rank int)
-	GetConfigTogglePairDiscovery() (bool, error)
-	GetExchanges() []string
+
 	SetOptionMeta(optionMeta *dia.OptionMeta) error
 	GetOptionMeta(baseCurrency string) ([]dia.OptionMeta, error)
 	SaveCVIInflux(float64, time.Time) error
-	GetCVIInflux(time.Time, time.Time) ([]dia.CviDataPoint, error)
-	GetSupplyInflux(string, time.Time, time.Time) ([]dia.Supply, error)
-	GetVolumeInflux(string, time.Time, time.Time) (float64, error)
+	GetCVIInflux(time.Time, time.Time, string) ([]dia.CviDataPoint, error)
+	GetVolumeInflux(dia.Asset, time.Time, time.Time) (float64, error)
 	// Get24Volume(symbol string, exchange string) (float64, error)
 	// Get24VolumeExchange(exchange string) (float64, error)
+	Sum24HoursInflux(asset dia.Asset, exchange string, filter string) (*float64, error)
 	Sum24HoursExchange(exchange string) (float64, error)
+	GetNumTrades(exchange string) (int64, error)
+
+	// New Asset pricing methods: 23/02/2021
+	SetAssetPriceUSD(asset dia.Asset, price float64, timestamp time.Time) error
+	GetAssetPriceUSD(asset dia.Asset, timestamp time.Time) (float64, error)
+	GetAssetPriceUSDLatest(asset dia.Asset) (price float64, err error)
+	SetAssetQuotation(quotation *AssetQuotation) error
+	GetAssetQuotation(asset dia.Asset, timestamp time.Time) (*AssetQuotation, error)
+	GetAssetQuotationLatest(asset dia.Asset) (*AssetQuotation, error)
+	GetSortedAssetQuotations(assets []dia.Asset) ([]AssetQuotation, error)
+	AddAssetQuotationsToBatch(quotations []*AssetQuotation) error
+	SetAssetQuotationCache(quotation *AssetQuotation, check bool) (bool, error)
+	GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, error)
+	GetAssetPriceUSDCache(asset dia.Asset) (price float64, err error)
+	GetTopAssetByMcap(symbol string, relDB *RelDB) (dia.Asset, error)
+	GetTopAssetByVolume(symbol string, relDB *RelDB) (topAsset dia.Asset, err error)
+	GetAssetsWithVOLInflux(timeInit time.Time) ([]dia.Asset, error)
+
+	// DEX Pool  methods
+	SavePoolInflux(p dia.Pool) error
+	GetPoolInflux(poolAddress string, starttime time.Time, endtime time.Time) ([]dia.Pool, error)
+
+	// Market Measures
+	GetAssetsMarketCap(asset dia.Asset) (float64, error)
 
 	// Interest rates' methods
 	SetInterestRate(ir *InterestRate) error
@@ -75,11 +116,6 @@ type Datastore interface {
 	GetCompoundedAvg(symbol string, date time.Time, calDays, daysPerYear int, rounding int) (*InterestRate, error)
 	GetCompoundedAvgRange(symbol string, dateInit, dateFinal time.Time, calDays, daysPerYear int, rounding int) ([]*InterestRate, error)
 	GetCompoundedAvgDIARange(symbol string, dateInit, dateFinal time.Time, calDays, daysPerYear int, rounding int) ([]*InterestRate, error)
-
-	// Pool  methods
-	SetFarmingPool(pr *FarmingPool) error
-	GetFarmingPoolData(starttime, endtime time.Time, protocol, poolID string) ([]FarmingPool, error)
-	GetFarmingPools() ([]FarmingPoolType, error)
 
 	// Itin methods
 	SetItinData(token dia.ItinToken) error
@@ -102,54 +138,78 @@ type Datastore interface {
 	GetForeignPriceYesterday(symbol, source string) (float64, error)
 	GetForeignSymbolsInflux(source string) (symbols []SymbolShort, err error)
 
+	SetVWAPFirefly(foreignName string, value float64, timestamp time.Time) error
+	GetVWAPFirefly(foreignName string, starttime time.Time, endtime time.Time) ([]float64, []time.Time, error)
+
 	// Gold token methods
 	GetPaxgQuotationOunces() (*Quotation, error)
 	GetPaxgQuotationGrams() (*Quotation, error)
-	// Crypto Index methods
-	GetCryptoIndex(time.Time, time.Time, string) ([]CryptoIndex, error)
-	SetCryptoIndex(index *CryptoIndex) error
-	GetCryptoIndexConstituents(time.Time, time.Time, string) ([]CryptoIndexConstituent, error)
-	SetCryptoIndexConstituent(*CryptoIndexConstituent) error
-	GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error)
-	GetCryptoIndexMintAmounts(symbol string) ([]CryptoIndexMintAmount, error)
+
+	SaveIndexEngineTimeInflux(map[string]string, map[string]interface{}, time.Time) error
+	GetBenchmarkedIndexValuesInflux(string, time.Time, time.Time) (BenchmarkedIndex, error)
 	// Token methods
 	// SaveTokenDetailInflux(tk Token) error
 	// GetTokenDetailInflux(symbol, source string, timestamp time.Time) (Token, error)
 	// GetCurentTotalSupply(symbol, source string) (float64, error)
+
+	// Github methods
+	SetCommit(commit GithubCommit) error
+	GetCommitByDate(user, repository string, date time.Time) (GithubCommit, error)
+	GetCommitByHash(user, repository, hash string) (GithubCommit, error)
+	GetLatestCommit(user, repository string) (GithubCommit, error)
+
+	// Stock methods
+	SetStockQuotation(sq StockQuotation) error
+	GetStockQuotation(source string, symbol string, timeInit time.Time, timeFinal time.Time) ([]StockQuotation, error)
+	GetStockSymbols() (map[Stock]string, error)
 }
 
 const (
 	influxMaxPointsInBatch = 5000
-	timeOutRedisOneBlock   = 60 * 3 * time.Second
+	// timeOutRedisOneBlock   = 60 * 3 * time.Second
 )
 
 type DB struct {
 	redisClient         *redis.Client
+	redisPipe           redis.Pipeliner
 	influxClient        clientInfluxdb.Client
 	influxBatchPoints   clientInfluxdb.BatchPoints
 	influxPointsInBatch int
 }
 
 const (
-	influxDbName                         = "dia"
-	influxDbTradesTable                  = "trades"
-	influxDbFiltersTable                 = "filters"
-	influxDbOptionsTable                 = "options"
-	influxDbCVITable                     = "cvi"
-	influxDbSupplyTable                  = "supplies"
-	influxDbSupplyTableOld               = "supply"
-	influxDbDefiRateTable                = "defiRate"
-	influxDbDefiStateTable               = "defiState"
-	influxDbPoolTable                    = "defiPools"
-	influxDbCryptoIndexTable             = "cryptoindex"
-	influxDbCryptoIndexConstituentsTable = "cryptoindexconstituents"
+	influxDbName                      = "dia"
+	influxDbOldTradesTable            = "oldTrades"
+	influxDbTradesTable               = "trades"
+	influxDbFiltersTable              = "filters"
+	influxDbFiatQuotationsTable       = "fiat"
+	influxDbOptionsTable              = "options"
+	influxDbCVITable                  = "cvi"
+	influxDbETHCVITable               = "cviETH"
+	influxDbSupplyTable               = "supplies"
+	influxDbDefiRateTable             = "defiRate"
+	influxDbDefiStateTable            = "defiState"
+	influxDbDEXPoolTable              = "DEXPools"
+	influxDbGithubCommitTable         = "githubcommits"
+	influxDbStockQuotationsTable      = "stockquotations"
+	influxDBAssetQuotationsTable      = "assetQuotations"
+	influxDbBenchmarkedIndexTableName = "benchmarkedIndexValues"
+	influxDbVwapFireflyTable          = "vwapFirefly"
+
+	influxDBDefaultURL = "http://influxdb:8086"
 )
 
-// queryInfluxDB convenience function to query the database
+// queryInfluxDB convenience function to query the database.
 func queryInfluxDB(clnt clientInfluxdb.Client, cmd string) (res []clientInfluxdb.Result, err error) {
+	res, err = queryInfluxDBName(clnt, influxDbName, cmd)
+	return
+}
+
+// queryInfluxDBName is a wrapper for queryInfluxDB that allows for queries on the database with name @dbName.
+func queryInfluxDBName(clnt clientInfluxdb.Client, dbName string, cmd string) (res []clientInfluxdb.Result, err error) {
 	q := clientInfluxdb.Query{
 		Command:  cmd,
-		Database: influxDbName,
+		Database: dbName,
 	}
 	if response, err := clnt.Query(q); err == nil {
 		if response.Error() != nil {
@@ -182,77 +242,53 @@ func NewDataStoreWithoutRedis() (*DB, error) {
 }
 
 func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
-	var ci clientInfluxdb.Client
-	var bp clientInfluxdb.BatchPoints
-	var r *redis.Client
-	var err error
-	// This environment variable is either set in docker-compose or empty
-	executionMode := os.Getenv("EXEC_MODE")
-	address := ""
+	var influxClient clientInfluxdb.Client
+	var influxBatchPoints clientInfluxdb.BatchPoints
+	var redisClient *redis.Client
+	var redisPipe redis.Pipeliner
 
 	if withRedis {
-		// Run localhost for testing and server for production
-		if executionMode == "production" {
-			address = "redis:6379"
-		} else {
-			address = "localhost:6379"
-		}
-		r = redis.NewClient(&redis.Options{
-			Addr:     address,
-			Password: "", // no password set
-			DB:       0,  // use default DB
-		})
-
-		pong2, err := r.Ping().Result()
-		if err != nil {
-			log.Error("NewDataStore redis", err)
-		}
-		log.Debug("NewDB", pong2)
+		redisClient = db.GetRedisClient()
+		redisPipe = redisClient.TxPipeline()
 	}
 	if withInflux {
-		if executionMode == "production" {
-			address = "http://influxdb:8086"
-		} else {
-			address = "http://localhost:8086"
-		}
-		ci, err = clientInfluxdb.NewHTTPClient(clientInfluxdb.HTTPConfig{
-			Addr:     address,
-			Username: "",
-			Password: "",
-		})
-		if err != nil {
-			log.Error("NewDataStore influxdb", err)
-		}
-		bp, _ = createBatchInflux()
-		_, err = queryInfluxDB(ci, fmt.Sprintf("CREATE DATABASE %s", influxDbName))
+		var err error
+		influxClient = db.GetInfluxClient(influxDBDefaultURL)
+		influxBatchPoints = createBatchInflux()
+		_, err = queryInfluxDB(influxClient, fmt.Sprintf("CREATE DATABASE %s", influxDbName))
 		if err != nil {
 			log.Errorln("queryInfluxDB CREATE DATABASE", err)
 		}
 	}
-	return &DB{r, ci, bp, 0}, nil
+	return &DB{redisClient, redisPipe, influxClient, influxBatchPoints, 0}, nil
 }
 
-func createBatchInflux() (clientInfluxdb.BatchPoints, error) {
+// SetInfluxClient resets influx's client url to @url.
+func (datastore *DB) SetInfluxClient(url string) {
+	datastore.influxClient = db.GetInfluxClient(url)
+}
+
+func createBatchInflux() clientInfluxdb.BatchPoints {
 	bp, err := clientInfluxdb.NewBatchPoints(clientInfluxdb.BatchPointsConfig{
 		Database:  influxDbName,
-		Precision: "s",
+		Precision: "ns",
 	})
 	if err != nil {
 		log.Errorln("NewBatchPoints", err)
 	}
-	return bp, err
+	return bp
 }
 
-func (db *DB) Flush() error {
+func (datastore *DB) Flush() error {
 	var err error
-	if db.influxBatchPoints != nil {
-		err = db.WriteBatchInflux()
+	if datastore.influxBatchPoints != nil {
+		err = datastore.WriteBatchInflux()
 	}
 	return err
 }
 
-func getKey(filter string, symbol string, exchange string) string {
-	key := filter + "_" + symbol
+func getKey(filter string, asset dia.Asset, exchange string) string {
+	key := filter + "_" + asset.Blockchain + "_" + asset.Address
 	if exchange != "" {
 		key = key + "_" + exchange
 	}
@@ -263,167 +299,58 @@ func getKeyFilterZSET(key string) string {
 	return "dia_" + key + "_ZSET"
 }
 
-func getKeyFilterSymbolAndExchangeZSET(filter string, symbol string, exchange string) string {
+func getKeyFilterSymbolAndExchangeZSET(filter string, asset dia.Asset, exchange string) string {
 	if exchange == "" {
-		return "dia_" + filter + "_" + symbol + "_ZSET"
+		return "dia_" + filter + "_" + asset.Blockchain + "_" + asset.Address + "_ZSET"
 	} else {
-		return "dia_" + filter + "_" + symbol + "_" + exchange + "_ZSET"
+		return "dia_" + filter + "_" + asset.Blockchain + "_" + asset.Address + "_ZSET"
 	}
 }
 
-func (db *DB) WriteBatchInflux() error {
-	err := db.influxClient.Write(db.influxBatchPoints)
+func (datastore *DB) WriteBatchInflux() (err error) {
+	err = datastore.influxClient.Write(datastore.influxBatchPoints)
 	if err != nil {
 		log.Errorln("WriteBatchInflux", err)
-		db.influxBatchPoints, _ = createBatchInflux()
-	} else {
-		db.influxPointsInBatch = 0
+		return
 	}
-	return err
+	datastore.influxPointsInBatch = 0
+	datastore.influxBatchPoints = createBatchInflux()
+	return
 }
 
-func (db *DB) addPoint(pt *clientInfluxdb.Point) {
-	db.influxBatchPoints.AddPoint(pt)
-	db.influxPointsInBatch++
-	if db.influxPointsInBatch >= influxMaxPointsInBatch {
-		log.Debug("AddPoint forcing write Bash")
-		db.WriteBatchInflux()
-	}
-}
+func (datastore *DB) addPoint(pt *clientInfluxdb.Point) {
+	datastore.influxBatchPoints.AddPoint(pt)
+	datastore.influxPointsInBatch++
 
-// // Get24Volume returns the volume in USD traded in the last 24 hours corresponding to quote token
-// // @symbol on exchange @exchange. It uses trades' volumes without filtering.
-// func (db *DB) Get24Volume(symbol string, exchange string) (float64, error) {
-// 	q := fmt.Sprintf("SELECT estimatedUSDPrice, volume FROM %s WHERE symbol='%s' and exchange='%s' and time > now() - 1d", influxDbTradesTable, symbol, exchange)
-// 	res, err := queryInfluxDB(db.influxClient, q)
-// 	if err != nil {
-// 		log.Errorf("Get24HoursVolume for %s on %s: %v \n", symbol, exchange, err)
-// 		return float64(0), err
-// 	}
-// 	var VolumeUSD float64
-// 	if len(res) > 0 && len(res[0].Series) > 0 {
-// 		for _, row := range res[0].Series[0].Values {
-// 			USDPrice, err := strconv.ParseFloat(row[1].(string), 64)
-// 			if err != nil {
-// 				return float64(0), err
-// 			}
-// 			volume, err := strconv.ParseFloat(row[2].(string), 64)
-// 			if err != nil {
-// 				return 0, err
-// 			}
-// 			VolumeUSD += math.Abs(volume) * USDPrice
-// 		}
-// 		return VolumeUSD, nil
-// 	}
-// 	return float64(0), errors.New("no trades")
-// }
-
-// // Get24VolumeExchange returns the trade volume in USD traded on exchange @exchange.
-// // Uses trades' volumes without filtering.
-// func (db *DB) Get24VolumeExchange(exchange string) (float64, error) {
-// 	allSymbols := db.GetSymbolsByExchange(exchange)
-// 	var TVL float64
-// 	for _, symbol := range allSymbols {
-// 		volumeUSD, err := db.Get24Volume(symbol, exchange)
-// 		if err != nil {
-// 			log.Errorf("Error getting 24h trade volume of %s: %v \n", symbol, err)
-// 			continue
-// 		}
-// 		TVL += volumeUSD
-// 	}
-// 	return TVL, nil
-// }
-
-/*
-select sum(value) from filters where filter='VOL120' and time > now() - 10m
-select * from filters where  symbol='BTC' and filter='VOL120' and time > now() - 2m
-select sum(value) from filters where  symbol='BTC' and filter='VOL120' and time > now()- 2m
-*/
-
-// Sum24HoursInflux returns the 24h  volume of @symbol on @exchange using the filter @filter.
-func (db *DB) Sum24HoursInflux(symbol string, exchange string, filter string) (*float64, error) {
-	q := fmt.Sprintf("SELECT SUM(value) FROM %s WHERE symbol='%s' and exchange='%s' and filter='%s' and time > now() - 1d", influxDbFiltersTable, symbol, exchange, filter)
-	var errorString string
-	res, err := queryInfluxDB(db.influxClient, q)
-	if err != nil {
-		log.Errorln("Sum24HoursInflux ", err)
-		return nil, err
-	}
-	if len(res) > 0 && len(res[0].Series) > 0 {
-		for _, row := range res[0].Series[0].Values {
-			var result float64
-			v, o := row[1].(json.Number)
-			if o {
-				result, _ = v.Float64()
-				return &result, nil
-			}
-			errorString = "error on parsing row 1"
-			log.Errorln(errorString)
-			return nil, errors.New(errorString)
-
-		}
-	} else {
-		errorString = "Empty response in Sum24HoursInflux"
-		log.Errorln(errorString)
-		return nil, errors.New(errorString)
-	}
-	return nil, errors.New("couldn't sum in Sum24HoursInflux")
-}
-
-// Sum24HoursExchange returns 24h trade volumes summed up for all assets on @exchange,
-// using VOL120 filtered data from influx.
-func (db *DB) Sum24HoursExchange(exchange string) (float64, error) {
-	allSymbols := db.GetSymbolsByExchange(exchange)
-	filter := "VOL120"
-	var TVL float64
-	for _, symbol := range allSymbols {
-		volumeUSD, err := db.Sum24HoursInflux(symbol, exchange, filter)
+	if datastore.influxPointsInBatch >= influxMaxPointsInBatch {
+		err := datastore.WriteBatchInflux()
 		if err != nil {
-			log.Errorf("Error getting 24h trade volume of %s: %v \n", symbol, err)
-			continue
+			log.Error("write influx batch: ", err)
 		}
-		TVL += *volumeUSD
 	}
-	return TVL, nil
-
 }
 
-// GetVolumeInflux returns the trade volume of @symbol in the time range @starttime - @endtime.
-// It uses the VOL filter from the filter services.
-func (db *DB) GetVolumeInflux(symbol string, starttime time.Time, endtime time.Time) (float64, error) {
-	var retval float64
-	var q string
-	filter := "VOL120"
-	if starttime.IsZero() || endtime.IsZero() {
-		q = fmt.Sprintf("SELECT SUM(value) FROM %s WHERE symbol='%s' and filter='%s' and time > now() - 1d", influxDbFiltersTable, symbol, filter)
-	} else {
-		q = fmt.Sprintf("SELECT SUM(value) FROM %s WHERE symbol='%s' and filter='%s' and time > %d and time < %d", influxDbFiltersTable, symbol, filter, starttime.UnixNano(), endtime.UnixNano())
-	}
-	res, err := queryInfluxDB(db.influxClient, q)
-	if err != nil {
-		return retval, err
-	}
-	if len(res) > 0 && len(res[0].Series) > 0 {
-		for _, row := range res[0].Series[0].Values {
-			v, o := row[1].(json.Number)
-			if o {
-				retval, _ = v.Float64()
-				return retval, nil
-			} else {
-				errorString := "error on parsing row 1"
-				log.Errorln(errorString)
-				return retval, errors.New(errorString)
-			}
-		}
-	} else {
-		return retval, errors.New("Error parsing Volume value from Database")
-	}
-	return retval, nil
+// SaveTradeInflux stores a trade in influx. Flushed when more than maxPoints in batch.
+// Wrapper around SaveTradeInfluxToTable.
+func (datastore *DB) SaveTradeInflux(t *dia.Trade) error {
+	return datastore.SaveTradeInfluxToTable(t, influxDbTradesTable)
 }
 
-func (db *DB) SaveTradeInflux(t *dia.Trade) error {
+// SaveTradeInfluxToTable stores a trade in influx into @table.
+// Flushed when more than maxPoints in batch.
+func (datastore *DB) SaveTradeInfluxToTable(t *dia.Trade, table string) error {
+
 	// Create a point and add to batch
-	tags := map[string]string{"symbol": t.Symbol, "exchange": t.Source, "pair": t.Pair}
+	tags := map[string]string{
+		"symbol":               t.Symbol,
+		"pair":                 t.Pair,
+		"exchange":             t.Source,
+		"verified":             strconv.FormatBool(t.VerifiedPair),
+		"quotetokenaddress":    t.QuoteToken.Address,
+		"basetokenaddress":     t.BaseToken.Address,
+		"quotetokenblockchain": t.QuoteToken.Blockchain,
+		"basetokenblockchain":  t.BaseToken.Blockchain,
+	}
 	fields := map[string]interface{}{
 		"price":             t.Price,
 		"volume":            t.Volume,
@@ -431,26 +358,31 @@ func (db *DB) SaveTradeInflux(t *dia.Trade) error {
 		"foreignTradeID":    t.ForeignTradeID,
 	}
 
-	pt, err := clientInfluxdb.NewPoint(influxDbTradesTable, tags, fields, t.Time)
+	pt, err := clientInfluxdb.NewPoint(table, tags, fields, t.Time)
 	if err != nil {
 		log.Errorln("NewTradeInflux:", err)
 	} else {
-		db.addPoint(pt)
+		datastore.addPoint(pt)
 	}
+
 	return err
 }
 
-func (db *DB) GetTradeInflux(symbol string, exchange string, timestamp time.Time) (*dia.Trade, error) {
+// GetTradeInflux returns the latest trade of @asset on @exchange before @timestamp in the time-range [endtime-window, endtime].
+func (datastore *DB) GetTradeInflux(asset dia.Asset, exchange string, endtime time.Time, window time.Duration) (*dia.Trade, error) {
+	starttime := endtime.Add(-window)
 	retval := dia.Trade{}
 	var q string
 	if exchange != "" {
-		q = fmt.Sprintf("SELECT * FROM %s WHERE symbol='%s' and echange='%s' and time < %d order by desc limit 1", influxDbTradesTable, symbol, exchange, timestamp.UnixNano())
+		queryString := "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume FROM %s WHERE quotetokenaddress='%s' AND quotetokenblockchain='%s' AND exchange='%s' AND time >= %d AND time < %d ORDER BY DESC LIMIT 1"
+		q = fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain, exchange, starttime.UnixNano(), endtime.UnixNano())
 	} else {
-		q = fmt.Sprintf("SELECT * FROM %s WHERE symbol='%s' and time < %d order by desc limit 1", influxDbTradesTable, symbol, timestamp.UnixNano())
+		queryString := "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume FROM %s WHERE quotetokenaddress='%s' AND quotetokenblockchain='%s' AND time >= %d AND time < %d ORDER BY DESC LIMIT 1"
+		q = fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain, starttime.UnixNano(), endtime.UnixNano())
 	}
 
 	/// TODO
-	res, err := queryInfluxDB(db.influxClient, q)
+	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		return &retval, err
 	}
@@ -478,12 +410,146 @@ func (db *DB) GetTradeInflux(symbol string, exchange string, timestamp time.Time
 			}
 		}
 	} else {
-		return &retval, errors.New("Error parsing Trade from Database")
+		return &retval, errors.New("parsing trade from database")
 	}
 	return &retval, nil
 }
 
-func (db *DB) SaveCVIInflux(cviValue float64, observationTime time.Time) error {
+// GetOldTradesFromInflux returns all recorded trades from @table done on @exchange between @timeInit and @timeFinal
+// where the time interval is closed on the left and open on the right side.
+// If @exchange is empty, trades across all exchanges are returned.
+// If @verified is true, address and blockchain are also parsed for both assets.
+func (datastore *DB) GetOldTradesFromInflux(table string, exchange string, verified bool, timeInit, timeFinal time.Time) ([]dia.Trade, error) {
+	allTrades := []dia.Trade{}
+	var queryString, query, addQueryString string
+	if verified {
+		addQueryString = ",\"quotetokenaddress\",\"basetokenaddress\",\"quotetokenblockchain\",\"basetokenblockchain\",\"verified\""
+	}
+	if exchange == "" {
+		queryString = "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume" +
+			addQueryString +
+			" FROM %s WHERE time>=%d and time<%d order by asc"
+		query = fmt.Sprintf(queryString, table, timeInit.UnixNano(), timeFinal.UnixNano())
+	} else {
+		queryString = "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume" +
+			addQueryString +
+			" FROM %s WHERE exchange='%s' and time>=%d and time<%d order by asc"
+		query = fmt.Sprintf(queryString, table, exchange, timeInit.UnixNano(), timeFinal.UnixNano())
+	}
+	res, err := queryInfluxDB(datastore.influxClient, query)
+	if err != nil {
+		log.Error("influx query: ", err)
+		return allTrades, err
+	}
+
+	log.Info("query: ", query)
+
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for i := 0; i < len(res[0].Series[0].Values); i++ {
+			var trade dia.Trade
+			trade.Time, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+			if err != nil {
+				return allTrades, err
+			}
+			trade.EstimatedUSDPrice, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
+			if err != nil {
+				return allTrades, err
+			}
+			if res[0].Series[0].Values[i][2] != nil {
+				trade.Source = res[0].Series[0].Values[i][2].(string)
+			}
+			if res[0].Series[0].Values[i][3] != nil {
+				trade.ForeignTradeID = res[0].Series[0].Values[i][3].(string)
+			}
+			if res[0].Series[0].Values[i][4] != nil {
+				trade.Pair = res[0].Series[0].Values[i][4].(string)
+			}
+			trade.Price, err = res[0].Series[0].Values[i][5].(json.Number).Float64()
+			if err != nil {
+				return allTrades, err
+			}
+			if res[0].Series[0].Values[i][6] == nil {
+				continue
+			}
+			if res[0].Series[0].Values[i][6] != nil {
+				trade.Symbol = res[0].Series[0].Values[i][6].(string)
+			}
+			trade.Volume, err = res[0].Series[0].Values[i][7].(json.Number).Float64()
+			if err != nil {
+				return allTrades, err
+			}
+			if verified {
+				if res[0].Series[0].Values[i][8] != nil {
+					trade.QuoteToken.Address = res[0].Series[0].Values[i][8].(string)
+				}
+				if res[0].Series[0].Values[i][9] != nil {
+					trade.BaseToken.Address = res[0].Series[0].Values[i][9].(string)
+				}
+				if res[0].Series[0].Values[i][10] != nil {
+					trade.QuoteToken.Blockchain = res[0].Series[0].Values[i][10].(string)
+				}
+				if res[0].Series[0].Values[i][11] != nil {
+					trade.BaseToken.Blockchain = res[0].Series[0].Values[i][11].(string)
+				}
+				verifiedPair, ok := res[0].Series[0].Values[i][12].(string)
+				if ok {
+					trade.VerifiedPair, err = strconv.ParseBool(verifiedPair)
+					if err != nil {
+						log.Error("parse verified pair boolean: ", err)
+					}
+				}
+			}
+			allTrades = append(allTrades, trade)
+		}
+	} else {
+		return allTrades, errors.New("no trades in time range")
+	}
+	return allTrades, nil
+}
+
+// CopyInfluxMeasurements copies entries from measurement @tableOrigin in database @dbOrigin into @tableDestination in database @dbDestination.
+// It takes into account all data ranging from @timeInit until @timeFinal.
+func (datastore *DB) CopyInfluxMeasurements(dbOrigin string, dbDestination string, tableOrigin string, tableDestination string, timeInit time.Time, timeFinal time.Time) (numCopiedRows int64, err error) {
+	queryString := "select * into %s..%s from %s..%s where time>%d and time<=%d group by *"
+	query := fmt.Sprintf(queryString, dbDestination, tableDestination, dbOrigin, tableOrigin, timeInit.UnixNano(), timeFinal.UnixNano())
+	res, err := queryInfluxDB(datastore.influxClient, query)
+	if err != nil {
+		return
+	}
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		numCopiedRows, err = res[0].Series[0].Values[0][1].(json.Number).Int64()
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
+// DeleteInfluxMeasurement deletes data from influx database @dbName and measurement @tableName in the given time range.
+func (datastore *DB) DeleteInfluxMeasurement(dbName string, tableName string, timeInit time.Time, timeFinal time.Time) (err error) {
+	queryString := "DELETE FROM %s WHERE time>%d AND time<=%d"
+	query := fmt.Sprintf(queryString, tableName, timeInit.UnixNano(), timeFinal.UnixNano())
+	_, err = queryInfluxDBName(datastore.influxClient, dbName, query)
+	return
+}
+
+func (datastore *DB) GetFirstTradeDate(table string) (time.Time, error) {
+	var query string
+	queryString := "SELECT \"exchange\",price FROM %s  where time<now() order by asc limit 1"
+	query = fmt.Sprintf(queryString, table)
+
+	res, err := queryInfluxDB(datastore.influxClient, query)
+	if err != nil {
+		return time.Time{}, err
+	}
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		return time.Parse(time.RFC3339, res[0].Series[0].Values[0][0].(string))
+	}
+	return time.Time{}, errors.New("no trade found")
+
+}
+
+func (datastore *DB) SaveCVIInflux(cviValue float64, observationTime time.Time) error {
 	fields := map[string]interface{}{
 		"value": cviValue,
 	}
@@ -491,10 +557,10 @@ func (db *DB) SaveCVIInflux(cviValue float64, observationTime time.Time) error {
 	if err != nil {
 		log.Errorln("NewOptionInflux:", err)
 	} else {
-		db.addPoint(pt)
+		datastore.addPoint(pt)
 	}
 
-	err = db.WriteBatchInflux()
+	err = datastore.WriteBatchInflux()
 	if err != nil {
 		log.Errorln("SaveOptionOrderbookDatumInflux", err)
 	}
@@ -502,10 +568,36 @@ func (db *DB) SaveCVIInflux(cviValue float64, observationTime time.Time) error {
 	return err
 }
 
-func (db *DB) GetCVIInflux(starttime time.Time, endtime time.Time) ([]dia.CviDataPoint, error) {
+func (datastore *DB) SaveETHCVIInflux(cviValue float64, observationTime time.Time) error {
+	fields := map[string]interface{}{
+		"value": cviValue,
+	}
+	pt, err := clientInfluxdb.NewPoint(influxDbETHCVITable, nil, fields, observationTime)
+	if err != nil {
+		log.Errorln("NewOptionInflux:", err)
+	} else {
+		datastore.addPoint(pt)
+	}
+
+	err = datastore.WriteBatchInflux()
+	if err != nil {
+		log.Errorln("SaveOptionOrderbookDatumInflux", err)
+	}
+
+	return err
+}
+
+func (datastore *DB) GetCVIInflux(starttime time.Time, endtime time.Time, symbol string) ([]dia.CviDataPoint, error) {
 	retval := []dia.CviDataPoint{}
-	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d", influxDbCVITable, starttime.UnixNano(), endtime.UnixNano())
-	res, err := queryInfluxDB(db.influxClient, q)
+	var q string
+	if symbol == "ETH" {
+		q = fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d", influxDbETHCVITable, starttime.UnixNano(), endtime.UnixNano())
+
+	} else {
+		q = fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d", influxDbCVITable, starttime.UnixNano(), endtime.UnixNano())
+	}
+
+	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		return retval, err
 	}
@@ -523,12 +615,12 @@ func (db *DB) GetCVIInflux(starttime time.Time, endtime time.Time) ([]dia.CviDat
 			retval = append(retval, currentPoint)
 		}
 	} else {
-		return retval, errors.New("Error parsing CVI value from Database")
+		return retval, errors.New("parsing CVI value from database")
 	}
 	return retval, nil
 }
 
-func (db *DB) SaveOptionOrderbookDatumInflux(t dia.OptionOrderbookDatum) error {
+func (datastore *DB) SaveOptionOrderbookDatumInflux(t dia.OptionOrderbookDatum) error {
 	tags := map[string]string{"instrumentName": t.InstrumentName}
 	fields := map[string]interface{}{
 		"askPrice": t.AskPrice,
@@ -540,10 +632,10 @@ func (db *DB) SaveOptionOrderbookDatumInflux(t dia.OptionOrderbookDatum) error {
 	if err != nil {
 		log.Errorln("NewOptionInflux:", err)
 	} else {
-		db.addPoint(pt)
+		datastore.addPoint(pt)
 	}
 
-	err = db.WriteBatchInflux()
+	err = datastore.WriteBatchInflux()
 	if err != nil {
 		log.Errorln("SaveOptionOrderbookDatumInflux", err)
 	}
@@ -551,10 +643,11 @@ func (db *DB) SaveOptionOrderbookDatumInflux(t dia.OptionOrderbookDatum) error {
 	return err
 }
 
-func (db *DB) GetOptionOrderbookDataInflux(t dia.OptionMeta) (dia.OptionOrderbookDatum, error) {
+func (datastore *DB) GetOptionOrderbookDataInflux(t dia.OptionMeta) (dia.OptionOrderbookDatum, error) {
 	retval := dia.OptionOrderbookDatum{}
 	q := fmt.Sprintf("SELECT LAST(askPrice), bidPrice, askSize, bidSize, observationTime FROM %s WHERE instrumentName ='%s'", influxDbOptionsTable, t.InstrumentName)
-	res, err := queryInfluxDB(db.influxClient, q)
+	res, err := queryInfluxDB(datastore.influxClient, q)
+
 	if err != nil {
 		return retval, err
 	}
@@ -585,144 +678,7 @@ func (db *DB) GetOptionOrderbookDataInflux(t dia.OptionMeta) (dia.OptionOrderboo
 	return retval, nil
 }
 
-func (db *DB) SetFarmingPool(pool *FarmingPool) error {
-	fields := map[string]interface{}{
-		"rate":        pool.Rate,
-		"balance":     pool.Balance,
-		"blockNumber": pool.BlockNumber,
-	}
-	inputAssetBytes, err := json.Marshal(pool.InputAsset)
-	if err != nil {
-		return err
-	}
-	outputAssetBytes, err := json.Marshal(pool.OutputAsset)
-	if err != nil {
-		return err
-	}
-	tags := map[string]string{
-		"inputAssets":  string(inputAssetBytes),
-		"outputAssets": string(outputAssetBytes),
-		"protocol":     pool.ProtocolName,
-		"poolID":       pool.PoolID,
-	}
-	pt, err := clientInfluxdb.NewPoint(influxDbPoolTable, tags, fields, pool.TimeStamp)
-	if err != nil {
-		log.Errorln("SetPoolInfo:", err)
-	} else {
-		db.addPoint(pt)
-	}
-
-	err = db.WriteBatchInflux()
-	if err != nil {
-		log.Errorln("SetPoolInfo", err)
-	}
-
-	return err
-}
-
-// GetFarmingPools returns all farming pool states in the given time range
-// time, balance, blocknumber, inputAssets, outputAssets, poolID, protocol, rate
-func (db *DB) GetFarmingPools() ([]FarmingPoolType, error) {
-	var retval []FarmingPoolType
-	// First get all protocols
-	qProtocol := fmt.Sprintf("SHOW TAG VALUES FROM %s with key=%s", influxDbPoolTable, "protocol")
-	fmt.Println("protocol query: ", qProtocol)
-	resProtocols, err := queryInfluxDB(db.influxClient, qProtocol)
-	if err != nil {
-		return retval, err
-	}
-
-	if len(resProtocols) > 0 && len(resProtocols[0].Series) > 0 {
-		for i := 0; i < len(resProtocols[0].Series[0].Values); i++ {
-			protocolName := resProtocols[0].Series[0].Values[i][1].(string)
-			// For each protocol, get available pools by ID
-			qPoolIDs := fmt.Sprintf("SHOW TAG VALUES FROM %s with key=%s where protocol='%s'", influxDbPoolTable, "poolID", protocolName)
-			resPoolIDs, err := queryInfluxDB(db.influxClient, qPoolIDs)
-			if err != nil {
-				return retval, err
-			}
-			if len(resPoolIDs) > 0 && len(resPoolIDs[0].Series) > 0 {
-				for k := 0; k < len(resPoolIDs[0].Series[0].Values); k++ {
-					poolType := FarmingPoolType{}
-					poolType.ProtocolName = protocolName
-					poolType.PoolID = resPoolIDs[0].Series[0].Values[k][1].(string)
-					// Get input assets of pool
-					qAssets := fmt.Sprintf("SHOW TAG VALUES FROM %s with key=%s where protocol='%s' and poolID='%s'", influxDbPoolTable, "inputAssets", protocolName, poolType.PoolID)
-					resAssets, err := queryInfluxDB(db.influxClient, qAssets)
-					if err != nil {
-						return retval, err
-					}
-					inputAssets := []string{}
-					err = json.Unmarshal([]byte(resAssets[0].Series[0].Values[0][1].(string)), &inputAssets)
-					if err != nil {
-						return retval, err
-					}
-					poolType.InputAsset = inputAssets
-
-					retval = append(retval, poolType)
-				}
-			}
-		}
-	} else {
-		return retval, errors.New("Error parsing Defi Lending Rate from Database")
-	}
-	return retval, nil
-
-}
-
-// GetFarmingPoolData returns all farming pool states in the given time range
-// time, balance, blocknumber, inputAssets, outputAssets, poolID, protocol, rate
-func (db *DB) GetFarmingPoolData(starttime, endtime time.Time, protocol, poolID string) ([]FarmingPool, error) {
-	retval := []FarmingPool{}
-	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time <= %d and protocol = '%s' and poolID='%s' order by desc", influxDbPoolTable, starttime.UnixNano(), endtime.UnixNano(), protocol, poolID)
-	res, err := queryInfluxDB(db.influxClient, q)
-	if err != nil {
-		return retval, err
-	}
-	if len(res) > 0 && len(res[0].Series) > 0 {
-		for i := 0; i < len(res[0].Series[0].Values); i++ {
-			pool := FarmingPool{}
-			pool.TimeStamp, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
-			if err != nil {
-				return retval, err
-			}
-			pool.Balance, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
-			if err != nil {
-				return retval, err
-			}
-			pool.BlockNumber, err = res[0].Series[0].Values[i][2].(json.Number).Int64()
-			if err != nil {
-				return retval, err
-			}
-			inputAssets := []string{}
-			err = json.Unmarshal([]byte(res[0].Series[0].Values[i][3].(string)), &inputAssets)
-			if err != nil {
-				return retval, err
-			}
-			pool.InputAsset = inputAssets
-			outputAssets := []string{}
-			err = json.Unmarshal([]byte(res[0].Series[0].Values[i][4].(string)), &outputAssets)
-			if err != nil {
-				return retval, err
-			}
-			pool.OutputAsset = outputAssets
-			pool.PoolID = res[0].Series[0].Values[i][5].(string)
-			pool.ProtocolName = res[0].Series[0].Values[i][6].(string)
-			pool.Rate, err = res[0].Series[0].Values[i][7].(json.Number).Float64()
-			if err != nil {
-				return retval, err
-			}
-
-			retval = append(retval, pool)
-		}
-	} else {
-		return retval, errors.New("Error parsing Defi Lending Rate from Database")
-	}
-	return retval, nil
-
-}
-
-func (db *DB) SetDefiRateInflux(rate *dia.DefiRate) error {
+func (datastore *DB) SetDefiRateInflux(rate *dia.DefiRate) error {
 	fields := map[string]interface{}{
 		"lendingRate": rate.LendingRate,
 		"borrowRate":  rate.BorrowingRate,
@@ -735,10 +691,10 @@ func (db *DB) SetDefiRateInflux(rate *dia.DefiRate) error {
 	if err != nil {
 		log.Errorln("SetDefiRateInflux:", err)
 	} else {
-		db.addPoint(pt)
+		datastore.addPoint(pt)
 	}
 
-	err = db.WriteBatchInflux()
+	err = datastore.WriteBatchInflux()
 	if err != nil {
 		log.Errorln("SetDefiRateInflux", err)
 	}
@@ -746,10 +702,13 @@ func (db *DB) SetDefiRateInflux(rate *dia.DefiRate) error {
 	return err
 }
 
-func (db *DB) GetDefiRateInflux(starttime time.Time, endtime time.Time, asset string, protocol string) ([]dia.DefiRate, error) {
+func (datastore *DB) GetDefiRateInflux(starttime time.Time, endtime time.Time, asset string, protocol string) ([]dia.DefiRate, error) {
 	retval := []dia.DefiRate{}
-	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d and asset = '%s' and protocol = '%s'", influxDbDefiRateTable, starttime.UnixNano(), endtime.UnixNano(), asset, protocol)
-	res, err := queryInfluxDB(db.influxClient, q)
+	influxQuery := "SELECT \"asset\",borrowRate,lendingRate,\"protocol\" FROM %s WHERE time > %d and time < %d and asset = '%s' and protocol = '%s'"
+	q := fmt.Sprintf(influxQuery, influxDbDefiRateTable, starttime.UnixNano(), endtime.UnixNano(), asset, protocol)
+	fmt.Println("influx query: ", q)
+	res, err := queryInfluxDB(datastore.influxClient, q)
+	fmt.Println("res, err: ", res, err)
 	if err != nil {
 		return retval, err
 	}
@@ -776,12 +735,12 @@ func (db *DB) GetDefiRateInflux(starttime time.Time, endtime time.Time, asset st
 			retval = append(retval, currentRate)
 		}
 	} else {
-		return retval, errors.New("Error parsing Defi Lending Rate from Database")
+		return retval, errors.New("parsing defi lending rate from database")
 	}
 	return retval, nil
 }
 
-func (db *DB) SetDefiStateInflux(state *dia.DefiProtocolState) error {
+func (datastore *DB) SetDefiStateInflux(state *dia.DefiProtocolState) error {
 	fields := map[string]interface{}{
 		"totalUSD": state.TotalUSD,
 		"totalETH": state.TotalETH,
@@ -793,10 +752,10 @@ func (db *DB) SetDefiStateInflux(state *dia.DefiProtocolState) error {
 	if err != nil {
 		log.Errorln("SetDefiStateInflux:", err)
 	} else {
-		db.addPoint(pt)
+		datastore.addPoint(pt)
 	}
 
-	err = db.WriteBatchInflux()
+	err = datastore.WriteBatchInflux()
 	if err != nil {
 		log.Errorln("SetDefiStateInflux", err)
 	}
@@ -804,9 +763,10 @@ func (db *DB) SetDefiStateInflux(state *dia.DefiProtocolState) error {
 	return err
 }
 
-func (db *DB) GetDefiStateInflux(starttime time.Time, endtime time.Time, protocol string) (retval []dia.DefiProtocolState, err error) {
-	q := fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d and protocol = '%s'", influxDbDefiStateTable, starttime.UnixNano(), endtime.UnixNano(), protocol)
-	res, err := queryInfluxDB(db.influxClient, q)
+func (datastore *DB) GetDefiStateInflux(starttime time.Time, endtime time.Time, protocol string) (retval []dia.DefiProtocolState, err error) {
+	influxQuery := "SELECT totalETH,totalUSD FROM %s WHERE time > %d and time < %d and protocol = '%s'"
+	q := fmt.Sprintf(influxQuery, influxDbDefiStateTable, starttime.UnixNano(), endtime.UnixNano(), protocol)
+	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		return retval, err
 	}
@@ -821,45 +781,47 @@ func (db *DB) GetDefiStateInflux(starttime time.Time, endtime time.Time, protoco
 			// if err != nil {
 			// 	return
 			// }
-			defiState.TotalETH, err = res[0].Series[0].Values[i][2].(json.Number).Float64()
+			defiState.TotalETH, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
 			if err != nil {
 				return
 			}
-			defiState.TotalUSD, err = res[0].Series[0].Values[i][3].(json.Number).Float64()
+			defiState.TotalUSD, err = res[0].Series[0].Values[i][2].(json.Number).Float64()
 			if err != nil {
 				return
 			}
-			defiState.Protocol, err = db.GetDefiProtocol(protocol)
+			defiState.Protocol, err = datastore.GetDefiProtocol(protocol)
 			if err != nil {
 				return
 			}
 			retval = append(retval, defiState)
 		}
 	} else {
-		err = errors.New("Error parsing Defi Lending Rate from Database")
+		err = errors.New("parsing defi lending state from database")
 		return
 	}
 	return
 }
 
-func (db *DB) SaveSupplyInflux(supply *dia.Supply) error {
+func (datastore *DB) SaveSupplyInflux(supply *dia.Supply) error {
 	fields := map[string]interface{}{
 		"supply":            supply.Supply,
 		"circulatingsupply": supply.CirculatingSupply,
 		"source":            supply.Source,
 	}
 	tags := map[string]string{
-		"symbol": supply.Symbol,
-		"name":   supply.Name,
+		"symbol":     supply.Asset.Symbol,
+		"name":       supply.Asset.Name,
+		"address":    supply.Asset.Address,
+		"blockchain": supply.Asset.Blockchain,
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbSupplyTable, tags, fields, supply.Time)
 	if err != nil {
 		log.Errorln("NewSupplyInflux:", err)
 	} else {
-		db.addPoint(pt)
+		datastore.addPoint(pt)
 	}
 
-	err = db.WriteBatchInflux()
+	err = datastore.WriteBatchInflux()
 	if err != nil {
 		log.Errorln("SaveSupplyInflux", err)
 	}
@@ -867,25 +829,30 @@ func (db *DB) SaveSupplyInflux(supply *dia.Supply) error {
 	return err
 }
 
-func (db *DB) GetSupplyInflux(symbol string, starttime time.Time, endtime time.Time) ([]dia.Supply, error) {
+// GetSupplyInflux returns supply and circulating supply of @asset. Needs asset.Address and asset.Blockchain.
+// If no time range is given it returns the latest supply.
+func (datastore *DB) GetSupplyInflux(asset dia.Asset, starttime time.Time, endtime time.Time) ([]dia.Supply, error) {
 	retval := []dia.Supply{}
 	var q string
 	if starttime.IsZero() || endtime.IsZero() {
-		q = fmt.Sprintf("SELECT supply,circulatingsupply,source,\"name\" FROM %s WHERE \"symbol\" = '%s' ORDER BY time DESC LIMIT 1", influxDbSupplyTable, symbol)
-		fmt.Println("influx query: ", q)
+		queryString := "SELECT supply,circulatingsupply,source,\"name\",\"symbol\" FROM %s WHERE \"address\" = '%s' AND \"blockchain\"='%s' AND time<now() ORDER BY DESC LIMIT 1"
+		q = fmt.Sprintf(queryString, influxDbSupplyTable, asset.Address, asset.Blockchain)
 	} else {
-		q = fmt.Sprintf("SELECT supply,circulatingsupply,source,\"name\" FROM %s WHERE time > %d and time < %d and \"symbol\" = '%s'", influxDbSupplyTable, starttime.UnixNano(), endtime.UnixNano(), symbol)
+		queryString := "SELECT supply,circulatingsupply,source,\"name\",\"symbol\" FROM %s WHERE time > %d AND time < %d AND \"address\" = '%s' AND \"blockchain\"='%s' ORDER BY DESC"
+		q = fmt.Sprintf(queryString, influxDbSupplyTable, starttime.UnixNano(), endtime.UnixNano(), asset.Address, asset.Blockchain)
 	}
-	res, err := queryInfluxDB(db.influxClient, q)
+	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		return retval, err
 	}
 	if len(res) > 0 && len(res[0].Series) > 0 {
 		for i := 0; i < len(res[0].Series[0].Values); i++ {
-			currentSupply := dia.Supply{}
-			currentSupply.Time, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
-			if err != nil {
-				return retval, err
+			currentSupply := dia.Supply{Asset: asset}
+			if res[0].Series[0].Values[i][0] != nil {
+				currentSupply.Time, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+				if err != nil {
+					return retval, err
+				}
 			}
 			currentSupply.Supply, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
 			if err != nil {
@@ -895,50 +862,62 @@ func (db *DB) GetSupplyInflux(symbol string, starttime time.Time, endtime time.T
 			if err != nil {
 				return retval, err
 			}
-			currentSupply.Source = res[0].Series[0].Values[i][3].(string)
-			if err != nil {
-				return retval, err
+			if res[0].Series[0].Values[i][3] != nil {
+				currentSupply.Source = res[0].Series[0].Values[i][3].(string)
+				if err != nil {
+					return retval, err
+				}
 			}
-			currentSupply.Name = res[0].Series[0].Values[i][4].(string)
-			if err != nil {
-				log.Error("error getting symbol name from influx: ", err)
+			if res[0].Series[0].Values[i][4] != nil {
+				currentSupply.Asset.Name = res[0].Series[0].Values[i][4].(string)
+				if err != nil {
+					log.Error("error getting symbol name from influx: ", err)
+				}
 			}
-
-			currentSupply.Symbol = symbol
+			if res[0].Series[0].Values[i][5] != nil {
+				currentSupply.Asset.Symbol = res[0].Series[0].Values[i][5].(string)
+				if err != nil {
+					log.Error("error getting symbol name from influx: ", err)
+				}
+			}
 			retval = append(retval, currentSupply)
 		}
 	} else {
-		return retval, errors.New("Error parsing Supply value from Database")
+		return retval, errors.New("parsing supply value from database")
 	}
 	return retval, nil
 }
 
-func (db *DB) SaveFilterInflux(filter string, symbol string, exchange string, value float64, t time.Time) error {
+// SaveFilterInflux stores a filter point in influx.
+func (datastore *DB) SaveFilterInflux(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error {
 	// Create a point and add to batch
-	tags := map[string]string{"filter": filter, "symbol": symbol, "exchange": exchange}
+	tags := map[string]string{
+		"filter":     filter,
+		"symbol":     asset.Symbol,
+		"address":    asset.Address,
+		"blockchain": asset.Blockchain,
+		"exchange":   exchange,
+	}
 	fields := map[string]interface{}{
 		"value":        value,
-		"ignore":       false,
 		"allExchanges": exchange == "",
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbFiltersTable, tags, fields, t)
 	if err != nil {
-		log.Errorln("newPoint:", err)
+		log.Errorln("new filter influx:", err)
 	} else {
-		db.addPoint(pt)
+		datastore.addPoint(pt)
 	}
 	return err
 }
 
-func (db *DB) setZSETValue(key string, value float64, unixTime int64, maxWindow int64) error {
-
-	if db.redisClient == nil {
+func (datastore *DB) setZSETValue(key string, value float64, unixTime int64, maxWindow int64) error {
+	if datastore.redisClient == nil {
 		return nil
 	}
-
 	member := strconv.FormatFloat(value, 'f', -1, 64) + " " + strconv.FormatInt(unixTime, 10)
 
-	err := db.redisClient.ZAdd(key, redis.Z{
+	err := datastore.redisPipe.ZAdd(key, redis.Z{
 		Score:  float64(unixTime),
 		Member: member,
 	}).Err()
@@ -947,29 +926,31 @@ func (db *DB) setZSETValue(key string, value float64, unixTime int64, maxWindow 
 		log.Errorf("Error: %v on SetZSETValue %v\n", err, key)
 	}
 	// purging old values
-	err = db.redisClient.ZRemRangeByScore(key, "-inf", "("+strconv.FormatInt(unixTime-maxWindow, 10)).Err()
+	err = datastore.redisPipe.ZRemRangeByScore(key, "-inf", "("+strconv.FormatInt(unixTime-maxWindow, 10)).Err()
 	if err != nil {
 		log.Errorf("Error: %v on SetZSETValue %v\n", err, key)
 	}
-
-	if err := db.redisClient.Expire(key, TimeOutRedis).Err(); err != nil {
+	if err = datastore.redisPipe.Expire(key, TimeOutRedis).Err(); err != nil {
 		log.Error(err)
 	} //TODO put two commands together ?
 	return err
 }
 
-func (db *DB) getZSETValue(key string, atUnixTime int64) (float64, error) {
+func (datastore *DB) getZSETValue(key string, atUnixTime int64) (float64, error) {
 
 	result := 0.0
 	max := strconv.FormatInt(atUnixTime, 10)
-	vals, err := db.redisClient.ZRangeByScoreWithScores(key, redis.ZRangeBy{
+	vals, err := datastore.redisClient.ZRangeByScoreWithScores(key, redis.ZRangeBy{
 		Min: "-inf",
 		Max: max,
 	}).Result()
 	log.Debug(key, "vals: %v on getZSETValue maxScore: %v", vals, max)
 	if err == nil {
 		if len(vals) > 0 {
-			fmt.Sscanf(vals[len(vals)-1].Member.(string), "%f", &result)
+			_, err = fmt.Sscanf(vals[len(vals)-1].Member.(string), "%f", &result)
+			if err != nil {
+				log.Error(err)
+			}
 			log.Debugf("returned value: %v", result)
 		} else {
 			err = errors.New("getZSETValue no value found")
@@ -978,6 +959,17 @@ func (db *DB) getZSETValue(key string, atUnixTime int64) (float64, error) {
 	return result, err
 }
 
+func (datastore *DB) ExecuteRedisPipe() (err error) {
+	// TO DO: Handle first return value for read requests.
+	_, err = datastore.redisPipe.Exec()
+	return
+}
+
+func (datastore *DB) FlushRedisPipe() error {
+	return datastore.redisPipe.Discard()
+}
+
+/*
 func (db *DB) getZSETSum(key string) (*float64, error) {
 
 	log.Debugf("getZSETSum: %v \n", key)
@@ -996,15 +988,19 @@ func (db *DB) getZSETSum(key string) (*float64, error) {
 		return &result, err
 	}
 }
+*/
 
-func (db *DB) getZSETLastValue(key string) (float64, int64, error) {
+func (datastore *DB) getZSETLastValue(key string) (float64, int64, error) {
 	value := 0.0
 	var unixTime int64
-	vals, err := db.redisClient.ZRange(key, -1, -1).Result()
+	vals, err := datastore.redisClient.ZRange(key, -1, -1).Result()
 	log.Debug(key, "on getZSETLastValue:", vals)
 	if err == nil {
 		if len(vals) == 1 {
-			fmt.Sscanf(vals[0], "%f %d", &value, &unixTime)
+			_, err = fmt.Sscanf(vals[0], "%f %d", &value, &unixTime)
+			if err != nil {
+				log.Error(err)
+			}
 			log.Debugf("returned value: %v", value)
 		} else {
 			err = errors.New("getZSETLastValue no value found")
@@ -1012,4 +1008,57 @@ func (db *DB) getZSETLastValue(key string) (float64, int64, error) {
 		}
 	}
 	return value, unixTime, err
+}
+
+func (datastore *DB) SetVWAPFirefly(foreignName string, value float64, timestamp time.Time) error {
+	tags := map[string]string{
+		"foreignName": foreignName,
+	}
+	fields := map[string]interface{}{
+		"value": value,
+	}
+	pt, err := clientInfluxdb.NewPoint(influxDbVwapFireflyTable, tags, fields, timestamp)
+	if err != nil {
+		log.Errorln("new filter influx:", err)
+	} else {
+		datastore.addPoint(pt)
+	}
+
+	err = datastore.WriteBatchInflux()
+	if err != nil {
+		log.Errorln("Write influx batch: ", err)
+	}
+
+	return err
+}
+
+func (datastore *DB) GetVWAPFirefly(foreignName string, starttime time.Time, endtime time.Time) (values []float64, timestamps []time.Time, err error) {
+
+	influxQuery := "SELECT value FROM %s WHERE time > %d AND time <= %d AND foreignName = '%s' ORDER BY DESC"
+	q := fmt.Sprintf(influxQuery, influxDbVwapFireflyTable, starttime.UnixNano(), endtime.UnixNano(), foreignName)
+	res, err := queryInfluxDB(datastore.influxClient, q)
+	if err != nil {
+		return
+	}
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for i := 0; i < len(res[0].Series[0].Values); i++ {
+			var value float64
+			var timestamp time.Time
+			timestamp, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+			if err != nil {
+				return
+			}
+			value, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
+			if err != nil {
+				return
+			}
+
+			values = append(values, value)
+			timestamps = append(timestamps, timestamp)
+		}
+	} else {
+		err = errors.New("no data available in given time range")
+		return
+	}
+	return
 }

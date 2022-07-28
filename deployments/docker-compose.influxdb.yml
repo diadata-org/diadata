@@ -9,11 +9,14 @@ services:
     environment:
       - EXEC_MODE=production
 
-    image: influxdb
+    image: influxdb:1.8.3
     volumes:
-      - /home/srv/influxdb:/var/lib/influxdb
+      - /home/srv/influx-backup:/var/lib/influxdb
     networks:
       - influxdb-network
+    environment:
+      INFLUXDB_HTTP_MAX_BODY_SIZE: 0
+      INFLUXDB_MONITOR_STORE_ENABLED: "FALSE"
     logging:
       options:
         max-size: "50m" 

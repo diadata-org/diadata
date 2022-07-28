@@ -1,7 +1,0 @@
-{
-  "name": "Coin Data",
-  "description": "Vue implementation of coin data",
-  "repository": "https://github.com/diadata-org/coindata",
-  "keywords": ["node", "express", "heroku"],
-  "image": "heroku/nodejs"
-}

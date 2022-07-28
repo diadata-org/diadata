@@ -1,0 +1,124 @@
+{
+  "Tokens": [
+    {
+      "Symbol": "AKRO",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0x8Ab7404063Ec4DBcfd4598215992DC3F8EC853d7"
+    },
+    {
+      "Symbol": "ANT",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0xa117000000f279D81A1D3cc75430fAA017FA5A2e"
+    },
+    {
+      "Symbol": "AXS",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b"
+    },
+    {
+      "Symbol": "ASTR",
+      "Exchange": "Huobi",
+      "Blockchain": "Astar",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "AURORA",
+      "Exchange": "Huobi",
+      "Blockchain": "Aurora",
+      "Address": "0x8BEc47865aDe3B172A928df8f990Bc7f2A3b9f79"
+    },
+    {
+      "Symbol": "BTG",
+      "Exchange": "Huobi",
+      "Blockchain": "BitcoinGold",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "CRV",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0xD533a949740bb3306d119CC777fa900bA034cd52"
+    },
+    {
+      "Symbol": "FLOW",
+      "Exchange": "Huobi",
+      "Blockchain": "Flow",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "FUSE",
+      "Exchange": "Huobi",
+      "Blockchain": "Fuse",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "GLM",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0x7DD9c5Cba05E151C895FDe1CF355C9A1D5DA6429"
+    },
+    {
+      "Symbol": "KSM",
+      "Exchange": "Huobi",
+      "Blockchain": "Kusama",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "LSK",
+      "Exchange": "Huobi",
+      "Blockchain": "Lisk",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "LUNA",
+      "Exchange": "Huobi",
+      "Blockchain": "Terra",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "SDN",
+      "Exchange": "Huobi",
+      "Blockchain": "Shiden",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "SNT",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0x744d70FDBE2Ba4CF95131626614a1763DF805B9E"
+    },
+    {
+      "Symbol": "SPA",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0xB4A3B0Faf0Ab53df58001804DdA5Bfc6a3D59008"
+    },
+    {
+      "Symbol": "SAND",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0x3845badAde8e6dFF049820680d1F14bD3903a5d0"
+    },
+    {
+      "Symbol": "STEEM",
+      "Exchange": "Huobi",
+      "Blockchain": "Steem",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "USDT",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+    },
+    {
+      "Symbol": "UST",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD"
+    }
+  ]
+}

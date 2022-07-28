@@ -1,0 +1,15 @@
+FROM us.icr.io/dia-registry/devops/build:latest as build
+
+WORKDIR $GOPATH
+
+WORKDIR $GOPATH/src/
+COPY ./cmd/blockchain/ethereum/diaOracleV2AstarService ./
+
+RUN go install
+
+FROM gcr.io/distroless/base
+
+COPY --from=build /go/bin/diaOracleV2AstarService /bin/diaOracleV2AstarService
+COPY --from=build /config/ /config/
+
+CMD ["diaOracleV2AstarService"]

@@ -1,0 +1,12 @@
+FROM us.icr.io/dia-registry/devops/build:latest as build
+
+WORKDIR $GOPATH/src/
+
+COPY ./cmd/services/volumeservice ./
+RUN go install
+
+FROM gcr.io/distroless/base
+
+COPY --from=build /go/bin/volumeservice /bin/volumeservice
+
+CMD ["volumeservice"]

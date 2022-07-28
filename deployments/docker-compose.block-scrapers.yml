@@ -1,0 +1,42 @@
+version: '3.2'
+services:
+
+  genericblockscraper:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-genericBlockScraper
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericblockscraper:latest
+    restart: "no"
+    networks:
+        - postgres-network
+    secrets:
+        - postgres_credentials
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
+  ethereumscraper:
+    depends_on: [genericblockscraper]
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_genericblockscraper:latest
+    command: /bin/blockscraper -blockchain=Ethereum
+    networks:
+      - postgres-network
+    secrets:
+      - postgres_credentials
+    environment:
+      - EXEC_MODE=production
+    logging:
+      options:
+        max-size: "50m"
+
+
+secrets:
+  postgres_credentials:
+    file: ../secrets/postgres_credentials.txt
+
+networks:
+  postgres-network:
+    external:
+        name: postgres_postgres-network

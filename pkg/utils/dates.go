@@ -50,10 +50,7 @@ func SameDays(date1, date2 time.Time) bool {
 func AfterDay(date1, date2 time.Time) bool {
 	date1Str := date1.Format("2006-01-02")
 	date2Str := date2.Format("2006-01-02")
-	if date1Str > date2Str {
-		return true
-	}
-	return false
+	return date1Str > date2Str
 }
 
 // CountDays returns the number of days between
@@ -125,4 +122,61 @@ func GetTomorrow(date, layout string) string {
 	}
 	tomorrow := dateTime.AddDate(0, 0, 1)
 	return tomorrow.Format(layout)
+}
+
+// MakeTimeRanges returns @numRanges start- and endtimes partitioning [@timeInit, @timeFinal] in intervals of identical size.
+func MakeTimeRanges(timeInit, timeFinal time.Time, numRanges int) (starttimes, endtimes []time.Time) {
+	a := timeInit
+	b := timeFinal
+	totalSize := b.Sub(a)
+	sizeRange := totalSize / time.Duration(numRanges)
+	starttime := timeInit
+	for k := 0; k < numRanges; k++ {
+		starttimes = append(starttimes, starttime)
+		endtimes = append(endtimes, starttime.Add(sizeRange))
+		starttime = starttime.Add(sizeRange)
+	}
+	return
+}
+
+// MakeTimerange parses Unix timestamps given as strings. In case one of the two is empty,
+// it returns a time-range based on @timeRange.
+func MakeTimerange(starttimeString string, endtimeString string, timeRange time.Duration) (starttime time.Time, endtime time.Time, err error) {
+
+	var (
+		starttimeInt int64
+		endtimeInt   int64
+	)
+
+	if starttimeString == "" && endtimeString == "" {
+		endtime = time.Now()
+		starttime = endtime.Add(-timeRange)
+	} else if starttimeString == "" && endtimeString != "" {
+		// zero time if not given
+		endtimeInt, err = strconv.ParseInt(endtimeString, 10, 64)
+		if err != nil {
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+		starttime = endtime.Add(-timeRange)
+	} else if starttimeString != "" && endtimeString == "" {
+		starttimeInt, err = strconv.ParseInt(starttimeString, 10, 64)
+		if err != nil {
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+		endtime = starttime.Add(timeRange)
+	} else {
+		starttimeInt, err = strconv.ParseInt(starttimeString, 10, 64)
+		if err != nil {
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+		endtimeInt, err = strconv.ParseInt(endtimeString, 10, 64)
+		if err != nil {
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	}
+	return starttime, endtime, nil
 }

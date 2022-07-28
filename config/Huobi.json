@@ -2,6 +2,102 @@
   "Coins": [
     {
       "Exchange": "Huobi",
+      "ForeignName": "ANTUSDT",
+      "Ignore": false,
+      "Symbol": "ANT"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "AURORAUSDT",
+      "Ignore": false,
+      "Symbol": "AURORA"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "AXSUSDT",
+      "Ignore": false,
+      "Symbol": "AXS"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "SDNUSDT",
+      "Ignore": false,
+      "Symbol": "SDN"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "ASTRUSDT",
+      "Ignore": false,
+      "Symbol": "ASTR"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "SPAUSDT",
+      "Ignore": false,
+      "Symbol": "SPA"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "CHRUSDT",
+      "Ignore": false,
+      "Symbol": "CHR"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "CRVUSDT",
+      "Ignore": false,
+      "Symbol": "CRV"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "FUSEUSDT",
+      "Ignore": false,
+      "Symbol": "FUSE"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "GRTUSDT",
+      "Ignore": false,
+      "Symbol": "GRT"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "GLMUSDT",
+      "Ignore": false,
+      "Symbol": "GLM"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "AKROUSDT",
+      "Ignore": false,
+      "Symbol": "AKRO"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "KSMUSDT",
+      "Ignore": false,
+      "Symbol": "KSM"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "LUNAUSDT",
+      "Ignore": false,
+      "Symbol": "LUNA"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "NEARUSDT",
+      "Ignore": false,
+      "Symbol": "NEAR"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "USTUSDT",
+      "Ignore": false,
+      "Symbol": "UST"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "ADABTC",
       "Ignore": false,
       "Symbol": "ADA"
@@ -116,6 +212,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "FLOWUSDT",
+      "Ignore": false,
+      "Symbol": "FLOW"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "IOTABTC",
       "Ignore": false,
       "Symbol": "MIOTA"
@@ -197,6 +299,12 @@
       "ForeignName": "QTUMUSDT",
       "Ignore": false,
       "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "SANDUSDT",
+      "Ignore": false,
+      "Symbol": "SAND"
     },
     {
       "Exchange": "Huobi",

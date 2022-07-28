@@ -1,18 +1,19 @@
 package filters
 
 import (
+	"errors"
 	"fmt"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
 	"math"
 	"time"
-	"errors"
-	"sort"
-	"strings"
 
-	scrapers "github.com/diadata-org/diadata/internal/pkg/exchange-scrapers"
+	"github.com/sirupsen/logrus"
+
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
+	models "github.com/diadata-org/diadata/pkg/model"
 )
+
+var log = logrus.New()
 
 // expiration related -------------------------------------
 
@@ -72,6 +73,9 @@ func processMinutesUntilMidnight(now time.Time, timezone string) (float64, error
 func MinutesUntilSettlement(settlement scrapers.OptionSettlement, timezone string) (float64, error) {
 	const nilTime float64 = 0
 	loc, err := time.LoadLocation(timezone)
+	if err != nil {
+		return 0, err
+	}
 	now := time.Now().In(loc)
 	mid, err := Eod(now, timezone)
 	if err != nil {
@@ -164,6 +168,12 @@ func TimeToMaturity(option dia.OptionMetaForward) float64 {
 	return endtime.Sub(starttime).Minutes()
 }
 
+func TimeToMaturityTime(endtime time.Time) float64 {
+	starttime := time.Now()
+
+	return endtime.Sub(starttime).Minutes()
+}
+
 // Get the forward option meta information for near and next term
 func GetNextTermOptionMeta(baseCurrency string) ([]dia.OptionMetaForward, error) {
 	result := []dia.OptionMetaForward{}
@@ -175,30 +185,40 @@ func GetNextTermOptionMeta(baseCurrency string) ([]dia.OptionMetaForward, error)
 
 	optionsMeta, err := ds.GetOptionMeta(baseCurrency)
 	if err != nil {
-		return result, err
+		return nil, err
 	}
 
 	// Create date so late it is out of target range
 	earliestDate := time.Now().Add(62 * 24 * time.Hour)
 	// Determine date of NextTerm
-	for _, optionMeta := range(optionsMeta) {
-		if optionMeta.ExpirationTime.Sub(time.Now()) > 62 * 24 * time.Hour {
+	for _, optionMeta := range optionsMeta {
+		// Options expiring in more than 62 days
+		if optionMeta.ExpirationTime.Sub(time.Now()) > 62*24*time.Hour {
 			continue
 		}
-		if optionMeta.ExpirationTime.Sub(time.Now()) < 20 * 24 * time.Hour {
+		// Options expiring in less than 62 days
+		if optionMeta.ExpirationTime.Sub(time.Now()) < 20*24*time.Hour {
 			continue
 		}
+		// Options expiring in less than 62 days
 		if optionMeta.ExpirationTime.Unix() < earliestDate.Unix() {
 			earliestDate = optionMeta.ExpirationTime
 			timeResult = optionMeta
 		}
 	}
 	if timeResult.InstrumentName == "" {
-		err = errors.New("No matching instrument found.")
+		err = errors.New("no matching instrument found")
+		log.Error(err)
 	}
+	//log.Errorln("optionsMeta",optionsMeta)
+
+	//log.Errorln("filtered",optionsMeta)
+	log.Errorln("timeResult", timeResult)
+
 	result, err = generateForwardMeta(ds, timeResult, optionsMeta)
+
 	if err != nil {
-		return result, err
+		return nil, err
 	}
 	return result, nil
 }
@@ -218,7 +238,7 @@ func GetNearTermOptionMeta(baseCurrency string, expirationNextTerm time.Time) ([
 		return result, err
 	}
 	latestFoundDate := time.Now().Add(1 * time.Second)
-	for _, optionMeta := range(optionsMeta) {
+	for _, optionMeta := range optionsMeta {
 		if optionMeta.ExpirationTime.Unix() >= expirationNextTerm.Unix() {
 			continue
 		}
@@ -228,7 +248,8 @@ func GetNearTermOptionMeta(baseCurrency string, expirationNextTerm time.Time) ([
 		}
 	}
 	if timeResult.InstrumentName == "" {
-		err = errors.New("No matching instrument found.")
+		err = errors.New("no matching instrument found")
+		log.Error(err)
 	}
 	result, err = generateForwardMeta(ds, timeResult, optionsMeta)
 	if err != nil {
@@ -241,16 +262,19 @@ func generateForwardMeta(ds *models.DB, timeResult dia.OptionMeta, optionsMeta [
 	result := []dia.OptionMetaForward{}
 	type OptionMetaOrderbook struct {
 		generalizedInstrumentName string
-		orderbookDataPut  dia.OptionOrderbookDatum
-		orderbookDataCall dia.OptionOrderbookDatum
-		optionMetaPut     dia.OptionMeta
-		optionMetaCall    dia.OptionMeta
+		orderbookDataPut          dia.OptionOrderbookDatum
+		orderbookDataCall         dia.OptionOrderbookDatum
+		optionMetaPut             dia.OptionMeta
+		optionMetaCall            dia.OptionMeta
 	}
 
 	orderbookDataStore := make(map[string]OptionMetaOrderbook)
 
 	// Add all options that expire at the same date into one object of type OptionMetaOrderbook
-	for _, optionMeta := range(optionsMeta) {
+	for _, optionMeta := range optionsMeta {
+		//log.Errorln("optionMeta",optionMeta.ExpirationTime)
+		//log.Errorln("timeResult",timeResult.ExpirationTime)
+
 		if optionMeta.ExpirationTime.Equal(timeResult.ExpirationTime) {
 			orderbookData, err := ds.GetOptionOrderbookDataInflux(optionMeta)
 			if err != nil {
@@ -258,10 +282,13 @@ func generateForwardMeta(ds *models.DB, timeResult dia.OptionMeta, optionsMeta [
 			}
 			if orderbookData.InstrumentName != "" {
 				generalizedInstrumentName := optionMeta.InstrumentName[:16]
+				log.Errorln("generalizedInstrumentName optionMeta", optionMeta)
+				log.Errorln("generalizedInstrumentName timeResult", timeResult)
+
 				switch optionMeta.OptionType {
 				case dia.CallOption:
 					if val, ok := orderbookDataStore[generalizedInstrumentName]; ok {
-						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook {
+						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook{
 							generalizedInstrumentName: generalizedInstrumentName,
 							orderbookDataCall:         orderbookData,
 							optionMetaCall:            optionMeta,
@@ -269,14 +296,14 @@ func generateForwardMeta(ds *models.DB, timeResult dia.OptionMeta, optionsMeta [
 							optionMetaPut:             val.optionMetaPut,
 						}
 					} else {
-						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook {
+						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook{
 							orderbookDataCall: orderbookData,
 							optionMetaCall:    optionMeta,
 						}
 					}
 				case dia.PutOption:
 					if val, ok := orderbookDataStore[generalizedInstrumentName]; ok {
-						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook {
+						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook{
 							generalizedInstrumentName: generalizedInstrumentName,
 							orderbookDataPut:          orderbookData,
 							optionMetaPut:             optionMeta,
@@ -284,7 +311,7 @@ func generateForwardMeta(ds *models.DB, timeResult dia.OptionMeta, optionsMeta [
 							optionMetaCall:            val.optionMetaCall,
 						}
 					} else {
-						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook {
+						orderbookDataStore[generalizedInstrumentName] = OptionMetaOrderbook{
 							orderbookDataPut: orderbookData,
 							optionMetaPut:    optionMeta,
 						}
@@ -299,18 +326,19 @@ func generateForwardMeta(ds *models.DB, timeResult dia.OptionMeta, optionsMeta [
 			log.Error("StrikePrice == 0 ", orderbookData)
 			continue
 		}
-		result = append(result, dia.OptionMetaForward {
+		result = append(result, dia.OptionMetaForward{
 			GeneralizedInstrumentName: orderbookData.generalizedInstrumentName,
-			ExpirationTime: orderbookData.optionMetaCall.ExpirationTime,
-			StrikePrice: orderbookData.optionMetaCall.StrikePrice,
-			CallPrice:   math.Abs(orderbookData.orderbookDataCall.AskPrice - orderbookData.orderbookDataCall.BidPrice),
-			PutPrice:    math.Abs(orderbookData.orderbookDataPut.AskPrice - orderbookData.orderbookDataPut.BidPrice),
+			ExpirationTime:            orderbookData.optionMetaCall.ExpirationTime,
+			StrikePrice:               orderbookData.optionMetaCall.StrikePrice,
+			CallPrice:                 math.Abs(orderbookData.orderbookDataCall.AskPrice - orderbookData.orderbookDataCall.BidPrice),
+			PutPrice:                  math.Abs(orderbookData.orderbookDataPut.AskPrice - orderbookData.orderbookDataPut.BidPrice),
 		})
 	}
 	return result, nil
 }
 
 func GetOptionMetaIndex(baseCurrency string, maturityDate string) ([]dia.OptionMetaIndex, error) {
+	log.Errorln("maturityDate", maturityDate)
 	result := []dia.OptionMetaIndex{}
 	ds, err := models.NewDataStore()
 	if err != nil {
@@ -319,23 +347,25 @@ func GetOptionMetaIndex(baseCurrency string, maturityDate string) ([]dia.OptionM
 
 	// Get options from DB
 	optionsMeta, err := ds.GetOptionMeta(baseCurrency)
+	if err != nil {
+		return []dia.OptionMetaIndex{}, err
+	}
 	for _, optionMeta := range optionsMeta {
-		if !strings.Contains(optionMeta.InstrumentName, maturityDate) {
-			continue
-		}
+		//if !strings.Contains(optionMeta.InstrumentName, maturityDate) {
+		//	log.Errorln("Skipping",optionMeta,maturityDate)
+		//	//continue
+		//}
 		orderbookData, err := ds.GetOptionOrderbookDataInflux(optionMeta)
-		if err != nil  || orderbookData.BidSize == 0{
+		if err != nil || orderbookData.BidSize == 0 {
 			log.Error("Error retrieving OptionOrderbookData: ", err)
 			continue
 		}
-		result = append(result, dia.OptionMetaIndex {
-			optionMeta,
-			orderbookData,
+		result = append(result, dia.OptionMetaIndex{
+			OptionMeta:           optionMeta,
+			OptionOrderbookDatum: orderbookData,
 		})
 	}
-	sort.Slice(result, func (i, j int) bool {
-		return result[i].StrikePrice > result[j].StrikePrice
-	})
+
 	return result, nil
 }
 
@@ -347,10 +377,8 @@ func VarianceIndex(optionsMeta []dia.OptionMetaIndex, r float64, t float64, f fl
 		return 0, fmt.Errorf("not enough options to compute the CVI")
 	}
 
-	var (
-		lh     float64 = 0
-		deltaK float64 = 0
-	)
+	lh := float64(0)
+	deltaK := float64(0)
 
 	// left & right hand side terms
 	// as explained in the issue on GitHub: https://github.com/diadata-org/diadata/issues/193
@@ -360,12 +388,12 @@ func VarianceIndex(optionsMeta []dia.OptionMetaIndex, r float64, t float64, f fl
 		if ix == 0 || ix == len(optionsMeta)-1 {
 			continue
 		}
-		deltaK = ((optionsMeta[ix-1].StrikePrice + optionsMeta[ix+1].StrikePrice) / 2)
+		//deltaK = ((optionsMeta[ix-1].StrikePrice + optionsMeta[ix+1].StrikePrice) / 2)
 		log.Info("prev option: ", optionsMeta[ix-1])
 		log.Info("this option: ", optionsMeta[ix])
 		log.Info("next option: ", optionsMeta[ix+1])
 		log.Info("deltaK: ", deltaK)
-		log.Info("midpoint: ", (option.AskPrice + option.BidPrice) / 2)
+		log.Info("midpoint: ", (option.AskPrice+option.BidPrice)/2)
 		lh += deltaK * ((option.AskPrice + option.BidPrice) / 2)
 	}
 
@@ -434,22 +462,30 @@ func CVIToDatastore(value float64) error {
 	return ds.SaveCVIInflux(value, time.Now())
 }
 
+func ETHCVIToDatastore(value float64) error {
+	ds, err := models.NewDataStore()
+	if err != nil {
+		return err
+	}
+	return ds.SaveETHCVIInflux(value, time.Now())
+}
+
 func CVIsFromDatastore(starttime time.Time, endtime time.Time) ([]dia.CviDataPoint, error) {
 	ds, err := models.NewDataStore()
 	if err != nil {
 		return []dia.CviDataPoint{}, err
 	}
-	return ds.GetCVIInflux(starttime, endtime)
+	return ds.GetCVIInflux(starttime, endtime, "ETH")
 }
 
 // CVIFiltering is the actual filtering algorithm; computedCVIs is the channel through which we receive the calculated CVIs, filteredCVIs is the channel through which we send the filtered CVIs
 func CVIFiltering(computedCVIs scrapers.ComputedCVIs, filteredCVIs chan<- scrapers.ComputedCVI) {
 	// it is the responsibility of the function that filters the CVIs to close the channel through which it communicates these values
 	defer close(filteredCVIs)
-	var baseline float64 = 0
-	var lastCVItime time.Time = time.Time{}
-	var absDiff float64 = 0
-	var noChangeCVItime time.Duration = 0 // tracks for how long there has been no change to CVI
+	var baseline float64
+	var lastCVItime time.Time
+	var absDiff float64
+	var noChangeCVItime time.Duration // tracks for how long there has been no change to CVI
 
 	// it is the responsibility of thr computedCVIs creator to send the computed CVI values as often as it needs to
 	for v := range computedCVIs {
@@ -461,7 +497,7 @@ func CVIFiltering(computedCVIs scrapers.ComputedCVIs, filteredCVIs chan<- scrape
 			continue
 		}
 		// if no changes for 2 minutes or more
-		noChangeCVItime = time.Now().Sub(lastCVItime)
+		noChangeCVItime = time.Since(lastCVItime)
 		if noChangeCVItime.Minutes() >= 2 {
 			baseline = v.CVI
 			lastCVItime = v.CalculationTime

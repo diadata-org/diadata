@@ -1,0 +1,370 @@
+{
+    "Tokens": [  
+        {
+            "Symbol": "1INCH",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0x111111111117dC0aa78b770fA6A738034120C302"
+        },
+        {
+            "Symbol": "ADA",
+            "Exchange": "Bitmax",
+            "Blockchain": "Cardano",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "AKRO",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0x8Ab7404063Ec4DBcfd4598215992DC3F8EC853d7"
+        },
+        {
+            "Symbol": "ALGO",
+            "Exchange": "Bitmax",
+            "Blockchain": "Algorand",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "ANKR",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4"
+        },
+        {
+            "Symbol": "BTC",
+            "Exchange": "Bitmax",
+            "Blockchain": "Bitcoin",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "BAND",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0xBA11D00c5f74255f56a5E366F4F77f5A186d7f55"
+        },
+        {
+            "Symbol": "BAT",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0x0D8775F648430679A709E98d2b0Cb6250d2887EF"
+        },
+        {
+            "Symbol": "BCH",
+            "Exchange": "Bitmax",
+            "Blockchain": "BitcoinCash",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "BNB",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0xB8c77482e45F1F44dE1745F52C74426C631bDD52"
+        },
+        {
+            "Symbol": "BSV",
+            "Exchange": "Bitmax",
+            "Blockchain": "BitcoinSV",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "CHR",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0x8A2279d4A90B6fe1C4B30fa660cC9f926797bAA2"
+        },
+        {
+            "Symbol": "COTI",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0xDDB3422497E61e13543BeA06989C0789117555c5"
+        },
+        {
+            "Symbol": "CRO",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0xA0b73E1Ff0B80914AB6fe0444E65848C4C34450b"
+        },
+        {
+            "Symbol": "CRV",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0xD533a949740bb3306d119CC777fa900bA034cd52"
+        },
+        {
+            "Symbol": "DAFI",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0xFc979087305A826c2B2a0056cFAbA50aad3E6439"
+        },
+        {
+            "Symbol": "DASH",
+            "Exchange": "Bitmax",
+            "Blockchain": "Dash",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "DIA",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"
+        },
+        {
+            "Symbol": "DOGE",
+            "Exchange": "Bitmax",
+            "Blockchain": "Dogechain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "DOT",
+            "Exchange": "Bitmax",
+            "Blockchain": "Polkadot",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "EGLD",
+            "Exchange": "Bitmax",
+            "Blockchain": "Elrond",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "ELF",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e"
+        },
+        {
+            "Symbol": "EOS",
+            "Exchange": "Bitmax",
+            "Blockchain": "EOS.IO",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "ETC",
+            "Exchange": "Bitmax",
+            "Blockchain": "EthereumClassic",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "ETH",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "FET",
+            "Exchange": "Bitmax",
+            "Blockchain": "Fetch",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "FIL",
+            "Exchange": "Bitmax",
+            "Blockchain": "Filecoin",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "FLEX",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0xFcF8eda095e37A41e002E266DaAD7efC1579bc0A"
+        },
+        {
+            "Symbol": "FRM",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0xE5CAeF4Af8780E59Df925470b050Fb23C43CA68C"
+        },
+        {
+            "Symbol": "FUSE",
+            "Exchange": "Bitmax",
+            "Blockchain": "Fuse",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "FTM",
+            "Exchange": "Bitmax",
+            "Blockchain": "Fantom",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "GT",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0xE66747a101bFF2dBA3697199DCcE5b743b454759"
+        },
+        {
+            "Symbol": "HT",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0x6f259637dcD74C767781E37Bc6133cd6A68aa161"
+        },
+        {
+            "Symbol": "IOST",
+            "Exchange": "Bitmax",
+            "Blockchain": "IOST",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "KCS",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0xf34960d9d60be18cC1D5Afc1A6F012A723a28811"
+        },
+        {
+            "Symbol": "LINK",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0x514910771AF9Ca656af840dff83E8264EcF986CA"
+        },
+        {
+            "Symbol": "MATIC",
+            "Exchange": "Bitmax",
+            "Blockchain": "Polygon",
+            "Address": "0x0000000000000000000000000000000000001010"
+        },
+        {
+            "Symbol": "NEO",
+            "Exchange": "Bitmax",
+            "Blockchain": "NEO",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "OKB",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0x75231F58b43240C9718Dd58B4967c5114342a86c"
+        },
+        {
+            "Symbol": "ONE",
+            "Exchange": "Bitmax",
+            "Blockchain": "Harmony",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "ONT",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ontology",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "ORN",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0x0258F474786DdFd37ABCE6df6BBb1Dd5dfC4434a"
+        },
+        {
+            "Symbol": "PAX",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0x8E870D67F660D95d5be530380D0eC0bd388289E1"
+        },
+        {
+            "Symbol": "PERP",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0xbC396689893D065F41bc2C6EcbeE5e0085233447"
+        },
+        {
+            "Symbol": "QTUM",
+            "Exchange": "Bitmax",
+            "Blockchain": "Qtum",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "RUNE",
+            "Exchange": "Bitmax",
+            "Blockchain": "Thorchain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "RVN",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ravencoin",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "SOL",
+            "Exchange": "Bitmax",
+            "Blockchain": "Solana",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "SRM",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0x476c5E26a75bd202a9683ffD34359C0CC15be0fF"
+        },     
+        {
+            "Symbol": "TRX",
+            "Exchange": "Bitmax",
+            "Blockchain": "Tron",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "UNI",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
+        },
+        {
+            "Symbol": "USDC",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+        },
+        {
+            "Symbol": "USDT",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+        },
+        {
+            "Symbol": "VET",
+            "Exchange": "Bitmax",
+            "Blockchain": "VeChain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "VRA",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0xF411903cbC70a74d22900a5DE66A2dda66507255"
+        },
+        {
+            "Symbol": "XEM",
+            "Exchange": "Bitmax",
+            "Blockchain": "NEM",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "XLM",
+            "Exchange": "Bitmax",
+            "Blockchain": "Stellar",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "XRP",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ripple",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "ZEC",
+            "Exchange": "Bitmax",
+            "Blockchain": "Zcash",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "ZIL",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ziliqa",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "ZRX",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0xE41d2489571d322189246DaFA5ebDe1F4699F498"
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+FROM us.icr.io/dia-registry/devops/build:latest as build
+
+WORKDIR $GOPATH
+
+WORKDIR $GOPATH/src/
+COPY ./cmd/blockchain/ethereum/diaBodhOracleService ./
+
+RUN go install
+
+FROM gcr.io/distroless/base
+
+COPY --from=build /go/bin/diaBodhOracleService /bin/diaBodhOracleService
+COPY --from=build /config/ /config/
+
+CMD ["diaBodhOracleService"]

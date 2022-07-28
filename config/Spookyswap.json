@@ -1,0 +1,10 @@
+{
+    "Coins": [
+        {
+            "Symbol": "RAY",
+            "ForeignName": "RAY-SOL",
+            "Exchange": "Spookyswap",
+            "Ignore": false
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "Coins": [
+        {
+            "Symbol": "TETHYS",
+            "ForeignName": "TETHYS-METIS",
+            "Exchange": "Netswap",
+            "Ignore": false
+        }
+    ]
+}
