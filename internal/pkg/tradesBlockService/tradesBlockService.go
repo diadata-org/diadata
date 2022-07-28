@@ -173,6 +173,13 @@ func (s *TradesBlockService) process(t dia.Trade) {
 						Blockchain: dia.MOONBEAM,
 					}
 				}
+				if (t.Source == dia.UniswapExchangeV3Polygon || t.Source == dia.QuickswapExchange || t.Source == dia.SushiSwapExchangePolygon || t.Source == dia.DfynNetwork) && basetoken.Blockchain == dia.POLYGON && basetoken.Address == common.HexToAddress("0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174").Hex() {
+					basetoken = dia.Asset{
+						Symbol:     "USDC",
+						Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+						Blockchain: dia.ETHEREUM,
+					}
+				}
 
 				// if basetoken.Blockchain == dia.ASTAR && t.Source == dia.ArthswapExchange && basetoken.Address == common.HexToAddress("0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98").Hex() {
 				// 	basetoken = dia.Asset{
