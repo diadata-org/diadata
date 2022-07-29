@@ -291,8 +291,7 @@ func main() {
 		diaGroup.GET("/NFTVolatility/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetNFTFloorVola))
 		diaGroup.GET("/topNFT/:numCollections", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetTopNFTClasses))
 		diaGroup.GET("/NFTVolume/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetNFTVolume))
-
-		diaGroup.GET("/assetmap/:address/:blockchain", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetAssetMap))
+		diaGroup.GET("/assetmap/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetAssetMap))
 		diaGroup.GET("/assetUpdates/:blockchain/:address/:deviation/:frequencySeconds", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetAssetUpdates))
 
 	}
