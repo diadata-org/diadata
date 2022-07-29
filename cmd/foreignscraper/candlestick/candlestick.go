@@ -4,13 +4,10 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/json"
-	"errors"
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"math"
 	"net/http"
-	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -710,69 +707,16 @@ func makeVWAP(pairData map[string][]candlestickMessage, basispoints float64) (ma
 	vwapMap := make(map[string]float64)
 	// key is a market, such as BTCUSDT, and value is a slice of data on this market from various exchanges.
 	for key, value := range pairData {
-		cleanedPrices, cleanedVolumes, err := discardOutliers(getPrices(value), getVolumes(value), basispoints, value)
+		cleanedPrices, cleanedVolumes, _, err := utils.DiscardOutliers(getPrices(value), getVolumes(value), basispoints)
 		if err != nil {
 			return vwapMap, err
 		}
-		vwapMap[key], err = vwap(cleanedPrices, cleanedVolumes)
+		vwapMap[key], err = utils.Vwap(cleanedPrices, cleanedVolumes)
 		if err != nil {
 			return vwapMap, err
 		}
 	}
 	return vwapMap, nil
-}
-
-// vwap returns the volume weighted average price for the slices @prices and @volumes.
-func vwap(prices []float64, volumes []float64) (float64, error) {
-	//log.Info("prices, volumes: ", prices, volumes)
-	if len(prices) != len(volumes) {
-		return 0, errors.New("number of prices does not equal number of volumes ")
-	}
-	avg := float64(0)
-	totalVolume := float64(0)
-	for i := 0; i < len(prices); i++ {
-		avg += prices[i] * math.Abs(volumes[i])
-		totalVolume += math.Abs(volumes[i])
-	}
-	if totalVolume > 0 {
-		return avg / totalVolume, nil
-	} else {
-		return 0, nil
-	}
-}
-
-// discardOutliers discards every data point from @prices and @volumes that deviates from
-// the price median by more than @basispoints basis points.
-func discardOutliers(prices []float64, volumes []float64, basispoints float64, values []candlestickMessage) (newPrices []float64, newVolumes []float64, err error) {
-	if len(prices) != len(volumes) {
-		err = errors.New("number of prices does not equal number of volumes ")
-		return
-	}
-	median := computeMedian(prices)
-	threshold := basispoints * float64(0.0001) * median
-	for i := 0; i < len(prices); i++ {
-		if math.Abs(prices[i]-median) < threshold {
-			newPrices = append(newPrices, prices[i])
-			newVolumes = append(newVolumes, volumes[i])
-		} else {
-			log.Warnf("discard %s on %s", values[i].ForeignName, values[i].Source)
-		}
-	}
-	return
-}
-
-// computeMedian returns the median of @samples.
-func computeMedian(samples []float64) (median float64) {
-	var length = len(samples)
-	if length > 0 {
-		sort.Float64s(samples)
-		if length%2 == 0 {
-			median = (samples[length/2-1] + samples[length/2]) / 2
-		} else {
-			median = samples[(length+1)/2-1]
-		}
-	}
-	return
 }
 
 func getPrices(messages []candlestickMessage) (prices []float64) {

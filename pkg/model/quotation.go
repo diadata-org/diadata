@@ -162,14 +162,54 @@ func (datastore *DB) GetAssetQuotation(asset dia.Asset, timestamp time.Time) (*A
 			}
 			log.Infof("queried price for %s: %v", asset.Symbol, quotation.Price)
 		} else {
-			return &quotation, errors.New("no assetQuotation in influx")
+			return &quotation, errors.New("no assetQuotation in DB")
 		}
 	} else {
-		return &quotation, errors.New("no assetQuotation in influx")
+		return &quotation, errors.New("no assetQuotation in DB")
 	}
 	quotation.Asset = asset
 	quotation.Source = dia.Diadata
 	return &quotation, nil
+}
+
+// GetAssetQuotations returns all assetQuotations for @asset in the given time-range.
+func (datastore *DB) GetAssetQuotations(asset dia.Asset, starttime time.Time, endtime time.Time) ([]AssetQuotation, error) {
+
+	quotations := []AssetQuotation{}
+	q := fmt.Sprintf(
+		"SELECT price FROM %s WHERE address='%s' AND blockchain='%s' AND time>%d AND time<=%d ORDER BY DESC",
+		influxDBAssetQuotationsTable,
+		asset.Address,
+		asset.Blockchain,
+		starttime.UnixNano(),
+		endtime.UnixNano(),
+	)
+
+	res, err := queryInfluxDB(datastore.influxClient, q)
+	if err != nil {
+		return quotations, err
+	}
+
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for i := range res[0].Series[0].Values {
+			var quotation AssetQuotation
+			quotation.Time, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
+			if err != nil {
+				return quotations, err
+			}
+			quotation.Price, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
+			if err != nil {
+				return quotations, err
+			}
+			quotation.Asset = asset
+			quotation.Source = dia.Diadata
+			quotations = append(quotations, quotation)
+		}
+	} else {
+		return quotations, errors.New("no assetQuotation in DB")
+	}
+
+	return quotations, nil
 }
 
 // SetAssetQuotationCache stores @quotation in redis cache.

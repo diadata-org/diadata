@@ -79,6 +79,7 @@ const (
 	ByBitExchange             = "ByBit"
 	BitMexExchange            = "BitMex"
 	MultiChain                = "MultiChain"
+	StellaswapExchange        = "Stellaswap"
 
 	// FinageForex        = "FinageForex"
 )

@@ -40,7 +40,7 @@ func main() {
 		log.Fatal("parse batch duration ", err)
 	}
 
-	diaSchema := graphql.MustParseSchema(ds, &resolver.DiaResolver{DS: *datastore, RelDB: *relStore, InfluxBatchSize: influxBatchSize}, graphql.UseStringDescriptions())
+	diaSchema := graphql.MustParseSchema(ds, &resolver.DiaResolver{DS: *datastore, RelDB: *relStore, InfluxBatchSize: influxBatchSize}, graphql.UseFieldResolvers())
 
 	mux := http.NewServeMux()
 	urlFolderPrefix := utils.Getenv("URL_FOLDER_PREFIX", "/graphql")

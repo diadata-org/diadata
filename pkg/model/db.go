@@ -52,10 +52,10 @@ type Datastore interface {
 	SaveFilterInflux(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error
 	GetLastTrades(asset dia.Asset, exchange string, maxTrades int, fullAsset bool) ([]dia.Trade, error)
 	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
-	GetTradesByExchanges(asset dia.Asset, exchange []string, startTime, endTime time.Time) ([]dia.Trade, error)
-	GetTradesByExchangesFull(asset dia.Asset, exchanges []string, returnBasetoken bool, startTime, endTime time.Time) ([]dia.Trade, error)
-	GetTradesByExchangesBatched(asset dia.Asset, exchanges []string, startTimes, endTimes []time.Time) ([]dia.Trade, error)
-	GetTradesByExchangesBatchedFull(asset dia.Asset, exchanges []string, returnBasetoken bool, startTimes, endTimes []time.Time) ([]dia.Trade, error)
+	GetTradesByExchanges(asset dia.Asset, baseAssets []dia.Asset, exchange []string, startTime, endTime time.Time) ([]dia.Trade, error)
+	GetTradesByExchangesFull(asset dia.Asset, baseAssets []dia.Asset, exchanges []string, returnBasetoken bool, startTime, endTime time.Time) ([]dia.Trade, error)
+	GetTradesByExchangesBatched(asset dia.Asset, baseAssets []dia.Asset, exchanges []string, startTimes, endTimes []time.Time) ([]dia.Trade, error)
+	GetTradesByExchangesBatchedFull(asset dia.Asset, baseAssets []dia.Asset, exchanges []string, returnBasetoken bool, startTimes, endTimes []time.Time) ([]dia.Trade, error)
 	GetOldTradesFromInflux(table string, exchange string, verified bool, timeInit, timeFinal time.Time) ([]dia.Trade, error)
 	CopyInfluxMeasurements(dbOrigin string, dbDestination string, tableOrigin string, tableDestination string, timeInit time.Time, timeFinal time.Time) (int64, error)
 	DeleteInfluxMeasurement(dbName string, tableName string, timeInit time.Time, timeFinal time.Time) error
@@ -89,6 +89,7 @@ type Datastore interface {
 	GetAssetPriceUSDLatest(asset dia.Asset) (price float64, err error)
 	SetAssetQuotation(quotation *AssetQuotation) error
 	GetAssetQuotation(asset dia.Asset, timestamp time.Time) (*AssetQuotation, error)
+	GetAssetQuotations(asset dia.Asset, starttime time.Time, endtime time.Time) ([]AssetQuotation, error)
 	GetAssetQuotationLatest(asset dia.Asset) (*AssetQuotation, error)
 	GetSortedAssetQuotations(assets []dia.Asset) ([]AssetQuotation, error)
 	AddAssetQuotationsToBatch(quotations []*AssetQuotation) error
@@ -144,19 +145,6 @@ type Datastore interface {
 	// Gold token methods
 	GetPaxgQuotationOunces() (*Quotation, error)
 	GetPaxgQuotationGrams() (*Quotation, error)
-	// Crypto Index methods
-	GetCryptoIndexTime(starttime, endtime time.Time, symbol string) (time.Time, error)
-	GetCryptoIndex(time.Time, time.Time, string, int) ([]CryptoIndex, error)
-	SetCryptoIndex(index *CryptoIndex) error
-	GetCryptoIndexValues(starttime time.Time, endtime time.Time, symbol string, maxResults int) ([]CryptoIndex, error)
-	GetCryptoIndexValuesSpaced(starttime time.Time, endtime time.Time, symbol string, frequency string) ([]CryptoIndex, error)
-	GetCryptoIndexConstituents(time.Time, time.Time, dia.Asset, string) ([]CryptoIndexConstituent, error)
-	SetCryptoIndexConstituent(*CryptoIndexConstituent, dia.Asset, time.Time) error
-	GetCryptoIndexConstituentPrice(symbol string, date time.Time) (float64, error)
-	GetIndexPrice(asset dia.Asset, time time.Time, window time.Duration) (*dia.Trade, error)
-	GetCurrentIndexCompositionForIndex(index dia.Asset) []CryptoIndexConstituent
-	IndexValueCalculation(currentConstituents []CryptoIndexConstituent, indexAsset dia.Asset, indexValue float64) CryptoIndex
-	UpdateConstituentsMarketData(index string, currentConstituents *[]CryptoIndexConstituent) error
 
 	SaveIndexEngineTimeInflux(map[string]string, map[string]interface{}, time.Time) error
 	GetBenchmarkedIndexValuesInflux(string, time.Time, time.Time) (BenchmarkedIndex, error)
@@ -191,25 +179,23 @@ type DB struct {
 }
 
 const (
-	influxDbName                         = "dia"
-	influxDbOldTradesTable               = "oldTrades"
-	influxDbTradesTable                  = "trades"
-	influxDbFiltersTable                 = "filters"
-	influxDbFiatQuotationsTable          = "fiat"
-	influxDbOptionsTable                 = "options"
-	influxDbCVITable                     = "cvi"
-	influxDbETHCVITable                  = "cviETH"
-	influxDbSupplyTable                  = "supplies"
-	influxDbDefiRateTable                = "defiRate"
-	influxDbDefiStateTable               = "defiState"
-	influxDbDEXPoolTable                 = "DEXPools"
-	influxDbCryptoIndexTable             = "cryptoindex"
-	influxDbCryptoIndexConstituentsTable = "cryptoindexconstituents"
-	influxDbGithubCommitTable            = "githubcommits"
-	influxDbStockQuotationsTable         = "stockquotations"
-	influxDBAssetQuotationsTable         = "assetQuotations"
-	influxDbBenchmarkedIndexTableName    = "benchmarkedIndexValues"
-	influxDbVwapFireflyTable             = "vwapFirefly"
+	influxDbName                      = "dia"
+	influxDbOldTradesTable            = "oldTrades"
+	influxDbTradesTable               = "trades"
+	influxDbFiltersTable              = "filters"
+	influxDbFiatQuotationsTable       = "fiat"
+	influxDbOptionsTable              = "options"
+	influxDbCVITable                  = "cvi"
+	influxDbETHCVITable               = "cviETH"
+	influxDbSupplyTable               = "supplies"
+	influxDbDefiRateTable             = "defiRate"
+	influxDbDefiStateTable            = "defiState"
+	influxDbDEXPoolTable              = "DEXPools"
+	influxDbGithubCommitTable         = "githubcommits"
+	influxDbStockQuotationsTable      = "stockquotations"
+	influxDBAssetQuotationsTable      = "assetQuotations"
+	influxDbBenchmarkedIndexTableName = "benchmarkedIndexValues"
+	influxDbVwapFireflyTable          = "vwapFirefly"
 
 	influxDBDefaultURL = "http://influxdb:8086"
 )

@@ -21,7 +21,6 @@ var (
 	log                  *logrus.Logger
 	swapTradesOnExchange = []string{
 		dia.CurveFIExchange,
-		dia.QuickswapExchange,
 		dia.OmniDexExchange,
 		dia.DiffusionExchange,
 		dia.BalancerV2Exchange,

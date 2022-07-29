@@ -92,13 +92,13 @@ type RelDatastore interface {
 	// NFT trading and bidding methods
 	SetNFTTrade(trade dia.NFTTrade) error
 	SetNFTTradeToTable(trade dia.NFTTrade, table string) error
-	GetNFTTrades(address string, blockchain string, tokenID string) ([]dia.NFTTrade, error)
-	GetNFTTradesFromTable(address string, blockchain string, tokenID string, starttime time.Time, endtime time.Time, table string) ([]dia.NFTTrade, error)
+	GetNFTTrades(address string, blockchain string, tokenID string, starttime time.Time, endtime time.Time) ([]dia.NFTTrade, error)
+	GetNFTTradesCollection(address string, blockchain string, starttime time.Time, endtime time.Time) ([]dia.NFTTrade, error)
 	GetNFTOffers(address string, blockchain string, tokenID string) ([]dia.NFTOffer, error)
 	GetNFTBids(address string, blockchain string, tokenID string) ([]dia.NFTBid, error)
-	GetNFTFloor(nftclass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration) (float64, error)
-	GetNFTFloorRecursive(nftClass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, stepBackLimit int) (float64, error)
-	GetNFTFloorRange(nftClass dia.NFTClass, starttime time.Time, endtime time.Time, floorWindowSeconds time.Duration, stepBackLimit int) ([]float64, error)
+	GetNFTFloor(nftclass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, noBundles bool) (float64, error)
+	GetNFTFloorRecursive(nftClass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, stepBackLimit int, noBundles bool) (float64, error)
+	GetNFTFloorRange(nftClass dia.NFTClass, starttime time.Time, endtime time.Time, floorWindowSeconds time.Duration, stepBackLimit int, noBundles bool) ([]float64, error)
 	GetLastBlockheightTopshot(upperBound time.Time) (uint64, error)
 	SetNFTBid(bid dia.NFTBid) error
 	GetLastNFTBid(address string, blockchain string, tokenID string, blockNumber uint64, blockPosition uint) (dia.NFTBid, error)
@@ -109,7 +109,7 @@ type RelDatastore interface {
 	GetLastNFTOffer(address string, blockchain string, tokenID string, blockNumber uint64, blockPosition uint) (offer dia.NFTOffer, err error)
 
 	// NFT stats
-	GetTopNFTsEth(numCollections int, starttime time.Time, endtime time.Time) ([]struct {
+	GetTopNFTsEth(numCollections int, exchanges []string, starttime time.Time, endtime time.Time) ([]struct {
 		Name       string
 		Address    string
 		Blockchain string
@@ -157,7 +157,6 @@ const (
 	nftcategoryTable     = "nftcategory"
 	nftclassTable        = "nftclass"
 	nftTable             = "nft"
-	nfttradeTable        = "nfttrade"
 	NfttradeCurrTable    = "nfttradecurrent"
 	NfttradeSumeriaTable = "nfttradesumeria"
 	nftbidTable          = "nftbid"
@@ -178,7 +177,7 @@ type RelDB struct {
 
 // NewRelDataStore returns a datastore with postgres client and redis cache.
 func NewRelDataStore() (*RelDB, error) {
-	log.Info("new rel datastore-------------------------")
+	log.Info("NewRelDataStore: Initialised")
 	return NewRelDataStoreWithOptions(true, true)
 }
 
