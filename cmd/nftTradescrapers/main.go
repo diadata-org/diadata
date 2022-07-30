@@ -53,6 +53,9 @@ func main() {
 	case "Topshot":
 		log.Println("NFT Trades Scraper: Start scraping trades from NBA Topshot")
 		scraper = nfttradescrapers.NewNBATopshotScraper(rdb)
+	case "X2Y2":
+		log.Println("NFT Trades Scraper: Start scraping trades from X2Y2")
+		scraper = nfttradescrapers.NewX2Y2Scraper(rdb)
 	case "Opensea":
 		log.Println("NFT Trades Scraper: Start scraping trades from Opensea")
 		scraper = nfttradescrapers.NewOpenSeaScraper(rdb)

@@ -163,13 +163,12 @@ func init() {
 	X2Y2 = utils.Getenv("SCRAPER_NAME_STATE", "")
 
 	// If scraper state is not set yet, start from this block
-	initBlockNumString := utils.Getenv("LAST_BLOCK_NUM", "14120913")
+	initBlockNumString := utils.Getenv("LAST_BLOCK_NUM", "14139341")
 	initBlockNum, err := strconv.ParseInt(initBlockNumString, 10, 64)
 	if err != nil {
 		log.Error("parse timeFinal: ", err)
 	}
 	defX2Y2State.LastBlockNum = uint64(initBlockNum)
-
 }
 
 func NewX2Y2Scraper(rdb *models.RelDB) *X2Y2Scraper {
@@ -181,8 +180,8 @@ func NewX2Y2Scraper(rdb *models.RelDB) *X2Y2Scraper {
 	}
 
 	s := &X2Y2Scraper{
-		conf:  &X2Y2ScraperConfig{},
-		state: &X2Y2ScraperState{},
+		conf:  defX2Y2Conf,
+		state: defX2Y2State,
 		tradeScraper: TradeScraper{
 			shutdown:      make(chan nothing),
 			shutdownDone:  make(chan nothing),
@@ -198,7 +197,7 @@ func NewX2Y2Scraper(rdb *models.RelDB) *X2Y2Scraper {
 		return nil
 	}
 
-	log.Info("scraper %s starts at block: %s", X2Y2, s.state.LastBlockNum)
+	log.Infof("scraper %s starts at block: %v", X2Y2, s.state.LastBlockNum)
 	time.Sleep(2 * time.Minute)
 	go s.mainLoop()
 
