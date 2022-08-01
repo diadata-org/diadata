@@ -206,6 +206,7 @@ func (env *Env) GetQuotation(c *gin.Context) {
 
 	c.JSON(http.StatusOK, quotationExtended)
 }
+
 func (env *Env) GetAssetMap(c *gin.Context) {
 	address := c.Param("address")
 	blockchain := c.Param("blockchain")
@@ -2478,4 +2479,90 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 		c.JSON(http.StatusOK, retVal)
 	}
 
+}
+
+// GetAssetUpdates returns the number of updates an oracle with the given parameters
+// would have done in the given time-range.
+func (env *Env) GetAssetUpdates(c *gin.Context) {
+
+	type localDeviationType struct {
+		Time      time.Time `json:"Time"`
+		Deviation float64   `json:"Deviation"`
+	}
+	type localResultType struct {
+		UpdateCount   int                  `json:"UpdateCount"`
+		UpdatesPer24h float64              `json:"UpdatesPer24h"`
+		Asset         dia.Asset            `json:"Asset"`
+		Deviations    []localDeviationType `json:"Deviations"`
+	}
+
+	blockchain := c.Param("blockchain")
+	address := c.Param("address")
+	// Deviation in per mille.
+	deviation, err := strconv.Atoi(c.Param("deviation"))
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+	FrequencySeconds, err := strconv.Atoi(c.Param("frequencySeconds"))
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*60)*time.Minute)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+	if endtime.Sub(starttime) > time.Duration(7*24*60)*time.Minute {
+		restApi.SendError(c, http.StatusRequestedRangeNotSatisfiable, errors.New("Requested time-range too large."))
+		return
+	}
+
+	asset, err := env.RelDB.GetAsset(address, blockchain)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	quotations, err := env.DataStore.GetAssetQuotations(asset, starttime, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	var lrt localResultType
+
+	lastQuotation := quotations[len(quotations)-1]
+	lastValue := lastQuotation.Price
+	for i := len(quotations) - 2; i >= 0; i-- {
+		var diff float64
+		// Oracle did not check for new quotation yet.
+		if quotations[i].Time.Sub(lastQuotation.Time) < time.Duration(FrequencySeconds)*time.Second {
+			continue
+		}
+		if lastValue != 0 {
+			diff = math.Abs((quotations[i].Price - lastValue) / lastValue)
+		} else {
+			// Artificially make diff large enough for update (instead of infty).
+			diff = float64(deviation)/1000 + 1
+		}
+		// If deviation is large enough, update values.
+		if diff > float64(deviation)/1000 {
+			lastQuotation = quotations[i]
+			lastValue = lastQuotation.Price
+
+			var ldt localDeviationType
+			ldt.Deviation = diff
+			ldt.Time = lastQuotation.Time
+			lrt.Deviations = append(lrt.Deviations, ldt)
+			lrt.UpdateCount++
+
+		}
+	}
+
+	lrt.Asset = asset
+	lrt.UpdatesPer24h = float64(lrt.UpdateCount) * float64(time.Duration(24*time.Hour).Hours()/endtime.Sub(starttime).Hours())
+	c.JSON(http.StatusOK, lrt)
 }

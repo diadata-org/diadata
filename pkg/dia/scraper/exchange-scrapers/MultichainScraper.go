@@ -343,7 +343,9 @@ func (s *BridgeSwapScraper) mapasset(t dia.Trade) {
 	if err != nil {
 		log.Errorln("quotetoken not exists", quoteToken_id)
 	} else if quote_group_id != "" {
-		s.relDB.InsertAssetMap(quote_group_id, baseToken_id)
+		log.Errorln("InsertAssetMap1 ", quote_group_id, baseToken_id)
+		err := s.relDB.InsertAssetMap(quote_group_id, baseToken_id)
+		log.Errorln("err InsertAssetMap1", err)
 		return
 	}
 
@@ -351,18 +353,23 @@ func (s *BridgeSwapScraper) mapasset(t dia.Trade) {
 	if err != nil {
 		log.Errorln("base does not exists ")
 	} else if quote_group_id != "" {
-		s.relDB.InsertAssetMap(base_group_id, quoteToken_id)
+		log.Errorln("InsertAssetMap2 ", quote_group_id, baseToken_id)
+		err := s.relDB.InsertAssetMap(base_group_id, quoteToken_id)
+		log.Errorln("err InsertAssetMap2", err)
+
 		return
 	}
+	log.Errorln("InsertAssetMap3 ", quoteToken_id)
 
-	s.relDB.InsertNewAssetMap(quoteToken_id)
+	err = s.relDB.InsertNewAssetMap(quoteToken_id)
+	log.Errorln("err InsertAssetMap3", err)
 
 	gpid, err := s.relDB.GetAssetMap(quoteToken_id)
 	if err != nil {
 		log.Errorln("gpid generated err ", err)
 	}
-	s.relDB.InsertAssetMap(baseToken_id, gpid)
-	log.Infoln("quote_group_id, base_group_id", quote_group_id, base_group_id)
+	s.relDB.InsertAssetMap(gpid, baseToken_id)
+	log.Infoln("quote_group_id, base_group_id", baseToken_id, gpid)
 }
 
 func GetDecimals(tokenAddress common.Address, chainid string) (decimals uint8, err error) {
@@ -498,6 +505,26 @@ func InitialiseRestClientsMap() {
 		log.Fatal("init rest client: ", err)
 	}
 
+	restClients["43114"], err = ethclient.Dial("https://rpc.ankr.com/avalanche")
+	if err != nil {
+		log.Fatal("init rest client: ", err)
+	}
+
+	restClients["10"], err = ethclient.Dial("https://mainnet.optimism.io")
+	if err != nil {
+		log.Fatal("init rest client: ", err)
+	}
+
+	restClients["1285"], err = ethclient.Dial("https://rpc.api.moonriver.moonbeam.network")
+	if err != nil {
+		log.Fatal("init rest client: ", err)
+	}
+
+	restClients["66"], err = ethclient.Dial("https://exchainrpc.okex.org")
+	if err != nil {
+		log.Fatal("init rest client: ", err)
+	}
+
 }
 
 func InitialiseWsClientsMap() {
@@ -508,7 +535,7 @@ func InitialiseWsClientsMap() {
 	for chainID, chainconfig := range multichainconfigs {
 		wsClients[chainID], err = ethclient.Dial(chainconfig.wsURL)
 		if err != nil {
-			log.Fatal("init ws client: ", err)
+			log.Errorln("init ws client: ", err)
 		}
 
 	}
