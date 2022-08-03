@@ -25,20 +25,8 @@
             "ForeignName": "WMATIC-WETH"
         },
         {
-            "Address": "0x3902b89e0e28a23f82086b87bb81ef5a1eabf276",
-            "ForeignName": "WETH-RVLT"
-        },
-        {
-            "Address": "0x304e57c752e854e9a233ae82fcc42f7568b81180",
-            "ForeignName": "USDT-IXT"
-        },
-        {
             "Address": "0x4a35582a710e1f4b2030a3f826da20bfb6703c09",
             "ForeignName": "WETH-DAI"
-        },
-        {
-            "Address": "0x6e53cb6942e518376e9e763554db1a45ddcd25c4",
-            "ForeignName": "DAI-GNS"
         },
         {
             "Address": "0x7c303894a165830751f524ebdb6b198affbb7211",
