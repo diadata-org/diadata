@@ -2,6 +2,12 @@
     "Coins": [
         {
             "Exchange": "Binance",
+            "ForeignName": "QUICKUSDT",
+            "Ignore": false,
+            "Symbol": "QUICK"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "DOTUSDT",
             "Ignore": false,
             "Symbol": "DOT"

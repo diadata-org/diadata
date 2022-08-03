@@ -1,6 +1,12 @@
 {
     "Tokens": [
         {
+            "Symbol": "QUICK",
+            "Exchange": "CoinBase",
+            "Blockchain": "Polygon",
+            "Address": "0x831753DD7087CaC61aB5644b308642cc1c33Dc13"
+        },
+        {
             "Symbol": "WBTC",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
