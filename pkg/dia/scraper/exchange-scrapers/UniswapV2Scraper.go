@@ -359,6 +359,10 @@ func (s *UniswapScraper) ListenToPair(i int, address common.Address, byAddress b
 		log.Info("skip pair ", pair.ForeignName, ", address is blacklisted")
 		return
 	}
+	if helpers.PoolIsBlacklisted(pair.Address) {
+		log.Info("skip blacklisted pool ", pair.Address)
+		return
+	}
 
 	// Normalize WETH on Ethereum
 	if Exchanges[s.exchangeName].BlockChain.Name == dia.ETHEREUM {
