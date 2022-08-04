@@ -173,9 +173,8 @@ func NewBridgeSwapScraper(exchange dia.Exchange, scrape bool, relDB *models.RelD
 	log.Println("chainConfigs", chainConfigs)
 
 	multichainconfigs["56"] = MultiChainConfig{restURL: chainConfigs["56"].RestURL, wsURL: chainConfigs["56"].WSURL, contratDeployedAtBlock: 7910338, contractAddress: "0xd1c5966f9f5ee6881ff6b261bbeda45972b1b5f3"}
-	multichainconfigs["56"] = MultiChainConfig{restURL: chainConfigs["56"].RestURL, wsURL: chainConfigs["56"].WSURL, contratDeployedAtBlock: 7910338, contractAddress: "0xd1c5966f9f5ee6881ff6b261bbeda45972b1b5f3"}
+	multichainconfigs["137"] = MultiChainConfig{restURL: chainConfigs["137"].RestURL, wsURL: chainConfigs["137"].WSURL, contratDeployedAtBlock: 17355461, contractAddress: "0x6ff0609046a38d76bd40c5863b4d1a2dce687f73"}
 	multichainconfigs["1"] = MultiChainConfig{restURL: chainConfigs["1"].RestURL, wsURL: chainConfigs["1"].WSURL, contratDeployedAtBlock: 12242619, contractAddress: "0x765277eebeca2e31912c9946eae1021199b39c61"}
-
 	multichainconfigs["250"] = MultiChainConfig{restURL: chainConfigs["250"].RestURL, wsURL: chainConfigs["250"].WSURL, contratDeployedAtBlock: 8475644, contractAddress: "0x1ccca1ce62c62f7be95d4a67722a8fdbed6eecb4"}
 
 	log.Info("NewBridgeSwapScraper: ", exchange.Name)
@@ -494,7 +493,7 @@ func InitialiseRestClientsMap() {
 		log.Fatal("init rest client: ", err)
 	}
 
-	restClients["137"], err = ethclient.Dial(polygonHTTP)
+	restClients["137"], err = ethclient.Dial(multichainconfigs["137"].restURL)
 	if err != nil {
 		log.Fatal("init rest client: ", err)
 	}
