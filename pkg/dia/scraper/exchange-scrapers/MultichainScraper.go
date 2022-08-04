@@ -173,6 +173,9 @@ func NewBridgeSwapScraper(exchange dia.Exchange, scrape bool, relDB *models.RelD
 	log.Println("chainConfigs", chainConfigs)
 
 	multichainconfigs["56"] = MultiChainConfig{restURL: chainConfigs["56"].RestURL, wsURL: chainConfigs["56"].WSURL, contratDeployedAtBlock: 7910338, contractAddress: "0xd1c5966f9f5ee6881ff6b261bbeda45972b1b5f3"}
+	multichainconfigs["56"] = MultiChainConfig{restURL: chainConfigs["56"].RestURL, wsURL: chainConfigs["56"].WSURL, contratDeployedAtBlock: 7910338, contractAddress: "0xd1c5966f9f5ee6881ff6b261bbeda45972b1b5f3"}
+	multichainconfigs["1"] = MultiChainConfig{restURL: chainConfigs["1"].RestURL, wsURL: chainConfigs["1"].WSURL, contratDeployedAtBlock: 12242619, contractAddress: "0x765277eebeca2e31912c9946eae1021199b39c61"}
+
 	multichainconfigs["250"] = MultiChainConfig{restURL: chainConfigs["250"].RestURL, wsURL: chainConfigs["250"].WSURL, contratDeployedAtBlock: 8475644, contractAddress: "0x1ccca1ce62c62f7be95d4a67722a8fdbed6eecb4"}
 
 	log.Info("NewBridgeSwapScraper: ", exchange.Name)
