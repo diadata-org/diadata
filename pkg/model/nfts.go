@@ -408,33 +408,50 @@ func (rdb *RelDB) GetNFTTrades(address string, blockchain string, tokenID string
 	return
 }
 
-// GetNFTFloor returns the floor price of @nftclass w.r.t. the last 24h.
-func (rdb *RelDB) GetNFTFloor(nftclass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, noBundles bool) (floor float64, err error) {
+// GetNFTFloorLevel returns the floor price of @nftclass w.r.t. the last 24h.
+// Here, floor is w.r.t the lower bound @level.
+// For Ethereum, only trades with @currencies are taken into account.
+func (rdb *RelDB) GetNFTFloorLevel(
+	nftclass dia.NFTClass,
+	timestamp time.Time,
+	floorWindowSeconds time.Duration,
+	currencies []dia.Asset,
+	level float64,
+	noBundles bool,
+) (floor float64, err error) {
+
 	query := fmt.Sprintf(`
 	SELECT min(tr.price::numeric)
 	FROM %s tr INNER JOIN %s n
 	ON tr.nftclass_id=n.nftclass_id
 	WHERE tr.trade_time<=to_timestamp(%d) AND tr.trade_time>to_timestamp(%d)
-	AND tr.price::numeric>0
+	AND tr.price::numeric>%v
 	AND n.address='%s' AND n.blockchain='%s'`,
 		NfttradeCurrTable,
 		nftclassTable,
 		timestamp.Unix(),
 		timestamp.Add(-floorWindowSeconds).Unix(),
+		level,
 		nftclass.Address,
 		nftclass.Blockchain,
 	)
-	if nftclass.Blockchain == dia.ETHEREUM {
-		query += fmt.Sprintf(" AND (currency_id=(SELECT asset_id FROM %s WHERE blockchain='%s' AND address='%s') OR ",
-			assetTable,
-			dia.ETHEREUM,
-			"0x0000000000000000000000000000000000000000",
-		)
-		query += fmt.Sprintf(" currency_id=(SELECT asset_id FROM %s WHERE blockchain='%s' AND address='%s'))",
-			assetTable,
-			dia.ETHEREUM,
-			"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-		)
+	// Only take into account selected currencies for payment.
+	if nftclass.Blockchain == dia.ETHEREUM || nftclass.Blockchain == dia.ASTAR {
+		for i, currency := range currencies {
+			if i == 0 {
+				query += " AND ("
+			}
+			query += fmt.Sprintf("  currency_id=(SELECT asset_id FROM %s WHERE blockchain='%s' AND address='%s') ",
+				assetTable,
+				currency.Blockchain,
+				currency.Address,
+			)
+			if i < len(currencies)-1 {
+				query += " OR "
+			} else {
+				query += " ) "
+			}
+		}
 	}
 	if noBundles {
 		query += " AND tr.bundle_sale=false"
@@ -446,9 +463,7 @@ func (rdb *RelDB) GetNFTFloor(nftclass dia.NFTClass, timestamp time.Time, floorW
 		return
 	}
 
-	// var f *big.Float
 	if floorFloat.Valid {
-		// f = big.NewFloat(0).SetFloat64(floorFloat.Float64)
 		floor, _ = new(big.Float).Quo(big.NewFloat(0).SetFloat64(floorFloat.Float64), new(big.Float).SetFloat64(math.Pow10(18))).Float64()
 	} else {
 		err = errors.New("no result in given time-range")
@@ -456,6 +471,23 @@ func (rdb *RelDB) GetNFTFloor(nftclass dia.NFTClass, timestamp time.Time, floorW
 	}
 
 	return
+}
+
+// GetNFTFloor returns the floor price of @nftclass w.r.t. the last 24h.
+func (rdb *RelDB) GetNFTFloor(nftclass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, noBundles bool) (floor float64, err error) {
+	var paymentCurrencies []dia.Asset
+	switch nftclass.Blockchain {
+	case dia.ETHEREUM:
+		paymentCurrencies = append(paymentCurrencies, dia.Asset{Blockchain: dia.ETHEREUM, Address: "0x0000000000000000000000000000000000000000"})
+		paymentCurrencies = append(paymentCurrencies, dia.Asset{Blockchain: dia.ETHEREUM, Address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"})
+	case dia.ASTAR:
+		paymentCurrencies = append(paymentCurrencies, dia.Asset{Blockchain: dia.ASTAR, Address: "0x0000000000000000000000000000000000000000"})
+		paymentCurrencies = append(paymentCurrencies, dia.Asset{Blockchain: dia.ASTAR, Address: "0x9dA4A3a345bf6371f8e47c63Cad2293e532022dE"})
+	case dia.BINANCESMARTCHAIN:
+		paymentCurrencies = append(paymentCurrencies, dia.Asset{Blockchain: dia.BINANCESMARTCHAIN, Address: "0x0000000000000000000000000000000000000000"})
+		paymentCurrencies = append(paymentCurrencies, dia.Asset{Blockchain: dia.BINANCESMARTCHAIN, Address: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"})
+	}
+	return rdb.GetNFTFloorLevel(nftclass, timestamp, floorWindowSeconds, paymentCurrencies, float64(0), noBundles)
 }
 
 // GetNFTFloorRecursive returns the floor price of @nftclass. If necessary, it iterates back in time until it finds a floor price.

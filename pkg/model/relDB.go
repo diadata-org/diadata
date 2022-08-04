@@ -97,6 +97,7 @@ type RelDatastore interface {
 	GetNFTOffers(address string, blockchain string, tokenID string) ([]dia.NFTOffer, error)
 	GetNFTBids(address string, blockchain string, tokenID string) ([]dia.NFTBid, error)
 	GetNFTFloor(nftclass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, noBundles bool) (float64, error)
+	GetNFTFloorLevel(nftclass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, currencies []dia.Asset, level float64, noBundles bool) (float64, error)
 	GetNFTFloorRecursive(nftClass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, stepBackLimit int, noBundles bool) (float64, error)
 	GetNFTFloorRange(nftClass dia.NFTClass, starttime time.Time, endtime time.Time, floorWindowSeconds time.Duration, stepBackLimit int, noBundles bool) ([]float64, error)
 	GetLastBlockheightTopshot(upperBound time.Time) (uint64, error)
