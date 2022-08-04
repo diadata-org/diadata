@@ -1,0 +1,160 @@
+{
+    "Pools": [
+        {
+            "Address": "0x2b4c76d0dc16be1c31d4c1dc53bf9b45987fc75c",
+            "ForeignName": "USDC-FTM"
+        },
+        {
+            "Address": "0xe120ffbda0d14f3bb6d6053e90e63c572a66a428",
+            "ForeignName": "FTM-DAI"
+        },
+        {
+            "Address": "0x5965e53aa80a0bcf1cd6dbdd72e6a9b2aa047410",
+            "ForeignName": "fUSDT-FTM"
+        },
+        {
+            "Address": "0xf0702249f4d3a25cd3ded7859a165693685ab577",
+            "ForeignName": "FTM-ETH"
+        },
+        {
+            "Address": "0xfa5a5f0bc990be1d095c5385fff6516f6e03c0a7",
+            "ForeignName": "SPA-DAI"
+        },
+        {
+            "Address": "0xfdb9ab8b9513ad9e419cf19530fee49d412c3ee3",
+            "ForeignName": "FTM-BTC"
+        },
+        {
+            "Address": "0xec7178f4c41f346b2721907f5cf7628e388a7a58",
+            "ForeignName": "FTM-BOO"
+        },
+        {
+            "Address": "0x956de13ea0fa5b577e4097be837bf4ac80005820",
+            "ForeignName": "FTM-BNB"
+        },
+        {
+            "Address": "0x2a651563c9d3af67ae0388a5c8f89b867038089e",
+            "ForeignName": "FTM-TOMB"
+        },
+        {
+            "Address": "0x4733bc45ef91cf7ccecaeedb794727075fb209f2",
+            "ForeignName": "FTM-SHARE"
+        },
+        {
+            "Address": "0x6f86e65b255c9111109d2d2325ca2dfc82456efc",
+            "ForeignName": "FTM-MIM"
+        },
+        {
+            "Address": "0x0a80c53afc6de9dfb2017781436bfe5090f4acb4",
+            "ForeignName": "USDC-STG"
+        },
+        {
+            "Address": "0x89d9bc2f2d091cfbfc31e333d6dc555ddbc2fd29",
+            "ForeignName": "FTM-LINK"
+        },
+        {
+            "Address": "0xb471ac6ef617e952b84c6a9ff5de65a9da96c93b",
+            "ForeignName": "CRV-FTM"
+        },
+        {
+            "Address": "0xbc0eecda2d8141e3a26d2535c57cadcb1095bca9",
+            "ForeignName": "HEC-DAI"
+        },
+        {
+            "Address": "0x297c8990134bf1ee08ae5d8805042fbac8781201",
+            "ForeignName": "FTM-MULTI"
+        },
+        {
+            "Address": "0x651d8b9911f1183daa6c52852a4cbbfb59746bd5",
+            "ForeignName": "USDC-MIDAS"
+        },
+        {
+            "Address": "0xf8cb2980120469d79958151daa45eb937c6e1ed6",
+            "ForeignName": "USDC-BOO"
+        },
+        {
+            "Address": "0x41d88635029c4402bf9914782ae55c412f8f2142",
+            "ForeignName": "FTM-TOR"
+        },
+        {
+            "Address": "0x5df809e410d9cc577f0d01b4e623c567c7ad56c1",
+            "ForeignName": "FTM-AVAX"
+        },
+        {
+            "Address": "0xec454eda10accdd66209c57af8c12924556f3abd",
+            "ForeignName": "BTC-ETH"
+        },
+        {
+            "Address": "0xf66d2bf736c05723b62e833a5dd747e24855ff99",
+            "ForeignName": "FTM-ALPACA"
+        },
+        {
+            "Address": "0xf84e313b36e86315af7a06ff26c8b20e9eb443c3",
+            "ForeignName": "FTM-SUSHI"
+        },
+        {
+            "Address": "0xaf918ef5b9f33231764a5557881e6d3e5277d456",
+            "ForeignName": "FTM-DEUS"
+        },
+        {
+            "Address": "0x78f82c16992932efdd18d93f889141ccf326dbc2",
+            "ForeignName": "FTM-SPELL"
+        },
+        {
+            "Address": "0x4de9f0ed95de2461b6db1660f908348c42893b1a",
+            "ForeignName": "USDC-miMATIC"
+        },
+        {
+            "Address": "0x827177de913b759d5e9342726d4f758d188365df",
+            "ForeignName": "FTM-miMATIC"
+        },
+        {
+            "Address": "0xc3ee54b8190c6a16f5acf0ab8edc07270f6e99c5",
+            "ForeignName": "DAI-miMATIC"
+        },
+        {
+            "Address": "0x55d4ac7a7e7c12c5ec179670e7b530ef6f8269e3",
+            "ForeignName": "fUSDT-miMATIC"
+        },
+        {
+            "Address": "0x814f6070ba723442141d60a2fc26ab511532f41d",
+            "ForeignName": "ETH-miMATIC"
+        },
+        {
+            "Address": "0x0845c0bfe75691b1e21b24351aac581a7fb6b7df",
+            "ForeignName": "YFI-ETH"
+        },
+        {
+            "Address": "0xb2bc8197cb2dfe8475f0c53e5ba1496fe42aea6c",
+            "ForeignName": "USDC-USDB"
+        },
+        {
+            "Address": "0xd77fc9c4074b56ecf80009744391942fbfddd88b",
+            "ForeignName": "DAI-FHM"
+        },
+        {
+            "Address": "0x46622913ce40c54ec14857f72968d4baaf963947",
+            "ForeignName": "MIM-FHM"
+        },
+        {
+            "Address": "0xaa572e307518f967c5a9b1fdbabe368cc62c160c",
+            "ForeignName": "FTM-FHM"
+        },
+        {
+            "Address": "0xb817a71af709ac6a02e322187c5d0036e7a4c450",
+            "ForeignName": "USDC-FHM"
+        },
+        {
+            "Address": "0x596ad49f6da172be82286441bae6111848eea050",
+            "ForeignName": "USDC-TOMB"
+        },
+        {
+            "Address": "0xe22524a307c962c4c833291b12c0db249464ab3c",
+            "ForeignName": "TOMB-DAI"
+        },
+        {
+            "Address": "0x8e633d213212107808de38935b43dd4411097bfa",
+            "ForeignName": "fUSDT-TOMB"
+        }
+    ]
+}

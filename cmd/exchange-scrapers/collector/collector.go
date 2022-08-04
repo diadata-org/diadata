@@ -23,7 +23,6 @@ var (
 		dia.CurveFIExchange,
 		dia.OmniDexExchange,
 		dia.DiffusionExchange,
-		dia.BeetsExchange,
 		dia.SolarbeamExchange,
 		dia.AnyswapExchange,
 		dia.HermesExchange,

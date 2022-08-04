@@ -6,7 +6,19 @@
     },
     {
       "Address": "0xfB98B335551a418cD0737375a2ea0ded62Ea213b",
-      "Symbol": "MAI"
+      "Symbol": "miMATIC"
+    },
+    {
+      "Address": "0xDE12c7959E1a72bbe8a5f7A1dc8f8EeF9Ab011B3",
+      "Symbol": "DEI"
+    },
+    {
+      "Address": "0x6Fc9383486c163fA48becdEC79d6058f984f62cA",
+      "Symbol": "USDB"
+    },
+    {
+      "Address": "0xfa1FBb8Ef55A4855E5688C0eE13aC3f202486286",
+      "Symbol": "FHM"
     }
   ]
 }
