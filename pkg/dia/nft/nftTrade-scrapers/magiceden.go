@@ -23,6 +23,7 @@ const (
 	rpcEndpointSolana         = "https://solana-api.projectserum.com"
 	MagicEdenV2ProgramAddress = "M2mx93ekt1fmXSVkTrUL9xVFHkmME8HTUi5Cyc5aF7K"
 	SaleTxPrefix              = "f223c68952e1f2b6"
+	MetadataFee               = 0.00561672
 )
 
 var (
@@ -36,6 +37,24 @@ var (
 	}
 	defMagicEdenState = &MagicEdenScraperState{}
 )
+
+type SolanaNFTMetadata struct {
+	sourceAccount   solana.PublicKey
+	mintAccount     solana.PublicKey
+	name            string
+	symbol          string
+	uri             string
+	fee             int
+	creators        []NFTCreator
+	primarySaleDone int
+	isMutable       int
+}
+
+type NFTCreator struct {
+	account  solana.PublicKey
+	verified int
+	share    int
+}
 
 type MagicEdenScraper struct {
 	solanaRpcClient *rpc.Client
@@ -258,7 +277,26 @@ func (s *MagicEdenScraper) processTx(ctx context.Context, tx *rpc.TransactionSig
 	instDataLowerCase := strings.ToLower(instData)
 
 	if strings.HasPrefix(instDataLowerCase, SaleTxPrefix) {
-		if err := s.notifyTrade(tx, confirmedTx); err != nil {
+		nftAddrIndex := confirmedTx.Transaction.Message.Instructions[1].Accounts[2]
+		nftAddr := confirmedTx.Transaction.Message.AccountKeys[nftAddrIndex]
+		fromIndex := confirmedTx.Transaction.Message.Instructions[0].Accounts[0]
+		from := confirmedTx.Transaction.Message.AccountKeys[fromIndex]
+		toIndex := confirmedTx.Transaction.Message.Instructions[2].Accounts[1]
+		to := confirmedTx.Transaction.Message.AccountKeys[toIndex]
+
+		price := big.NewInt(int64(float64(confirmedTx.Meta.PostBalances[0]) - float64(confirmedTx.Meta.PreBalances[0])))
+		normPrice := decimal.NewFromBigInt(price, 0).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(9)))
+		usdPrice, err := s.calcUSDPrice(normPrice)
+		if err != nil {
+			return false, err
+		}
+
+		metadata, err := s.fetchNFTMetadata(ctx, nftAddr)
+		if err != nil {
+			return false, err
+		}
+
+		if err := s.notifyTrade(tx, nftAddr, from, to, metadata, price, usdPrice); err != nil {
 			return false, err
 		}
 		return false, nil
@@ -267,41 +305,20 @@ func (s *MagicEdenScraper) processTx(ctx context.Context, tx *rpc.TransactionSig
 	}
 }
 
-func (s *MagicEdenScraper) notifyTrade(tx *rpc.TransactionSignature, txWithMeta rpc.TransactionWithMeta) error {
-	//nftClass, err := s.createOrReadNFTClass(transfer)
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//nft, err := s.createOrReadNFT(nftClass, transfer)
-	//if err != nil {
-	//	return err
-	//}
-	//
+func (s *MagicEdenScraper) notifyTrade(tx *rpc.TransactionSignature, addr, from, to solana.PublicKey, metadata SolanaNFTMetadata, price *big.Int, usdPrice float64) error {
+	nft, err := s.createOrReadNFT(tx, metadata)
+	if err != nil {
+		return err
+	}
+
 	//// Get block time.
 	//timestamp, err := ethhelper.GetBlockTimeEth(int64(ev.Raw.BlockNumber), s.tradeScraper.datastore, s.tradeScraper.ethConnection)
 	//if err != nil {
 	//	log.Errorf("getting block time: %+v", err)
 	//}
 
-	nftAddrIndex := txWithMeta.Transaction.Message.Instructions[1].Accounts[2]
-	nftAddr := txWithMeta.Transaction.Message.AccountKeys[nftAddrIndex]
-	fromIndex := txWithMeta.Transaction.Message.Instructions[0].Accounts[0]
-	from := txWithMeta.Transaction.Message.AccountKeys[fromIndex]
-	toIndex := txWithMeta.Transaction.Message.Instructions[2].Accounts[1]
-	to := txWithMeta.Transaction.Message.AccountKeys[toIndex]
-
-	price := big.NewInt(int64(float64(txWithMeta.Meta.PostBalances[0]) - float64(txWithMeta.Meta.PreBalances[0])))
-	normPrice := decimal.NewFromBigInt(price, 0).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(9)))
-	usdPrice, err := s.calcUSDPrice(normPrice)
-	if err != nil {
-		return err
-	}
-
 	trade := dia.NFTTrade{
-		NFT: dia.NFT{
-			NFTClass: dia.NFTClass{Address: nftAddr.String()},
-		},
+		NFT:         *nft,
 		Price:       price,
 		PriceUSD:    usdPrice,
 		FromAddress: from.String(),
@@ -335,71 +352,166 @@ func (s *MagicEdenScraper) notifyTrade(tx *rpc.TransactionSignature, txWithMeta 
 	return nil
 }
 
-//func (s *MagicEdenScraper) createOrReadNFTClass(transfer *erc721Transfer) (*dia.NFTClass, error) {
-//	nftClass, err := s.tradeScraper.datastore.GetNFTClass(transfer.NFTAddress.Hex(), dia.ETHEREUM)
-//	if err != nil {
-//		if !errors.Is(err, pgx.ErrNoRows) {
-//			log.Warnf("unable to read nftclass from reldb: %s", err.Error())
-//			return nil, err
-//		}
-//
-//		nftClass = dia.NFTClass{
-//			Address:      transfer.NFTAddress.Hex(),
-//			Blockchain:   dia.ETHEREUM,
-//			ContractType: openSeaNFTContractType,
-//		}
-//
-//		if transfer.Name != nil {
-//			nftClass.Name = *transfer.Name
-//		}
-//
-//		if transfer.Symbol != nil {
-//			nftClass.Symbol = *transfer.Symbol
-//		}
-//
-//		if err = s.tradeScraper.datastore.SetNFTClass(nftClass); err != nil {
-//			log.Warnf("unable to create nftclass on reldb: %s", err.Error())
-//			return nil, err
-//		}
-//	}
-//
-//	return &nftClass, nil
-//}
-//
-//func (s *MagicEdenScraper) createOrReadNFT(nftClass *dia.NFTClass, transfer *erc721Transfer) (*dia.NFT, error) {
-//	nft, err := s.tradeScraper.datastore.GetNFT(nftClass.Address, dia.ETHEREUM, transfer.TokenID.String())
-//	if err != nil {
-//		if !errors.Is(err, pgx.ErrNoRows) {
-//			log.Warnf("unable to read nft from reldb: %s", err.Error())
-//			return nil, err
-//		}
-//
-//		createdBy, createdAt, err := s.findContractCreationInfo(context.Background(), common.HexToAddress(nftClass.Address))
-//		if err != nil {
-//			log.Warnf("unable to find the creation info for the nft contract(%s): %s", nftClass.Address, err.Error())
-//			return nil, err
-//		}
-//
-//		nft = dia.NFT{
-//			NFTClass:       *nftClass,
-//			TokenID:        transfer.TokenID.String(),
-//			CreationTime:   createdAt,
-//			CreatorAddress: createdBy.Hex(),
-//			Attributes:     transfer.TokenAttrs,
-//		}
-//
-//		if transfer.TokenURI != nil {
-//			nft.URI = *transfer.TokenURI
-//		}
-//
-//		if err = s.tradeScraper.datastore.SetNFT(nft); err != nil {
-//			log.Warnf("unable to create nft on reldb: %s", err.Error())
-//			return nil, err
-//		}
-//	}
-//
-//	return &nft, nil
-//}
+func (s *MagicEdenScraper) createOrReadNFT(tx *rpc.TransactionSignature, metadata SolanaNFTMetadata) (*dia.NFT, error) {
+	nftClass, err := s.tradeScraper.datastore.GetNFTClass(tx.Signature, dia.SOLANA)
+	if err != nil {
+		if !errors.Is(err, pgx.ErrNoRows) {
+			log.Warnf("unable to read nftclass from reldb: %s", err.Error())
+			return nil, err
+		}
+
+		nftClass = dia.NFTClass{
+			Address:    tx.Signature,
+			Blockchain: dia.SOLANA,
+			Name:       metadata.name,
+			Symbol:     metadata.symbol,
+		}
+
+		if err = s.tradeScraper.datastore.SetNFTClass(nftClass); err != nil {
+			log.Warnf("unable to create nftclass on reldb: %s", err.Error())
+			return nil, err
+		}
+	}
+
+	nft, err := s.tradeScraper.datastore.GetNFT(nftClass.Address, dia.SOLANA, "1")
+	if err != nil {
+		if !errors.Is(err, pgx.ErrNoRows) {
+			log.Warnf("unable to read nft from reldb: %s", err.Error())
+			return nil, err
+		}
+
+		nft = dia.NFT{
+			NFTClass: nftClass,
+			TokenID:  "1",
+			URI:      metadata.uri,
+		}
+
+		maxShare := -1
+		for _, c := range metadata.creators {
+			if c.share > maxShare {
+				maxShare = c.share
+				nft.CreatorAddress = c.account.String()
+			}
+		}
+
+		if err = s.tradeScraper.datastore.SetNFT(nft); err != nil {
+			log.Warnf("unable to create nft on reldb: %s", err.Error())
+			return nil, err
+		}
+	}
+
+	return &nft, nil
+}
+
+func (s *MagicEdenScraper) fetchNFTMetadata(ctx context.Context, nftAddr solana.PublicKey) (SolanaNFTMetadata, error) {
+	metadata := SolanaNFTMetadata{}
+
+	lastTxFetched := ""
+	for {
+		txList, err := s.solanaRpcClient.GetSignaturesForAddress(ctx, nftAddr,
+			&rpc.GetSignaturesForAddressOpts{
+				Before: lastTxFetched,
+			})
+		if err != nil {
+			log.Warnf("unable to retrieve transaction signatures for account: %s", err.Error())
+			return metadata, err
+		}
+
+		if len(txList) == 0 {
+			break
+		}
+
+		lastTxFetched = txList[len(txList)-1].Signature
+	}
+
+	var addr solana.PublicKey
+	if lastTxFetched != "" {
+		confirmedTx, err := s.solanaRpcClient.GetConfirmedTransaction(ctx, lastTxFetched)
+		if err != nil || confirmedTx.Meta == nil || confirmedTx.Meta.Err != nil ||
+			confirmedTx.Transaction == nil || confirmedTx.Transaction.Message.AccountKeys == nil {
+			log.Errorf("unable to get confirmed transaction with signature %q: %w", lastTxFetched, err)
+			return metadata, err
+		}
+		for i, postBalance := range confirmedTx.Meta.PostBalances {
+			normPrice := decimal.NewFromInt(int64(postBalance)).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(9)))
+			if normPrice.Equals(decimal.NewFromFloat(MetadataFee)) {
+				addr = confirmedTx.Transaction.Message.AccountKeys[i]
+			}
+		}
+	} else {
+		return metadata, errors.New("unable to fetch create tx for nft")
+	}
+
+	if out, err := s.solanaRpcClient.GetAccountInfo(ctx, addr); err != nil {
+		return metadata, err
+	} else {
+		if out != nil && out.Value != nil {
+			data := out.Value.Data
+			if len(data) > 0 {
+				i := 1
+				source := data[i : i+32]
+				metadata.sourceAccount = solana.PublicKeyFromBytes(source)
+				i += 32
+
+				mint := data[i : i+32]
+				metadata.mintAccount = solana.PublicKeyFromBytes(mint)
+				i += 32
+
+				nameSize := int(data[i])
+				i += 4
+				metadata.name = string(data[i : i+nameSize])
+				i += nameSize
+
+				symbolSize := int(data[i])
+				i += 4
+				metadata.symbol = string(data[i : i+symbolSize])
+				i += symbolSize
+
+				uriSize := int(data[i])
+				i += 4
+				metadata.uri = string(data[i : i+uriSize])
+				i += uriSize
+
+				metadata.fee = int(data[i])
+				i += 2
+
+				hasCreator := int(data[i])
+				i += 1
+				if hasCreator == 1 {
+					creatorCount := int(data[i])
+					metadata.creators = make([]NFTCreator, creatorCount)
+					i += 4
+					for j := 0; j < creatorCount; j++ {
+						nftCreator := NFTCreator{}
+						account := data[i : i+32]
+						nftCreator.account = solana.PublicKeyFromBytes(account)
+						i += 32
+
+						nftCreator.verified = int(data[i])
+						i += 1
+
+						nftCreator.share = int(data[i])
+						i += 1
+
+						metadata.creators = append(metadata.creators, nftCreator)
+					}
+				}
+
+				metadata.primarySaleDone = int(data[i])
+				i += 1
+
+				metadata.isMutable = int(data[i])
+
+				return metadata, err
+
+			} else {
+				return metadata, errors.New("no data found in account info response")
+			}
+		} else {
+			return metadata, errors.New("no value found in account info response")
+		}
+	}
+}
 
 func (s *MagicEdenScraper) calcUSDPrice(price decimal.Decimal) (float64, error) {
 	tokenPrice, err := decimal.NewFromString("100")
