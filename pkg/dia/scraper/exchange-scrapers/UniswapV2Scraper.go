@@ -214,7 +214,7 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialAstar, wsDialAstar, astarWaitMilliseconds)
 	case dia.StellaswapExchange:
-		listenByAddress = false
+		listenByAddress = true
 		s = makeUniswapScraper(exchange, listenByAddress, restDialMoonbeam, wsDialMoonbeam, moonbeamWaitMilliseconds)
 	}
 
