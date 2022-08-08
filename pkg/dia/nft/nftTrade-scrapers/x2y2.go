@@ -28,7 +28,10 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/jackc/pgx/v4"
 	"github.com/shopspring/decimal"
+	"github.com/vincent-petithory/dataurl"
 )
+
+var ZeroAddress = common.HexToAddress("0x0000000000000000000000000000000000000000")
 
 const (
 	// we assume all of the NFTs traded on X2Y2 are ERC721(1155 is an extension of it)
@@ -90,11 +93,8 @@ type X2Y2Scraper struct {
 	state *X2Y2ScraperState
 }
 
-type x2y2ERC20Transfer struct {
+type x2y2ERC20Metadata struct {
 	TokenAddr   common.Address
-	From        common.Address
-	To          common.Address
-	Amount      *big.Int
 	TokenSymbol *string
 	Decimals    int
 }
@@ -384,7 +384,7 @@ func (s *X2Y2Scraper) processTx(ctx context.Context, tx *utils.EthFilteredTx) (b
 		return false, err
 	}
 
-	txData, pending, err := s.tradeScraper.ethConnection.TransactionByHash(ctx, tx.TXHash)
+	_, pending, err := s.tradeScraper.ethConnection.TransactionByHash(ctx, tx.TXHash)
 	if err != nil {
 		log.Errorf("unable to read transaction(%s): %s", tx.TXHash, err.Error())
 		return false, err
@@ -400,59 +400,51 @@ func (s *X2Y2Scraper) processTx(ctx context.Context, tx *utils.EthFilteredTx) (b
 		log.Errorf("unable to read transaction(%s) receipt: %s", tx.TXHash, err.Error())
 		return false, err
 	}
-
 	currSymbol := "ETH"
-	currAddr := common.Address{}
+	currAddr := ev.Currency
 	currDecimals := 18
 
 	// if an ERC20 token used for the trade
-	if new(big.Int).Cmp(txData.Value()) == 0 {
-		var tokenTransfers []*x2y2ERC20Transfer
-		tokenTransfers, err = s.findERC20Transfers(ctx, receipt, ev.Amount)
+	if bytes.Compare(currAddr.Bytes(), ZeroAddress.Bytes()) != 0 {
+		tokenMetadata, err := s.fetchERC20Metadata(ctx, currAddr, tx.BlockNum)
 		if err != nil {
-			log.Errorf("unable to find erc20 transfers for transaction(%s): %s", tx.TXHash, err.Error())
 			return false, err
 		}
-
-		if len(tokenTransfers) == 1 {
-			currAddr = tokenTransfers[0].TokenAddr
-			currDecimals = tokenTransfers[0].Decimals
-
-			if v := tokenTransfers[0].TokenSymbol; v != nil {
-				currSymbol = *v
-			}
+		currDecimals = tokenMetadata.Decimals
+		if v := tokenMetadata.TokenSymbol; v != nil {
+			currSymbol = *v
 		}
 	}
 
 	transfers, err := s.findERC721Transfers(ctx, receipt)
 	if err != nil {
-		log.Errorf("unable to find transfers of the event(block: %d, tx index: %d, tx: %s): %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
+		log.Errorf("unable to find transfers of the event(block: %d, tx index: %d, tx: %s): %s", tx.BlockNum, tx.TXIndex, tx.TXHash.Hex(), err.Error())
 		return false, err
 	}
 
 	// skip if the event has no transfer
 	if len(transfers) == 0 {
-		log.Tracef("event(block: %d, tx index: %d, tx: %s) skipped due to it has no erc721 transfer log", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex())
+		log.Tracef("event(block: %d, tx index: %d, tx: %s) skipped due to it has no erc721 transfer log", tx.BlockNum, tx.TXIndex, tx.TXHash.Hex())
 		return true, nil
 	}
 
 	// skip if the event has multiple transfers due to we can't calculate the price of trade
 	if len(transfers) > 1 {
-		log.Tracef("event(block: %d, tx index: %d, tx: %s) skipped due to it has multiple erc721 transfer logs", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex())
+		log.Tracef("event(block: %d, tx index: %d, tx: %s) skipped due to it has multiple erc721 transfer logs", tx.BlockNum, tx.TXIndex, tx.TXHash.Hex())
 		return true, nil
 	}
 
 	normPrice := decimal.NewFromBigInt(ev.Amount, 0).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(int64(currDecimals))))
 
-	usdPrice, err := s.calcUSDPrice(ev.Raw.BlockNumber, currAddr, currSymbol, normPrice)
+	usdPrice, err := s.calcUSDPrice(tx.BlockNum, currAddr, currSymbol, normPrice)
 	if err != nil {
-		log.Errorf("unable to calculate usd price of the event(block: %d, log: %d, tx: %s): %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
+		log.Errorf("unable to calculate usd price of the event(block: %d, log: %d, tx: %s): %s", tx.BlockNum, tx.TXIndex, tx.TXHash.Hex(), err.Error())
 		return false, err
 	}
 
-	if err := s.notifyTrade(&ev, transfers[0], ev.Amount, normPrice, usdPrice, currSymbol, currAddr); err != nil {
+	if err := s.notifyTrade(tx, transfers[0], ev.Amount, normPrice, usdPrice, currSymbol, currAddr); err != nil {
 		if !errors.Is(err, errX2Y2ShutdownRequest) {
-			log.Warnf("event(block: %d, tx index: %d, tx: %s) couldn't processed: %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
+			log.Warnf("event(block: %d, tx index: %d, tx: %s) couldn't processed: %s", tx.BlockNum, tx.TXIndex, tx.TXHash.Hex(), err.Error())
 		}
 
 		return false, err
@@ -461,7 +453,7 @@ func (s *X2Y2Scraper) processTx(ctx context.Context, tx *utils.EthFilteredTx) (b
 	return false, nil
 }
 
-func (s *X2Y2Scraper) notifyTrade(ev *x2y2.X2y2EvProfit, transfer *x2y2ERC721Transfer, price *big.Int, priceDec decimal.Decimal, usdPrice float64, currSymbol string, currAddr common.Address) error {
+func (s *X2Y2Scraper) notifyTrade(tx *utils.EthFilteredTx, transfer *x2y2ERC721Transfer, price *big.Int, priceDec decimal.Decimal, usdPrice float64, currSymbol string, currAddr common.Address) error {
 	nftClass, err := s.createOrReadNFTClass(transfer)
 	if err != nil {
 		return err
@@ -473,7 +465,7 @@ func (s *X2Y2Scraper) notifyTrade(ev *x2y2.X2y2EvProfit, transfer *x2y2ERC721Tra
 	}
 
 	// Get block time.
-	timestamp, err := ethhelper.GetBlockTimeEth(int64(ev.Raw.BlockNumber), s.tradeScraper.datastore, s.tradeScraper.ethConnection)
+	timestamp, err := ethhelper.GetBlockTimeEth(int64(tx.BlockNum), s.tradeScraper.datastore, s.tradeScraper.ethConnection)
 	if err != nil {
 		log.Errorf("getting block time: %+v", err)
 	}
@@ -484,9 +476,9 @@ func (s *X2Y2Scraper) notifyTrade(ev *x2y2.X2y2EvProfit, transfer *x2y2ERC721Tra
 		PriceUSD:    usdPrice,
 		FromAddress: transfer.From.Hex(),
 		ToAddress:   transfer.To.Hex(),
-		BlockNumber: ev.Raw.BlockNumber,
+		BlockNumber: tx.BlockNum,
 		Timestamp:   timestamp,
-		TxHash:      ev.Raw.TxHash.Hex(),
+		TxHash:      tx.TXHash.Hex(),
 		Exchange:    "X2Y2",
 	}
 
@@ -702,70 +694,37 @@ func (s *X2Y2Scraper) findContractCreationInfo(ctx context.Context, contractAddr
 	return
 }
 
-func (s *X2Y2Scraper) findERC20Transfers(ctx context.Context, receipt *types.Receipt, filterAmount *big.Int) ([]*x2y2ERC20Transfer, error) {
-	transfers := make([]*x2y2ERC20Transfer, 0, 2)
-
-	for _, txLog := range receipt.Logs {
-		if len(txLog.Topics) < 1 || txLog.Topics[0] != x2y2ERC20ABI.Events["Transfer"].ID {
-			continue
-		}
-
-		token, err := erc20.NewERC20(txLog.Address, s.tradeScraper.ethConnection)
-		if err != nil {
-			log.Warnf("unable to bind erc720 contract at address %s: %s", txLog.Address.Hex(), err.Error())
-			continue
-		}
-
-		ev, err := token.ParseTransfer(*txLog)
-		if err != nil {
-			log.Tracef("the event cannot comply to erc20's transfer: %s", err)
-			continue
-		}
-
-		if filterAmount != nil && filterAmount.Cmp(ev.Value) != 0 {
-			continue
-		}
-
-		transfer := &x2y2ERC20Transfer{
-			TokenAddr: txLog.Address,
-			From:      ev.From,
-			To:        ev.To,
-			Amount:    ev.Value,
-			Decimals:  1,
-		}
-
-		transfers = append(transfers, transfer)
-
-		metadata, err := erc20.NewERC20Metadata(txLog.Address, s.tradeScraper.ethConnection)
-		if err != nil {
-			log.Warnf("unable to bind erc20 metadata contract at address %s: %s", txLog.Address.Hex(), err.Error())
-			continue
-		}
-
-		callOpts := &bind.CallOpts{Context: ctx}
-
-		if s.conf.UseArchiveNode {
-			callOpts.BlockNumber = new(big.Int).SetUint64(txLog.BlockNumber)
-		}
-
-		symbol, err := metadata.Symbol(callOpts)
-		if err != nil {
-			log.Warnf("unable to read token symbol from metadata interface of erc20(addr: %s): %s", txLog.Address.Hex(), err.Error())
-			continue
-		}
-
-		transfer.TokenSymbol = &symbol
-
-		decimals, err := metadata.Decimals(callOpts)
-		if err != nil {
-			log.Warnf("unable to read token decimals from metadata interface of erc20(addr: %s): %s", txLog.Address.Hex(), err.Error())
-			continue
-		}
-
-		transfer.Decimals = int(decimals)
+func (s *X2Y2Scraper) fetchERC20Metadata(ctx context.Context, address common.Address, blockNum uint64) (*x2y2ERC20Metadata, error) {
+	transfer := &x2y2ERC20Metadata{}
+	metadata, err := erc20.NewERC20Metadata(address, s.tradeScraper.ethConnection)
+	if err != nil {
+		log.Warnf("unable to bind erc20 metadata contract at address %s: %s", address.Hex(), err.Error())
+		return nil, err
 	}
 
-	return transfers, nil
+	callOpts := &bind.CallOpts{Context: ctx}
+
+	if s.conf.UseArchiveNode {
+		callOpts.BlockNumber = new(big.Int).SetUint64(blockNum)
+	}
+
+	symbol, err := metadata.Symbol(callOpts)
+	if err != nil {
+		log.Warnf("unable to read token symbol from metadata interface of erc20(addr: %s): %s", address.Hex(), err.Error())
+		return nil, err
+	}
+
+	transfer.TokenSymbol = &symbol
+
+	decimals, err := metadata.Decimals(callOpts)
+	if err != nil {
+		log.Warnf("unable to read token decimals from metadata interface of erc20(addr: %s): %s", address.Hex(), err.Error())
+		return nil, err
+	}
+
+	transfer.Decimals = int(decimals)
+
+	return transfer, nil
 }
 
 // it finds the transfer events of ERC721 in the given transaction
@@ -868,28 +827,37 @@ func (s *X2Y2Scraper) readNFTAttr(ctx context.Context, uri string) (map[string]i
 	}
 
 	attrs := make(map[string]interface{})
+	if strings.HasPrefix(uri, "data:") {
+		data, err := dataurl.DecodeString(uri)
+		if err != nil {
+			return nil, err
+		}
+		if err := json.Unmarshal(data.Data, attrs); err != nil {
+			return nil, err
+		}
+	} else {
+		ctx, cancel := context.WithTimeout(ctx, s.conf.MetadataTimeout)
+		defer cancel()
 
-	ctx, cancel := context.WithTimeout(ctx, s.conf.MetadataTimeout)
-	defer cancel()
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+		if err != nil {
+			return nil, err
+		}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
-	if err != nil {
-		return nil, err
-	}
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			return nil, err
+		}
 
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
+		defer resp.Body.Close()
 
-	defer resp.Body.Close()
+		if resp.StatusCode < 200 || resp.StatusCode > 299 {
+			return nil, errors.New("unable to read token attributes: " + resp.Status)
+		}
 
-	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return nil, errors.New("unable to read token attributes: " + resp.Status)
-	}
-
-	if err := json.NewDecoder(io.LimitReader(resp.Body, int64(s.conf.MaxMetadataSize))).Decode(&attrs); err != nil {
-		return nil, err
+		if err := json.NewDecoder(io.LimitReader(resp.Body, int64(s.conf.MaxMetadataSize))).Decode(&attrs); err != nil {
+			return nil, err
+		}
 	}
 
 	return attrs, nil
