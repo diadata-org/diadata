@@ -160,6 +160,12 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewLoopringScraper(Exchanges[dia.LoopringExchange], scrape, relDB)
 	case dia.CurveFIExchange:
 		return NewCurveFIScraper(Exchanges[dia.CurveFIExchange], scrape)
+	case dia.CurveFIExchangeFantom:
+		return NewCurveFIScraper(Exchanges[dia.CurveFIExchangeFantom], scrape)
+	case dia.CurveFIExchangeMoonbeam:
+		return NewCurveFIScraper(Exchanges[dia.CurveFIExchangeMoonbeam], scrape)
+	case dia.CurveFIExchangePolygon:
+		return NewCurveFIScraper(Exchanges[dia.CurveFIExchangePolygon], scrape)
 	case dia.BalancerExchange:
 		return NewBalancerScraper(Exchanges[dia.BalancerExchange], scrape)
 	case dia.BalancerV2Exchange:

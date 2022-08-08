@@ -300,6 +300,45 @@
             "WatchdogDelay": 7200
         },
         {
+            "Name": "Curvefi-Fantom",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": "Fantom"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "Curvefi-Moonbeam",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": "Moonbeam"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "Curvefi-Polygon",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": "Polygon"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
             "Name": "Dforce",
             "Centralized": false,
             "Bridge": false,

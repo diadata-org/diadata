@@ -96,6 +96,14 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 		return source.NewUniswapV3AssetSource(exchanges[dia.UniswapExchangeV3Polygon])
 	case dia.StellaswapExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.StellaswapExchange])
+	case dia.CurveFIExchange:
+		return source.NewCurvefiAssetSource(exchanges[dia.CurveFIExchange])
+	case dia.CurveFIExchangeFantom:
+		return source.NewCurvefiAssetSource(exchanges[dia.CurveFIExchangeFantom])
+	case dia.CurveFIExchangeMoonbeam:
+		return source.NewCurvefiAssetSource(exchanges[dia.CurveFIExchangeMoonbeam])
+	case dia.CurveFIExchangePolygon:
+		return source.NewCurvefiAssetSource(exchanges[dia.CurveFIExchangePolygon])
 	case "assetlists":
 		return source.NewJSONReader(exchange, secret)
 	default:
