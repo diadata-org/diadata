@@ -119,7 +119,7 @@ var (
 	defX2Y2Conf = &X2Y2ScraperConfig{
 		ContractAddr:    "0x74312363e45DCaBA76c59ec49a7Aa8A65a67EeD3", // X2Y2 V1
 		BatchSize:       5000,
-		WaitPeriod:      60 * time.Second,
+		WaitPeriod:      30 * time.Second,
 		FollowDist:      10,
 		UseArchiveNode:  false,
 		MaxRetry:        5,
@@ -133,7 +133,7 @@ var (
 	defX2Y2State = &X2Y2ScraperState{LastBlockNum: 14139341}
 
 	// This string is the identifier of the scraper in conf and state fields in postgres.
-	X2Y2 = ""
+	X2Y2 = "X2Y2"
 
 	x2y2ABI       abi.ABI
 	x2y2ERC20ABI  abi.ABI
@@ -160,7 +160,7 @@ func init() {
 		panic(err)
 	}
 
-	X2Y2 = utils.Getenv("SCRAPER_NAME_STATE", "")
+	X2Y2 = utils.Getenv("SCRAPER_NAME_STATE", "X2Y2")
 
 	// If scraper state is not set yet, start from this block
 	initBlockNumString := utils.Getenv("LAST_BLOCK_NUM", "14139341")
