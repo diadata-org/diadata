@@ -154,7 +154,7 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		listenByAddress = true
 		s = makeUniswapScraper(exchange, listenByAddress, restDialBSC, wsDialBSC, pancakeswapWaitMilliseconds)
 	case dia.DfynNetwork:
-		listenByAddress = false
+		listenByAddress = true
 		s = makeUniswapScraper(exchange, listenByAddress, restDialPolygon, wsDialPolygon, dfynWaitMilliseconds)
 	case dia.QuickswapExchange:
 		listenByAddress = true
@@ -178,7 +178,7 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialMetis, wsDialMetis, metisWaitMilliseconds)
 	case dia.SushiSwapExchangePolygon:
-		listenByAddress = false
+		listenByAddress = true
 		s = makeUniswapScraper(exchange, listenByAddress, restDialPolygon, wsDialPolygon, metisWaitMilliseconds)
 	case dia.SushiSwapExchangeFantom:
 		listenByAddress = false
