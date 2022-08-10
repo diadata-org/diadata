@@ -87,6 +87,19 @@ const (
 	// FinageForex        = "FinageForex"
 )
 
+const (
+	CryptoPunks              = "CryptoPunks"
+	CryptoKitties            = "CryptoKitties"
+	Topshot                  = "Topshot"
+	X2Y2                     = "X2Y2"
+	Opensea                  = "Opensea"
+	OpenseaBAYC              = "OpenseaBAYC"
+	OpenseaSeaport           = "OpenseaSeaport"
+	LooksRare                = "LooksRare"
+	TofuNFTAstar             = "TofuNFT-Astar"
+	TofuNFTBinanceSmartChain = "TofuNFT-BinanceSmartChain"
+)
+
 // func Exchanges() []string {
 // 	return []string{
 
