@@ -82,6 +82,15 @@ type Datastore interface {
 	Sum24HoursInflux(asset dia.Asset, exchange string, filter string) (*float64, error)
 	Sum24HoursExchange(exchange string) (float64, error)
 	GetNumTrades(exchange string) (int64, error)
+	GetNumTradesSeries(
+		exchange string,
+		pair string,
+		starttime time.Time,
+		endtime time.Time,
+		grouping string,
+		quotetoken dia.Asset,
+		basetoken dia.Asset,
+	) ([]int, error)
 
 	// New Asset pricing methods: 23/02/2021
 	SetAssetPriceUSD(asset dia.Asset, price float64, timestamp time.Time) error
