@@ -212,7 +212,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 						basetoken = dia.Asset{
 							Symbol:     "ASTR",
 							Address:    "0x0000000000000000000000000000000000000000",
-							Blockchain: dia.ETHEREUM,
+							Blockchain: dia.ASTAR,
 						}
 					}
 				}
