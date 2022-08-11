@@ -119,9 +119,7 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 	var asset dia.Asset
 	var quotationExtended models.AssetQuotationFull
 	timestamp := time.Now()
-	if !if !validateInputParams(c) {
-		return
-	} {
+	if !validateInputParams(c) {
 		return
 	}
 
