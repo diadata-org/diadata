@@ -2695,7 +2695,7 @@ func validateInputParams(c *gin.Context) bool {
 	}
 	return true
 }
-func containSpecialChars(s string) bool {
-	return strings.ContainsAny(s, "!@#$%^&*()'\"|{}[];:><?/`~,")
 
+func containSpecialChars(s string) bool {
+	return strings.ContainsAny(s, "!@#$%^&*()'\"|{}[];><?/`~,")
 }
