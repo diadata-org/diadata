@@ -259,6 +259,7 @@ func (datastore *DB) GetLastTrades(asset dia.Asset, exchange string, maxTrades i
 			" FROM %s WHERE time<now() AND time>now()-30d AND exchange='%s' AND quotetokenaddress='%s' AND quotetokenblockchain='%s' AND estimatedUSDPrice>0 ORDER BY DESC LIMIT %d"
 		q = fmt.Sprintf(queryString, influxDbTradesTable, exchange, asset.Address, asset.Blockchain, maxTrades)
 	}
+	log.Info("query: ", q)
 	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		log.Errorln("GetLastTrades", err)
@@ -297,6 +298,69 @@ func (datastore *DB) GetNumTrades(exchange string) (numTrades int64, err error) 
 			numTrades, err = vol.Int64()
 			if err != nil {
 				return numTrades, err
+			}
+		}
+	}
+	return
+}
+
+// GetNumTradesSeries returns a time-series of number of trades in the respective time-ranges.
+// If pair is the empty string, trades are identified by address/blockchain.
+// @grouping defines the time-ranges in the notation of influx such as 30s, 40m, 2h,...
+func (datastore *DB) GetNumTradesSeries(
+	exchange string,
+	pair string,
+	starttime time.Time,
+	endtime time.Time,
+	grouping string,
+	quotetoken dia.Asset,
+	basetoken dia.Asset,
+) (numTrades []int, err error) {
+	var query string
+	if pair != "" {
+		queryString := "SELECT COUNT(price) FROM %s WHERE exchange='%s' AND pair='%s' AND time<=%d AND time>%d GROUP BY time('%s') ORDER BY ASC"
+		query = fmt.Sprintf(
+			queryString,
+			influxDbTradesTable,
+			exchange,
+			pair,
+			endtime.UnixNano(),
+			starttime.UnixNano(),
+			grouping,
+		)
+	} else {
+		queryString := `SELECT COUNT(price) FROM %s 
+		WHERE exchange='%s' 
+		AND quotetokenaddress='%s' AND quotetokenblockchain='%s' 
+		AND basetokenaddress='%s' AND basetokenblockchain='%s' 
+		AND time<=%d AND time>%d 
+		GROUP BY time('%s') ORDER BY ASC`
+		query = fmt.Sprintf(
+			queryString,
+			influxDbTradesTable,
+			exchange,
+			quotetoken.Address,
+			quotetoken.Blockchain,
+			basetoken.Address,
+			basetoken.Blockchain,
+			endtime.UnixNano(),
+			starttime.UnixNano(),
+			grouping,
+		)
+	}
+	res, err := queryInfluxDB(datastore.influxClient, query)
+	if err != nil {
+		return
+	}
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for _, val := range res[0].Series[0].Values {
+			num, ok := val[1].(json.Number)
+			if ok {
+				aux, err := num.Int64()
+				if err != nil {
+					return numTrades, err
+				}
+				numTrades = append(numTrades, int(aux))
 			}
 		}
 	}
