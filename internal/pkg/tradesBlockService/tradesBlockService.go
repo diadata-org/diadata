@@ -200,7 +200,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 					}
 				}
 
-				if basetoken.Blockchain == dia.ASTAR && t.Source == dia.ArthswapExchange {
+				if t.Source == dia.ArthswapExchange && basetoken.Blockchain == dia.ASTAR {
 					if basetoken.Address == common.HexToAddress("0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98").Hex() {
 						basetoken = dia.Asset{
 							Symbol:     "USDC",
@@ -211,7 +211,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 					if basetoken.Address == common.HexToAddress("0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720").Hex() {
 						basetoken = dia.Asset{
 							Symbol:     "ASTR",
-							Address:    "0x0000000000000000000000000000000000001010",
+							Address:    "0x0000000000000000000000000000000000000000",
 							Blockchain: dia.ETHEREUM,
 						}
 					}
