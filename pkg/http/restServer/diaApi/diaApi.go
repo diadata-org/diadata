@@ -357,6 +357,11 @@ func (env *Env) GetAssetSupply(c *gin.Context) {
 		}
 	}
 
+	if ok, err := validTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
 	values, err := env.DataStore.GetSupplyInflux(dia.Asset{Address: address, Blockchain: blockchain}, starttime, endtime)
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
@@ -408,6 +413,10 @@ func (env *Env) GetSupplies(c *gin.Context) {
 			return
 		}
 		endtime = time.Unix(endtimeInt, 0)
+	}
+	if ok, err := validTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
 	}
 
 	s, err := env.DataStore.GetSupply(symbol, starttime, endtime, &env.RelDB)
@@ -635,6 +644,10 @@ func (env *Env) GetAssetChartPoints(c *gin.Context) {
 		}
 		endtime = time.Unix(endtimeInt, 0)
 	}
+	if ok, err := validTimeRange(starttime, endtime, time.Duration(14*24*time.Hour)); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
 
 	p, err := env.DataStore.GetFilterPointsAsset(filter, exchange, address, blockchain, starttime, endtime)
 	if err != nil {
@@ -695,6 +708,10 @@ func (env *Env) GetChartPoints(c *gin.Context) {
 		}
 		endtime = time.Unix(endtimeInt, 0)
 	}
+	if ok, err := validTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
 
 	p, err := env.DataStore.GetFilterPoints(filter, exchange, symbol, scale, starttime, endtime)
 	if err != nil {
@@ -753,6 +770,10 @@ func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 			return
 		}
 		endtime = time.Unix(endtimeInt, 0)
+	}
+	if ok, err := validTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
 	}
 
 	p, err := env.DataStore.GetFilterPoints(filter, "", symbol, scale, starttime, endtime)
@@ -1537,6 +1558,10 @@ func (env *Env) GetVwapFirefly(c *gin.Context) {
 			return
 		}
 		endtime = time.Unix(endtimeInt, 0)
+		if ok, err := validTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
 	}
 
 	type vwapObj struct {
@@ -2501,6 +2526,10 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 		}
 		starttime = time.Unix(starttimeInt, 0)
 	}
+	if ok, err := validTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
 
 	asset, err := env.RelDB.GetAsset(address, blockchain)
 	if err != nil {
@@ -2639,6 +2668,10 @@ func (env *Env) GetAssetUpdates(c *gin.Context) {
 		restApi.SendError(c, http.StatusRequestedRangeNotSatisfiable, errors.New("Requested time-range too large."))
 		return
 	}
+	if ok, err := validTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
 
 	asset, err := env.RelDB.GetAsset(address, blockchain)
 	if err != nil {
@@ -2685,6 +2718,14 @@ func (env *Env) GetAssetUpdates(c *gin.Context) {
 	lrt.Asset = asset
 	lrt.UpdatesPer24h = float64(lrt.UpdateCount) * float64(time.Duration(24*time.Hour).Hours()/endtime.Sub(starttime).Hours())
 	c.JSON(http.StatusOK, lrt)
+}
+
+func validTimeRange(starttime time.Time, endtime time.Time, maxDuration time.Duration) (ok bool, err error) {
+	if endtime.Sub(starttime) < maxDuration {
+		ok = true
+	}
+	err = fmt.Errorf("time-range too big. max duration is %v", maxDuration)
+	return
 }
 
 func validateInputParams(c *gin.Context) bool {
