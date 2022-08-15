@@ -398,8 +398,8 @@ func (env *Env) GetSupplies(c *gin.Context) {
 	var starttime, endtime time.Time
 
 	if starttimeStr == "noRange" || endtimeStr == "" {
-		starttime = time.Unix(1, 0)
 		endtime = time.Now()
+		starttime = endtime.AddDate(0, 0, -30)
 	} else {
 		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
 		if err != nil {
@@ -414,7 +414,7 @@ func (env *Env) GetSupplies(c *gin.Context) {
 		}
 		endtime = time.Unix(endtimeInt, 0)
 	}
-	if ok, err := validTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
+	if ok, err := validTimeRange(starttime, endtime, time.Duration(31*24*time.Hour)); !ok {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 		return
 	}
