@@ -248,4 +248,18 @@ CREATE TABLE tradesdistribution (
     compute_time timestamp
 );
 
+CREATE TABLE synthassetdata (
+    synthassetdata_id UUID DEFAULT gen_random_uuid(),
+    synthasset_id UUID REFERENCES asset(asset_id),
+    underlying_id UUID REFERENCES asset(asset_id),
+    supply numeric,
+    locked_underlying numeric,
+    num_mints numeric,
+    num_redeems numeric,
+    block_number numeric,
+    time_stamp timestamp,
+    UNIQUE(synthassetdata_id),
+    UNIQUE(synthasset_id,time_stamp)
+);
+
 

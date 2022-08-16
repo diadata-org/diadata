@@ -414,6 +414,18 @@ type Trade struct {
 	VerifiedPair      bool // will be filled by the pairDiscoveryService
 }
 
+// SynthAssetSupply is a container for data on synthetic assets such as aUSDC.
+// https://etherscan.io/address/0xbcca60bb61934080951369a648fb03df4f96263c
+type SynthAssetSupply struct {
+	Asset            Asset   // Synthetic asset under consideration.
+	AssetUnderlying  Asset   // Asset underlying the synth asset.
+	Supply           float64 // Supply of the synthetic asset.
+	LockedUnderlying float64 // Amount of underlying asset locked in the contract.
+	NumMint          int64   // Total number of synth asset mint events (optional).
+	NumRedeem        int64   // Total number of underlying asset redeem events (optional).
+	BlockNumber      uint8
+}
+
 type ItinToken struct {
 	Itin               string
 	Symbol             string
