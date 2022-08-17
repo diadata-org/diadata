@@ -217,6 +217,16 @@ func (s *TradesBlockService) process(t dia.Trade) {
 					}
 				}
 
+				if basetoken.Blockchain == dia.AVALANCHE && (t.Source == dia.TraderJoeExchange || t.Source == dia.PangolinExchange) {
+					if basetoken.Address == common.HexToAddress("0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7").Hex() {
+						basetoken = dia.Asset{
+							Symbol:     "AVAX",
+							Address:    "0x0000000000000000000000000000000000000000",
+							Blockchain: dia.AVALANCHE,
+						}
+					}
+				}
+
 				if _, ok = s.priceCache[basetoken]; ok {
 					price = s.priceCache[basetoken]
 				} else {

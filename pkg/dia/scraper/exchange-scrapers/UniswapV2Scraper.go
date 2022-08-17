@@ -187,10 +187,10 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialMoonriver, wsDialMoonriver, moonriverWaitMilliseconds)
 	case dia.TraderJoeExchange:
-		listenByAddress = false
+		listenByAddress = true
 		s = makeUniswapScraper(exchange, listenByAddress, restDialAvalanche, wsDialAvalanche, avalancheWaitMilliseconds)
 	case dia.PangolinExchange:
-		listenByAddress = false
+		listenByAddress = true
 		s = makeUniswapScraper(exchange, listenByAddress, restDialAvalanche, wsDialAvalanche, avalancheWaitMilliseconds)
 	case dia.TethysExchange:
 		listenByAddress = false
