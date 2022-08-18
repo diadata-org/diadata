@@ -818,7 +818,7 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 
 		sort.Strings(s)
 		// Sort all symbols by volume, append if they have no volume.
-		sortedAssets, err = env.RelDB.GetAssetsWithVOL(int64(0), substring)
+		sortedAssets, err = env.RelDB.GetAssetsWithVOL(int64(0), int64(0), substring)
 		if err != nil {
 			log.Error("get assets with volume: ", err)
 		}
@@ -836,7 +836,7 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 	if exchange == "noRange" {
 		if numSymbolsString != "" {
 			// -- Get top @numSymbols symbols across all exchanges. --
-			sortedAssets, err = env.RelDB.GetAssetsWithVOL(numSymbols, "")
+			sortedAssets, err = env.RelDB.GetAssetsWithVOL(numSymbols, int64(0), "")
 			if err != nil {
 				log.Error("get assets with volume: ", err)
 			}
@@ -854,7 +854,7 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 
 			sort.Strings(s)
 			// Sort all symbols by volume, append if they have no volume.
-			sortedAssets, err = env.RelDB.GetAssetsWithVOL(numSymbols, "")
+			sortedAssets, err = env.RelDB.GetAssetsWithVOL(numSymbols, int64(0), "")
 			if err != nil {
 				log.Error("get assets with volume: ", err)
 			}
@@ -880,6 +880,8 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 
 func (env *Env) GetTopAssets(c *gin.Context) {
 	numAssetsString := c.Param("numAssets")
+	pageString := c.DefaultQuery("Page", "1")
+
 	if !validateInputParams(c) {
 		return
 	}
@@ -888,13 +890,22 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 		numAssets    int64
 		sortedAssets []dia.AssetVolume
 		err          error
+		pageNumber   int64
+		offset       int64
 	)
+
+	pageNumber, err = strconv.ParseInt(pageString, 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("Page of assets must be an integer"))
+	}
+
+	offset = (pageNumber - 1) * numAssets
 
 	numAssets, err = strconv.ParseInt(numAssetsString, 10, 64)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, errors.New("number of assets must be an integer"))
 	}
-	sortedAssets, err = env.RelDB.GetAssetsWithVOL(numAssets, "")
+	sortedAssets, err = env.RelDB.GetAssetsWithVOL(numAssets, offset, "")
 	if err != nil {
 		log.Error("get assets with volume: ", err)
 	}

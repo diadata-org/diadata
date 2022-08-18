@@ -999,7 +999,7 @@ func (rdb *RelDB) GetAssetsWithVOLRange(starttime time.Time, endtime time.Time) 
 // GetAssetsWithVOL returns the first @numAssets assets with entry in the assetvolume table, sorted by volume in descending order.
 // If @numAssets==0, all assets are returned.
 // If @substring is not the empty string, results are filtered by the first letters being @substring.
-func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, substring string) (volumeSortedAssets []dia.AssetVolume, err error) {
+func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, skip int64, substring string) (volumeSortedAssets []dia.AssetVolume, err error) {
 	var (
 		queryString string
 		query       string
@@ -1015,11 +1015,11 @@ func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, substring string) (volumeSor
 		}
 	} else {
 		if substring == "" {
-			queryString = "SELECT symbol,name,address,decimals,blockchain,volume FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) ORDER BY assetvolume.volume DESC LIMIT %d"
-			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, numAssets)
+			queryString = "SELECT symbol,name,address,decimals,blockchain,volume FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) ORDER BY assetvolume.volume DESC LIMIT %d OFFSET %d"
+			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, numAssets, skip)
 		} else {
-			queryString = "SELECT symbol,name,address,decimals,blockchain,volume FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) WHERE symbol ILIKE '%s%%' ORDER BY assetvolume.volume DESC LIMIT %d"
-			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, substring, numAssets)
+			queryString = "SELECT symbol,name,address,decimals,blockchain,volume FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) WHERE symbol ILIKE '%s%%' ORDER BY assetvolume.volume DESC LIMIT %d OFFSET %d"
+			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, substring, numAssets, skip)
 		}
 	}
 
