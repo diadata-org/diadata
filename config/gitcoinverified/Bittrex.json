@@ -1,6 +1,18 @@
 {
     "Tokens": [
         {
+            "Symbol": "PAR",
+            "Exchange": "HitBTC",
+            "Blockchain": "Ethereum",
+            "Address": "0x68037790A0229e9Ce6EaA8A99ea92964106C4703"
+        },
+        {
+            "Symbol": "MIMO",
+            "Exchange": "HitBTC",
+            "Blockchain": "Ethereum",
+            "Address": "0x90B831fa3Bebf58E9744A14D638E25B4eE06f9Bc"
+        },
+        {
             "Symbol": "1INCH",
             "Exchange": "Bittrex",
             "Blockchain": "Ethereum",

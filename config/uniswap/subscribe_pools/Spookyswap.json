@@ -155,6 +155,10 @@
         {
             "Address": "0x8e633d213212107808de38935b43dd4411097bfa",
             "ForeignName": "fUSDT-TOMB"
+        },
+        {
+            "Address": "0x77ecD4B23E255A78572CCfD59141D96CFC9F5FB0",
+            "ForeignName": "USDC-PAR"
         }
     ]
 }

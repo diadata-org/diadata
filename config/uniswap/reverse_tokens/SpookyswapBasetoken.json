@@ -29,21 +29,8 @@
       "Symbol": "USDB"
     },
     {
-      "Address": "0xfa1FBb8Ef55A4855E5688C0eE13aC3f202486286",
-      "Symbol": "FHM"
-    },
-    {
-      "Address": "",
-      "Symbol" : ""
-    },
-    {
-      "Address": "",
-      "Symbol" : ""
-    },
-    {
-      "Address": "",
-      "Symbol" : ""
-    }
-    
+      "Address": "0x13082681E8CE9bd0aF505912d306403592490Fc7",
+      "Symbol" : "PAR"
+    }    
   ]
 }
