@@ -37,6 +37,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "CKB",
+      "Exchange": "Huobi",
+      "Blockchain": "Nervos",
+      "Address": "0x0000000000000000000000000000000000000000"
+  },
+    {
       "Symbol": "CRV",
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",

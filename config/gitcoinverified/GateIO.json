@@ -1,6 +1,12 @@
 {
     "Tokens": [
         {
+            "Symbol": "CKB",
+            "Exchange": "GateIO",
+            "Blockchain": "Nervos",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "NFTY",
             "Exchange": "GateIO",
             "Blockchain": "BinanceSmartChain",

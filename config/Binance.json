@@ -2,6 +2,12 @@
     "Coins": [
         {
             "Exchange": "Binance",
+            "ForeignName": "CKBUSDT",
+            "Ignore": false,
+            "Symbol": "CKB"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "QUICKUSDT",
             "Ignore": false,
             "Symbol": "QUICK"

@@ -103,6 +103,12 @@
             "Address": "0x471EcE3750Da237f93B8E339c536989b8978a438"
         },
         {
+            "Symbol": "CKB",
+            "Exchange": "Binance",
+            "Blockchain": "Nervos",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "CRV",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",

@@ -44,6 +44,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "CKBUSDT",
+      "Ignore": false,
+      "Symbol": "CKB"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "CRVUSDT",
       "Ignore": false,
       "Symbol": "CRV"
