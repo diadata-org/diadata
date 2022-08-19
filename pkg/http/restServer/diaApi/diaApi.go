@@ -2261,6 +2261,7 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 	type localReturn struct {
 		Collection   string
 		Floor        float64
+		FloorMA      float64
 		Volume       float64
 		Trades       int
 		FloorChange  float64
@@ -2305,7 +2306,6 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 	} else {
 		starttime = endtime.AddDate(0, 0, -1)
 	}
-	timeWindow := endtime.Sub(starttime)
 
 	exchangesString := c.Query("exchanges")
 	var exchanges []string
@@ -2320,6 +2320,8 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 		log.Error("parse bundles string: ", err)
 	}
 
+	var window24h = time.Duration(24 * 60 * time.Minute)
+
 	nftVolumes, err := env.RelDB.GetTopNFTsEth(numCollections, exchanges, starttime, endtime)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
@@ -2330,16 +2332,39 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 		floor, err := env.RelDB.GetNFTFloor(
 			dia.NFTClass{Address: nftvolume.Address, Blockchain: nftvolume.Blockchain},
 			endtime,
-			timeWindow,
+			window24h,
 			!bundles,
 		)
 		if err != nil {
 			log.Errorf("get number of nft trades for address %s: %v", nftvolume.Address, err)
 		}
+
+		// ------------- Floor MA -------------
+		floorPrices, err := env.RelDB.GetNFTFloorRange(
+			dia.NFTClass{Address: nftvolume.Address, Blockchain: nftvolume.Blockchain},
+			endtime.AddDate(0, 0, -30),
+			endtime,
+			window24h,
+			20,
+			!bundles,
+		)
+		if err != nil {
+			log.Errorf("get floor range for address %s: %v", nftvolume.Address, err)
+		}
+
+		cleanFloorPrices, indices := filters.RemoveOutliers(floorPrices, 1.5)
+		var floorMA float64
+		if len(indices) == 2 {
+			floorMA = utils.Average(cleanFloorPrices)
+		} else {
+			floorMA = utils.Average(floorPrices)
+		}
+		// -------------------------------------
+
 		floorYesterday, err := env.RelDB.GetNFTFloor(
 			dia.NFTClass{Address: nftvolume.Address, Blockchain: nftvolume.Blockchain},
-			endtime.Add(-timeWindow),
-			timeWindow,
+			endtime.Add(-window24h),
+			window24h,
 			!bundles,
 		)
 		if err != nil {
@@ -2350,11 +2375,11 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 		if err != nil {
 			log.Errorf("get number of nft trades for address %s: %v", nftvolume.Address, err)
 		}
-		numTradesYesterday, err := env.RelDB.GetNumNFTTrades(nftvolume.Address, nftvolume.Blockchain, starttime.Add(-timeWindow), endtime.Add(-timeWindow))
+		numTradesYesterday, err := env.RelDB.GetNumNFTTrades(nftvolume.Address, nftvolume.Blockchain, starttime.Add(-window24h), endtime.Add(-window24h))
 		if err != nil {
 			log.Errorf("get number of nft trades yesterday for address %s: %v", nftvolume.Address, err)
 		}
-		volumeYesterday, err := env.RelDB.GetNFTVolume(nftvolume.Address, nftvolume.Blockchain, starttime.Add(-timeWindow), endtime.Add(-timeWindow))
+		volumeYesterday, err := env.RelDB.GetNFTVolume(nftvolume.Address, nftvolume.Blockchain, starttime.Add(-window24h), endtime.Add(-window24h))
 		if err != nil {
 			log.Errorf("get volume yesterday for address %s: %v", nftvolume.Address, err)
 		}
@@ -2362,6 +2387,7 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 		var l localReturn
 		l.Collection = nftvolume.Name
 		l.Floor = floor
+		l.FloorMA = floorMA
 		l.Volume = nftvolume.Volume
 		if volumeYesterday > 0 {
 			l.VolumeChange = (nftvolume.Volume - volumeYesterday) / volumeYesterday * 100
