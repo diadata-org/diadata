@@ -899,12 +899,13 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 		restApi.SendError(c, http.StatusInternalServerError, errors.New("Page of assets must be an integer"))
 	}
 
-	offset = (pageNumber - 1) * numAssets
-
 	numAssets, err = strconv.ParseInt(numAssetsString, 10, 64)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, errors.New("number of assets must be an integer"))
 	}
+
+	offset = (pageNumber - 1) * numAssets
+
 	sortedAssets, err = env.RelDB.GetAssetsWithVOL(numAssets, offset, "")
 	if err != nil {
 		log.Error("get assets with volume: ", err)
