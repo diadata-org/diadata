@@ -999,7 +999,7 @@ func (rdb *RelDB) GetAssetsWithVOLRange(starttime time.Time, endtime time.Time) 
 // GetAssetsWithVOL returns the first @numAssets assets with entry in the assetvolume table, sorted by volume in descending order.
 // If @numAssets==0, all assets are returned.
 // If @substring is not the empty string, results are filtered by the first letters being @substring.
-func (rdb *RelDB) c(numAssets int64, skip int64, substring string) (volumeSortedAssets []dia.AssetVolume, err error) {
+func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, skip int64, substring string) (volumeSortedAssets []dia.AssetVolume, err error) {
 	var (
 		queryString string
 		query       string
