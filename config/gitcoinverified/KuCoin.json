@@ -133,6 +133,12 @@
             "Address": "0x6393E822874728f8Afa7e1C9944E417D37CA5878"
         },
         {
+            "Symbol": "CKB",
+            "Exchange": "KuCoin",
+            "Blockchain": "Nervos",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "COFI",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
