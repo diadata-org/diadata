@@ -1082,7 +1082,7 @@ func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, skip int64, onlycex bool, su
 
 func (rdb *RelDB) GetAssetSource(asset dia.Asset, onlycex bool) (exchanges []string, err error) {
 
-	query := fmt.Sprintf("SELECT DISTINCT ON (es.exchange) es.exchange From exchangesymbol es INNER JOIN exchange  e ON es.exchange = e.name where es.symbol = %s", asset.Symbol)
+	query := fmt.Sprintf("SELECT DISTINCT ON (es.exchange) es.exchange From exchangesymbol es INNER JOIN exchange  e ON es.exchange = e.name where es.symbol = '%s'", asset.Symbol)
 
 	log.Infoln("GetAssetSource query", query)
 
