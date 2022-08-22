@@ -1080,6 +1080,30 @@ func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, skip int64, onlycex bool, su
 	return
 }
 
+func (rdb *RelDB) GetAssetSource(asset dia.Asset, onlycex bool) (exchanges []string, err error) {
+
+	rows, err := rdb.postgresClient.Query(context.Background(), "SELECT DISTINCT ON (es.exchange) es.exchange From exchangesymbol es INNER JOIN exchange  e ON es.exchange = e.name where es.symbol = %s", asset.Symbol)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			exchange string
+		)
+
+		err = rows.Scan(&exchange)
+		if err != nil {
+			return
+		}
+
+		exchanges = append(exchanges, exchange)
+	}
+	return
+
+}
+
 // GetAssetsWithVOLInflux returns all assets that have an entry in Influx's volumes table and hence have been traded since @timeInit.
 func (datastore *DB) GetAssetsWithVOLInflux(timeInit time.Time) ([]dia.Asset, error) {
 	var quotedAssets []dia.Asset

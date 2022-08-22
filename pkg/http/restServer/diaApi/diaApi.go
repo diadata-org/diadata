@@ -930,9 +930,16 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 			log.Warn("quotation: ", err)
 		} else {
 			aqf.Price = quotation.Price
-			aqf.Source = quotation.Source
+
 		}
 		aqf.Volume = v.Volume
+
+		sources, err := env.RelDB.GetAssetSource(v.Asset, onlycex)
+		if err != nil {
+			log.Warn("get GetAssetSource: ", err)
+		} else {
+			aqf.Source = sources
+		}
 
 		quotationYesterday, err := env.DataStore.GetAssetQuotation(aqf.Asset, timestamp.AddDate(0, 0, -1))
 		if err != nil {
