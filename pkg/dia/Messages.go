@@ -230,6 +230,14 @@ type AssetVolume struct {
 	Volume float64 `json:"Volume"`
 }
 
+type TopAsset struct {
+	Asset          Asset   `json:"Asset"`
+	Volume         float64 `json:"Volume"`
+	Price          float64 `json:"Price"`
+	PriceYesterday float64 `json:"PriceYesterday"`
+	Source         string  `json:"Source"`
+}
+
 type PairVolume struct {
 	Pair   Pair    `json:"Pair"`
 	Volume float64 `json:"Volume"`

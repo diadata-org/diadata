@@ -915,8 +915,35 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 	sortedAssets, err = env.RelDB.GetAssetsWithVOL(numAssets, offset, onlycex, "")
 	if err != nil {
 		log.Error("get assets with volume: ", err)
+
 	}
-	c.JSON(http.StatusOK, sortedAssets)
+
+	var assets = []dia.TopAsset{}
+	timestamp := time.Now()
+
+	for _, v := range sortedAssets {
+
+		aqf := dia.TopAsset{}
+		aqf.Asset = v.Asset
+		quotation, err := env.DataStore.GetAssetQuotation(aqf.Asset, timestamp)
+		if err != nil {
+			log.Warn("quotation: ", err)
+		} else {
+			aqf.Price = quotation.Price
+			aqf.Source = quotation.Source
+		}
+
+		quotationYesterday, err := env.DataStore.GetAssetQuotation(aqf.Asset, timestamp.AddDate(0, 0, -1))
+		if err != nil {
+			log.Warn("get quotation yesterday: ", err)
+		} else {
+			aqf.PriceYesterday = quotationYesterday.Price
+		}
+
+		assets = append(assets, aqf)
+
+	}
+	c.JSON(http.StatusOK, assets)
 }
 
 // -----------------------------------------------------------------------------
