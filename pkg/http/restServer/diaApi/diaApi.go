@@ -818,7 +818,7 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 
 		sort.Strings(s)
 		// Sort all symbols by volume, append if they have no volume.
-		sortedAssets, err = env.RelDB.GetAssetsWithVOL(int64(0), int64(0), substring)
+		sortedAssets, err = env.RelDB.GetAssetsWithVOL(int64(0), int64(0), false, substring)
 		if err != nil {
 			log.Error("get assets with volume: ", err)
 		}
@@ -836,7 +836,7 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 	if exchange == "noRange" {
 		if numSymbolsString != "" {
 			// -- Get top @numSymbols symbols across all exchanges. --
-			sortedAssets, err = env.RelDB.GetAssetsWithVOL(numSymbols, int64(0), "")
+			sortedAssets, err = env.RelDB.GetAssetsWithVOL(numSymbols, int64(0), false, "")
 			if err != nil {
 				log.Error("get assets with volume: ", err)
 			}
@@ -854,7 +854,7 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 
 			sort.Strings(s)
 			// Sort all symbols by volume, append if they have no volume.
-			sortedAssets, err = env.RelDB.GetAssetsWithVOL(numSymbols, int64(0), "")
+			sortedAssets, err = env.RelDB.GetAssetsWithVOL(numSymbols, int64(0), false, "")
 			if err != nil {
 				log.Error("get assets with volume: ", err)
 			}
@@ -881,6 +881,7 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 func (env *Env) GetTopAssets(c *gin.Context) {
 	numAssetsString := c.Param("numAssets")
 	pageString := c.DefaultQuery("Page", "1")
+	onlycexString := c.DefaultQuery("Cex", "false")
 
 	if !validateInputParams(c) {
 		return
@@ -899,6 +900,11 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 		restApi.SendError(c, http.StatusInternalServerError, errors.New("Page of assets must be an integer"))
 	}
 
+	onlycex, err := strconv.ParseBool(onlycexString)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	numAssets, err = strconv.ParseInt(numAssetsString, 10, 64)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, errors.New("number of assets must be an integer"))
@@ -906,7 +912,7 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 
 	offset = (pageNumber - 1) * numAssets
 
-	sortedAssets, err = env.RelDB.GetAssetsWithVOL(numAssets, offset, "")
+	sortedAssets, err = env.RelDB.GetAssetsWithVOL(numAssets, offset, onlycex, "")
 	if err != nil {
 		log.Error("get assets with volume: ", err)
 	}
