@@ -1027,7 +1027,7 @@ func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, skip int64, onlycex bool, su
 	} else {
 		if numAssets == 0 {
 			if substring == "" {
-				// SELECT DISTINCT ON (av.volume,av.asset_id) av.volume,a.address,a.blockchain,a.symbol FROM assetvolume av INNER JOIN asset a ON av.asset_id=a.asset_id INNER JOIN exchangesymbol es ON av.asset_id=es.asset_id INNER JOIN exchange e ON es.exchange=e.name WHERE e.centralized=true and a.symbol ILIKE '%BTC%' ORDER BY av.volume DESC LIMIT 5;
+				// SELECT DISTINCT ON (av.volume,av.asset_id) av.volume,a.address,a.blockchain,a.symbol FROM assetvolume av INNER JOIN asset a ON av.asset_id=a.asset_id INNER JOIN exchangesymbol es ON av.asset_id=es.asset_id INNER JOIN exchange e ON es.exchange=e.name WHERE tralized=true e.cenand a.symbol ILIKE '%BTC%' ORDER BY av.volume DESC LIMIT 5;
 				// SELECT DISTINCT ON (av.volume,av.asset_id) av.volume,a.address,a.blockchain,a.symbol FROM assetvolume av INNER JOIN asset a ON av.asset_id=a.asset_id INNER JOIN exchangesymbol es ON av.asset_id=es.asset_id INNER JOIN exchange e ON es.exchange=e.name WHERE e.centralized=true ORDER BY av.volume DESC LIMIT 5;
 				queryString = "SELECT DISTINCT ON (av.volume,av.asset_id)  a.symbol,a.name,a.address,a.decimals,a.blockchain,av.volume FROM %s  av INNER JOIN %s a ON av.asset_id=a.asset_id INNER JOIN %s es ON av.asset_id=es.asset_id INNER JOIN %s e ON es.exchange=e.name WHERE e.centralized=true ORDER BY av.volume DESC LIMIT 100"
 				query = fmt.Sprintf(queryString, assetVolumeTable, assetTable, exchangesymbolTable, exchangeTable)
@@ -1081,8 +1081,13 @@ func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, skip int64, onlycex bool, su
 }
 
 func (rdb *RelDB) GetAssetSource(asset dia.Asset, onlycex bool) (exchanges []string, err error) {
+	var query string
+	if onlycex {
+		query = fmt.Sprintf("SELECT DISTINCT ON (es.exchange) es.exchange From exchangesymbol es INNER JOIN exchange  e ON es.exchange = e.name where es.symbol = '%s' and e.centralized=true ", asset.Symbol)
+	} else {
+		query = fmt.Sprintf("SELECT DISTINCT ON (es.exchange) es.exchange From exchangesymbol es INNER JOIN exchange  e ON es.exchange = e.name where es.symbol  '%s'", asset.Symbol)
 
-	query := fmt.Sprintf("SELECT DISTINCT ON (es.exchange) es.exchange From exchangesymbol es INNER JOIN exchange  e ON es.exchange = e.name where es.symbol = '%s'", asset.Symbol)
+	}
 
 	log.Infoln("GetAssetSource query", query)
 
