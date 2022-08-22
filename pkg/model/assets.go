@@ -1080,7 +1080,7 @@ func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, skip int64, onlycex bool, su
 	return
 }
 
-func (rdb *RelDB) GetAssetSource(asset dia.Asset, onlycex bool) (exchanges []string, err error) {
+func (datastore *DB) GetAssetSource(asset dia.Asset, onlycex bool) (exchanges []string, err error) {
 
 	rows, err := rdb.postgresClient.Query(context.Background(), "SELECT DISTINCT ON (es.exchange) es.exchange From exchangesymbol es INNER JOIN exchange  e ON es.exchange = e.name where es.symbol = %s", asset.Symbol)
 	if err != nil {

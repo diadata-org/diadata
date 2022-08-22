@@ -31,6 +31,7 @@ type RelDatastore interface {
 	SetAssetVolume24H(asset dia.Asset, volume float64, timestamp time.Time) error
 	GetAssetVolume24H(asset dia.Asset) (float64, error)
 	GetAssetsWithVOL(numAssets int64, skip int64, onlycex bool, substring string) ([]dia.AssetVolume, error)
+	GetAssetSource(asset dia.Asset, onlycex bool) ([]string, error)
 	GetAssetsWithVOLRange(starttime time.Time, endtime time.Time) ([]dia.AssetVolume, error)
 	SetAggregatedVolume(aggVol dia.AggregatedVolume) error
 	GetAggregatedVolumes(asset dia.Asset, starttime time.Time, endtime time.Time) ([]dia.AggregatedVolume, error)

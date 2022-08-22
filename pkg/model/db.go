@@ -98,7 +98,6 @@ type Datastore interface {
 	GetAssetPriceUSDLatest(asset dia.Asset) (price float64, err error)
 	SetAssetQuotation(quotation *AssetQuotation) error
 	GetAssetQuotation(asset dia.Asset, timestamp time.Time) (*AssetQuotation, error)
-	GetAssetSource(asset dia.Asset, onlycex bool) ([]string, error)
 	GetAssetQuotations(asset dia.Asset, starttime time.Time, endtime time.Time) ([]AssetQuotation, error)
 	GetAssetQuotationLatest(asset dia.Asset) (*AssetQuotation, error)
 	GetSortedAssetQuotations(assets []dia.Asset) ([]AssetQuotation, error)
