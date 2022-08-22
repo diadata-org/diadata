@@ -932,6 +932,7 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 			aqf.Price = quotation.Price
 			aqf.Source = quotation.Source
 		}
+		aqf.Volume = v.Volume
 
 		quotationYesterday, err := env.DataStore.GetAssetQuotation(aqf.Asset, timestamp.AddDate(0, 0, -1))
 		if err != nil {
