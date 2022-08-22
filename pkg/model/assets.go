@@ -1029,19 +1029,19 @@ func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, skip int64, onlycex bool, su
 			if substring == "" {
 				// SELECT DISTINCT ON (av.volume,av.asset_id) av.volume,a.address,a.blockchain,a.symbol FROM assetvolume av INNER JOIN asset a ON av.asset_id=a.asset_id INNER JOIN exchangesymbol es ON av.asset_id=es.asset_id INNER JOIN exchange e ON es.exchange=e.name WHERE e.centralized=true and a.symbol ILIKE '%BTC%' ORDER BY av.volume DESC LIMIT 5;
 				// SELECT DISTINCT ON (av.volume,av.asset_id) av.volume,a.address,a.blockchain,a.symbol FROM assetvolume av INNER JOIN asset a ON av.asset_id=a.asset_id INNER JOIN exchangesymbol es ON av.asset_id=es.asset_id INNER JOIN exchange e ON es.exchange=e.name WHERE e.centralized=true ORDER BY av.volume DESC LIMIT 5;
-				queryString = "SELECT DISTINCT ON (av.volume,av.asset_id)  av.volume,a.address,a.blockchain,a.symbol FROM %s  av INNER JOIN %s a ON av.asset_id=a.asset_id INNER JOIN %s es ON av.asset_id=es.asset_id INNER JOIN %s e ON es.exchange=e.name WHERE e.centralized=true ORDER BY av.volume DESC"
+				queryString = "SELECT DISTINCT ON (av.volume,av.asset_id)  a.symbol,a.name,a.address,a.blockchain,av.volume FROM %s  av INNER JOIN %s a ON av.asset_id=a.asset_id INNER JOIN %s es ON av.asset_id=es.asset_id INNER JOIN %s e ON es.exchange=e.name WHERE e.centralized=true ORDER BY av.volume DESC"
 				query = fmt.Sprintf(queryString, assetVolumeTable, assetTable, exchangesymbolTable, exchangeTable)
 			} else {
-				queryString = "SELECT DISTINCT ON (av.volume,av.asset_id)  av.volume,a.address,a.blockchain,a.symbol FROM %s  av INNER JOIN %s a ON av.asset_id=a.asset_id INNER JOIN %s es ON av.asset_id=es.asset_id INNER JOIN %s e ON es.exchange=e.name WHERE e.centralized=true  and a.symbol ILIKE '%s%%'  ORDER BY av.volume DESC"
+				queryString = "SELECT DISTINCT ON (av.volume,av.asset_id)  a.symbol,a.name,a.address,a.blockchain,av.volume FROM %s  av INNER JOIN %s a ON av.asset_id=a.asset_id INNER JOIN %s es ON av.asset_id=es.asset_id INNER JOIN %s e ON es.exchange=e.name WHERE e.centralized=true  and a.symbol ILIKE '%s%%'  ORDER BY av.volume DESC"
 				query = fmt.Sprintf(queryString, assetVolumeTable, assetTable, exchangesymbolTable, exchangeTable, substring)
 			}
 		} else {
 			if substring == "" {
-				queryString = "SELECT DISTINCT ON (av.volume,av.asset_id)  av.volume,a.address,a.blockchain,a.symbol FROM %s  av INNER JOIN %s a ON av.asset_id=a.asset_id INNER JOIN %s es ON av.asset_id=es.asset_id INNER JOIN %s e ON es.exchange=e.name WHERE e.centralized=true ORDER BY av.volume DESC  LIMIT %d OFFSET %d"
+				queryString = "SELECT DISTINCT ON (av.volume,av.asset_id)  a.symbol,a.name,a.address,a.blockchain,av.volume FROM %s  av INNER JOIN %s a ON av.asset_id=a.asset_id INNER JOIN %s es ON av.asset_id=es.asset_id INNER JOIN %s e ON es.exchange=e.name WHERE e.centralized=true ORDER BY av.volume DESC  LIMIT %d OFFSET %d"
 				query = fmt.Sprintf(queryString, assetVolumeTable, assetTable, exchangesymbolTable, exchangeTable, numAssets, skip)
 
 			} else {
-				queryString = "SELECT DISTINCT ON (av.volume,av.asset_id)  av.volume,a.address,a.blockchain,a.symbol FROM %s  av INNER JOIN %s a ON av.asset_id=a.asset_id INNER JOIN %s es ON av.asset_id=es.asset_id INNER JOIN %s e ON es.exchange=e.name WHERE e.centralized=true  and a.symbol ILIKE '%s%%' ORDER BY av.volume DESC LIMIT %d OFFSET %d"
+				queryString = "SELECT DISTINCT ON (av.volume,av.asset_id)  a.symbol,a.name,a.address,a.blockchain,av.volume FROM %s  av INNER JOIN %s a ON av.asset_id=a.asset_id INNER JOIN %s es ON av.asset_id=es.asset_id INNER JOIN %s e ON es.exchange=e.name WHERE e.centralized=true  and a.symbol ILIKE '%s%%' ORDER BY av.volume DESC LIMIT %d OFFSET %d"
 				query = fmt.Sprintf(queryString, assetVolumeTable, assetTable, exchangesymbolTable, exchangeTable, substring, numAssets, skip)
 
 			}
