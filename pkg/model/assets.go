@@ -189,15 +189,42 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 	var decimals string
 	var rows pgx.Rows
 	if name == "" {
-		query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE symbol=$1", assetTable)
-		rows, err = rdb.postgresClient.Query(context.Background(), query, symbol)
+		query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE symbol ILIKE '%s%%'", assetTable, symbol)
+		rows, err = rdb.postgresClient.Query(context.Background(), query)
 	} else if symbol == "" {
-		query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE name=$1", assetTable)
-		rows, err = rdb.postgresClient.Query(context.Background(), query, name)
+		query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE name ILIKE '%s%%'", assetTable, symbol)
+		rows, err = rdb.postgresClient.Query(context.Background(), query)
 	} else {
-		query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE symbol=$1 AND name=$2", assetTable)
-		rows, err = rdb.postgresClient.Query(context.Background(), query, symbol, name)
+		query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE symbol ILIKE '%s%%' AND name='%s%%'", assetTable, name, symbol)
+		rows, err = rdb.postgresClient.Query(context.Background(), query)
 	}
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var decimalsInt int
+		var asset dia.Asset
+		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
+		if err != nil {
+			return
+		}
+		decimalsInt, err = strconv.Atoi(decimals)
+		if err != nil {
+			return
+		}
+		asset.Decimals = uint8(decimalsInt)
+		assets = append(assets, asset)
+	}
+	return
+}
+
+// GetAssetsByAddress returns a (possibly multiple) dia.Asset by its address from postgres.
+func (rdb *RelDB) GetAssetsByAddress(address string) (assets []dia.Asset, err error) {
+	var decimals string
+	var rows pgx.Rows
+	query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE address ILIKE '%s%%'", assetTable, address)
+	rows, err = rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return
 	}

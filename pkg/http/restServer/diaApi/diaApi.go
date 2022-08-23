@@ -878,6 +878,43 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 
 }
 
+func (env *Env) SearchAsset(c *gin.Context) {
+	querystring := c.Param("query")
+
+	if !validateInputParams(c) {
+		return
+	}
+	var (
+		assets = []dia.Asset{}
+		err    error
+	)
+
+	switch {
+
+	case len(querystring) > 4:
+		assets, err = env.RelDB.GetAssetsBySymbolName(querystring, querystring)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
+
+		}
+
+	case len(querystring) > 4 && strings.Contains(querystring[0:2], "0x"):
+		assets, err = env.RelDB.GetAssetsByAddress(querystring)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
+		}
+
+	case len(querystring) < 4:
+		assets, err = env.RelDB.GetAssetsBySymbolName(querystring, querystring)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
+		}
+
+	}
+
+	c.JSON(http.StatusOK, assets)
+}
+
 func (env *Env) GetTopAssets(c *gin.Context) {
 	numAssetsString := c.Param("numAssets")
 	pageString := c.DefaultQuery("Page", "1")
