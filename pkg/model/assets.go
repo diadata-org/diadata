@@ -188,19 +188,20 @@ func (rdb *RelDB) GetAllAssets(blockchain string) (assets []dia.Asset, err error
 func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset, err error) {
 	var decimals string
 	var rows pgx.Rows
+	var query string
 	if name == "" {
-		query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE symbol ILIKE '%s%%'", assetTable, symbol)
-		rows, err = rdb.postgresClient.Query(context.Background(), query)
+		query = fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE symbol ILIKE '%s%%'", assetTable, symbol)
 	} else if symbol == "" {
-		query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE name ILIKE '%s%%'", assetTable, symbol)
-		rows, err = rdb.postgresClient.Query(context.Background(), query)
+		query = fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE name ILIKE '%s%%'", assetTable, symbol)
 	} else {
-		query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE symbol ILIKE '%s%%' AND name='%s%%'", assetTable, name, symbol)
-		rows, err = rdb.postgresClient.Query(context.Background(), query)
+		query = fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE symbol ILIKE '%s%%' AND name='%s%%'", assetTable, name, symbol)
 	}
 	if err != nil {
 		return
 	}
+	rows, err = rdb.postgresClient.Query(context.Background(), query)
+
+	log.Infoln("GetAssetsBySymbolName query", query)
 	defer rows.Close()
 	for rows.Next() {
 		var decimalsInt int
