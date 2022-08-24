@@ -981,7 +981,7 @@ func (rdb *RelDB) SearchNFT(searchstring string) (nfts []dia.NFT, err error) {
 	var query string
 	var rows pgx.Rows
 
-	query = `SELECT DISTINCT ON (address) address, symbol, name, category, n.creator_address, n.uri, n.attributes from nftclass nc INNER JOIN nft n ON  n.nftclass_id=nc.nftclass_id WHERE symbol ILIKE '%` + searchstring + `'  or name ILIKE '%` + searchstring + `';`
+	query = `SELECT DISTINCT ON (address) address, symbol, name, n.creator_address, n.uri, n.attributes from nftclass nc INNER JOIN nft n ON  n.nftclass_id=nc.nftclass_id WHERE symbol ILIKE '%` + searchstring + `'  or name ILIKE '%` + searchstring + `';`
 
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
 
@@ -989,7 +989,7 @@ func (rdb *RelDB) SearchNFT(searchstring string) (nfts []dia.NFT, err error) {
 	defer rows.Close()
 	for rows.Next() {
 		var nft dia.NFT
-		err = rows.Scan(&nft.NFTClass.Address, &nft.NFTClass.Symbol, &nft.NFTClass.Name, &nft.NFTClass.Category, &nft.CreatorAddress, &nft.URI, &nft.Attributes)
+		err = rows.Scan(&nft.NFTClass.Address, &nft.NFTClass.Symbol, &nft.NFTClass.Name, &nft.CreatorAddress, &nft.URI, &nft.Attributes)
 		if err != nil {
 			return
 		}
