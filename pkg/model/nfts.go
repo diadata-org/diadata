@@ -989,7 +989,7 @@ func (rdb *RelDB) SearchNFT(searchstring string) (nfts []dia.NFT, err error) {
 	defer rows.Close()
 	for rows.Next() {
 		var nft dia.NFT
-		err = rows.Scan(&nft.NFTClass.Address, &nft.NFTClass.Symbol, &nft.NFTClass.Name, &nft.NFTClass.ContractType, &nft.NFTClass.Category, &nft.CreatorAddress, &nft.URI)
+		err = rows.Scan(&nft.NFTClass.Address, &nft.NFTClass.Symbol, &nft.NFTClass.Name, &nft.NFTClass.ContractType, &nft.NFTClass.Category, &nft.CreatorAddress, &nft.URI, &nft.Attributes)
 		if err != nil {
 			return
 		}
