@@ -895,34 +895,39 @@ func (env *Env) SearchAsset(c *gin.Context) {
 	case len(querystring) > 4 && strings.Contains(querystring[0:2], "0x"):
 		assets, err = env.RelDB.GetAssetsByAddress(querystring)
 		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
+			// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
+			log.Errorln("error getting GetAssetsByAddress", err)
 		}
 
 	case len(querystring) > 4 && !strings.Contains(querystring[0:2], "0x"):
 		assets, err = env.RelDB.GetAssetsBySymbolName(querystring, querystring)
 		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
+			// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
+			log.Errorln("error getting GetAssetsBySymbolName", err)
 
 		}
 
 	case len(querystring) < 4:
 		assets, err = env.RelDB.GetAssetsBySymbolName(querystring, querystring)
 		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
+			// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
+			log.Errorln("error getting GetAssetsBySymbolName", err)
+
 		}
 
 	}
 
 	nfts, err = env.RelDB.SearchNFT(querystring)
 	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
+		log.Errorln("error getting SearchNFT", err)
+		// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
 	}
 
 	response := make(map[string]interface{})
 	response["assets"] = assets
 	response["nfts"] = nfts
 
-	c.JSON(http.StatusOK, assets)
+	c.JSON(http.StatusOK, response)
 }
 
 func (env *Env) GetTopAssets(c *gin.Context) {
