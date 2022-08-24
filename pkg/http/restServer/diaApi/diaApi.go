@@ -899,7 +899,7 @@ func (env *Env) SearchAsset(c *gin.Context) {
 			log.Errorln("error getting GetAssetsByAddress", err)
 		}
 
-		nfts, err = env.RelDB.GetNFTByNameSYMBOL(querystring)
+		nfts, err = env.RelDB.GetNFTByNameSymbol(querystring)
 		if err != nil {
 			log.Errorln("error getting SearchNFT", err)
 			// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
