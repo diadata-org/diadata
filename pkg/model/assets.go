@@ -194,7 +194,7 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 	} else if symbol == "" {
 		query = fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE name ILIKE '%s%%'", assetTable, symbol)
 	} else {
-		query = fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE symbol ILIKE '%s%%' or name ILIKE '%s%%'", assetTable, name, symbol)
+		query = fmt.Sprintf("SELECT  symbol,name,address,decimals,blockchain FROM %s a INNER JOIN %s av ON av.asset_id=a.asset_id WHERE symbol ILIKE '%s%%' or name ILIKE '%s%%' ORDER BY av.volume DESC", assetTable, assetVolumeTable, name, symbol)
 	}
 	if err != nil {
 		return

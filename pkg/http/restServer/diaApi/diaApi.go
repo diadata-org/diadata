@@ -886,7 +886,9 @@ func (env *Env) SearchAsset(c *gin.Context) {
 	}
 	var (
 		assets = []dia.Asset{}
-		err    error
+		nfts   = []dia.NFT{}
+
+		err error
 	)
 
 	switch {
@@ -910,6 +912,15 @@ func (env *Env) SearchAsset(c *gin.Context) {
 		}
 
 	}
+
+	nfts, err = env.RelDB.SearchNFT(querystring)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
+	}
+
+	response := make(map[string]interface{})
+	response["assets"] = assets
+	response["nfts"] = nfts
 
 	c.JSON(http.StatusOK, assets)
 }
