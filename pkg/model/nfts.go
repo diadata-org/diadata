@@ -976,8 +976,8 @@ func (rdb *RelDB) GetLastNFTOffer(address string, blockchain string, tokenID str
 	return
 }
 
-// SearchNFT returns the nft by name, or symbol, or address
-func (rdb *RelDB) SearchNFT(searchstring string) (nfts []dia.NFT, err error) {
+// GetNFTByNameSYMBOL returns the nft by name, or symbol
+func (rdb *RelDB) GetNFTByNameSYMBOL(searchstring string) (nfts []dia.NFT, err error) {
 	var query string
 	var rows pgx.Rows
 
@@ -985,7 +985,30 @@ func (rdb *RelDB) SearchNFT(searchstring string) (nfts []dia.NFT, err error) {
 
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
 
-	log.Infoln("SearchNFT query", query)
+	log.Infoln("GetNFTByNameSYMBOL query", query)
+	defer rows.Close()
+	for rows.Next() {
+		var nft dia.NFT
+		err = rows.Scan(&nft.NFTClass.Address, &nft.NFTClass.Symbol, &nft.NFTClass.Name, &nft.CreatorAddress, &nft.URI, &nft.Attributes)
+		if err != nil {
+			return
+		}
+
+		nfts = append(nfts, nft)
+	}
+	return
+}
+
+// GetNFTByNameSYMBOL returns the nft by  address
+func (rdb *RelDB) GetNFTByAddress(address string) (nfts []dia.NFT, err error) {
+	var query string
+	var rows pgx.Rows
+
+	query = `SELECT DISTINCT ON (address) address, symbol, name, n.creator_address, n.uri, n.attributes from nftclass nc INNER JOIN nft n ON  n.nftclass_id=nc.nftclass_id WHERE address ILIKE '%` + address + `' ;`
+
+	rows, err = rdb.postgresClient.Query(context.Background(), query)
+
+	log.Infoln("GetNFTByAddress query", query)
 	defer rows.Close()
 	for rows.Next() {
 		var nft dia.NFT
