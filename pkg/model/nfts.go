@@ -977,7 +977,7 @@ func (rdb *RelDB) GetLastNFTOffer(address string, blockchain string, tokenID str
 }
 
 // GetNFTByNameSYMBOL returns the nft by name, or symbol
-func (rdb *RelDB) GetNFTByNameSYMBOL(searchstring string) (nfts []dia.NFT, err error) {
+func (rdb *RelDB) GetNFTByNameSymbol(searchstring string) (nfts []dia.NFT, err error) {
 	var query string
 	var rows pgx.Rows
 

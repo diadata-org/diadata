@@ -913,7 +913,7 @@ func (env *Env) SearchAsset(c *gin.Context) {
 
 		}
 
-		nfts, err = env.RelDB.GetNFTByNameSYMBOL(querystring)
+		nfts, err = env.RelDB.GetNFTByNameSymbol(querystring)
 		if err != nil {
 			log.Errorln("error getting SearchNFT", err)
 			// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
@@ -925,12 +925,6 @@ func (env *Env) SearchAsset(c *gin.Context) {
 			// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
 			log.Errorln("error getting GetAssetsBySymbolName", err)
 
-		}
-
-		nfts, err = env.RelDB.GetNFTByNameSYMBOL(querystring)
-		if err != nil {
-			log.Errorln("error getting SearchNFT", err)
-			// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
 		}
 
 	}
