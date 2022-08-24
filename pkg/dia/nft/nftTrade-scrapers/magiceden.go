@@ -35,7 +35,9 @@ var (
 		MaxRetry:      5,
 		SkipOnErr:     true,
 	}
-	defMagicEdenState = &MagicEdenScraperState{}
+	defMagicEdenState   = &MagicEdenScraperState{}
+	MagicEden           = ""
+	assetCacheMagicEden = make(map[string]dia.Asset)
 )
 
 type SolanaNFTMetadata struct {
@@ -81,26 +83,31 @@ type MagicEdenScraperConfig struct {
 type MagicEdenScraperState struct {
 	LastTx string `json:"last_tx"`
 
-	LastTxHistorical uint `json:"last_tx_historical"`
+	LastTxHistorical string `json:"last_tx_historical"`
 
 	LastErr string `json:"last_error"`
 
+	LastErrHistorical string `json:"last_error_historical"`
+
 	ErrCounter int `json:"count_of_error"`
+
+	ErrCounterHistorical int `json:"count_of_error_historical"`
 }
 
 func (s *MagicEdenScraper) loadConfig(ctx context.Context) error {
-	return s.tradeScraper.datastore.GetScraperConfig(ctx, OpenSea, s.conf)
+	return s.tradeScraper.datastore.GetScraperConfig(ctx, MagicEden, s.conf)
 }
 
 func (s *MagicEdenScraper) loadState(ctx context.Context) error {
-	return s.tradeScraper.datastore.GetScraperState(ctx, OpenSea, s.state)
+	return s.tradeScraper.datastore.GetScraperState(ctx, MagicEden, s.state)
 }
 
 func (s *MagicEdenScraper) storeState(ctx context.Context) error {
-	return s.tradeScraper.datastore.SetScraperState(ctx, OpenSea, s.state)
+	return s.tradeScraper.datastore.SetScraperState(ctx, MagicEden, s.state)
 }
 
 func NewMagicEdenScraper(rdb *models.RelDB) *MagicEdenScraper {
+	ctx := context.Background()
 	scraper := &MagicEdenScraper{
 		solanaRpcClient: rpc.NewClient(utils.Getenv("SOLANA_URI_REST", rpcEndpointSolana)),
 		tradeScraper: TradeScraper{
@@ -111,6 +118,12 @@ func NewMagicEdenScraper(rdb *models.RelDB) *MagicEdenScraper {
 			source:       "MagicEden",
 		},
 	}
+	MagicEden = utils.Getenv("SCRAPER_NAME_STATE", "")
+	if err := scraper.initScraper(ctx); err != nil {
+		log.Errorf("magiceden scraper could not be initialized: %s", err.Error())
+		return nil
+	}
+	log.Infof("magiceden scraper starts from tx: %s", scraper.state.LastTx)
 	go scraper.mainLoop()
 	return scraper
 }
@@ -160,10 +173,17 @@ func (s *MagicEdenScraper) mainLoop() {
 			}
 		}
 
-		log.Debugf("wait for %s", 60*time.Second)
+		if err := s.FetchHistoricalTrades(); err != nil {
+			if errors.Is(err, errOpenSeaShutdownRequest) {
+				stop = true
+				continue
+			}
+		}
+
+		log.Debugf("wait for %s", 5*time.Second)
 
 		select {
-		case <-time.After(60 * time.Second):
+		case <-time.After(5 * time.Second):
 		case <-s.tradeScraper.shutdown:
 			stop = true
 		}
@@ -192,23 +212,28 @@ func (s *MagicEdenScraper) FetchTrades() error {
 	}
 
 	txToProcess := make([]*rpc.TransactionSignature, 0)
+	lastFetchedTx := ""
 	for {
 		txList, err := s.solanaRpcClient.GetSignaturesForAddress(ctx, solana.MustPublicKeyFromBase58(MagicEdenV2ProgramAddress),
 			&rpc.GetSignaturesForAddressOpts{
-				Until: s.state.LastTx,
+				Before: lastFetchedTx,
+				Until:  s.state.LastTx,
+				Limit:  uint64(s.conf.BatchSize),
 			})
 		if err != nil {
 			log.Warnf("unable to retrieve confirmed transaction signatures for account: %s", err.Error())
 			return err
 		}
 
-		if len(txList) == 0 {
+		for _, tx := range txList {
+			txToProcess = append(txToProcess, tx)
+			lastFetchedTx = tx.Signature
+		}
+
+		if len(txList) == 0 || s.state.LastTx == "" {
 			break
 		}
 
-		for _, tx := range txList {
-			txToProcess = append(txToProcess, tx)
-		}
 	}
 
 	log.Infof("processing magiceden %d transactions", len(txToProcess))
@@ -266,25 +291,112 @@ func (s *MagicEdenScraper) FetchTrades() error {
 
 }
 
+func (s *MagicEdenScraper) FetchHistoricalTrades() error {
+	var err error
+	ctx := context.Background()
+
+	// it must be run once at a time
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	// read config
+	if err = s.loadConfig(ctx); err != nil {
+		log.Warnf("unable to load scraper config: %s", err.Error())
+		return err
+	}
+
+	// read state
+	if err = s.loadState(ctx); err != nil {
+		log.Warnf("unable to load scraper state: %s", err.Error())
+		return err
+	}
+
+	txList, err := s.solanaRpcClient.GetSignaturesForAddress(ctx, solana.MustPublicKeyFromBase58(MagicEdenV2ProgramAddress),
+		&rpc.GetSignaturesForAddressOpts{
+			Before: s.state.LastTxHistorical,
+			Limit:  uint64(s.conf.BatchSize),
+		})
+
+	if err != nil {
+		log.Warnf("unable to retrieve confirmed transaction signatures for account: %s", err.Error())
+		return err
+	}
+
+	log.Infof("processing magiceden %d historical transactions", len(txList))
+
+	numTrades := 0
+
+	for i := 0; i < len(txList); i++ {
+		tx := txList[i]
+		s.state.LastErrHistorical = ""
+
+		skipped, err := s.processTx(ctx, tx)
+
+		if err != nil {
+			s.state.ErrCounterHistorical++
+
+			if s.state.ErrCounterHistorical <= s.conf.MaxRetry {
+				s.state.LastErrHistorical = fmt.Sprintf("unable to process trade transaction(%s): %s", tx.Signature, err.Error())
+				log.Error(s.state.LastErrHistorical)
+				// store state
+				if err := s.storeState(ctx); err != nil {
+					log.Warnf("unable to store scraper state: %s", err.Error())
+					return err
+				}
+				return err
+			}
+		}
+
+		if !skipped {
+			numTrades++
+		}
+
+		// reset consecutive error counter
+		s.state.ErrCounterHistorical = 0
+
+		// move next
+		s.state.LastTxHistorical = tx.Signature
+
+		// store state
+		if err := s.storeState(ctx); err != nil {
+			log.Warnf("unable to store scraper state: %s", err.Error())
+			return err
+		}
+		log.Info("done with tx")
+	}
+
+	if err := s.storeState(ctx); err != nil {
+		log.Warnf("unable to store scraper state: %s", err.Error())
+		return err
+	}
+
+	log.Infof("processed %d historical trades", numTrades)
+
+	return nil
+
+}
+
 func (s *MagicEdenScraper) processTx(ctx context.Context, tx *rpc.TransactionSignature) (bool, error) {
 	confirmedTx, err := s.solanaRpcClient.GetConfirmedTransaction(ctx, tx.Signature)
-	if err != nil || confirmedTx.Meta == nil || confirmedTx.Meta.Err != nil ||
+	if err != nil || confirmedTx.Meta == nil ||
 		confirmedTx.Transaction == nil || confirmedTx.Transaction.Message.AccountKeys == nil {
-		log.Errorf("unable to get confirmed transaction with signature %q: %w", tx.Signature, err)
+		log.Errorf("unable to get confirmed transaction with signature %q: %v", tx.Signature, err)
+		return false, err
+	} else if confirmedTx.Meta.Err != nil {
 		return true, err
 	}
 	instData := hexutils.BytesToHex(confirmedTx.Transaction.Message.Instructions[0].Data)
 	instDataLowerCase := strings.ToLower(instData)
 
-	if strings.HasPrefix(instDataLowerCase, SaleTxPrefix) {
+	if strings.HasPrefix(instDataLowerCase, SaleTxPrefix) && len(confirmedTx.Transaction.Message.Instructions) > 2 {
 		nftAddrIndex := confirmedTx.Transaction.Message.Instructions[1].Accounts[2]
 		nftAddr := confirmedTx.Transaction.Message.AccountKeys[nftAddrIndex]
-		fromIndex := confirmedTx.Transaction.Message.Instructions[0].Accounts[0]
-		from := confirmedTx.Transaction.Message.AccountKeys[fromIndex]
-		toIndex := confirmedTx.Transaction.Message.Instructions[2].Accounts[1]
+		toIndex := confirmedTx.Transaction.Message.Instructions[0].Accounts[0]
 		to := confirmedTx.Transaction.Message.AccountKeys[toIndex]
+		fromIndex := confirmedTx.Transaction.Message.Instructions[2].Accounts[1]
+		from := confirmedTx.Transaction.Message.AccountKeys[fromIndex]
 
-		price := big.NewInt(int64(float64(confirmedTx.Meta.PostBalances[0]) - float64(confirmedTx.Meta.PreBalances[0])))
+		price := big.NewInt(int64(float64(confirmedTx.Meta.PreBalances[0]) - float64(confirmedTx.Meta.PostBalances[0])))
 		normPrice := decimal.NewFromBigInt(price, 0).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(9)))
 		usdPrice, err := s.calcUSDPrice(normPrice)
 		if err != nil {
@@ -306,16 +418,16 @@ func (s *MagicEdenScraper) processTx(ctx context.Context, tx *rpc.TransactionSig
 }
 
 func (s *MagicEdenScraper) notifyTrade(tx *rpc.TransactionSignature, addr, from, to solana.PublicKey, metadata SolanaNFTMetadata, price *big.Int, usdPrice float64) error {
-	nft, err := s.createOrReadNFT(tx, metadata)
+	nft, err := s.createOrReadNFT(tx, addr, metadata)
 	if err != nil {
 		return err
 	}
 
-	//// Get block time.
-	//timestamp, err := ethhelper.GetBlockTimeEth(int64(ev.Raw.BlockNumber), s.tradeScraper.datastore, s.tradeScraper.ethConnection)
-	//if err != nil {
-	//	log.Errorf("getting block time: %+v", err)
-	//}
+	// Get block time.
+	block, err := s.solanaRpcClient.GetConfirmedBlock(context.TODO(), uint64(tx.Slot), "")
+	if err != nil && block != nil {
+		log.Errorf("getting block time: %+v", err)
+	}
 
 	trade := dia.NFTTrade{
 		NFT:         *nft,
@@ -324,12 +436,12 @@ func (s *MagicEdenScraper) notifyTrade(tx *rpc.TransactionSignature, addr, from,
 		FromAddress: from.String(),
 		ToAddress:   to.String(),
 		BlockNumber: uint64(tx.Slot),
-		Timestamp:   time.Now(),
+		Timestamp:   time.Unix(int64(block.BlockTime), 0),
 		TxHash:      tx.Signature,
 		Exchange:    "MagicEden",
 	}
 
-	if asset, ok := assetCacheOpensea[dia.SOLANA+"-"+tx.Signature]; ok {
+	if asset, ok := assetCacheMagicEden[dia.SOLANA+"-"+tx.Signature]; ok {
 		trade.Currency = asset
 	} else {
 		currency, err := s.tradeScraper.datastore.GetAsset(tx.Signature, dia.SOLANA)
@@ -337,7 +449,7 @@ func (s *MagicEdenScraper) notifyTrade(tx *rpc.TransactionSignature, addr, from,
 			log.Errorf("cannot fetch asset %s -- %s", dia.SOLANA, tx.Signature)
 		}
 		trade.Currency = currency
-		assetCacheOpensea[dia.SOLANA+"-"+tx.Signature] = currency
+		assetCacheMagicEden[dia.SOLANA+"-"+tx.Signature] = currency
 	}
 
 	fmt.Println("found trade: ", trade)
@@ -352,7 +464,7 @@ func (s *MagicEdenScraper) notifyTrade(tx *rpc.TransactionSignature, addr, from,
 	return nil
 }
 
-func (s *MagicEdenScraper) createOrReadNFT(tx *rpc.TransactionSignature, metadata SolanaNFTMetadata) (*dia.NFT, error) {
+func (s *MagicEdenScraper) createOrReadNFT(tx *rpc.TransactionSignature, addr solana.PublicKey, metadata SolanaNFTMetadata) (*dia.NFT, error) {
 	nftClass, err := s.tradeScraper.datastore.GetNFTClass(tx.Signature, dia.SOLANA)
 	if err != nil {
 		if !errors.Is(err, pgx.ErrNoRows) {
@@ -361,7 +473,7 @@ func (s *MagicEdenScraper) createOrReadNFT(tx *rpc.TransactionSignature, metadat
 		}
 
 		nftClass = dia.NFTClass{
-			Address:    tx.Signature,
+			Address:    addr.String(),
 			Blockchain: dia.SOLANA,
 			Name:       metadata.name,
 			Symbol:     metadata.symbol,
@@ -429,13 +541,14 @@ func (s *MagicEdenScraper) fetchNFTMetadata(ctx context.Context, nftAddr solana.
 		confirmedTx, err := s.solanaRpcClient.GetConfirmedTransaction(ctx, lastTxFetched)
 		if err != nil || confirmedTx.Meta == nil || confirmedTx.Meta.Err != nil ||
 			confirmedTx.Transaction == nil || confirmedTx.Transaction.Message.AccountKeys == nil {
-			log.Errorf("unable to get confirmed transaction with signature %q: %w", lastTxFetched, err)
+			log.Errorf("unable to get confirmed transaction with signature %q: %v", lastTxFetched, err)
 			return metadata, err
 		}
 		for i, postBalance := range confirmedTx.Meta.PostBalances {
 			normPrice := decimal.NewFromInt(int64(postBalance)).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(9)))
 			if normPrice.Equals(decimal.NewFromFloat(MetadataFee)) {
 				addr = confirmedTx.Transaction.Message.AccountKeys[i]
+				break
 			}
 		}
 	} else {
