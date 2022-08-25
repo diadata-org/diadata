@@ -221,6 +221,7 @@ func main() {
 		diaGroup.GET("/volume24/:exchange", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.Get24hVolume))
 		diaGroup.GET("/feedStats/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetFeedStats))
 		diaGroup.GET("/search/:query", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.SearchAsset))
+		diaGroup.GET("/searchnft/:query", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.SearchNFTs))
 
 		diaGroup.GET("/exchanges", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetExchanges))
 		diaGroup.GET("/defiLendingProtocols", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetLendingProtocols))

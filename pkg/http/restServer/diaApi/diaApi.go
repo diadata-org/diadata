@@ -886,7 +886,6 @@ func (env *Env) SearchAsset(c *gin.Context) {
 	}
 	var (
 		assets = []dia.Asset{}
-		nfts   = []dia.NFT{}
 
 		err error
 	)
@@ -899,24 +898,12 @@ func (env *Env) SearchAsset(c *gin.Context) {
 			log.Errorln("error getting GetAssetsByAddress", err)
 		}
 
-		nfts, err = env.RelDB.GetNFTByAddress(querystring)
-		if err != nil {
-			log.Errorln("error getting GetNFTByNameSymbol", err)
-			// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
-		}
-
 	case len(querystring) > 4 && !strings.Contains(querystring[0:2], "0x"):
 		assets, err = env.RelDB.GetAssetsBySymbolName(querystring, querystring)
 		if err != nil {
 			// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
 			log.Errorln("error getting GetAssetsBySymbolName", err)
 
-		}
-
-		nfts, err = env.RelDB.GetNFTByNameSymbol(querystring)
-		if err != nil {
-			log.Errorln("error getting GetNFTByNameSymbol", err)
-			// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
 		}
 
 	case len(querystring) < 4:
@@ -926,6 +913,41 @@ func (env *Env) SearchAsset(c *gin.Context) {
 			log.Errorln("error getting GetAssetsBySymbolName", err)
 
 		}
+	}
+	c.JSON(http.StatusOK, assets)
+}
+
+func (env *Env) SearchNFTs(c *gin.Context) {
+	querystring := c.Param("query")
+
+	if !validateInputParams(c) {
+		return
+	}
+	var (
+		nfts = []dia.NFT{}
+
+		err error
+	)
+
+	switch {
+	case len(querystring) > 4 && strings.Contains(querystring[0:2], "0x"):
+
+		nfts, err = env.RelDB.GetNFTByAddress(querystring)
+		if err != nil {
+			log.Errorln("error getting GetNFTByNameSymbol", err)
+			// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
+		}
+
+	case len(querystring) > 4 && !strings.Contains(querystring[0:2], "0x"):
+
+		nfts, err = env.RelDB.GetNFTByNameSymbol(querystring)
+		if err != nil {
+			log.Errorln("error getting GetNFTByNameSymbol", err)
+			// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
+		}
+
+	case len(querystring) < 4:
+
 		nfts, err = env.RelDB.GetNFTByNameSymbol(querystring)
 		if err != nil {
 			log.Errorln("error getting GetNFTByNameSymbol", err)
@@ -934,11 +956,7 @@ func (env *Env) SearchAsset(c *gin.Context) {
 
 	}
 
-	response := make(map[string]interface{})
-	response["assets"] = assets
-	response["nfts"] = nfts
-
-	c.JSON(http.StatusOK, response)
+	c.JSON(http.StatusOK, nfts)
 }
 
 func (env *Env) GetTopAssets(c *gin.Context) {
