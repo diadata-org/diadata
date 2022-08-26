@@ -8,10 +8,13 @@ import (
 	"github.com/diadata-org/diadata/http/monitoringServer/platform"
 	"github.com/diadata-org/diadata/pkg/http/restApi"
 	"github.com/diadata-org/diadata/pkg/utils"
+	"github.com/diadata-org/diadata/pkg/utils/probes"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 )
+
+var startupDone = false
 
 func main() {
 
@@ -23,12 +26,29 @@ func main() {
 	databases.AddRoutes(routerGroup)
 	nodes.AddRoutes(routerGroup)
 	platform.AddRoutes(routerGroup)
-
+	startupDone = true
 	// This environment variable is either set in docker-compose or empty
-	err := engine.Run(utils.Getenv("LISTEN_PORT", ":8080"))
-	if err != nil {
-		log.Error(err)
+
+	go func() {
+		err := engine.Run(utils.Getenv("LISTEN_PORT", ":8080"))
+		if err != nil {
+			log.Error(err)
+		}
+	}()
+
+	log.Infoln("starting probes")
+	probes.Start(live, ready)
+}
+
+func ready() bool {
+	return startupDone
+}
+
+func live() bool {
+	if !startupDone {
+		return false
 	}
+	return config.GetKubernetesConnection() != nil
 }
 
 func mergeStateSlicesAsSubsection(name string, states []config.State) config.State {
