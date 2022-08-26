@@ -14,6 +14,12 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "PHA-USDT",
+      "Ignore": false,
+      "Symbol": "PHA"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "WBTC-USDT",
       "Ignore": false,
       "Symbol": "WBTC"

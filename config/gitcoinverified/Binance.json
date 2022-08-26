@@ -1,6 +1,12 @@
 {
     "Tokens": [
         {
+            "Symbol": "ACA",
+            "Exchange": "Binance",
+            "Blockchain": "Acala",
+            "Address": "Token:ACA"
+        },
+        {
             "Symbol": "ADX",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -377,6 +383,12 @@
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0xbC396689893D065F41bc2C6EcbeE5e0085233447"
+        },
+        {
+            "Symbol": "PHA",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x6c5bA91642F10282b576d91922Ae6448C9d52f4E"
         },
         {
             "Symbol": "POE",

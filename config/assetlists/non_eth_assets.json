@@ -496,6 +496,20 @@
       "Decimals": 8,
       "Blockchain": "Nervos",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "INTR",
+      "Name": "Interlay",
+      "Decimals": 12,
+      "Blockchain": "Interlay",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "CFG",
+      "Name": "Centrifuge",
+      "Decimals": 12,
+      "Blockchain": "Centrifuge",
+      "Address": "0x0000000000000000000000000000000000000000"
     }
   ]
 }

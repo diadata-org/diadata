@@ -79,6 +79,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "BFC",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x0c7D5ae016f806603CB1782bEa29AC69471CAb9c"
+        },
+        {
             "Symbol": "BNB",
             "Exchange": "KuCoin",
             "Blockchain": "BinanceSmartChain",

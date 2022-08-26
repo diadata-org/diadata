@@ -1,6 +1,12 @@
 {
   "Tokens": [
     {
+      "Symbol": "ACA",
+      "Exchange": "LBank",
+      "Blockchain": "Acala",
+      "Address": "Token:ACA"
+  },
+    {
       "Symbol": "AXS",
       "Exchange": "LBank",
       "Blockchain": "Ethereum",

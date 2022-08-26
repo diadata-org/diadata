@@ -313,6 +313,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "BFC",
+            "ForeignName": "BFC-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "BNB",
             "ForeignName": "BNB-BTC",
             "Exchange": "KuCoin",

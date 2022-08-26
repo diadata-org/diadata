@@ -187,6 +187,12 @@
             "Address": "0xB97048628DB6B661D4C2aA833e95Dbe1A905B280"
         },
         {
+            "Symbol": "PHA",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x6c5bA91642F10282b576d91922Ae6448C9d52f4E"
+        },
+        {
             "Symbol": "PPT",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
