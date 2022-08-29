@@ -86,8 +86,9 @@ func (datastore *DB) GetVolumeInflux(asset dia.Asset, exchange string, starttime
 		return nil, errors.New(errorString)
 
 	} else {
-		errorString = "empty response in GetVolumeInflux"
-		return nil, errors.New(errorString)
+		volume := float64(0)
+		log.Warnf("no volume on %s in influx filter table", exchange)
+		return &volume, nil
 	}
 }
 
