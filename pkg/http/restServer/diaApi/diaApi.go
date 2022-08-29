@@ -2973,6 +2973,7 @@ func (env *Env) GetAssetInfo(c *gin.Context) {
 		restApi.SendError(c, http.StatusNotFound, err)
 		return
 	}
+	var eix []localExchangeInfo
 	for exchange, pairs := range exchangemap {
 		var ei localExchangeInfo
 		ei.Name = exchange
@@ -2987,8 +2988,13 @@ func (env *Env) GetAssetInfo(c *gin.Context) {
 		} else {
 			ei.Volume24h = *vol
 		}
-		quotationExtended.ExchangeInfo = append(quotationExtended.ExchangeInfo, ei)
+		eix = append(eix, ei)
 	}
+
+	sort.Slice(eix, func(i, j int) bool {
+		return eix[i].Volume24h > eix[j].Volume24h
+	})
+	quotationExtended.ExchangeInfo = eix
 
 	c.JSON(http.StatusOK, quotationExtended)
 }
