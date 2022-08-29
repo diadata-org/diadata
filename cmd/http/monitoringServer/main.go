@@ -124,7 +124,7 @@ func getMonitoringGroupConfigStates(conn *pgxpool.Pool, groupParentId uuid.UUID)
 				&monitoringItem.k8sNamespace,
 				&monitoringItem.k8sServiceName,
 			)
-			itemState := config.GetMajorHealthState(monitoringItem.itemName)
+			itemState := config.GetOperationalHealthState(monitoringItem.itemName)
 			listOptions := metaV1.ListOptions{
 				LabelSelector: "app=" + monitoringItem.k8sServiceName,
 			}
@@ -137,6 +137,8 @@ func getMonitoringGroupConfigStates(conn *pgxpool.Pool, groupParentId uuid.UUID)
 				if strings.Contains(service.Name, monitoringItem.k8sServiceName) {
 					if len(service.Status.Conditions) == 0 {
 						itemState.State = enums.HealthStateOperational
+					} else {
+						itemState.State = enums.HealthStateMinor
 					}
 					break
 				}
@@ -153,14 +155,12 @@ func getMonitoringGroupConfigStates(conn *pgxpool.Pool, groupParentId uuid.UUID)
 							itemState.State = enums.HealthStateOperational
 						} else {
 							itemState.State = enums.HealthStateMajor
-							monitorState.State = enums.HealthStateMajor
 							break
 						}
 					}
 					break
 				}
 			}
-
 			monitorState.Subsection = append(monitorState.Subsection, itemState)
 			/*subStates := getMonitoringGroupConfigStates(conn, monitoringGroup.id)
 
@@ -170,8 +170,11 @@ func getMonitoringGroupConfigStates(conn *pgxpool.Pool, groupParentId uuid.UUID)
 			}
 			*/
 		}
-		fmt.Printf("%v", monitorState)
+		//goland:noinspection GoDeferInLoop
 		defer itemRows.Close()
+		for _, item := range monitorState.Subsection {
+			monitorState.State = enums.CompareStates(item.State, monitorState.State)
+		}
 		states = append(states, monitorState)
 	}
 	defer rows.Close()
@@ -179,26 +182,15 @@ func getMonitoringGroupConfigStates(conn *pgxpool.Pool, groupParentId uuid.UUID)
 	return
 }
 
-func mergeStateSlicesAsSubsection(name string, states []config.State) config.State {
-	state := config.GetOperationalHealthState(name)
+func mergeStateSlicesAsSubsection(name string, states []config.State) (configState config.State) {
+	configState = config.GetOperationalHealthState(name)
 
 	for _, oneSlice := range states {
-		state.Subsection = append(state.Subsection, oneSlice)
-		switch oneSlice.State {
-		case enums.HealthStateMajor:
-			state.State = enums.HealthStateMajor
-		case enums.HealthStateMinor:
-			if state.State == enums.HealthStateOperational || state.State == enums.HealthStateMaintenance {
-				state.State = enums.HealthStateMinor
-			}
-		case enums.HealthStateMaintenance:
-			if state.State == enums.HealthStateOperational {
-				state.State = enums.HealthStateOperational
-			}
-		}
+		configState.Subsection = append(configState.Subsection, oneSlice)
+		configState.State = enums.CompareStates(oneSlice.State, configState.State)
 	}
 
-	return state
+	return
 }
 
 func GetAllStates(context *gin.Context) {
