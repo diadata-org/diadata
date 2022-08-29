@@ -19,12 +19,15 @@ import (
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"net/http"
 	"strings"
+	"time"
 )
 
-var startupDone = false
+var StartupDone = false
+var CacheGlobalState []config.State
+
+const CacheTTLSeconds = 5 * 60
 
 func main() {
-
 	engine := gin.Default()
 	engine.Use(gin.Logger())
 	engine.Use(gin.Recovery())
@@ -33,26 +36,37 @@ func main() {
 	databases.AddRoutes(routerGroup)
 	nodes.AddRoutes(routerGroup)
 	platform.AddRoutes(routerGroup)
-	startupDone = true
-	// This environment variable is either set in docker-compose or empty
-
+	readAllStates()
+	ticker := time.NewTicker(time.Second * CacheTTLSeconds)
+	quit := make(chan struct{})
 	go func() {
-		err := engine.Run(utils.Getenv("LISTEN_PORT", ":8080"))
-		if err != nil {
-			log.Error(err)
+		for {
+			select {
+			case <-ticker.C:
+				readAllStates()
+			case <-quit:
+				ticker.Stop()
+				return
+			}
 		}
 	}()
 
 	log.Infoln("starting probes")
 	probes.Start(live, ready)
+
+	err := engine.Run(utils.Getenv("LISTEN_PORT", ":8080"))
+	StartupDone = true
+	if err != nil {
+		log.Error(err)
+	}
 }
 
 func ready() bool {
-	return startupDone
+	return StartupDone
 }
 
 func live() bool {
-	if !startupDone {
+	if !StartupDone {
 		return false
 	}
 	return config.GetKubernetesConnection() != nil
@@ -77,9 +91,9 @@ func getMonitoringGroupStates() []config.State {
 func getMonitoringGroupConfigStates(conn *pgxpool.Pool, groupParentId uuid.UUID) (states []config.State) {
 	parentWhere := ""
 	if groupParentId != uuid.Nil {
-		parentWhere = fmt.Sprintf(" where group_parent_id = %s", groupParentId)
+		parentWhere = fmt.Sprintf(" and group_parent_id = %s", groupParentId)
 	}
-	query := fmt.Sprintf("select id, group_name from monitoring_groups %s", parentWhere)
+	query := fmt.Sprintf("select id, group_name from monitoring_groups where active = true %s", parentWhere)
 
 	log.Info("reading service monitoring endpoints")
 	rows, err := conn.Query(context.Background(), query)
@@ -95,13 +109,12 @@ func getMonitoringGroupConfigStates(conn *pgxpool.Pool, groupParentId uuid.UUID)
 		err := rows.Scan(
 			&monitoringGroup.id,
 			&monitoringGroup.groupName,
-			&monitoringGroup.groupParentId,
 		)
 		monitorState := config.GetOperationalHealthState(monitoringGroup.groupName)
-		itemQuery := fmt.Sprintf("select item_name, k8s_namespace, k8s_servicename from monitoring_items WHERE monitoring_group_id = '%s' ", monitoringGroup.groupParentId.String())
+		itemQuery := fmt.Sprintf("select item_name, k8s_namespace, k8s_servicename from monitoring_items WHERE monitoring_group_id = '%s' AND active = true", monitoringGroup.id.String())
 		itemRows, err := conn.Query(context.Background(), itemQuery)
 		if err != nil {
-			log.Error("error reading endpoint from postgres", err)
+			log.Error("error reading endpoint from postgres ", err)
 			return nil
 		}
 		for itemRows.Next() {
@@ -111,8 +124,10 @@ func getMonitoringGroupConfigStates(conn *pgxpool.Pool, groupParentId uuid.UUID)
 				&monitoringItem.k8sNamespace,
 				&monitoringItem.k8sServiceName,
 			)
-			itemState := config.GetMajorHealthState(monitoringItem.k8sServiceName)
-			listOptions := metaV1.ListOptions{}
+			itemState := config.GetMajorHealthState(monitoringItem.itemName)
+			listOptions := metaV1.ListOptions{
+				LabelSelector: "app=" + monitoringItem.k8sServiceName,
+			}
 			services, serviceErr := kube.CoreV1().Services(monitoringItem.k8sNamespace).List(context.TODO(), listOptions)
 			if serviceErr != nil {
 				log.Error(serviceErr)
@@ -126,13 +141,34 @@ func getMonitoringGroupConfigStates(conn *pgxpool.Pool, groupParentId uuid.UUID)
 					break
 				}
 			}
+			deployments, deploymentErr := kube.AppsV1().Deployments(monitoringItem.k8sNamespace).List(context.TODO(), listOptions)
+			if deploymentErr != nil {
+				log.Error(deploymentErr)
+				return nil
+			}
+			for _, deployment := range deployments.Items {
+				if strings.Contains(deployment.Name, monitoringItem.k8sServiceName) {
+					for _, condition := range deployment.Status.Conditions {
+						if condition.Status == "True" && (condition.Type == "Progressing" || condition.Type == "Available") {
+							itemState.State = enums.HealthStateOperational
+						} else {
+							itemState.State = enums.HealthStateMajor
+							monitorState.State = enums.HealthStateMajor
+							break
+						}
+					}
+					break
+				}
+			}
+
 			monitorState.Subsection = append(monitorState.Subsection, itemState)
-			subStates := getMonitoringGroupConfigStates(conn, monitoringGroup.id)
+			/*subStates := getMonitoringGroupConfigStates(conn, monitoringGroup.id)
 
 			subState := config.GetOperationalHealthState(monitoringGroup.groupName + " Children")
 			for _, subStateItem := range subStates {
 				subState.Subsection = append(subState.Subsection, subStateItem)
 			}
+			*/
 		}
 		fmt.Printf("%v", monitorState)
 		defer itemRows.Close()
@@ -166,6 +202,13 @@ func mergeStateSlicesAsSubsection(name string, states []config.State) config.Sta
 }
 
 func GetAllStates(context *gin.Context) {
+	if len(CacheGlobalState) == 0 {
+		restApi.SendError(context, http.StatusNotFound, nil)
+	}
+	context.JSON(http.StatusOK, CacheGlobalState)
+}
+
+func readAllStates() {
 	states := getMonitoringGroupStates()
 	if states == nil {
 		states = []config.State{}
@@ -177,8 +220,5 @@ func GetAllStates(context *gin.Context) {
 	platformStates := platform.GetAllStates()
 	states = append(states, mergeStateSlicesAsSubsection("platform", platformStates))
 
-	if len(states) == 0 {
-		restApi.SendError(context, http.StatusNotFound, nil)
-	}
-	context.JSON(http.StatusOK, states)
+	CacheGlobalState = states
 }
