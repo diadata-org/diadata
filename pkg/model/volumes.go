@@ -21,21 +21,52 @@ var (
 	volumeKey = "VOL" + strconv.Itoa(dia.BlockSizeSeconds)
 )
 
-// GetVolume returns the 24h trading volume of @asset across exchanges.
-func (datastore *DB) GetVolume(asset dia.Asset) (*float64, error) {
-	return datastore.Sum24HoursInflux(asset, "", volumeKey)
-}
+// GetVolumeInflux returns the volume of @asset on @exchange using the VOL120 filter in the given time-range.
+// Both, @asset and @exchange may be empty.
+// If @starttime,@endtime are empty, the last 24h are taken into account.
+func (datastore *DB) GetVolumeInflux(asset dia.Asset, exchange string, starttime time.Time, endtime time.Time) (*float64, error) {
 
-// Sum24HoursInflux returns the 24h  volume of @asset on @exchange using the filter @filter.
-func (datastore *DB) Sum24HoursInflux(asset dia.Asset, exchange string, filter string) (*float64, error) {
-	queryString := "SELECT SUM(value) FROM %s WHERE address='%s' AND blockchain='%s' AND exchange='%s' AND filter='%s' AND time > now() - 1d AND time<now()"
-	q := fmt.Sprintf(queryString, influxDbFiltersTable, asset.Address, asset.Blockchain, exchange, filter)
-	log.Infoln("Running influx query ", q)
+	if endtime.IsZero() {
+		endtime = time.Now()
+		starttime = endtime.AddDate(0, 0, -1)
+	}
+
+	var q string
+
+	if asset == (dia.Asset{}) {
+		queryString := `
+		SELECT SUM(value) 
+		FROM %s 
+		AND exchange='%s' 
+		AND filter='%s' 
+		AND time > %d AND time<= %d
+		`
+		q = fmt.Sprintf(queryString, influxDbFiltersTable, exchange, volumeKey, starttime.UnixNano(), endtime.UnixNano())
+	} else if exchange == "" {
+		queryString := `
+		SELECT SUM(value) 
+		FROM %s 
+		WHERE address='%s' AND blockchain='%s' 
+		AND filter='%s' 
+		AND time > %d AND time<= %d
+		`
+		q = fmt.Sprintf(queryString, influxDbFiltersTable, asset.Address, asset.Blockchain, volumeKey, starttime.UnixNano(), endtime.UnixNano())
+	} else {
+		queryString := `
+		SELECT SUM(value) 
+		FROM %s 
+		WHERE address='%s' AND blockchain='%s' 
+		AND exchange='%s' 
+		AND filter='%s' 
+		AND time > %d AND time<= %d
+		`
+		q = fmt.Sprintf(queryString, influxDbFiltersTable, asset.Address, asset.Blockchain, exchange, volumeKey, starttime.UnixNano(), endtime.UnixNano())
+	}
 
 	var errorString string
 	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
-		log.Errorln("Sum24HoursInflux ", err)
+		log.Errorln("GetVolumeInflux ", err)
 		return nil, err
 	}
 
@@ -52,104 +83,24 @@ func (datastore *DB) Sum24HoursInflux(asset dia.Asset, exchange string, filter s
 			return &result, nil
 		}
 		errorString = "error on parsing row 1"
-		log.Errorln(errorString)
 		return nil, errors.New(errorString)
 
 	} else {
-		errorString = "empty response in Sum24HoursInflux"
-		log.Errorln(errorString)
+		errorString = "empty response in GetVolumeInflux"
 		return nil, errors.New(errorString)
 	}
 }
 
-// Get24HVolumePerExchange returns the 24h volumes of @asset sorted by pairs.
-func (datastore *DB) Get24HVolumePerExchange(asset dia.Asset) (exchangeVolume []dia.ExchangeVolume, err error) {
-	filter := "VOL120"
-
-	queryString := "SELECT SUM(value) FROM %s WHERE address='%s' AND blockchain='%s' AND filter='%s' AND time > now() - 100d AND time<now() GROUP BY exchange"
-	q := fmt.Sprintf(queryString, influxDbFiltersTable, asset.Address, asset.Blockchain, filter)
-	// q := "select sum(absvolume) from ( select abs(volume) as absvolume from trades) group by exchange;"
-
-	log.Infoln("Running influx query ", q)
-
-	// var errorString string
-	res, err := queryInfluxDB(datastore.influxClient, q)
-	if err != nil {
-		log.Errorln("Get24HVolumePerExchange ", err)
-		return
-	}
-
-	if len(res) > 0 && len(res[0].Series) > 0 {
-		for _, row := range res[0].Series {
-			volume, _ := row.Values[0][1].(json.Number).Float64()
-			exchangeVolume = append(exchangeVolume, dia.ExchangeVolume{
-				Exchange: row.Tags["exchange"],
-				Volume:   volume,
-			})
-		}
-
-	}
-	return
+// Get24HoursAssetVolume returns the 24h trading volume of @asset across exchanges.
+func (datastore *DB) Get24HoursAssetVolume(asset dia.Asset) (*float64, error) {
+	endtime := time.Now()
+	return datastore.GetVolumeInflux(asset, "", endtime.AddDate(0, 0, -1), endtime)
 }
 
-// Sum24HoursExchange returns 24h trade volume on @exchange using VOL120 filtered data from influx.
-func (datastore *DB) Sum24HoursExchange(exchange string) (volume float64, err error) {
-
-	queryString := "SELECT SUM(value) FROM %s WHERE filter='%s' AND exchange='%s' AND time > now() - 24h AND time<now()"
-	q := fmt.Sprintf(queryString, influxDbFiltersTable, "VOL120", exchange)
-
-	res, err := queryInfluxDB(datastore.influxClient, q)
-	if err != nil {
-		log.Errorln("Get24HVolumePerExchange ", err)
-		return
-	}
-
-	if len(res) > 0 && len(res[0].Series) > 0 {
-		vol, ok := res[0].Series[0].Values[0][1].(json.Number)
-		if ok {
-			volume, err = vol.Float64()
-			if err != nil {
-				return volume, err
-			}
-		}
-	}
-
-	return
-}
-
-// GetVolumeInflux returns the trade volume of @asset in the time range @starttime - @endtime.
-// It uses the VOL filter from the filter services.
-func (datastore *DB) GetVolumeInflux(asset dia.Asset, starttime time.Time, endtime time.Time) (float64, error) {
-	var retval float64
-	var q string
-	filter := "VOL120"
-	if starttime.IsZero() || endtime.IsZero() {
-		queryString := "SELECT SUM(value) FROM %s WHERE address='%s' AND blockchain='%s' AND filter='%s' AND time > now() - 1d AND time < now()"
-		q = fmt.Sprintf(queryString, influxDbFiltersTable, asset.Address, asset.Blockchain, filter)
-	} else {
-		queryString := "SELECT SUM(value) FROM %s WHERE address='%s' AND blockchain='%s' AND filter='%s' AND time > %d AND time < %d"
-		q = fmt.Sprintf(queryString, influxDbFiltersTable, asset.Address, asset.Blockchain, filter, starttime.UnixNano(), endtime.UnixNano())
-	}
-	res, err := queryInfluxDB(datastore.influxClient, q)
-	if err != nil {
-		return retval, err
-	}
-	if len(res) > 0 && len(res[0].Series) > 0 {
-		for _, row := range res[0].Series[0].Values {
-			v, o := row[1].(json.Number)
-			if o {
-				retval, _ = v.Float64()
-				return retval, nil
-			} else {
-				errorString := "error on parsing row 1"
-				log.Errorln(errorString)
-				return retval, errors.New(errorString)
-			}
-		}
-	} else {
-		return retval, errors.New("parsing volume value from database")
-	}
-	return retval, nil
+// Get24HoursExchangeVolume returns 24h trade volume on @exchange using VOL120 filtered data from influx.
+func (datastore *DB) Get24HoursExchangeVolume(exchange string) (*float64, error) {
+	endtime := time.Now()
+	return datastore.GetVolumeInflux(dia.Asset{}, exchange, endtime.AddDate(0, 0, -1), endtime)
 }
 
 // SetAggregatedVolume sets the aggregated volume @aggVol in postgres.

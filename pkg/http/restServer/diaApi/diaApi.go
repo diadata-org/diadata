@@ -493,12 +493,12 @@ func (env *Env) GetVolume(c *gin.Context) {
 	preliminaryAsset := dia.Asset{
 		Symbol: symbol,
 	}
-	v, err := env.DataStore.GetVolumeInflux(preliminaryAsset, starttime, endtime)
+	v, err := env.DataStore.GetVolumeInflux(preliminaryAsset, "", starttime, endtime)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, v)
+	c.JSON(http.StatusOK, *v)
 }
 
 // Get24hVolume if no times are set use the last 24h
@@ -534,12 +534,12 @@ func (env *Env) Get24hVolume(c *gin.Context) {
 	// 	endtime = time.Unix(endtimeInt, 0)
 	// }
 
-	v, err := env.DataStore.Sum24HoursExchange(exchange)
+	v, err := env.DataStore.Get24HoursExchangeVolume(exchange)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, v)
+	c.JSON(http.StatusOK, *v)
 }
 
 // GetExchanges is the delegate method for fetching all exchanges available in Postgres.
@@ -559,12 +559,12 @@ func (env *Env) GetExchanges(c *gin.Context) {
 	}
 	for _, exchange := range exchanges {
 
-		vol, err := env.DataStore.Sum24HoursExchange(exchange.Name)
+		vol, err := env.DataStore.Get24HoursExchangeVolume(exchange.Name)
 		if err != nil {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 			return
 		}
-		numTrades, err := env.DataStore.GetNumTrades(exchange.Name)
+		numTrades, err := env.DataStore.GetNumTradesExchange24H(exchange.Name)
 		if err != nil {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 			return
@@ -577,7 +577,7 @@ func (env *Env) GetExchanges(c *gin.Context) {
 
 		exchangereturn := exchangeReturn{
 			Name:       exchange.Name,
-			Volume24h:  vol,
+			Volume24h:  *vol,
 			Trades:     numTrades,
 			Pairs:      numPairs,
 			Blockchain: exchange.BlockChain.Name,
@@ -2895,6 +2895,102 @@ func validateInputParams(c *gin.Context) bool {
 		return false
 	}
 	return true
+}
+
+// GetAssetInfo returns quotation of asset with highest market cap among
+// all assets with symbol ticker @symbol. Additionally information on exchanges and volumes.
+func (env *Env) GetAssetInfo(c *gin.Context) {
+
+	type localExchangeInfo struct {
+		Name      string
+		Volume24h float64
+		NumPairs  int
+		NumTrades int64
+	}
+
+	type localAssetInfoReturn struct {
+		Symbol             string
+		Name               string
+		Address            string
+		Blockchain         string
+		Price              float64
+		PriceYesterday     float64
+		VolumeYesterdayUSD float64
+		Time               time.Time
+		Source             string
+		ExchangeInfo       []localExchangeInfo
+	}
+
+	symbol := c.Param("symbol")
+	if !validateInputParams(c) {
+		return
+	}
+	endtime := time.Now()
+	starttime := endtime.AddDate(0, 0, -1)
+
+	var quotationExtended localAssetInfoReturn
+
+	// Fetch underlying assets for symbol
+	assets, err := env.RelDB.GetTopAssetByVolume(symbol)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, err)
+		return
+	}
+	if len(assets) == 0 {
+		restApi.SendError(c, http.StatusNotFound, errors.New("no quotation available"))
+		return
+	}
+	asset := assets[0]
+
+	quotation, err := env.DataStore.GetAssetQuotation(asset, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, errors.New("no quotation available"))
+		return
+	}
+	quotationYesterday, err := env.DataStore.GetAssetQuotation(asset, starttime)
+	if err != nil {
+		log.Warn("get quotation yesterday: ", err)
+	} else {
+		quotationExtended.PriceYesterday = quotationYesterday.Price
+	}
+	volumeYesterday, err := env.RelDB.GetAssetVolume24H(asset)
+	if err != nil {
+		log.Warn("get volume yesterday: ", err)
+	} else {
+		quotationExtended.VolumeYesterdayUSD = volumeYesterday
+	}
+	quotationExtended.Symbol = quotation.Asset.Symbol
+	quotationExtended.Name = quotation.Asset.Name
+	quotationExtended.Address = quotation.Asset.Address
+	quotationExtended.Blockchain = quotation.Asset.Blockchain
+	quotationExtended.Price = quotation.Price
+	quotationExtended.Time = quotation.Time
+	quotationExtended.Source = quotation.Source
+
+	// Get Exchange stats
+	exchangemap, err := env.DataStore.GetActiveExchangesAndPairs(asset.Address, asset.Blockchain, starttime, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, err)
+		return
+	}
+	for exchange, pairs := range exchangemap {
+		var ei localExchangeInfo
+		ei.Name = exchange
+		ei.NumPairs = len(pairs)
+		ei.NumTrades, err = env.DataStore.GetNumTrades(exchange, asset.Address, asset.Blockchain, starttime, endtime)
+		if err != nil {
+			log.Errorf("get number of trades for %s: %v", exchange, err)
+		}
+		vol, err := env.DataStore.GetVolumeInflux(asset, exchange, starttime, endtime)
+		if err != nil {
+			log.Errorf("get 24h volume for %s: %v", exchange, err)
+		} else {
+			ei.Volume24h = *vol
+		}
+		quotationExtended.ExchangeInfo = append(quotationExtended.ExchangeInfo, ei)
+	}
+
+	c.JSON(http.StatusOK, quotationExtended)
 }
 
 func containSpecialChars(s string) bool {

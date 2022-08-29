@@ -51,7 +51,7 @@ func fetchAndUpdateVolume() {
 	log.Infoln("Total Assets: ", totalAssets)
 
 	for _, asset := range totalAssets {
-		volume, err := datastore.GetVolume(asset)
+		volume, err := datastore.Get24HoursAssetVolume(asset)
 		if err != nil {
 			log.Errorf("get volume of asset %s, %s", asset.Symbol, err.Error())
 		} else {

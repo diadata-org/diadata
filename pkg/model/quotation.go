@@ -273,7 +273,7 @@ func (datastore *DB) GetSortedAssetQuotations(assets []dia.Asset) ([]AssetQuotat
 			log.Errorf("get quotation for symbol %s with address %s on blockchain %s: %v", asset.Symbol, asset.Address, asset.Blockchain, err)
 			continue
 		}
-		volume, err = datastore.GetVolume(asset)
+		volume, err = datastore.Get24HoursAssetVolume(asset)
 		if err != nil {
 			log.Errorf("get volume for symbol %s with address %s on blockchain %s: %v", asset.Symbol, asset.Address, asset.Blockchain, err)
 			continue
@@ -325,7 +325,7 @@ func (datastore *DB) GetTopAssetByVolume(symbol string, relDB *RelDB) (topAsset 
 	var volume float64
 	for _, asset := range assets {
 		var value *float64
-		value, err = datastore.GetVolume(asset)
+		value, err = datastore.Get24HoursAssetVolume(asset)
 		if err != nil {
 			log.Error(err)
 			continue
@@ -456,8 +456,6 @@ func (datastore *DB) GetQuotation(symbol string) (*Quotation, error) {
 	if err2 == nil {
 		value.PriceYesterday = &v
 	}
-	// v2, err2 := db.GetVolume(symbol)
-	// value.VolumeYesterdayUSD = v2
 	itin, err := datastore.GetItinBySymbol(symbol)
 	if err != nil {
 		value.ITIN = "undefined"

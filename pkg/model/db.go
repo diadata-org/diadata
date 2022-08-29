@@ -16,8 +16,6 @@ import (
 
 type Datastore interface {
 	SetInfluxClient(url string)
-	Get24HVolumePerExchange(asset dia.Asset) ([]dia.ExchangeVolume, error)
-	GetVolume(asset dia.Asset) (*float64, error)
 
 	// Deprecating
 	SetPriceUSD(symbol string, price float64) error
@@ -56,6 +54,7 @@ type Datastore interface {
 	GetTradesByExchangesFull(asset dia.Asset, baseAssets []dia.Asset, exchanges []string, returnBasetoken bool, startTime, endTime time.Time) ([]dia.Trade, error)
 	GetTradesByExchangesBatched(asset dia.Asset, baseAssets []dia.Asset, exchanges []string, startTimes, endTimes []time.Time) ([]dia.Trade, error)
 	GetTradesByExchangesBatchedFull(asset dia.Asset, baseAssets []dia.Asset, exchanges []string, returnBasetoken bool, startTimes, endTimes []time.Time) ([]dia.Trade, error)
+	GetActiveExchangesAndPairs(address string, blockchain string, starttime time.Time, endtime time.Time) (map[string][]string, error)
 	GetOldTradesFromInflux(table string, exchange string, verified bool, timeInit, timeFinal time.Time) ([]dia.Trade, error)
 	CopyInfluxMeasurements(dbOrigin string, dbDestination string, tableOrigin string, tableDestination string, timeInit time.Time, timeFinal time.Time) (int64, error)
 	DeleteInfluxMeasurement(dbName string, tableName string, timeInit time.Time, timeFinal time.Time) error
@@ -76,12 +75,13 @@ type Datastore interface {
 	GetOptionMeta(baseCurrency string) ([]dia.OptionMeta, error)
 	SaveCVIInflux(float64, time.Time) error
 	GetCVIInflux(time.Time, time.Time, string) ([]dia.CviDataPoint, error)
-	GetVolumeInflux(dia.Asset, time.Time, time.Time) (float64, error)
-	// Get24Volume(symbol string, exchange string) (float64, error)
-	// Get24VolumeExchange(exchange string) (float64, error)
-	Sum24HoursInflux(asset dia.Asset, exchange string, filter string) (*float64, error)
-	Sum24HoursExchange(exchange string) (float64, error)
-	GetNumTrades(exchange string) (int64, error)
+
+	// Volume methods
+	GetVolumeInflux(asset dia.Asset, exchange string, starttime time.Time, endtime time.Time) (*float64, error)
+	Get24HoursAssetVolume(asset dia.Asset) (*float64, error)
+	Get24HoursExchangeVolume(exchange string) (*float64, error)
+	GetNumTradesExchange24H(exchange string) (int64, error)
+	GetNumTrades(exchange string, address string, blockchain string, starttime time.Time, endtime time.Time) (int64, error)
 	GetNumTradesSeries(
 		exchange string,
 		pair string,
@@ -189,7 +189,6 @@ type DB struct {
 
 const (
 	influxDbName                      = "dia"
-	influxDbOldTradesTable            = "oldTrades"
 	influxDbTradesTable               = "trades"
 	influxDbFiltersTable              = "filters"
 	influxDbFiatQuotationsTable       = "fiat"
