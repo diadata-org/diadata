@@ -6,11 +6,14 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
 	"k8s.io/client-go/kubernetes"
+	_ "k8s.io/client-go/plugin/pkg/client/auth/oidc"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
 	"path/filepath"
 )
+
+var kubeConfigCache *kubernetes.Clientset
 
 func GetKubernetesConnection() *kubernetes.Clientset {
 	switch utils.Getenv("KUBERNETES_CONFIG", string(enums.KubernetesConfigInCluster)) {
@@ -39,6 +42,9 @@ func GetInClusterConfig() *kubernetes.Clientset {
 }
 
 func GetConfigFromPath(path string) *kubernetes.Clientset {
+	if kubeConfigCache != nil {
+		return kubeConfigCache
+	}
 	var kubeConfig *string
 	if len(path) == 0 || path == "" {
 		path = filepath.Join(homedir.HomeDir(), ".kube", "config")
@@ -51,12 +57,13 @@ func GetConfigFromPath(path string) *kubernetes.Clientset {
 		return nil
 	}
 	// creates the clientset
-	kube, configErr := kubernetes.NewForConfig(config)
+	var configErr error
+	kubeConfigCache, configErr = kubernetes.NewForConfig(config)
 	if configErr != nil {
 		log.Error(configErr)
 	}
-	if kube == nil {
+	if kubeConfigCache == nil {
 		log.Error("could not get kubernetes clientSet")
 	}
-	return kube
+	return kubeConfigCache
 }
