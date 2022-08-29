@@ -50,6 +50,38 @@ func (datastore *DB) SetLastTradeTimeForExchange(asset dia.Asset, exchange strin
 	return err
 }
 
+// GetActiveExchangesAndPairs returns all exchanges the asset with @address and @blockchain was
+// traded on in the given time-range as keys of a map.
+// Additionaly, the map's values are the underlying pairs.
+func (datastore *DB) GetActiveExchangesAndPairs(address string, blockchain string, starttime time.Time, endtime time.Time) (map[string][]string, error) {
+	exchangepairmap := make(map[string][]string)
+
+	query := `
+	SELECT exchange,pair,LAST(estimatedUSDPrice) 
+	FROM %s 
+	WHERE time>%d AND time<=%d 
+	AND quotetokenaddress='%s' AND quotetokenblockchain='%s' 
+	GROUP BY "pair"
+	`
+
+	q := fmt.Sprintf(query, influxDbTradesTable, starttime.UnixNano(), endtime.UnixNano(), address, blockchain)
+	res, err := queryInfluxDB(datastore.influxClient, q)
+	if err != nil {
+		return exchangepairmap, err
+	}
+
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for _, row := range res[0].Series {
+			if len(row.Values[0]) > 1 {
+				exchangepairmap[row.Values[0][1].(string)] = append(exchangepairmap[row.Values[0][1].(string)], row.Values[0][2].(string))
+			}
+		}
+	}
+
+	return exchangepairmap, nil
+
+}
+
 func (rdb *RelDB) GetExchangesForSymbol(symbol string) (exchanges []string, err error) {
 
 	query := fmt.Sprintf("select distinct(exchange) from %s where symbol=$1", exchangesymbolTable)

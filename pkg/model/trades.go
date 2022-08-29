@@ -282,25 +282,52 @@ func (datastore *DB) GetLastTrades(asset dia.Asset, exchange string, maxTrades i
 	return r, nil
 }
 
-func (datastore *DB) GetNumTrades(exchange string) (numTrades int64, err error) {
-	queryString := "SELECT COUNT(*) FROM %s WHERE exchange='%s' AND time > now() - 24h AND time<now()"
-	q := fmt.Sprintf(queryString, influxDbTradesTable, exchange)
+// GetNumTradesExchange24H returns the number of trades on @exchange in the last 24 hours.
+func (datastore *DB) GetNumTradesExchange24H(exchange string) (numTrades int64, err error) {
+	endtime := time.Now()
+	return datastore.GetNumTrades(exchange, "", "", endtime.AddDate(0, 0, -1), endtime)
+}
+
+// GetNumTrades returns the number of trades on @exchange for asset with @address and @blockchain in the given time-range.
+// If @address and @blockchain are empty, it returns all trades on @exchange in the given-time range.
+func (datastore *DB) GetNumTrades(exchange string, address string, blockchain string, starttime time.Time, endtime time.Time) (numTrades int64, err error) {
+	var q string
+
+	if address != "" && blockchain != "" {
+		queryString := `
+	SELECT COUNT(*) 
+	FROM %s 
+	WHERE exchange='%s' 
+	AND quotetokenaddress='%s' AND quotetokenblockchain='%s' 
+	AND time > %d AND time<= %d
+	`
+		q = fmt.Sprintf(queryString, influxDbTradesTable, exchange, address, blockchain, starttime.UnixNano(), endtime.UnixNano())
+	} else {
+		queryString := `
+	SELECT COUNT(*) 
+	FROM %s 
+	WHERE exchange='%s' 
+	AND time > %d AND time<= %d
+	`
+		q = fmt.Sprintf(queryString, influxDbTradesTable, exchange, starttime.UnixNano(), endtime.UnixNano())
+	}
 
 	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
-		log.Errorln("Get24HVolumePerExchange ", err)
+		log.Errorln("GetNumTrades ", err)
 		return
 	}
 
 	if len(res) > 0 && len(res[0].Series) > 0 {
-		vol, ok := res[0].Series[0].Values[0][1].(json.Number)
+		num, ok := res[0].Series[0].Values[0][1].(json.Number)
 		if ok {
-			numTrades, err = vol.Int64()
+			numTrades, err = num.Int64()
 			if err != nil {
 				return numTrades, err
 			}
 		}
 	}
+
 	return
 }
 
