@@ -37,7 +37,7 @@ func (datastore *DB) GetVolumeInflux(asset dia.Asset, exchange string, starttime
 		queryString := `
 		SELECT SUM(value) 
 		FROM %s 
-		AND exchange='%s' 
+		WHERE exchange='%s' 
 		AND filter='%s' 
 		AND time > %d AND time<= %d
 		`
