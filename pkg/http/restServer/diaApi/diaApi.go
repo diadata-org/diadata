@@ -2921,7 +2921,8 @@ func (env *Env) GetAssetInfo(c *gin.Context) {
 		ExchangeInfo       []localExchangeInfo
 	}
 
-	symbol := c.Param("symbol")
+	blockchain := c.Param("blockchain")
+	address := c.Param("address")
 	if !validateInputParams(c) {
 		return
 	}
@@ -2930,17 +2931,11 @@ func (env *Env) GetAssetInfo(c *gin.Context) {
 
 	var quotationExtended localAssetInfoReturn
 
-	// Fetch underlying assets for symbol
-	assets, err := env.RelDB.GetTopAssetByVolume(symbol)
+	asset, err := env.RelDB.GetAsset(address, blockchain)
 	if err != nil {
 		restApi.SendError(c, http.StatusNotFound, err)
 		return
 	}
-	if len(assets) == 0 {
-		restApi.SendError(c, http.StatusNotFound, errors.New("no quotation available"))
-		return
-	}
-	asset := assets[0]
 
 	quotation, err := env.DataStore.GetAssetQuotation(asset, endtime)
 	if err != nil {
