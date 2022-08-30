@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -44,33 +43,13 @@ func main() {
 	assetsStr := utils.Getenv("ASSETS", "")
 	assetsParsed := strings.Split(assetsStr, ",")
 
-	addresses := []string{
-		/*"0x0000000000000000000000000000000000000000", //BTC
-		"0x0000000000000000000000000000000000000000", //ETH
-		"0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419", //DIA
-		"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", //USDC
-		"0x0000000000000000000000000000000000000000", //SDN
-		"0x0000000000000000000000000000000000000000", //FTM
-		"0x0000000000000000000000000000000000000000", //KSM
-		"0x0000000000000000000000000000000000000000", //ASTR
-		"0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000", //Metis*/
-	}
-	blockchains := []string{
-/*		"Bitcoin",
-		"Ethereum",
-		"Ethereum",
-		"Ethereum",
-		"Shiden",
-		"Fantom",
-		"Kusama",
-		"Astar",
-		"Metis",*/
-	}
+	addresses := []string{}
+	blockchains := []string{}
 
 	for _, asset := range assetsParsed {
 		entries := strings.Split(asset, "-")
-		blockchains = append(blockchains, entries[0])
-		addresses = append(addresses, entries[1])
+		blockchains = append(blockchains, strings.TrimSpace(entries[0]))
+		addresses = append(addresses, strings.TrimSpace(entries[1]))
 	}
 
 	oldPrices := make(map[int]float64)
@@ -190,7 +169,7 @@ func updateOracle(
 	value int64,
 	timestamp int64) error {
 
-	gasPrice, err := client.SuggestGasPrice(context.Background())
+	/*gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -200,7 +179,7 @@ func updateOracle(
 	fGas := new(big.Float).SetInt(gasPrice)
 	fGas.Mul(fGas, big.NewFloat(1.1))
 	gasPrice, _ = fGas.Int(nil)
-	fmt.Println(gasPrice)
+	fmt.Println(gasPrice)*/
 
 	// Write values to smart contract
 	tx, err := contract.SetValue(&bind.TransactOpts{
@@ -210,7 +189,7 @@ func updateOracle(
 	if err != nil {
 		return err
 	}
-	fmt.Println(tx.GasPrice())
+  //fmt.Println(tx.GasPrice())
 	log.Printf("key: %s\n", key)
 	log.Printf("Nonce: %d\n", tx.Nonce())
 	log.Printf("Tx To: %s\n", tx.To().String())
