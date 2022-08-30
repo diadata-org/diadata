@@ -1,24 +1,22 @@
 package main
 
 import (
-	//"context"
+	"context"
+	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math/big"
-	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
-	diaOracleServiceV2 "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleServiceV2"
-	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleServiceV2"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/tidwall/gjson"
+	gql "github.com/machinebox/graphql"
 )
 
 func main() {
@@ -28,32 +26,33 @@ func main() {
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
 	sleepSeconds, err := strconv.Atoi(utils.Getenv("SLEEP_SECONDS", "120"))
 	if err != nil {
-		log.Fatalf("Failed to parse sleepSeconds: %v")
+		log.Fatalf("Failed to parse sleepSeconds: %v", err)
 	}
 	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "120"))
 	if err != nil {
-		log.Fatalf("Failed to parse frequencySeconds: %v")
+		log.Fatalf("Failed to parse frequencySeconds: %v", err)
 	}
 	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "1"), 10, 64)
 	if err != nil {
-		log.Fatalf("Failed to parse chainId: %v")
+		log.Fatalf("Failed to parse chainId: %v", err)
 	}
 	deviationPermille, err := strconv.Atoi(utils.Getenv("DEVIATION_PERMILLE", "10"))
 	if err != nil {
-		log.Fatalf("Failed to parse deviationPermille: %v")
-	}
-	assetsStr := utils.Getenv("ASSETS", "")
-	assetsParsed := strings.Split(assetsStr, ",")
-
-	addresses := []string{}
-	blockchains := []string{}
-	
-	for _, asset := range assetsParsed {
-		entries := strings.Split(asset, "-")
-		blockchains = append(blockchains, strings.TrimSpace(entries[0]))
-		addresses = append(addresses, strings.TrimSpace(entries[1]))
+		log.Fatalf("Failed to parse deviationPermille: %v", err)
 	}
 
+	addresses := []string{
+		"0x0000000000000000000000000000000000000000", //BTC
+		"0x0000000000000000000000000000000000000000", //ETH
+		"0x0000000000000000000000000000000000000000", //FTM
+		"0x0000000000000000000000000000000000000000", //AVAX
+	}
+	blockchains := []string{
+		"Bitcoin",           //BTC
+		"Ethereum",          //ETH
+		"Fantom",            //FTM
+		"Avalanche",         //AVAX
+	}
 	oldPrices := make(map[int]float64)
 
 	/*
@@ -104,19 +103,17 @@ func main() {
 func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string) (float64, error) {
 
 	// Get quotation for token and update Oracle
-	rawQ, err := getAssetQuotationFromDia(blockchain, address)
+	rawPrice, symbol, err := getGraphqlAssetQuotationFromDia(blockchain, address, 60)
 	if err != nil {
-		log.Fatalf("Failed to retrieve %s - %s quotation data from DIA: %v", blockchain, address, err)
+		log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
 		return oldPrice, err
 	}
-	rawQ.Name = rawQ.Symbol
 
-	// Check for deviation
-	newPrice := rawQ.Price
+	newPrice := rawPrice
 
 	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
 		log.Println("Entering deviation based update zone")
-		err = updateQuotation(rawQ, auth, contract, conn)
+		err = updateGraphqlQuotation(rawPrice, symbol, auth, contract, conn)
 		if err != nil {
 			log.Fatalf("Failed to update DIA Oracle: %v", err)
 			return oldPrice, err
@@ -150,9 +147,9 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 	return nil
 }
 
-func updateQuotation(quotation *models.Quotation, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client) error {
-	symbol := quotation.Symbol + "/USD"
-	price := quotation.Price
+func updateGraphqlQuotation(value float64, name string, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client) error {
+	symbol := name + "/USD"
+	price := value
 	timestamp := time.Now().Unix()
 	err := updateOracle(conn, contract, auth, symbol, int64(price*100000000), timestamp)
 	if err != nil {
@@ -171,7 +168,7 @@ func updateOracle(
 	value int64,
 	timestamp int64) error {
 
-	gasPrice, err := getGasSuggestion()
+	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -182,64 +179,62 @@ func updateOracle(
 	fGas.Mul(fGas, big.NewFloat(1.1))
 	gasPrice, _ = fGas.Int(nil)
 	fmt.Println(gasPrice)
-
 	// Write values to smart contract
 	tx, err := contract.SetValue(&bind.TransactOpts{
 		From:     auth.From,
 		Signer:   auth.Signer,
-		GasPrice: gasPrice,
 		GasLimit: 1000725,
+		GasPrice: gasPrice,
 	}, key, big.NewInt(value), big.NewInt(timestamp))
 	if err != nil {
 		return err
 	}
 	fmt.Println(tx.GasPrice())
+	log.Printf("price: %d\n", value)
 	log.Printf("key: %s\n", key)
-	log.Printf("Nonce: %d\n", tx.Nonce())
+	log.Printf("nonce: %d\n", tx.Nonce())
 	log.Printf("Tx To: %s\n", tx.To().String())
 	log.Printf("Tx Hash: 0x%x\n", tx.Hash())
 	return nil
 }
 
-func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, error) {
-	response, err := http.Get("https://api.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
-	if err != nil {
-		return nil, err
+func getGraphqlAssetQuotationFromDia(blockchain, address string, blockDuration int) (float64, string, error) {
+	currentTime := time.Now()
+	starttime := currentTime.Add(time.Duration(-blockDuration*2) * time.Second)
+	type Response struct {
+		GetChart []struct {
+			Name   string    `json:"Name"`
+			Symbol string    `json:"Symbol"`
+			Time   time.Time `json:"Time"`
+			Value  float64   `json:"Value"`
+		} `json:"GetChart"`
 	}
+	client := gql.NewClient("https://api.diadata.org/graphql/query")
+	req := gql.NewRequest(`
+    query  {
+		 GetChart(
+		 	filter: "mair", 
+			Symbol:"Asset",
+			BlockDurationSeconds: ` + strconv.Itoa(blockDuration) + `, 
+			BlockShiftSeconds: ` + strconv.Itoa(blockDuration) + `,
+			StartTime: ` + strconv.FormatInt(starttime.Unix(), 10) + `, 
+			EndTime: ` + strconv.FormatInt(currentTime.Unix(), 10) + `, 
+			Address: "` + address + `", 
+			BlockChain: "` + blockchain + `") {
+				Name
+				Symbol
+				Time
+				Value
+	  	}
+		}`)
 
-	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	ctx := context.Background()
+	var r Response
+	if err := client.Run(ctx, req, &r); err != nil {
+		return 0.0, "", err
 	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
+	if len(r.GetChart) == 0 {
+		return 0.0, "", errors.New("no results")
 	}
-	var quotation models.Quotation
-	err = quotation.UnmarshalBinary(contents)
-	if err != nil {
-		return nil, err
-	}
-	return &quotation, nil
-}
-
-func getGasSuggestion() (*big.Int, error) {
-	response, err := http.Get("http://astargasstation.dia-services:3000/api/astar/gasnow")
-	if err != nil {
-		return nil, err
-	}
-
-	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return nil, fmt.Errorf("Error on astar gasstation with return code %d", response.StatusCode)
-	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
-	
-	gasSuggestion := gjson.Get(string(contents), "data.fast")
-	retval := big.NewInt(gasSuggestion.Int())
-
-	return retval, nil
+	return r.GetChart[len(r.GetChart)-1].Value, r.GetChart[len(r.GetChart)-1].Symbol, nil
 }
