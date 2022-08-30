@@ -1015,7 +1015,7 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 		}
 		aqf.Volume = v.Volume
 
-		sources["CEX"], err = env.RelDB.GetAssetSource(v.Asset, onlycex)
+		sources["CEX"], err = env.RelDB.GetAssetSource(v.Asset, true)
 		if err != nil {
 			log.Warn("get GetAssetSource: ", err)
 		}
