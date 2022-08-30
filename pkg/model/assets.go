@@ -1113,7 +1113,7 @@ func (rdb *RelDB) GetAssetSource(asset dia.Asset, onlycex bool) (exchanges []str
 	if onlycex {
 		query = fmt.Sprintf("SELECT DISTINCT ON (es.exchange) es.exchange From exchangesymbol es INNER JOIN exchange  e ON es.exchange = e.name where es.symbol ILIKE '%s' and e.centralized=true ", asset.Symbol)
 	} else {
-		query = fmt.Sprintf("SELECT DISTINCT ON (es.exchange) es.exchange From exchangesymbol es INNER JOIN exchange  e ON es.exchange = e.name where es.symbol ILIKE '%s'", asset.Symbol)
+		query = fmt.Sprintf("SELECT DISTINCT ON (es.exchange) es.exchange From exchangesymbol es INNER JOIN exchange  e ON es.exchange = e.name where es.symbol ILIKE '%s' and e.centralized=false ", asset.Symbol)
 
 	}
 
