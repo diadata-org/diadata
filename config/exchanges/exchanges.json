@@ -196,6 +196,19 @@
             "WatchdogDelay": 1200
         },
         {
+            "Name": "MEXC",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "https://api.mexc.com/api/v3",
+            "WsAPI": "wss://wbs.mexc.com/ws",
+            "pairsAPI": "https://api.mexc.com/api/v3/exchangeInfo",
+            "WatchdogDelay": 1200
+        },
+        {
             "Name": "BitMex",
             "Centralized": true,
             "Bridge": false,

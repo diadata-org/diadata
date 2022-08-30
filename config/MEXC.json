@@ -1,0 +1,10 @@
+{
+  "Coins": [
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTC_USDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    }
+  ]
+}

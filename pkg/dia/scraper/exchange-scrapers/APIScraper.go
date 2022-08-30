@@ -184,6 +184,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewKyberScraper(Exchanges[dia.KyberExchange], scrape)
 	case dia.BitMaxExchange:
 		return NewBitMaxScraper(Exchanges[dia.BitMaxExchange], scrape, relDB)
+	case dia.MEXCExchange:
+		return NewMEXCScraper(Exchanges[dia.MEXCExchange], scrape, relDB)
 	case dia.STEXExchange:
 		return NewSTEXScraper(Exchanges[dia.STEXExchange], scrape, relDB)
 	case dia.UniswapExchangeV3:
