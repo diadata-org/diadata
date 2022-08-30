@@ -998,11 +998,11 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 		log.Error("get assets with volume: ", err)
 
 	}
-
 	var assets = []dia.TopAsset{}
 	timestamp := time.Now()
 
 	for _, v := range sortedAssets {
+		var sources = make(map[string][]string)
 
 		aqf := dia.TopAsset{}
 		aqf.Asset = v.Asset
@@ -1015,12 +1015,15 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 		}
 		aqf.Volume = v.Volume
 
-		sources, err := env.RelDB.GetAssetSource(v.Asset, onlycex)
+		sources["CEX"], err = env.RelDB.GetAssetSource(v.Asset, true)
 		if err != nil {
 			log.Warn("get GetAssetSource: ", err)
-		} else {
-			aqf.Source = sources
 		}
+		sources["DEX"], err = env.RelDB.GetAssetSource(v.Asset, false)
+		if err != nil {
+			log.Warn("get GetAssetSource: ", err)
+		}
+		aqf.Source = sources
 
 		quotationYesterday, err := env.DataStore.GetAssetQuotation(aqf.Asset, timestamp.AddDate(0, 0, -1))
 		if err != nil {
