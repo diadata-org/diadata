@@ -906,7 +906,7 @@ func (env *Env) SearchAsset(c *gin.Context) {
 
 		}
 
-	case len(querystring) < 4:
+	case len(querystring) <= 4:
 		assets, err = env.RelDB.GetAssetsBySymbolName(querystring, querystring)
 		if err != nil {
 			// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
