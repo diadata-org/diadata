@@ -10,6 +10,8 @@ import (
 )
 
 const (
+	AcalaswapExchange         = "AcalaswapExchange"
+	AcalaswapExchangeKarura   = "AcalaswapExchangeKarura"
 	ArthswapExchange          = "Arthswap"
 	DiffusionExchange         = "Diffusion"
 	OmniDexExchange           = "OmniDex"

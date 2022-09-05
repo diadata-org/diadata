@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 	"github.com/ethereum/go-ethereum/common"
 
 	log "github.com/sirupsen/logrus"
@@ -40,6 +41,7 @@ const (
 	TELOS                                   = "Telos"
 	EVMOS                                   = "Evmos"
 	KUSAMA                                  = "Kusama"
+	KARURA                                  = "Karura"
 	ACALA                                   = "Acala"
 	POLKADOT                                = "Polkadot"
 	FIAT                                    = "Fiat"
@@ -284,6 +286,19 @@ type EthereumBlockData struct {
 	ReceiptHash common.Hash        `json:"receipt_hash"`
 	UncleHash   common.Hash        `json:"uncle_hash"`
 	Extra       []byte             `json:"extra"`
+}
+
+type SubstrateChangeSet struct {
+	Data []byte
+}
+
+type SubstrateBlockData struct {
+	Number     uint64     `json:"number"`
+	Root       types.Hash `json:"root"`
+	ParentHash types.Hash `json:"parent_hash"`
+	// Set of event names (used for filtering event data).
+	EventNames []string             `json:"event_names"`
+	Events     []SubstrateChangeSet `json:"events"`
 }
 
 type Exchange struct {
