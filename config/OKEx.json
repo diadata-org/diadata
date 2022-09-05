@@ -20,6 +20,12 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "SHIB-USDT",
+      "Ignore": false,
+      "Symbol": "SHIB"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "WBTC-USDT",
       "Ignore": false,
       "Symbol": "WBTC"

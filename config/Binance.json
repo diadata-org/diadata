@@ -20,6 +20,24 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "SHIBUSDT",
+            "Ignore": false,
+            "Symbol": "SHIB"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "SHIBBUSD",
+            "Ignore": false,
+            "Symbol": "SHIB"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "TUSDUSDT",
+            "Ignore": false,
+            "Symbol": "TUSD"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "CKBUSDT",
             "Ignore": false,
             "Symbol": "CKB"

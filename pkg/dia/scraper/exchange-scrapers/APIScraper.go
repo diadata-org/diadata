@@ -170,6 +170,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewBalancerScraper(Exchanges[dia.BalancerExchange], scrape)
 	case dia.BalancerV2Exchange:
 		return NewBalancerV2Scraper(Exchanges[dia.BalancerV2Exchange], scrape)
+	case dia.BalancerV2ExchangePolygon:
+		return NewBalancerV2Scraper(Exchanges[dia.BalancerV2ExchangePolygon], scrape)
 	case dia.BeetsExchange:
 		return NewBalancerV2Scraper(Exchanges[dia.BeetsExchange], scrape)
 	case dia.MakerExchange:
@@ -184,6 +186,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewKyberScraper(Exchanges[dia.KyberExchange], scrape)
 	case dia.BitMaxExchange:
 		return NewBitMaxScraper(Exchanges[dia.BitMaxExchange], scrape, relDB)
+	case dia.MEXCExchange:
+		return NewMEXCScraper(Exchanges[dia.MEXCExchange], scrape, relDB)
 	case dia.STEXExchange:
 		return NewSTEXScraper(Exchanges[dia.STEXExchange], scrape, relDB)
 	case dia.UniswapExchangeV3:

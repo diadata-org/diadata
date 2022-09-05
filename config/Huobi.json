@@ -338,6 +338,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "TUSDUSDT",
+      "Ignore": false,
+      "Symbol": "TUSD"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "XMRBTC",
       "Ignore": false,
       "Symbol": "XMR"

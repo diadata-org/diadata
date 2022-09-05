@@ -92,6 +92,19 @@
             "WatchdogDelay": 7200
         },
         {
+            "Name": "BalancerV2-Polygon",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
+            "Blockchain": {
+                "Name": "Polygon"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
             "Name": "Bancor",
             "Centralized": false,
             "Bridge": false,
@@ -193,6 +206,19 @@
             "RestAPI": "https://ascendex.com/api/pro/v1",
             "WsAPI": "wss://ascendex.com/0/api/pro/v1/stream",
             "pairsAPI": "https://ascendex.com/api/pro/v1/products",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "MEXC",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "https://api.mexc.com/api/v3",
+            "WsAPI": "wss://wbs.mexc.com/ws",
+            "pairsAPI": "https://api.mexc.com/api/v3/exchangeInfo",
             "WatchdogDelay": 1200
         },
         {

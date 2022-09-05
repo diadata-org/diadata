@@ -115,6 +115,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "TUSD",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0x0000000000085d4780B73119b644AE5ecd22b376"
+    },
+    {
       "Symbol": "USDT",
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",

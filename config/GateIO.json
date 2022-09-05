@@ -20,6 +20,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "SHIB_USDT",
+      "Ignore": false,
+      "Symbol": "SHIB"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "CKB_USDT",
       "Ignore": false,
       "Symbol": "CKB"
