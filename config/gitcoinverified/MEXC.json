@@ -67,6 +67,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "BFC",
+      "Exchange": "MEXC",
+      "Blockchain": "Ethereum",
+      "Address": "0x0c7D5ae016f806603CB1782bEa29AC69471CAb9c"
+    },
+    {
       "Symbol": "BNB",
       "Exchange": "MEXC",
       "Blockchain": "BinanceSmartChain",
@@ -199,6 +205,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "INTR",
+      "Exchange": "MEXC",
+      "Blockchain": "Interlay",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "KSM",
       "Exchange": "MEXC",
       "Blockchain": "Kusama",
@@ -257,6 +269,12 @@
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",
       "Address": "0x45804880De22913dAFE09f4980848ECE6EcbAf78"
+    },
+    {
+      "Symbol": "PHA",
+      "Exchange": "MEXC",
+      "Blockchain": "Ethereum",
+      "Address": "0x6c5bA91642F10282b576d91922Ae6448C9d52f4E"
     },
     {
       "Symbol": "SAND",

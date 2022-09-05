@@ -67,6 +67,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "BFC",
+      "ForeignName": "BFC_USDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "BNB",
       "ForeignName": "BNB_USDT",
       "Exchange": "MEXC",
@@ -211,6 +217,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "INTR",
+      "ForeignName": "INTR_USDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "KSM",
       "ForeignName": "KSM_BTC",
       "Exchange": "MEXC",
@@ -279,6 +291,12 @@
     {
       "Symbol": "PAXG",
       "ForeignName": "PAXG_USDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PHA",
+      "ForeignName": "PHA_USDT",
       "Exchange": "MEXC",
       "Ignore": false
     },
