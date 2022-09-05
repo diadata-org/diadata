@@ -195,7 +195,9 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 		FROM %s a
 		INNER JOIN %s av
 		ON av.asset_id=a.asset_id
-		WHERE symbol ILIKE '%s%%'
+		WHERE av.volume>0
+		AND av.time_stamp IS NOT NULL
+		AND symbol ILIKE '%s%%'
 		ORDER BY av.volume DESC`,
 			assetTable,
 			assetVolumeTable,
@@ -207,7 +209,9 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 		FROM %s a
 		INNER JOIN %s av
 		ON av.asset_id=a.asset_id
-		WHERE name ILIKE '%s%%'
+		WHERE av.volume>0
+		AND av.time_stamp IS NOT NULL
+		AND name ILIKE '%s%%'
 		ORDER BY av.volume DESC`,
 			assetTable,
 			assetVolumeTable,
@@ -219,8 +223,9 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 		FROM %s a 
 		INNER JOIN %s av 
 		ON av.asset_id=a.asset_id 
-		WHERE symbol ILIKE '%s%%' 
-		OR name ILIKE '%s%%' 
+		WHERE av.volume>0
+		AND av.time_stamp IS NOT NULL
+		AND (symbol ILIKE '%s%%' OR name ILIKE '%s%%')
 		ORDER BY av.volume DESC`,
 			assetTable,
 			assetVolumeTable,
@@ -261,7 +266,9 @@ func (rdb *RelDB) GetAssetsByAddress(address string) (assets []dia.Asset, err er
 	FROM %s a 
 	INNER JOIN %s av 
 	ON a.asset_id=av.asset_id
-	WHERE address ILIKE '%s%%'
+	WHERE av.volume>0
+	AND av.time_stamp IS NOT NULL
+	AND address ILIKE '%s%%'
 	ORDER BY av.volume DESC`,
 		assetTable,
 		assetVolumeTable,
