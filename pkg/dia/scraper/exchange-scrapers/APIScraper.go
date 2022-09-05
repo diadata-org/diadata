@@ -184,6 +184,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewZeroxScraper(Exchanges[dia.ZeroxExchange], scrape)
 	case dia.KyberExchange:
 		return NewKyberScraper(Exchanges[dia.KyberExchange], scrape)
+	case dia.BitMartExchange:
+		return NewBitMartScraper(Exchanges[dia.BitMartExchange], scrape, relDB)
 	case dia.BitMaxExchange:
 		return NewBitMaxScraper(Exchanges[dia.BitMaxExchange], scrape, relDB)
 	case dia.MEXCExchange:
