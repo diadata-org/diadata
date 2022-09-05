@@ -190,11 +190,43 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 	var rows pgx.Rows
 	var query string
 	if name == "" {
-		query = fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE symbol ILIKE '%s%%'", assetTable, symbol)
+		query = fmt.Sprintf(`
+		SELECT symbol,name,address,decimals,blockchain 
+		FROM %s a
+		INNER JOIN %s av
+		ON av.asset_id=a.asset_id
+		WHERE symbol ILIKE '%s%%'
+		ORDER BY av.volume DESC`,
+			assetTable,
+			assetVolumeTable,
+			symbol,
+		)
 	} else if symbol == "" {
-		query = fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE name ILIKE '%s%%'", assetTable, symbol)
+		query = fmt.Sprintf(`
+		SELECT symbol,name,address,decimals,blockchain 
+		FROM %s a
+		INNER JOIN %s av
+		ON av.asset_id=a.asset_id
+		WHERE name ILIKE '%s%%'
+		ORDER BY av.volume DESC`,
+			assetTable,
+			assetVolumeTable,
+			symbol,
+		)
 	} else {
-		query = fmt.Sprintf("SELECT  symbol,name,address,decimals,blockchain FROM %s a INNER JOIN %s av ON av.asset_id=a.asset_id WHERE symbol ILIKE '%s%%' or name ILIKE '%s%%' ORDER BY av.volume DESC", assetTable, assetVolumeTable, name, symbol)
+		query = fmt.Sprintf(`
+		SELECT symbol,name,address,decimals,blockchain 
+		FROM %s a 
+		INNER JOIN %s av 
+		ON av.asset_id=a.asset_id 
+		WHERE symbol ILIKE '%s%%' 
+		OR name ILIKE '%s%%' 
+		ORDER BY av.volume DESC`,
+			assetTable,
+			assetVolumeTable,
+			name,
+			symbol,
+		)
 	}
 	if err != nil {
 		return
@@ -224,7 +256,17 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 func (rdb *RelDB) GetAssetsByAddress(address string) (assets []dia.Asset, err error) {
 	var decimals string
 	var rows pgx.Rows
-	query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE address ILIKE '%s%%'", assetTable, address)
+	query := fmt.Sprintf(`
+	SELECT symbol,name,address,decimals,blockchain 
+	FROM %s a 
+	INNER JOIN %s av 
+	ON a.asset_id=av.asset_id
+	WHERE address ILIKE '%s%%'
+	ORDER BY av.volume DESC`,
+		assetTable,
+		assetVolumeTable,
+		address,
+	)
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return
