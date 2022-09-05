@@ -469,6 +469,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "SHIB",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
+          },
+        {
             "Symbol": "SNM",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -503,6 +509,12 @@
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0x08f5a9235B08173b7569F83645d2c7fB55e8cCD8"
+        },
+        {
+            "Symbol": "TUSD",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000085d4780B73119b644AE5ecd22b376"
         },
         {
             "Symbol": "UST",

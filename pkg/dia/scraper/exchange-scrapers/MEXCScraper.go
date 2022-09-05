@@ -116,22 +116,23 @@ func (s *MEXCScraper) mainLoop() {
 			continue
 			// deal it
 		}
-		log.Info(message)
 		for _, trade := range message.D.Deals {
 			var exchangePair dia.ExchangePair
 			priceFloat, _ := strconv.ParseFloat(trade.P, 64)
 			volumeFloat, _ := strconv.ParseFloat(trade.Q, 64)
+			if trade.T == 2 {
+				volumeFloat *= -1
+			}
 			exchangePair, err = s.db.GetExchangePairCache(s.exchangeName, message.S)
 			if err != nil {
 				log.Error(err)
 			}
 			t := &dia.Trade{
-				Symbol: strings.Split(message.S, "_")[0],
-				Pair:   message.S,
-				Price:  priceFloat,
-				Volume: volumeFloat,
-				Time:   time.Unix(0, trade.TS*int64(time.Millisecond)),
-				// ForeignTradeID: ,
+				Symbol:       strings.Split(message.S, "_")[0],
+				Pair:         message.S,
+				Price:        priceFloat,
+				Volume:       volumeFloat,
+				Time:         time.Unix(0, trade.TS*int64(time.Millisecond)),
 				Source:       s.exchangeName,
 				VerifiedPair: exchangePair.Verified,
 				BaseToken:    exchangePair.UnderlyingPair.BaseToken,
@@ -139,7 +140,7 @@ func (s *MEXCScraper) mainLoop() {
 			}
 
 			if exchangePair.Verified {
-				log.Infoln("Got verified trade", t)
+				log.Infof("Got verified trade: %v", t)
 			}
 			s.chanTrades <- t
 		}

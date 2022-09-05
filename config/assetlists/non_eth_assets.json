@@ -510,6 +510,13 @@
       "Decimals": 12,
       "Blockchain": "Centrifuge",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "EVMOS",
+      "Name": "Evmos",
+      "Decimals": 18,
+      "Blockchain": "Evmos",
+      "Address": "0x0000000000000000000000000000000000000000"
     }
   ]
 }

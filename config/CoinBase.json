@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "CoinBase",
+      "ForeignName": "SHIB-USD",
+      "Ignore": false,
+      "Symbol": "SHIB"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "QUICK-USD",
       "Ignore": false,
       "Symbol": "QUICK"
