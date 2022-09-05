@@ -92,6 +92,19 @@
             "WatchdogDelay": 7200
         },
         {
+            "Name": "BalancerV2-Polygon",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
+            "Blockchain": {
+                "Name": "Polygon"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
             "Name": "Bancor",
             "Centralized": false,
             "Bridge": false,

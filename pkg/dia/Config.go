@@ -19,6 +19,7 @@ const (
 	AnyswapExchange           = "Anyswap"
 	BalancerExchange          = "Balancer"
 	BalancerV2Exchange        = "BalancerV2"
+	BalancerV2ExchangePolygon = "BalancerV2-Polygon"
 	BeetsExchange             = "Beets"
 	KrakenExchange            = "Kraken"
 	BitfinexExchange          = "Bitfinex"
