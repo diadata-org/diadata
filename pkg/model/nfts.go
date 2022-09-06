@@ -990,6 +990,7 @@ func (rdb *RelDB) GetNFTClassesByNameSymbol(searchstring string) (collections []
 	INNER JOIN %s nt 
 	ON nc.nftclass_id=nt.nftclass_id
 	WHERE (symbol ILIKE '%s%%'  or name ILIKE '%s%%')
+	AND nc.blockchain='%s'
 	AND (
 		currency_id=(SELECT currency_id FROM asset WHERE address='%s' AND blockchain='%s') 
 		OR currency_id=(SELECT currency_id FROM asset WHERE address='%s' AND blockchain='%s')
@@ -1000,6 +1001,7 @@ func (rdb *RelDB) GetNFTClassesByNameSymbol(searchstring string) (collections []
 		NfttradeCurrTable,
 		searchstring,
 		searchstring,
+		dia.ETHEREUM,
 		"0x0000000000000000000000000000000000000000",
 		dia.ETHEREUM,
 		"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
