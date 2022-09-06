@@ -976,48 +976,58 @@ func (rdb *RelDB) GetLastNFTOffer(address string, blockchain string, tokenID str
 	return
 }
 
-// GetNFTByNameSYMBOL returns the nft by name, or symbol
-func (rdb *RelDB) GetNFTByNameSymbol(searchstring string) (nfts []dia.NFT, err error) {
+// GetNFTClassByNameSymbol returns all nft collections which have @searchstring
+// in either its name or symbol. Search is case-insensitive.
+func (rdb *RelDB) GetNFTClassesByNameSymbol(searchstring string) (collections []dia.NFTClass, err error) {
 	var query string
 	var rows pgx.Rows
 
-	query = `SELECT DISTINCT ON (address) address, symbol, name, n.creator_address, n.uri, n.attributes from nftclass nc INNER JOIN nft n ON  n.nftclass_id=nc.nftclass_id WHERE symbol ILIKE '%` + searchstring + `'  or name ILIKE '%` + searchstring + `';`
+	query = fmt.Sprintf(`
+	SELECT nc.address,nc.symbol,nc.name,nc.blockchain,nc.contract_type,category
+	FROM %s nc 
+	INNER JOIN %s nt 
+	ON nc.nftclass_id=nt.nftclass_id
+	WHERE (symbol ILIKE '%s%%'  or name ILIKE '%s%%')
+	AND (
+		currency_id=(SELECT currency_id FROM asset WHERE address='%s' AND blockchain='%s') 
+		OR currency_id=(SELECT currency_id FROM asset WHERE address='%s' AND blockchain='%s')
+	)
+	GROUP BY nc.address,nc.symbol,nc.name,nc.blockchain,nc.contract_type,nc.category
+	ORDER BY SUM(nt.price::numeric) DESC`,
+		nftclassTable,
+		NfttradeCurrTable,
+		searchstring,
+		searchstring,
+		"0x0000000000000000000000000000000000000000",
+		dia.ETHEREUM,
+		"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+		dia.ETHEREUM,
+	)
 
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
-
-	log.Infoln("GetNFTByNameSYMBOL query", query)
-	defer rows.Close()
-	for rows.Next() {
-		var nft dia.NFT
-		err = rows.Scan(&nft.NFTClass.Address, &nft.NFTClass.Symbol, &nft.NFTClass.Name, &nft.CreatorAddress, &nft.URI, &nft.Attributes)
-		if err != nil {
-			return
-		}
-
-		nfts = append(nfts, nft)
+	if err != nil {
+		return
 	}
-	return
-}
 
-// GetNFTByNameSYMBOL returns the nft by  address
-func (rdb *RelDB) GetNFTByAddress(address string) (nfts []dia.NFT, err error) {
-	var query string
-	var rows pgx.Rows
-
-	query = `SELECT DISTINCT ON (address) address, symbol, name, n.creator_address, n.uri, n.attributes from nftclass nc INNER JOIN nft n ON  n.nftclass_id=nc.nftclass_id WHERE address ILIKE '%` + address + `' ;`
-
-	rows, err = rdb.postgresClient.Query(context.Background(), query)
-
-	log.Infoln("GetNFTByAddress query", query)
 	defer rows.Close()
 	for rows.Next() {
-		var nft dia.NFT
-		err = rows.Scan(&nft.NFTClass.Address, &nft.NFTClass.Symbol, &nft.NFTClass.Name, &nft.CreatorAddress, &nft.URI, &nft.Attributes)
+		var (
+			collection   dia.NFTClass
+			contractType sql.NullString
+			category     sql.NullString
+		)
+		err = rows.Scan(&collection.Address, &collection.Symbol, &collection.Name, &collection.Blockchain, &contractType, &category)
 		if err != nil {
 			return
 		}
+		if contractType.Valid {
+			collection.ContractType = contractType.String
+		}
+		if category.Valid {
+			collection.Category = category.String
+		}
 
-		nfts = append(nfts, nft)
+		collections = append(collections, collection)
 	}
 	return
 }

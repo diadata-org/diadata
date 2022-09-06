@@ -924,39 +924,31 @@ func (env *Env) SearchNFTs(c *gin.Context) {
 		return
 	}
 	var (
-		nfts = []dia.NFT{}
-
-		err error
+		collections = []dia.NFTClass{}
+		err         error
 	)
 
 	switch {
 	case len(querystring) > 4 && strings.Contains(querystring[0:2], "0x"):
-
-		nfts, err = env.RelDB.GetNFTByAddress(querystring)
+		var collection dia.NFTClass
+		address := common.HexToAddress(querystring).Hex()
+		collection, err = env.RelDB.GetNFTClass(address, dia.ETHEREUM)
 		if err != nil {
 			log.Errorln("error getting GetNFTByNameSymbol", err)
-			// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
+			restApi.SendError(c, http.StatusInternalServerError, errors.New("Address not valid."))
 		}
+		collections = append(collections, collection)
 
-	case len(querystring) > 4 && !strings.Contains(querystring[0:2], "0x"):
-
-		nfts, err = env.RelDB.GetNFTByNameSymbol(querystring)
+	case !strings.Contains(querystring[0:2], "0x"):
+		collections, err = env.RelDB.GetNFTClassesByNameSymbol(querystring)
 		if err != nil {
 			log.Errorln("error getting GetNFTByNameSymbol", err)
-			// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
-		}
-
-	case len(querystring) < 4:
-
-		nfts, err = env.RelDB.GetNFTByNameSymbol(querystring)
-		if err != nil {
-			log.Errorln("error getting GetNFTByNameSymbol", err)
-			// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
+			restApi.SendError(c, http.StatusInternalServerError, errors.New("Couldn't find any collections."))
 		}
 
 	}
 
-	c.JSON(http.StatusOK, nfts)
+	c.JSON(http.StatusOK, collections)
 }
 
 func (env *Env) GetTopAssets(c *gin.Context) {

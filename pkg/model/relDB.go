@@ -77,11 +77,12 @@ type RelDatastore interface {
 	// ---------------- NFT methods -------------------
 	// NFT class methods
 	SetNFTClass(nftClass dia.NFTClass) error
-	GetAllNFTClasses(blockchain string) (nftClasses []dia.NFTClass, err error)
-	GetNFTClasses(limit, offset uint64) (nftClasses []dia.NFTClass, err error)
-	GetNFTClass(address string, blockchain string) (nftclass dia.NFTClass, err error)
-	GetNFTClassID(address string, blockchain string) (ID string, err error)
-	GetNFTClassByID(id string) (nftclass dia.NFTClass, err error)
+	GetAllNFTClasses(blockchain string) ([]dia.NFTClass, error)
+	GetNFTClasses(limit, offset uint64) ([]dia.NFTClass, error)
+	GetNFTClass(address string, blockchain string) (dia.NFTClass, error)
+	GetNFTClassID(address string, blockchain string) (string, error)
+	GetNFTClassByID(id string) (dia.NFTClass, error)
+	GetNFTClassesByNameSymbol(searchstring string) ([]dia.NFTClass, error)
 	UpdateNFTClassCategory(nftclassID string, category string) (bool, error)
 	GetNFTCategories() ([]string, error)
 
