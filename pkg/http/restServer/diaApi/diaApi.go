@@ -953,7 +953,7 @@ func (env *Env) SearchNFTs(c *gin.Context) {
 
 func (env *Env) GetTopAssets(c *gin.Context) {
 	numAssetsString := c.Param("numAssets")
-	pageString := c.DefaultQuery("Page", "1")
+	pageString := c.DefaultQuery("page", "1")
 	onlycexString := c.DefaultQuery("Cex", "false")
 
 	if !validateInputParams(c) {
@@ -2393,6 +2393,8 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 		starttime   time.Time
 		endtime     time.Time
 		returnValue []localReturn
+		pageNumber  int64
+		offset      int64
 	)
 
 	numCollections, err := strconv.Atoi(c.Param("numCollections"))
@@ -2400,6 +2402,13 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 		return
 	}
+
+	pageString := c.DefaultQuery("page", "1")
+	pageNumber, err = strconv.ParseInt(pageString, 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("Page of assets must be an integer"))
+	}
+	offset = (pageNumber - 1) * int64(numCollections)
 
 	endtimeString := c.Query("endtime")
 	if endtimeString != "" {
@@ -2439,7 +2448,7 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 
 	var window24h = time.Duration(24 * 60 * time.Minute)
 
-	nftVolumes, err := env.RelDB.GetTopNFTsEth(numCollections, exchanges, starttime, endtime)
+	nftVolumes, err := env.RelDB.GetTopNFTsEth(numCollections, offset, exchanges, starttime, endtime)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 		return

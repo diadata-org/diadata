@@ -545,7 +545,7 @@ func (rdb *RelDB) GetNFTFloorRange(nftClass dia.NFTClass, starttime time.Time, e
 
 // GetTopNFTsEth returns a list of @numCollections NFT collections sorted by trading volume in [@starttime, @endtime]
 // in descending order. Only takes into account trades done with ETH.
-func (rdb *RelDB) GetTopNFTsEth(numCollections int, exchanges []string, starttime time.Time, endtime time.Time) (nftVolumes []struct {
+func (rdb *RelDB) GetTopNFTsEth(numCollections int, offset int64, exchanges []string, starttime time.Time, endtime time.Time) (nftVolumes []struct {
 	Name       string
 	Address    string
 	Blockchain string
@@ -591,8 +591,10 @@ func (rdb *RelDB) GetTopNFTsEth(numCollections int, exchanges []string, starttim
 
 	query += fmt.Sprintf(`
 	GROUP BY nc.name,nc.address,nc.blockchain
-	ORDER BY sum(price::numeric) DESC LIMIT %d`,
+	ORDER BY sum(price::numeric) DESC LIMIT %d
+	OFFSET %d`,
 		numCollections,
+		offset,
 	)
 
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
