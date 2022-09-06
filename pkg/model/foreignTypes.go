@@ -13,7 +13,6 @@ type ForeignQuotation struct {
 	VolumeYesterdayUSD float64
 	Source             string
 	Time               time.Time
-	ITIN               string
 }
 
 type DefiScore struct {

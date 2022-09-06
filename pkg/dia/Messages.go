@@ -431,15 +431,6 @@ type SynthAssetSupply struct {
 	BlockNumber      uint8
 }
 
-type ItinToken struct {
-	Itin               string
-	Symbol             string
-	Label              string
-	Url_website        string
-	Coinmarketcap_url  string
-	Coinmarketcap_slug string
-}
-
 type TradesBlockData struct {
 	BeginTime    time.Time
 	EndTime      time.Time
@@ -600,19 +591,6 @@ func (e *Pairs) MarshalBinary() ([]byte, error) {
 
 // UnmarshalBinary -
 func (e *Pairs) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &e); err != nil {
-		return err
-	}
-	return nil
-}
-
-// MarshalBinary -
-func (e *ItinToken) MarshalBinary() ([]byte, error) {
-	return json.Marshal(e)
-}
-
-// UnmarshalBinary -
-func (e *ItinToken) UnmarshalBinary(data []byte) error {
 	if err := json.Unmarshal(data, &e); err != nil {
 		return err
 	}

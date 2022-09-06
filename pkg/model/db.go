@@ -119,15 +119,11 @@ type Datastore interface {
 	GetCompoundedAvgRange(symbol string, dateInit, dateFinal time.Time, calDays, daysPerYear int, rounding int) ([]*InterestRate, error)
 	GetCompoundedAvgDIARange(symbol string, dateInit, dateFinal time.Time, calDays, daysPerYear int, rounding int) ([]*InterestRate, error)
 
-	// Itin methods
-	SetItinData(token dia.ItinToken) error
-	GetItinBySymbol(symbol string) (dia.ItinToken, error)
-
 	// Foreign quotation methods
 	SaveForeignQuotationInflux(fq ForeignQuotation) error
 	GetForeignQuotationInflux(symbol, source string, timestamp time.Time) (ForeignQuotation, error)
 	GetForeignPriceYesterday(symbol, source string) (float64, error)
-	GetForeignSymbolsInflux(source string) (symbols []SymbolShort, err error)
+	GetForeignSymbolsInflux(source string) ([]string, error)
 
 	SetVWAPFirefly(foreignName string, value float64, timestamp time.Time) error
 	GetVWAPFirefly(foreignName string, starttime time.Time, endtime time.Time) ([]float64, []time.Time, error)

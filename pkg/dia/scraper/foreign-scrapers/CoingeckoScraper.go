@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	log "github.com/sirupsen/logrus"
@@ -93,13 +92,6 @@ func (scraper *CoingeckoScraper) UpdateQuotation() error {
 			log.Errorln("error parsing time")
 		}
 
-		// get ITIN if available in redis
-		itin, err := scraper.foreignScrapper.datastore.GetItinBySymbol(coin.Symbol)
-		if err != nil {
-			// log.Errorf("error: no ITIN available for %s \n", coin.Symbol)
-			itin = dia.ItinToken{}
-		}
-
 		// Get yesterday's price from influx if available
 		priceYesterday, err := scraper.foreignScrapper.datastore.GetForeignPriceYesterday(coin.Symbol, source)
 		if err != nil {
@@ -114,7 +106,6 @@ func (scraper *CoingeckoScraper) UpdateQuotation() error {
 			VolumeYesterdayUSD: coin.Yesterday24hVolume,
 			Source:             source,
 			Time:               timestamp,
-			ITIN:               itin.Itin,
 		}
 		scraper.foreignScrapper.chanQuotation <- &foreignQuotation
 	}

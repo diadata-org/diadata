@@ -1432,7 +1432,7 @@ func (env *Env) GetForeignQuotation(c *gin.Context) {
 	}
 }
 
-// GetForeignSymbols returns all symbols available for quotation from @source, along with their ITIN
+// GetForeignSymbols returns all symbols available for quotation from @source.
 func (env *Env) GetForeignSymbols(c *gin.Context) {
 	source := c.Param("source")
 	if !validateInputParams(c) {

@@ -27,10 +27,6 @@ func (qr *QuotationResolver) Source(ctx context.Context) (*string, error) {
 	return &qr.q.Source, nil
 }
 
-func (qr *QuotationResolver) ITIN(ctx context.Context) (*string, error) {
-	return &qr.q.ITIN, nil
-}
-
 func (qr *QuotationResolver) Time(ctx context.Context) (*graphql.Time, error) {
 	return &graphql.Time{Time: qr.q.Time}, nil
 }

@@ -456,13 +456,7 @@ func (datastore *DB) GetQuotation(symbol string) (*Quotation, error) {
 	if err2 == nil {
 		value.PriceYesterday = &v
 	}
-	itin, err := datastore.GetItinBySymbol(symbol)
-	if err != nil {
-		value.ITIN = "undefined"
-		log.Error(err)
-	} else {
-		value.ITIN = itin.Itin
-	}
+
 	return value, nil
 }
 
