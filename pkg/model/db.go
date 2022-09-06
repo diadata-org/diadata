@@ -39,8 +39,6 @@ type Datastore interface {
 	GetDiaCirculatingSupply() (float64, error)
 
 	GetSymbols(exchange string) ([]string, error)
-	// Deprecating: GetExchangesForSymbol(symbol string) ([]string, error)
-	// Deprecating: GetSymbolExchangeDetails(symbol string, exchange string) (*SymbolExchangeDetails, error)
 	GetLastTradeTimeForExchange(asset dia.Asset, exchange string) (*time.Time, error)
 	SetLastTradeTimeForExchange(asset dia.Asset, exchange string, t time.Time) error
 	GetFirstTradeDate(table string) (time.Time, error)
@@ -57,7 +55,6 @@ type Datastore interface {
 	GetActiveExchangesAndPairs(address string, blockchain string, starttime time.Time, endtime time.Time) (map[string][]string, error)
 	GetOldTradesFromInflux(table string, exchange string, verified bool, timeInit, timeFinal time.Time) ([]dia.Trade, error)
 	CopyInfluxMeasurements(dbOrigin string, dbDestination string, tableOrigin string, tableDestination string, timeInit time.Time, timeFinal time.Time) (int64, error)
-	DeleteInfluxMeasurement(dbName string, tableName string, timeInit time.Time, timeFinal time.Time) error
 
 	Flush() error
 	ExecuteRedisPipe() error
@@ -70,11 +67,6 @@ type Datastore interface {
 	GetAvailablePairs(exchange string) ([]dia.ExchangePair, error)
 	SetCurrencyChange(cc *Change) error
 	GetCurrencyChange() (*Change, error)
-
-	SetOptionMeta(optionMeta *dia.OptionMeta) error
-	GetOptionMeta(baseCurrency string) ([]dia.OptionMeta, error)
-	SaveCVIInflux(float64, time.Time) error
-	GetCVIInflux(time.Time, time.Time, string) ([]dia.CviDataPoint, error)
 
 	// Volume methods
 	GetVolumeInflux(asset dia.Asset, exchange string, starttime time.Time, endtime time.Time) (*float64, error)
@@ -131,17 +123,6 @@ type Datastore interface {
 	SetItinData(token dia.ItinToken) error
 	GetItinBySymbol(symbol string) (dia.ItinToken, error)
 
-	// Defi rates
-	SetDefiProtocol(dia.DefiProtocol) error
-	GetDefiProtocol(string) (dia.DefiProtocol, error)
-	GetDefiProtocols() ([]dia.DefiProtocol, error)
-
-	GetDefiRateInflux(time.Time, time.Time, string, string) ([]dia.DefiRate, error)
-	SetDefiRateInflux(rate *dia.DefiRate) error
-
-	GetDefiStateInflux(time.Time, time.Time, string) ([]dia.DefiProtocolState, error)
-	SetDefiStateInflux(state *dia.DefiProtocolState) error
-
 	// Foreign quotation methods
 	SaveForeignQuotationInflux(fq ForeignQuotation) error
 	GetForeignQuotationInflux(symbol, source string, timestamp time.Time) (ForeignQuotation, error)
@@ -161,12 +142,6 @@ type Datastore interface {
 	// SaveTokenDetailInflux(tk Token) error
 	// GetTokenDetailInflux(symbol, source string, timestamp time.Time) (Token, error)
 	// GetCurentTotalSupply(symbol, source string) (float64, error)
-
-	// Github methods
-	SetCommit(commit GithubCommit) error
-	GetCommitByDate(user, repository string, date time.Time) (GithubCommit, error)
-	GetCommitByHash(user, repository, hash string) (GithubCommit, error)
-	GetLatestCommit(user, repository string) (GithubCommit, error)
 
 	// Stock methods
 	SetStockQuotation(sq StockQuotation) error
@@ -192,14 +167,8 @@ const (
 	influxDbTradesTable               = "trades"
 	influxDbFiltersTable              = "filters"
 	influxDbFiatQuotationsTable       = "fiat"
-	influxDbOptionsTable              = "options"
-	influxDbCVITable                  = "cvi"
-	influxDbETHCVITable               = "cviETH"
 	influxDbSupplyTable               = "supplies"
-	influxDbDefiRateTable             = "defiRate"
-	influxDbDefiStateTable            = "defiState"
 	influxDbDEXPoolTable              = "DEXPools"
-	influxDbGithubCommitTable         = "githubcommits"
 	influxDbStockQuotationsTable      = "stockquotations"
 	influxDBAssetQuotationsTable      = "assetQuotations"
 	influxDbBenchmarkedIndexTableName = "benchmarkedIndexValues"
@@ -534,14 +503,6 @@ func (datastore *DB) CopyInfluxMeasurements(dbOrigin string, dbDestination strin
 	return
 }
 
-// DeleteInfluxMeasurement deletes data from influx database @dbName and measurement @tableName in the given time range.
-func (datastore *DB) DeleteInfluxMeasurement(dbName string, tableName string, timeInit time.Time, timeFinal time.Time) (err error) {
-	queryString := "DELETE FROM %s WHERE time>%d AND time<=%d"
-	query := fmt.Sprintf(queryString, tableName, timeInit.UnixNano(), timeFinal.UnixNano())
-	_, err = queryInfluxDBName(datastore.influxClient, dbName, query)
-	return
-}
-
 func (datastore *DB) GetFirstTradeDate(table string) (time.Time, error) {
 	var query string
 	queryString := "SELECT \"exchange\",price FROM %s  where time<now() order by asc limit 1"
@@ -556,259 +517,6 @@ func (datastore *DB) GetFirstTradeDate(table string) (time.Time, error) {
 	}
 	return time.Time{}, errors.New("no trade found")
 
-}
-
-func (datastore *DB) SaveCVIInflux(cviValue float64, observationTime time.Time) error {
-	fields := map[string]interface{}{
-		"value": cviValue,
-	}
-	pt, err := clientInfluxdb.NewPoint(influxDbCVITable, nil, fields, observationTime)
-	if err != nil {
-		log.Errorln("NewOptionInflux:", err)
-	} else {
-		datastore.addPoint(pt)
-	}
-
-	err = datastore.WriteBatchInflux()
-	if err != nil {
-		log.Errorln("SaveOptionOrderbookDatumInflux", err)
-	}
-
-	return err
-}
-
-func (datastore *DB) SaveETHCVIInflux(cviValue float64, observationTime time.Time) error {
-	fields := map[string]interface{}{
-		"value": cviValue,
-	}
-	pt, err := clientInfluxdb.NewPoint(influxDbETHCVITable, nil, fields, observationTime)
-	if err != nil {
-		log.Errorln("NewOptionInflux:", err)
-	} else {
-		datastore.addPoint(pt)
-	}
-
-	err = datastore.WriteBatchInflux()
-	if err != nil {
-		log.Errorln("SaveOptionOrderbookDatumInflux", err)
-	}
-
-	return err
-}
-
-func (datastore *DB) GetCVIInflux(starttime time.Time, endtime time.Time, symbol string) ([]dia.CviDataPoint, error) {
-	retval := []dia.CviDataPoint{}
-	var q string
-	if symbol == "ETH" {
-		q = fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d", influxDbETHCVITable, starttime.UnixNano(), endtime.UnixNano())
-
-	} else {
-		q = fmt.Sprintf("SELECT * FROM %s WHERE time > %d and time < %d", influxDbCVITable, starttime.UnixNano(), endtime.UnixNano())
-	}
-
-	res, err := queryInfluxDB(datastore.influxClient, q)
-	if err != nil {
-		return retval, err
-	}
-	if len(res) > 0 && len(res[0].Series) > 0 {
-		for i := 0; i < len(res[0].Series[0].Values); i++ {
-			currentPoint := dia.CviDataPoint{}
-			currentPoint.Timestamp, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
-			if err != nil {
-				return retval, err
-			}
-			currentPoint.Value, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
-			if err != nil {
-				return retval, err
-			}
-			retval = append(retval, currentPoint)
-		}
-	} else {
-		return retval, errors.New("parsing CVI value from database")
-	}
-	return retval, nil
-}
-
-func (datastore *DB) SaveOptionOrderbookDatumInflux(t dia.OptionOrderbookDatum) error {
-	tags := map[string]string{"instrumentName": t.InstrumentName}
-	fields := map[string]interface{}{
-		"askPrice": t.AskPrice,
-		"bidPrice": t.BidPrice,
-		"askSize":  t.AskSize,
-		"bidSize":  t.BidSize,
-	}
-	pt, err := clientInfluxdb.NewPoint(influxDbOptionsTable, tags, fields, t.ObservationTime)
-	if err != nil {
-		log.Errorln("NewOptionInflux:", err)
-	} else {
-		datastore.addPoint(pt)
-	}
-
-	err = datastore.WriteBatchInflux()
-	if err != nil {
-		log.Errorln("SaveOptionOrderbookDatumInflux", err)
-	}
-
-	return err
-}
-
-func (datastore *DB) GetOptionOrderbookDataInflux(t dia.OptionMeta) (dia.OptionOrderbookDatum, error) {
-	retval := dia.OptionOrderbookDatum{}
-	q := fmt.Sprintf("SELECT LAST(askPrice), bidPrice, askSize, bidSize, observationTime FROM %s WHERE instrumentName ='%s'", influxDbOptionsTable, t.InstrumentName)
-	res, err := queryInfluxDB(datastore.influxClient, q)
-
-	if err != nil {
-		return retval, err
-	}
-	if len(res) > 0 && len(res[0].Series) > 0 {
-		retval.InstrumentName = t.InstrumentName
-		retval.ObservationTime, err = time.Parse(time.RFC3339, res[0].Series[0].Values[0][0].(string))
-		if err != nil {
-			return retval, err
-		}
-		retval.AskPrice, err = res[0].Series[0].Values[0][1].(json.Number).Float64()
-		if err != nil {
-			return retval, err
-		}
-		retval.BidPrice, err = res[0].Series[0].Values[0][2].(json.Number).Float64()
-		if err != nil {
-			return retval, err
-		}
-		retval.AskSize, err = res[0].Series[0].Values[0][3].(json.Number).Float64()
-		if err != nil {
-			return retval, err
-		}
-		retval.BidSize, err = res[0].Series[0].Values[0][4].(json.Number).Float64()
-		if err != nil {
-			return retval, err
-		}
-		return retval, nil
-	}
-	return retval, nil
-}
-
-func (datastore *DB) SetDefiRateInflux(rate *dia.DefiRate) error {
-	fields := map[string]interface{}{
-		"lendingRate": rate.LendingRate,
-		"borrowRate":  rate.BorrowingRate,
-	}
-	tags := map[string]string{
-		"asset":    rate.Asset,
-		"protocol": rate.Protocol,
-	}
-	pt, err := clientInfluxdb.NewPoint(influxDbDefiRateTable, tags, fields, rate.Timestamp)
-	if err != nil {
-		log.Errorln("SetDefiRateInflux:", err)
-	} else {
-		datastore.addPoint(pt)
-	}
-
-	err = datastore.WriteBatchInflux()
-	if err != nil {
-		log.Errorln("SetDefiRateInflux", err)
-	}
-
-	return err
-}
-
-func (datastore *DB) GetDefiRateInflux(starttime time.Time, endtime time.Time, asset string, protocol string) ([]dia.DefiRate, error) {
-	retval := []dia.DefiRate{}
-	influxQuery := "SELECT \"asset\",borrowRate,lendingRate,\"protocol\" FROM %s WHERE time > %d and time < %d and asset = '%s' and protocol = '%s'"
-	q := fmt.Sprintf(influxQuery, influxDbDefiRateTable, starttime.UnixNano(), endtime.UnixNano(), asset, protocol)
-	fmt.Println("influx query: ", q)
-	res, err := queryInfluxDB(datastore.influxClient, q)
-	fmt.Println("res, err: ", res, err)
-	if err != nil {
-		return retval, err
-	}
-	if len(res) > 0 && len(res[0].Series) > 0 {
-		for i := 0; i < len(res[0].Series[0].Values); i++ {
-			currentRate := dia.DefiRate{}
-			currentRate.Timestamp, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
-			if err != nil {
-				return retval, err
-			}
-			currentRate.Asset = res[0].Series[0].Values[i][1].(string)
-			if err != nil {
-				return retval, err
-			}
-			currentRate.BorrowingRate, err = res[0].Series[0].Values[i][2].(json.Number).Float64()
-			if err != nil {
-				return retval, err
-			}
-			currentRate.LendingRate, err = res[0].Series[0].Values[i][3].(json.Number).Float64()
-			if err != nil {
-				return retval, err
-			}
-			currentRate.Protocol = protocol
-			retval = append(retval, currentRate)
-		}
-	} else {
-		return retval, errors.New("parsing defi lending rate from database")
-	}
-	return retval, nil
-}
-
-func (datastore *DB) SetDefiStateInflux(state *dia.DefiProtocolState) error {
-	fields := map[string]interface{}{
-		"totalUSD": state.TotalUSD,
-		"totalETH": state.TotalETH,
-	}
-	tags := map[string]string{
-		"protocol": state.Protocol.Name,
-	}
-	pt, err := clientInfluxdb.NewPoint(influxDbDefiStateTable, tags, fields, state.Timestamp)
-	if err != nil {
-		log.Errorln("SetDefiStateInflux:", err)
-	} else {
-		datastore.addPoint(pt)
-	}
-
-	err = datastore.WriteBatchInflux()
-	if err != nil {
-		log.Errorln("SetDefiStateInflux", err)
-	}
-
-	return err
-}
-
-func (datastore *DB) GetDefiStateInflux(starttime time.Time, endtime time.Time, protocol string) (retval []dia.DefiProtocolState, err error) {
-	influxQuery := "SELECT totalETH,totalUSD FROM %s WHERE time > %d and time < %d and protocol = '%s'"
-	q := fmt.Sprintf(influxQuery, influxDbDefiStateTable, starttime.UnixNano(), endtime.UnixNano(), protocol)
-	res, err := queryInfluxDB(datastore.influxClient, q)
-	if err != nil {
-		return retval, err
-	}
-	if len(res) > 0 && len(res[0].Series) > 0 {
-		for i := 0; i < len(res[0].Series[0].Values); i++ {
-			defiState := dia.DefiProtocolState{}
-			defiState.Timestamp, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
-			if err != nil {
-				return
-			}
-			// defiState.Protocol.Name = res[0].Series[0].Values[i][1].(string)
-			// if err != nil {
-			// 	return
-			// }
-			defiState.TotalETH, err = res[0].Series[0].Values[i][1].(json.Number).Float64()
-			if err != nil {
-				return
-			}
-			defiState.TotalUSD, err = res[0].Series[0].Values[i][2].(json.Number).Float64()
-			if err != nil {
-				return
-			}
-			defiState.Protocol, err = datastore.GetDefiProtocol(protocol)
-			if err != nil {
-				return
-			}
-			retval = append(retval, defiState)
-		}
-	} else {
-		err = errors.New("parsing defi lending state from database")
-		return
-	}
-	return
 }
 
 func (datastore *DB) SaveSupplyInflux(supply *dia.Supply) error {

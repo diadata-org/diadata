@@ -157,47 +157,6 @@ func (e *Coin) MarshalBinary() ([]byte, error) {
 	return json.Marshal(e)
 }
 
-type Coins struct {
-	CompleteCoinList []CoinSymbolAndName
-	Change           *Change
-	Coins            []Coin
-}
-
-// MarshalBinary -
-func (e *Coins) MarshalBinary() ([]byte, error) {
-	return json.Marshal(e)
-}
-
-// UnmarshalBinary -
-func (e *Coins) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &e); err != nil {
-		return err
-	}
-	return nil
-}
-
-// SymbolDetails is used for API return values
-type SymbolDetails struct {
-	Change    *Change
-	Coin      Coin
-	Rank      int
-	Exchanges []SymbolExchangeDetails
-	Gfx1      *Points
-}
-
-// MarshalBinary -
-func (e *SymbolDetails) MarshalBinary() ([]byte, error) {
-	return json.Marshal(e)
-}
-
-// UnmarshalBinary -
-func (e *SymbolDetails) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &e); err != nil {
-		return err
-	}
-	return nil
-}
-
 type CurrencyChange struct {
 	Symbol        string
 	Rate          float64
@@ -219,12 +178,6 @@ func (e *Change) UnmarshalBinary(data []byte) error {
 		return err
 	}
 	return nil
-}
-
-// Point is used exclusively for chart points in the API
-type Point struct {
-	UnixTime int64
-	Value    float64
 }
 
 type Points struct {
