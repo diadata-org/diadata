@@ -7,5 +7,3 @@ require (
 	github.com/jackc/pgconn v1.10.0
 	github.com/sirupsen/logrus v1.8.1
 )
-
-replace github.com/diadata-org/diadata => /home/philipp/go/src/github.com/diadata-org/diadata
