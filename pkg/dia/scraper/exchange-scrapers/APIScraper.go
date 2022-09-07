@@ -260,7 +260,3 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 	}
 
 }
-
-func GetWatchdogDelay() int {
-	return watchdogDelay
-}
