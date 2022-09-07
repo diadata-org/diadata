@@ -2197,6 +2197,11 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 		return
 	}
 
+	minTradesCount, err := strconv.Atoi(c.DefaultQuery("minTradesCount", "10"))
+	if err != nil {
+		log.Error("parse minTrades: ", err)
+	}
+
 	pageString := c.DefaultQuery("page", "1")
 	pageNumber, err = strconv.ParseInt(pageString, 10, 64)
 	if err != nil {
@@ -2242,7 +2247,7 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 
 	var window24h = time.Duration(24 * 60 * time.Minute)
 
-	nftVolumes, err := env.RelDB.GetTopNFTsEth(numCollections, offset, exchanges, starttime, endtime)
+	nftVolumes, err := env.RelDB.GetTopNFTsEth(numCollections, offset, minTradesCount, exchanges, starttime, endtime)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 		return
