@@ -17,13 +17,6 @@ import (
 type Datastore interface {
 	SetInfluxClient(url string)
 
-	// Deprecating
-	SetPriceUSD(symbol string, price float64) error
-	SetPriceEUR(symbol string, price float64) error
-	GetPriceUSD(symbol string) (float64, error)
-	GetQuotation(symbol string) (*Quotation, error)
-	SetQuotation(quotation *Quotation) error
-	SetQuotationEUR(quotation *Quotation) error
 	SetBatchFiatPriceInflux(fqs []*FiatQuotation) error
 	SetSingleFiatPriceRedis(fiatQuotation *FiatQuotation) error
 
@@ -127,10 +120,6 @@ type Datastore interface {
 
 	SetVWAPFirefly(foreignName string, value float64, timestamp time.Time) error
 	GetVWAPFirefly(foreignName string, starttime time.Time, endtime time.Time) ([]float64, []time.Time, error)
-
-	// Gold token methods
-	GetPaxgQuotationOunces() (*Quotation, error)
-	GetPaxgQuotationGrams() (*Quotation, error)
 
 	SaveIndexEngineTimeInflux(map[string]string, map[string]interface{}, time.Time) error
 	GetBenchmarkedIndexValuesInflux(string, time.Time, time.Time) (BenchmarkedIndex, error)

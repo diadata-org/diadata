@@ -262,10 +262,6 @@ func main() {
 		// Endpoints for customized products
 		diaGroup.GET("/custom/vwapFirefly/:ticker", cache.CachePageAtomic(memoryStore, cachingTime20Secs, diaApiEnv.GetVwapFirefly))
 
-		// Gold asset
-		diaGroup.GET("/goldPaxgOunces", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationOunces))
-		diaGroup.GET("/goldPaxgGrams", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationGrams))
-
 		// Index
 		diaGroup.GET("/benchmarkedIndexValue/:symbol", diaApiEnv.GetBenchmarkedIndexValue)
 
