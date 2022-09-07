@@ -991,14 +991,13 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 
 	}
 	var assets = []dia.TopAsset{}
-	timestamp := time.Now()
 
 	for _, v := range sortedAssets {
 		var sources = make(map[string][]string)
 
 		aqf := dia.TopAsset{}
 		aqf.Asset = v.Asset
-		quotation, err := env.DataStore.GetAssetQuotation(aqf.Asset, timestamp)
+		quotation, err := env.DataStore.GetAssetQuotationLatest(aqf.Asset)
 		if err != nil {
 			log.Warn("quotation: ", err)
 		} else {
@@ -1017,7 +1016,7 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 		}
 		aqf.Source = sources
 
-		quotationYesterday, err := env.DataStore.GetAssetQuotation(aqf.Asset, timestamp.AddDate(0, 0, -1))
+		quotationYesterday, err := env.DataStore.GetAssetQuotation(aqf.Asset, time.Now().AddDate(0, 0, -1))
 		if err != nil {
 			log.Warn("get quotation yesterday: ", err)
 		} else {
