@@ -3,6 +3,7 @@ package synthscrapers
 import (
 	"math"
 	"math/big"
+	"strconv"
 	"strings"
 
 	"github.com/diadata-org/diadata/config/synthContracts/aavepool2"
@@ -40,18 +41,28 @@ type aTokenScraper struct {
 	blockchain   string
 	WsClient     *ethclient.Client
 	atokens      map[string]string // atokenaddress -> underlyingtokenaddress
-
-	pooladdress string
-	version     int
+	pooladdress  string
+	version      int
+	start        uint64
 }
 
 func NewaTokenScraper(rdb *models.RelDB, blockchain, pooladdress string, version int) *aTokenScraper {
 
 	scraper := &aTokenScraper{
-		blockchain:  blockchain,
-		pooladdress: pooladdress,
-		version:     version,
+		blockchain:   blockchain,
+		pooladdress:  pooladdress,
+		version:      version,
+		synthChannel: make(chan dia.SynthAssetSupply),
 	}
+
+	startblock, err := strconv.ParseInt(utils.Getenv("START_BLOCK", "0"), 10, 64)
+
+	if err != nil {
+		startblock = 0
+	}
+
+	scraper.start = uint64(startblock)
+
 	atokens := make(map[string]string)
 
 	restclient, err := ethclient.Dial(utils.Getenv(strings.ToUpper(scraper.blockchain)+"_URI_REST", ""))
@@ -91,8 +102,13 @@ func (scraper *aTokenScraper) watchReservedataupdatedV2() chan *aavepool2.Aavepo
 		log.Error("new NewAavepool3Filterer caller: ", err)
 	}
 	sink := make(chan *aavepool2.Aavepool2ReserveDataUpdated)
-	start := uint64(15494944)
-	filterer.WatchReserveDataUpdated(&bind.WatchOpts{Start: &start}, sink, []common.Address{})
+	// if start is zero start from latest
+	if scraper.start == 0 {
+		filterer.WatchReserveDataUpdated(&bind.WatchOpts{}, sink, []common.Address{})
+
+	} else {
+		filterer.WatchReserveDataUpdated(&bind.WatchOpts{Start: &scraper.start}, sink, []common.Address{})
+	}
 	return sink
 
 }
@@ -108,7 +124,11 @@ func (scraper *aTokenScraper) mainLoop() {
 			dataupdated, ok := <-sink
 			if ok {
 				log.Infoln("Reserve Data updated fetch supply and reserver of token ", dataupdated.Raw.TxHash.Hex())
-				atokenasset, underlyingasset, atokensupply, reserver := scraper.fetchsupplyandbalance(dataupdated.Reserve.Hex(), big.NewInt(int64(dataupdated.Raw.BlockNumber)))
+				atokenasset, underlyingasset, atokensupply, reserver, err := scraper.fetchsupplyandbalance(dataupdated.Reserve.Hex(), big.NewInt(int64(dataupdated.Raw.BlockNumber)))
+				if err != nil {
+					log.Errorln("err on fetchsupplyandbalance", err)
+					continue
+				}
 				sas := dia.SynthAssetSupply{Asset: atokenasset, AssetUnderlying: underlyingasset, Supply: atokensupply, LockedUnderlying: reserver, BlockNumber: dataupdated.Raw.BlockNumber}
 				log.Infoln("sas", sas)
 				scraper.synthChannel <- sas
@@ -181,33 +201,37 @@ func (scraper *aTokenScraper) GetSynthSupplyChannel() chan dia.SynthAssetSupply 
 	return scraper.synthChannel
 }
 
-// func (scraper *aTokenScraper) FetchSynthSupply() error {
+func (scraper *aTokenScraper) FetchSynthSupply() error {
 
-// 	for underlyingtokenaddress, _ := range scraper.atokens {
-// 		scraper.fetchsupplyandbalance(underlyingtokenaddress)
+	return nil
+}
 
-// 	}
-
-// 	return nil
-// }
-
-func (scraper *aTokenScraper) fetchsupplyandbalance(underlyingtokenaddress string, blocknumber *big.Int) (atokenasset, underlyingasset dia.Asset, atokensupply, underlyingreserve float64) {
+func (scraper *aTokenScraper) fetchsupplyandbalance(underlyingtokenaddress string, blocknumber *big.Int) (atokenasset, underlyingasset dia.Asset, atokensupply, underlyingreserve float64, err error) {
 
 	atokenaddress := scraper.atokens[underlyingtokenaddress]
 	filterer, err := ceth.NewERC20Caller(common.HexToAddress(atokenaddress), scraper.RestClient)
 	if err != nil {
 		log.Error("new erc20 caller: ", err)
+		return
 	}
 	supply, err := filterer.TotalSupply(&bind.CallOpts{BlockNumber: blocknumber})
 	if err != nil {
 		log.Error("get supply: ", err)
+		return
 	}
 
 	atokendecimal, err := filterer.Decimals(&bind.CallOpts{BlockNumber: blocknumber})
 	if err != nil {
 		log.Error("get Decimals: ", err)
+		return
+	}
+	atokensymbol, err := filterer.Symbol(&bind.CallOpts{BlockNumber: blocknumber})
+	if err != nil {
+		log.Error("get Decimals: ", err)
+		return
 	}
 
+	atokenasset.Symbol = atokensymbol
 	atokenasset.Address = atokenaddress
 	atokenasset.Decimals = uint8(atokendecimal.Int64())
 	atokenasset.Blockchain = scraper.blockchain
@@ -217,23 +241,28 @@ func (scraper *aTokenScraper) fetchsupplyandbalance(underlyingtokenaddress strin
 	underlyingfilterer, err := ceth.NewERC20Caller(common.HexToAddress(underlyingtokenaddress), scraper.RestClient)
 	if err != nil {
 		log.Error("new erc20 caller: ", err)
+		return
 	}
 	balanceof, err := underlyingfilterer.BalanceOf(&bind.CallOpts{BlockNumber: blocknumber}, common.HexToAddress(atokenaddress))
 	if err != nil {
 		log.Error("get balanceof: ", err)
+		return
 	}
 	log.Info("balanceof: ", balanceof)
 
 	underlyingdecimals, err := underlyingfilterer.Decimals(&bind.CallOpts{BlockNumber: blocknumber})
 	if err != nil {
-		log.Error("get balanceof: ", err)
+		log.Error("get Decimals: ", err)
+		return
+	}
+	underlyingsymbol, err := underlyingfilterer.Symbol(&bind.CallOpts{BlockNumber: blocknumber})
+	if err != nil {
+		log.Error("get Symbol: ", err)
+		return
 	}
 
-	atokenasset.Address = atokenaddress
-	atokenasset.Decimals = uint8(atokendecimal.Int64())
-	atokenasset.Blockchain = scraper.blockchain
-
 	underlyingreserve, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(balanceof), new(big.Float).SetFloat64(math.Pow10(int(underlyingdecimals.Int64())))).Float64()
+	underlyingasset.Symbol = underlyingsymbol
 
 	underlyingasset.Address = underlyingtokenaddress
 	underlyingasset.Decimals = uint8(underlyingdecimals.Int64())
