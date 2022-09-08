@@ -29,6 +29,12 @@ func main() {
 	case "cETH":
 		log.Println("Start scraping data from cETH")
 		scraper = synthscrapers.NewcETHScraper(rdb)
+	case "atokenv2ethereum":
+		log.Print("Start scraping data from aToken ")
+		scraper = synthscrapers.NewaTokenScraper(rdb, dia.ETHEREUM, "0x7d2768de32b0b80b7a3454c06bdac94a69ddc7a9", 2)
+	case "atokenv3polygon":
+		log.Print("Start scraping data from aToken ")
+		scraper = synthscrapers.NewaTokenScraper(rdb, dia.POLYGON, "0x794a61358D6845594F94dc1DB02A252b5b4814aD", 3)
 	default:
 		for {
 			time.Sleep(24 * time.Hour)
@@ -49,6 +55,7 @@ func handleSynthData(synthChannel chan dia.SynthAssetSupply, wg *sync.WaitGroup,
 			log.Error("error")
 			return
 		}
+		log.Infoln("synthData", synthData)
 		err := rdb.SetSynthAssetSupply(synthData)
 		if err != nil {
 			log.Errorf("Error saving synth data for %s: %v", synthData.Asset.Address, err)
