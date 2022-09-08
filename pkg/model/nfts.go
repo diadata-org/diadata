@@ -625,7 +625,7 @@ func (rdb *RelDB) GetTopNFTsEth(numCollections int, offset int64, exchanges []st
 			Address    string
 			Blockchain string
 			Volume     float64
-		}{Name: name, Address: address, Blockchain: blockchain, Volume: volume * 10e-18})
+		}{Name: name, Address: address, Blockchain: blockchain, Volume: volume * 1e-18})
 	}
 	return
 }
