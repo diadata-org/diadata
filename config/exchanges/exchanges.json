@@ -196,6 +196,19 @@
             "WatchdogDelay": 1200
         },
         {
+            "Name": "BitMart",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "https://api-cloud.bitmart.com/spot/v1/",
+            "WsAPI": "wss://ws-manager-compress.bitmart.com/api?protocol=1.1",
+            "pairsAPI": "https://api-cloud.bitmart.com/spot/v1/symbols",
+            "WatchdogDelay": 1200
+        },
+        {
             "Name": "Bitmax",
             "Centralized": true,
             "Bridge": false,
