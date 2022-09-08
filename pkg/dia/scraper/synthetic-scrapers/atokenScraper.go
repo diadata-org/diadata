@@ -127,7 +127,6 @@ func (scraper *aTokenScraper) mainLoop() {
 			dataupdated, ok := <-sink
 			if ok {
 				log.Infoln("Reserve Data updated fetch supply and reserver of token ", dataupdated.Raw.TxHash.Hex())
-
 				atokenasset, underlyingasset, atokensupply, reserver, err := scraper.fetchsupplyandbalance(dataupdated.Reserve.Hex(), big.NewInt(int64(dataupdated.Raw.BlockNumber)))
 				if err != nil {
 					log.Errorln("err on fetchsupplyandbalance", err)

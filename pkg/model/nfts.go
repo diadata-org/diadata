@@ -545,8 +545,7 @@ func (rdb *RelDB) GetNFTFloorRange(nftClass dia.NFTClass, starttime time.Time, e
 
 // GetTopNFTsEth returns a list of @numCollections NFT collections sorted by trading volume in [@starttime, @endtime]
 // in descending order. Only takes into account trades done with ETH.
-// Only collections with at least @minCount trades in the last 4 days are taken into account (starting from endtime backwards).
-func (rdb *RelDB) GetTopNFTsEth(numCollections int, offset int64, minCount int, exchanges []string, starttime time.Time, endtime time.Time) (nftVolumes []struct {
+func (rdb *RelDB) GetTopNFTsEth(numCollections int, offset int64, exchanges []string, starttime time.Time, endtime time.Time) (nftVolumes []struct {
 	Name       string
 	Address    string
 	Blockchain string
@@ -559,42 +558,23 @@ func (rdb *RelDB) GetTopNFTsEth(numCollections int, offset int64, minCount int, 
 	)
 
 	query := fmt.Sprintf(`
-	WITH nonnulltrades AS (
-		SELECT n.nftclass_id,SUM(price::numeric) 
-		FROM %s n 
-		INNER JOIN %s nt 
-		ON n.nftclass_id=nt.nftclass_id 
-		AND (
-			nt.currency_id=(SELECT asset_id from %s where address='%s' and blockchain='%s') 
-			OR nt.currency_id=(SELECT asset_id from %s where address='%s' and blockchain='%s')
-			)
-		WHERE nt.trade_time>to_timestamp(%v) AND nt.trade_time<to_timestamp(%v)
-		GROUP BY n.nftclass_id 
-		HAVING COUNT(nt.nftclass_id)>%v
-		ORDER BY SUM(price::numeric) DESC LIMIT 100
-	)
 	SELECT nc.name,nc.address,nc.blockchain,SUM(price::numeric) 
-	FROM %s
-	INNER JOIN %s nc 
-	ON nfttradecurrent.nftclass_id=nc.nftclass_id
-	INNER JOIN nonnulltrades nnt ON nnt.nftclass_id=nc.nftclass_id 
+	FROM %s INNER JOIN %s nc 
+	ON nfttradecurrent.nftclass_id=nc.nftclass_id 
 	WHERE trade_time>to_timestamp(%v) 
-	AND trade_time<=to_timestamp(%v) `,
-		nftclassTable,
-		NfttradeCurrTable,
-		assetTable,
-		"0x0000000000000000000000000000000000000000",
-		dia.ETHEREUM,
-		assetTable,
-		"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-		dia.ETHEREUM,
-		endtime.AddDate(0, 0, -4).Unix(),
-		endtime.Unix(),
-		minCount,
+	AND trade_time<=to_timestamp(%v) 
+	AND (currency_id=(SELECT asset_id FROM %s WHERE blockchain='%s' AND address='%s') 
+	OR currency_id=(SELECT asset_id FROM %s WHERE blockchain='%s' AND address='%s') ) `,
 		NfttradeCurrTable,
 		nftclassTable,
 		starttime.Unix(),
 		endtime.Unix(),
+		assetTable,
+		dia.ETHEREUM,
+		"0x0000000000000000000000000000000000000000",
+		assetTable,
+		dia.ETHEREUM,
+		"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
 	)
 
 	for i, exchange := range exchanges {
@@ -645,7 +625,7 @@ func (rdb *RelDB) GetTopNFTsEth(numCollections int, offset int64, minCount int, 
 			Address    string
 			Blockchain string
 			Volume     float64
-		}{Name: name, Address: address, Blockchain: blockchain, Volume: volume * 10e-18})
+		}{Name: name, Address: address, Blockchain: blockchain, Volume: volume * 1e-18})
 	}
 	return
 }
