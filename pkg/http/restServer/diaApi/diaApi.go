@@ -113,15 +113,16 @@ func (env *Env) SetQuotation(c *gin.Context) {
 // GetAssetQuotation returns quotation of asset with highest market cap among
 // all assets with symbol ticker @symbol.
 func (env *Env) GetAssetQuotation(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	blockchain := c.Param("blockchain")
 	address := c.Param("address")
 	var err error
 	var asset dia.Asset
 	var quotationExtended models.AssetQuotationFull
 	timestamp := time.Now()
-	if !validateInputParams(c) {
-		return
-	}
 
 	// An asset is uniquely defined by blockchain and address.
 	asset, err = env.RelDB.GetAsset(address, blockchain)
@@ -166,10 +167,12 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 // GetQuotation returns quotation of asset with highest market cap among
 // all assets with symbol ticker @symbol.
 func (env *Env) GetQuotation(c *gin.Context) {
-	symbol := c.Param("symbol")
 	if !validateInputParams(c) {
 		return
 	}
+
+	symbol := c.Param("symbol")
+
 	timestamp := time.Now()
 	var quotationExtended models.AssetQuotationFull
 	// Fetch underlying assets for symbol
@@ -214,11 +217,12 @@ func (env *Env) GetQuotation(c *gin.Context) {
 }
 
 func (env *Env) GetAssetMap(c *gin.Context) {
-	address := c.Param("address")
-	blockchain := c.Param("blockchain")
 	if !validateInputParams(c) {
 		return
 	}
+
+	address := c.Param("address")
+	blockchain := c.Param("blockchain")
 
 	timestamp := time.Now()
 	var quotations []models.AssetQuotationFull
@@ -288,10 +292,11 @@ func (env *Env) GetAssetMap(c *gin.Context) {
 
 // GetSupply returns latest supply of token with @symbol
 func (env *Env) GetSupply(c *gin.Context) {
-	symbol := c.Param("symbol")
 	if !validateInputParams(c) {
 		return
 	}
+
+	symbol := c.Param("symbol")
 
 	s, err := env.DataStore.GetLatestSupply(symbol, &env.RelDB)
 	if err != nil {
@@ -307,13 +312,14 @@ func (env *Env) GetSupply(c *gin.Context) {
 
 // GetSupply returns latest supply of token with @symbol
 func (env *Env) GetAssetSupply(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	address := c.Param("address")
 	blockchain := c.Param("blockchain")
 	starttimeStr := c.Query("starttime")
 	endtimeStr := c.Query("endtime")
-	if !validateInputParams(c) {
-		return
-	}
 
 	var starttime, endtime time.Time
 	if starttimeStr != "" && endtimeStr != "" {
@@ -362,12 +368,13 @@ func (env *Env) GetAssetSupply(c *gin.Context) {
 
 // GetSupplies returns a time range of supplies of token with @symbol
 func (env *Env) GetSupplies(c *gin.Context) {
-	symbol := c.Param("symbol")
-	starttimeStr := c.DefaultQuery("starttime", "noRange")
-	endtimeStr := c.Query("endtime")
 	if !validateInputParams(c) {
 		return
 	}
+
+	symbol := c.Param("symbol")
+	starttimeStr := c.DefaultQuery("starttime", "noRange")
+	endtimeStr := c.Query("endtime")
 
 	var starttime, endtime time.Time
 
@@ -433,12 +440,13 @@ func (env *Env) GetDiaCirculatingSupply(c *gin.Context) {
 
 // GetVolume if no times are set use the last 24h
 func (env *Env) GetVolume(c *gin.Context) {
-	symbol := c.Param("symbol")
-	starttimeStr := c.DefaultQuery("starttime", "noRange")
-	endtimeStr := c.Query("endtime")
 	if !validateInputParams(c) {
 		return
 	}
+
+	symbol := c.Param("symbol")
+	starttimeStr := c.DefaultQuery("starttime", "noRange")
+	endtimeStr := c.Query("endtime")
 
 	var starttime, endtime time.Time
 
@@ -477,10 +485,11 @@ func (env *Env) GetVolume(c *gin.Context) {
 
 // Get24hVolume if no times are set use the last 24h
 func (env *Env) Get24hVolume(c *gin.Context) {
-	exchange := c.Param("exchange")
 	if !validateInputParams(c) {
 		return
 	}
+
+	exchange := c.Param("exchange")
 
 	// starttimeStr := c.DefaultQuery("starttime", "noRange")
 	// endtimeStr := c.Query("endtime")
@@ -570,15 +579,16 @@ func (env *Env) GetExchanges(c *gin.Context) {
 
 // GetAssetChartPoints queries for filter points of asset given by address and blockchain.
 func (env *Env) GetAssetChartPoints(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	filter := c.Param("filter")
 	blockchain := c.Param("blockchain")
 	address := c.Param("address")
 	exchange := c.Query("exchange")
 	starttimeStr := c.Query("starttime")
 	endtimeStr := c.Query("endtime")
-	if !validateInputParams(c) {
-		return
-	}
 
 	// Set times depending on what is given by the query parameters
 	var starttime, endtime time.Time
@@ -634,15 +644,16 @@ func (env *Env) GetAssetChartPoints(c *gin.Context) {
 // GetChartPoints godoc
 // @Param   scale      query   string     false       "scale 5m 30m 1h 4h 1d 1w"
 func (env *Env) GetChartPoints(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	filter := c.Param("filter")
 	exchange := c.Param("exchange")
 	symbol := c.Param("symbol")
 	scale := c.Query("scale")
 	starttimeStr := c.Query("starttime")
 	endtimeStr := c.Query("endtime")
-	if !validateInputParams(c) {
-		return
-	}
 
 	// Set times depending on what is given by the query parameters
 	var starttime, endtime time.Time
@@ -698,14 +709,15 @@ func (env *Env) GetChartPoints(c *gin.Context) {
 // GetChartPointsAllExchanges godoc
 // @Param   scale      query   string     false       "scale 5m 30m 1h 4h 1d 1w"
 func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	filter := c.Param("filter")
 	symbol := c.Param("symbol")
 	scale := c.Query("scale")
 	starttimeStr := c.Query("starttime")
 	endtimeStr := c.Query("endtime")
-	if !validateInputParams(c) {
-		return
-	}
 
 	// Set times depending on what is given by the query parameters
 	var starttime, endtime time.Time
@@ -763,6 +775,10 @@ func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 // If @top is set to an integer, only the top @top symbols w.r.t. trading volume are returned. This is
 // only active if @exchange is not set.
 func (env *Env) GetAllSymbols(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	var s []string
 	var numSymbols int64
 	var sortedAssets []dia.AssetVolume
@@ -771,9 +787,6 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 	substring := c.Param("substring")
 	exchange := c.DefaultQuery("exchange", "noRange")
 	numSymbolsString := c.Query("top")
-	if !validateInputParams(c) {
-		return
-	}
 
 	if numSymbolsString != "" {
 		numSymbols, err = strconv.ParseInt(numSymbolsString, 10, 64)
@@ -853,11 +866,12 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 }
 
 func (env *Env) SearchAsset(c *gin.Context) {
-	querystring := c.Param("query")
-
 	if !validateInputParams(c) {
 		return
 	}
+
+	querystring := c.Param("query")
+
 	var (
 		assets = []dia.Asset{}
 
@@ -892,11 +906,12 @@ func (env *Env) SearchAsset(c *gin.Context) {
 }
 
 func (env *Env) SearchNFTs(c *gin.Context) {
-	querystring := c.Param("query")
-
 	if !validateInputParams(c) {
 		return
 	}
+
+	querystring := c.Param("query")
+
 	var (
 		collections = []dia.NFTClass{}
 		err         error
@@ -926,13 +941,13 @@ func (env *Env) SearchNFTs(c *gin.Context) {
 }
 
 func (env *Env) GetTopAssets(c *gin.Context) {
-	numAssetsString := c.Param("numAssets")
-	pageString := c.DefaultQuery("page", "1")
-	onlycexString := c.DefaultQuery("Cex", "false")
-
 	if !validateInputParams(c) {
 		return
 	}
+
+	numAssetsString := c.Param("numAssets")
+	pageString := c.DefaultQuery("page", "1")
+	onlycexString := c.DefaultQuery("Cex", "false")
 
 	var (
 		numAssets    int64
@@ -1375,14 +1390,14 @@ func (env *Env) GetStockQuotation(c *gin.Context) {
 
 // GetForeignQuotation returns several quotations vs USD as published by the ECB
 func (env *Env) GetForeignQuotation(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	source := c.Param("source")
 	symbol := c.Param("symbol")
 	date := c.DefaultQuery("time", "noRange")
 	var timestamp time.Time
-
-	if !validateInputParams(c) {
-		return
-	}
 
 	if date == "noRange" {
 		timestamp = time.Now()
@@ -1407,10 +1422,11 @@ func (env *Env) GetForeignQuotation(c *gin.Context) {
 
 // GetForeignSymbols returns all symbols available for quotation from @source.
 func (env *Env) GetForeignSymbols(c *gin.Context) {
-	source := c.Param("source")
 	if !validateInputParams(c) {
 		return
 	}
+
+	source := c.Param("source")
 
 	q, err := env.DataStore.GetForeignSymbolsInflux(source)
 	if err != nil {
@@ -1430,12 +1446,13 @@ func (env *Env) GetForeignSymbols(c *gin.Context) {
 // -----------------------------------------------------------------------------
 
 func (env *Env) GetVwapFirefly(c *gin.Context) {
-	foreignname := c.Param("ticker")
-	starttimeStr := c.Query("starttime")
-	endtimeStr := c.Query("endtime")
 	if !validateInputParams(c) {
 		return
 	}
+
+	foreignname := c.Param("ticker")
+	starttimeStr := c.Query("starttime")
+	endtimeStr := c.Query("endtime")
 
 	var starttime, endtime time.Time
 	if starttimeStr == "" || endtimeStr == "" {
@@ -1508,12 +1525,13 @@ func (env *Env) getDecimalsFromCache(localCache map[dia.Asset]uint8, asset dia.A
 
 // GetBenchmarkedIndexValue Get benchmarked Index values
 func (env *Env) GetBenchmarkedIndexValue(c *gin.Context) {
-	symbol := c.Param("symbol")
-	starttimeStr := c.Query("starttime")
-	endtimeStr := c.Query("endtime")
 	if !validateInputParams(c) {
 		return
 	}
+
+	symbol := c.Param("symbol")
+	starttimeStr := c.Query("starttime")
+	endtimeStr := c.Query("endtime")
 
 	// Set times depending on what is given by the query parameters
 	var starttime, endtime time.Time
@@ -1564,10 +1582,11 @@ func (env *Env) GetBenchmarkedIndexValue(c *gin.Context) {
 
 // GetLastTrades Get last 1000 trades of an asset
 func (env *Env) GetLastTrades(c *gin.Context) {
-	symbol := c.Param("symbol")
 	if !validateInputParams(c) {
 		return
 	}
+
+	symbol := c.Param("symbol")
 
 	// First get asset with @symbol with largest market cap.
 	topAsset, err := env.DataStore.GetTopAssetByVolume(symbol, &env.RelDB)
@@ -1589,13 +1608,14 @@ func (env *Env) GetLastTrades(c *gin.Context) {
 
 // GetLastTrades returns last N trades of an asset. Defaults to N=1000.
 func (env *Env) GetLastTradesAsset(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	blockchain := c.Param("blockchain")
 	address := c.Param("address")
 	numTradesString := c.DefaultQuery("numTrades", "1000")
 	exchange := c.Query("exchange")
-	if !validateInputParams(c) {
-		return
-	}
 
 	var numTrades int64
 	var err error
@@ -1627,10 +1647,11 @@ func (env *Env) GetLastTradesAsset(c *gin.Context) {
 
 // GetMissingExchangeSymbol returns all unverified symbol
 func (env *Env) GetMissingExchangeSymbol(c *gin.Context) {
-	exchange := c.Param("exchange")
 	if !validateInputParams(c) {
 		return
 	}
+
+	exchange := c.Param("exchange")
 
 	//symbols, err := api.GetUnverifiedExchangeSymbols(exchange)
 	symbols, err := env.RelDB.GetUnverifiedExchangeSymbols(exchange)
@@ -1642,10 +1663,11 @@ func (env *Env) GetMissingExchangeSymbol(c *gin.Context) {
 }
 
 func (env *Env) GetAsset(c *gin.Context) {
-	symbol := c.Param("symbol")
 	if !validateInputParams(c) {
 		return
 	}
+
+	symbol := c.Param("symbol")
 
 	symbols, err := env.RelDB.GetAssets(symbol)
 	if err != nil {
@@ -1656,10 +1678,11 @@ func (env *Env) GetAsset(c *gin.Context) {
 }
 
 func (env *Env) GetAssetExchanges(c *gin.Context) {
-	symbol := c.Param("symbol")
 	if !validateInputParams(c) {
 		return
 	}
+
+	symbol := c.Param("symbol")
 
 	symbols, err := env.RelDB.GetAssetExchange(symbol)
 	if err != nil {
@@ -1693,10 +1716,11 @@ func (env *Env) GetNFTCategories(c *gin.Context) {
 
 // GetAllNFTClasses returns all NFT classes.
 func (env *Env) GetAllNFTClasses(c *gin.Context) {
-	blockchain := c.Param("blockchain")
 	if !validateInputParams(c) {
 		return
 	}
+
+	blockchain := c.Param("blockchain")
 
 	q, err := env.RelDB.GetAllNFTClasses(blockchain)
 	if len(q) == 0 || err != nil {
@@ -1707,11 +1731,12 @@ func (env *Env) GetAllNFTClasses(c *gin.Context) {
 
 // GetNFTClasses returns all NFT classes.
 func (env *Env) GetNFTClasses(c *gin.Context) {
-	limitString := c.Param("limit")
-	offsetString := c.Param("offset")
 	if !validateInputParams(c) {
 		return
 	}
+
+	limitString := c.Param("limit")
+	offsetString := c.Param("offset")
 
 	limit, err := strconv.ParseUint(limitString, 10, 32)
 	if err != nil {
@@ -1731,12 +1756,13 @@ func (env *Env) GetNFTClasses(c *gin.Context) {
 
 // GetNFT returns an NFT.
 func (env *Env) GetNFT(c *gin.Context) {
-	blockchain := c.Param("blockchain")
-	address := c.Param("address")
-	id := c.Param("id")
 	if !validateInputParams(c) {
 		return
 	}
+
+	blockchain := c.Param("blockchain")
+	address := c.Param("address")
+	id := c.Param("id")
 
 	q, err := env.RelDB.GetNFT(address, blockchain, id)
 	if err != nil {
@@ -1747,10 +1773,11 @@ func (env *Env) GetNFT(c *gin.Context) {
 
 // GetNFTTrades returns all trades of the unique NFT with given parameters.
 func (env *Env) GetNFTTrades(c *gin.Context) {
-	blockchain := c.Param("blockchain")
 	if !validateInputParams(c) {
 		return
 	}
+
+	blockchain := c.Param("blockchain")
 
 	// Sanitize address
 	address := common.HexToAddress(c.Param("address")).Hex()
@@ -1770,10 +1797,11 @@ func (env *Env) GetNFTTrades(c *gin.Context) {
 
 // GetNFTTradesCollection returns all trades of the collection with given parameters.
 func (env *Env) GetNFTTradesCollection(c *gin.Context) {
-	blockchain := c.Param("blockchain")
 	if !validateInputParams(c) {
 		return
 	}
+
+	blockchain := c.Param("blockchain")
 
 	address := common.HexToAddress(c.Param("address")).Hex()
 	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*30)*time.Hour)
@@ -1830,11 +1858,12 @@ func (env *Env) GetNFTTradesCollection(c *gin.Context) {
 
 // GetNFTFloor returns the last floor price of a collection before @timestamp.
 func (env *Env) GetNFTFloor(c *gin.Context) {
-	blockchain := c.Param("blockchain")
-	address := common.HexToAddress(c.Param("address")).Hex()
 	if !validateInputParams(c) {
 		return
 	}
+
+	blockchain := c.Param("blockchain")
+	address := common.HexToAddress(c.Param("address")).Hex()
 
 	timestampUnixString := c.Query("timestamp")
 	var timestamp time.Time
@@ -1958,13 +1987,13 @@ func (env *Env) GetNFTFloorMA(c *gin.Context) {
 
 // GetNFTDownday returns the moving average floor price of the nft class over the last 30 days.
 func (env *Env) GetNFTDownday(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
 
 	// NFT collection.
 	blockchain := c.Param("blockchain")
 	address := common.HexToAddress(c.Param("address")).Hex()
-	if !validateInputParams(c) {
-		return
-	}
 
 	nftClass := dia.NFTClass{Address: address, Blockchain: blockchain}
 
@@ -2060,13 +2089,13 @@ func (env *Env) GetNFTDownday(c *gin.Context) {
 
 // GetNFTFloorVola returns the volatility of the moving average floor price of the nft class over the last 90 days.
 func (env *Env) GetNFTFloorVola(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
 
 	// NFT collection.
 	blockchain := c.Param("blockchain")
 	address := common.HexToAddress(c.Param("address")).Hex()
-	if !validateInputParams(c) {
-		return
-	}
 
 	nftClass := dia.NFTClass{Address: address, Blockchain: blockchain}
 
@@ -2579,10 +2608,6 @@ func (env *Env) GetAssetUpdates(c *gin.Context) {
 	blockchain := c.Param("blockchain")
 	address := c.Param("address")
 
-	if containSpecialChars(blockchain) || containSpecialChars(address) || containSpecialChars(c.Param("deviation")) || containSpecialChars(c.Param("frequencySeconds")) || containSpecialChars(c.Param("starttime")) || containSpecialChars(c.Param("endtime")) {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("invalid inpout params"))
-		return
-	}
 	// Deviation in per mille.
 	deviation, err := strconv.Atoi(c.Param("deviation"))
 	if err != nil {
@@ -2656,27 +2681,12 @@ func (env *Env) GetAssetUpdates(c *gin.Context) {
 	c.JSON(http.StatusOK, lrt)
 }
 
-func validTimeRange(starttime time.Time, endtime time.Time, maxDuration time.Duration) (ok bool, err error) {
-	if endtime.Sub(starttime) < maxDuration {
-		ok = true
-	}
-	err = fmt.Errorf("time-range too big. max duration is %v", maxDuration)
-	return
-}
-
-func validateInputParams(c *gin.Context) bool {
-	//filter, scale, substring,numAssets,type,name
-	if containSpecialChars(c.Param("numAssets")) || containSpecialChars(c.Param("substring")) || containSpecialChars(c.Param("scale")) || containSpecialChars(c.Param("filter")) || containSpecialChars(c.Param("symbol")) || containSpecialChars(c.Param("blockchain")) || containSpecialChars(c.Param("address")) || containSpecialChars(c.Param("deviation")) || containSpecialChars(c.Param("frequencySeconds")) || containSpecialChars(c.Param("starttime")) || containSpecialChars(c.Param("endtime")) {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("invalid input params"))
-		return false
-	}
-	return true
-}
-
 // GetAssetInfo returns quotation of asset with highest market cap among
 // all assets with symbol ticker @symbol. Additionally information on exchanges and volumes.
 func (env *Env) GetAssetInfo(c *gin.Context) {
-
+	if !validateInputParams(c) {
+		return
+	}
 	type localExchangeInfo struct {
 		Name      string
 		Volume24h float64
@@ -2699,9 +2709,7 @@ func (env *Env) GetAssetInfo(c *gin.Context) {
 
 	blockchain := c.Param("blockchain")
 	address := c.Param("address")
-	if !validateInputParams(c) {
-		return
-	}
+
 	endtime := time.Now()
 	starttime := endtime.AddDate(0, 0, -1)
 
@@ -2770,6 +2778,37 @@ func (env *Env) GetAssetInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, quotationExtended)
 }
 
-func containSpecialChars(s string) bool {
+func validTimeRange(starttime time.Time, endtime time.Time, maxDuration time.Duration) (ok bool, err error) {
+	if endtime.Sub(starttime) < maxDuration {
+		ok = true
+	}
+	err = fmt.Errorf("time-range too big. max duration is %v", maxDuration)
+	return
+}
+
+func validateInputParams(c *gin.Context) bool {
+
+	// Validate input parameters.
+	for _, input := range c.Params {
+		if containsSpecialChars(input.Value) {
+			restApi.SendError(c, http.StatusInternalServerError, errors.New("invalid input params"))
+			return false
+		}
+	}
+
+	// Validate query parameters.
+	for _, value := range c.Request.URL.Query() {
+		for _, input := range value {
+			if containsSpecialChars(input) {
+				restApi.SendError(c, http.StatusInternalServerError, errors.New("invalid input params"))
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
+func containsSpecialChars(s string) bool {
 	return strings.ContainsAny(s, "!@#$%^&*()'\"|{}[];><?/`~,")
 }
