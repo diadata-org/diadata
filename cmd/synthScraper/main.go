@@ -16,9 +16,9 @@ func main() {
 
 	wg := sync.WaitGroup{}
 
-	rdb, err := models.NewRelDataStore()
+	db, err := models.NewDataStore()
 	if err != nil {
-		log.Fatal("relational datastore error: ", err)
+		log.Fatal(" datastore error: ", err)
 	}
 
 	scraperType := flag.String("synthAsset", "cETH", "which synthetic asset")
@@ -28,7 +28,20 @@ func main() {
 	switch *scraperType {
 	case "cETH":
 		log.Println("Start scraping data from cETH")
-		scraper = synthscrapers.NewcETHScraper(rdb)
+		scraper = synthscrapers.NewcETHScraper()
+	case "atokenv2ethereum":
+		log.Print("Start scraping data from aToken ")
+		scraper = synthscrapers.NewaTokenScraper(dia.ETHEREUM, "0x7d2768de32b0b80b7a3454c06bdac94a69ddc7a9", 2)
+	case "atokenv3polygon":
+		log.Print("Start scraping data from aToken ")
+		scraper = synthscrapers.NewaTokenScraper(dia.POLYGON, "0x794a61358D6845594F94dc1DB02A252b5b4814aD", 3)
+	case "atokenv3avalanche":
+		log.Print("Start scraping data from aToken ")
+		scraper = synthscrapers.NewaTokenScraper(dia.AVALANCHE, "0x794a61358d6845594f94dc1db02a252b5b4814ad", 3)
+	case "atokenv2avalanche":
+		log.Print("Start scraping data from aToken ")
+		scraper = synthscrapers.NewaTokenScraper(dia.AVALANCHE, "0x4f01aed16d97e3ab5ab2b501154dc9bb0f1a5a2c", 2)
+
 	default:
 		for {
 			time.Sleep(24 * time.Hour)
@@ -36,12 +49,13 @@ func main() {
 	}
 
 	wg.Add(1)
-	go handleSynthData(scraper.GetSynthSupplyChannel(), &wg, rdb)
+
+	go handleSynthData(scraper.GetSynthSupplyChannel(), &wg, db)
 	defer wg.Wait()
 
 }
 
-func handleSynthData(synthChannel chan dia.SynthAssetSupply, wg *sync.WaitGroup, rdb *models.RelDB) {
+func handleSynthData(synthChannel chan dia.SynthAssetSupply, wg *sync.WaitGroup, db *models.DB) {
 	defer wg.Done()
 	for {
 		synthData, ok := <-synthChannel
@@ -49,11 +63,16 @@ func handleSynthData(synthChannel chan dia.SynthAssetSupply, wg *sync.WaitGroup,
 			log.Error("error")
 			return
 		}
-		err := rdb.SetSynthAssetSupply(synthData)
+		log.Infoln("synthData", synthData)
+		err := db.SaveSynthSupplyInflux(&synthData)
 		if err != nil {
 			log.Errorf("Error saving synth data for %s: %v", synthData.Asset.Address, err)
 		} else {
 			log.Infof("successfully set synth data for %s", synthData.Asset.Symbol)
+		}
+		err = db.Flush()
+		if err != nil {
+			log.Error(err)
 		}
 	}
 }

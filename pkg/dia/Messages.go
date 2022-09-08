@@ -428,7 +428,10 @@ type SynthAssetSupply struct {
 	LockedUnderlying float64 // Amount of underlying asset locked in the contract.
 	NumMint          int64   // Total number of synth asset mint events (optional).
 	NumRedeem        int64   // Total number of underlying asset redeem events (optional).
-	BlockNumber      uint8
+	BlockNumber      uint64
+	Time             time.Time
+	ColleteralRatio  float64
+	Protocol         string
 }
 
 type TradesBlockData struct {
