@@ -54,7 +54,7 @@ func NewaTokenScraper(blockchain, pooladdress string, version int) *aTokenScrape
 		blockchain:   blockchain,
 		pooladdress:  pooladdress,
 		version:      version,
-		protocol:     "Aave",
+		protocol:     "Aave-V" + strconv.Itoa(version),
 		synthChannel: make(chan dia.SynthAssetSupply),
 	}
 
