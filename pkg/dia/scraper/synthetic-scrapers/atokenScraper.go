@@ -137,7 +137,7 @@ func (scraper *aTokenScraper) mainLoop() {
 				if err != nil {
 					log.Errorln("error getting block details", err)
 				}
-				collateralRatio := reserver / atokensupply
+				collateralRatio := atokensupply / reserver
 				sas := dia.SynthAssetSupply{Asset: atokenasset, AssetUnderlying: underlyingasset, Supply: atokensupply, LockedUnderlying: reserver, BlockNumber: dataupdated.Raw.BlockNumber, Time: time.Unix(int64(block.Time()), 0), ColleteralRatio: collateralRatio, Protocol: scraper.protocol}
 				scraper.synthChannel <- sas
 			}
