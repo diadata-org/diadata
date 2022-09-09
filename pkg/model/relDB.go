@@ -134,10 +134,6 @@ type RelDatastore interface {
 	SetBlockData(dia.BlockData) error
 	GetBlockData(blockchain string, blocknumber int64) (dia.BlockData, error)
 	GetLastBlockBlockscraper(blockchain string) (int64, error)
-
-	// Synthetic assets.
-	SetSynthAssetSupply(synthData dia.SynthAssetSupply) error
-	GetSynthAssetSupply(address string, blockchain string, timestamp time.Time) (dia.SynthAssetSupply, error)
 }
 
 const (
