@@ -29,6 +29,7 @@ func (datastore *DB) SaveSynthSupplyInfluxToTable(t *dia.SynthAssetSupply, table
 		"underlyinglocked": t.LockedUnderlying,
 		"collateralRatio":  t.ColleteralRatio,
 		"blocknumber":      int64(t.BlockNumber),
+		"totaldebt":        int64(t.TotalDebt),
 	}
 
 	pt, err := clientInfluxdb.NewPoint(table, tags, fields, t.Time)

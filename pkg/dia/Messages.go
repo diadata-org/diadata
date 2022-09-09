@@ -432,6 +432,7 @@ type SynthAssetSupply struct {
 	Time             time.Time
 	ColleteralRatio  float64
 	Protocol         string
+	TotalDebt        float64
 }
 
 type TradesBlockData struct {

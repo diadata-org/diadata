@@ -36,12 +36,18 @@ Polygon aave pool address 0x794a61358d6845594f94dc1db02a252b5b4814ad
 
 
 */
+
+type atokendetail struct {
+	address                  string
+	stabledebttokenaddress   string
+	variabledebttokenaddress string
+}
 type aTokenScraper struct {
 	RestClient   *ethclient.Client
 	synthChannel chan dia.SynthAssetSupply
 	blockchain   string
 	WsClient     *ethclient.Client
-	atokens      map[string]string // atokenaddress -> underlyingtokenaddress
+	atokens      map[string]atokendetail // atokenaddress -> underlyingtokenaddress
 	pooladdress  string
 	version      int
 	start        uint64
@@ -66,7 +72,7 @@ func NewaTokenScraper(blockchain, pooladdress string, version int) *aTokenScrape
 
 	scraper.start = uint64(startblock)
 
-	atokens := make(map[string]string)
+	atokens := make(map[string]atokendetail)
 
 	restclient, err := ethclient.Dial(utils.Getenv(strings.ToUpper(scraper.blockchain)+"_URI_REST", ""))
 	if err != nil {
@@ -127,7 +133,7 @@ func (scraper *aTokenScraper) mainLoop() {
 			dataupdated, ok := <-sink
 			if ok {
 				log.Infoln("Reserve Data updated fetch supply and reserver of token ", dataupdated.Raw.TxHash.Hex())
-				atokenasset, underlyingasset, atokensupply, reserver, err := scraper.fetchsupplyandbalance(dataupdated.Reserve.Hex(), big.NewInt(int64(dataupdated.Raw.BlockNumber)))
+				atokenasset, underlyingasset, atokensupply, reserver, totalDebt, err := scraper.fetchsupplyandbalance(dataupdated.Reserve.Hex(), big.NewInt(int64(dataupdated.Raw.BlockNumber)))
 				if err != nil {
 					log.Errorln("err on fetchsupplyandbalance", err)
 					continue
@@ -137,8 +143,9 @@ func (scraper *aTokenScraper) mainLoop() {
 				if err != nil {
 					log.Errorln("error getting block details", err)
 				}
-				collateralRatio := atokensupply / reserver
-				sas := dia.SynthAssetSupply{Asset: atokenasset, AssetUnderlying: underlyingasset, Supply: atokensupply, LockedUnderlying: reserver, BlockNumber: dataupdated.Raw.BlockNumber, Time: time.Unix(int64(block.Time()), 0), ColleteralRatio: collateralRatio, Protocol: scraper.protocol}
+				collateralRatio := (reserver + totalDebt) / atokensupply
+
+				sas := dia.SynthAssetSupply{Asset: atokenasset, AssetUnderlying: underlyingasset, Supply: atokensupply, LockedUnderlying: reserver, BlockNumber: dataupdated.Raw.BlockNumber, Time: time.Unix(int64(block.Time()), 0), ColleteralRatio: collateralRatio, Protocol: scraper.protocol, TotalDebt: totalDebt}
 				scraper.synthChannel <- sas
 			}
 		}
@@ -170,7 +177,7 @@ func (scraper *aTokenScraper) getPoolAssetsV2() {
 			log.Error("GetReserveData: ", err)
 		}
 
-		scraper.atokens[asset.Hex()] = data.ATokenAddress.Hex()
+		scraper.atokens[asset.Hex()] = atokendetail{address: data.ATokenAddress.Hex(), stabledebttokenaddress: data.StableDebtTokenAddress.Hex(), variabledebttokenaddress: data.VariableDebtTokenAddress.Hex()}
 
 	}
 
@@ -197,7 +204,7 @@ func (scraper *aTokenScraper) getPoolAssetsV3() {
 			log.Error("err on GetReserveData: ", err)
 		}
 
-		scraper.atokens[asset.Hex()] = data.ATokenAddress.Hex()
+		scraper.atokens[asset.Hex()] = atokendetail{address: data.ATokenAddress.Hex(), stabledebttokenaddress: data.StableDebtTokenAddress.Hex(), variabledebttokenaddress: data.VariableDebtTokenAddress.Hex()}
 
 	}
 
@@ -214,14 +221,14 @@ func (scraper *aTokenScraper) FetchSynthSupply() error {
 	return nil
 }
 
-func (scraper *aTokenScraper) fetchsupplyandbalance(underlyingtokenaddress string, blocknumber *big.Int) (atokenasset, underlyingasset dia.Asset, atokensupply, underlyingreserve float64, err error) {
+func (scraper *aTokenScraper) fetchsupplyandbalance(underlyingtokenaddress string, blocknumber *big.Int) (atokenasset, underlyingasset dia.Asset, atokensupply, underlyingreserve, totalDebt float64, err error) {
 
-	atokenaddress := scraper.atokens[underlyingtokenaddress]
+	atokendetail := scraper.atokens[underlyingtokenaddress]
 
-	log.Info("atokenaddress", atokenaddress)
+	log.Info("atokenaddress", atokendetail.address)
 	log.Info("underlyingtokenaddress", underlyingtokenaddress)
 
-	filterer, err := ceth.NewERC20Caller(common.HexToAddress(atokenaddress), scraper.RestClient)
+	filterer, err := ceth.NewERC20Caller(common.HexToAddress(atokendetail.address), scraper.RestClient)
 	if err != nil {
 		log.Error("new erc20 caller: ", err)
 		return
@@ -244,7 +251,7 @@ func (scraper *aTokenScraper) fetchsupplyandbalance(underlyingtokenaddress strin
 	}
 
 	atokenasset.Symbol = atokensymbol
-	atokenasset.Address = atokenaddress
+	atokenasset.Address = atokendetail.address
 	atokenasset.Decimals = uint8(atokendecimal.Int64())
 	atokenasset.Blockchain = scraper.blockchain
 
@@ -255,7 +262,7 @@ func (scraper *aTokenScraper) fetchsupplyandbalance(underlyingtokenaddress strin
 		log.Error("new erc20 caller: ", err)
 		return
 	}
-	balanceof, err := underlyingfilterer.BalanceOf(&bind.CallOpts{BlockNumber: blocknumber}, common.HexToAddress(atokenaddress))
+	balanceof, err := underlyingfilterer.BalanceOf(&bind.CallOpts{BlockNumber: blocknumber}, common.HexToAddress(atokendetail.address))
 	if err != nil {
 		log.Error("get balanceof: ", err)
 		return
@@ -279,6 +286,48 @@ func (scraper *aTokenScraper) fetchsupplyandbalance(underlyingtokenaddress strin
 	underlyingasset.Address = underlyingtokenaddress
 	underlyingasset.Decimals = uint8(underlyingdecimals.Int64())
 	underlyingasset.Blockchain = scraper.blockchain
+
+	stabledebtTokenSupply, err := scraper.getTokenSupply(atokendetail.stabledebttokenaddress, blocknumber)
+	if err != nil {
+		log.Error("getTokenSupply: ", err)
+		return
+	}
+
+	log.Infof("total supply of %v is %v ", atokendetail.stabledebttokenaddress, stabledebtTokenSupply)
+
+	variabledebtTokenSupply, err := scraper.getTokenSupply(atokendetail.variabledebttokenaddress, blocknumber)
+	if err != nil {
+		log.Error("getTokenSupply: ", err)
+		return
+	}
+
+	log.Infof("total supply of %v is %v ", atokendetail.variabledebttokenaddress, variabledebtTokenSupply)
+
+	totalDebt = stabledebtTokenSupply + variabledebtTokenSupply
+
 	return
 
+}
+
+func (scraper *aTokenScraper) getTokenSupply(address string, blocknumber *big.Int) (float64, error) {
+
+	tokenfilterer, err := ceth.NewERC20Caller(common.HexToAddress(address), scraper.RestClient)
+	if err != nil {
+		log.Error("new erc20 caller: ", err)
+		return 0.0, err
+
+	}
+	decimal, err := tokenfilterer.Decimals(&bind.CallOpts{BlockNumber: blocknumber})
+	if err != nil {
+		log.Error("get Decimals: ", err)
+		return 0.0, err
+
+	}
+	supply, err := tokenfilterer.TotalSupply(&bind.CallOpts{BlockNumber: blocknumber})
+	if err != nil {
+		log.Error("get Decimals: ", err)
+		return 0.0, err
+	}
+	atokensupply, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(supply), new(big.Float).SetFloat64(math.Pow10(int(decimal.Int64())))).Float64()
+	return atokensupply, nil
 }
