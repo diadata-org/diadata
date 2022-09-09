@@ -946,7 +946,7 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 	}
 
 	numAssetsString := c.Param("numAssets")
-	pageString := c.DefaultQuery("page", "1")
+	pageString := c.DefaultQuery("Page", "1")
 	onlycexString := c.DefaultQuery("Cex", "false")
 
 	var (
