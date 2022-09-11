@@ -35,6 +35,7 @@ const (
 	restDialTelos     = ""
 	restDialEvmos     = ""
 	restDialAstar     = ""
+	restDialMoonbeam  = ""
 
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
@@ -51,6 +52,7 @@ const (
 	telosWaitMilliseconds       = "400"
 	evmosWaitMilliseconds       = "400"
 	astarWaitMilliseconds       = "1000"
+	moonbeamWaitMilliseconds    = "1000"
 )
 
 type UniswapAssetSource struct {
@@ -104,6 +106,8 @@ func NewUniswapAssetSource(exchange dia.Exchange) (uas *UniswapAssetSource) {
 		uas = makeUniswapAssetSource(exchange, restDialEvmos, evmosWaitMilliseconds)
 	case dia.ArthswapExchange:
 		uas = makeUniswapAssetSource(exchange, restDialAstar, astarWaitMilliseconds)
+	case dia.StellaswapExchange:
+		uas = makeUniswapAssetSource(exchange, restDialMoonbeam, moonbeamWaitMilliseconds)
 	}
 
 	exchangeFactoryContractAddress = exchange.Contract

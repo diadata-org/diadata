@@ -69,6 +69,9 @@ const (
 	restDialAstar = ""
 	wsDialAstar   = ""
 
+	restDialMoonbeam = ""
+	wsDialMoonbeam   = ""
+
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
 	pancakeswapWaitMilliseconds = "200"
@@ -84,6 +87,7 @@ const (
 	telosWaitMilliseconds       = "400"
 	evmosWaitMilliseconds       = "400"
 	astarWaitMilliseconds       = "1000"
+	moonbeamWaitMilliseconds    = "1000"
 )
 
 type UniswapToken struct {
@@ -150,19 +154,19 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		listenByAddress = true
 		s = makeUniswapScraper(exchange, listenByAddress, restDialBSC, wsDialBSC, pancakeswapWaitMilliseconds)
 	case dia.DfynNetwork:
-		listenByAddress = false
+		listenByAddress = true
 		s = makeUniswapScraper(exchange, listenByAddress, restDialPolygon, wsDialPolygon, dfynWaitMilliseconds)
 	case dia.QuickswapExchange:
-		listenByAddress = false
+		listenByAddress = true
 		s = makeUniswapScraper(exchange, listenByAddress, restDialPolygon, wsDialPolygon, quickswapWaitMilliseconds)
 	case dia.UbeswapExchange:
 		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialCelo, wsDialCelo, ubeswapWaitMilliseconds)
 	case dia.SpookyswapExchange:
-		listenByAddress = false
+		listenByAddress = true
 		s = makeUniswapScraper(exchange, listenByAddress, restDialFantom, wsDialFantom, spookyswapWaitMilliseconds)
 	case dia.SpiritswapExchange:
-		listenByAddress = false
+		listenByAddress = true
 		s = makeUniswapScraper(exchange, listenByAddress, restDialFantom, wsDialFantom, spookyswapWaitMilliseconds)
 	case dia.SolarbeamExchange:
 		listenByAddress = false
@@ -174,7 +178,7 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialMetis, wsDialMetis, metisWaitMilliseconds)
 	case dia.SushiSwapExchangePolygon:
-		listenByAddress = false
+		listenByAddress = true
 		s = makeUniswapScraper(exchange, listenByAddress, restDialPolygon, wsDialPolygon, metisWaitMilliseconds)
 	case dia.SushiSwapExchangeFantom:
 		listenByAddress = false
@@ -183,10 +187,10 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialMoonriver, wsDialMoonriver, moonriverWaitMilliseconds)
 	case dia.TraderJoeExchange:
-		listenByAddress = false
+		listenByAddress = true
 		s = makeUniswapScraper(exchange, listenByAddress, restDialAvalanche, wsDialAvalanche, avalancheWaitMilliseconds)
 	case dia.PangolinExchange:
-		listenByAddress = false
+		listenByAddress = true
 		s = makeUniswapScraper(exchange, listenByAddress, restDialAvalanche, wsDialAvalanche, avalancheWaitMilliseconds)
 	case dia.TethysExchange:
 		listenByAddress = false
@@ -207,8 +211,11 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		listenByAddress = true
 		s = makeUniswapScraper(exchange, listenByAddress, restDialBSC, wsDialBSC, pancakeswapWaitMilliseconds)
 	case dia.ArthswapExchange:
-		listenByAddress = false
+		listenByAddress = true
 		s = makeUniswapScraper(exchange, listenByAddress, restDialAstar, wsDialAstar, astarWaitMilliseconds)
+	case dia.StellaswapExchange:
+		listenByAddress = true
+		s = makeUniswapScraper(exchange, listenByAddress, restDialMoonbeam, wsDialMoonbeam, moonbeamWaitMilliseconds)
 	}
 
 	if scrape {
@@ -350,6 +357,10 @@ func (s *UniswapScraper) ListenToPair(i int, address common.Address, byAddress b
 
 	if helpers.AddressIsBlacklisted(pair.Token0.Address) || helpers.AddressIsBlacklisted(pair.Token1.Address) {
 		log.Info("skip pair ", pair.ForeignName, ", address is blacklisted")
+		return
+	}
+	if helpers.PoolIsBlacklisted(pair.Address) {
+		log.Info("skip blacklisted pool ", pair.Address)
 		return
 	}
 

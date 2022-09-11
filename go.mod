@@ -55,7 +55,9 @@ require (
 	github.com/tidwall/gjson v1.12.1 // indirect
 	github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
+	github.com/vincent-petithory/dataurl v1.0.0
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
+	github.com/zksync-sdk/zksync-sdk-go v0.0.0-20211119083613-58613b4d3d77 // indirect
 	go.uber.org/ratelimit v0.2.0
 	go.uber.org/zap v1.19.1
 	golang.org/x/crypto v0.0.0-20211117183948-ae814b36b871

@@ -1,0 +1,72 @@
+{
+    "Pools": [
+        {
+            "Address": "0x999fC000F3F5176306c0753bAD01d6a37644FEEF",
+            "ForeignName": "NXD-USDT"
+        },
+        {
+            "Address": "0x34965ba0ac2451A34a0471F04CCa3F990b8dea27",
+            "ForeignName": "USDC-WETH"
+        },
+        {
+            "Address": "0xc4e595acDD7d12feC385E5dA5D43160e8A0bAC0E",
+            "ForeignName": "WMATIC-WETH"
+        },
+        {
+            "Address": "0xDE990994309BC08E57aca82B1A19170AD84323E8",
+            "ForeignName": "USDC-GDDY"
+        },
+        {
+            "Address": "0x374552804F7CA26C307c8D31f4cC0d9215C87f46",
+            "ForeignName": "ZED-WETH"
+        },
+        {
+            "Address": "0x6FF62bfb8c12109E8000935A6De54daD83a4f39f",
+            "ForeignName": "WETH-DAI"
+        },
+        {
+            "Address": "0x396E655C309676cAF0acf4607a868e0CDed876dB",
+            "ForeignName": "CRV-WETH"
+        },
+        {
+            "Address": "0xcd353F79d9FADe311fC3119B841e1f456b54e858",
+            "ForeignName": "WMATIC-USDC"
+        },
+        {
+            "Address": "0x74D23F21F780CA26B47Db16B0504F2e3832b9321",
+            "ForeignName": "LINK-WETH"
+        },
+        {
+            "Address": "0xc2755915a85C6f6c1C0F3a86ac8C058F11Caa9C9",
+            "ForeignName": "WETH-USDT"
+        },
+        {
+            "Address": "0x5786b267d35F9D011c4750e0B0bA584E1fDbeAD1",
+            "ForeignName": "USDC-KLIMA"
+        },
+        {
+            "Address": "0x1E67124681b402064CD0ABE8ed1B5c79D2e02f64",
+            "ForeignName": "USDC-BCT"
+        },
+        {
+            "Address": "0x1cedA73C034218255F50eF8a2c282E6B4c301d60",
+            "ForeignName": "GRT-WETH"
+        },
+        {
+            "Address": "0xE62Ec2e799305E0D367b0Cc3ee2CdA135bF89816",
+            "ForeignName": "WBTC-WETH"
+        },
+        {
+            "Address": "0x941eb28e750C441AEF465a89E43DDfec2561830b",
+            "ForeignName": "ICE-WETH"
+        },
+        {
+            "Address": "0x4B1F1e2435A9C96f7330FAea190Ef6A7C8D70001",
+            "ForeignName": "USDC-USDT"
+        },
+        {
+            "Address": "0x9803c7aE526049210a1725F7487AF26fE2c24614",
+            "ForeignName": "BCT-KLIMA"
+        }
+    ]
+}

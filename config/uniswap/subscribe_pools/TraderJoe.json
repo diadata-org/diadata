@@ -1,0 +1,68 @@
+{
+    "Pools": [
+        {
+            "Address": "0xf4003F4efBE8691B60249E6afbD307aBE7758adb",
+            "ForeignName": "WAVAX-USDC"
+        },
+        {
+            "Address": "0xFE15c2695F1F920da45C30AAE47d11dE51007AF9",
+            "ForeignName": "ETH.e-WAVAX"
+        },
+        {
+            "Address": "0x2A8A315e82F85D1f0658C5D66A452Bbdd9356783",
+            "ForeignName": "USDC.e-USDC"
+        },
+        {
+            "Address": "0x2fD81391E30805Cc7F2Ec827013ce86dc591B806",
+            "ForeignName": "BTC.b-WAVAX"
+        },
+        {
+            "Address": "0x454E67025631C065d3cFAD6d71E6892f74487a15",
+            "ForeignName": "JOE-WAVAX"
+        },
+        {
+            "Address": "0x4b946c91C2B1a7d7C40FB3C130CdfBaf8389094d",
+            "ForeignName": "sAVAX-WAVAX"
+        },
+        {
+            "Address": "0xbb4646a764358ee93c2a9c4a147d5aDEd527ab73",
+            "ForeignName": "USDt-WAVAX"
+        },
+        {
+            "Address": "0xA389f9430876455C36478DeEa9769B7Ca4E3DDB1",
+            "ForeignName": "USDC.e-WAVAX"
+        },
+        {
+            "Address": "0xeD8CBD9F0cE3C6986b22002F03c6475CEb7a6256",
+            "ForeignName": "WAVAX-USDT.e"
+        },
+        {
+            "Address": "0x781655d802670bbA3c89aeBaaEa59D3182fD755D",
+            "ForeignName": "MIM-WAVAX"
+        },
+        {
+            "Address": "0xd5a37dC5C9A396A03dd1136Fc76A1a02B1c88Ffa",
+            "ForeignName": "WBTC.e-WAVAX"
+        },
+        {
+            "Address": "0x3bc40d4307cD946157447CD55d70ee7495bA6140",
+            "ForeignName": "JOE-USDC"
+        },
+        {
+            "Address": "0x74B651Eff97871eA99fcc14423E611d85Eb0EA93",
+            "ForeignName": "USDt-USDT.e"
+        },
+        {
+            "Address": "0xeb8eB6300c53C3AddBb7382Ff6c6FbC4165B0742",
+            "ForeignName": "BNB-WAVAX"
+        },
+        {
+            "Address": "0x87Dee1cC9FFd464B79e058ba20387c1984aed86a",
+            "ForeignName": "WAVAX-DAI.e"
+        },
+        {
+            "Address": "0x05366F13d5f655FFB2d2ABb7b2ba005b12eB8bdE",
+            "ForeignName": "QI-WAVAX"
+        }
+    ]
+}

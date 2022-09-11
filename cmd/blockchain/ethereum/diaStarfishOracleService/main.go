@@ -54,7 +54,7 @@ func main() {
 	}
 	blockchains := []string{
 		"Astar",//ASTR
-		"Bitcoin",//ETH
+		"Ethereum",//ETH
 		"Polkadot",//DOT
 		"Moonbeam",//GLMR
 		"Ethereum",//USDC

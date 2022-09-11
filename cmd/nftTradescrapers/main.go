@@ -7,15 +7,24 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	nfttradescrapers "github.com/diadata-org/diadata/pkg/dia/nft/nftTrade-scrapers"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/jackc/pgconn"
+	"github.com/segmentio/kafka-go"
 
 	log "github.com/sirupsen/logrus"
 )
 
 func main() {
+
+	var (
+		w *kafka.Writer
+	)
+
 	if testOpenSeaScraper := false; testOpenSeaScraper {
+		w = kafkaHelper.NewWriter(kafkaHelper.TopicNFTTradesTest)
+
 		rdb, err := models.NewRelDataStore()
 		if err != nil {
 			panic(err)
@@ -26,11 +35,12 @@ func main() {
 
 		wg := sync.WaitGroup{}
 		wg.Add(1)
-		go handleData(scraper.GetTradeChannel(), &wg, rdb)
+		go handleData(scraper.GetTradeChannel(), &wg, w, rdb)
 		wg.Wait()
 
 		return
 	}
+	w = kafkaHelper.NewWriter(kafkaHelper.TopicNFTTrades)
 
 	wg := sync.WaitGroup{}
 
@@ -44,32 +54,35 @@ func main() {
 	var scraper nfttradescrapers.NFTTradeScraper
 
 	switch *scraperType {
-	case "CryptoPunks":
-		log.Println("NFT Trades Scraper: Start scraping trades from Cryptopunks")
+	case dia.CryptoPunks:
+		log.Infoln("NFT Trades Scraper: Start scraping trades from Cryptopunks")
 		scraper = nfttradescrapers.NewCryptoPunkScraper(rdb)
-	case "CryptoKitties":
-		log.Println("NFT Trades Scraper: Start scraping trades from CryptoKitties")
+	case dia.CryptoKitties:
+		log.Infoln("NFT Trades Scraper: Start scraping trades from CryptoKitties")
 		scraper = nfttradescrapers.NewCryptoKittiesScraper(rdb)
-	case "Topshot":
-		log.Println("NFT Trades Scraper: Start scraping trades from NBA Topshot")
+	case dia.Topshot:
+		log.Infoln("NFT Trades Scraper: Start scraping trades from NBA Topshot")
 		scraper = nfttradescrapers.NewNBATopshotScraper(rdb)
-	case "Opensea":
-		log.Println("NFT Trades Scraper: Start scraping trades from Opensea")
+	case dia.X2Y2:
+		log.Infoln("NFT Trades Scraper: Start scraping trades from X2Y2")
+		scraper = nfttradescrapers.NewX2Y2Scraper(rdb)
+	case dia.Opensea:
+		log.Infoln("NFT Trades Scraper: Start scraping trades from Opensea")
 		scraper = nfttradescrapers.NewOpenSeaScraper(rdb)
-	case "OpenseaBAYC":
-		log.Println("NFT Trades Scraper: Start scraping trades from Opensea")
+	case dia.OpenseaBAYC:
+		log.Infoln("NFT Trades Scraper: Start scraping trades from Opensea")
 		scraper = nfttradescrapers.NewOpenSeaBAYCScraper(rdb)
-	case "OpenseaSeaport":
-		log.Println("NFT Trades Scraper: Start scraping trades from Opensea Seaport contract")
+	case dia.OpenseaSeaport:
+		log.Infoln("NFT Trades Scraper: Start scraping trades from Opensea Seaport contract")
 		scraper = nfttradescrapers.NewOpenSeaSeaportScraper(rdb)
-	case "LooksRare":
-		log.Println("NFT Trades Scraper: Start scraping trades from LooksRare")
+	case dia.LooksRare:
+		log.Infoln("NFT Trades Scraper: Start scraping trades from LooksRare")
 		scraper = nfttradescrapers.NewLooksRareScraper(rdb)
-	case "TofuNFT-Astar":
-		log.Println("NFT Trades Scraper: Start scraping trades from TofuNFT on Astar")
+	case dia.TofuNFTAstar:
+		log.Infoln("NFT Trades Scraper: Start scraping trades from TofuNFT on Astar")
 		scraper = nfttradescrapers.NewTofuNFTScraper(dia.ASTAR, rdb)
-	case "TofuNFT-BinanceSmartChain":
-		log.Println("NFT Trades Scraper: Start scraping trades from TofuNFT on BinanceSmartChain")
+	case dia.TofuNFTBinanceSmartChain:
+		log.Infoln("NFT Trades Scraper: Start scraping trades from TofuNFT on BinanceSmartChain")
 		scraper = nfttradescrapers.NewTofuNFTScraper(dia.BINANCESMARTCHAIN, rdb)
 
 	default:
@@ -79,11 +92,11 @@ func main() {
 	}
 
 	wg.Add(1)
-	go handleData(scraper.GetTradeChannel(), &wg, rdb)
+	go handleData(scraper.GetTradeChannel(), &wg, w, rdb)
 	defer wg.Wait()
 }
 
-func handleData(tradeChannel chan dia.NFTTrade, wg *sync.WaitGroup, rdb *models.RelDB) {
+func handleData(tradeChannel chan dia.NFTTrade, wg *sync.WaitGroup, w *kafka.Writer, rdb *models.RelDB) {
 	defer wg.Done()
 
 	for {
@@ -96,6 +109,7 @@ func handleData(tradeChannel chan dia.NFTTrade, wg *sync.WaitGroup, rdb *models.
 		log.Infof("got trade: %s -> (%s) -> %s for %v %s (%.4f USD) \n", trade.FromAddress, trade.NFT.NFTClass.Name, trade.ToAddress, trade.Price, trade.Currency.Symbol, trade.PriceUSD)
 
 		err := rdb.SetNFTTradeToTable(trade, models.NfttradeCurrTable)
+		writeNFTTradeToKafka(w, &trade)
 		// err := rdb.SetNFTTradeToTable(trade, models.NfttradeSumeriaTable)
 		if err != nil {
 			var pgErr *pgconn.PgError
@@ -114,4 +128,14 @@ func handleData(tradeChannel chan dia.NFTTrade, wg *sync.WaitGroup, rdb *models.
 		}
 	}
 
+}
+
+func writeNFTTradeToKafka(w *kafka.Writer, t *dia.NFTTrade) error {
+	// Write trade to Kafka.
+	err := kafkaHelper.WriteMessage(w, t)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

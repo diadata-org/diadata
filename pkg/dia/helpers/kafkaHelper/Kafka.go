@@ -43,6 +43,8 @@ const (
 	TopicFiltersBlockTest = 21
 	TopicTradesTest       = 22
 	TopicTradesBlockTest  = 23
+	TopicNFTTrades        = 24
+	TopicNFTTradesTest    = 25
 
 	retryDelay = 2 * time.Second
 )
@@ -70,6 +72,8 @@ func getTopic(topic int) string {
 		21: "filtersblocktest",
 		22: "tradestest",
 		23: "tradesblocktest",
+		24: "nfttrades",
+		25: "nfttradestest",
 	}
 	result, ok := topicMap[topic]
 	if !ok {

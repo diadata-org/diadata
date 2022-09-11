@@ -313,6 +313,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "BFC",
+            "ForeignName": "BFC-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "BNB",
             "ForeignName": "BNB-BTC",
             "Exchange": "KuCoin",
@@ -1965,6 +1971,12 @@
         {
             "Symbol": "SERO",
             "ForeignName": "SERO-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SHIB",
+            "ForeignName": "SHIB-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
         },

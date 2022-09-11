@@ -55,6 +55,7 @@ func main() {
 		"0x0000000000000000000000000000000000000000", //BNB
 		"0x0000000000000000000000000000000000001010", //MATIC
 		"0x0000000000000000000000000000000000000000", //DOT
+		"Token:AUSD",                                 //aUSD
 	}
 	blockchains := []string{
 		"Ethereum", //USDT
@@ -68,6 +69,7 @@ func main() {
 		"BinanceSmartChain", //BNB
 		"Polygon", //MATIC
 		"Polkadot", //DOT
+		"Acala", //aUSD
 	}
 	oldPrices := make(map[int]float64)
 

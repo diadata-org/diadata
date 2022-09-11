@@ -2,6 +2,36 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "ACA_USDT",
+      "Ignore": false,
+      "Symbol": "ACA"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "CFG_USDT",
+      "Ignore": false,
+      "Symbol": "CFG"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "INTR_USDT",
+      "Ignore": false,
+      "Symbol": "INTR"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "SHIB_USDT",
+      "Ignore": false,
+      "Symbol": "SHIB"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "CKB_USDT",
+      "Ignore": false,
+      "Symbol": "CKB"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "NFTY_USDT",
       "Ignore": false,
       "Symbol": "NFTY"

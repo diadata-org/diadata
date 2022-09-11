@@ -16,3 +16,8 @@ description: Develop applications and sources on top of DIA
 [exchangescrapers.md](exchangescrapers.md)
 {% endcontent-ref %}
 
+{% content-ref url="nfttradescrapers.md" %}
+[nfttradescrapers.md](nfttradescrapers.md)
+{% endcontent-ref %}
+
+

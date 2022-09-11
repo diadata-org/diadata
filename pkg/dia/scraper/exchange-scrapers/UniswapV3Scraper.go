@@ -160,6 +160,10 @@ func (s *UniswapV3Scraper) mainLoop() {
 			log.Info("skip pair ", pair.ForeignName, ", address is blacklisted")
 			continue
 		}
+		if helpers.PoolIsBlacklisted(pair.Address) {
+			log.Info("skip blacklisted pool ", pair.Address)
+			continue
+		}
 		pair.normalizeUniPair()
 		// ps, ok := s.pairScrapers[pair.ForeignName]
 

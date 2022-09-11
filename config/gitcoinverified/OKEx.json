@@ -187,6 +187,12 @@
             "Address": "0xB97048628DB6B661D4C2aA833e95Dbe1A905B280"
         },
         {
+            "Symbol": "PHA",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x6c5bA91642F10282b576d91922Ae6448C9d52f4E"
+        },
+        {
             "Symbol": "PPT",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
@@ -209,6 +215,12 @@
             "Exchange": "OKEx",
             "Blockchain": "Sia",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "SHIB",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
         },
         {
             "Symbol": "SNC",

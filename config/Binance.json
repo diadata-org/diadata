@@ -2,6 +2,54 @@
     "Coins": [
         {
             "Exchange": "Binance",
+            "ForeignName": "ACAUSDT",
+            "Ignore": false,
+            "Symbol": "ACA"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "ACABUSD",
+            "Ignore": false,
+            "Symbol": "ACA"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "PHAUSDT",
+            "Ignore": false,
+            "Symbol": "PHA"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "SHIBUSDT",
+            "Ignore": false,
+            "Symbol": "SHIB"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "SHIBBUSD",
+            "Ignore": false,
+            "Symbol": "SHIB"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "TUSDUSDT",
+            "Ignore": false,
+            "Symbol": "TUSD"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "CKBUSDT",
+            "Ignore": false,
+            "Symbol": "CKB"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "QUICKUSDT",
+            "Ignore": false,
+            "Symbol": "QUICK"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "DOTUSDT",
             "Ignore": false,
             "Symbol": "DOT"

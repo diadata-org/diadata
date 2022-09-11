@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleServiceV2"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -27,30 +28,47 @@ func main() {
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
 	sleepSeconds, err := strconv.Atoi(utils.Getenv("SLEEP_SECONDS", "120"))
 	if err != nil {
-		log.Fatalf("Failed to parse sleepSeconds: %v")
+		log.Fatalf("Failed to parse sleepSeconds: %v", err)
 	}
 	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "120"))
 	if err != nil {
-		log.Fatalf("Failed to parse frequencySeconds: %v")
+		log.Fatalf("Failed to parse frequencySeconds: %v", err)
 	}
 	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "1"), 10, 64)
 	if err != nil {
-		log.Fatalf("Failed to parse chainId: %v")
+		log.Fatalf("Failed to parse chainId: %v", err)
 	}
 	deviationPermille, err := strconv.Atoi(utils.Getenv("DEVIATION_PERMILLE", "10"))
 	if err != nil {
-		log.Fatalf("Failed to parse deviationPermille: %v")
+		log.Fatalf("Failed to parse deviationPermille: %v", err)
 	}
 
 	addresses := []string{
-		"0x6B175474E89094C44Da98b954EedeAC495271d0F",//DAI
-		"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",//USDC
-		"0xdAC17F958D2ee523a2206206994597C13D831ec7",//USDT
+		"0x6B175474E89094C44Da98b954EedeAC495271d0F", //DAI
+		"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", //USDC
+		"0xdAC17F958D2ee523a2206206994597C13D831ec7", //USDT
+		"0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", //BUSD
 	}
 	blockchains := []string{
 		"Ethereum",
 		"Ethereum",
 		"Ethereum",
+		"BinanceSmartChain",
+	}
+
+	miMaticAddresses := []string{
+		"0xa3Fa99A148fA48D14Ed51d610c367C61876997F1",
+		"0xfB98B335551a418cD0737375a2ea0ded62Ea213b",
+		"0xdFA46478F9e5EA86d57387849598dbFB2e964b02",
+		// "0x3B55E45fD6bd7d4724F5c47E0d1bCaEdd059263e",
+		// "0x7f5a79576620C046a293F54FFCdbd8f2468174F1",
+	}
+	miMaticBlockchains := []string{
+		dia.POLYGON,
+		dia.FANTOM,
+		dia.METIS,
+		// dia.AVALANCHE,
+		// dia.MOONRIVER,
 	}
 	oldPrices := make(map[int]float64)
 
@@ -93,10 +111,72 @@ func main() {
 					}
 					time.Sleep(time.Duration(sleepSeconds) * time.Second)
 				}
+				// Update price of miMatic across blockchains.
+				oldPrice := oldPrices[len(addresses)]
+				oldPrice, err = periodicXChainOracleUpdateHelper(oldPrice, deviationPermille, auth, contract, conn, "miMATIC", miMaticBlockchains, miMaticAddresses)
+				oldPrices[len(addresses)] = oldPrice
+				if err != nil {
+					log.Println(err)
+				}
+				time.Sleep(time.Duration(sleepSeconds) * time.Second)
+
 			}
 		}
 	}()
 	select {}
+}
+
+func periodicXChainOracleUpdateHelper(
+	oldPrice float64,
+	deviationPermille int,
+	auth *bind.TransactOpts,
+	contract *diaOracleServiceV2.DIAOracleV2,
+	conn *ethclient.Client,
+	symbol string,
+	blockchains []string,
+	addresses []string,
+) (newPrice float64, err error) {
+
+	// Get quotations for tokens
+	var (
+		weightedPrice       float64
+		totalVolume         float64
+		rawQ                *models.Quotation
+		aggregatedQuotation models.Quotation
+	)
+	for i := range addresses {
+		rawQ, err = getAssetQuotationFromDia(blockchains[i], addresses[i])
+		if err != nil {
+			log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", addresses[i], err)
+			return oldPrice, err
+		}
+		if *rawQ.VolumeYesterdayUSD > 0 {
+			weightedPrice += rawQ.Price * (*rawQ.VolumeYesterdayUSD)
+			totalVolume += *rawQ.VolumeYesterdayUSD
+		}
+	}
+	aggregatedQuotation.Name = symbol
+	aggregatedQuotation.Symbol = symbol
+
+	// Check for deviation
+	if totalVolume > 0 {
+		newPrice = weightedPrice / totalVolume
+	} else {
+		newPrice = oldPrice
+	}
+	aggregatedQuotation.Price = newPrice
+
+	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
+		log.Println("Entering deviation based update zone")
+		err = updateQuotation(&aggregatedQuotation, auth, contract, conn)
+		if err != nil {
+			log.Fatalf("Failed to update DIA Oracle: %v", err)
+			return oldPrice, err
+		}
+		return newPrice, nil
+	}
+
+	return oldPrice, nil
 }
 
 func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string) (float64, error) {
