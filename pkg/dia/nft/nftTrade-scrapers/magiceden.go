@@ -473,10 +473,11 @@ func (s *MagicEdenScraper) createOrReadNFT(tx *rpc.TransactionSignature, addr so
 		}
 
 		nftClass = dia.NFTClass{
-			Address:    addr.String(),
-			Blockchain: dia.SOLANA,
-			Name:       metadata.name,
-			Symbol:     metadata.symbol,
+			Address:      addr.String(),
+			Blockchain:   dia.SOLANA,
+			Name:         metadata.name,
+			Symbol:       metadata.symbol,
+			ContractType: "",
 		}
 
 		if err = s.tradeScraper.datastore.SetNFTClass(nftClass); err != nil {
@@ -562,33 +563,62 @@ func (s *MagicEdenScraper) fetchNFTMetadata(ctx context.Context, nftAddr solana.
 			data := out.Value.Data
 			if len(data) > 0 {
 				i := 1
-				source := data[i : i+32]
-				metadata.sourceAccount = solana.PublicKeyFromBytes(source)
+				if len(data) >= i+32 {
+					source := data[i : i+32]
+					metadata.sourceAccount = solana.PublicKeyFromBytes(source)
+				} else {
+					return metadata, err
+				}
 				i += 32
 
-				mint := data[i : i+32]
-				metadata.mintAccount = solana.PublicKeyFromBytes(mint)
+				if len(data) >= i+32 {
+					mint := data[i : i+32]
+					metadata.mintAccount = solana.PublicKeyFromBytes(mint)
+				} else {
+					return metadata, err
+				}
 				i += 32
 
 				nameSize := int(data[i])
 				i += 4
-				metadata.name = string(data[i : i+nameSize])
+				if len(data) >= i+nameSize {
+					metadata.name = string(data[i : i+nameSize])
+				} else {
+					return metadata, err
+				}
 				i += nameSize
 
 				symbolSize := int(data[i])
 				i += 4
-				metadata.symbol = string(data[i : i+symbolSize])
+				if len(data) >= i+symbolSize {
+					metadata.symbol = string(data[i : i+symbolSize])
+				} else {
+					return metadata, err
+				}
 				i += symbolSize
 
 				uriSize := int(data[i])
 				i += 4
-				metadata.uri = string(data[i : i+uriSize])
+				if len(data) >= i+uriSize {
+					metadata.uri = string(data[i : i+uriSize])
+				} else {
+					return metadata, err
+				}
 				i += uriSize
 
-				metadata.fee = int(data[i])
+				if len(data) > i {
+					metadata.fee = int(data[i])
+				} else {
+					return metadata, err
+				}
 				i += 2
 
-				hasCreator := int(data[i])
+				hasCreator := 0
+				if len(data) > i {
+					hasCreator = int(data[i])
+				} else {
+					return metadata, err
+				}
 				i += 1
 				if hasCreator == 1 {
 					creatorCount := int(data[i])
@@ -596,24 +626,44 @@ func (s *MagicEdenScraper) fetchNFTMetadata(ctx context.Context, nftAddr solana.
 					i += 4
 					for j := 0; j < creatorCount; j++ {
 						nftCreator := NFTCreator{}
-						account := data[i : i+32]
-						nftCreator.account = solana.PublicKeyFromBytes(account)
+						if len(data) >= i+32 {
+							account := data[i : i+32]
+							nftCreator.account = solana.PublicKeyFromBytes(account)
+						} else {
+							return metadata, err
+						}
 						i += 32
 
-						nftCreator.verified = int(data[i])
+						if len(data) > i {
+							nftCreator.verified = int(data[i])
+						} else {
+							return metadata, err
+						}
 						i += 1
 
-						nftCreator.share = int(data[i])
+						if len(data) > i {
+							nftCreator.share = int(data[i])
+						} else {
+							return metadata, err
+						}
 						i += 1
 
 						metadata.creators = append(metadata.creators, nftCreator)
 					}
 				}
 
-				metadata.primarySaleDone = int(data[i])
+				if len(data) > i {
+					metadata.primarySaleDone = int(data[i])
+				} else {
+					return metadata, err
+				}
 				i += 1
 
-				metadata.isMutable = int(data[i])
+				if len(data) > i {
+					metadata.isMutable = int(data[i])
+				} else {
+					return metadata, err
+				}
 
 				return metadata, err
 
