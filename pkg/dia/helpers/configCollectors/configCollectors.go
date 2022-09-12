@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/user"
+	"path"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	logrus "github.com/sirupsen/logrus"
@@ -51,6 +52,9 @@ func ConfigFileConnectors(exchange string, fileteype string) string {
 	}
 	if dir == "/home/travis" {
 		return "../config/" + exchange + fileteype //hack for travis
+	}
+	if configDir := os.Getenv("DIA_CONFIG_DIR"); configDir != "" { //hack for local tests.
+		return path.Join(configDir, exchange+fileteype)
 	}
 	return os.Getenv("GOPATH") + "/src/github.com/diadata-org/diadata/config/" + exchange + fileteype
 }

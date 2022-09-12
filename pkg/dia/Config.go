@@ -19,6 +19,7 @@ const (
 	AnyswapExchange           = "Anyswap"
 	BalancerExchange          = "Balancer"
 	BalancerV2Exchange        = "BalancerV2"
+	BalancerV2ExchangePolygon = "BalancerV2-Polygon"
 	BeetsExchange             = "Beets"
 	KrakenExchange            = "Kraken"
 	BitfinexExchange          = "Bitfinex"
@@ -52,6 +53,9 @@ const (
 	UniswapExchangeV3Polygon  = "UniswapV3-polygon"
 	LoopringExchange          = "Loopring"
 	CurveFIExchange           = "Curvefi"
+	CurveFIExchangeFantom     = "Curvefi-Fantom"
+	CurveFIExchangeMoonbeam   = "Curvefi-Moonbeam"
+	CurveFIExchangePolygon    = "Curvefi-Polygon"
 	MakerExchange             = "Maker"
 	KuCoinExchange            = "KuCoin"
 	SushiSwapExchange         = "SushiSwap"
@@ -64,7 +68,9 @@ const (
 	DforceExchange            = "Dforce"
 	ZeroxExchange             = "0x"
 	KyberExchange             = "Kyber"
+	BitMartExchange           = "BitMart"
 	BitMaxExchange            = "Bitmax"
+	MEXCExchange              = "MEXC"
 	CREX24Exchange            = "CREX24"
 	STEXExchange              = "STEX"
 	Deribit                   = "Deribit"
@@ -79,8 +85,22 @@ const (
 	ByBitExchange             = "ByBit"
 	BitMexExchange            = "BitMex"
 	MultiChain                = "MultiChain"
+	StellaswapExchange        = "Stellaswap"
 
 	// FinageForex        = "FinageForex"
+)
+
+const (
+	CryptoPunks              = "CryptoPunks"
+	CryptoKitties            = "CryptoKitties"
+	Topshot                  = "Topshot"
+	X2Y2                     = "X2Y2"
+	Opensea                  = "Opensea"
+	OpenseaBAYC              = "OpenseaBAYC"
+	OpenseaSeaport           = "OpenseaSeaport"
+	LooksRare                = "LooksRare"
+	TofuNFTAstar             = "TofuNFT-Astar"
+	TofuNFTBinanceSmartChain = "TofuNFT-BinanceSmartChain"
 )
 
 // func Exchanges() []string {

@@ -1,6 +1,12 @@
 {
     "Tokens": [
         {
+            "Symbol": "ACA",
+            "Exchange": "Binance",
+            "Blockchain": "Acala",
+            "Address": "Token:ACA"
+        },
+        {
             "Symbol": "ADX",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -101,6 +107,12 @@
             "Exchange": "Binance",
             "Blockchain": "Celo",
             "Address": "0x471EcE3750Da237f93B8E339c536989b8978a438"
+        },
+        {
+            "Symbol": "CKB",
+            "Exchange": "Binance",
+            "Blockchain": "Nervos",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "CRV",
@@ -373,6 +385,12 @@
             "Address": "0xbC396689893D065F41bc2C6EcbeE5e0085233447"
         },
         {
+            "Symbol": "PHA",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x6c5bA91642F10282b576d91922Ae6448C9d52f4E"
+        },
+        {
             "Symbol": "POE",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -395,6 +413,12 @@
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0xd4fa1460F537bb9085d22C7bcCB5DD450Ef28e3a"
+        },
+        {
+            "Symbol": "QUICK",
+            "Exchange": "Binance",
+            "Blockchain": "Polygon",
+            "Address": "0x831753DD7087CaC61aB5644b308642cc1c33Dc13"
         },
         {
             "Symbol": "QKC",
@@ -445,6 +469,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "SHIB",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
+        },
+        {
             "Symbol": "SNM",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -479,6 +509,12 @@
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0x08f5a9235B08173b7569F83645d2c7fB55e8cCD8"
+        },
+        {
+            "Symbol": "TUSD",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000085d4780B73119b644AE5ecd22b376"
         },
         {
             "Symbol": "UST",

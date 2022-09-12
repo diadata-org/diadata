@@ -21,18 +21,16 @@ var (
 	log                  *logrus.Logger
 	swapTradesOnExchange = []string{
 		dia.CurveFIExchange,
-		dia.QuickswapExchange,
+		dia.CurveFIExchangeFantom,
+		dia.CurveFIExchangeMoonbeam,
+		dia.CurveFIExchangePolygon,
 		dia.OmniDexExchange,
 		dia.DiffusionExchange,
-		dia.BalancerV2Exchange,
-		dia.BeetsExchange,
 		dia.SolarbeamExchange,
 		dia.AnyswapExchange,
 		dia.HermesExchange,
 		dia.HuckleberryExchange,
 		dia.NetswapExchange,
-		dia.PangolinExchange,
-		dia.ArthswapExchange,
 	}
 
 	exchange = flag.String("exchange", "", "which exchange")

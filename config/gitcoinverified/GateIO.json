@@ -1,10 +1,40 @@
 {
     "Tokens": [
         {
+            "Symbol": "ACA",
+            "Exchange": "GateIO",
+            "Blockchain": "Acala",
+            "Address": "Token:ACA"
+        },
+        {
+            "Symbol": "CFG",
+            "Exchange": "GateIO",
+            "Blockchain": "Centrifuge",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "INTR",
+            "Exchange": "GateIO",
+            "Blockchain": "Interlay",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "CKB",
+            "Exchange": "GateIO",
+            "Blockchain": "Nervos",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "NFTY",
             "Exchange": "GateIO",
             "Blockchain": "BinanceSmartChain",
             "Address": "0x5774B2fc3e91aF89f89141EacF76545e74265982"
+        },
+        {
+            "Symbol": "SHIB",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
         },
         {
             "Symbol": "TLOS",

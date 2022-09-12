@@ -1,6 +1,30 @@
 {
   "Coins": [
     {
+      "Symbol": "MIMO",
+      "ForeignName": "MIMOBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MIMO",
+      "ForeignName": "MIMOUSDT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PAR",
+      "ForeignName": "PARBTC",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PAR",
+      "ForeignName": "PARUSDT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
       "Symbol": "NEAR",
       "ForeignName": "NEARUSD",
       "Exchange": "HitBTC",

@@ -139,7 +139,7 @@ CREATE TABLE nft (
     UNIQUE(nft_id)
 );
 
-CREATE TABLE nfttrade (
+CREATE TABLE nfttradecurrent (
     sale_id UUID DEFAULT gen_random_uuid(),
     nftclass_id UUID REFERENCES nftclass(nftclass_id),
     nft_id UUID REFERENCES nft(nft_id),
@@ -151,6 +151,7 @@ CREATE TABLE nfttrade (
     currency_address text,
     currency_decimals numeric,
     currency_id UUID REFERENCES asset(asset_id),
+    bundle_sale boolean default false,
     block_number numeric,
     trade_time timestamp,
     tx_hash text,    
@@ -245,6 +246,20 @@ CREATE TABLE tradesdistribution (
     -- total time range under consideration (for instance 24h = 86400s)
     time_range_seconds numeric NOT NULL,
     compute_time timestamp
+);
+
+CREATE TABLE synthassetdata (
+    synthassetdata_id UUID DEFAULT gen_random_uuid(),
+    synthasset_id UUID REFERENCES asset(asset_id),
+    underlying_id UUID REFERENCES asset(asset_id),
+    supply numeric,
+    locked_underlying numeric,
+    num_mints numeric,
+    num_redeems numeric,
+    block_number numeric,
+    time_stamp timestamp,
+    UNIQUE(synthassetdata_id),
+    UNIQUE(synthasset_id,time_stamp)
 );
 
 

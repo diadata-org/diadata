@@ -23,7 +23,6 @@ func (datastore *DB) SaveForeignQuotationInflux(fq ForeignQuotation) error {
 	tags := map[string]string{
 		"symbol": fq.Symbol,
 		"name":   fq.Name,
-		"itin":   fq.ITIN,
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbForeignQuotationTable, tags, fields, fq.Time)
 	if err != nil {
@@ -44,7 +43,7 @@ func (datastore *DB) GetForeignQuotationInflux(symbol, source string, timestamp 
 	retval := ForeignQuotation{}
 
 	unixtime := timestamp.UnixNano()
-	q := fmt.Sprintf("SELECT price,priceYesterday,volumeYesterdayUSD,\"itin\",\"name\" FROM %s WHERE source='%s' and \"symbol\"='%s' and time<%d order by time desc limit 1", influxDbForeignQuotationTable, source, symbol, unixtime)
+	q := fmt.Sprintf("SELECT price,priceYesterday,volumeYesterdayUSD,\"name\" FROM %s WHERE source='%s' and \"symbol\"='%s' and time<%d order by time desc limit 1", influxDbForeignQuotationTable, source, symbol, unixtime)
 	fmt.Println("query: ", q)
 	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
@@ -72,12 +71,8 @@ func (datastore *DB) GetForeignQuotationInflux(symbol, source string, timestamp 
 		if err != nil {
 			log.Error(err)
 		}
-		if vals[4] != nil {
-			retval.ITIN = vals[4].(string)
-		} else {
-			retval.ITIN = ""
-		}
-		retval.Name = vals[5].(string)
+
+		retval.Name = vals[4].(string)
 		retval.Source = source
 		retval.Symbol = symbol
 
@@ -128,9 +123,8 @@ func (datastore *DB) GetForeignPriceYesterday(symbol, source string) (float64, e
 	return 0, errors.New("no data available from yesterday")
 }
 
-// GetForeignSymbolsInflux returns a list with all symbols available for quotation from @source,
-// along with their ITIN.
-func (datastore *DB) GetForeignSymbolsInflux(source string) (symbols []SymbolShort, err error) {
+// GetForeignSymbolsInflux returns a list with all symbols available for quotation from @source.
+func (datastore *DB) GetForeignSymbolsInflux(source string) (symbols []string, err error) {
 
 	q := fmt.Sprintf("SELECT symbol,source FROM %s WHERE time>now()-7d and source='%s'", influxDbForeignQuotationTable, source)
 	res, err := queryInfluxDB(datastore.influxClient, q)
@@ -153,17 +147,7 @@ func (datastore *DB) GetForeignSymbolsInflux(source string) (symbols []SymbolSho
 
 		// fill return slice
 		for _, sym := range symsUnique {
-			itin, err := datastore.GetItinBySymbol(sym)
-			symbol := SymbolShort{
-				Symbol: sym,
-			}
-			if err != nil {
-				symbol.ITIN = ""
-				symbols = append(symbols, symbol)
-			} else {
-				symbol.ITIN = itin.Itin
-				symbols = append(symbols, symbol)
-			}
+			symbols = append(symbols, sym)
 		}
 	}
 	return

@@ -1,0 +1,121 @@
+{
+    "Pools": [
+        {
+            "Address": "0x6e7a5fafcec6bb1e78bae2a1f0b612012bf14827",
+            "ForeignName": "WMATIC-USDC"
+        },
+        {
+            "Address": "0x604229c960e5cacf2aaeac8be68ac07ba9df81c3",
+            "ForeignName": "WMATIC-USDT"
+        },
+        {
+            "Address": "0x369582d2010b6ed950b571f4101e3bb9b554876f",
+            "ForeignName": "WMATIC-SAND"
+        },
+        {
+            "Address": "0x853ee4b2a13f8a742d64c8f088be7ba2131f670d",
+            "ForeignName": "USDC-WETH"
+        },
+        {
+            "Address": "0xf6422b997c7f54d1c6a6e103bcb1499eea0a7046",
+            "ForeignName": "WETH-USDT"
+        },
+        {
+            "Address": "0xadbf1854e5883eb8aa7baf50705338739e558e5b",
+            "ForeignName": "WMATIC-WETH"
+        },
+        {
+            "Address": "0x4a35582a710e1f4b2030a3f826da20bfb6703c09",
+            "ForeignName": "WETH-DAI"
+        },
+        {
+            "Address": "0x7c303894a165830751f524ebdb6b198affbb7211",
+            "ForeignName": "USDC-VOXEL"
+        },
+        {
+            "Address": "0x85ba262be13329a2db5acf9aa46ac2345b5df4ff",
+            "ForeignName": "USDC-ADS"
+        },
+        {
+            "Address": "0xdc9232e2df177d7a12fdff6ecbab114e2231198d",
+            "ForeignName": "WBTC-WETH"
+        },
+        {
+            "Address": "0x019ba0325f1988213d448b3472fa1cf8d07618d7",
+            "ForeignName": "WMATIC-QUICK"
+        },
+        {
+            "Address": "0x096c5ccb33cfc5732bcd1f3195c13dbefc4c82f4",
+            "ForeignName": "USDC-GHST"
+        },
+        {
+            "Address": "0x2cf7252e74036d1da831d11089d326296e64a728",
+            "ForeignName": "USDC-USDT"
+        },
+        {
+            "Address": "0xf04adbf75cdfc5ed26eea4bbbb991db002036bdd",
+            "ForeignName": "USDC-DAI"
+        },
+        {
+            "Address": "0xf6a637525402643b0654a54bead2cb9a83c8b498",
+            "ForeignName": "WBTC-USDC"
+        },
+        {
+            "Address": "0xa022ae9cfadefd62d70b510c27dc3d5db67ca43b",
+            "ForeignName": "BLOK-USDT"
+        },
+        {
+            "Address": "0x8f89216177144a553be966fd45e17f9e915e3ef4",
+            "ForeignName": "USDC-SOL"
+        },
+        {
+            "Address": "0xa0f330f5fc47ee7a3297dbd6be6fe60cd0346b26",
+            "ForeignName": "WMATIC-LDO"
+        },
+        {
+            "Address": "0x8b4e00810c927bb1c02dee73d714a31121689ab3",
+            "ForeignName": "BOMB-USDT"
+        },
+        {
+            "Address": "0x1f1e4c845183ef6d50e9609f16f6f9cae43bc9cb",
+            "ForeignName": "USDC-QUICK"
+        },
+        {
+            "Address": "0x032d86f50ee9c0c361f268bd7c08013465e29968",
+            "ForeignName": "WMATIC-NITRO"
+        },
+        {
+            "Address": "0x10e14e23686826915efcb23ed9b128750831bf4c",
+            "ForeignName": "WOMBAT-USDC"
+        },
+        {
+            "Address": "0xccb9d2100037f1253e6c1682adf7dc9944498aff",
+            "ForeignName": "GHST-WETH"
+        },
+        {
+            "Address": "0x160532d2536175d65c03b97b0630a9802c274dad",
+            "ForeignName": "USDC-miMATIC"
+        },
+        {
+            "Address": "0x74214f5d8aa71b8dc921d8a963a1ba3605050781",
+            "ForeignName": "DAI-miMATIC"
+        },
+        {
+            "Address": "0xe89fae1b4ada2c869f05a0c96c87022dadc7709a",
+            "ForeignName": "miMATIC-USDT"
+        },
+        {
+            "Address": "0x59cddd0be2a26b6134ad457f94f579b99767b564",
+            "ForeignName": "WETH-DFYN"
+        },
+        {
+            "Address": "0xd7d41d2a1463fca5855f3e386d20a5cf0f38956d",
+            "ForeignName": "BCT-USDT"
+        },
+        {
+            "Address": "0x65752C54D9102BDFD69d351E1838A1Be83C924C6",
+            "ForeignName": "WMATIC-stMATIC"
+        }
+        
+    ]
+}

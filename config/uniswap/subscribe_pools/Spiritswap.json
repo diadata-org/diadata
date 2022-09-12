@@ -1,0 +1,108 @@
+{
+    "Pools": [
+        {
+            "Address": "0xe7e90f5a767406eff87fdad7eb07ef407922ec1d",
+            "ForeignName": "USDC-FTM"
+        },
+        {
+            "Address": "0xede32b76302cb71cc0467c4b42dabffa6b091dd1",
+            "ForeignName": "FTM-MIDAS"
+        },
+        {
+            "Address": "0x7ed0cddb9bb6c6dfea6fb63e117c8305479b8d7d",
+            "ForeignName": "FTM-FRAX"
+        },
+        {
+            "Address": "0x613bf4e46b4817015c01c6bb31c7ae9edaadc26e",
+            "ForeignName": "FTM-ETH"
+        },
+        {
+            "Address": "0xb32b31dfafbd53e310390f641c7119b5b9ea0488",
+            "ForeignName": "FTM-MIM"
+        },
+        {
+            "Address": "0x279b2c897737a50405ed2091694f225d83f2d3ba",
+            "ForeignName": "FTM-BTC"
+        },
+        {
+            "Address": "0x51eb93ecfeffbb2f6fe6106c4491b5a0b944e8bd",
+            "ForeignName": "FTM-miMATIC"
+        },
+        {
+            "Address": "0x30748322b6e34545dbe0788c421886aeb5297789",
+            "ForeignName": "FTM-SPIRIT"
+        },
+        {
+            "Address": "0xc28cf9aebfe1a07a27b3a4d722c841310e504fe3",
+            "ForeignName": "FTM-BIFI"
+        },
+        {
+            "Address": "0xd14dd3c56d9bc306322d4cea0e1c49e9ddf045d4",
+            "ForeignName": "fUSDT-FTM"
+        },
+        {
+            "Address": "0xdbc490b47508d31c9ec44afb6e132ad01c61a02c",
+            "ForeignName": "FTM-DAI"
+        },
+        {
+            "Address": "0x4fe6f19031239f105f753d1df8a0d24857d0caa2",
+            "ForeignName": "LQDR-FTM"
+        },
+        {
+            "Address": "0x2599eba5fd1e49f294c76d034557948034d6c96e",
+            "ForeignName": "FTM-DEUS"
+        },
+        {
+            "Address": "0x1478aec7896e40ae5fb858c77d389f0b3e6cbc5d",
+            "ForeignName": "USDC-FRAX"
+        },
+        {
+            "Address": "0xd0891213c87d68773477428ac800b5f7eecf641e",
+            "ForeignName": "OATH-FTM"
+        },
+        {
+            "Address": "0x8efd36aa4afa9f4e157bec759f1744a7febaea0e",
+            "ForeignName": "USDC-DEI"
+        },
+        {
+            "Address": "0xd061c6586670792331e14a80f3b3bb267189c681",
+            "ForeignName": "FTM-LINK"
+        },
+        {
+            "Address": "0x95297492b1faa6047d1d8ce982a0f5cdeb0e9482",
+            "ForeignName": "FTM-COMB"
+        },
+        {
+            "Address": "0x374c8acb146407ef0ae8f82baafcf8f4ec1708cf",
+            "ForeignName": "CRV-FTM"
+        },
+        {
+            "Address": "0xe7f86cef8fef60ce5050899d1f8e465c00d04a79",
+            "ForeignName": "USDC-fUSDT"
+        },
+        {
+            "Address": "0x37dcc99cf0967807d727b2c1760fa8f5449d4042",
+            "ForeignName": "USDC-USDB"
+        },
+        {
+            "Address": "0xf575a1d96a616163d42cb4d80898815d2bc839d5",
+            "ForeignName": "FTM-USDB"
+        },
+        {
+            "Address": "0x2336b5e116a4255add1d36ff23848180bcfc6925",
+            "ForeignName": "MIM-FHM"
+        },
+        {
+            "Address": "0xd01ed862e51bf50b5f08002775dc07a5ca361d25",
+            "ForeignName": "USDC-miMATIC"
+        },
+        {
+            "Address": "0xd473ff135305f2fc7bc82d6b6831c911ebd55ed6",
+            "ForeignName": "FTM-TOMB"
+        },
+        {
+            "Address": "0x95ed4bc28f21f97695a1dc460db9814d5aaf6519",
+            "ForeignName": "SPIRIT-TOMB"
+        }
+    ]
+}

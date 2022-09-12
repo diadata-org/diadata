@@ -99,7 +99,7 @@ var (
 	defOpenSeaSeaportConf = OpenSeaSeaportScraperConfig{
 		ContractAddr:    "0x00000000006c3852cbEf3e08E8dF289169EdE581", // Seaport
 		BatchSize:       100,
-		WaitPeriod:      1,
+		WaitPeriod:      60 * time.Second,
 		FollowDist:      10,
 		UseArchiveNode:  false,
 		MaxRetry:        5,
@@ -547,6 +547,10 @@ func (s *OpenSeaSeaportScraper) notifyTrade(ev *openseaseaport.OpenseaseaportOrd
 				Exchange:    "OpenSea",
 			}
 
+			if len(ev.Offer) > 1 {
+				trade.BundleSale = true
+			}
+
 			if asset, ok := assetCacheOpensea[dia.ETHEREUM+"-"+currAddr.Hex()]; ok {
 				trade.Currency = asset
 			} else {
@@ -557,8 +561,6 @@ func (s *OpenSeaSeaportScraper) notifyTrade(ev *openseaseaport.OpenseaseaportOrd
 				trade.Currency = currency
 				assetCacheOpensea[dia.ETHEREUM+"-"+currAddr.Hex()] = currency
 			}
-
-			//log.Infof("found trade: %v", trade)
 
 			// handle close request if the chanTrade not consumed immediately
 			select {

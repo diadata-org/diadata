@@ -1,0 +1,56 @@
+{
+    "Pools": [
+        {
+            "Address": "0x0e0100Ab771E9288e0Aa97e11557E6654C3a9665",
+            "ForeignName": "WAVAX-USDC"
+        },
+        {
+            "Address": "0xbd918Ed441767fe7924e99F6a0E0B568ac1970D9",
+            "ForeignName": "USDC.e-WAVAX"
+        },
+        {
+            "Address": "0xE530dC2095Ef5653205CF5ea79F8979a7028065c",
+            "ForeignName": "QI-WAVAX"
+        },
+        {
+            "Address": "0x7c05d54fc5CB6e4Ad87c6f5db3b807C94bB89c52",
+            "ForeignName": "WETH.e-WAVAX"
+        },
+        {
+            "Address": "0xe28984e1EE8D431346D32BeC9Ec800Efb643eef4",
+            "ForeignName": "WAVAX-USDT.e"
+        },
+        {
+            "Address": "0xe3bA3d5e3F98eefF5e9EDdD5Bd20E476202770da",
+            "ForeignName": "USDt-WAVAX"
+        },
+        {
+            "Address": "0x8a9c36BC3CEd5ECce703A4dA8032218Dfe72fE86",
+            "ForeignName": "USDC.e-USDC"
+        },
+        {
+            "Address": "0x5875c368Cddd5FB9Bf2f410666ca5aad236DAbD4",
+            "ForeignName": "LINK.e-WAVAX"
+        },
+        {
+            "Address": "0x42152bDD72dE8d6767FE3B4E17a221D6985E8B25",
+            "ForeignName": "WAVAX-XAVA"
+        },
+        {
+            "Address": "0xd7538cABBf8605BdE1f4901B47B8D42c61DE0367",
+            "ForeignName": "PNG-WAVAX"
+        },
+        {
+            "Address": "0x5764b8D8039C6E32f1e5d8DE8Da05DdF974EF5D3",
+            "ForeignName": "WBTC.e-WAVAX"
+        },
+        {
+            "Address": "0x9D86243Ae7008Ec1F9CcE83c49D76f7A557B80cf",
+            "ForeignName": "WBTC.e-USDC"
+        },
+        {
+            "Address": "0x4E9A38F05c38106C1cf5c145Df24959ec50ff70D",
+            "ForeignName": "sAVAX-WAVAX"
+        }
+    ]
+}

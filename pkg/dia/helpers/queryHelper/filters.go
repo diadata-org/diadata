@@ -12,7 +12,7 @@ var log = logrus.New()
 
 func FilterMA(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint, metadata *dia.FilterPointMetadata) {
 
-	var lastfp *dia.FilterPoint
+	lastfp := &dia.FilterPoint{}
 	metadata = dia.NewFilterPointMetadata()
 	for _, block := range tradeBlocks {
 		if len(block.Trades) > 0 {
@@ -26,6 +26,9 @@ func FilterMA(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints
 			fp := maFilter.FilterPointForBlock()
 
 			metadata.AddPoint(fp.Value)
+
+			fp.FirstTrade = block.Trades[0]
+			fp.LastTrade = block.Trades[len(block.Trades)-1]
 
 			if fp != nil {
 				filterPoints = append(filterPoints, *fp)
@@ -63,6 +66,9 @@ func FilterMAIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoin
 
 			metadata.AddPoint(fp.Value)
 
+			fp.FirstTrade = block.Trades[0]
+			fp.LastTrade = block.Trades[len(block.Trades)-1]
+
 			if fp != nil {
 				fp.Time = time.Unix(block.TimeStamp/1e9, 0)
 				filterPoints = append(filterPoints, *fp)
@@ -95,6 +101,8 @@ func FilterVWAP(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoin
 			maFilter.FinalCompute(block.Trades[0].Time)
 			fp := maFilter.FilterPointForBlock()
 			metadata.AddPoint(fp.Value)
+			fp.FirstTrade = block.Trades[0]
+			fp.LastTrade = block.Trades[len(block.Trades)-1]
 			if fp != nil {
 				fp.Time = time.Unix(block.TimeStamp/1e9, 0)
 				filterPoints = append(filterPoints, *fp)
@@ -126,7 +134,10 @@ func FilterVWAPIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPo
 
 			maFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
 			fp := maFilter.FilterPointForBlock()
+
 			metadata.AddPoint(fp.Value)
+			fp.FirstTrade = block.Trades[0]
+			fp.LastTrade = block.Trades[len(block.Trades)-1]
 			if fp != nil && fp.Value > 0 {
 				fp.Time = time.Unix(block.TimeStamp/1e9, 0)
 				filterPoints = append(filterPoints, *fp)
@@ -163,6 +174,8 @@ func FilterMEDIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoi
 			medirFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
 			fp := medirFilter.FilterPointForBlock()
 			metadata.AddPoint(fp.Value)
+			fp.FirstTrade = block.Trades[0]
+			fp.LastTrade = block.Trades[len(block.Trades)-1]
 			if fp != nil && fp.Value > 0 {
 				fp.Time = time.Unix(block.TimeStamp/1e9, 0)
 				filterPoints = append(filterPoints, *fp)
@@ -222,6 +235,8 @@ func FilterVOL(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoint
 			volFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
 			fp := volFilter.FilterPointForBlock()
 			metadata.AddPoint(fp.Value)
+			fp.FirstTrade = block.Trades[0]
+			fp.LastTrade = block.Trades[len(block.Trades)-1]
 			if fp != nil {
 				fp.Time = time.Unix(block.TimeStamp/1e9, 0)
 				filterPoints = append(filterPoints, *fp)

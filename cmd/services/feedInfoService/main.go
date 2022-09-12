@@ -117,7 +117,7 @@ func updateStatsPerAsset(asset dia.Asset, tFinal time.Time, numRanges int, datas
 	for i := range starttimes {
 
 		// 1. Fetch trades for @asset in batches.
-		trades, err := datastore.GetTradesByExchangesFull(asset, []string{}, true, starttimes[i], endtimes[i])
+		trades, err := datastore.GetTradesByExchangesFull(asset, []dia.Asset{}, []string{}, true, starttimes[i], endtimes[i])
 		if err != nil {
 			log.Warnf("GetTradesByExchangesFull for asset %s in time range %v -- %v: %v", asset.Address, starttimes[i], endtimes[i], err)
 		}

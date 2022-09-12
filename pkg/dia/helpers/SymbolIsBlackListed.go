@@ -229,3 +229,41 @@ func AddressIsBlacklisted(address common.Address) bool {
 		return false
 	}
 }
+
+// PoolIsBlacklisted returns true if a pool address is blacklisted
+func PoolIsBlacklisted(address common.Address) bool {
+	switch address.Hex() {
+	case "0xB607CC1ac4413e405c70C8b7853719f6f7F916f2":
+		return true
+	case "0x512cFC9ae132372e360B6367934A02df0b23eB40":
+		return true
+	case "0x21952E5e807061a3201B3D96b3C564b9602869cb":
+		return true
+	case "0xC785C361a7C52c56c51e053Ab3De0b205585d354":
+		return true
+	case "0x293E896eEaB9e7805aec3b51Eb7A3Cf2970208Bb":
+		return true
+	case "0x313c37fbD500e0E2fc95F5b139422af71a1D41f2":
+		return true
+	case "0x239F4CbeEAfFC4d6A94d0c1363D5f228A9c002Bc":
+		return true
+	case "0x96f72333A043a623D6869954B6A50AB7Be883EbC":
+		return true
+	case "0x611F0347424B7c2A7EF94627D1BA5C57F646E9d1":
+		return true
+	case "0x5a45F2403379dF7e90449a37334515f1f2506D5c":
+		return true
+	case "0x8835aE35908F473ce3bA238cDd5B3302Fb879BCB":
+		return true
+	case "0x5f75338F439928c5ab71354399892b2548C24d0F":
+		return true
+	case "0x5C981300A2FD35aeD8427B2d6d004e0Ab11602b0":
+		return true
+	case "0x8F9643EaaE04F5B3D8a3ce0a37CE91ab8513b5D3":
+		return true
+	case "0x1a45a8DE4D836cD7549b7F2C1B69e141f08c9051":
+		return true
+	default:
+		return false
+	}
+}

@@ -1,0 +1,52 @@
+{
+    "Pools": [
+        {
+            "Address": "0x4c38938E21cB9796932B0B0Cc3f8a088f07b49B0",
+            "ForeignName": "USDC-DFYN"
+        },
+        {
+            "Address": "0x40F0A05C8c7a86aD1491A3911c293e093fe92436",
+            "ForeignName": "ROUTE (PoS)-USDC"
+        },
+        {
+            "Address": "0x6fA867BBFDd025780a8CFE988475220AfF51FB8b",
+            "ForeignName": "ETH-DFYN"
+        },
+        {
+            "Address": "0xBe40F7Fff5A2235aF9a8cb79A17373162eFeFA9C",
+            "ForeignName": "USDC-USDT"
+        },
+        {
+            "Address": "0xC3379226AEeF21464d05676305dad1261D6F3FAC",
+            "ForeignName": "WMATIC-ETH"
+        },
+        {
+            "Address": "0xeBC4f9B1cE66258AC3A48578FFEEba1330dDB68B",
+            "ForeignName": "ROUTE (PoS)-ETH"
+        },
+        {
+            "Address": "0xB0dc320ea9eea823a150763AbB4A7bA8286Cd08B",
+            "ForeignName": "ROUTE (PoS)-DFYN"
+        },
+        {
+            "Address": "0x4efd21b3e10110bD4d88A8b3ad34EeB4D4B1FcFD",
+            "ForeignName": "USDC-STACK"
+        },
+        {
+            "Address": "0x4f5dF10B9991482bCD2DB19DAE1FD0e0184397c2",
+            "ForeignName": "USDC-WMATIC"
+        },
+        {
+            "Address": "0x740d668883b0fAEf5eeF7E84BE28C7152D6f609D",
+            "ForeignName": "WMATIC-DFYN"
+        },
+        {
+            "Address": "0x7D51bAd48d253dae37cC82cad07f73849286Deec",
+            "ForeignName": "USDC-ETH"
+        },
+        {
+            "Address": "0x39eAA90a70E8FdC04E1f63Db04e1c62c9aCe0641",
+            "ForeignName": "WBTC-ETH"
+        }
+    ]
+}

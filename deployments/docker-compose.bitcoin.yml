@@ -21,8 +21,6 @@ services:
 
   btc:
     build:
-      context: ../../../..
-    build:
       context: $GOPATH
       dockerfile: $GOPATH/src/github.com/diadata-org/diadata/build/Dockerfile-btc
     image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_btc:latest

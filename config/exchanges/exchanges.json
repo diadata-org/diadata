@@ -92,6 +92,19 @@
             "WatchdogDelay": 7200
         },
         {
+            "Name": "BalancerV2-Polygon",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
+            "Blockchain": {
+                "Name": "Polygon"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
             "Name": "Bancor",
             "Centralized": false,
             "Bridge": false,
@@ -183,6 +196,19 @@
             "WatchdogDelay": 1200
         },
         {
+            "Name": "BitMart",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "https://api-cloud.bitmart.com/spot/v1/",
+            "WsAPI": "wss://ws-manager-compress.bitmart.com/api?protocol=1.1",
+            "pairsAPI": "https://api-cloud.bitmart.com/spot/v1/symbols",
+            "WatchdogDelay": 1200
+        },
+        {
             "Name": "Bitmax",
             "Centralized": true,
             "Bridge": false,
@@ -193,6 +219,19 @@
             "RestAPI": "https://ascendex.com/api/pro/v1",
             "WsAPI": "wss://ascendex.com/0/api/pro/v1/stream",
             "pairsAPI": "https://ascendex.com/api/pro/v1/products",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "MEXC",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "https://api.mexc.com/api/v3",
+            "WsAPI": "wss://wbs.mexc.com/ws",
+            "pairsAPI": "https://api.mexc.com/api/v3/exchangeInfo",
             "WatchdogDelay": 1200
         },
         {
@@ -293,6 +332,45 @@
             "Contract": "0x90E00ACe148ca3b23Ac1bC8C240C2a7Dd9c2d7f5",
             "Blockchain": {
                 "Name": "Ethereum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "Curvefi-Fantom",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": "Fantom"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "Curvefi-Moonbeam",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": "Moonbeam"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "Curvefi-Polygon",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": "Polygon"
             },
             "RestAPI": "",
             "WsAPI": "",
@@ -649,6 +727,19 @@
             "WsAPI": "",
             "pairsAPI": "",
             "WatchdogDelay": 7200
+        },
+        {
+            "Name": "Stellaswap",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x68A384D826D3678f78BB9FB1533c7E9577dACc0E",
+            "Blockchain": {
+                "Name": "Moonbeam"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 180
         },
         {
             "Name": "STEX",

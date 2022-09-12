@@ -1,10 +1,9 @@
 type Query {
-  GetQuotation(symbol: String!): Quotation
 
   GetSupply(symbol: String!): Supply
-  
+
   GetSupplies(symbol: String!): [Supply]
-  
+
   GetChart(
     filter: String!
     BlockDurationSeconds: Int!
@@ -13,27 +12,10 @@ type Query {
     StartTime: Time!
     EndTime: Time!
     Exchanges: [String!]
-    Address :  String
-	  BlockChain : String
+    Address: String
+    BlockChain: String
+    BaseAsset: [BaseAsset!]
   ): [FilterPoint]
-
-    GetChart(
-    filter: String!
-    BlockDurationSeconds: Int!
-    BlockShiftSeconds: Int
-    Symbol: String!
-    StartTime: Time!
-    EndTime: Time!
-    Exchanges: [String!]
-    Address :  String
-	  BlockChain : String
-  ): [FilterPoint]
-
-
-
-    
-
-
 
   GetChartMeta(
     filter: String!
@@ -43,57 +25,54 @@ type Query {
     StartTime: Time!
     EndTime: Time!
     Exchanges: [String!]
-    Address :  String
-	  BlockChain : String
+    Address: String
+    BlockChain: String
+    BaseAsset: [BaseAsset!]
   ): FilterPointMeta
 
+  GetVWALP(
+    Quotetokenblockchain: String!
+	  Quotetokenaddress: String!
+	  BaseAssets: [BaseAsset!]
+	  Exchanges: [String]
+	  BlockDurationSeconds: Int!
+	  EndTime: Time
+	  BasisPoints: Int!
+  ): VWALP
 
-  
-  GetNFT(
-    Address:String!
-    Blockchain:String!
-    TokenID:String!
-  ): NFT
-  
+  GetNFT(Address: String!, Blockchain: String!, TokenID: String!): NFT
+
   GetNFTTrades(
-    Address:String!
-    Blockchain:String!
-    TokenID:String!
+    Address: String!
+    Blockchain: String!
+    TokenID: String!
   ): [NFTTrade]
 
   GetNFTOffers(
-    Address:String!
-    Blockchain:String!
-    TokenID:String!
+    Address: String!
+    Blockchain: String!
+    TokenID: String!
   ): [NFTOffer]
 
   GetNFTBids(
-    Address:String!
-    Blockchain:String!
-    TokenID:String!
+    Address: String!,
+    Blockchain: String!,
+    TokenID: String!
   ): [NFTBid]
 
 }
 
 scalar Time
 
-
 type FilterPointMeta {
   Max: Float
   Min: Float
   Points: [FilterPoint]
- 
 }
 
-
-
-type Quotation {
-  Symbol: String
-  Name: String
-  Price: Float
-  Source: String
-  ITIN: String
-  Time: Time
+input BaseAsset {
+  Address: String
+  BlockChain: String
 }
 
 type Supply {
@@ -111,6 +90,12 @@ type ChartPoint {
   Value: Float
 }
 
+type VWALP {
+  Symbol: String
+  Value: Float
+  Time: Time
+}
+
 type FilterPoint {
   Symbol: String
   Value: Float
@@ -118,64 +103,72 @@ type FilterPoint {
   Time: Time
   Address:String
   Blockchain :String
+  FirstTrade: Trade
+  LastTrade: Trade
+}
+
+type Trade {
+  Price:Float
+  Pair:String
+  Volume: Float
+  Symbol: String
+  EstimatedUSDPrice: Float
 }
 
 type NFT {
-  Address:String
-  Blockchain:String
-  CreationTime:Time
-  CreatorAddress:String
-  URI:String
-  TokenID:String
+  Address: String
+  Blockchain: String
+  CreationTime: Time
+  CreatorAddress: String
+  URI: String
+  TokenID: String
 }
 
 type NFTTrade {
-  Address:String
-  Blockchain:String
-  TokenID:String
-  Price:String
-  FromAddress:String
-  ToAddress:String
-  CurrencyAddress:String
-  CurrencySymbol:String
-  CurrencyDecimals:Int
-  BlockNumber:Int
-  Timestamp:Time
-  TxHash:String
-  Exchange:String
+  Address: String
+  Blockchain: String
+  TokenID: String
+  Price: String
+  FromAddress: String
+  ToAddress: String
+  CurrencyAddress: String
+  CurrencySymbol: String
+  CurrencyDecimals: Int
+  BlockNumber: Int
+  Timestamp: Time
+  TxHash: String
+  Exchange: String
 }
 
 type NFTOffer {
-  Address:String
-  Blockchain:String
-  TokenID:String
-  StartValue:String
-  EndValue:String
-  Duration:Int
-  AuctionType:String
-  FromAddress:String
-  CurrencyAddress:String
-  CurrencySymbol:String
-  CurrencyDecimals:Int
-  Blocknumber:Int
-  Timestamp:Time
-  TxHash:String
-  Exchange:String
+  Address: String
+  Blockchain: String
+  TokenID: String
+  StartValue: String
+  EndValue: String
+  Duration: Int
+  AuctionType: String
+  FromAddress: String
+  CurrencyAddress: String
+  CurrencySymbol: String
+  CurrencyDecimals: Int
+  Blocknumber: Int
+  Timestamp: Time
+  TxHash: String
+  Exchange: String
 }
-
 
 type NFTBid {
-  Address:String
-  Blockchain:String
-  TokenID:String
-  BidValue:String
-  FromAddress:String
-  CurrencyAddress:String
-  CurrencySymbol:String
-  CurrencyDecimals:Int
-  Blocknumber:Int
-  Timestamp:Time
-  TxHash:String
-  Exchange:String
+  Address: String
+  Blockchain: String
+  TokenID: String
+  BidValue: String
+  FromAddress: String
+  CurrencyAddress: String
+  CurrencySymbol: String
+  CurrencyDecimals: Int
+  Blocknumber: Int
+  Timestamp: Time
+  TxHash: String
+  Exchange: String
 }
- 
