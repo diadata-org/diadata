@@ -2773,6 +2773,87 @@ func (env *Env) GetAssetInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, quotationExtended)
 }
 
+// GetSyntheticAsset
+func (env *Env) GetSyntheticAsset(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	blockchain := c.Param("blockchain")
+	protocol := c.Query("protocol")
+	starttimeStr := c.Query("starttime")
+	endtimeStr := c.Query("endtime")
+
+	// Set times depending on what is given by the query parameters
+	var starttime, endtime time.Time
+	if starttimeStr == "" && endtimeStr == "" {
+		// Last seven days per default
+		starttime = time.Now().AddDate(0, 0, -7)
+		endtime = time.Now()
+	} else if starttimeStr == "" && endtimeStr != "" {
+		// zero time if not given
+		starttime = time.Time{}
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	} else if starttimeStr != "" && endtimeStr == "" {
+		// endtime now if not given
+		endtime = time.Now()
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+	} else {
+		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	}
+	if ok, err := validTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	p, err := env.DataStore.GetSynthSupplyInflux(blockchain, protocol, starttime, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	} else {
+		var response []map[string]interface{}
+
+		for _, v := range p {
+			row := make(map[string]interface{})
+			row["Blockchain"] = v.Asset.Blockchain
+			row["UnderlyingTokenAddress"] = v.AssetUnderlying.Address
+			row["UnderlyingTokenSymbol"] = v.AssetUnderlying.Symbol
+			row["SyntheticTokenAddress"] = v.Asset.Address
+			row["SyntheticTokenSymbol"] = v.Asset.Symbol
+			row["TotalDebt"] = v.TotalDebt
+			row["BlockNumber"] = v.BlockNumber
+			row["ColleteralRatio"] = v.ColleteralRatio
+			row["Supply"] = v.Supply
+			row["Protocol"] = v.Protocol
+			row["Time"] = v.Time
+			response = append(response, row)
+
+		}
+
+		c.JSON(http.StatusOK, response)
+	}
+}
+
 func validTimeRange(starttime time.Time, endtime time.Time, maxDuration time.Duration) (ok bool, err error) {
 	if endtime.Sub(starttime) < maxDuration {
 		ok = true

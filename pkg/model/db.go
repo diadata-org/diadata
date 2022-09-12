@@ -26,6 +26,7 @@ type Datastore interface {
 	GetSupplyInflux(dia.Asset, time.Time, time.Time) ([]dia.Supply, error)
 	SaveSynthSupplyInfluxToTable(*dia.SynthAssetSupply, string) error
 	SaveSynthSupplyInflux(*dia.SynthAssetSupply) error
+	GetSynthSupplyInflux(string, string, time.Time, time.Time) ([]dia.SynthAssetSupply, error)
 
 	SetDiaTotalSupply(totalSupply float64) error
 	GetDiaTotalSupply() (float64, error)
