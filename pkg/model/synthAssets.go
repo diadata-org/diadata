@@ -47,7 +47,7 @@ func (datastore *DB) SaveSynthSupplyInfluxToTable(t *dia.SynthAssetSupply, table
 }
 
 // GetSynthSupplyInflux
-func (datastore *DB) GetSynthSupplyInflux(blockchain, protocol string, starttime, endtime time.Time) ([]dia.SynthAssetSupply, error) {
+func (datastore *DB) GetSynthSupplyInflux(blockchain, protocol, address string, starttime, endtime time.Time) ([]dia.SynthAssetSupply, error) {
 	var r []dia.SynthAssetSupply
 
 	queryString := ` 
@@ -61,6 +61,11 @@ func (datastore *DB) GetSynthSupplyInflux(blockchain, protocol string, starttime
 
 	if protocol != "" {
 		queryString = queryString + `AND protocol='` + protocol + `'`
+	}
+	if address != "" {
+		queryString = queryString + `AND underlyingtokenaddress='` + address + `'`
+		queryString = queryString + ` OR synthtokenaddress='` + address + `'`
+
 	}
 
 	queryString = queryString + ` AND time > %d AND time<= %d ;`

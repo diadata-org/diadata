@@ -2781,6 +2781,8 @@ func (env *Env) GetSyntheticAsset(c *gin.Context) {
 
 	blockchain := c.Param("blockchain")
 	protocol := c.Query("protocol")
+	address := c.Query("address")
+
 	starttimeStr := c.Query("starttime")
 	endtimeStr := c.Query("endtime")
 
@@ -2827,7 +2829,7 @@ func (env *Env) GetSyntheticAsset(c *gin.Context) {
 		return
 	}
 
-	p, err := env.DataStore.GetSynthSupplyInflux(blockchain, protocol, starttime, endtime)
+	p, err := env.DataStore.GetSynthSupplyInflux(blockchain, protocol, address, starttime, endtime)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	} else {
