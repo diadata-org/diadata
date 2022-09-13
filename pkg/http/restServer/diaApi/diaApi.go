@@ -2844,7 +2844,7 @@ func (env *Env) GetSyntheticAsset(c *gin.Context) {
 			row["SyntheticTokenSymbol"] = v.Asset.Symbol
 			row["TotalDebt"] = v.TotalDebt
 			row["BlockNumber"] = v.BlockNumber
-			row["ColleteralRatio"] = v.ColleteralRatio
+			row["CollateralRatio"] = v.ColleteralRatio
 			row["Supply"] = v.Supply
 			row["Protocol"] = v.Protocol
 			row["Time"] = v.Time
