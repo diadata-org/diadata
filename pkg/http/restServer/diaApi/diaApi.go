@@ -2780,11 +2780,13 @@ func (env *Env) GetSyntheticAsset(c *gin.Context) {
 	}
 
 	blockchain := c.Param("blockchain")
+
 	protocol := c.Query("protocol")
 	address := c.Query("address")
-
 	starttimeStr := c.Query("starttime")
 	endtimeStr := c.Query("endtime")
+
+	limit := 0
 
 	// Set times depending on what is given by the query parameters
 	var starttime, endtime time.Time
@@ -2792,6 +2794,7 @@ func (env *Env) GetSyntheticAsset(c *gin.Context) {
 		// Last seven days per default
 		starttime = time.Now().AddDate(0, 0, -7)
 		endtime = time.Now()
+		limit = 1
 	} else if starttimeStr == "" && endtimeStr != "" {
 		// zero time if not given
 		starttime = time.Time{}
@@ -2829,7 +2832,7 @@ func (env *Env) GetSyntheticAsset(c *gin.Context) {
 		return
 	}
 
-	p, err := env.DataStore.GetSynthSupplyInflux(blockchain, protocol, address, starttime, endtime)
+	p, err := env.DataStore.GetSynthSupplyInflux(blockchain, protocol, address, limit, starttime, endtime)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	} else {
@@ -2845,6 +2848,7 @@ func (env *Env) GetSyntheticAsset(c *gin.Context) {
 			row["TotalDebt"] = v.TotalDebt
 			row["BlockNumber"] = v.BlockNumber
 			row["CollateralRatio"] = v.ColleteralRatio
+			row["LockedUnderlying"] = v.LockedUnderlying
 			row["Supply"] = v.Supply
 			row["Protocol"] = v.Protocol
 			row["Time"] = v.Time

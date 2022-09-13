@@ -46,8 +46,12 @@ func (datastore *DB) SaveSynthSupplyInfluxToTable(t *dia.SynthAssetSupply, table
 	return err
 }
 
+func (datastore *DB) GetSynthLastSupplyInflux(blockchain, protocol, address string) {
+
+}
+
 // GetSynthSupplyInflux
-func (datastore *DB) GetSynthSupplyInflux(blockchain, protocol, address string, starttime, endtime time.Time) ([]dia.SynthAssetSupply, error) {
+func (datastore *DB) GetSynthSupplyInflux(blockchain, protocol, address string, limit int, starttime, endtime time.Time) ([]dia.SynthAssetSupply, error) {
 	var r []dia.SynthAssetSupply
 
 	queryString := ` 
@@ -68,7 +72,14 @@ func (datastore *DB) GetSynthSupplyInflux(blockchain, protocol, address string, 
 
 	}
 
-	queryString = queryString + ` AND time > %d AND time<= %d ;`
+	queryString = queryString + ` AND time > %d AND time<= %d  `
+
+	queryString = queryString + " ORDER BY time DESC"
+
+	if limit == 1 {
+		queryString = queryString + " LIMIT 1"
+	}
+	queryString = queryString + " ;"
 	q := fmt.Sprintf(queryString, influxDbSynthSupplyTable, blockchain, starttime.UnixNano(), endtime.UnixNano())
 
 	log.Info("query: ", q)
