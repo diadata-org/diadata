@@ -277,6 +277,12 @@
       "Address": "0x6c5bA91642F10282b576d91922Ae6448C9d52f4E"
     },
     {
+      "Symbol": "PHX",
+      "Exchange": "MEXC",
+      "Blockchain": "Wanchain",
+      "Address": "0xF17c59bF0f6326dA7A8cC2CE417e4F53a26707bd"
+    },
+    {
       "Symbol": "SAND",
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",

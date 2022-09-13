@@ -911,6 +911,19 @@
             "WatchdogDelay": 1200
         },
         {
+            "Name": "Wanswap",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x1125C5F53C72eFd175753d427aA116B972Aa5537",
+            "Blockchain": {
+                "Name": "Wanchain"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
             "Name": "ZB",
             "Centralized": true,
             "Bridge": false,

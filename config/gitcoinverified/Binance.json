@@ -541,6 +541,12 @@
             "Address": "0x286BDA1413a2Df81731D4930ce2F862a35A609fE"
         },
         {
+            "Symbol": "WAN",
+            "Exchange": "Binance",
+            "Blockchain": "Wanchain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "WBTC",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",

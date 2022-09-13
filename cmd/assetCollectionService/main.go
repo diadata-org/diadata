@@ -96,6 +96,8 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 		return source.NewUniswapV3AssetSource(exchanges[dia.UniswapExchangeV3Polygon])
 	case dia.StellaswapExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.StellaswapExchange])
+	case dia.WanswapExchange:
+		return source.NewUniswapAssetSource(exchanges[dia.WanswapExchange])
 	case dia.CurveFIExchange:
 		return source.NewCurvefiAssetSource(exchanges[dia.CurveFIExchange])
 	case dia.CurveFIExchangeFantom:
@@ -123,7 +125,6 @@ func main() {
 }
 
 func runAssetSource(relDB *models.RelDB, source string, caching bool, secret string) {
-	// TO DO: check for duplicate key error and return if error is different
 	log.Println("Fetching asset from ", source)
 	asset := NewAssetScraper(source, secret)
 

@@ -39,6 +39,7 @@ const (
 	KUSAMA                                  = "Kusama"
 	ACALA                                   = "Acala"
 	POLKADOT                                = "Polkadot"
+	WANCHAIN                                = "Wanchain"
 	FIAT                                    = "Fiat"
 )
 

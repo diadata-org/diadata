@@ -72,6 +72,9 @@ const (
 	restDialMoonbeam = ""
 	wsDialMoonbeam   = ""
 
+	restDialWanchain = ""
+	wsDialWanchain   = ""
+
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
 	pancakeswapWaitMilliseconds = "200"
@@ -88,6 +91,7 @@ const (
 	evmosWaitMilliseconds       = "400"
 	astarWaitMilliseconds       = "1000"
 	moonbeamWaitMilliseconds    = "1000"
+	wanchainWaitMilliseconds    = "1000"
 )
 
 type UniswapToken struct {
@@ -216,6 +220,9 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 	case dia.StellaswapExchange:
 		listenByAddress = true
 		s = makeUniswapScraper(exchange, listenByAddress, restDialMoonbeam, wsDialMoonbeam, moonbeamWaitMilliseconds)
+	case dia.WanswapExchange:
+		listenByAddress = true
+		s = makeUniswapScraper(exchange, listenByAddress, restDialWanchain, wsDialWanchain, wanchainWaitMilliseconds)
 	}
 
 	if scrape {
