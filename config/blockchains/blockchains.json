@@ -176,6 +176,15 @@
             "ChainID": "Ethereum1088"
         },
         {
+            "Name": "Wanchain",
+            "GenesisDate": 1587945600,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pos",
+            "ChainID": "Ethereum888"
+        },
+        {
             "Name": "Fetch",
             "GenesisDate": 1601510400,
             "NativeToken": {

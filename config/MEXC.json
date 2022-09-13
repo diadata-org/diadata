@@ -301,6 +301,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "PHX",
+      "ForeignName": "PHX_USDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "SAND",
       "ForeignName": "SAND_USDT",
       "Exchange": "MEXC",

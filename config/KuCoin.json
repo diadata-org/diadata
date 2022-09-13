@@ -2693,6 +2693,18 @@
             "ForeignName": "ZRX-ETH",
             "Exchange": "KuCoin",
             "Ignore": false
+        },
+        {
+            "Symbol": "WAN",
+            "ForeignName": "WAN-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WAN",
+            "ForeignName": "WAN-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": false
         }
     ]
 }

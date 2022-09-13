@@ -51,6 +51,10 @@
         {
             "Address": "0x4E9A38F05c38106C1cf5c145Df24959ec50ff70D",
             "ForeignName": "sAVAX-WAVAX"
+        },
+        {
+            "Address": "0x97bD1EB9B32a991b1c4F27A537F3253cEB6051EB",
+            "ForeignName": "ZOO-WAVAX"
         }
     ]
 }

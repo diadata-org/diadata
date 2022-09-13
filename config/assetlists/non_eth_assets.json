@@ -538,6 +538,13 @@
       "Decimals": 18,
       "Blockchain": "Evmos",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "WAN",
+      "Name": "Wanchain",
+      "Decimals": 18,
+      "Blockchain": "Wanchain",
+      "Address": "0x0000000000000000000000000000000000000000"
     }
   ]
 }

@@ -36,7 +36,7 @@ func (rdb *RelDB) GetKeyAsset(asset dia.Asset) (string, error) {
 
 // SetAsset stores an asset into postgres.
 func (rdb *RelDB) SetAsset(asset dia.Asset) error {
-	query := fmt.Sprintf("INSERT INTO %s (symbol,name,address,decimals,blockchain) VALUES ($1,$2,$3,$4,$5)", assetTable)
+	query := fmt.Sprintf("INSERT INTO %s (symbol,name,address,decimals,blockchain) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (address,blockchain) DO NOTHING", assetTable)
 	_, err := rdb.postgresClient.Exec(context.Background(), query, asset.Symbol, asset.Name, asset.Address, strconv.Itoa(int(asset.Decimals)), asset.Blockchain)
 	if err != nil {
 		return err
