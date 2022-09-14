@@ -14,18 +14,6 @@
         },
         {
             "Exchange": "Binance",
-            "ForeignName": "WANUSDT",
-            "Ignore": false,
-            "Symbol": "WAN"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "WANBTC",
-            "Ignore": false,
-            "Symbol": "WAN"
-        },
-        {
-            "Exchange": "Binance",
             "ForeignName": "PHAUSDT",
             "Ignore": false,
             "Symbol": "PHA"
@@ -2219,6 +2207,12 @@
             "ForeignName": "WABIETH",
             "Ignore": false,
             "Symbol": "WABI"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "WANUSDT",
+            "Ignore": false,
+            "Symbol": "WAN"
         },
         {
             "Exchange": "Binance",

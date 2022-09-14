@@ -194,15 +194,16 @@ func (s *KuCoinScraper) mainLoop() {
 				}
 
 				trade := &dia.Trade{
-					Symbol:       asset[0],
-					Pair:         t.Symbol,
-					Price:        f64Price,
-					Time:         time.Unix(0, timeOrder),
-					Volume:       f64Volume,
-					Source:       s.exchangeName,
-					VerifiedPair: exchangepair.Verified,
-					BaseToken:    exchangepair.UnderlyingPair.BaseToken,
-					QuoteToken:   exchangepair.UnderlyingPair.QuoteToken,
+					Symbol:         asset[0],
+					Pair:           t.Symbol,
+					Price:          f64Price,
+					Time:           time.Unix(0, timeOrder),
+					Volume:         f64Volume,
+					Source:         s.exchangeName,
+					VerifiedPair:   exchangepair.Verified,
+					BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+					QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+					ForeignTradeID: t.TradeID,
 				}
 				if exchangepair.Verified {
 					log.Info("Got verified trade from stream 1: ", trade)
@@ -239,15 +240,16 @@ func (s *KuCoinScraper) mainLoop() {
 					log.Error(err)
 				}
 				trade := &dia.Trade{
-					Symbol:       asset[0],
-					Pair:         t.Symbol,
-					Price:        f64Price,
-					Time:         time.Unix(0, timeOrder),
-					Volume:       f64Volume,
-					Source:       s.exchangeName,
-					VerifiedPair: exchangepair.Verified,
-					BaseToken:    exchangepair.UnderlyingPair.BaseToken,
-					QuoteToken:   exchangepair.UnderlyingPair.QuoteToken,
+					Symbol:         asset[0],
+					Pair:           t.Symbol,
+					Price:          f64Price,
+					Time:           time.Unix(0, timeOrder),
+					Volume:         f64Volume,
+					Source:         s.exchangeName,
+					VerifiedPair:   exchangepair.Verified,
+					BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+					QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+					ForeignTradeID: t.TradeID,
 				}
 				if exchangepair.Verified {
 					log.Info("Got verified trade from stream 2: ", trade)
@@ -284,15 +286,16 @@ func (s *KuCoinScraper) mainLoop() {
 					log.Error(err)
 				}
 				trade := &dia.Trade{
-					Symbol:       asset[0],
-					Pair:         t.Symbol,
-					Price:        f64Price,
-					Time:         time.Unix(0, timeOrder),
-					Volume:       f64Volume,
-					Source:       s.exchangeName,
-					VerifiedPair: exchangepair.Verified,
-					BaseToken:    exchangepair.UnderlyingPair.BaseToken,
-					QuoteToken:   exchangepair.UnderlyingPair.QuoteToken,
+					Symbol:         asset[0],
+					Pair:           t.Symbol,
+					Price:          f64Price,
+					Time:           time.Unix(0, timeOrder),
+					Volume:         f64Volume,
+					Source:         s.exchangeName,
+					VerifiedPair:   exchangepair.Verified,
+					BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+					QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+					ForeignTradeID: t.TradeID,
 				}
 				if exchangepair.Verified {
 					log.Info("Got verified trade from stream 3: ", trade)
