@@ -39,6 +39,7 @@ var (
 		"PAX":  "",
 		"BUSD": "",
 	}
+	USDT             = dia.Asset{Address: "0xdAC17F958D2ee523a2206206994597C13D831ec7", Blockchain: dia.ETHEREUM}
 	tol              = float64(0.04)
 	log              *logrus.Logger
 	batchTimeSeconds int
@@ -128,6 +129,8 @@ func (s *TradesBlockService) mainLoop() {
 			swapppedTradeOk := s.checkTrade(tSwapped)
 			if tradeOk {
 				s.process(*t)
+				log.Info("source: ", (*t).Source)
+				log.Info("Exchange: ", scrapers.Exchanges[(*t).Source])
 				if scrapers.Exchanges[(*t).Source].Centralized {
 					acceptCountCEX++
 				} else {
@@ -172,6 +175,11 @@ func (s *TradesBlockService) checkTrade(t dia.Trade) bool {
 	}
 	if t.QuoteToken.Blockchain == dia.FIAT {
 		return false
+	}
+	if t.QuoteToken.Address == "0xdAC17F958D2ee523a2206206994597C13D831ec7" && t.QuoteToken.Blockchain == dia.ETHEREUM {
+		if basetoken.Blockchain != dia.FIAT {
+			return false
+		}
 	}
 
 	if baseVolume, ok := s.volumeCache[assetIdentifier(basetoken)]; ok {
