@@ -44,7 +44,8 @@ var (
 	batchTimeSeconds int
 	// volumeUpdateSeconds = 60 * 60 * 6
 	volumeUpdateSeconds = 60 * 10
-	volumeThreshold     = float64(10000)
+	volumeThreshold     = float64(100000)
+	blueChipThreshold   = float64(50000000)
 	smallX              = float64(10)
 )
 
@@ -175,10 +176,13 @@ func (s *TradesBlockService) checkTrade(t dia.Trade) bool {
 	}
 
 	if baseVolume, ok := s.volumeCache[assetIdentifier(t.BaseToken)]; ok {
+		if baseVolume > blueChipThreshold {
+			return true
+		}
 		if quoteVolume, ok := s.volumeCache[assetIdentifier(t.QuoteToken)]; ok {
 			if baseVolume < volumeThreshold {
 				// For small volume assets, quote asset must be a small volume asset too.
-				return smallX*baseVolume > quoteVolume
+				return quoteVolume < smallX*baseVolume
 			}
 		}
 		// Base asset has enough volume or quote asset has no volume yet.
