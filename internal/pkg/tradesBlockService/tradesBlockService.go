@@ -327,7 +327,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 					quotation, err = s.datastore.GetAssetQuotationCache(basetoken)
 					price = quotation.Price
 					s.priceCache[assetIdentifier(basetoken)] = price
-					log.Infof("quotation for %s from redis cache: %v", basetoken.Symbol, price)
+					// log.Infof("quotation for %s from redis cache: %v", basetoken.Symbol, price)
 				}
 
 			} else {
