@@ -52,6 +52,7 @@ type aTokenScraper struct {
 	version      int
 	start        uint64
 	protocol     string
+	endBlock     uint64
 }
 
 func NewaTokenScraper(blockchain, pooladdress string, version int) *aTokenScraper {
@@ -65,6 +66,7 @@ func NewaTokenScraper(blockchain, pooladdress string, version int) *aTokenScrape
 	}
 
 	startblock, err := strconv.ParseInt(utils.Getenv("START_BLOCK", "0"), 10, 64)
+	endBlock, err := strconv.ParseInt(utils.Getenv("END_BLOCK", "0"), 10, 64)
 
 	if err != nil {
 		startblock = 0
@@ -88,6 +90,7 @@ func NewaTokenScraper(blockchain, pooladdress string, version int) *aTokenScrape
 	scraper.WsClient = wsclient
 
 	scraper.atokens = atokens
+	scraper.endBlock = uint64(endBlock)
 
 	switch scraper.version {
 	case 2:
@@ -99,13 +102,52 @@ func NewaTokenScraper(blockchain, pooladdress string, version int) *aTokenScrape
 
 	log.Info(scraper.atokens)
 
-	go scraper.mainLoop()
+	if scraper.start == 0 {
+		go scraper.mainLoop()
+
+	} else {
+		log.Info("running")
+		go scraper.mainLoopHistory()
+
+	}
 
 	return scraper
 }
 
-func (scraper *aTokenScraper) watchReservedataupdatedV2() chan *aavepool2.Aavepool2ReserveDataUpdated {
+func (scraper *aTokenScraper) filterReservedataupdatedV2History() chan *aavepool2.Aavepool2ReserveDataUpdated {
 	filterer, err := aavepool2.NewAavepool2Filterer(common.HexToAddress(scraper.pooladdress), scraper.WsClient)
+
+	if err != nil {
+		log.Error("new NewAavepool3Filterer caller: ", err)
+	}
+	sink := make(chan *aavepool2.Aavepool2ReserveDataUpdated)
+	// if start is zero start from latest
+
+	log.Error("FilterReserveDataUpdated starting from block: ", scraper.start)
+	endblock := scraper.start + 100
+
+	go func() {
+		for endblock <= scraper.endBlock {
+			iter, err := filterer.FilterReserveDataUpdated(&bind.FilterOpts{Start: scraper.start, End: &endblock}, []common.Address{})
+			if err != nil {
+				log.Errorln("error getting filterdata", err)
+			}
+			for iter.Next() {
+				sink <- iter.Event
+			}
+			scraper.start = scraper.start + 100
+			endblock = scraper.start + 100
+			log.Infof("increasing block  start: %d, End: %d ", scraper.start, endblock)
+
+		}
+	}()
+
+	return sink
+
+}
+
+func (scraper *aTokenScraper) watchReservedataupdatedV2() chan *aavepool2.Aavepool2ReserveDataUpdated {
+	filterer, err := aavepool2.NewAavepool2Filterer(common.HexToAddress(scraper.pooladdress), scraper.RestClient)
 
 	if err != nil {
 		log.Error("new NewAavepool3Filterer caller: ", err)
@@ -116,6 +158,8 @@ func (scraper *aTokenScraper) watchReservedataupdatedV2() chan *aavepool2.Aavepo
 		filterer.WatchReserveDataUpdated(&bind.WatchOpts{}, sink, []common.Address{})
 
 	} else {
+		log.Error("WatchReserveDataUpdated starting from block: ", scraper.start)
+
 		filterer.WatchReserveDataUpdated(&bind.WatchOpts{Start: &scraper.start}, sink, []common.Address{})
 	}
 	return sink
@@ -127,6 +171,37 @@ func (scraper *aTokenScraper) mainLoop() {
 
 	log.Info("looking for watchReservedataupdatedV2")
 	sink := scraper.watchReservedataupdatedV2()
+
+	go func() {
+		for {
+			dataupdated, ok := <-sink
+			if ok {
+				log.Infoln("Reserve Data updated fetch supply and reserver of token ", dataupdated.Raw.TxHash.Hex())
+				atokenasset, underlyingasset, atokensupply, reserver, totalDebt, err := scraper.fetchsupplyandbalance(dataupdated.Reserve.Hex(), big.NewInt(int64(dataupdated.Raw.BlockNumber)))
+				if err != nil {
+					log.Errorln("err on fetchsupplyandbalance", err)
+					continue
+				}
+
+				block, err := scraper.RestClient.BlockByNumber(context.Background(), big.NewInt(int64(dataupdated.Raw.BlockNumber)))
+				if err != nil {
+					log.Errorln("error getting block details", err)
+				}
+				collateralRatio := (reserver + totalDebt) / atokensupply
+
+				sas := dia.SynthAssetSupply{Asset: atokenasset, AssetUnderlying: underlyingasset, Supply: atokensupply, LockedUnderlying: reserver, BlockNumber: dataupdated.Raw.BlockNumber, Time: time.Unix(int64(block.Time()), 0), ColleteralRatio: collateralRatio, Protocol: scraper.protocol, TotalDebt: totalDebt}
+				scraper.synthChannel <- sas
+			}
+		}
+	}()
+
+}
+
+func (scraper *aTokenScraper) mainLoopHistory() {
+	// runs whenever there is  ReserveDataUpdated occurs
+
+	log.Info("looking for filterReservedataupdatedV2History")
+	sink := scraper.filterReservedataupdatedV2History()
 
 	go func() {
 		for {

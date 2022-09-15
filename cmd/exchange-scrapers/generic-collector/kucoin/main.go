@@ -3,28 +3,33 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
+	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
+	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
+	"github.com/diadata-org/diadata/pkg/utils/probes"
+	"github.com/segmentio/kafka-go"
+	log "github.com/sirupsen/logrus"
+	"strconv"
 	"sync"
 	"time"
-
-	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
-	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
-	"github.com/diadata-org/diadata/pkg/utils"
-
-	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
-	models "github.com/diadata-org/diadata/pkg/model"
-	"github.com/segmentio/kafka-go"
-	"github.com/sirupsen/logrus"
 )
 
 var (
-	log                  *logrus.Logger
+	exchange = flag.String("exchange", "", "which exchange")
+	// mode==current:		default mode. Trades are forwarded to TBS and FBS.
+	// mode==storeTrades:	trades are not forwarded to TBS and FBS and stored as raw trades in influx.
+	// mode==estimation:	trades are forwarded to tradesEstimationService, i.e. same as storeTrades mode
+	//						but estimatedUSDPrice is filled by tradesEstimationService.
+	// mode==historical:	trades are sent through kafka to TBS in tradesHistorical topic.
+	mode                 = flag.String("mode", "current", "either storeTrades, current, historical or estimation")
 	swapTradesOnExchange = []string{
 		dia.CurveFIExchange,
 		dia.CurveFIExchangeFantom,
 		dia.CurveFIExchangeMoonbeam,
 		dia.CurveFIExchangePolygon,
-		dia.WanswapExchange,
 		dia.OmniDexExchange,
 		dia.DiffusionExchange,
 		dia.SolarbeamExchange,
@@ -33,21 +38,26 @@ var (
 		dia.HuckleberryExchange,
 		dia.NetswapExchange,
 	}
-
-	exchange = flag.String("exchange", "", "which exchange")
-	// mode==current:		default mode. Trades are forwarded to TBS and FBS.
-	// mode==storeTrades:	trades are not forwarded to TBS and FBS and stored as raw trades in influx.
-	// mode==estimation:	trades are forwarded to tradesEstimationService, i.e. same as storeTrades mode
-	//						but estimatedUSDPrice is filled by tradesEstimationService.
-	// mode==historical:	trades are sent through kafka to TBS in tradesHistorical topic.
-	// mode==assetmap:   	Bridged Trades, asstes are mapped and trades are not saved.
-	mode = flag.String("mode", "current", "either storeTrades, current, historical or estimation.")
-
-	pairsfile = flag.Bool("pairsfile", false, "read pairs from json file in config folder.")
+	pairsfile   = flag.Bool("pairsfile", false, "read pairs from json file in config folder.")
+	StartupDone = false
+	// delay until the service will be restarted
+	restartDelayMinutes, _ = strconv.Atoi(utils.Getenv("RESTART_DELAY_MINUTES", "720"))
+	startTime              = time.Now()
 )
 
+// main manages all PairScrapers and handles incoming trade information
+func ready() bool {
+	return StartupDone
+}
+
+func live() bool {
+	if !StartupDone {
+		return false
+	}
+	return startTime.Before(startTime.Add(time.Minute * time.Duration(restartDelayMinutes)))
+}
+
 func init() {
-	log = logrus.New()
 	flag.Parse()
 	if *exchange == "" {
 		flag.Usage()
@@ -67,6 +77,8 @@ func init() {
 func main() {
 
 	log.Infof("start collector for %s in %s mode...", *exchange, *mode)
+
+	log.Infof("%s starttime, %s duration", startTime, startTime.Add(time.Minute*time.Duration(restartDelayMinutes)))
 
 	relDB, err := models.NewRelDataStore()
 	if err != nil {
@@ -97,7 +109,14 @@ func main() {
 	if err != nil {
 		log.Warning("no config for exchange's api ", err)
 	}
-	es := scrapers.NewAPIScraper(*exchange, true, configApi.ApiKey, configApi.SecretKey, relDB)
+
+	exchangeConfig, err := relDB.GetExchange(dia.KuCoinExchange)
+	if err != nil {
+		log.Warning("no config for exchange ", err)
+	}
+
+	diaExchange := dia.Exchange{Name: dia.KuCoinExchange, Centralized: true, WatchdogDelay: exchangeConfig.WatchdogDelay}
+	es := scrapers.NewKuCoinScraper(configApi.ApiKey, configApi.SecretKey, diaExchange, true, relDB)
 
 	// Set up kafka writers for various modes.
 	var (
@@ -150,6 +169,9 @@ func main() {
 
 	}
 	go handleTrades(es.Channel(), &wg, w, wTest, ds, *exchange, *mode)
+
+	probes.Start(live, ready)
+	StartupDone = true
 }
 
 func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wTest *kafka.Writer, ds *models.DB, exchange string, mode string) {

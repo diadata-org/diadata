@@ -2210,6 +2210,12 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "WANUSDT",
+            "Ignore": false,
+            "Symbol": "WAN"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "WANBNB",
             "Ignore": false,
             "Symbol": "WAN"

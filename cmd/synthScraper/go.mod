@@ -3,7 +3,7 @@ module github.com/diadata-org/diadata/cmd/synthScraper
 go 1.17
 
 require (
-	github.com/diadata-org/diadata v1.4.1-rc-83
+	github.com/diadata-org/diadata v1.4.1-rc-383
 	github.com/sirupsen/logrus v1.8.1
 )
 
@@ -43,4 +43,3 @@ require (
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
-

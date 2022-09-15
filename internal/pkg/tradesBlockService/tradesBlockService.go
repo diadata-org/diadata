@@ -311,6 +311,16 @@ func (s *TradesBlockService) process(t dia.Trade) {
 					}
 				}
 
+				if basetoken.Blockchain == dia.WANCHAIN && t.Source == dia.WanswapExchange {
+					if basetoken.Address == common.HexToAddress("0xdabD997aE5E4799BE47d6E69D9431615CBa28f48").Hex() {
+						basetoken = dia.Asset{
+							Symbol:     "WAN",
+							Address:    "0x0000000000000000000000000000000000000000",
+							Blockchain: dia.WANCHAIN,
+						}
+					}
+				}
+
 				if _, ok = s.priceCache[assetIdentifier(basetoken)]; ok {
 					price = s.priceCache[assetIdentifier(basetoken)]
 				} else {

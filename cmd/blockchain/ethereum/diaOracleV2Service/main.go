@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -169,28 +170,28 @@ func updateOracle(
 	value int64,
 	timestamp int64) error {
 
-	/*gasPrice, err := client.SuggestGasPrice(context.Background())
+	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Get 110% of the gas price
-	fmt.Println(gasPrice)
 	fGas := new(big.Float).SetInt(gasPrice)
 	fGas.Mul(fGas, big.NewFloat(1.1))
 	gasPrice, _ = fGas.Int(nil)
-	fmt.Println(gasPrice)*/
 
 	// Write values to smart contract
 	tx, err := contract.SetValue(&bind.TransactOpts{
 		From:     auth.From,
 		Signer:   auth.Signer,
+		GasLimit: 1000725,
 	}, key, big.NewInt(value), big.NewInt(timestamp))
 	if err != nil {
 		return err
 	}
-  //fmt.Println(tx.GasPrice())
+	log.Printf("Gas price: %d\n", tx.GasPrice())
 	log.Printf("key: %s\n", key)
+	log.Printf("Data: %x\n", tx.Data())
 	log.Printf("Nonce: %d\n", tx.Nonce())
 	log.Printf("Tx To: %s\n", tx.To().String())
 	log.Printf("Tx Hash: 0x%x\n", tx.Hash())

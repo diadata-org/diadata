@@ -377,6 +377,12 @@
       "ForeignName": "ZRXBTC",
       "Ignore": false,
       "Symbol": "ZRX"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "WANBTC",
+      "Ignore": false,
+      "Symbol": "WAN"
     }
   ]
 }

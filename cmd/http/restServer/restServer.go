@@ -285,6 +285,10 @@ func main() {
 		diaGroup.GET("/assetmap/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetAssetMap))
 		diaGroup.GET("/assetUpdates/:blockchain/:address/:deviation/:frequencySeconds", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetAssetUpdates))
 
+		// Endpoints for Synthassets
+
+		diaGroup.GET("/synthasset/:blockchain", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetSyntheticAsset))
+
 	}
 
 	r.Use(static.Serve("/v1/chart", static.LocalFile("/charts", true)))
