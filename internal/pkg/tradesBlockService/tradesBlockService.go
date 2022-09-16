@@ -129,8 +129,6 @@ func (s *TradesBlockService) mainLoop() {
 			swapppedTradeOk := s.checkTrade(tSwapped)
 			if tradeOk {
 				s.process(*t)
-				log.Info("source: ", (*t).Source)
-				log.Info("Exchange: ", scrapers.Exchanges[(*t).Source])
 				if scrapers.Exchanges[(*t).Source].Centralized {
 					acceptCountCEX++
 				} else {
