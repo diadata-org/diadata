@@ -259,6 +259,12 @@
             "Address": "0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e"
         },
         {
+            "Symbol": "ETC",
+            "Exchange": "KuCoin",
+            "Blockchain": "EthereumClassic",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "FET",
             "Exchange": "KuCoin",
             "Blockchain": "Fetch",

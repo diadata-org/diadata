@@ -1,6 +1,12 @@
 {
   "Coins": [
     {
+      "Symbol": "YFI",
+      "ForeignName": "YFIUSD",
+      "Exchange": "Bitfinex",
+      "Ignore": false
+    },
+    {
       "Symbol": "BTC",
       "ForeignName": "BTCUSD",
       "Exchange": "Bitfinex",

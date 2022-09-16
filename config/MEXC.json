@@ -79,6 +79,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "BOO",
+      "ForeignName": "BOO_USDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "BSV",
       "ForeignName": "BSV_USDT",
       "Exchange": "MEXC",
@@ -133,6 +139,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "DOGE",
+      "ForeignName": "DOGE_USDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "DOT",
       "ForeignName": "DOT_USDT",
       "Exchange": "MEXC",
@@ -153,6 +165,12 @@
     {
       "Symbol": "ETC",
       "ForeignName": "ETC_USDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETC",
+      "ForeignName": "ETC_BTC",
       "Exchange": "MEXC",
       "Ignore": false
     },
@@ -393,6 +411,12 @@
     {
       "Symbol": "WBTC",
       "ForeignName": "WBTC_USDC",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "YFI",
+      "ForeignName": "YFI_USDT",
       "Exchange": "MEXC",
       "Ignore": false
     },
