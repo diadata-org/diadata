@@ -288,19 +288,6 @@ type EthereumBlockData struct {
 	Extra       []byte             `json:"extra"`
 }
 
-type SubstrateChangeSet struct {
-	Data []byte
-}
-
-type SubstrateBlockData struct {
-	Number     uint64     `json:"number"`
-	Root       types.Hash `json:"root"`
-	ParentHash types.Hash `json:"parent_hash"`
-	// Set of event names (used for filtering event data).
-	EventNames []string             `json:"event_names"`
-	Events     []SubstrateChangeSet `json:"events"`
-}
-
 type Exchange struct {
 	Name          string     `json:"Name"`
 	Centralized   bool       `json:"Centralized"`
