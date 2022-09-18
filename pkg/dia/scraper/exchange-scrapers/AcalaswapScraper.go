@@ -15,7 +15,6 @@ import (
 	"github.com/centrifuge/go-substrate-rpc-client/v4/rpc/state"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/scale"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/acalaswap"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -246,7 +245,6 @@ func (s *AcalaswapScraper) subscribeToSystemEvents() error {
 						if evtMap["event_id"] == "Swap" && evtMap["module_id"] == "Dex" {
 							id := fmt.Sprintf("%s-%v", blockId, evtMap["event_idx"])
 							log.Debugf("Event found: %s", id)
-							spew.Dump(evtMap)
 							s.processSwap(id, evtMap)
 						}
 					}
