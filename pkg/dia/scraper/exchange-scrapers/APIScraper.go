@@ -41,16 +41,6 @@ func init() {
 		Exchanges[exchange.Name] = exchange
 	}
 
-	Exchanges[dia.AcalaswapExchange] = dia.Exchange{
-		Name:          dia.AcalaswapExchange,
-		WatchdogDelay: 200,
-	}
-
-	Exchanges[dia.AcalaswapExchangeKarura] = dia.Exchange{
-		Name:          dia.AcalaswapExchangeKarura,
-		WatchdogDelay: 200,
-	}
-
 	evmID = make(map[string]string)
 	evmID["137"] = dia.POLYGON
 	evmID["1"] = dia.ETHEREUM
