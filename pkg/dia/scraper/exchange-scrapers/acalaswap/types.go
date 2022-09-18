@@ -14,8 +14,8 @@ type AssetIds struct {
 }
 
 type AcalaAssetMetadata struct {
-	Name           []types.U8
-	Symbol         []types.U8
-	Decimals       types.U8
-	MinimalBalance Balance
+	Name           string
+	Symbol         string
+	Decimals       uint8
+	MinimalBalance []byte
 }
