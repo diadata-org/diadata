@@ -196,6 +196,19 @@
             "WatchdogDelay": 1200
         },
         {
+            "Name": "BitMart",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "https://api-cloud.bitmart.com/spot/v1/",
+            "WsAPI": "wss://ws-manager-compress.bitmart.com/api?protocol=1.1",
+            "pairsAPI": "https://api-cloud.bitmart.com/spot/v1/symbols",
+            "WatchdogDelay": 1200
+        },
+        {
             "Name": "Bitmax",
             "Centralized": true,
             "Bridge": false,
@@ -896,6 +909,19 @@
             "WsAPI": "",
             "pairsAPI": "",
             "WatchdogDelay": 1200
+        },
+        {
+            "Name": "Wanswap",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x1125C5F53C72eFd175753d427aA116B972Aa5537",
+            "Blockchain": {
+                "Name": "Wanchain"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
         },
         {
             "Name": "ZB",

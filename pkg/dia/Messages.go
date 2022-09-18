@@ -5,13 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"math/big"
-	"strings"
 	"time"
 
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 	"github.com/ethereum/go-ethereum/common"
-
-	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -44,6 +41,7 @@ const (
 	KARURA                                  = "Karura"
 	ACALA                                   = "Acala"
 	POLKADOT                                = "Polkadot"
+	WANCHAIN                                = "Wanchain"
 	FIAT                                    = "Fiat"
 )
 
@@ -60,12 +58,12 @@ type NFTClass struct {
 	Category     string
 }
 
-// MarshalBinary for DefiProtocolState
+// MarshalBinary for NFTClass
 func (nc *NFTClass) MarshalBinary() ([]byte, error) {
 	return json.Marshal(nc)
 }
 
-// UnmarshalBinary for DefiProtocolState
+// UnmarshalBinary for NFTClass
 func (nc *NFTClass) UnmarshalBinary(data []byte) error {
 	if err := json.Unmarshal(data, &nc); err != nil {
 		return err
@@ -103,12 +101,12 @@ func (a *NFTAttributes) Scan(value interface{}) error {
 	return json.Unmarshal(b, &a)
 }
 
-// MarshalBinary for DefiProtocolState
+// MarshalBinary for NFT
 func (n *NFT) MarshalBinary() ([]byte, error) {
 	return json.Marshal(n)
 }
 
-// UnmarshalBinary for DefiProtocolState
+// UnmarshalBinary for NFT
 func (n *NFT) UnmarshalBinary(data []byte) error {
 	if err := json.Unmarshal(data, &n); err != nil {
 		return err
@@ -130,12 +128,12 @@ type NFTTrade struct {
 	Exchange    string
 }
 
-// MarshalBinary for DefiProtocolState
+// MarshalBinary for NFTTrade
 func (ns *NFTTrade) MarshalBinary() ([]byte, error) {
 	return json.Marshal(ns)
 }
 
-// UnmarshalBinary for DefiProtocolState
+// UnmarshalBinary for NFTTrade
 func (ns *NFTTrade) UnmarshalBinary(data []byte) error {
 	if err := json.Unmarshal(data, &ns); err != nil {
 		return err
@@ -159,12 +157,12 @@ type NFTBid struct {
 	Exchange      string
 }
 
-// MarshalBinary for DefiProtocolState
+// MarshalBinary for NFTBid
 func (nb *NFTBid) MarshalBinary() ([]byte, error) {
 	return json.Marshal(nb)
 }
 
-// UnmarshalBinary for DefiProtocolState
+// UnmarshalBinary for NFTBid
 func (nb *NFTBid) UnmarshalBinary(data []byte) error {
 	if err := json.Unmarshal(data, &nb); err != nil {
 		return err
@@ -195,12 +193,12 @@ type NFTOffer struct {
 	Exchange      string
 }
 
-// MarshalBinary for DefiProtocolState
+// MarshalBinary for NFTOffer
 func (no *NFTOffer) MarshalBinary() ([]byte, error) {
 	return json.Marshal(no)
 }
 
-// UnmarshalBinary for DefiProtocolState
+// UnmarshalBinary for NFTOffer
 func (no *NFTOffer) UnmarshalBinary(data []byte) error {
 	if err := json.Unmarshal(data, &no); err != nil {
 		return err
@@ -433,83 +431,11 @@ type SynthAssetSupply struct {
 	LockedUnderlying float64 // Amount of underlying asset locked in the contract.
 	NumMint          int64   // Total number of synth asset mint events (optional).
 	NumRedeem        int64   // Total number of underlying asset redeem events (optional).
-	BlockNumber      uint8
-}
-
-type ItinToken struct {
-	Itin               string
-	Symbol             string
-	Label              string
-	Url_website        string
-	Coinmarketcap_url  string
-	Coinmarketcap_slug string
-}
-
-type OptionType int
-
-// signals if the option is call or a put
-const (
-	CallOption OptionType = iota + 1
-	PutOption
-)
-
-type OptionOrderbookDatum struct {
-	InstrumentName  string
-	ObservationTime time.Time
-	AskPrice        float64
-	BidPrice        float64
-	AskSize         float64
-	BidSize         float64
-	StrikePrice     float64
-	ExpirationTime  time.Time
-}
-
-type OptionMeta struct {
-	InstrumentName string
-	BaseCurrency   string
-	ExpirationTime time.Time
-	StrikePrice    float64
-	OptionType     OptionType
-}
-
-type OptionMetaIndex struct {
-	OptionMeta
-	OptionOrderbookDatum
-}
-
-type OptionMetaForward struct {
-	GeneralizedInstrumentName string
-	StrikePrice               float64
-	CallPrice                 float64
-	PutPrice                  float64 // this, as well as the above is defined as the bid price at a given strike price
-	ExpirationTime            time.Time
-}
-
-type CviDataPoint struct {
-	Timestamp time.Time
-	Value     float64
-}
-
-type DefiProtocol struct {
-	Name                 string
-	Address              string
-	UnderlyingBlockchain string
-	Token                string
-}
-
-type DefiProtocolState struct {
-	TotalUSD  float64
-	TotalETH  float64
-	Timestamp time.Time
-	Protocol  DefiProtocol
-}
-
-type DefiRate struct {
-	Timestamp     time.Time
-	LendingRate   float64
-	BorrowingRate float64
-	Asset         string
-	Protocol      string
+	BlockNumber      uint64
+	Time             time.Time
+	ColleteralRatio  float64
+	Protocol         string
+	TotalDebt        float64
 }
 
 type TradesBlockData struct {
@@ -613,45 +539,6 @@ func (fp *FilterPointMetadata) AddPoint(value float64) {
 	}
 }
 
-// MarshalBinary for DefiProtocolState
-func (e *DefiProtocolState) MarshalBinary() ([]byte, error) {
-	return json.Marshal(e)
-}
-
-// UnmarshalBinary for DefiProtocolState
-func (e *DefiProtocolState) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &e); err != nil {
-		return err
-	}
-	return nil
-}
-
-// MarshalBinary for DefiRate
-func (e *DefiRate) MarshalBinary() ([]byte, error) {
-	return json.Marshal(e)
-}
-
-// UnmarshalBinary for DefiRate
-func (e *DefiRate) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &e); err != nil {
-		return err
-	}
-	return nil
-}
-
-// MarshalBinary for DefiProtocol
-func (e *DefiProtocol) MarshalBinary() ([]byte, error) {
-	return json.Marshal(e)
-}
-
-// UnmarshalBinary for DefiProtocol
-func (e *DefiProtocol) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &e); err != nil {
-		return err
-	}
-	return nil
-}
-
 // MarshalBinary -
 func (e *FiltersBlock) MarshalBinary() ([]byte, error) {
 	return json.Marshal(e)
@@ -714,75 +601,6 @@ func (e *Pairs) UnmarshalBinary(data []byte) error {
 	if err := json.Unmarshal(data, &e); err != nil {
 		return err
 	}
-	return nil
-}
-
-// MarshalBinary -
-func (e *ItinToken) MarshalBinary() ([]byte, error) {
-	return json.Marshal(e)
-}
-
-// UnmarshalBinary -
-func (e *ItinToken) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &e); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (e *OptionMeta) MarshalBinary() ([]byte, error) {
-	basicOptionMeta := struct {
-		InstrumentName string     `json:"instrumentname"`
-		BaseCurrency   string     `json:"basecurrency"`
-		ExpirationTime string     `json:"expirationtime"`
-		StrikePrice    float64    `json:"strikeprice"`
-		OptionType     OptionType `json:"optiontype"`
-	}{
-		InstrumentName: e.InstrumentName,
-		BaseCurrency:   e.BaseCurrency,
-		ExpirationTime: e.ExpirationTime.Format(time.RFC3339),
-		StrikePrice:    e.StrikePrice,
-		OptionType:     e.OptionType,
-	}
-
-	return json.Marshal(basicOptionMeta)
-}
-
-func (e *OptionMeta) UnmarshalBinary(data []byte) error {
-	var rawStrings map[string]interface{}
-
-	err := json.Unmarshal(data, &rawStrings)
-	if err != nil {
-		log.Error(err)
-		return err
-	}
-
-	for k, v := range rawStrings {
-		if strings.ToLower(k) == "strikeprice" {
-			e.StrikePrice = v.(float64)
-		}
-		if strings.ToLower(k) == "instrumentname" {
-			e.InstrumentName = v.(string)
-		}
-		if strings.ToLower(k) == "basecurrency" {
-			e.BaseCurrency = v.(string)
-		}
-		if strings.ToLower(k) == "optiontype" {
-			if int(v.(float64)) == 2 {
-				e.OptionType = PutOption
-			} else {
-				e.OptionType = CallOption
-			}
-		}
-		if strings.ToLower(k) == "expirationtime" {
-			t, err := time.Parse(time.RFC3339, v.(string))
-			if err != nil {
-				return err
-			}
-			e.ExpirationTime = t
-		}
-	}
-
 	return nil
 }
 

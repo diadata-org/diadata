@@ -70,6 +70,7 @@ const (
 	DforceExchange            = "Dforce"
 	ZeroxExchange             = "0x"
 	KyberExchange             = "Kyber"
+	BitMartExchange           = "BitMart"
 	BitMaxExchange            = "Bitmax"
 	MEXCExchange              = "MEXC"
 	CREX24Exchange            = "CREX24"
@@ -87,6 +88,7 @@ const (
 	BitMexExchange            = "BitMex"
 	MultiChain                = "MultiChain"
 	StellaswapExchange        = "Stellaswap"
+	WanswapExchange           = "Wanswap"
 
 	// FinageForex        = "FinageForex"
 )

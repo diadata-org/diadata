@@ -24,6 +24,7 @@ var (
 		dia.CurveFIExchangeFantom,
 		dia.CurveFIExchangeMoonbeam,
 		dia.CurveFIExchangePolygon,
+		dia.WanswapExchange,
 		dia.OmniDexExchange,
 		dia.DiffusionExchange,
 		dia.SolarbeamExchange,

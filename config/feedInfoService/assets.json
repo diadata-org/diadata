@@ -41,15 +41,20 @@
       "Blockchain": "BinanceSmartChain"
     },
     {
-      "Symbol": "BUSD",
-      "Address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
-      "Blockchain": "BinanceSmartChain"
+      "Symbol": "BOO",
+      "Address": "0x841FAD6EAe12c286d1Fd18d1d525DFfA75C7EFFE",
+      "Blockchain": "Fantom"
     },
     {
       "Symbol": "BTC",
       "Address": "0x0000000000000000000000000000000000000000",
       "Blockchain": "Bitcoin"
     },
+    {
+      "Symbol": "BUSD",
+      "Address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+      "Blockchain": "BinanceSmartChain"
+    },   
     {
       "Symbol": "CELO",
       "Address": "0x471EcE3750Da237f93B8E339c536989b8978a438",
@@ -81,6 +86,11 @@
       "Blockchain": "Polygon"
     },
     {
+      "Symbol": "DOGE",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "Dogechain"
+    },
+    {
       "Symbol": "DOT",
       "Address": "0x0000000000000000000000000000000000000000",
       "Blockchain": "Polkadot"
@@ -89,6 +99,11 @@
       "Symbol": "DOWS",
       "Address": "0x661Ab0Ed68000491d98C796146bcF28c20d7c559",
       "Blockchain": "Ethereum"
+    },
+    {
+      "Symbol": "ETC",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "EthereumClassic"
     },
     {
       "Symbol": "ETH",
@@ -129,6 +144,11 @@
       "Symbol": "KSM",
       "Address": "0x0000000000000000000000000000000000000000",
       "Blockchain": "Kusama"
+    },
+    {
+      "Symbol": "LTC",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "Litecoin"
     },
     {
       "Symbol": "LUNA",
@@ -226,6 +246,11 @@
       "Blockchain": "Ethereum"
     },
     {
+      "Symbol": "WAN",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "Wanchain"
+    },
+    {
       "Symbol": "WBTC",
       "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
       "Blockchain": "Ethereum"
@@ -248,6 +273,11 @@
     {
       "Symbol": "WUST",
       "Address": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD",
+      "Blockchain": "Ethereum"
+    },
+    {
+      "Symbol": "YFI",
+      "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
       "Blockchain": "Ethereum"
     }
   ]

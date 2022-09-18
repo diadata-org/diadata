@@ -157,6 +157,12 @@
             "Address": "0xE5Dada80Aa6477e85d09747f2842f7993D0Df71C"
         },
         {
+            "Symbol": "DOGE",
+            "Exchange": "Binance",
+            "Blockchain": "Dogechain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "DOT",
             "Exchange": "Binance",
             "Blockchain": "Polkadot",
@@ -473,7 +479,7 @@
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
-          },
+        },
         {
             "Symbol": "SNM",
             "Exchange": "Binance",
@@ -541,6 +547,12 @@
             "Address": "0x286BDA1413a2Df81731D4930ce2F862a35A609fE"
         },
         {
+            "Symbol": "WAN",
+            "Exchange": "Binance",
+            "Blockchain": "Wanchain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "WBTC",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -569,6 +581,12 @@
             "Exchange": "Binance",
             "Blockchain": "Verge",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "YFI",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
         },
         {
             "Symbol": "YGG",

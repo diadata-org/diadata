@@ -212,8 +212,6 @@ func main() {
 		diaGroup.GET("/supply/:symbol", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetSupply))
 		diaGroup.GET("/assetSupply/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetAssetSupply))
 		diaGroup.GET("/supplies/:symbol", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetSupplies))
-		//  Deprectated - > split up in specific endpoints
-		// diaGroup.GET("/symbol/:symbol", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetSymbolDetails))
 		diaGroup.GET("/topAssets/:numAssets", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetTopAssets))
 		diaGroup.GET("/symbols", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetAllSymbols))
 		diaGroup.GET("/symbols/:substring", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetAllSymbols))
@@ -226,23 +224,16 @@ func main() {
 		diaGroup.GET("/assetInfo/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetAssetInfo))
 
 		diaGroup.GET("/exchanges", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetExchanges))
-		diaGroup.GET("/defiLendingProtocols", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetLendingProtocols))
+
 		diaGroup.GET("/chartPoints/:filter/:exchange/:symbol", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetChartPoints))
 		diaGroup.GET("/assetChartPoints/:filter/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetAssetChartPoints))
 		diaGroup.GET("/chartPointsAllExchanges/:filter/:symbol", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetChartPointsAllExchanges))
-		diaGroup.GET("/cviIndex", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetCviIndex))
-		diaGroup.GET("/defiLendingRate/:protocol/:asset", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetDefiRate))
-		diaGroup.GET("/defiLendingRate/:protocol/:asset/:time", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetDefiRate))
-		diaGroup.GET("/defiLendingState/:protocol", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetDefiState))
-		diaGroup.GET("/defiLendingState/:protocol/:time", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetDefiState))
 
 		diaGroup.GET("/missingToken/:exchange", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetMissingExchangeSymbol))
 		diaGroup.GET("/token/:symbol", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetAsset))
 		diaGroup.GET("/tokenexchanges/:symbol", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetAssetExchanges))
 
 		diaGroup.GET("/blockchains", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetAllBlockchains))
-
-		diaGroup.GET("CryptoDerivatives/:type/:name", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetCryptoDerivative))
 
 		// Endpoints for interestrates
 		// diaGroup.GET("/interestrates", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetRates))
@@ -271,10 +262,6 @@ func main() {
 		// Endpoints for customized products
 		diaGroup.GET("/custom/vwapFirefly/:ticker", cache.CachePageAtomic(memoryStore, cachingTime20Secs, diaApiEnv.GetVwapFirefly))
 
-		// Gold asset
-		diaGroup.GET("/goldPaxgOunces", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationOunces))
-		diaGroup.GET("/goldPaxgGrams", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetPaxgQuotationGrams))
-
 		// Index
 		diaGroup.GET("/benchmarkedIndexValue/:symbol", diaApiEnv.GetBenchmarkedIndexValue)
 
@@ -297,6 +284,10 @@ func main() {
 		diaGroup.GET("/NFTVolume/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetNFTVolume))
 		diaGroup.GET("/assetmap/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetAssetMap))
 		diaGroup.GET("/assetUpdates/:blockchain/:address/:deviation/:frequencySeconds", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetAssetUpdates))
+
+		// Endpoints for Synthassets
+
+		diaGroup.GET("/synthasset/:blockchain", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetSyntheticAsset))
 
 	}
 

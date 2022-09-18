@@ -1,0 +1,52 @@
+{
+    "Pools": [      
+        {
+            "Address": "0xa0cf1f16994ecd6d4613024b3ebb61b9f9c06f06",
+            "ForeignName": "ZOO-WASP"
+        },
+        {
+            "Address": "0xa6cbea6c72c002daa535b4a614e7246c2ae25e16",
+            "ForeignName": "ZOO-WWAN"
+        },
+        {
+            "Address": "0x56290cdbd88d5516877cbc1c892aa7a77f3b0301",
+            "ForeignName": "wanBTC-WWAN"
+        },
+        {
+            "Address": "0x2a272a37c999a36dc10100f8a4b7c3937c174a0d",
+            "ForeignName": "WWAN-wanXRP"
+        },
+        {
+            "Address": "0xb1b5dada5795f174f1f62ede70edb4365fb07fb1",
+            "ForeignName": "WWAN-wanETH"
+        },
+        {
+            "Address": "0x0a886dc4d584d55e9a1fa7eb0821762296b4ec0e",
+            "ForeignName": "wanUSDT-WWAN"
+        },
+        {
+            "Address": "0x29239a9b93a78decec6e0dd58ddbb854b7ffb0af",
+            "ForeignName": "WASP-WWAN"
+        },
+        {
+            "Address": "0x22d41262d4587ab2ac32d67cfeef7449d566920d",
+            "ForeignName": "wanUSDT-wanUSDC"
+        },
+        {
+            "Address": "0x5deca3be7cf6236820c2b9277ad269fb946fd073",
+            "ForeignName": "wanUSDT-ZOO"
+        },
+        {
+            "Address": "0x76227986f3331c8798616205b3f1c4a2d06fd1bc",
+            "ForeignName": "wanUSDT-WASP"
+        },
+        {
+            "Address": "0xcd326d196feb12471cef51c73d965b278c71a852",
+            "ForeignName": "WAND-WASP"
+        },
+        {
+            "Address": "0x7f84994114c41191386b7cb5e9296896e44a41ed",
+            "ForeignName": "WASP-PHX"
+        }
+    ]
+}

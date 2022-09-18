@@ -56,6 +56,18 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "DOGEUSDT",
+            "Ignore": false,
+            "Symbol": "DOGE"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "DOGEBUSD",
+            "Ignore": false,
+            "Symbol": "DOGE"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "USTBTC",
             "Ignore": false,
             "Symbol": "UST"
@@ -845,6 +857,12 @@
             "ForeignName": "EOSUSDT",
             "Ignore": false,
             "Symbol": "EOS"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "ETCBUSD",
+            "Ignore": false,
+            "Symbol": "ETC"
         },
         {
             "Exchange": "Binance",
@@ -2210,6 +2228,12 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "WANUSDT",
+            "Ignore": false,
+            "Symbol": "WAN"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "WANBNB",
             "Ignore": false,
             "Symbol": "WAN"
@@ -2393,6 +2417,18 @@
             "ForeignName": "XZCETH",
             "Ignore": false,
             "Symbol": "XZC"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "YFIUSDT",
+            "Ignore": false,
+            "Symbol": "YFI"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "YFIBUSD",
+            "Ignore": false,
+            "Symbol": "YFI"
         },
         {
             "Exchange": "Binance",

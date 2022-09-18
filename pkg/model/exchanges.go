@@ -181,7 +181,6 @@ func (rdb *RelDB) GetExchange(name string) (exchange dia.Exchange, err error) {
 	exchange.Name = name
 	return
 }
-
 // GetAllExchanges returns all exchanges existent in the exchange table.
 func (rdb *RelDB) GetAllExchanges() (exchanges []dia.Exchange, err error) {
 	query := fmt.Sprintf("SELECT name,centralized,bridge,contract,blockchain,rest_api,ws_api,pairs_api,watchdog_delay FROM %s", exchangeTable)

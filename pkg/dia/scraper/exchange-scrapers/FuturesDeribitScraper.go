@@ -13,6 +13,27 @@ import (
 )
 
 // const scrapeDataSaveLocationDeribit = ""
+type deribitInstrument struct {
+	InstrumentName      string  `json:"instrument_name"`
+	Kind                string  `json:"kind"`
+	TickSize            float64 `json:"tick_size"`
+	TakerCommission     float64 `json:"taker_commission"`
+	Strike              float64 `json:"strike"`
+	SettlementPeriod    string  `json:"settlement_period"`
+	QuoteCurrency       string  `json:"quote_currency"`
+	OptionType          string  `json:"option_type"`
+	MinTradeAmount      float64 `json:"min_trade_amount"`
+	MakerCommission     float64 `json:"maker_commission"`
+	IsActive            bool    `json:"is_active"`
+	ExpirationTimestamp int64   `json:"expiration_timestamp"`
+	CreationTimestamp   int64   `json:"creation_timestamp"`
+	ContractSize        float64 `json:"contract_size"`
+	BaseCurrency        string  `json:"base_currency"`
+}
+
+type deribitInstruments struct {
+	Result []deribitInstrument `json:"result"`
+}
 
 type deribitRefreshMessage struct {
 	Result struct {
@@ -29,8 +50,8 @@ type deribitErrorMessage struct {
 
 type ParsedDeribitResponse struct {
 	Jsonrpc string                      `json:"jsonrpc"`
-	Method string                      `json:"method"`
-	Params ParsedDeribitResponseParams `json:"params"`
+	Method  string                      `json:"method"`
+	Params  ParsedDeribitResponseParams `json:"params"`
 }
 
 type ParsedDeribitResponseParams struct {

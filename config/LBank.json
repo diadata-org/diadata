@@ -230,6 +230,12 @@
     },
     {
       "Exchange": "LBank",
+      "ForeignName": "ETC_USDT",
+      "Ignore": false,
+      "Symbol": "ETC"
+    },
+    {
+      "Exchange": "LBank",
       "ForeignName": "ETH_BTC",
       "Ignore": false,
       "Symbol": "ETH"
