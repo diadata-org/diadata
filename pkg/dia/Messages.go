@@ -7,7 +7,6 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 	"github.com/ethereum/go-ethereum/common"
 )
 
