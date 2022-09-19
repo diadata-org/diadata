@@ -40,8 +40,8 @@ func init() {
 }
 
 type AcalaAssetMetadata struct {
-	Name           string
-	Symbol         string
+	Name           []byte
+	Symbol         []byte
 	Decimals       uint8
 	MinimalBalance []byte
 }

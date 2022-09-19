@@ -506,13 +506,13 @@ func (s *AcalaswapScraper) GetPairByToken(currencyIdIn map[string]interface{}, c
 		return nil, err
 	}
 	token0 := AcalaswapToken{
-		Name:     targetIn.Name,
-		Symbol:   targetIn.Symbol,
+		Name:     string(targetIn.Name),
+		Symbol:   string(targetIn.Symbol),
 		Decimals: uint8(targetIn.Decimals),
 	}
 	token1 := AcalaswapToken{
-		Name:     targetOut.Name,
-		Symbol:   targetOut.Symbol,
+		Name:     string(targetOut.Name),
+		Symbol:   string(targetOut.Symbol),
 		Decimals: uint8(targetOut.Decimals),
 	}
 	foreignName := token0.Symbol + "-" + token1.Symbol
