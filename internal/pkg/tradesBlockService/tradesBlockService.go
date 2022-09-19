@@ -44,10 +44,11 @@ var (
 	log              *logrus.Logger
 	batchTimeSeconds int
 	// volumeUpdateSeconds = 60 * 60 * 6
-	volumeUpdateSeconds = 60 * 10
-	volumeThreshold     = float64(100000)
-	blueChipThreshold   = float64(50000000)
-	smallX              = float64(10)
+	volumeUpdateSeconds  = 60 * 10
+	volumeThreshold      = float64(100000)
+	blueChipThreshold    = float64(50000000)
+	tradeVolumeThreshold = 1e-8
+	smallX               = float64(10)
 )
 
 type TradesBlockService struct {
@@ -172,6 +173,10 @@ func (s *TradesBlockService) mainLoop() {
 
 // checkTrade determines whether a trade should be taken into account for price determination.
 func (s *TradesBlockService) checkTrade(t dia.Trade) bool {
+	if t.Volume < tradeVolumeThreshold {
+		return false
+	}
+
 	basetoken := buildBridge(t)
 
 	if basetoken.Blockchain == dia.FIAT {
