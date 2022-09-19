@@ -19,6 +19,7 @@ const (
 	AnyswapExchange           = "Anyswap"
 	BalancerExchange          = "Balancer"
 	BalancerV2Exchange        = "BalancerV2"
+	BalancerV2ExchangePolygon = "BalancerV2-Polygon"
 	BeetsExchange             = "Beets"
 	KrakenExchange            = "Kraken"
 	BitfinexExchange          = "Bitfinex"
@@ -67,7 +68,9 @@ const (
 	DforceExchange            = "Dforce"
 	ZeroxExchange             = "0x"
 	KyberExchange             = "Kyber"
+	BitMartExchange           = "BitMart"
 	BitMaxExchange            = "Bitmax"
+	MEXCExchange              = "MEXC"
 	CREX24Exchange            = "CREX24"
 	STEXExchange              = "STEX"
 	Deribit                   = "Deribit"
@@ -83,6 +86,7 @@ const (
 	BitMexExchange            = "BitMex"
 	MultiChain                = "MultiChain"
 	StellaswapExchange        = "Stellaswap"
+	WanswapExchange           = "Wanswap"
 
 	// FinageForex        = "FinageForex"
 )

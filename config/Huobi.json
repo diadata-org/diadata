@@ -176,6 +176,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "DOGEUSDT",
+      "Ignore": false,
+      "Symbol": "DOGE"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "EOSBTC",
       "Ignore": false,
       "Symbol": "EOS"
@@ -338,6 +344,18 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "TUSDUSDT",
+      "Ignore": false,
+      "Symbol": "TUSD"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "WANBTC",
+      "Ignore": false,
+      "Symbol": "WAN"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "XMRBTC",
       "Ignore": false,
       "Symbol": "XMR"
@@ -359,6 +377,12 @@
       "ForeignName": "XRPUSDT",
       "Ignore": false,
       "Symbol": "XRP"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "YFIUSDT",
+      "Ignore": false,
+      "Symbol": "YFI"
     },
     {
       "Exchange": "Huobi",

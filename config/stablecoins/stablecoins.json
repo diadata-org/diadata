@@ -1,0 +1,151 @@
+{
+    "Stablecoins": [
+        {
+            "Symbol": "USDT",
+            "Blockchain": "Ethereum",
+            "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+            "PegBlockchain": "Fiat",
+            "PegAddress": "840"
+        },
+        {
+            "Symbol": "USDC",
+            "Blockchain": "Ethereum",
+            "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "PegBlockchain": "Fiat",
+            "PegAddress": "840"
+        },
+        {
+            "Symbol": "BUSD",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+            "PegBlockchain": "Fiat",
+            "PegAddress": "840"
+        },
+        {
+            "Symbol": "DAI",
+            "Blockchain": "Ethereum",
+            "Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+            "PegBlockchain": "Fiat",
+            "PegAddress": "840"
+        },
+        {
+            "Symbol": "TUSD",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000085d4780B73119b644AE5ecd22b376",
+            "PegBlockchain": "Fiat",
+            "PegAddress": "840"
+        },
+        {
+            "Symbol": "USDP",
+            "Blockchain": "Ethereum",
+            "Address": "0x8E870D67F660D95d5be530380D0eC0bd388289E1",
+            "PegBlockchain": "Fiat",
+            "PegAddress": "840"
+        },
+        {
+            "Symbol": "USDD",
+            "Blockchain": "Tron",
+            "Address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
+            "PegBlockchain": "Fiat",
+            "PegAddress": "840"
+        },
+        {
+            "Symbol": "FEI",
+            "Blockchain": "Ethereum",
+            "Address": "0x956F47F50A910163D8BF957Cf5846D573E7f87CA",
+            "PegBlockchain": "Fiat",
+            "PegAddress": "840"
+        },
+        {
+            "Symbol": "FRAX",
+            "Blockchain": "Ethereum",
+            "Address": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+            "PegBlockchain": "Fiat",
+            "PegAddress": "840"
+        },
+        {
+            "Symbol": "MIM",
+            "Blockchain": "Ethereum",
+            "Address": "0x99D8a9C45b2ecA8864373A26D1459e3Dff1e17F3",
+            "PegBlockchain": "Fiat",
+            "PegAddress": "840"
+        },
+        {
+            "Symbol": "sUSD",
+            "Blockchain": "Ethereum",
+            "Address": "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51",
+            "PegBlockchain": "Fiat",
+            "PegAddress": "840"
+        },
+        {
+            "Symbol": "cUSD",
+            "Blockchain": "Celo",
+            "Address": "0x765DE816845861e75A25fCA122bb6898B8B1282a",
+            "PegBlockchain": "Fiat",
+            "PegAddress": "840"
+        },
+        {
+            "Symbol": "miMATIC",
+            "Blockchain": "Polygon",
+            "Address": "0xa3Fa99A148fA48D14Ed51d610c367C61876997F1",
+            "PegBlockchain": "Fiat",
+            "PegAddress": "840"
+        },
+        {
+            "Symbol": "EURS",
+            "Blockchain": "Ethereum",
+            "Address": "0xdB25f211AB05b1c97D595516F45794528a807ad8",
+            "PegBlockchain": "Fiat",
+            "PegAddress": "978"
+        },
+        {
+            "Symbol": "EUROC",
+            "Blockchain": "Ethereum",
+            "Address": "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c",
+            "PegBlockchain": "Fiat",
+            "PegAddress": "978"
+        },
+        {
+            "Symbol": "agEUR",
+            "Blockchain": "Ethereum",
+            "Address": "0x1a7e4e63778B4f12a199C062f3eFdD288afCBce8",
+            "PegBlockchain": "Fiat",
+            "PegAddress": "978"
+        },
+        {
+            "Symbol": "EURT",
+            "Blockchain": "Ethereum",
+            "Address": "0xC581b735A1688071A1746c968e0798D642EDE491",
+            "PegBlockchain": "Fiat",
+            "PegAddress": "978"
+        },
+        {
+            "Symbol": "sEUR",
+            "Blockchain": "Ethereum",
+            "Address": "0xD71eCFF9342A5Ced620049e616c5035F1dB98620",
+            "PegBlockchain": "Fiat",
+            "PegAddress": "978"
+        },
+        {
+            "Symbol": "mCEUR",
+            "Blockchain": "Celo",
+            "Address": "0xE273Ad7ee11dCfAA87383aD5977EE1504aC07568",
+            "PegBlockchain": "Fiat",
+            "PegAddress": "978"
+        },
+        {
+            "Symbol": "cEUR",
+            "Blockchain": "Celo",
+            "Address": "0xEE586e7Eaad39207F0549BC65f19e336942C992f",
+            "PegBlockchain": "Fiat",
+            "PegAddress": "978"
+        },
+        {
+            "Symbol": "JPYC",
+            "Blockchain": "Polygon",
+            "Address": "0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB",
+            "PegBlockchain": "Fiat",
+            "PegAddress": "392"
+        }
+    ]
+}

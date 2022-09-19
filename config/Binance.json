@@ -20,6 +20,24 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "SHIBUSDT",
+            "Ignore": false,
+            "Symbol": "SHIB"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "SHIBBUSD",
+            "Ignore": false,
+            "Symbol": "SHIB"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "TUSDUSDT",
+            "Ignore": false,
+            "Symbol": "TUSD"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "CKBUSDT",
             "Ignore": false,
             "Symbol": "CKB"
@@ -35,6 +53,18 @@
             "ForeignName": "DOTUSDT",
             "Ignore": false,
             "Symbol": "DOT"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "DOGEUSDT",
+            "Ignore": false,
+            "Symbol": "DOGE"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "DOGEBUSD",
+            "Ignore": false,
+            "Symbol": "DOGE"
         },
         {
             "Exchange": "Binance",
@@ -827,6 +857,12 @@
             "ForeignName": "EOSUSDT",
             "Ignore": false,
             "Symbol": "EOS"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "ETCBUSD",
+            "Ignore": false,
+            "Symbol": "ETC"
         },
         {
             "Exchange": "Binance",
@@ -2192,6 +2228,12 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "WANUSDT",
+            "Ignore": false,
+            "Symbol": "WAN"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "WANBNB",
             "Ignore": false,
             "Symbol": "WAN"
@@ -2375,6 +2417,18 @@
             "ForeignName": "XZCETH",
             "Ignore": false,
             "Symbol": "XZC"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "YFIUSDT",
+            "Ignore": false,
+            "Symbol": "YFI"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "YFIBUSD",
+            "Ignore": false,
+            "Symbol": "YFI"
         },
         {
             "Exchange": "Binance",

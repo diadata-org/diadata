@@ -63,6 +63,10 @@
         {
             "Address": "0x05366F13d5f655FFB2d2ABb7b2ba005b12eB8bdE",
             "ForeignName": "QI-WAVAX"
+        },
+        {
+            "Address": "0x34EA62d682C82E998945f1D663cb65f8b4DB37E1",
+            "ForeignName": "ZOO-WAVAX"
         }
     ]
 }

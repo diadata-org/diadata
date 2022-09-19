@@ -26,7 +26,6 @@ type Quotation struct {
 	VolumeYesterdayUSD *float64
 	Source             string
 	Time               time.Time
-	ITIN               string
 }
 
 type StockQuotation struct {
@@ -134,70 +133,6 @@ type Price struct {
 	Time   time.Time
 }
 
-type Coin struct {
-	Symbol             string
-	Name               string
-	Price              float64
-	PriceYesterday     *float64
-	VolumeYesterdayUSD *float64
-	Time               time.Time
-	CirculatingSupply  *float64
-	ITIN               string
-}
-
-func (e *Coin) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &e); err != nil {
-		return err
-	}
-	return nil
-}
-
-// MarshalBinary -
-func (e *Coin) MarshalBinary() ([]byte, error) {
-	return json.Marshal(e)
-}
-
-type Coins struct {
-	CompleteCoinList []CoinSymbolAndName
-	Change           *Change
-	Coins            []Coin
-}
-
-// MarshalBinary -
-func (e *Coins) MarshalBinary() ([]byte, error) {
-	return json.Marshal(e)
-}
-
-// UnmarshalBinary -
-func (e *Coins) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &e); err != nil {
-		return err
-	}
-	return nil
-}
-
-// SymbolDetails is used for API return values
-type SymbolDetails struct {
-	Change    *Change
-	Coin      Coin
-	Rank      int
-	Exchanges []SymbolExchangeDetails
-	Gfx1      *Points
-}
-
-// MarshalBinary -
-func (e *SymbolDetails) MarshalBinary() ([]byte, error) {
-	return json.Marshal(e)
-}
-
-// UnmarshalBinary -
-func (e *SymbolDetails) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &e); err != nil {
-		return err
-	}
-	return nil
-}
-
 type CurrencyChange struct {
 	Symbol        string
 	Rate          float64
@@ -221,12 +156,6 @@ func (e *Change) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
-// Point is used exclusively for chart points in the API
-type Point struct {
-	UnixTime int64
-	Value    float64
-}
-
 type Points struct {
 	DataPoints []clientInfluxdb.Result
 }
@@ -241,13 +170,6 @@ func (e *Points) UnmarshalBinary(data []byte) error {
 // MarshalBinary -
 func (e *Points) MarshalBinary() ([]byte, error) {
 	return json.Marshal(e)
-}
-
-// SymbolShort is used in ForeignQuotation.
-// TO DO: Switch from ITIN to Address/Identifier
-type SymbolShort struct {
-	Symbol string
-	ITIN   string
 }
 
 type CoinSymbolAndName struct {

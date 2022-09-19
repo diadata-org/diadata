@@ -2,6 +2,18 @@
   "Coins": [
     {
       "Exchange": "CoinBase",
+      "ForeignName": "YFIUSD",
+      "Ignore": false,
+      "Symbol": "YFI"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "SHIB-USD",
+      "Ignore": false,
+      "Symbol": "SHIB"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "QUICK-USD",
       "Ignore": false,
       "Symbol": "QUICK"
@@ -23,6 +35,18 @@
       "ForeignName": "BUSD-USD",
       "Ignore": false,
       "Symbol": "BUSD"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "DOGE-USD",
+      "Ignore": false,
+      "Symbol": "DOGE"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "ETC-USD",
+      "Ignore": false,
+      "Symbol": "ETC"
     },
     {
       "Exchange": "CoinBase",

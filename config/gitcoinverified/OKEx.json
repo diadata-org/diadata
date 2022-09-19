@@ -67,6 +67,12 @@
             "Address": "0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"
         },
         {
+            "Symbol": "DOGE",
+            "Exchange": "OKEx",
+            "Blockchain": "Dogechain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "GLM",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
@@ -217,6 +223,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "SHIB",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
+        },
+        {
             "Symbol": "SNC",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
@@ -275,6 +287,12 @@
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
             "Address": "0x922105fAd8153F516bCfB829f56DC097a0E1D705"
+        },
+        {
+            "Symbol": "YFI",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
         },
         {
             "Symbol": "YGG",

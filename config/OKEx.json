@@ -2,6 +2,18 @@
   "Coins": [
     {
       "Exchange": "OKEx",
+      "ForeignName": "YFI-USDT",
+      "Ignore": false,
+      "Symbol": "YFI"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "YFI-USDC",
+      "Ignore": false,
+      "Symbol": "YFI"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "ACA-USDT",
       "Ignore": false,
       "Symbol": "ACA"
@@ -17,6 +29,12 @@
       "ForeignName": "PHA-USDT",
       "Ignore": false,
       "Symbol": "PHA"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "SHIB-USDT",
+      "Ignore": false,
+      "Symbol": "SHIB"
     },
     {
       "Exchange": "OKEx",
@@ -707,6 +725,12 @@
       "ForeignName": "DNT-USDT",
       "Ignore": false,
       "Symbol": "DNT"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "DOGE-USDT",
+      "Ignore": false,
+      "Symbol": "DOGE"
     },
     {
       "Exchange": "OKEx",

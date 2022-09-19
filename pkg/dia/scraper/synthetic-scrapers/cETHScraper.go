@@ -3,7 +3,6 @@ package synthscrapers
 import (
 	ceth "github.com/diadata-org/diadata/config/synthContracts/cETH"
 	"github.com/diadata-org/diadata/pkg/dia"
-	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -16,7 +15,7 @@ type cETHScraper struct {
 	blockchain   string
 }
 
-func NewcETHScraper(rdb *models.RelDB) *cETHScraper {
+func NewcETHScraper() *cETHScraper {
 	log.Info("TO DO")
 
 	scraper := &cETHScraper{

@@ -31,6 +31,12 @@
             "Address": "0x5774B2fc3e91aF89f89141EacF76545e74265982"
         },
         {
+            "Symbol": "SHIB",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
+        },
+        {
             "Symbol": "TLOS",
             "Exchange": "GateIO",
             "Blockchain": "Telos",

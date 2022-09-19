@@ -36,7 +36,7 @@ func (rdb *RelDB) GetKeyAsset(asset dia.Asset) (string, error) {
 
 // SetAsset stores an asset into postgres.
 func (rdb *RelDB) SetAsset(asset dia.Asset) error {
-	query := fmt.Sprintf("INSERT INTO %s (symbol,name,address,decimals,blockchain) VALUES ($1,$2,$3,$4,$5)", assetTable)
+	query := fmt.Sprintf("INSERT INTO %s (symbol,name,address,decimals,blockchain) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (address,blockchain) DO NOTHING", assetTable)
 	_, err := rdb.postgresClient.Exec(context.Background(), query, asset.Symbol, asset.Name, asset.Address, strconv.Itoa(int(asset.Decimals)), asset.Blockchain)
 	if err != nil {
 		return err
@@ -190,11 +190,48 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 	var rows pgx.Rows
 	var query string
 	if name == "" {
-		query = fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE symbol ILIKE '%s%%'", assetTable, symbol)
+		query = fmt.Sprintf(`
+		SELECT symbol,name,address,decimals,blockchain 
+		FROM %s a
+		INNER JOIN %s av
+		ON av.asset_id=a.asset_id
+		WHERE av.volume>0
+		AND av.time_stamp IS NOT NULL
+		AND symbol ILIKE '%s%%'
+		ORDER BY av.volume DESC`,
+			assetTable,
+			assetVolumeTable,
+			symbol,
+		)
 	} else if symbol == "" {
-		query = fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE name ILIKE '%s%%'", assetTable, symbol)
+		query = fmt.Sprintf(`
+		SELECT symbol,name,address,decimals,blockchain 
+		FROM %s a
+		INNER JOIN %s av
+		ON av.asset_id=a.asset_id
+		WHERE av.volume>0
+		AND av.time_stamp IS NOT NULL
+		AND name ILIKE '%s%%'
+		ORDER BY av.volume DESC`,
+			assetTable,
+			assetVolumeTable,
+			symbol,
+		)
 	} else {
-		query = fmt.Sprintf("SELECT  symbol,name,address,decimals,blockchain FROM %s a INNER JOIN %s av ON av.asset_id=a.asset_id WHERE symbol ILIKE '%s%%' or name ILIKE '%s%%' ORDER BY av.volume DESC", assetTable, assetVolumeTable, name, symbol)
+		query = fmt.Sprintf(`
+		SELECT symbol,name,address,decimals,blockchain 
+		FROM %s a 
+		INNER JOIN %s av 
+		ON av.asset_id=a.asset_id 
+		WHERE av.volume>0
+		AND av.time_stamp IS NOT NULL
+		AND (symbol ILIKE '%s%%' OR name ILIKE '%s%%')
+		ORDER BY av.volume DESC`,
+			assetTable,
+			assetVolumeTable,
+			name,
+			symbol,
+		)
 	}
 	if err != nil {
 		return
@@ -224,7 +261,19 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 func (rdb *RelDB) GetAssetsByAddress(address string) (assets []dia.Asset, err error) {
 	var decimals string
 	var rows pgx.Rows
-	query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE address ILIKE '%s%%'", assetTable, address)
+	query := fmt.Sprintf(`
+	SELECT symbol,name,address,decimals,blockchain 
+	FROM %s a 
+	INNER JOIN %s av 
+	ON a.asset_id=av.asset_id
+	WHERE av.volume>0
+	AND av.time_stamp IS NOT NULL
+	AND address ILIKE '%s%%'
+	ORDER BY av.volume DESC`,
+		assetTable,
+		assetVolumeTable,
+		address,
+	)
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return
@@ -1113,7 +1162,7 @@ func (rdb *RelDB) GetAssetSource(asset dia.Asset, onlycex bool) (exchanges []str
 	if onlycex {
 		query = fmt.Sprintf("SELECT DISTINCT ON (es.exchange) es.exchange From exchangesymbol es INNER JOIN exchange  e ON es.exchange = e.name where es.symbol ILIKE '%s' and e.centralized=true ", asset.Symbol)
 	} else {
-		query = fmt.Sprintf("SELECT DISTINCT ON (es.exchange) es.exchange From exchangesymbol es INNER JOIN exchange  e ON es.exchange = e.name where es.symbol ILIKE '%s'", asset.Symbol)
+		query = fmt.Sprintf("SELECT DISTINCT ON (es.exchange) es.exchange From exchangesymbol es INNER JOIN exchange  e ON es.exchange = e.name where es.symbol ILIKE '%s' and e.centralized=false ", asset.Symbol)
 
 	}
 

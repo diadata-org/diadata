@@ -122,6 +122,12 @@
     },
     {
       "Exchange": "Kraken",
+      "ForeignName": "XETCZUSD",
+      "Ignore": false,
+      "Symbol": "ETC"
+    },
+    {
+      "Exchange": "Kraken",
       "ForeignName": "XETHXXBT",
       "Ignore": false,
       "Symbol": "ETH"
@@ -179,6 +185,12 @@
       "ForeignName": "XZECXXBT",
       "Ignore": false,
       "Symbol": "ZEC"
+    },
+    {
+      "Exchange": "Kraken",
+      "ForeignName": "YFIUSD",
+      "Ignore": false,
+      "Symbol": "YFI"
     },
     {
       "Exchange": "Kraken",

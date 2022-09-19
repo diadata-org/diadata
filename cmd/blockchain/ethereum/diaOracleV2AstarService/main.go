@@ -42,28 +42,16 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse deviationPermille: %v")
 	}
+	assetsStr := utils.Getenv("ASSETS", "")
+	assetsParsed := strings.Split(assetsStr, ",")
 
-	addresses := []string{
-		"0x0000000000000000000000000000000000000000", //BTC
-		"0x0000000000000000000000000000000000000000", //ETH
-		"0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419", //DIA
-		"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", //USDC
-		"0x0000000000000000000000000000000000000000", //SDN
-		"0x0000000000000000000000000000000000000000", //FTM
-		"0x0000000000000000000000000000000000000000", //KSM
-		"0x0000000000000000000000000000000000000000", //ASTR
-		"0x9E32b13ce7f2E80A01932B42553652E053D6ed8e", //Metis
-	}
-	blockchains := []string{
-		"Bitcoin",
-		"Ethereum",
-		"Ethereum",
-		"Ethereum",
-		"Shiden",
-		"Fantom",
-		"Kusama",
-		"Astar",
-		"Ethereum",
+	addresses := []string{}
+	blockchains := []string{}
+	
+	for _, asset := range assetsParsed {
+		entries := strings.Split(asset, "-")
+		blockchains = append(blockchains, strings.TrimSpace(entries[0]))
+		addresses = append(addresses, strings.TrimSpace(entries[1]))
 	}
 
 	oldPrices := make(map[int]float64)
@@ -100,7 +88,7 @@ func main() {
 					blockchain := blockchains[i]
 					oldPrice := oldPrices[i]
 					log.Println("old price", oldPrice)
-					oldPrice, err = periodicOracleUpdateHelper(oldPrice, deviationPermille, auth, contract, conn, blockchain, address)
+					oldPrice, err = periodicOracleUpdateHelper(oldPrice, deviationPermille, auth, contract, conn, blockchain, address, chainId)
 					oldPrices[i] = oldPrice
 					if err != nil {
 						log.Println(err)
@@ -113,12 +101,12 @@ func main() {
 	select {}
 }
 
-func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string) (float64, error) {
+func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string, chainId int64) (float64, error) {
 
 	// Get quotation for token and update Oracle
 	rawQ, err := getAssetQuotationFromDia(blockchain, address)
 	if err != nil {
-		log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
+		log.Fatalf("Failed to retrieve %s - %s quotation data from DIA: %v", blockchain, address, err)
 		return oldPrice, err
 	}
 	rawQ.Name = rawQ.Symbol
@@ -128,7 +116,7 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 
 	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
 		log.Println("Entering deviation based update zone")
-		err = updateQuotation(rawQ, auth, contract, conn)
+		err = updateQuotation(rawQ, auth, contract, conn, chainId)
 		if err != nil {
 			log.Fatalf("Failed to update DIA Oracle: %v", err)
 			return oldPrice, err
@@ -162,11 +150,11 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 	return nil
 }
 
-func updateQuotation(quotation *models.Quotation, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client) error {
+func updateQuotation(quotation *models.Quotation, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, chainId int64) error {
 	symbol := quotation.Symbol + "/USD"
 	price := quotation.Price
 	timestamp := time.Now().Unix()
-	err := updateOracle(conn, contract, auth, symbol, int64(price*100000000), timestamp)
+	err := updateOracle(conn, contract, auth, symbol, int64(price*100000000), timestamp, chainId)
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err
@@ -181,9 +169,10 @@ func updateOracle(
 	auth *bind.TransactOpts,
 	key string,
 	value int64,
-	timestamp int64) error {
+	timestamp int64,
+	chainId int64) error {
 
-	gasPrice, err := getGasSuggestion()
+	gasPrice, err := getGasSuggestion(chainId)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -214,7 +203,7 @@ func updateOracle(
 }
 
 func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, error) {
-	response, err := http.Get("https://rest.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
+	response, err := http.Get("https://api.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
 	if err != nil {
 		return nil, err
 	}
@@ -235,8 +224,15 @@ func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, er
 	return &quotation, nil
 }
 
-func getGasSuggestion() (*big.Int, error) {
-	response, err := http.Get("http://astargasstation.dia-services:3000/api/astar/gasnow")
+func getGasSuggestion(chainId int64) (*big.Int, error) {
+	chainName := "shiden"
+	if chainId == 592 {
+		chainName = "astar"
+	}
+	if chainId == 81 {
+		chainName = "shibuya"
+	}
+	response, err := http.Get("http://astargasstation.dia-services:3000/api/" + chainName + "/gasnow")
 	if err != nil {
 		return nil, err
 	}

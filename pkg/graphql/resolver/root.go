@@ -22,15 +22,6 @@ type DiaResolver struct {
 	InfluxBatchSize int64
 }
 
-// GetQuotation Get quotation
-func (r *DiaResolver) GetQuotation(ctx context.Context, args struct{ Symbol graphql.NullString }) (*QuotationResolver, error) {
-	q, err := r.DS.GetQuotation(*args.Symbol.Value)
-	if err != nil {
-		return nil, err
-	}
-	return &QuotationResolver{q: *q}, nil
-}
-
 func (r *DiaResolver) GetSupply(ctx context.Context, args struct{ Symbol graphql.NullString }) (*SupplyResolver, error) {
 	q, err := r.DS.GetLatestSupply(*args.Symbol.Value, &r.RelDB)
 	if err != nil {
