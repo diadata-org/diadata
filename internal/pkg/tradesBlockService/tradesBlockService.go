@@ -127,8 +127,9 @@ func (s *TradesBlockService) mainLoop() {
 			}
 			tradeOk := s.checkTrade(*t)
 			swapppedTradeOk := s.checkTrade(tSwapped)
+			s.process(*t)
+			s.process(tSwapped)
 			if tradeOk {
-				s.process(*t)
 				if scrapers.Exchanges[(*t).Source].Centralized {
 					acceptCountCEX++
 				} else {
@@ -136,7 +137,6 @@ func (s *TradesBlockService) mainLoop() {
 				}
 			}
 			if swapppedTradeOk {
-				s.process(tSwapped)
 				if scrapers.Exchanges[(*t).Source].Centralized {
 					acceptCountSwapCEX++
 				} else {
@@ -160,6 +160,12 @@ func (s *TradesBlockService) mainLoop() {
 			log.Info("accepted trades DEX: ", acceptCountDEX)
 			log.Info("accepted swapped trades DEX: ", acceptCountSwapDEX)
 			log.Info("discarded trades: ", totalCount-acceptCount)
+			acceptCount = 0
+			acceptCountCEX = 0
+			acceptCountDEX = 0
+			acceptCountSwapCEX = 0
+			acceptCountSwapDEX = 0
+			totalCount = 0
 		}
 	}
 }
@@ -200,9 +206,11 @@ func (s *TradesBlockService) process(t dia.Trade) {
 
 	var verifiedTrade bool
 
+	tradeOk := s.checkTrade(t)
+
 	// Price estimation can only be done for verified pairs.
 	// Trades with unverified pairs are still saved, but not sent to the filtersBlockService.
-	if t.VerifiedPair {
+	if t.VerifiedPair && tradeOk {
 		if t.BaseToken.Address == "840" && t.BaseToken.Blockchain == dia.FIAT {
 			// All prices are measured in US-Dollar, so just price for base token == USD
 			t.EstimatedUSDPrice = t.Price
@@ -215,11 +223,11 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				err       error
 			)
 			if !s.historical {
-				// Get latest price from cache.
-				// price, err = s.datastore.GetAssetPriceUSDLatest(t.BaseToken)
 
+				// Bridge basetoken if necessary.
 				basetoken := buildBridge(t)
 
+				// Get latest price from cache.
 				if _, ok = s.priceCache[assetIdentifier(basetoken)]; ok {
 					price = s.priceCache[assetIdentifier(basetoken)]
 				} else {
@@ -231,8 +239,10 @@ func (s *TradesBlockService) process(t dia.Trade) {
 
 			} else {
 
-				basetoken := t.BaseToken
-				// Look for historic price of base token at trade time.
+				// Bridge basetoken if necessary.
+				basetoken := buildBridge(t)
+
+				// Get latest price from cache.
 				if _, ok = s.priceCache[assetIdentifier(basetoken)]; ok {
 					price = s.priceCache[assetIdentifier(basetoken)]
 				} else {
