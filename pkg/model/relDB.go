@@ -59,6 +59,7 @@ type RelDatastore interface {
 
 	// ----------------- pool methods -------------------
 	SetPool(pool dia.Pool) error
+	GetPoolByAddress(blockchain string, address string) (pool dia.Pool, err error)
 	GetAllPoolAddrsExchange(exchange string) ([]string, error)
 
 	// ----------------- blockchain methods -------------------
