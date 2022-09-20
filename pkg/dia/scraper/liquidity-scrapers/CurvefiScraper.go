@@ -129,6 +129,7 @@ func (scraper *CurveFIScraper) fetchPools(factoryAddress common.Address) {
 		poolCount, err = contract.PoolCount(&bind.CallOpts{})
 		if err != nil {
 			log.Error("PoolCount: ", err)
+			return
 		}
 
 		for i := 0; i < int(poolCount.Int64()); i++ {
