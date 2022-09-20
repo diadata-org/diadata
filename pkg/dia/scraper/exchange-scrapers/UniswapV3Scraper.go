@@ -67,6 +67,8 @@ func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool) *UniswapV3Scraper {
 		s = makeUniswapV3Scraper(exchange, false, "", "", "200", uint64(12369621))
 	case dia.UniswapExchangeV3Polygon:
 		s = makeUniswapV3Scraper(exchange, false, "", "", "200", uint64(22757913))
+	case dia.UniswapExchangeV3Arbitrum:
+		s = makeUniswapV3Scraper(exchange, false, "", "", "200", uint64(165))
 	}
 
 	if scrape {

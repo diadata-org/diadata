@@ -898,6 +898,19 @@
             "WatchdogDelay": 7200
         },
         {
+            "Name": "UniswapV3-Arbitrum",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x1F98431c8aD98523631AE4a59f267346ea31F984",
+            "Blockchain": {
+                "Name": "Arbitrum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
             "Name": "Unkown",
             "Centralized": true,
             "Bridge": false,
