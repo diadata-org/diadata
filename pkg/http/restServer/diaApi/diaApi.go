@@ -865,6 +865,39 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 
 }
 
+// -----------------------------------------------------------------------------
+// POOLS AND LIQUIDITY
+// -----------------------------------------------------------------------------
+
+func (env *Env) GetPoolLiquidityByAddress(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+	blockchain := c.Param("blockchain")
+	address := c.Param("address")
+
+	type localReturn struct {
+		Exchange   string
+		Blockchain string
+		Address    string
+		Liquidity  []dia.AssetVolume
+	}
+
+	pool, err := env.RelDB.GetPoolByAddress(blockchain, address)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find pool"))
+		return
+	}
+	var l localReturn
+	l.Exchange = pool.Exchange.Name
+	l.Blockchain = pool.Blockchain.Name
+	l.Address = pool.Address
+	l.Liquidity = pool.Assetvolumes
+
+	c.JSON(http.StatusOK, l)
+
+}
+
 func (env *Env) SearchAsset(c *gin.Context) {
 	if !validateInputParams(c) {
 		return

@@ -415,7 +415,7 @@ func (rdb *RelDB) GetAssets(symbol string) (assets []dia.Asset, err error) {
 }
 
 // GetAssetExchnage returns all assets which share the symbol ticker @symbol.
-func (rdb *RelDB) GetAssetExchange(symbol string) (exchnages []string, err error) {
+func (rdb *RelDB) GetAssetExchange(symbol string) (exchanges []string, err error) {
 
 	query := fmt.Sprintf("SELECT exchange FROM %s  INNER JOIN %s ON asset.asset_id = exchangesymbol.asset_id WHERE exchangesymbol.symbol = $1 ", exchangesymbolTable, assetTable)
 	var rows pgx.Rows
@@ -432,7 +432,7 @@ func (rdb *RelDB) GetAssetExchange(symbol string) (exchnages []string, err error
 		if err != nil {
 			return
 		}
-		exchnages = append(exchnages, exchange)
+		exchanges = append(exchanges, exchange)
 	}
 	return
 }
