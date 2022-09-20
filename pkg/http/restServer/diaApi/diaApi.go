@@ -2813,8 +2813,8 @@ func (env *Env) GetSyntheticAsset(c *gin.Context) {
 	}
 
 	blockchain := c.Param("blockchain")
+	protocol := c.Param("protocol")
 
-	protocol := c.Query("protocol")
 	address := c.Query("address")
 	starttimeStr := c.Query("starttime")
 	endtimeStr := c.Query("endtime")

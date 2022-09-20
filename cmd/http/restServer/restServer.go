@@ -297,7 +297,7 @@ func main() {
 
 		// Endpoints for Synthassets
 
-		diaGroup.GET("/synthasset/:blockchain", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetSyntheticAsset))
+		diaGroup.GET("/synthasset/:blockchain/:protocol", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetSyntheticAsset))
 
 	}
 
