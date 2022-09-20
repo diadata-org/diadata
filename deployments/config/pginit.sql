@@ -70,6 +70,7 @@ CREATE TABLE poolasset (
     pool_id UUID REFERENCES pool(pool_id) NOT NULL,
     asset_id UUID REFERENCES asset(asset_id) NOT NULL, 
     liquidity numeric,
+    time_stamp timestamp,
     UNIQUE (poolasset_id),
     UNIQUE(pool_id,asset_id)
 );

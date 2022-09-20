@@ -877,14 +877,17 @@ func (env *Env) GetPoolLiquidityByAddress(c *gin.Context) {
 	address := c.Param("address")
 
 	type localReturn struct {
-		Exchange   string
-		Blockchain string
-		Address    string
-		Liquidity  []dia.AssetVolume
+		Exchange          string
+		Blockchain        string
+		Address           string
+		Time              time.Time
+		TotalLiquidityUSD float64
+		Liquidity         []dia.AssetVolume
 	}
 
 	pool, err := env.RelDB.GetPoolByAddress(blockchain, address)
 	if err != nil {
+		log.Info("err: ", err)
 		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find pool"))
 		return
 	}
@@ -892,7 +895,21 @@ func (env *Env) GetPoolLiquidityByAddress(c *gin.Context) {
 	l.Exchange = pool.Exchange.Name
 	l.Blockchain = pool.Blockchain.Name
 	l.Address = pool.Address
+	l.Time = pool.Time
 	l.Liquidity = pool.Assetvolumes
+
+	// Get total liquidity.
+	var totalLiquidity float64
+	for _, assetvol := range pool.Assetvolumes {
+		price, err := env.DataStore.GetAssetPriceUSDCache(assetvol.Asset)
+		if err != nil {
+			log.Warnf("no quotation for %v: %v", assetvol.Asset, err)
+			totalLiquidity = 0
+			break
+		}
+		totalLiquidity += price * assetvol.Volume
+	}
+	l.TotalLiquidityUSD = totalLiquidity
 
 	c.JSON(http.StatusOK, l)
 

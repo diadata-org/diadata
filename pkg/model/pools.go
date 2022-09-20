@@ -112,8 +112,8 @@ func (rdb *RelDB) SetPool(pool dia.Pool) error {
 	var query1 string
 	for i := 0; i < len(pool.Assetvolumes); i++ {
 		query1 = fmt.Sprintf(
-			`INSERT INTO %s (pool_id,asset_id,liquidity)
-				VALUES ((SELECT pool_id from %s where address=$1 and blockchain=$2),(SELECT asset_id from %s where address=$3 and blockchain=$4),$5)
+			`INSERT INTO %s (pool_id,asset_id,liquidity,time_stamp)
+				VALUES ((SELECT pool_id from %s where address=$1 and blockchain=$2),(SELECT asset_id from %s where address=$3 and blockchain=$4),$5,$6)
 				ON CONFLICT (pool_id,asset_id) DO UPDATE SET liquidity=EXCLUDED.liquidity`,
 			poolassetTable,
 			poolTable,
@@ -128,6 +128,7 @@ func (rdb *RelDB) SetPool(pool dia.Pool) error {
 			pool.Assetvolumes[i].Asset.Address,
 			pool.Assetvolumes[i].Asset.Blockchain,
 			pool.Assetvolumes[i].Volume,
+			pool.Time,
 		)
 		if err != nil {
 			return err
@@ -143,7 +144,7 @@ func (rdb *RelDB) GetPoolByAddress(blockchain string, address string) (pool dia.
 
 	var rows pgx.Rows
 	query := fmt.Sprintf(`
-		SELECT pa.liquidity,a.symbol,a.name,a.address,a.decimals,p.exchange 
+		SELECT pa.liquidity,a.symbol,a.name,a.address,a.decimals,p.exchange,pa.time_stamp 
 		FROM %s pa 
 		INNER JOIN %s p 
 		ON p.pool_id=pa.pool_id 
@@ -168,6 +169,7 @@ func (rdb *RelDB) GetPoolByAddress(blockchain string, address string) (pool dia.
 		var (
 			decimals    sql.NullInt64
 			assetvolume dia.AssetVolume
+			timestamp   sql.NullTime
 		)
 		err = rows.Scan(
 			&assetvolume.Volume,
@@ -176,12 +178,16 @@ func (rdb *RelDB) GetPoolByAddress(blockchain string, address string) (pool dia.
 			&assetvolume.Asset.Address,
 			&decimals,
 			&pool.Exchange.Name,
+			&timestamp,
 		)
 		if err != nil {
 			return
 		}
 		if decimals.Valid {
 			assetvolume.Asset.Decimals = uint8(decimals.Int64)
+		}
+		if timestamp.Valid {
+			pool.Time = timestamp.Time
 		}
 		assetvolume.Asset.Blockchain = blockchain
 		pool.Assetvolumes = append(pool.Assetvolumes, assetvolume)
