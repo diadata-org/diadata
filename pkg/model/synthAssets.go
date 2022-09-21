@@ -66,7 +66,7 @@ func (datastore *DB) GetSynthSupplyInflux(blockchain, protocol, address string, 
 	if protocol != "" {
 		queryString = queryString + `AND protocol='` + protocol + `'`
 	}
-	if address != "" {
+	if address != "" && address != "0x0000000000000000000000000000000000000000" {
 		queryString = queryString + `AND underlyingtokenaddress='` + address + `'`
 		queryString = queryString + ` OR synthtokenaddress='` + address + `'`
 
