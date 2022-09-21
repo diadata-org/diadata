@@ -638,6 +638,19 @@
             "WatchdogDelay": 1200
         },
         {
+            "Name": "PlatypusFinance",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x7125B4211357d7C3a90F796c956c12c681146EbB",
+            "Blockchain": {
+                "Name": "Avalanche"
+            },
+            "RestAPI": "https://api.avax.network/ext/bc/C/rpc",
+            "WsAPI": "wss://api.avax.network/ext/bc/C/ws",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
             "Name": "Quickswap",
             "Centralized": false,
             "Bridge": false,

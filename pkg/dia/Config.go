@@ -37,6 +37,7 @@ const (
 	HuckleberryExchange       = "Huckleberry"
 	TraderJoeExchange         = "TraderJoe"
 	PangolinExchange          = "Pangolin"
+	PlatypusExchange          = "PlatypusFinance"
 	SimexExchange             = "Simex"
 	OKExExchange              = "OKEx"
 	HuobiExchange             = "Huobi"
