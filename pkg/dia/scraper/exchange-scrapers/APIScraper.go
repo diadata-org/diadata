@@ -19,10 +19,11 @@ const (
 // empty type used for signaling
 type nothing struct{}
 
-var Exchanges = make(map[string]dia.Exchange)
-
-var blockchains map[string]dia.BlockChain
-var chainConfigs map[string]dia.ChainConfig
+var (
+	Exchanges    = make(map[string]dia.Exchange)
+	blockchains  map[string]dia.BlockChain
+	chainConfigs map[string]dia.ChainConfig
+)
 
 var evmID map[string]string
 
