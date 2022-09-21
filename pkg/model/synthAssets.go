@@ -50,6 +50,41 @@ func (datastore *DB) GetSynthLastSupplyInflux(blockchain, protocol, address stri
 
 }
 
+// GetSynthSupplyInflux Get distinct syntasset per protocol
+func (datastore *DB) GetSynthAssets(blockchain, protocol string) (r []string, err error) {
+	queryString := ` 
+	SHOW TAG VALUES FROM %s 
+	WITH KEY="synthtokenaddress" 
+	WHERE blockchain='%s'
+	and protocol='%s'`
+
+	q := fmt.Sprintf(queryString, influxDbSynthSupplyTable, blockchain, protocol)
+
+	log.Info("query: ", q)
+	res, err := queryInfluxDB(datastore.influxClient, q)
+	if err != nil {
+		log.Errorln("GetSynthAssets", err)
+		return r, err
+	}
+
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for _, row := range res[0].Series[0].Values {
+			value, o := row[1].(string)
+			if !o {
+				log.Errorln("error on parsing value", row)
+			} else {
+				r = append(r, value)
+			}
+		}
+	} else {
+		err = fmt.Errorf("Empty response for")
+		log.Error(err)
+		return r, err
+	}
+	return r, nil
+
+}
+
 // GetSynthSupplyInflux
 func (datastore *DB) GetSynthSupplyInflux(blockchain, protocol, address string, limit int, starttime, endtime time.Time) ([]dia.SynthAssetSupply, error) {
 	var r []dia.SynthAssetSupply

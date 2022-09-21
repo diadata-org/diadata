@@ -15,7 +15,6 @@ import (
 
 type Datastore interface {
 	SetInfluxClient(url string)
-
 	SetBatchFiatPriceInflux(fqs []*FiatQuotation) error
 	SetSingleFiatPriceRedis(fiatQuotation *FiatQuotation) error
 
@@ -27,6 +26,7 @@ type Datastore interface {
 	SaveSynthSupplyInfluxToTable(*dia.SynthAssetSupply, string) error
 	SaveSynthSupplyInflux(*dia.SynthAssetSupply) error
 	GetSynthSupplyInflux(string, string, string, int, time.Time, time.Time) ([]dia.SynthAssetSupply, error)
+	GetSynthAssets(string, string) ([]string, error)
 
 	SetDiaTotalSupply(totalSupply float64) error
 	GetDiaTotalSupply() (float64, error)

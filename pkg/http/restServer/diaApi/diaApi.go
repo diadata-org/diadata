@@ -2836,6 +2836,11 @@ func (env *Env) GetAssetInfo(c *gin.Context) {
 
 // GetSyntheticAsset
 func (env *Env) GetSyntheticAsset(c *gin.Context) {
+	var (
+		err error
+		p   []dia.SynthAssetSupply
+	)
+
 	if !validateInputParams(c) {
 		return
 	}
@@ -2894,7 +2899,26 @@ func (env *Env) GetSyntheticAsset(c *gin.Context) {
 		return
 	}
 
-	p, err := env.DataStore.GetSynthSupplyInflux(blockchain, protocol, address, limit, starttime, endtime)
+	if address != "" && address != "0x0000000000000000000000000000000000000000" {
+
+		p, err = env.DataStore.GetSynthSupplyInflux(blockchain, protocol, address, limit, starttime, endtime)
+
+	} else {
+		synthassets, err := env.DataStore.GetSynthAssets(blockchain, protocol)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+		for _, asset := range synthassets {
+			points, _ := env.DataStore.GetSynthSupplyInflux(blockchain, protocol, asset, limit, starttime, endtime)
+			if err != nil {
+				log.Errorln("GetSynthSupplyInflux", err)
+			} else {
+				p = append(p, points[0])
+
+			}
+		}
+	}
+
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	} else {
