@@ -856,7 +856,7 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 1800
         },
         {
             "Name": "Uniswap",
@@ -908,7 +908,7 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 300
         },
         {
             "Name": "Unkown",
