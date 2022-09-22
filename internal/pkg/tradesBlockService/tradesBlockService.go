@@ -56,9 +56,9 @@ var (
 	batchTimeSeconds int
 	// volumeUpdateSeconds = 60 * 60 * 6
 	volumeUpdateSeconds  = 60 * 10
-	volumeThreshold      = float64(100000)
-	blueChipThreshold    = float64(50000000)
-	smallX               = float64(10)
+	volumeThreshold      float64
+	blueChipThreshold    float64
+	smallX               float64
 	tradeVolumeThreshold = 1e-8
 )
 
@@ -107,6 +107,10 @@ func NewTradesBlockService(datastore models.Datastore, relDB models.RelDatastore
 	log.Info("write measurement: ", s.writeMeasurement)
 	log.Info("historical: ", s.historical)
 	log.Info("batch ticker time: ", batchTimeSeconds)
+	log.Info("volume threshold: ", volumeThreshold)
+	log.Info("bluechip threshold: ", blueChipThreshold)
+	log.Info("smallX: ", smallX)
+
 	s.volumeCache = s.loadVolumes()
 	log.Info("...done loading volumes.")
 
