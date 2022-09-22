@@ -27,7 +27,18 @@ func init() {
 	if err != nil {
 		log.Error("parse batchTimeString: ", err)
 	}
-
+	volumeThreshold, err = strconv.ParseFloat(utils.Getenv("VOLUME_THRESHOLD", "100000"), 64)
+	if err != nil {
+		log.Error("parse env var VOLUME_THRESHOLD: ", err)
+	}
+	blueChipThreshold, err = strconv.ParseFloat(utils.Getenv("BLUECHIP_THRESHOLD", "50000000"), 64)
+	if err != nil {
+		log.Error("parse env var BLUECHIP_THRESHOLD: ", err)
+	}
+	smallX, err = strconv.ParseFloat(utils.Getenv("SMALL_X", "10"), 64)
+	if err != nil {
+		log.Error("parse env var SMALL_X: ", err)
+	}
 }
 
 var (
@@ -47,8 +58,8 @@ var (
 	volumeUpdateSeconds  = 60 * 10
 	volumeThreshold      = float64(100000)
 	blueChipThreshold    = float64(50000000)
-	tradeVolumeThreshold = 1e-8
 	smallX               = float64(10)
+	tradeVolumeThreshold = 1e-8
 )
 
 type TradesBlockService struct {
