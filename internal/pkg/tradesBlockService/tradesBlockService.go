@@ -188,7 +188,7 @@ func (s *TradesBlockService) mainLoop() {
 
 // checkTrade determines whether a trade should be taken into account for price determination.
 func (s *TradesBlockService) checkTrade(t dia.Trade) bool {
-	if t.Volume < tradeVolumeThreshold {
+	if math.Abs(t.Volume) < tradeVolumeThreshold {
 		log.Info("low volume trade: ", t)
 		return false
 	}
