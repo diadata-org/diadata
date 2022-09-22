@@ -291,16 +291,8 @@ func (s *TradesBlockService) process(t dia.Trade) {
 					t.BaseToken.Blockchain,
 				)
 			} else {
-				if price == 0 {
-					if t.BaseToken.Address == USDT.Address && t.BaseToken.Blockchain == dia.ETHEREUM {
-						log.Info("price=0: ", t)
-					}
-				}
 				if price > 0.0 {
 					t.EstimatedUSDPrice = t.Price * price
-					if t.BaseToken.Address == USDT.Address && t.BaseToken.Blockchain == dia.ETHEREUM {
-						log.Info("price>0: price, t.Price, pair, exchange", price, t.Price, t.Pair, t.Source)
-					}
 					if t.EstimatedUSDPrice > 0 {
 						verifiedTrade = true
 					}
