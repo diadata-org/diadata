@@ -678,7 +678,7 @@ func (rdb *RelDB) GetNFTVolume(address, blockchain, exchange string, starttime t
 // GetNFTExchanges returns the exchanges in which nft is traded
 func (rdb *RelDB) GetNFTExchanges(address string, blockchain string) (exchanges []string, err error) {
 	query := fmt.Sprintf(`
-	SELECT marketplace
+	SELECT DISTINCT marketplace
 	FROM %s INNER JOIN %s nc 
 	ON nfttradecurrent.nftclass_id=nc.nftclass_id 
 	WHERE nc.address='%s' AND nc.blockchain='%s'`,
