@@ -200,10 +200,13 @@ func (s *TradesBlockService) checkTrade(t dia.Trade) bool {
 	if t.QuoteToken.Blockchain == dia.FIAT {
 		return false
 	}
-	if t.QuoteToken.Address == "0xdAC17F958D2ee523a2206206994597C13D831ec7" && t.QuoteToken.Blockchain == dia.ETHEREUM {
+	if t.QuoteToken.Address == USDT.Address && t.QuoteToken.Blockchain == dia.ETHEREUM {
 		if basetoken.Blockchain != dia.FIAT {
 			return false
 		}
+	}
+	if t.BaseToken.Address == USDT.Address && t.BaseToken.Blockchain == dia.ETHEREUM {
+		return true
 	}
 
 	if baseVolume, ok := s.volumeCache[assetIdentifier(basetoken)]; ok {
