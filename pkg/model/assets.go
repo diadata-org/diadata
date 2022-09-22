@@ -778,7 +778,7 @@ func (rdb *RelDB) GetAllBlockchains(fullAsset bool) ([]dia.BlockChain, error) {
 // GetAllAssetsBlockchains returns all blockchain names existent in the asset table.
 func (rdb *RelDB) GetAllAssetsBlockchains() ([]string, error) {
 	var blockchains []string
-	query := fmt.Sprintf("SELECT DISTINCT blockchain FROM %s ORDER BY blockchain ASC", assetTable)
+	query := fmt.Sprintf("SELECT DISTINCT blockchain FROM %s WHERE name!='' ORDER BY blockchain ASC", assetTable)
 	rows, err := rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return []string{}, err
