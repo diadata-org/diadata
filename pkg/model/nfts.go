@@ -631,21 +631,41 @@ func (rdb *RelDB) GetTopNFTsEth(numCollections int, offset int64, exchanges []st
 }
 
 // GetNFTVolume returns the trade volume of a collection in the time-range (@starttime, @endtime].
-func (rdb *RelDB) GetNFTVolume(address string, blockchain string, starttime time.Time, endtime time.Time) (float64, error) {
-	query := fmt.Sprintf(`
+func (rdb *RelDB) GetNFTVolume(address, blockchain, exchange string, starttime time.Time, endtime time.Time) (float64, error) {
+	var query string
+	if exchange == "" {
+		query = fmt.Sprintf(`
 	SELECT SUM(price::numeric) 
 	FROM %s INNER JOIN %s nc 
 	ON nfttradecurrent.nftclass_id=nc.nftclass_id 
 	WHERE trade_time>to_timestamp(%v) 
 	AND trade_time<=to_timestamp(%v) 
 	AND nc.address='%s' AND nc.blockchain='%s'`,
-		NfttradeCurrTable,
-		nftclassTable,
-		starttime.Unix(),
-		endtime.Unix(),
-		address,
-		blockchain,
-	)
+			NfttradeCurrTable,
+			nftclassTable,
+			starttime.Unix(),
+			endtime.Unix(),
+			address,
+			blockchain,
+		)
+	} else {
+		query = fmt.Sprintf(`
+		SELECT SUM(price::numeric) 
+		FROM %s INNER JOIN %s nc 
+		ON nfttradecurrent.nftclass_id=nc.nftclass_id 
+		WHERE trade_time>to_timestamp(%v) 
+		AND trade_time<=to_timestamp(%v) 
+		AND nc.address='%s' AND nc.blockchain='%s' AND marketplace='%s' `,
+			NfttradeCurrTable,
+			nftclassTable,
+			starttime.Unix(),
+			endtime.Unix(),
+			address,
+			blockchain,
+			exchange,
+		)
+
+	}
 	// TO DO: address currency issue.
 	var volume sql.NullFloat64
 	err := rdb.postgresClient.QueryRow(context.Background(), query).Scan(&volume)
@@ -655,21 +675,74 @@ func (rdb *RelDB) GetNFTVolume(address string, blockchain string, starttime time
 	return 0, err
 }
 
-// GetNumNFTTrades returns the number of trades recorded in [@starttime,@endtime] on the collection on @blockchain with @address.
-func (rdb *RelDB) GetNumNFTTrades(address string, blockchain string, starttime time.Time, endtime time.Time) (int, error) {
+// GetNFTExchanges returns the exchanges in which nft is traded
+func (rdb *RelDB) GetNFTExchanges(address string, blockchain string) (exchanges []string, err error) {
 	query := fmt.Sprintf(`
+	SELECT sum(price::numeric),count(*), marketplace
+	FROM %s INNER JOIN %s nc 
+	ON nfttradecurrent.nftclass_id=nc.nftclass_id 
+	WHERE nc.address='%s' AND nc.blockchain='%s'`,
+		NfttradeCurrTable,
+		nftclassTable,
+		address,
+		blockchain,
+	)
+
+	rows, err := rdb.postgresClient.Query(context.Background(), query)
+	if err != nil {
+		return
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			exchange sql.NullString
+		)
+		rows.Scan(&exchange)
+		if exchange.Valid {
+			exchanges = append(exchanges, exchange.String)
+
+		}
+	}
+
+	return exchanges, err
+}
+
+// GetNumNFTTrades returns the number of trades recorded in [@starttime,@endtime] on the collection on @blockchain with @address.
+func (rdb *RelDB) GetNumNFTTrades(address, blockchain, exchange string, starttime time.Time, endtime time.Time) (int, error) {
+	var query string
+	if exchange == "" {
+		query = fmt.Sprintf(`
 	SELECT count(*) 
 	FROM %s INNER JOIN %s nc 
 	ON nfttradecurrent.nftclass_id=nc.nftclass_id 
 	WHERE trade_time>to_timestamp(%v) AND trade_time<to_timestamp(%v) 
 	AND nc.address='%s' AND nc.blockchain='%s'`,
-		NfttradeCurrTable,
-		nftclassTable,
-		starttime.Unix(),
-		endtime.Unix(),
-		address,
-		blockchain,
-	)
+			NfttradeCurrTable,
+			nftclassTable,
+			starttime.Unix(),
+			endtime.Unix(),
+			address,
+			blockchain,
+		)
+	} else {
+		query = fmt.Sprintf(`
+		SELECT count(*) 
+		FROM %s INNER JOIN %s nc 
+		ON nfttradecurrent.nftclass_id=nc.nftclass_id 
+		WHERE trade_time>to_timestamp(%v) AND trade_time<to_timestamp(%v) 
+		AND nc.address='%s' AND nc.blockchain='%s' and marketplace='%s'`,
+			NfttradeCurrTable,
+			nftclassTable,
+			starttime.Unix(),
+			endtime.Unix(),
+			address,
+			blockchain,
+			exchange,
+		)
+
+	}
 	var numTrades sql.NullInt64
 	err := rdb.postgresClient.QueryRow(context.Background(), query).Scan(&numTrades)
 	if numTrades.Valid {

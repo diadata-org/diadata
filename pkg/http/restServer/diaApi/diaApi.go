@@ -2353,15 +2353,15 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 			log.Errorf("get floor yesterday for address %s: %v", nftvolume.Address, err)
 		}
 
-		numTrades, err := env.RelDB.GetNumNFTTrades(nftvolume.Address, nftvolume.Blockchain, starttime, endtime)
+		numTrades, err := env.RelDB.GetNumNFTTrades(nftvolume.Address, nftvolume.Blockchain, "", starttime, endtime)
 		if err != nil {
 			log.Errorf("get number of nft trades for address %s: %v", nftvolume.Address, err)
 		}
-		numTradesYesterday, err := env.RelDB.GetNumNFTTrades(nftvolume.Address, nftvolume.Blockchain, starttime.Add(-window24h), endtime.Add(-window24h))
+		numTradesYesterday, err := env.RelDB.GetNumNFTTrades(nftvolume.Address, nftvolume.Blockchain, "", starttime.Add(-window24h), endtime.Add(-window24h))
 		if err != nil {
 			log.Errorf("get number of nft trades yesterday for address %s: %v", nftvolume.Address, err)
 		}
-		volumeYesterday, err := env.RelDB.GetNFTVolume(nftvolume.Address, nftvolume.Blockchain, starttime.Add(-window24h), endtime.Add(-window24h))
+		volumeYesterday, err := env.RelDB.GetNFTVolume(nftvolume.Address, nftvolume.Blockchain, "", starttime.Add(-window24h), endtime.Add(-window24h))
 		if err != nil {
 			log.Errorf("get volume yesterday for address %s: %v", nftvolume.Address, err)
 		}
@@ -2406,6 +2406,7 @@ func (env *Env) GetNFTVolume(c *gin.Context) {
 		Blockchain   string
 		Time         time.Time
 		Source       string
+		Exchanges    []dia.NFTExchangeStats
 	}
 	var (
 		starttime time.Time
@@ -2473,21 +2474,38 @@ func (env *Env) GetNFTVolume(c *gin.Context) {
 	if err != nil {
 		log.Error("get floor yesterday: ", err)
 	}
-	volume, err := env.RelDB.GetNFTVolume(address, blockchain, starttime, endtime)
+	volume, err := env.RelDB.GetNFTVolume(address, blockchain, "", starttime, endtime)
 	if err != nil {
 		log.Error("get volume: ", err)
 	}
-	volumeYesterday, err := env.RelDB.GetNFTVolume(address, blockchain, starttime.Add(-timeWindow), endtime.Add(-timeWindow))
+	volumeYesterday, err := env.RelDB.GetNFTVolume(address, blockchain, "", starttime.Add(-timeWindow), endtime.Add(-timeWindow))
 	if err != nil {
 		log.Error("get volume yesterday: ", err)
 	}
-	numTrades, err := env.RelDB.GetNumNFTTrades(address, blockchain, starttime, endtime)
+	numTrades, err := env.RelDB.GetNumNFTTrades(address, blockchain, "", starttime, endtime)
 	if err != nil {
 		log.Error("get number of nft trades: ", err)
 	}
-	numTradesYesterday, err := env.RelDB.GetNumNFTTrades(address, blockchain, starttime.Add(-timeWindow), endtime.Add(-timeWindow))
+	numTradesYesterday, err := env.RelDB.GetNumNFTTrades(address, blockchain, "", starttime.Add(-timeWindow), endtime.Add(-timeWindow))
 	if err != nil {
 		log.Error("get number of nft trades yesterday: ", err)
+	}
+
+	exchanges, err := env.RelDB.GetNFTExchanges(address, blockchain)
+	if err != nil {
+		log.Error("get number of nft trades yesterday: ", err)
+	}
+
+	for _, exchange := range exchanges {
+		numTrades, err := env.RelDB.GetNumNFTTrades(address, blockchain, exchange, starttime, endtime)
+		if err != nil {
+			log.Error("get number of nft trades: ", err)
+		}
+		volume, err := env.RelDB.GetNFTVolume(address, blockchain, exchange, starttime, endtime)
+		if err != nil {
+			log.Error("get number of nft trades: ", err)
+		}
+		l.Exchanges = append(l.Exchanges, dia.NFTExchangeStats{Exchange: exchange, NumTrades: uint64(numTrades), Volume: volume})
 	}
 
 	l.Collection = collection.Name
