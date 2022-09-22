@@ -746,6 +746,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "DOT_USDT",
+      "Ignore": false,
+      "Symbol": "DOT"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "DPY_ETH",
       "Ignore": false,
       "Symbol": "DPY"

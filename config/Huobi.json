@@ -182,6 +182,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "DOTUSDT",
+      "Ignore": false,
+      "Symbol": "DOT"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "EOSBTC",
       "Ignore": false,
       "Symbol": "EOS"

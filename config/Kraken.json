@@ -62,6 +62,12 @@
     },
     {
       "Exchange": "Kraken",
+      "ForeignName": "DOTUSD",
+      "Ignore": false,
+      "Symbol": "DOT"
+    },
+    {
+      "Exchange": "Kraken",
       "ForeignName": "EOSETH",
       "Ignore": false,
       "Symbol": "EOS"
