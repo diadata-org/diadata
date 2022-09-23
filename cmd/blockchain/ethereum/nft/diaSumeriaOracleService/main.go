@@ -188,7 +188,7 @@ func periodicOracleUpdateHelper(oldFloor float64, deviationPermille int, update 
 	// Get floor price
 	floor, err := getFloor(blockchain, address)
 	if err != nil {
-		log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
+		log.Printf("Failed to retrieve %s quotation data from DIA: %v", address, err)
 		return oldFloor, err
 	}
 	data.Floor = floor.Value
@@ -196,7 +196,7 @@ func periodicOracleUpdateHelper(oldFloor float64, deviationPermille int, update 
 	// Get MA of floor price
 	floorMA, err := getFloorMA(blockchain, address)
 	if err != nil {
-		log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
+		log.Printf("Failed to retrieve %s quotation data from DIA: %v", address, err)
 		return oldFloor, err
 	}
 	data.FloorMA = floorMA.Value
@@ -204,7 +204,7 @@ func periodicOracleUpdateHelper(oldFloor float64, deviationPermille int, update 
 	// Get drawdown data
 	drawdown, err := getDrawdown(blockchain, address)
 	if err != nil {
-		log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
+		log.Printf("Failed to retrieve %s quotation data from DIA: %v", address, err)
 		return oldFloor, err
 	}
 	data.Drawdown.Drawdown = drawdown.Drawdown
@@ -219,7 +219,7 @@ func periodicOracleUpdateHelper(oldFloor float64, deviationPermille int, update 
 		log.Println("Entering deviation based update zone")
 		err = updateNFTData(data, auth, contract, conn)
 		if err != nil {
-			log.Fatalf("Failed to update DIA Oracle: %v", err)
+			log.Printf("Failed to update DIA Oracle: %v", err)
 			return oldFloor, err
 		}
 		return newFloor, nil
