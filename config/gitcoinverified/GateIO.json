@@ -7,6 +7,12 @@
             "Address": "Token:ACA"
         },
         {
+            "Symbol": "ANGLE",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x31429d1856aD1377A8A0079410B297e1a9e214c2"
+        },
+        {
             "Symbol": "CFG",
             "Exchange": "GateIO",
             "Blockchain": "Centrifuge",
@@ -403,6 +409,12 @@
             "Address": "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942"
         },
         {
+            "Symbol": "MATIC",
+            "Exchange": "GateIO",
+            "Blockchain": "Polygon",
+            "Address": "0x0000000000000000000000000000000000001010"
+        },
+        {
             "Symbol": "METIS",
             "Exchange": "GateIO",
             "Blockchain": "Metis",
@@ -685,11 +697,23 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "UNI",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
+        },
+        {
             "Symbol": "USD",
             "Exchange": "GateIO",
             "Blockchain": "Fiat",
             "Address": "840"
         },
+        {
+            "Symbol": "USDD",
+            "Exchange": "GateIO",
+            "Blockchain": "Tron",
+            "Address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn"
+          },
         {
             "Symbol": "USDT",
             "Exchange": "GateIO",

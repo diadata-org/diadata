@@ -254,6 +254,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "USDD_USDT",
+      "Ignore": false,
+      "Symbol": "USDD"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "ABT_ETH",
       "Ignore": false,
       "Symbol": "ABT"
@@ -299,6 +305,12 @@
       "ForeignName": "AE_USDT",
       "Ignore": false,
       "Symbol": "AE"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "ANGLE_USDT",
+      "Ignore": false,
+      "Symbol": "ANGLE"
     },
     {
       "Exchange": "GateIO",
@@ -1346,6 +1358,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "MATIC_USDT",
+      "Ignore": false,
+      "Symbol": "MATIC"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "MCO_ETH",
       "Ignore": false,
       "Symbol": "MCO"
@@ -2147,6 +2165,12 @@
       "ForeignName": "TUSD_USDT",
       "Ignore": false,
       "Symbol": "TUSD"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "UNI_USDT",
+      "Ignore": false,
+      "Symbol": "UNI"
     },
     {
       "Exchange": "GateIO",
