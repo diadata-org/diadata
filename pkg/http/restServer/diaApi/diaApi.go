@@ -2931,7 +2931,9 @@ func (env *Env) GetSyntheticAsset(c *gin.Context) {
 			if err != nil {
 				log.Errorln("GetSynthSupplyInflux", err)
 			} else {
-				p = append(p, points[0])
+				if len(points) > 0 {
+					p = append(p, points[0])
+				}
 
 			}
 		}
