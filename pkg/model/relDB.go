@@ -119,8 +119,8 @@ type RelDatastore interface {
 		Blockchain string
 		Volume     float64
 	}, error)
-	GetNumNFTTrades(address string, blockchain string, starttime time.Time, endtime time.Time) (int, error)
-	GetNFTVolume(address string, blockchain string, starttime time.Time, endtime time.Time) (float64, error)
+	GetNumNFTTrades(address string, blockchain string, exchange string, starttime time.Time, endtime time.Time) (int, error)
+	GetNFTVolume(address string, blockchain string, exchange string, starttime time.Time, endtime time.Time) (float64, error)
 
 	// General methods
 	GetKeys(table string) ([]string, error)
