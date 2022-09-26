@@ -233,7 +233,7 @@ func (datastore *DB) SetAssetQuotationCache(quotation *AssetQuotation, check boo
 // GetAssetQuotationCache returns the latest quotation for @asset from the redis cache.
 func (datastore *DB) GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, error) {
 	key := getKeyAssetQuotation(asset.Blockchain, asset.Address)
-	log.Infof("get asset quotation from cache for asset %s with address %s using key as %s ", asset.Symbol, asset.Address, key)
+	// log.Infof("get asset quotation from cache for asset %s with address %s using key as %s ", asset.Symbol, asset.Address, key)
 
 	quotation := &AssetQuotation{}
 

@@ -44,6 +44,12 @@
     },
     {
       "Exchange": "CoinBase",
+      "ForeignName": "DOT-USD",
+      "Ignore": false,
+      "Symbol": "DOT"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "ETC-USD",
       "Ignore": false,
       "Symbol": "ETC"

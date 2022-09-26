@@ -73,6 +73,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "DOT",
+            "Exchange": "OKEx",
+            "Blockchain": "Polkadot",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "GLM",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",

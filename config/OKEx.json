@@ -734,6 +734,18 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "DOT-USDT",
+      "Ignore": false,
+      "Symbol": "DOT"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "DOT-USDC",
+      "Ignore": false,
+      "Symbol": "DOT"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "DPY-BTC",
       "Ignore": false,
       "Symbol": "DPY"

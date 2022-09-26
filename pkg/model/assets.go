@@ -415,7 +415,7 @@ func (rdb *RelDB) GetAssets(symbol string) (assets []dia.Asset, err error) {
 }
 
 // GetAssetExchnage returns all assets which share the symbol ticker @symbol.
-func (rdb *RelDB) GetAssetExchange(symbol string) (exchnages []string, err error) {
+func (rdb *RelDB) GetAssetExchange(symbol string) (exchanges []string, err error) {
 
 	query := fmt.Sprintf("SELECT exchange FROM %s  INNER JOIN %s ON asset.asset_id = exchangesymbol.asset_id WHERE exchangesymbol.symbol = $1 ", exchangesymbolTable, assetTable)
 	var rows pgx.Rows
@@ -432,7 +432,7 @@ func (rdb *RelDB) GetAssetExchange(symbol string) (exchnages []string, err error
 		if err != nil {
 			return
 		}
-		exchnages = append(exchnages, exchange)
+		exchanges = append(exchanges, exchange)
 	}
 	return
 }
@@ -778,7 +778,7 @@ func (rdb *RelDB) GetAllBlockchains(fullAsset bool) ([]dia.BlockChain, error) {
 // GetAllAssetsBlockchains returns all blockchain names existent in the asset table.
 func (rdb *RelDB) GetAllAssetsBlockchains() ([]string, error) {
 	var blockchains []string
-	query := fmt.Sprintf("SELECT DISTINCT blockchain FROM %s ORDER BY blockchain ASC", assetTable)
+	query := fmt.Sprintf("SELECT DISTINCT blockchain FROM %s WHERE name!='' ORDER BY blockchain ASC", assetTable)
 	rows, err := rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return []string{}, err

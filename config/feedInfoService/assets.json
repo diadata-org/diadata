@@ -6,6 +6,11 @@
       "Blockchain": "Acala"
     },
     {
+      "Symbol": "ANGLE",
+      "Address": "0x31429d1856aD1377A8A0079410B297e1a9e214c2",
+      "Blockchain": "Ethereum"
+    },
+    {
       "Symbol": "ARGO",
       "Address": "0x28Cca76f6e8eC81e4550ecd761f899110b060E97",
       "Blockchain": "Ethereum"

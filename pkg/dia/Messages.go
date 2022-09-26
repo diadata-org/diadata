@@ -168,6 +168,12 @@ func (nb *NFTBid) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
+type NFTExchangeStats struct {
+	Exchange  string
+	NumTrades uint64
+	Volume    float64
+}
+
 type NFTOffer struct {
 	NFT NFT
 	// Start and EndValue are for auction types. Otherwise, use StartValue

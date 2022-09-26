@@ -25,11 +25,29 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var DECIMALS_CACHE = make(map[dia.Asset]uint8)
+var (
+	DECIMALS_CACHE = make(map[dia.Asset]uint8)
+	BLOCKCHAINS    = make(map[string]dia.BlockChain)
+)
 
 type Env struct {
 	DataStore models.Datastore
 	RelDB     models.RelDB
+}
+
+func init() {
+	relDB, err := models.NewRelDataStore()
+	if err != nil {
+		log.Errorln("Error connecting to asset DB: ", err)
+		return
+	}
+	chains, err := relDB.GetAllBlockchains(false)
+	if err != nil {
+		log.Fatal("get all chains: ", err)
+	}
+	for _, chain := range chains {
+		BLOCKCHAINS[chain.Name] = chain
+	}
 }
 
 // PostSupply deprecated? TO DO
@@ -118,10 +136,13 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 	}
 
 	blockchain := c.Param("blockchain")
-	address := c.Param("address")
-	var err error
-	var asset dia.Asset
-	var quotationExtended models.AssetQuotationFull
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
+	var (
+		err               error
+		asset             dia.Asset
+		quotationExtended models.AssetQuotationFull
+	)
 	timestamp := time.Now()
 
 	// An asset is uniquely defined by blockchain and address.
@@ -221,8 +242,8 @@ func (env *Env) GetAssetMap(c *gin.Context) {
 		return
 	}
 
-	address := c.Param("address")
 	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 
 	timestamp := time.Now()
 	var quotations []models.AssetQuotationFull
@@ -316,8 +337,9 @@ func (env *Env) GetAssetSupply(c *gin.Context) {
 		return
 	}
 
-	address := c.Param("address")
 	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
 	starttimeStr := c.Query("starttime")
 	endtimeStr := c.Query("endtime")
 
@@ -585,7 +607,8 @@ func (env *Env) GetAssetChartPoints(c *gin.Context) {
 
 	filter := c.Param("filter")
 	blockchain := c.Param("blockchain")
-	address := c.Param("address")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
 	exchange := c.Query("exchange")
 	starttimeStr := c.Query("starttime")
 	endtimeStr := c.Query("endtime")
@@ -862,6 +885,56 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, symbols)
 	}
+
+}
+
+// -----------------------------------------------------------------------------
+// POOLS AND LIQUIDITY
+// -----------------------------------------------------------------------------
+
+func (env *Env) GetPoolLiquidityByAddress(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
+	type localReturn struct {
+		Exchange          string
+		Blockchain        string
+		Address           string
+		Time              time.Time
+		TotalLiquidityUSD float64
+		Liquidity         []dia.AssetVolume
+	}
+
+	pool, err := env.RelDB.GetPoolByAddress(blockchain, address)
+	if err != nil {
+		log.Info("err: ", err)
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find pool"))
+		return
+	}
+	var l localReturn
+	l.Exchange = pool.Exchange.Name
+	l.Blockchain = pool.Blockchain.Name
+	l.Address = pool.Address
+	l.Time = pool.Time
+	l.Liquidity = pool.Assetvolumes
+
+	// Get total liquidity.
+	var totalLiquidity float64
+	for _, assetvol := range pool.Assetvolumes {
+		price, err := env.DataStore.GetAssetPriceUSDCache(assetvol.Asset)
+		if err != nil {
+			log.Warnf("no quotation for %v: %v", assetvol.Asset, err)
+			totalLiquidity = 0
+			break
+		}
+		totalLiquidity += price * assetvol.Volume
+	}
+	l.TotalLiquidityUSD = totalLiquidity
+
+	c.JSON(http.StatusOK, l)
 
 }
 
@@ -1508,21 +1581,6 @@ func (env *Env) GetVwapFirefly(c *gin.Context) {
 	}
 }
 
-// getDecimalsFromCache returns the decimals of @asset, either from the map @localCache or from
-// Postgres, in which latter case it also adds the decimals to the local cache.
-// Remember that maps are always passed by reference.
-func (env *Env) getDecimalsFromCache(localCache map[dia.Asset]uint8, asset dia.Asset) uint8 {
-	if decimals, ok := localCache[asset]; ok {
-		return decimals
-	}
-	fullAsset, err := env.RelDB.GetAsset(asset.Address, asset.Blockchain)
-	if err != nil {
-		log.Warnf("could not find asset with address %s on blockchain %s in postgres: ", asset.Address, asset.Blockchain)
-	}
-	localCache[asset] = fullAsset.Decimals
-	return fullAsset.Decimals
-}
-
 // GetBenchmarkedIndexValue Get benchmarked Index values
 func (env *Env) GetBenchmarkedIndexValue(c *gin.Context) {
 	if !validateInputParams(c) {
@@ -1613,7 +1671,8 @@ func (env *Env) GetLastTradesAsset(c *gin.Context) {
 	}
 
 	blockchain := c.Param("blockchain")
-	address := c.Param("address")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
 	numTradesString := c.DefaultQuery("numTrades", "1000")
 	exchange := c.Query("exchange")
 
@@ -1761,7 +1820,8 @@ func (env *Env) GetNFT(c *gin.Context) {
 	}
 
 	blockchain := c.Param("blockchain")
-	address := c.Param("address")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
 	id := c.Param("id")
 
 	q, err := env.RelDB.GetNFT(address, blockchain, id)
@@ -1778,9 +1838,8 @@ func (env *Env) GetNFTTrades(c *gin.Context) {
 	}
 
 	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 
-	// Sanitize address
-	address := common.HexToAddress(c.Param("address")).Hex()
 	id := c.Param("id")
 	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*30)*time.Hour)
 	if err != nil {
@@ -1802,8 +1861,8 @@ func (env *Env) GetNFTTradesCollection(c *gin.Context) {
 	}
 
 	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 
-	address := common.HexToAddress(c.Param("address")).Hex()
 	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*30)*time.Hour)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
@@ -1863,7 +1922,7 @@ func (env *Env) GetNFTFloor(c *gin.Context) {
 	}
 
 	blockchain := c.Param("blockchain")
-	address := common.HexToAddress(c.Param("address")).Hex()
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 
 	timestampUnixString := c.Query("timestamp")
 	var timestamp time.Time
@@ -1925,7 +1984,8 @@ func (env *Env) GetNFTFloorMA(c *gin.Context) {
 
 	// NFT collection.
 	blockchain := c.Param("blockchain")
-	address := common.HexToAddress(c.Param("address")).Hex()
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
 	nftClass := dia.NFTClass{Address: address, Blockchain: blockchain}
 
 	// lookback for MA is 30 days per default.
@@ -1993,7 +2053,7 @@ func (env *Env) GetNFTDownday(c *gin.Context) {
 
 	// NFT collection.
 	blockchain := c.Param("blockchain")
-	address := common.HexToAddress(c.Param("address")).Hex()
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 
 	nftClass := dia.NFTClass{Address: address, Blockchain: blockchain}
 
@@ -2095,7 +2155,7 @@ func (env *Env) GetNFTFloorVola(c *gin.Context) {
 
 	// NFT collection.
 	blockchain := c.Param("blockchain")
-	address := common.HexToAddress(c.Param("address")).Hex()
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 
 	nftClass := dia.NFTClass{Address: address, Blockchain: blockchain}
 
@@ -2293,15 +2353,15 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 			log.Errorf("get floor yesterday for address %s: %v", nftvolume.Address, err)
 		}
 
-		numTrades, err := env.RelDB.GetNumNFTTrades(nftvolume.Address, nftvolume.Blockchain, starttime, endtime)
+		numTrades, err := env.RelDB.GetNumNFTTrades(nftvolume.Address, nftvolume.Blockchain, "", starttime, endtime)
 		if err != nil {
 			log.Errorf("get number of nft trades for address %s: %v", nftvolume.Address, err)
 		}
-		numTradesYesterday, err := env.RelDB.GetNumNFTTrades(nftvolume.Address, nftvolume.Blockchain, starttime.Add(-window24h), endtime.Add(-window24h))
+		numTradesYesterday, err := env.RelDB.GetNumNFTTrades(nftvolume.Address, nftvolume.Blockchain, "", starttime.Add(-window24h), endtime.Add(-window24h))
 		if err != nil {
 			log.Errorf("get number of nft trades yesterday for address %s: %v", nftvolume.Address, err)
 		}
-		volumeYesterday, err := env.RelDB.GetNFTVolume(nftvolume.Address, nftvolume.Blockchain, starttime.Add(-window24h), endtime.Add(-window24h))
+		volumeYesterday, err := env.RelDB.GetNFTVolume(nftvolume.Address, nftvolume.Blockchain, "", starttime.Add(-window24h), endtime.Add(-window24h))
 		if err != nil {
 			log.Errorf("get volume yesterday for address %s: %v", nftvolume.Address, err)
 		}
@@ -2346,6 +2406,7 @@ func (env *Env) GetNFTVolume(c *gin.Context) {
 		Blockchain   string
 		Time         time.Time
 		Source       string
+		Exchanges    []dia.NFTExchangeStats
 	}
 	var (
 		starttime time.Time
@@ -2353,8 +2414,8 @@ func (env *Env) GetNFTVolume(c *gin.Context) {
 		l         localReturn
 	)
 
-	address := common.HexToAddress(c.Param("address")).Hex()
 	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 
 	endtimeString := c.Query("endtime")
 	if endtimeString != "" {
@@ -2413,21 +2474,38 @@ func (env *Env) GetNFTVolume(c *gin.Context) {
 	if err != nil {
 		log.Error("get floor yesterday: ", err)
 	}
-	volume, err := env.RelDB.GetNFTVolume(address, blockchain, starttime, endtime)
+	volume, err := env.RelDB.GetNFTVolume(address, blockchain, "", starttime, endtime)
 	if err != nil {
 		log.Error("get volume: ", err)
 	}
-	volumeYesterday, err := env.RelDB.GetNFTVolume(address, blockchain, starttime.Add(-timeWindow), endtime.Add(-timeWindow))
+	volumeYesterday, err := env.RelDB.GetNFTVolume(address, blockchain, "", starttime.Add(-timeWindow), endtime.Add(-timeWindow))
 	if err != nil {
 		log.Error("get volume yesterday: ", err)
 	}
-	numTrades, err := env.RelDB.GetNumNFTTrades(address, blockchain, starttime, endtime)
+	numTrades, err := env.RelDB.GetNumNFTTrades(address, blockchain, "", starttime, endtime)
 	if err != nil {
 		log.Error("get number of nft trades: ", err)
 	}
-	numTradesYesterday, err := env.RelDB.GetNumNFTTrades(address, blockchain, starttime.Add(-timeWindow), endtime.Add(-timeWindow))
+	numTradesYesterday, err := env.RelDB.GetNumNFTTrades(address, blockchain, "", starttime.Add(-timeWindow), endtime.Add(-timeWindow))
 	if err != nil {
 		log.Error("get number of nft trades yesterday: ", err)
+	}
+
+	exchanges, err := env.RelDB.GetNFTExchanges(address, blockchain)
+	if err != nil {
+		log.Error("get number of nft trades yesterday: ", err)
+	}
+
+	for _, exchange := range exchanges {
+		numTrades, err := env.RelDB.GetNumNFTTrades(address, blockchain, exchange, starttime, endtime)
+		if err != nil {
+			log.Error("get number of nft trades: ", err)
+		}
+		volume, err := env.RelDB.GetNFTVolume(address, blockchain, exchange, starttime, endtime)
+		if err != nil {
+			log.Error("get number of nft trades: ", err)
+		}
+		l.Exchanges = append(l.Exchanges, dia.NFTExchangeStats{Exchange: exchange, NumTrades: uint64(numTrades), Volume: volume})
 	}
 
 	l.Collection = collection.Name
@@ -2460,7 +2538,8 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 	}
 
 	blockchain := c.Param("blockchain")
-	address := c.Param("address")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
 	starttimeStr := c.Query("starttime")
 	endtimeStr := c.Query("endtime")
 	var starttime time.Time
@@ -2601,7 +2680,7 @@ func (env *Env) GetAssetUpdates(c *gin.Context) {
 	}
 
 	blockchain := c.Param("blockchain")
-	address := c.Param("address")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 
 	// Deviation in per mille.
 	deviation, err := strconv.Atoi(c.Param("deviation"))
@@ -2703,7 +2782,7 @@ func (env *Env) GetAssetInfo(c *gin.Context) {
 	}
 
 	blockchain := c.Param("blockchain")
-	address := c.Param("address")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 
 	endtime := time.Now()
 	starttime := endtime.AddDate(0, 0, -1)
@@ -2775,14 +2854,20 @@ func (env *Env) GetAssetInfo(c *gin.Context) {
 
 // GetSyntheticAsset
 func (env *Env) GetSyntheticAsset(c *gin.Context) {
+	var (
+		err error
+		p   []dia.SynthAssetSupply
+	)
+
 	if !validateInputParams(c) {
 		return
 	}
 
 	blockchain := c.Param("blockchain")
+	protocol := c.Param("protocol")
 
-	protocol := c.Query("protocol")
-	address := c.Query("address")
+	address := makeAddressEIP55Compliant(c.Query("address"), blockchain)
+
 	starttimeStr := c.Query("starttime")
 	endtimeStr := c.Query("endtime")
 
@@ -2832,7 +2917,28 @@ func (env *Env) GetSyntheticAsset(c *gin.Context) {
 		return
 	}
 
-	p, err := env.DataStore.GetSynthSupplyInflux(blockchain, protocol, address, limit, starttime, endtime)
+	if address != "" && address != "0x0000000000000000000000000000000000000000" {
+
+		p, err = env.DataStore.GetSynthSupplyInflux(blockchain, protocol, address, limit, starttime, endtime)
+
+	} else {
+		synthassets, err := env.DataStore.GetSynthAssets(blockchain, protocol)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+		for _, asset := range synthassets {
+			points, _ := env.DataStore.GetSynthSupplyInflux(blockchain, protocol, asset, limit, starttime, endtime)
+			if err != nil {
+				log.Errorln("GetSynthSupplyInflux", err)
+			} else {
+				if len(points) > 0 {
+					p = append(p, points[0])
+				}
+
+			}
+		}
+	}
+
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 	} else {
@@ -2893,4 +2999,27 @@ func validateInputParams(c *gin.Context) bool {
 
 func containsSpecialChars(s string) bool {
 	return strings.ContainsAny(s, "!@#$%^&*()'\"|{}[];><?/`~,")
+}
+
+// Returns the EIP55 compliant address in case @blockchain has an Ethereum ChainID.
+func makeAddressEIP55Compliant(address string, blockchain string) string {
+	if strings.Contains(BLOCKCHAINS[blockchain].ChainID, "Ethereum") {
+		return common.HexToAddress(address).Hex()
+	}
+	return address
+}
+
+// getDecimalsFromCache returns the decimals of @asset, either from the map @localCache or from
+// Postgres, in which latter case it also adds the decimals to the local cache.
+// Remember that maps are always passed by reference.
+func (env *Env) getDecimalsFromCache(localCache map[dia.Asset]uint8, asset dia.Asset) uint8 {
+	if decimals, ok := localCache[asset]; ok {
+		return decimals
+	}
+	fullAsset, err := env.RelDB.GetAsset(asset.Address, asset.Blockchain)
+	if err != nil {
+		log.Warnf("could not find asset with address %s on blockchain %s in postgres: ", asset.Address, asset.Blockchain)
+	}
+	localCache[asset] = fullAsset.Decimals
+	return fullAsset.Decimals
 }

@@ -206,6 +206,12 @@
     },
     {
       "Exchange": "LBank",
+      "ForeignName": "DOT_USDT",
+      "Ignore": false,
+      "Symbol": "DOT"
+    },
+    {
+      "Exchange": "LBank",
       "ForeignName": "EKO_ETH",
       "Ignore": false,
       "Symbol": "EKO"
