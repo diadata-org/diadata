@@ -78,6 +78,8 @@ func main() {
 
 	log.Infof("start collector for %s in %s mode...", *exchange, *mode)
 
+	log.Infof("%s starttime, %s duration", startTime, startTime.Add(time.Minute*time.Duration(restartDelayMinutes)))
+
 	relDB, err := models.NewRelDataStore()
 	if err != nil {
 		log.Errorln("NewDataStore:", err)
