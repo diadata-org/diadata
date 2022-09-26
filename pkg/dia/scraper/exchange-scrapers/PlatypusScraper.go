@@ -172,7 +172,6 @@ func (s *PlatypusScraper) ScrapePair(pair dia.ExchangePair) (ps PairScraper, err
 
 // Returns the list of all available trade pairs
 func (s *PlatypusScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
-	// TODO: this should be implement in order to pairDiscoveryService service work
 	return pairs, nil
 }
 
@@ -252,10 +251,6 @@ func (s *PlatypusScraper) loadPoolsAndCoins(registry platypusRegistry) (err erro
 
 // Runs in a goroutine until scraper is closed
 func (s *PlatypusScraper) mainLoop() {
-	defer s.cleanup(nil)
-	defer func() {
-		log.Printf("Shutting down main loop...\n")
-	}()
 
 	s.run = true
 	for _, pool := range s.pools.poolsAddressNoLock() {
@@ -309,8 +304,6 @@ func (s *PlatypusScraper) mainLoop() {
 		}
 	}
 
-	// TODO: time to scrape...
-	time.Sleep(45 * time.Minute)
 	if s.error == nil {
 		s.error = errors.New("main loop terminated by Close()")
 	}
@@ -394,6 +387,7 @@ func (s *PlatypusScraper) processSwap(pool string, swap *platypusPoolABI.PoolSwa
 	}
 
 	log.Infof("got trade in pool %s with tx %s", pool, trade.ForeignTradeID)
+	log.Info("trade: ", trade)
 	s.chanTrades <- trade
 }
 
@@ -526,11 +520,6 @@ func (s *PlatypusScraper) loadPoolData(asset string, registry platypusRegistry) 
 		var name string
 		if c == common.HexToAddress("0x0000000000000000000000000000000000000000") {
 			continue
-		} else if c == common.HexToAddress("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
-			symbol = "ETH"
-			decimals = big.NewInt(int64(18))
-			name = "Ether"
-			c = common.HexToAddress("0x0000000000000000000000000000000000000000")
 		} else {
 			contractToken, err := platypusTokenABI.NewTokenCaller(c, s.RestClient)
 			if err != nil {
