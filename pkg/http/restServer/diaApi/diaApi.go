@@ -27,6 +27,7 @@ import (
 
 var (
 	DECIMALS_CACHE = make(map[dia.Asset]uint8)
+	ASSET_CACHE    = make(map[string]dia.Asset)
 	BLOCKCHAINS    = make(map[string]dia.BlockChain)
 )
 
@@ -3022,4 +3023,24 @@ func (env *Env) getDecimalsFromCache(localCache map[dia.Asset]uint8, asset dia.A
 	}
 	localCache[asset] = fullAsset.Decimals
 	return fullAsset.Decimals
+}
+
+// getAssetFromCache returns the full asset given by blockchain and address, either from the map @localCache
+// or from Postgres, in which latter case it also adds the asset to the local cache.
+// Remember that maps are always passed by reference.
+func (env *Env) getAssetFromCache(localCache map[string]dia.Asset, blockchain string, address string) dia.Asset {
+	if asset, ok := localCache[assetIdentifier(blockchain, address)]; ok {
+		return asset
+	}
+	fullAsset, err := env.RelDB.GetAsset(address, blockchain)
+	if err != nil {
+		log.Warnf("could not find asset with address %s on blockchain %s in postgres: ", address, blockchain)
+	}
+	localCache[assetIdentifier(blockchain, address)] = fullAsset
+	return fullAsset
+
+}
+
+func assetIdentifier(blockchain string, address string) string {
+	return blockchain + "-" + address
 }
