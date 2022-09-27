@@ -1,0 +1,28 @@
+{
+    "Pools": [
+        {
+            "Address": "0xf4003F4efBE8691B60249E6afbD307aBE7758adb",
+            "ForeignName": "WAVAX-USDC"
+        },
+        {
+            "Address": "0xFE15c2695F1F920da45C30AAE47d11dE51007AF9",
+            "ForeignName": "ETH.e-WAVAX"
+        },
+        {
+            "Address": "0x2A8A315e82F85D1f0658C5D66A452Bbdd9356783",
+            "ForeignName": "USDC.e-USDC"
+        },
+        {
+            "Address": "0xbb4646a764358ee93c2a9c4a147d5aDEd527ab73",
+            "ForeignName": "USDt-WAVAX"
+        },
+        {
+            "Address": "0xA389f9430876455C36478DeEa9769B7Ca4E3DDB1",
+            "ForeignName": "USDC.e-WAVAX"
+        },
+        {
+            "Address": "0x4b946c91C2B1a7d7C40FB3C130CdfBaf8389094d",
+            "ForeignName": "sAVAX-WAVAX"
+        }
+    ]
+}
