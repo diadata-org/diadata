@@ -235,6 +235,19 @@
             "WatchdogDelay": 1200
         },
         {
+            "Name": "BKEX",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "https://api.bkex.com/v2",
+            "WsAPI": "wss://api.bkex.com/socket.io/?EIO=3&transport=websocket",
+            "pairsAPI": "https://api.bkex.com/v2/common/symbols",
+            "WatchdogDelay": 1200
+        },
+        {
             "Name": "BitMex",
             "Centralized": true,
             "Bridge": false,
