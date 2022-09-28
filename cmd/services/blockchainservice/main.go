@@ -10,9 +10,10 @@ import (
 )
 
 const (
-	configFileBlockchains = "blockchains/blockchains"
-	configFileExchanges   = "exchanges/exchanges"
-	configFileChains      = "chainconfig/chainconfig"
+	configFileBlockchains  = "blockchains/blockchains"
+	configFileExchanges    = "exchanges/exchanges"
+	configFileChains       = "chainconfig/chainconfig"
+	configFileNFTExchanges = "nftExchanges/nftexchanges"
 )
 
 type chainConfigs struct {
@@ -25,6 +26,10 @@ type blockchainsConfig struct {
 
 type exchangesConfig struct {
 	Exchanges []dia.Exchange `json:"Exchanges"`
+}
+
+type nftExchangesConfig struct {
+	Exchanges []dia.NFTExchange `json:"Exchanges"`
 }
 
 func main() {
@@ -47,12 +52,25 @@ func main() {
 
 	exchanges, err := fetchExchangesFromConfig()
 	if err != nil {
-		log.Fatal("fetch exchanges from config file: ", err)
+		log.Errorln("fetch exchanges from config file: ", err)
+	} else {
+		for _, exchange := range exchanges {
+			err = rdb.SetExchange(exchange)
+			if err != nil {
+				log.Error("set blockchain to postgres: ", err)
+			}
+		}
+
 	}
-	for _, exchange := range exchanges {
-		err = rdb.SetExchange(exchange)
+
+	nftexchanges, err := fetchNFTExchangesFromConfig()
+	if err != nil {
+		log.Fatal("fetch nftexchanges from config file: ", err)
+	}
+	for _, nftexchange := range nftexchanges {
+		err = rdb.SetNFTExchange(nftexchange)
 		if err != nil {
-			log.Error("set blockchain to postgres: ", err)
+			log.Error("set SetNFTExchange to postgres: ", err)
 		}
 	}
 
@@ -102,6 +120,17 @@ func fetchExchangesFromConfig() (exchanges []dia.Exchange, err error) {
 		return
 	}
 	var exchangeList exchangesConfig
+	err = json.Unmarshal(content, &exchangeList)
+	exchanges = exchangeList.Exchanges
+	return
+}
+
+func fetchNFTExchangesFromConfig() (exchanges []dia.NFTExchange, err error) {
+	content, err := configCollectors.ReadJSONFromConfig(configFileNFTExchanges)
+	if err != nil {
+		return
+	}
+	var exchangeList nftExchangesConfig
 	err = json.Unmarshal(content, &exchangeList)
 	exchanges = exchangeList.Exchanges
 	return

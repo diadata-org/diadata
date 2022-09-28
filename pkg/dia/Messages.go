@@ -302,6 +302,16 @@ type Exchange struct {
 	WatchdogDelay int        `json:"WatchdogDelay"`
 }
 
+type NFTExchange struct {
+	Name          string     `json:"Name"`
+	Centralized   bool       `json:"Centralized"`
+	Contract      string     `json:"Contract"`
+	BlockChain    BlockChain `json:"BlockChain"`
+	RestAPI       string     `json:"RestAPI"`
+	WsAPI         string     `json:"WsAPI"`
+	WatchdogDelay int        `json:"WatchdogDelay"`
+}
+
 type Supply struct {
 	Asset             Asset
 	Supply            float64

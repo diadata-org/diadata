@@ -84,9 +84,10 @@ type TofuNFTScraper struct {
 	tradeScraper TradeScraper
 	blockchain   string
 
-	mu    sync.Mutex
-	conf  *TofuNFTScraperConfig
-	state *TofuNFTScraperState
+	mu           sync.Mutex
+	conf         *TofuNFTScraperConfig
+	state        *TofuNFTScraperState
+	exchangeName string
 }
 
 type astarERC721Transfer struct {
@@ -156,14 +157,14 @@ func init() {
 
 }
 
-func NewTofuNFTScraper(blockchain string, rdb *models.RelDB) (scraper *TofuNFTScraper) {
-	switch blockchain {
+func NewTofuNFTScraper(rdb *models.RelDB, exchange dia.NFTExchange) (scraper *TofuNFTScraper) {
+	switch exchange.BlockChain.Name {
 	case dia.ASTAR:
 		defTofuNFTConf.ContractAddr = "0x7Cae7FeB55349FeADB8f84468F692450D92597bc"
-		scraper = makeNewTofuNFTScraper(blockchain, rdb)
+		scraper = makeNewTofuNFTScraper(exchange.BlockChain.Name, rdb)
 	case dia.BINANCESMARTCHAIN:
 		defTofuNFTConf.ContractAddr = "0x449D05C544601631785a7C062DCDFF530330317e"
-		scraper = makeNewTofuNFTScraper(blockchain, rdb)
+		scraper = makeNewTofuNFTScraper(exchange.BlockChain.Name, rdb)
 	}
 	return
 }
@@ -454,7 +455,7 @@ func (s *TofuNFTScraper) notifyTrade(tx *utils.EthFilteredTx, ev *tofunft.Tofunf
 		BlockNumber: tx.BlockNum,
 		Timestamp:   time.Unix(int64(block.Time()), 0),
 		TxHash:      tx.TXHash.Hex(),
-		Exchange:    TofuNFT,
+		Exchange:    s.exchangeName,
 	}
 
 	if asset, ok := assetCacheTofuAstar[s.blockchain+"-"+currAddr.Hex()]; ok {

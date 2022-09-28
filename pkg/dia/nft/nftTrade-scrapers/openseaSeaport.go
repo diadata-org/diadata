@@ -86,9 +86,10 @@ type OpenSeaSeaportScraperState struct {
 type OpenSeaSeaportScraper struct {
 	tradeScraper TradeScraper
 
-	mu    sync.Mutex
-	conf  *OpenSeaSeaportScraperConfig
-	state *OpenSeaSeaportScraperState
+	mu       sync.Mutex
+	conf     *OpenSeaSeaportScraperConfig
+	state    *OpenSeaSeaportScraperState
+	exchange dia.NFTExchange
 }
 
 var (
@@ -150,7 +151,7 @@ func init() {
 	defOpenSeaSeaportState.LastBlockNum = uint64(initBlockNum)
 }
 
-func NewOpenSeaSeaportScraper(rdb *models.RelDB) *OpenSeaSeaportScraper {
+func NewOpenSeaSeaportScraper(rdb *models.RelDB, exchange dia.NFTExchange) *OpenSeaSeaportScraper {
 	ctx := context.Background()
 
 	eth, err := ethclient.Dial(utils.Getenv("ETH_URI_REST", ""))
@@ -159,14 +160,15 @@ func NewOpenSeaSeaportScraper(rdb *models.RelDB) *OpenSeaSeaportScraper {
 	}
 
 	s := &OpenSeaSeaportScraper{
-		conf:  &OpenSeaSeaportScraperConfig{},
-		state: &OpenSeaSeaportScraperState{},
+		conf:     &OpenSeaSeaportScraperConfig{},
+		state:    &OpenSeaSeaportScraperState{},
+		exchange: exchange,
 		tradeScraper: TradeScraper{
 			shutdown:      make(chan nothing),
 			shutdownDone:  make(chan nothing),
 			datastore:     rdb,
 			chanTrade:     make(chan dia.NFTTrade),
-			source:        "OpenSea",
+			source:        exchange.Name,
 			ethConnection: eth,
 		},
 	}
@@ -544,7 +546,7 @@ func (s *OpenSeaSeaportScraper) notifyTrade(ev *openseaseaport.OpenseaseaportOrd
 				BlockNumber: ev.Raw.BlockNumber,
 				Timestamp:   timestamp,
 				TxHash:      ev.Raw.TxHash.Hex(),
-				Exchange:    "OpenSea",
+				Exchange:    s.exchange.Name,
 			}
 
 			if len(ev.Offer) > 1 {

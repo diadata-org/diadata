@@ -135,6 +135,12 @@ type RelDatastore interface {
 	SetBlockData(dia.BlockData) error
 	GetBlockData(blockchain string, blocknumber int64) (dia.BlockData, error)
 	GetLastBlockBlockscraper(blockchain string) (int64, error)
+
+	//NFT exchange methods
+
+	GetAllNFTExchanges() (exchanges []dia.NFTExchange, err error)
+	GetNFTExchange(name string) (exchange dia.Exchange, err error)
+	SetNFTExchange(exchange dia.NFTExchange) (err error)
 }
 
 const (
@@ -147,6 +153,7 @@ const (
 	poolTable               = "pool"
 	poolassetTable          = "poolasset"
 	exchangeTable           = "exchange"
+	nftExchangeTable        = "nftexchange"
 	chainconfigTable        = "chainconfig"
 	blockchainTable         = "blockchain"
 	assetVolumeTable        = "assetvolume"

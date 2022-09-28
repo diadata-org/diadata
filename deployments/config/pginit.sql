@@ -263,4 +263,17 @@ CREATE TABLE synthassetdata (
     UNIQUE(synthasset_id,time_stamp)
 );
 
+CREATE TABLE nftexchange (
+    exchange_id UUID DEFAULT gen_random_uuid(),
+    name text NOT NULL,
+    centralized boolean default false,
+    contract text,
+    blockchain text,
+    rest_api text,
+    ws_api text,
+    watchdog_delay numeric NOT NULL,
+    UNIQUE(exchange_id),
+    UNIQUE (name)
+);
+
 

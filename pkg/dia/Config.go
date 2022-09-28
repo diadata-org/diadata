@@ -95,7 +95,7 @@ const (
 )
 
 const (
-	CryptoPunks              = "CryptoPunks"
+	CryptoPunks              = "CryptopunkMarket"
 	CryptoKitties            = "CryptoKitties"
 	Topshot                  = "Topshot"
 	X2Y2                     = "X2Y2"
