@@ -603,10 +603,11 @@ func (env *Env) GetExchanges(c *gin.Context) {
 // GetNFTExchanges is the delegate method for fetching all exchanges available in Postgres.
 func (env *Env) GetNFTExchanges(c *gin.Context) {
 	type exchangeReturn struct {
-		Name       string
-		Volume24h  float64
-		Trades     int64
-		Blockchain string
+		Name           string
+		Volume24h      float64
+		Trades24h      int64
+		Blockchain     string
+		NumCollections int64
 	}
 	var exchangereturns []exchangeReturn
 	exchanges, err := env.RelDB.GetAllNFTExchanges()
@@ -625,12 +626,18 @@ func (env *Env) GetNFTExchanges(c *gin.Context) {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 			return
 		}
+		numCollections, err := env.RelDB.GetCollectionCountByExchange(exchange.Name)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
 
 		exchangereturn := exchangeReturn{
-			Name:       exchange.Name,
-			Volume24h:  vol,
-			Trades:     numTrades,
-			Blockchain: exchange.BlockChain.Name,
+			Name:           exchange.Name,
+			Volume24h:      vol,
+			Trades24h:      numTrades,
+			Blockchain:     exchange.BlockChain.Name,
+			NumCollections: numCollections,
 		}
 		exchangereturns = append(exchangereturns, exchangereturn)
 
