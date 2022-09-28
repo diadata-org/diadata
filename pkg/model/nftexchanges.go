@@ -111,18 +111,17 @@ func (rdb *RelDB) GetAllNFTExchanges() (exchanges []dia.NFTExchange, err error) 
 
 // Get24HoursNFTExchangeTrades returns the number of trades in last 24 hours
 func (rdb *RelDB) Get24HoursNFTExchangeTrades(exchange string) (int64, error) {
-	var query string
-	if exchange == "" {
-		query = fmt.Sprintf(`
+
+	query := fmt.Sprintf(`
 	SELECT count(*) 
 	FROM %s  
 	WHERE trade_time>now()- INTERVAL '1 days' 
 	AND trade_time<=now()
 	AND marketplace='%s'`,
-			NfttradeCurrTable,
-			exchange,
-		)
-	}
+		NfttradeCurrTable,
+		exchange,
+	)
+
 	var numTrades sql.NullInt64
 	err := rdb.postgresClient.QueryRow(context.Background(), query).Scan(&numTrades)
 	if numTrades.Valid {
@@ -133,18 +132,17 @@ func (rdb *RelDB) Get24HoursNFTExchangeTrades(exchange string) (int64, error) {
 
 // Get24HoursNFTExchangeVolume returns the volume traded in last 24 hours
 func (rdb *RelDB) Get24HoursNFTExchangeVolume(exchange string) (float64, error) {
-	var query string
-	if exchange == "" {
-		query = fmt.Sprintf(`
+
+	query := fmt.Sprintf(`
 		SELECT SUM(price::numeric) 
 		FROM %s  
 		WHERE trade_time>now()- INTERVAL '1 days' 
 		AND trade_time<=now()
         AND marketplace='%s'`,
-			NfttradeCurrTable,
-			exchange,
-		)
-	}
+		NfttradeCurrTable,
+		exchange,
+	)
+
 	// TO DO: address currency issue.
 	var volume sql.NullFloat64
 	err := rdb.postgresClient.QueryRow(context.Background(), query).Scan(&volume)
@@ -156,16 +154,14 @@ func (rdb *RelDB) Get24HoursNFTExchangeVolume(exchange string) (float64, error) 
 
 // GetCollectionCountByExchange returns the  number of NFT collections traded on exchange
 func (rdb *RelDB) GetCollectionCountByExchange(exchange string) (int64, error) {
-	var query string
-	if exchange == "" {
-		query = fmt.Sprintf(`
+	query := fmt.Sprintf(`
 		SELECT COUNT (DISTINCT nftclass_id) 
 		FROM %s  
         AND marketplace='%s'`,
-			NfttradeCurrTable,
-			exchange,
-		)
-	}
+		NfttradeCurrTable,
+		exchange,
+	)
+
 	var collections sql.NullInt64
 	err := rdb.postgresClient.QueryRow(context.Background(), query).Scan(&collections)
 	if collections.Valid {
