@@ -60,7 +60,7 @@ func main() {
 
 		f := filters.NewFiltersBlockService(loadFilterPointsFromPreviousBlock(), s, channel)
 
-		w := kafkaHelper.NewSyncWriter(filtersBlockTopic)
+		w := kafkaHelper.NewSyncWriterWithCompression(filtersBlockTopic)
 
 		defer func() {
 			err := w.Close()
