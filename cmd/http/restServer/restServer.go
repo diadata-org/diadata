@@ -243,6 +243,8 @@ func main() {
 		diaGroup.GET("/tokenexchanges/:symbol", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetAssetExchanges))
 
 		diaGroup.GET("/exchanges", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetExchanges))
+		diaGroup.GET("/NFT/exchanges", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetNFTExchanges))
+
 		diaGroup.GET("/blockchains", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetAllBlockchains))
 
 		// Endpoints for interestrates

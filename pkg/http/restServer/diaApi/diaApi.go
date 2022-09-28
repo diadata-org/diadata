@@ -600,6 +600,49 @@ func (env *Env) GetExchanges(c *gin.Context) {
 	c.JSON(http.StatusOK, exchangereturns)
 }
 
+// GetNFTExchanges is the delegate method for fetching all exchanges available in Postgres.
+func (env *Env) GetNFTExchanges(c *gin.Context) {
+	type exchangeReturn struct {
+		Name       string
+		Volume24h  float64
+		Trades     int64
+		Blockchain string
+	}
+	var exchangereturns []exchangeReturn
+	exchanges, err := env.RelDB.GetAllNFTExchanges()
+	if len(exchanges) == 0 || err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+	for _, exchange := range exchanges {
+
+		vol, err := env.RelDB.Get24HoursNFTExchangeVolume(exchange.Name)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		numTrades, err := env.RelDB.Get24HoursNFTExchangeTrades(exchange.Name)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+
+		exchangereturn := exchangeReturn{
+			Name:       exchange.Name,
+			Volume24h:  vol,
+			Trades:     numTrades,
+			Blockchain: exchange.BlockChain.Name,
+		}
+		exchangereturns = append(exchangereturns, exchangereturn)
+
+	}
+
+	sort.Slice(exchangereturns, func(i, j int) bool {
+		return exchangereturns[i].Volume24h > exchangereturns[j].Volume24h
+	})
+
+	c.JSON(http.StatusOK, exchangereturns)
+}
+
 // GetAssetChartPoints queries for filter points of asset given by address and blockchain.
 func (env *Env) GetAssetChartPoints(c *gin.Context) {
 	if !validateInputParams(c) {
