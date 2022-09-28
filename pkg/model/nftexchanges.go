@@ -157,7 +157,7 @@ func (rdb *RelDB) GetCollectionCountByExchange(exchange string) (int64, error) {
 	query := fmt.Sprintf(`
 		SELECT COUNT (DISTINCT nftclass_id) 
 		FROM %s  
-        AND marketplace='%s'`,
+        WHERE marketplace='%s'`,
 		NfttradeCurrTable,
 		exchange,
 	)
