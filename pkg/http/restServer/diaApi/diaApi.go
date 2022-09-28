@@ -611,6 +611,8 @@ func (env *Env) GetNFTExchanges(c *gin.Context) {
 	}
 	var exchangereturns []exchangeReturn
 	exchanges, err := env.RelDB.GetAllNFTExchanges()
+
+	log.Infoln("exchanges", exchanges)
 	if len(exchanges) == 0 || err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
 	}
@@ -618,18 +620,17 @@ func (env *Env) GetNFTExchanges(c *gin.Context) {
 
 		vol, err := env.RelDB.Get24HoursNFTExchangeVolume(exchange.Name)
 		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
+			log.Errorln("err on Get24HoursNFTExchangeVolume", err)
 		}
 		numTrades, err := env.RelDB.Get24HoursNFTExchangeTrades(exchange.Name)
 		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
+			log.Errorln("err on Get24HoursNFTExchangeTrades", err)
+
 		}
 		numCollections, err := env.RelDB.GetCollectionCountByExchange(exchange.Name)
 		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
+			log.Errorln("err on GetCollectionCountByExchange", err)
+
 		}
 
 		exchangereturn := exchangeReturn{

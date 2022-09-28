@@ -1,7 +1,7 @@
 {
     "Exchanges": [
         {
-            "Name": "Opensea",
+            "Name": "OpenSea",
             "Centralized": false,
             "Contract": "",
             "Blockchain": {
