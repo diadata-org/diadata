@@ -141,6 +141,9 @@ type RelDatastore interface {
 	GetAllNFTExchanges() (exchanges []dia.NFTExchange, err error)
 	GetNFTExchange(name string) (exchange dia.Exchange, err error)
 	SetNFTExchange(exchange dia.NFTExchange) (err error)
+	GetCollectionCountByExchange(exchange string) (int64, error)
+	Get24HoursNFTExchangeVolume(exchange string) (float64, error)
+	Get24HoursNFTExchangeTrades(exchange string) (int64, error)
 }
 
 const (
