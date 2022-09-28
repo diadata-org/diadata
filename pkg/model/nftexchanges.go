@@ -108,3 +108,68 @@ func (rdb *RelDB) GetAllNFTExchanges() (exchanges []dia.NFTExchange, err error) 
 
 	return exchanges, nil
 }
+
+// Get24HoursNFTExchangeTrades returns the number of trades in last 24 hours
+func (rdb *RelDB) Get24HoursNFTExchangeTrades(exchange string) (int64, error) {
+	var query string
+	if exchange == "" {
+		query = fmt.Sprintf(`
+	SELECT count(*) 
+	FROM %s  
+	WHERE trade_time>now()- INTERVAL '1 days' 
+	AND trade_time<=now()
+	AND marketplace='%s'`,
+			NfttradeCurrTable,
+			exchange,
+		)
+	}
+	var numTrades sql.NullInt64
+	err := rdb.postgresClient.QueryRow(context.Background(), query).Scan(&numTrades)
+	if numTrades.Valid {
+		return numTrades.Int64, nil
+	}
+	return 0, err
+}
+
+// Get24HoursNFTExchangeVolume returns the volume traded in last 24 hours
+func (rdb *RelDB) Get24HoursNFTExchangeVolume(exchange string) (float64, error) {
+	var query string
+	if exchange == "" {
+		query = fmt.Sprintf(`
+		SELECT SUM(price::numeric) 
+		FROM %s  
+		WHERE trade_time>now()- INTERVAL '1 days' 
+		AND trade_time<=now()
+        AND marketplace='%s'`,
+			NfttradeCurrTable,
+			exchange,
+		)
+	}
+	// TO DO: address currency issue.
+	var volume sql.NullFloat64
+	err := rdb.postgresClient.QueryRow(context.Background(), query).Scan(&volume)
+	if volume.Valid {
+		return volume.Float64 / 1e18, nil
+	}
+	return 0, err
+}
+
+// GetCollectionCountByExchange returns the  number of NFT collections traded on exchange
+func (rdb *RelDB) GetCollectionCountByExchange(exchange string) (int64, error) {
+	var query string
+	if exchange == "" {
+		query = fmt.Sprintf(`
+		SELECT COUNT (DISTINCT nftclass_id) 
+		FROM %s  
+        AND marketplace='%s'`,
+			NfttradeCurrTable,
+			exchange,
+		)
+	}
+	var collections sql.NullInt64
+	err := rdb.postgresClient.QueryRow(context.Background(), query).Scan(&collections)
+	if collections.Valid {
+		return collections.Int64, nil
+	}
+	return 0, err
+}
