@@ -117,6 +117,9 @@ func (s *BKEXScraper) mainLoop() {
 			continue
 		}
 
+		if len(strings.Split(string(p), "42/quotation,")) < 2 {
+			continue
+		}
 		d := strings.Split(string(p), "42/quotation,")[1]
 
 		var r BKEXTradeResponse
@@ -136,14 +139,18 @@ func (s *BKEXScraper) mainLoop() {
 
 			exchangePair, err = s.db.GetExchangePairCache(s.exchangeName, trade.Symbol)
 			if err != nil {
-				log.Error("Get Exchange Pair  ", err)
+				log.Error("Get Exchange Pair  ", trade.Symbol)
+			}
+			volume := trade.Volume
+			if trade.Direction == "S" {
+				volume *= -1
 			}
 
 			t := &dia.Trade{
 				Symbol:       strings.Split(trade.Symbol, "_")[0],
 				Pair:         trade.Symbol,
 				Price:        priceFloat,
-				Volume:       trade.Volume,
+				Volume:       volume,
 				Time:         time.Unix(0, trade.Ts*int64(time.Millisecond)),
 				Source:       s.exchangeName,
 				VerifiedPair: exchangePair.Verified,
@@ -207,8 +214,8 @@ func (s *BKEXScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 		pair:   pair,
 	}
 
-	// message := `42/quotation,["quotationDealConnect",{"symbol": {"` + pair.ForeignName + `"},"number": 50}]`
-	message := `42/quotation,["quotationDealConnect",{"symbol": "BTC_USDT","number": 50}]`
+	message := `42/quotation,["quotationDealConnect",{"symbol": "` + pair.ForeignName + `","number": 50}]`
+	// message := `42/quotation,["quotationDealConnect",{"symbol": "BTC_USDT","number": 50}]`
 	log.Info(message)
 
 	if err := s.wsClient.WriteMessage(ws.TextMessage, []byte(message)); err != nil {

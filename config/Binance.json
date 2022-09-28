@@ -80,6 +80,18 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "GMTBUSD",
+            "Ignore": false,
+            "Symbol": "GMT"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "LDOBUSD",
+            "Ignore": false,
+            "Symbol": "LDO"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "USTBTC",
             "Ignore": false,
             "Symbol": "UST"

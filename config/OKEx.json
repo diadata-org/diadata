@@ -974,6 +974,12 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "GMT-USDT",
+      "Ignore": false,
+      "Symbol": "GMT"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "GNT-BTC",
       "Ignore": false,
       "Symbol": "GNT"
@@ -1337,6 +1343,12 @@
       "ForeignName": "LBA-USDT",
       "Ignore": false,
       "Symbol": "LBA"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "LDO-USDT",
+      "Ignore": false,
+      "Symbol": "LDO"
     },
     {
       "Exchange": "OKEx",
