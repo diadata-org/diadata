@@ -20,13 +20,17 @@ type nothing struct{}
 
 func init() {
 	log = logrus.New()
-	batchTimeString = utils.Getenv("BATCH_TIME_SECONDS", "30")
-	var err error
-	batchTimeSeconds, err = strconv.Atoi(batchTimeString)
-	if err != nil {
-		log.Error("parse batchTimeString: ", err)
-	}
 
+	var err error
+	batchTimeSeconds, err = strconv.Atoi(utils.Getenv("BATCH_TIME_SECONDS", "30"))
+	if err != nil {
+		log.Error("parse BATCH_TIME_SECONDS: ", err)
+	}
+	tradeVolumeThresholdExponent, err := strconv.ParseFloat(utils.Getenv("TRADE_VOLUME_THRESHOLD_EXPONENT", ""), 64)
+	if err != nil {
+		log.Error("Parse TRADE_VOLUME_THRESHOLD_EXPONENT: ", err)
+	}
+	tradeVolumeThreshold = math.Pow(10, -tradeVolumeThresholdExponent)
 }
 
 var (
@@ -38,10 +42,10 @@ var (
 		"PAX":  "",
 		"BUSD": "",
 	}
-	tol              = float64(0.04)
-	log              *logrus.Logger
-	batchTimeString  string
-	batchTimeSeconds int
+	tol                  = float64(0.04)
+	log                  *logrus.Logger
+	batchTimeSeconds     int
+	tradeVolumeThreshold float64
 )
 
 type TradesBlockService struct {
@@ -112,7 +116,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 
 	// Price estimation can only be done for verified pairs.
 	// Trades with unverified pairs are still saved, but not sent to the filtersBlockService.
-	if t.VerifiedPair {
+	if t.VerifiedPair && s.checkTrade(t) {
 		if t.BaseToken.Address == "840" && t.BaseToken.Blockchain == dia.FIAT {
 			// All prices are measured in US-Dollar, so just price for base token == USD
 			t.EstimatedUSDPrice = t.Price
@@ -274,6 +278,14 @@ func (s *TradesBlockService) cleanup(err error) {
 
 func (s *TradesBlockService) Channel() chan *dia.TradesBlock {
 	return s.chanTradesBlock
+}
+
+func (s *TradesBlockService) checkTrade(t dia.Trade) bool {
+	if math.Abs(t.Volume) < tradeVolumeThreshold {
+		log.Info("low volume trade: ", t)
+		return false
+	}
+	return true
 }
 
 func buildBridge(t dia.Trade) dia.Asset {
