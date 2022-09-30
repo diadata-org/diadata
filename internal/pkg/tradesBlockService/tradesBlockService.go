@@ -39,6 +39,11 @@ func init() {
 	if err != nil {
 		log.Error("parse env var SMALL_X: ", err)
 	}
+	tradeVolumeThresholdExponent, err := strconv.ParseFloat(utils.Getenv("TRADE_VOLUME_THRESHOLD_EXPONENT", ""), 64)
+	if err != nil {
+		log.Error("Parse TRADE_VOLUME_THRESHOLD_EXPONENT: ", err)
+	}
+	tradeVolumeThreshold = math.Pow(10, -tradeVolumeThresholdExponent)
 }
 
 var (
@@ -59,7 +64,7 @@ var (
 	volumeThreshold      float64
 	blueChipThreshold    float64
 	smallX               float64
-	tradeVolumeThreshold = 1e-8
+	tradeVolumeThreshold float64
 )
 
 type TradesBlockService struct {
