@@ -8,6 +8,12 @@
     },
     {
       "Exchange": "CoinBase",
+      "ForeignName": "BNT-USD",
+      "Ignore": false,
+      "Symbol": "BNT"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "YFI-USD",
       "Ignore": false,
       "Symbol": "YFI"

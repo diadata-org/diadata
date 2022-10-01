@@ -166,8 +166,6 @@ func (s *UniswapV3Scraper) mainLoop() {
 			log.Info("skip blacklisted pool ", pair.Address)
 			continue
 		}
-		pair.normalizeUniPair()
-		// ps, ok := s.pairScrapers[pair.ForeignName]
 
 		log.Info("found pair scraper for: ", pair.ForeignName, " with address ", pair.Address.Hex())
 		sink, err := s.GetSwapsChannel(pair.Address)
@@ -355,9 +353,6 @@ func (s *UniswapV3Scraper) FillSymbolData(symbol string) (dia.Asset, error) {
 }
 
 func (s *UniswapV3Scraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
-	if pair.ForeignName == "WETH" {
-		pair.Symbol = "ETH"
-	}
 	return pair, nil
 }
 

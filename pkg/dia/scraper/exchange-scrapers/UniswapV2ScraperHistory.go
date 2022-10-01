@@ -207,7 +207,6 @@ func (s *UniswapHistoryScraper) loadPairMap() {
 	pairmap := make(map[common.Address]UniswapPair)
 	for _, m := range maps {
 		for i, j := range m {
-			j.normalizeUniPair()
 			pairmap[i] = j
 		}
 	}
@@ -508,7 +507,6 @@ func (s *UniswapHistoryScraper) GetAllPairs() ([]UniswapPair, error) {
 				log.Error("error retrieving pair by ID: ", err)
 				return
 			}
-			uniPair.normalizeUniPair()
 			pairs[index] = uniPair
 		}(i)
 	}
