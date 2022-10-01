@@ -1,6 +1,12 @@
 {
     "Tokens": [
         {
+            "Symbol": "AVAX",
+            "Exchange": "CoinBase",
+            "Blockchain": "Avalanche",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "DOT",
             "Exchange": "CoinBase",
             "Blockchain": "Polkadot",

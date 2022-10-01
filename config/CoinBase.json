@@ -2,7 +2,13 @@
   "Coins": [
     {
       "Exchange": "CoinBase",
-      "ForeignName": "YFIUSD",
+      "ForeignName": "AVAX-USD",
+      "Ignore": false,
+      "Symbol": "AVAX"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "YFI-USD",
       "Ignore": false,
       "Symbol": "YFI"
     },

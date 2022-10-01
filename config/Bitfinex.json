@@ -505,6 +505,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "FTM",
+      "ForeignName": "FTMUSD",
+      "Exchange": "Bitfinex",
+      "Ignore": false
+    },
+    {
       "Symbol": "UTK",
       "ForeignName": "UTKUSD",
       "Exchange": "Bitfinex",
@@ -793,6 +799,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "AVAX",
+      "ForeignName": "AVAXUSD",
+      "Exchange": "Bitfinex",
+      "Ignore": false
+    },
+    {
       "Symbol": "DOT",
       "ForeignName": "DOTUST",
       "Exchange": "Bitfinex",
@@ -807,18 +819,6 @@
     {
       "Symbol": "UNI",
       "ForeignName": "UNIUST",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
-      "Symbol": "AVA",
-      "ForeignName": "AVAX:USD",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
-      "Symbol": "AVA",
-      "ForeignName": "AVAX:UST",
       "Exchange": "Bitfinex",
       "Ignore": false
     },

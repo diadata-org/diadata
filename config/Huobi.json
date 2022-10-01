@@ -20,6 +20,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "AVAXUSDT",
+      "Ignore": false,
+      "Symbol": "AVAX"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "SDNUSDT",
       "Ignore": false,
       "Symbol": "SDN"
@@ -140,6 +146,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "BTCUSDC",
+      "Ignore": false,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "BTGBTC",
       "Ignore": false,
       "Symbol": "BTG"
@@ -233,6 +245,12 @@
       "ForeignName": "FLOWUSDT",
       "Ignore": false,
       "Symbol": "FLOW"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "FTMUSDT",
+      "Ignore": false,
+      "Symbol": "FTM"
     },
     {
       "Exchange": "Huobi",
