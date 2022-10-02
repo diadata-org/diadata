@@ -29,6 +29,7 @@ require (
 	github.com/graarh/golang-socketio v0.0.0-20170510162725-2c44953b9b5f
 	github.com/graph-gophers/graphql-go v1.1.0
 	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab
+	github.com/jackc/pgconn v1.8.1 // indirect
 	github.com/jackc/pgtype v1.7.0
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
@@ -50,7 +51,7 @@ require (
 	github.com/sirupsen/logrus v1.7.0
 	github.com/status-im/keycard-go v0.0.0-20200402102358-957c09536969 // indirect
 	github.com/streamingfast/binary v0.0.0-20210928223119-44fc44e4a0b5
-	github.com/streamingfast/solana-go v0.3.0
+	github.com/streamingfast/solana-go v0.5.1-0.20220502224452-432fbe84aee8
 	github.com/stretchr/testify v1.8.0
 	github.com/tidwall/gjson v1.12.1 // indirect
 	github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf
@@ -59,8 +60,8 @@ require (
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	github.com/zksync-sdk/zksync-sdk-go v0.0.0-20211119083613-58613b4d3d77 // indirect
 	go.uber.org/ratelimit v0.2.0
-	go.uber.org/zap v1.19.1
-	golang.org/x/crypto v0.0.0-20211117183948-ae814b36b871
+	go.uber.org/zap v1.21.0
+	golang.org/x/crypto v0.0.0-20220214200702-86341886e292
 	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba
