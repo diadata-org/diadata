@@ -66,6 +66,7 @@ func GetTrades(c *gin.Context) {
 }
 
 const (
+	cachingTime1Sec   = 1 * time.Second
 	cachingTime20Secs = 20 * time.Second
 	cachingTimeShort  = time.Minute * 2
 	// cachingTimeMedium = time.Minute * 10
@@ -243,7 +244,7 @@ func main() {
 		diaGroup.GET("/tokenexchanges/:symbol", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetAssetExchanges))
 
 		diaGroup.GET("/exchanges", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetExchanges))
-		diaGroup.GET("/NFT/exchanges", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetNFTExchanges))
+		diaGroup.GET("/NFT/exchanges", cache.CachePageAtomic(memoryStore, cachingTime1Sec, diaApiEnv.GetNFTExchanges))
 
 		diaGroup.GET("/blockchains", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetAllBlockchains))
 

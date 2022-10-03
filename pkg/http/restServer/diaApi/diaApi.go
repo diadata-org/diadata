@@ -618,11 +618,11 @@ func (env *Env) GetNFTExchanges(c *gin.Context) {
 	}
 	for _, exchange := range exchanges {
 
-		vol, err := env.RelDB.Get24HoursNFTExchangeVolume(exchange.Name)
+		vol, err := env.RelDB.Get24HoursNFTExchangeVolume(exchange)
 		if err != nil {
 			log.Errorln("err on Get24HoursNFTExchangeVolume", err)
 		}
-		numTrades, err := env.RelDB.Get24HoursNFTExchangeTrades(exchange.Name)
+		numTrades, err := env.RelDB.Get24HoursNFTExchangeTrades(exchange)
 		if err != nil {
 			log.Errorln("err on Get24HoursNFTExchangeTrades", err)
 
