@@ -280,6 +280,7 @@ func (scrapper *BancorScraper) normalizeSwap(swap BancorNetwork.BancorNetworkCon
 	}
 
 	pair := scrapper.GetPair([]common.Address{swap.ToToken, swap.FromToken})
+	pair, _ = scrapper.NormalizePair(pair)
 	normalizedSwap.Pair = pair
 	normalizedSwap.ID = swap.Raw.TxHash.Hex()
 	normalizedSwap.Timestamp = time.Now().Unix()
@@ -294,7 +295,13 @@ func (scrapper *BancorScraper) getSwapData(swap BancorSwap) (price float64, volu
 }
 
 func (scraper *BancorScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
-	return dia.ExchangePair{}, nil
+	if pair.UnderlyingPair.BaseToken.Address == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" {
+		pair.UnderlyingPair.BaseToken.Address = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+	}
+	if pair.UnderlyingPair.QuoteToken.Address == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" {
+		pair.UnderlyingPair.QuoteToken.Address = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+	}
+	return pair, nil
 }
 
 func (scraper *BancorScraper) ConverterTypeZero(address common.Address) (tokenAddress []common.Address, err error) {
