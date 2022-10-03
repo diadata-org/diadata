@@ -482,8 +482,12 @@ func (scraper *BancorScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, e
 }
 
 func (scraper *BancorScraper) GetPair(address []common.Address) dia.ExchangePair {
-	var symbol0 string
-	var symbol1 string
+	var (
+		symbol0    string
+		symbol1    string
+		quotetoken dia.Asset
+		basetoken  dia.Asset
+	)
 
 	token0, err := uniswapcontract.NewIERC20Caller(address[0], scraper.RestClient)
 	if err != nil {
@@ -495,6 +499,7 @@ func (scraper *BancorScraper) GetPair(address []common.Address) dia.ExchangePair
 	}
 
 	if address[0].Hex() == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" {
+		quotetoken.Address = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
 		symbol0 = "WETH"
 	} else {
 		symbol0, err = token0.Symbol(&bind.CallOpts{})
@@ -503,6 +508,7 @@ func (scraper *BancorScraper) GetPair(address []common.Address) dia.ExchangePair
 		}
 	}
 	if address[1].Hex() == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" {
+		basetoken.Address = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
 		symbol1 = "WETH"
 	} else {
 		symbol1, err = token1.Symbol(&bind.CallOpts{})
@@ -510,17 +516,10 @@ func (scraper *BancorScraper) GetPair(address []common.Address) dia.ExchangePair
 			log.Error(err)
 		}
 	}
-
-	basetoken := dia.Asset{
-		Symbol:     symbol1,
-		Address:    address[1].Hex(),
-		Blockchain: dia.ETHEREUM,
-	}
-	quotetoken := dia.Asset{
-		Symbol:     symbol0,
-		Address:    address[0].Hex(),
-		Blockchain: dia.ETHEREUM,
-	}
+	quotetoken.Symbol = symbol0
+	quotetoken.Blockchain = dia.ETHEREUM
+	basetoken.Symbol = symbol1
+	basetoken.Blockchain = dia.ETHEREUM
 
 	return dia.ExchangePair{
 		ForeignName:    symbol0 + "-" + symbol1,
