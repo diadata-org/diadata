@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -111,9 +112,9 @@ func (rdb *RelDB) SetPool(pool dia.Pool) error {
 	var query1 string
 	for i := 0; i < len(pool.Assetvolumes); i++ {
 		query1 = fmt.Sprintf(
-			`INSERT INTO %s (pool_id,asset_id,liquidity)
-				VALUES ((SELECT pool_id from %s where address=$1 and blockchain=$2),(SELECT asset_id from %s where address=$3 and blockchain=$4),$5)
-				ON CONFLICT (pool_id,asset_id) DO UPDATE SET liquidity=EXCLUDED.liquidity`,
+			`INSERT INTO %s (pool_id,asset_id,liquidity,time_stamp)
+				VALUES ((SELECT pool_id from %s where address=$1 and blockchain=$2),(SELECT asset_id from %s where address=$3 and blockchain=$4),$5,$6)
+				ON CONFLICT (pool_id,asset_id) DO UPDATE SET liquidity=EXCLUDED.liquidity, time_stamp=EXCLUDED.time_stamp`,
 			poolassetTable,
 			poolTable,
 			assetTable,
@@ -127,6 +128,7 @@ func (rdb *RelDB) SetPool(pool dia.Pool) error {
 			pool.Assetvolumes[i].Asset.Address,
 			pool.Assetvolumes[i].Asset.Blockchain,
 			pool.Assetvolumes[i].Volume,
+			pool.Time,
 		)
 		if err != nil {
 			return err
@@ -135,6 +137,66 @@ func (rdb *RelDB) SetPool(pool dia.Pool) error {
 
 	return nil
 
+}
+
+// GetPoolByAddress returns the most recent pool data, i.e. liquidity.
+func (rdb *RelDB) GetPoolByAddress(blockchain string, address string) (pool dia.Pool, err error) {
+
+	var rows pgx.Rows
+	query := fmt.Sprintf(`
+		SELECT pa.liquidity,a.symbol,a.name,a.address,a.decimals,p.exchange,pa.time_stamp 
+		FROM %s pa 
+		INNER JOIN %s p 
+		ON p.pool_id=pa.pool_id 
+		INNER JOIN %s a
+		ON pa.asset_id=a.asset_id 
+		WHERE p.blockchain='%s'
+		AND p.address='%s'`,
+		poolassetTable,
+		poolTable,
+		assetTable,
+		blockchain,
+		address,
+	)
+
+	rows, err = rdb.postgresClient.Query(context.Background(), query)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			decimals    sql.NullInt64
+			assetvolume dia.AssetVolume
+			timestamp   sql.NullTime
+		)
+		err = rows.Scan(
+			&assetvolume.Volume,
+			&assetvolume.Asset.Symbol,
+			&assetvolume.Asset.Name,
+			&assetvolume.Asset.Address,
+			&decimals,
+			&pool.Exchange.Name,
+			&timestamp,
+		)
+		if err != nil {
+			return
+		}
+		if decimals.Valid {
+			assetvolume.Asset.Decimals = uint8(decimals.Int64)
+		}
+		if timestamp.Valid {
+			pool.Time = timestamp.Time
+		}
+		assetvolume.Asset.Blockchain = blockchain
+		pool.Assetvolumes = append(pool.Assetvolumes, assetvolume)
+	}
+
+	pool.Blockchain.Name = blockchain
+	pool.Address = address
+
+	return
 }
 
 // GetAllPoolAddrsExchange returns all pool addresses available for @exchange.

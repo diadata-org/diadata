@@ -2,8 +2,10 @@ package main
 
 import (
 	"flag"
-	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/foreign-scrapers"
 	"sync"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/foreign-scrapers"
 
 	models "github.com/diadata-org/diadata/pkg/model"
 
@@ -26,7 +28,11 @@ func main() {
 	switch *scraperType {
 	case "Coingecko":
 		log.Println("Foreign Scraper: Start scraping data from Coingecko")
-		sc = scrapers.NewCoingeckoScraper(ds)
+		config, err := dia.GetConfig(*scraperType)
+		if err != nil {
+			log.Error("Get API key: ", err)
+		}
+		sc = scrapers.NewCoingeckoScraper(ds, config.ApiKey, config.SecretKey)
 	case "CoinMarketCap":
 		log.Println("Foreign Scraper: Start scraping data from CoinMarketCap")
 		sc = scrapers.NewCoinMarketCapScraper(ds)

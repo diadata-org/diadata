@@ -349,6 +349,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "SPA",
+      "ForeignName": "SPA_USDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "stETH",
       "ForeignName": "stETH_USDC",
       "Exchange": "MEXC",

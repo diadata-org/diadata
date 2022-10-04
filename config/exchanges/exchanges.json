@@ -235,6 +235,19 @@
             "WatchdogDelay": 1200
         },
         {
+            "Name": "BKEX",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "https://api.bkex.com/v2",
+            "WsAPI": "wss://api.bkex.com/socket.io/?EIO=3&transport=websocket",
+            "pairsAPI": "https://api.bkex.com/v2/common/symbols",
+            "WatchdogDelay": 1200
+        },
+        {
             "Name": "BitMex",
             "Centralized": true,
             "Bridge": false,
@@ -638,6 +651,19 @@
             "WatchdogDelay": 1200
         },
         {
+            "Name": "PlatypusFinance",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x7125B4211357d7C3a90F796c956c12c681146EbB",
+            "Blockchain": {
+                "Name": "Avalanche"
+            },
+            "RestAPI": "https://api.avax.network/ext/bc/C/rpc",
+            "WsAPI": "wss://api.avax.network/ext/bc/C/ws",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
             "Name": "Quickswap",
             "Centralized": false,
             "Bridge": false,
@@ -856,7 +882,7 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 1800
         },
         {
             "Name": "Uniswap",
@@ -896,6 +922,19 @@
             "WsAPI": "",
             "pairsAPI": "",
             "WatchdogDelay": 7200
+        },
+        {
+            "Name": "UniswapV3-Arbitrum",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x1F98431c8aD98523631AE4a59f267346ea31F984",
+            "Blockchain": {
+                "Name": "Arbitrum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 300
         },
         {
             "Name": "Unkown",

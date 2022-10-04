@@ -2,7 +2,19 @@
   "Coins": [
     {
       "Exchange": "CoinBase",
-      "ForeignName": "YFIUSD",
+      "ForeignName": "AVAX-USD",
+      "Ignore": false,
+      "Symbol": "AVAX"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "BNT-USD",
+      "Ignore": false,
+      "Symbol": "BNT"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "YFI-USD",
       "Ignore": false,
       "Symbol": "YFI"
     },
@@ -41,6 +53,12 @@
       "ForeignName": "DOGE-USD",
       "Ignore": false,
       "Symbol": "DOGE"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "DOT-USD",
+      "Ignore": false,
+      "Symbol": "DOT"
     },
     {
       "Exchange": "CoinBase",

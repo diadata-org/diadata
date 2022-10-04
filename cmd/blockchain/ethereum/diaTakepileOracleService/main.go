@@ -4,8 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"math/big"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -17,6 +19,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	gql "github.com/machinebox/graphql"
+	"github.com/tidwall/gjson"
 )
 
 func main() {
@@ -46,12 +49,16 @@ func main() {
 		"0x0000000000000000000000000000000000000000", //ETH
 		"0x0000000000000000000000000000000000000000", //FTM
 		"0x0000000000000000000000000000000000000000", //AVAX
+		"0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e", //YFI
+		"0x0000000000000000000000000000000000000000", //ETC
 	}
 	blockchains := []string{
 		"Bitcoin",           //BTC
 		"Ethereum",          //ETH
 		"Fantom",            //FTM
 		"Avalanche",         //AVAX
+		"Ethereum",          //YFI
+		"EthereumClassic",   //ETC
 	}
 	oldPrices := make(map[int]float64)
 
@@ -105,7 +112,7 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 	// Get quotation for token and update Oracle
 	rawPrice, symbol, err := getGraphqlAssetQuotationFromDia(blockchain, address, 60)
 	if err != nil {
-		log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
+		log.Printf("Failed to retrieve %s quotation data from DIA: %v", address, err)
 		return oldPrice, err
 	}
 
@@ -168,17 +175,22 @@ func updateOracle(
 	value int64,
 	timestamp int64) error {
 
-	gasPrice, err := client.SuggestGasPrice(context.Background())
+	/*gasPrice, err := client.SuggestGasPrice(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+  */
+
+	gasPrice, err := getGasSuggestion()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Get 110% of the gas price
-	fmt.Println(gasPrice)
+	// Get 120% of the gas price
 	fGas := new(big.Float).SetInt(gasPrice)
-	fGas.Mul(fGas, big.NewFloat(1.1))
+	fGas.Mul(fGas, big.NewFloat(1.2))
 	gasPrice, _ = fGas.Int(nil)
-	fmt.Println(gasPrice)
+
 	// Write values to smart contract
 	tx, err := contract.SetValue(&bind.TransactOpts{
 		From:     auth.From,
@@ -189,7 +201,7 @@ func updateOracle(
 	if err != nil {
 		return err
 	}
-	fmt.Println(tx.GasPrice())
+	log.Printf("gas price: %d\n", tx.GasPrice())
 	log.Printf("price: %d\n", value)
 	log.Printf("key: %s\n", key)
 	log.Printf("nonce: %d\n", tx.Nonce())
@@ -213,13 +225,23 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, blockDuration i
 	req := gql.NewRequest(`
     query  {
 		 GetChart(
-		 	filter: "mair", 
+		 	filter: "ma", 
 			Symbol:"Asset",
 			BlockDurationSeconds: ` + strconv.Itoa(blockDuration) + `, 
 			BlockShiftSeconds: ` + strconv.Itoa(blockDuration) + `,
 			StartTime: ` + strconv.FormatInt(starttime.Unix(), 10) + `, 
 			EndTime: ` + strconv.FormatInt(currentTime.Unix(), 10) + `, 
 			Address: "` + address + `", 
+			Exchanges: [
+        "Binance",
+        "CoinBase",
+        "Huobi",
+        "Bitfinex",
+        "ByBit",
+        "GateIO",
+        "Uniswap",
+        "UniswapV3"
+      ],
 			BlockChain: "` + blockchain + `") {
 				Name
 				Symbol
@@ -237,4 +259,26 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, blockDuration i
 		return 0.0, "", errors.New("no results")
 	}
 	return r.GetChart[len(r.GetChart)-1].Value, r.GetChart[len(r.GetChart)-1].Symbol, nil
+}
+
+func getGasSuggestion() (*big.Int, error) {
+	response, err := http.Get("https://api.ftmscan.com/api?module=gastracker&action=gasoracle")
+	if err != nil {
+		return nil, err
+	}
+
+	defer response.Body.Close()
+	if 200 != response.StatusCode {
+		return nil, fmt.Errorf("Error on Fantom gasstation with return code %d", response.StatusCode)
+	}
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	
+	gasSuggestion := gjson.Get(string(contents), "result.FastGasPrice")
+	log.Printf(gasSuggestion.String())
+	retval := big.NewInt(int64(gasSuggestion.Float() * 1e9))
+
+	return retval, nil
 }

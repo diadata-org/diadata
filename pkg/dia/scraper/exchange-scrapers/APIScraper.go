@@ -19,10 +19,11 @@ const (
 // empty type used for signaling
 type nothing struct{}
 
-var Exchanges = make(map[string]dia.Exchange)
-
-var blockchains map[string]dia.BlockChain
-var chainConfigs map[string]dia.ChainConfig
+var (
+	Exchanges    = make(map[string]dia.Exchange)
+	blockchains  map[string]dia.BlockChain
+	chainConfigs map[string]dia.ChainConfig
+)
 
 var evmID map[string]string
 
@@ -190,6 +191,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewBitMaxScraper(Exchanges[dia.BitMaxExchange], scrape, relDB)
 	case dia.MEXCExchange:
 		return NewMEXCScraper(Exchanges[dia.MEXCExchange], scrape, relDB)
+	case dia.BKEXExchange:
+		return NewBKEXScraper(Exchanges[dia.BKEXExchange], scrape, relDB)
 	case dia.STEXExchange:
 		return NewSTEXScraper(Exchanges[dia.STEXExchange], scrape, relDB)
 	case dia.UniswapExchangeV3:
@@ -206,12 +209,16 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewAcalaswapScraper(Exchanges[dia.AcalaswapExchangeKarura], scrape)
 	case dia.UniswapExchangeV3Polygon:
 		return NewUniswapV3Scraper(Exchanges[dia.UniswapExchangeV3Polygon], scrape)
+	case dia.UniswapExchangeV3Arbitrum:
+		return NewUniswapV3Scraper(Exchanges[dia.UniswapExchangeV3Arbitrum], scrape)
 	case dia.HuckleberryExchange:
 		return NewUniswapScraper(Exchanges[dia.HuckleberryExchange], scrape)
 	case dia.TraderJoeExchange:
 		return NewUniswapScraper(Exchanges[dia.TraderJoeExchange], scrape)
 	case dia.PangolinExchange:
 		return NewUniswapScraper(Exchanges[dia.PangolinExchange], scrape)
+	case dia.PlatypusExchange:
+		return NewPlatypusScraper(Exchanges[dia.PlatypusExchange], scrape)
 	case dia.SpookyswapExchange:
 		return NewUniswapScraper(Exchanges[dia.SpookyswapExchange], scrape)
 	case dia.QuickswapExchange:

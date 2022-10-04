@@ -169,6 +169,12 @@ func (nb *NFTBid) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
+type NFTExchangeStats struct {
+	Exchange  string
+	NumTrades uint64
+	Volume    float64
+}
+
 type NFTOffer struct {
 	NFT NFT
 	// Start and EndValue are for auction types. Otherwise, use StartValue
@@ -294,6 +300,16 @@ type Exchange struct {
 	RestAPI       string     `json:"RestAPI"`
 	WsAPI         string     `json:"WsAPI"`
 	PairsAPI      string     `json:"PairsAPI"`
+	WatchdogDelay int        `json:"WatchdogDelay"`
+}
+
+type NFTExchange struct {
+	Name          string     `json:"Name"`
+	Centralized   bool       `json:"Centralized"`
+	Contract      string     `json:"Contract"`
+	BlockChain    BlockChain `json:"BlockChain"`
+	RestAPI       string     `json:"RestAPI"`
+	WsAPI         string     `json:"WsAPI"`
 	WatchdogDelay int        `json:"WatchdogDelay"`
 }
 

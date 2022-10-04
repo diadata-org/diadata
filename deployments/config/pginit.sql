@@ -70,6 +70,7 @@ CREATE TABLE poolasset (
     pool_id UUID REFERENCES pool(pool_id) NOT NULL,
     asset_id UUID REFERENCES asset(asset_id) NOT NULL, 
     liquidity numeric,
+    time_stamp timestamp,
     UNIQUE (poolasset_id),
     UNIQUE(pool_id,asset_id)
 );
@@ -260,6 +261,19 @@ CREATE TABLE synthassetdata (
     time_stamp timestamp,
     UNIQUE(synthassetdata_id),
     UNIQUE(synthasset_id,time_stamp)
+);
+
+CREATE TABLE nftexchange (
+    exchange_id UUID DEFAULT gen_random_uuid(),
+    name text NOT NULL,
+    centralized boolean default false,
+    contract text,
+    blockchain text,
+    rest_api text,
+    ws_api text,
+    watchdog_delay numeric NOT NULL,
+    UNIQUE(exchange_id),
+    UNIQUE (name)
 );
 
 

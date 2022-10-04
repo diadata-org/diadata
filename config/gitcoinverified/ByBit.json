@@ -451,6 +451,12 @@
             "Address": "0x15D4c048F83bd7e37d49eA4C83a07267Ec4203dA"
         },
         {
+            "Symbol": "GMT",
+            "Exchange": "ByBit",
+            "Blockchain": "Solana",
+            "Address": "7i5KKsX2weiTkry7jA4ZwSuXGhs5eJBEjY8vVxR4pfRx"
+        },
+        {
             "Symbol": "GTC",
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",

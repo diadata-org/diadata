@@ -56,6 +56,18 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "DOTBUSD",
+            "Ignore": false,
+            "Symbol": "DOT"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "DOTBTC",
+            "Ignore": false,
+            "Symbol": "DOT"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "DOGEUSDT",
             "Ignore": false,
             "Symbol": "DOGE"
@@ -65,6 +77,18 @@
             "ForeignName": "DOGEBUSD",
             "Ignore": false,
             "Symbol": "DOGE"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "GMTBUSD",
+            "Ignore": false,
+            "Symbol": "GMT"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "LDOBUSD",
+            "Ignore": false,
+            "Symbol": "LDO"
         },
         {
             "Exchange": "Binance",
