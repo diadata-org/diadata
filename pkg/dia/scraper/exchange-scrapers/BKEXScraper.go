@@ -16,7 +16,7 @@ import (
 )
 
 type BKEXScraper struct {
-	wsClient *ws.Conn
+	wsClient map[int]*ws.Conn
 	// signaling channels for session initialization and finishing
 	shutdown     chan nothing
 	shutdownDone chan nothing
@@ -34,6 +34,7 @@ type BKEXScraper struct {
 
 func NewBKEXScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BKEXScraper {
 	s := &BKEXScraper{
+		wsClient:     make(map[int]*ws.Conn),
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*BKEXPairScraper),
@@ -42,37 +43,6 @@ func NewBKEXScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BK
 		chanTrades:   make(chan *dia.Trade),
 		db:           relDB,
 	}
-
-	var wsDialer ws.Dialer
-	SwConn, _, err := wsDialer.Dial("wss://api.bkex.com/socket.io/?EIO=3&transport=websocket", nil)
-
-	if err != nil {
-		println(err.Error())
-	}
-	s.wsClient = SwConn
-
-	// Two time read message
-	messageType, p, err := s.wsClient.ReadMessage()
-
-	if err != nil {
-		println(err.Error())
-	}
-
-	log.Info("Connected ", messageType, "-", string(p))
-
-	messageType, p, err = s.wsClient.ReadMessage()
-
-	if err != nil {
-		println(err.Error())
-	}
-
-	log.Info("Connected ", messageType, "-", string(p))
-	// Connect Finished
-
-	// Send 40/quotation and receive it
-	s.wsClient.WriteMessage(ws.TextMessage, []byte("40/quotation"))
-	messageType, p, err = s.wsClient.ReadMessage()
-	log.Info("Connected ", messageType, "-", string(p))
 
 	if scrape {
 		go s.mainLoop()
@@ -94,16 +64,79 @@ type BKEXTradeResponse struct {
 	records          []BKEXTradeRecord
 }
 
-func (s *BKEXScraper) mainLoop() {
+func chunkSlice(slice []string, chunkSize int) [][]string {
+	var chunks [][]string
+	for {
+		if len(slice) == 0 {
+			break
+		}
+
+		// necessary check to avoid slicing beyond
+		// slice capacity
+		if len(slice) < chunkSize {
+			chunkSize = len(slice)
+		}
+
+		chunks = append(chunks, slice[0:chunkSize])
+		slice = slice[chunkSize:]
+	}
+
+	return chunks
+}
+
+func (s *BKEXScraper) connect(i int) *ws.Conn {
+	var wsDialer ws.Dialer
+	SwConn, _, err := wsDialer.Dial("wss://api.bkex.com/socket.io/?EIO=3&transport=websocket", nil)
+
+	if err != nil {
+		println(err.Error())
+		return nil
+	}
+	s.wsClient[i] = SwConn
+
+	// Two time read message
+	messageType, p, err := SwConn.ReadMessage()
+
+	if err != nil {
+		println(err.Error())
+	}
+
+	log.Info("Connected ", messageType, "-", string(p))
+
+	messageType, p, err = SwConn.ReadMessage()
+
+	if err != nil {
+		println(err.Error())
+	}
+
+	log.Info("Connected ", messageType, "-", string(p))
+	// Connect Finished
+
+	// Send 40/quotation and receive it
+	SwConn.WriteMessage(ws.TextMessage, []byte("40/quotation"))
+	messageType, p, err = SwConn.ReadMessage()
+	log.Info("Connected ", messageType, "-", string(p))
+
+	return SwConn
+}
+
+func (s *BKEXScraper) subLoop(wsClient *ws.Conn, pairs string) {
 	pingTimer := time.NewTicker(25 * time.Second)
 	go func() {
 		for range pingTimer.C {
-			go s.ping()
+			go s.ping(wsClient)
 		}
 	}()
 
+	message := `42/quotation,["quotationDealConnect",{"symbol": "` + pairs + `","number": 50}]`
+
+	if err := wsClient.WriteMessage(ws.TextMessage, []byte(message)); err != nil {
+		log.Error("write pair sub: ", err.Error())
+	}
+	log.Info("Subscribed to get trades for ", pairs)
+
 	for {
-		messageType, p, err := s.wsClient.ReadMessage()
+		messageType, p, err := wsClient.ReadMessage()
 		if err != nil {
 			log.Fatal("read message: ", err.Error())
 		}
@@ -117,10 +150,10 @@ func (s *BKEXScraper) mainLoop() {
 			continue
 		}
 
-		if len(strings.Split(string(p), "42/quotation,")) < 2 {
+		if len(strings.Split(c, "42/quotation,")) < 2 {
 			continue
 		}
-		d := strings.Split(string(p), "42/quotation,")[1]
+		d := strings.Split(c, "42/quotation,")[1]
 
 		var r BKEXTradeResponse
 		tmp := []interface{}{&r.quotationAllDeal, &r.records}
@@ -166,8 +199,34 @@ func (s *BKEXScraper) mainLoop() {
 	}
 }
 
-func (s *BKEXScraper) ping() {
-	s.wsClient.WriteMessage(ws.TextMessage, []byte("2"))
+func (s *BKEXScraper) mainLoop() {
+
+	log.Info("Wait 5s untill subscribe all Pairs")
+	time.Sleep(5 * time.Second)
+
+	keys := make([]string, 0, len(s.pairScrapers))
+	for k := range s.pairScrapers {
+		keys = append(keys, k)
+	}
+
+	miniPairs := chunkSlice(keys, 10)
+
+	for i, v := range miniPairs {
+		log.Info("Connect Websocket ...", i, v)
+		time.Sleep(5 * time.Second)
+		conn := s.connect(i)
+		if conn != nil {
+			log.Info("Connect Done Websocket", i, v)
+			go s.subLoop(conn, strings.Join(v, ","))
+		} else {
+			log.Error("Connection Failed !!!", i)
+			return
+		}
+	}
+}
+
+func (s *BKEXScraper) ping(conn *ws.Conn) {
+	conn.WriteMessage(ws.TextMessage, []byte("2"))
 }
 
 // FillSymbolData from MEXCScraper
@@ -182,9 +241,11 @@ func (s *BKEXScraper) Close() error {
 		return errors.New("BKEXScraper: Already closed")
 	}
 	close(s.shutdown)
-	err := s.wsClient.Close()
-	if err != nil {
-		return err
+	for _, c := range s.wsClient {
+		err := c.Close()
+		if err != nil {
+			return err
+		}
 	}
 
 	<-s.shutdownDone
@@ -214,14 +275,14 @@ func (s *BKEXScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 		pair:   pair,
 	}
 
-	message := `42/quotation,["quotationDealConnect",{"symbol": "` + pair.ForeignName + `","number": 50}]`
-	// message := `42/quotation,["quotationDealConnect",{"symbol": "BTC_USDT","number": 50}]`
-	log.Info(message)
+	// message := `42/quotation,["quotationDealConnect",{"symbol": "` + pair.ForeignName + `","number": 50}]`
+	// // message := `42/quotation,["quotationDealConnect",{"symbol": "BTC_USDT","number": 50}]`
+	// log.Info(message)
 
-	if err := s.wsClient.WriteMessage(ws.TextMessage, []byte(message)); err != nil {
-		log.Error("write pair sub: ", err.Error())
-	}
-	log.Info("Subscribed to get trades for ", pair.ForeignName)
+	// if err := s.wsClient.WriteMessage(ws.TextMessage, []byte(message)); err != nil {
+	// 	log.Error("write pair sub: ", err.Error())
+	// }
+	log.Info("Add to get trades for ", pair.ForeignName)
 	s.pairScrapers[pair.ForeignName] = ps
 	return ps, nil
 }
