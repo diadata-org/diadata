@@ -229,6 +229,10 @@ func main() {
 		// (DEX) pools/liquidity endpoints.
 		diaGroup.GET("/poolLiquidity/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetPoolLiquidityByAddress))
 
+		// Pairs endpoints
+		diaGroup.GET("/pairsCex/:exchange", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetExchangePairs))
+		diaGroup.GET("/pairsAssetCex/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetAssetPairs))
+
 		// Volume endpoints.
 		diaGroup.GET("/volume/:symbol", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetVolume))
 		diaGroup.GET("/volume24/:exchange", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.Get24hVolume))

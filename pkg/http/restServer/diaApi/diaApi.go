@@ -989,6 +989,78 @@ func (env *Env) GetPoolLiquidityByAddress(c *gin.Context) {
 
 }
 
+// -----------------------------------------------------------------------------
+// EXCHANGE PAIRS
+// -----------------------------------------------------------------------------
+
+func (env *Env) GetExchangePairs(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+	exchange, err := env.RelDB.GetExchange(c.Param("exchange"))
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+	var (
+		filterVerified bool
+		verified       bool
+	)
+	verifiedString := c.Query("verified")
+	if verifiedString != "" {
+		verified, err = strconv.ParseBool(verifiedString)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		filterVerified = true
+	}
+
+	pairs, err := env.RelDB.GetPairsForExchange(exchange, filterVerified, verified)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	sort.Slice(pairs, func(m, n int) bool {
+		return pairs[m].Symbol < pairs[n].Symbol
+	})
+	c.JSON(http.StatusOK, pairs)
+
+}
+
+func (env *Env) GetAssetPairs(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+	blockchain := c.Param("blockchain")
+	address := c.Param("address")
+	var (
+		filterVerified bool
+		verified       bool
+		err            error
+	)
+	verifiedString := c.Query("verified")
+	if verifiedString != "" {
+		verified, err = strconv.ParseBool(verifiedString)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		filterVerified = true
+	}
+
+	pairs, err := env.RelDB.GetPairsForAsset(dia.Asset{Address: address, Blockchain: blockchain}, filterVerified, verified)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	sort.Slice(pairs, func(m, n int) bool { return pairs[m].Exchange < pairs[n].Exchange })
+	c.JSON(http.StatusOK, pairs)
+
+}
+
 func (env *Env) SearchAsset(c *gin.Context) {
 	if !validateInputParams(c) {
 		return
