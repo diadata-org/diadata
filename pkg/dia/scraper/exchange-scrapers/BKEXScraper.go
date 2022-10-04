@@ -102,6 +102,21 @@ func (s *BKEXScraper) mainLoop() {
 		}
 	}()
 
+	log.Info("Wait 1s untill subscribe all Pairs")
+	time.Sleep(1 * time.Second)
+
+	keys := make([]string, 0, len(s.pairScrapers))
+	for k := range s.pairScrapers {
+		keys = append(keys, k)
+	}
+	pairs := strings.Join(keys, ",")
+	message := `42/quotation,["quotationDealConnect",{"symbol": "` + pairs + `","number": 50}]`
+
+	if err := s.wsClient.WriteMessage(ws.TextMessage, []byte(message)); err != nil {
+		log.Error("write pair sub: ", err.Error())
+	}
+	log.Info("Subscribed to get trades for ", pairs)
+
 	for {
 		messageType, p, err := s.wsClient.ReadMessage()
 		if err != nil {
@@ -117,7 +132,7 @@ func (s *BKEXScraper) mainLoop() {
 			continue
 		}
 
-		d := strings.Split(string(p), "42/quotation,")[1]
+		d := strings.Split(c, "42/quotation,")[1]
 
 		var r BKEXTradeResponse
 		tmp := []interface{}{&r.quotationAllDeal, &r.records}
@@ -208,13 +223,13 @@ func (s *BKEXScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	}
 
 	// message := `42/quotation,["quotationDealConnect",{"symbol": {"` + pair.ForeignName + `"},"number": 50}]`
-	message := `42/quotation,["quotationDealConnect",{"symbol": "BTC_USDT","number": 50}]`
-	log.Info(message)
+	// log.Info(message)
 
-	if err := s.wsClient.WriteMessage(ws.TextMessage, []byte(message)); err != nil {
-		log.Error("write pair sub: ", err.Error())
-	}
-	log.Info("Subscribed to get trades for ", pair.ForeignName)
+	// if err := s.wsClient.WriteMessage(ws.TextMessage, []byte(message)); err != nil {
+	// 	log.Error("write pair sub: ", err.Error())
+	// }
+	// log.Info("Subscribed to get trades for ", pair.ForeignName)
+	log.Info("Add to get trades for ", pair.ForeignName)
 	s.pairScrapers[pair.ForeignName] = ps
 	return ps, nil
 }

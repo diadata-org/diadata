@@ -5,6 +5,12 @@
       "ForeignName": "BTC_USDT",
       "Exchange": "BKEX",
       "Ignore": false
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETH_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
     }
   ]
 }
