@@ -31,6 +31,18 @@
       "Address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
     },
     {
+      "Symbol": "DOT",
+      "Exchange": "LBank",
+      "Blockchain": "Polkadot",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "ETC",
+      "Exchange": "LBank",
+      "Blockchain": "EthereumClassic",
+      "Address": "0x0000000000000000000000000000000000000000"
+  },
+    {
       "Symbol": "ILV",
       "Exchange": "LBank",
       "Blockchain": "Ethereum",

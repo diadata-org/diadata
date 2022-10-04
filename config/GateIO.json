@@ -8,6 +8,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "AVAX_USDT",
+      "Ignore": false,
+      "Symbol": "AVAX"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "CFG_USDT",
       "Ignore": false,
       "Symbol": "CFG"
@@ -254,6 +260,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "USDD_USDT",
+      "Ignore": false,
+      "Symbol": "USDD"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "ABT_ETH",
       "Ignore": false,
       "Symbol": "ABT"
@@ -299,6 +311,12 @@
       "ForeignName": "AE_USDT",
       "Ignore": false,
       "Symbol": "AE"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "ANGLE_USDT",
+      "Ignore": false,
+      "Symbol": "ANGLE"
     },
     {
       "Exchange": "GateIO",
@@ -351,12 +369,6 @@
     {
       "Exchange": "GateIO",
       "ForeignName": "BCH_BTC",
-      "Ignore": false,
-      "Symbol": "BCH"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BCH_CNYX",
       "Ignore": false,
       "Symbol": "BCH"
     },
@@ -467,12 +479,6 @@
       "ForeignName": "BOT_USDT",
       "Ignore": false,
       "Symbol": "BOT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BTC_CNYX",
-      "Ignore": false,
-      "Symbol": "BTC"
     },
     {
       "Exchange": "GateIO",
@@ -734,15 +740,15 @@
     },
     {
       "Exchange": "GateIO",
-      "ForeignName": "DOGE_CNYX",
+      "ForeignName": "DOGE_USDT",
       "Ignore": false,
       "Symbol": "DOGE"
     },
     {
       "Exchange": "GateIO",
-      "ForeignName": "DOGE_USDT",
+      "ForeignName": "DOT_USDT",
       "Ignore": false,
-      "Symbol": "DOGE"
+      "Symbol": "DOT"
     },
     {
       "Exchange": "GateIO",
@@ -824,12 +830,6 @@
     },
     {
       "Exchange": "GateIO",
-      "ForeignName": "EOS_CNYX",
-      "Ignore": false,
-      "Symbol": "EOS"
-    },
-    {
-      "Exchange": "GateIO",
       "ForeignName": "EOS_ETH",
       "Ignore": false,
       "Symbol": "EOS"
@@ -861,12 +861,6 @@
     {
       "Exchange": "GateIO",
       "ForeignName": "ETH_BTC",
-      "Ignore": false,
-      "Symbol": "ETH"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ETH_CNYX",
       "Ignore": false,
       "Symbol": "ETH"
     },
@@ -1340,6 +1334,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "MATIC_USDT",
+      "Ignore": false,
+      "Symbol": "MATIC"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "MCO_ETH",
       "Ignore": false,
       "Symbol": "MCO"
@@ -1625,12 +1625,6 @@
       "ForeignName": "OST_USDT",
       "Ignore": false,
       "Symbol": "OST"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "PAX_CNYX",
-      "Ignore": false,
-      "Symbol": "PAX"
     },
     {
       "Exchange": "GateIO",
@@ -2054,12 +2048,6 @@
     },
     {
       "Exchange": "GateIO",
-      "ForeignName": "TIPS_CNYX",
-      "Ignore": false,
-      "Symbol": "TIPS"
-    },
-    {
-      "Exchange": "GateIO",
       "ForeignName": "TIPS_ETH",
       "Ignore": false,
       "Symbol": "TIPS"
@@ -2132,33 +2120,21 @@
     },
     {
       "Exchange": "GateIO",
-      "ForeignName": "TUSD_CNYX",
-      "Ignore": false,
-      "Symbol": "TUSD"
-    },
-    {
-      "Exchange": "GateIO",
       "ForeignName": "TUSD_USDT",
       "Ignore": false,
       "Symbol": "TUSD"
     },
     {
       "Exchange": "GateIO",
-      "ForeignName": "USDC_CNYX",
+      "ForeignName": "UNI_USDT",
       "Ignore": false,
-      "Symbol": "USDC"
+      "Symbol": "UNI"
     },
     {
       "Exchange": "GateIO",
       "ForeignName": "USDC_USDT",
       "Ignore": false,
       "Symbol": "USDC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "USDT_CNYX",
-      "Ignore": false,
-      "Symbol": "USDT"
     },
     {
       "Exchange": "GateIO",
@@ -2229,12 +2205,6 @@
     {
       "Exchange": "GateIO",
       "ForeignName": "XRP_BTC",
-      "Ignore": false,
-      "Symbol": "XRP"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "XRP_CNYX",
       "Ignore": false,
       "Symbol": "XRP"
     },

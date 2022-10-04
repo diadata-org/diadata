@@ -1,6 +1,18 @@
 {
   "Tokens": [
     {
+      "Symbol": "DOT",
+      "Exchange": "Kraken",
+      "Blockchain": "Polkadot",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "YFI",
+      "Exchange": "Kraken",
+      "Blockchain": "Ethereum",
+      "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
+    },
+    {
       "Symbol": "KILT",
       "Exchange": "Kraken",
       "Blockchain": "Kilt",

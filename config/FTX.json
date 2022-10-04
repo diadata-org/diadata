@@ -289,6 +289,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "LDO",
+            "ForeignName": "LDO/USD",
+            "Exchange": "FTX",
+            "Ignore": false
+        },
+        {
             "Symbol": "LINK",
             "ForeignName": "LINK/BTC",
             "Exchange": "FTX",

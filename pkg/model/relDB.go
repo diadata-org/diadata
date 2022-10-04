@@ -43,6 +43,8 @@ type RelDatastore interface {
 	// --------------- asset methods for exchanges ---------------
 	SetExchangePair(exchange string, pair dia.ExchangePair, cache bool) error
 	GetExchangePair(exchange string, foreignname string) (exchangepair dia.ExchangePair, err error)
+	GetPairsForExchange(exchange dia.Exchange, filterVerified bool, verified bool) ([]dia.ExchangePair, error)
+	GetPairsForAsset(asset dia.Asset, filterVerified bool, verified bool) ([]dia.ExchangePair, error)
 	GetExchangePairSymbols(exchange string) ([]dia.ExchangePair, error)
 	GetNumPairs(exchange dia.Exchange) (int, error)
 	SetExchangeSymbol(exchange string, symbol string) error
@@ -59,6 +61,7 @@ type RelDatastore interface {
 
 	// ----------------- pool methods -------------------
 	SetPool(pool dia.Pool) error
+	GetPoolByAddress(blockchain string, address string) (pool dia.Pool, err error)
 	GetAllPoolAddrsExchange(exchange string) ([]string, error)
 
 	// ----------------- blockchain methods -------------------
@@ -118,8 +121,8 @@ type RelDatastore interface {
 		Blockchain string
 		Volume     float64
 	}, error)
-	GetNumNFTTrades(address string, blockchain string, starttime time.Time, endtime time.Time) (int, error)
-	GetNFTVolume(address string, blockchain string, starttime time.Time, endtime time.Time) (float64, error)
+	GetNumNFTTrades(address string, blockchain string, exchange string, starttime time.Time, endtime time.Time) (int, error)
+	GetNFTVolume(address string, blockchain string, exchange string, starttime time.Time, endtime time.Time) (float64, error)
 
 	// General methods
 	GetKeys(table string) ([]string, error)
@@ -134,6 +137,15 @@ type RelDatastore interface {
 	SetBlockData(dia.BlockData) error
 	GetBlockData(blockchain string, blocknumber int64) (dia.BlockData, error)
 	GetLastBlockBlockscraper(blockchain string) (int64, error)
+
+	//NFT exchange methods
+
+	GetAllNFTExchanges() (exchanges []dia.NFTExchange, err error)
+	GetNFTExchange(name string) (exchange dia.Exchange, err error)
+	SetNFTExchange(exchange dia.NFTExchange) (err error)
+	GetCollectionCountByExchange(exchange string) (int64, error)
+	Get24HoursNFTExchangeVolume(exchange dia.NFTExchange) (float64, error)
+	Get24HoursNFTExchangeTrades(exchange dia.NFTExchange) (int64, error)
 }
 
 const (
@@ -146,6 +158,7 @@ const (
 	poolTable               = "pool"
 	poolassetTable          = "poolasset"
 	exchangeTable           = "exchange"
+	nftExchangeTable        = "nftexchange"
 	chainconfigTable        = "chainconfig"
 	blockchainTable         = "blockchain"
 	assetVolumeTable        = "assetvolume"

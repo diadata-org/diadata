@@ -20,6 +20,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "AVAXUSDT",
+      "Ignore": false,
+      "Symbol": "AVAX"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "SDNUSDT",
       "Ignore": false,
       "Symbol": "SDN"
@@ -140,6 +146,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "BTCUSDC",
+      "Ignore": false,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "BTGBTC",
       "Ignore": false,
       "Symbol": "BTG"
@@ -173,6 +185,18 @@
       "ForeignName": "DGBBTC",
       "Ignore": false,
       "Symbol": "DGB"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "DOGEUSDT",
+      "Ignore": false,
+      "Symbol": "DOGE"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "DOTUSDT",
+      "Ignore": false,
+      "Symbol": "DOT"
     },
     {
       "Exchange": "Huobi",
@@ -221,6 +245,12 @@
       "ForeignName": "FLOWUSDT",
       "Ignore": false,
       "Symbol": "FLOW"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "FTMUSDT",
+      "Ignore": false,
+      "Symbol": "FTM"
     },
     {
       "Exchange": "Huobi",
@@ -344,6 +374,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "WANBTC",
+      "Ignore": false,
+      "Symbol": "WAN"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "XMRBTC",
       "Ignore": false,
       "Symbol": "XMR"
@@ -368,6 +404,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "YFIUSDT",
+      "Ignore": false,
+      "Symbol": "YFI"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "ZECBTC",
       "Ignore": false,
       "Symbol": "ZEC"
@@ -377,12 +419,6 @@
       "ForeignName": "ZRXBTC",
       "Ignore": false,
       "Symbol": "ZRX"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "WANBTC",
-      "Ignore": false,
-      "Symbol": "WAN"
     }
   ]
 }

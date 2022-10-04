@@ -13,6 +13,12 @@
       "Address": "0xa117000000f279D81A1D3cc75430fAA017FA5A2e"
     },
     {
+      "Symbol": "AVAX",
+      "Exchange": "Huobi",
+      "Blockchain": "Avalanche",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "AXS",
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",
@@ -41,7 +47,7 @@
       "Exchange": "Huobi",
       "Blockchain": "Nervos",
       "Address": "0x0000000000000000000000000000000000000000"
-  },
+    },
     {
       "Symbol": "CRV",
       "Exchange": "Huobi",
@@ -49,9 +55,27 @@
       "Address": "0xD533a949740bb3306d119CC777fa900bA034cd52"
     },
     {
+      "Symbol": "DOGE",
+      "Exchange": "Huobi",
+      "Blockchain": "Dogechain",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "DOT",
+      "Exchange": "Huobi",
+      "Blockchain": "Polkadot",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "FLOW",
       "Exchange": "Huobi",
       "Blockchain": "Flow",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "FTM",
+      "Exchange": "Huobi",
+      "Blockchain": "Fantom",
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
@@ -137,6 +161,12 @@
       "Exchange": "Huobi",
       "Blockchain": "Wanchain",
       "Address": "0x0000000000000000000000000000000000000000"
-  }
+    },
+    {
+      "Symbol": "YFI",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
+    }
   ]
 }

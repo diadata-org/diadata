@@ -19,8 +19,22 @@ import (
 func main() {
 
 	var (
-		w *kafka.Writer
+		w            *kafka.Writer
+		NFTExchanges = make(map[string]dia.NFTExchange)
 	)
+
+	rdb, err := models.NewRelDataStore()
+	if err != nil {
+		log.Fatal("get rel datastore: ", err)
+	}
+
+	exchanges, err := rdb.GetAllNFTExchanges()
+	if err != nil {
+		log.Fatal("get all exchanges: ", err)
+	}
+	for _, exchange := range exchanges {
+		NFTExchanges[exchange.Name] = exchange
+	}
 
 	if testOpenSeaScraper := false; testOpenSeaScraper {
 		w = kafkaHelper.NewWriter(kafkaHelper.TopicNFTTradesTest)
@@ -30,7 +44,7 @@ func main() {
 			panic(err)
 		}
 
-		scraper := nfttradescrapers.NewOpenSeaScraper(rdb)
+		scraper := nfttradescrapers.NewOpenSeaScraper(rdb, NFTExchanges[dia.Opensea])
 		go func() { time.Sleep(3 * time.Minute); scraper.Close() }()
 
 		wg := sync.WaitGroup{}
@@ -44,11 +58,6 @@ func main() {
 
 	wg := sync.WaitGroup{}
 
-	rdb, err := models.NewRelDataStore()
-	if err != nil {
-		log.Fatal("relational datastore error: ", err)
-	}
-
 	scraperType := flag.String("nftclass", "Cryptopunk", "which NFT class")
 	flag.Parse()
 	var scraper nfttradescrapers.NFTTradeScraper
@@ -56,7 +65,7 @@ func main() {
 	switch *scraperType {
 	case dia.CryptoPunks:
 		log.Infoln("NFT Trades Scraper: Start scraping trades from Cryptopunks")
-		scraper = nfttradescrapers.NewCryptoPunkScraper(rdb)
+		scraper = nfttradescrapers.NewCryptoPunkScraper(rdb, NFTExchanges[dia.CryptoPunks])
 	case dia.CryptoKitties:
 		log.Infoln("NFT Trades Scraper: Start scraping trades from CryptoKitties")
 		scraper = nfttradescrapers.NewCryptoKittiesScraper(rdb)
@@ -65,25 +74,25 @@ func main() {
 		scraper = nfttradescrapers.NewNBATopshotScraper(rdb)
 	case dia.X2Y2:
 		log.Infoln("NFT Trades Scraper: Start scraping trades from X2Y2")
-		scraper = nfttradescrapers.NewX2Y2Scraper(rdb)
+		scraper = nfttradescrapers.NewX2Y2Scraper(rdb, NFTExchanges[dia.X2Y2])
 	case dia.Opensea:
 		log.Infoln("NFT Trades Scraper: Start scraping trades from Opensea")
-		scraper = nfttradescrapers.NewOpenSeaScraper(rdb)
+		scraper = nfttradescrapers.NewOpenSeaScraper(rdb, NFTExchanges[dia.Opensea])
 	case dia.OpenseaBAYC:
 		log.Infoln("NFT Trades Scraper: Start scraping trades from Opensea")
-		scraper = nfttradescrapers.NewOpenSeaBAYCScraper(rdb)
+		scraper = nfttradescrapers.NewOpenSeaBAYCScraper(rdb, NFTExchanges[dia.Opensea])
 	case dia.OpenseaSeaport:
 		log.Infoln("NFT Trades Scraper: Start scraping trades from Opensea Seaport contract")
-		scraper = nfttradescrapers.NewOpenSeaSeaportScraper(rdb)
+		scraper = nfttradescrapers.NewOpenSeaSeaportScraper(rdb, NFTExchanges[dia.Opensea])
 	case dia.LooksRare:
 		log.Infoln("NFT Trades Scraper: Start scraping trades from LooksRare")
-		scraper = nfttradescrapers.NewLooksRareScraper(rdb)
+		scraper = nfttradescrapers.NewLooksRareScraper(rdb, NFTExchanges[dia.LooksRare])
 	case dia.TofuNFTAstar:
 		log.Infoln("NFT Trades Scraper: Start scraping trades from TofuNFT on Astar")
-		scraper = nfttradescrapers.NewTofuNFTScraper(dia.ASTAR, rdb)
+		scraper = nfttradescrapers.NewTofuNFTScraper(rdb, NFTExchanges[dia.TofuNFTAstar])
 	case dia.TofuNFTBinanceSmartChain:
 		log.Infoln("NFT Trades Scraper: Start scraping trades from TofuNFT on BinanceSmartChain")
-		scraper = nfttradescrapers.NewTofuNFTScraper(dia.BINANCESMARTCHAIN, rdb)
+		scraper = nfttradescrapers.NewTofuNFTScraper(rdb, NFTExchanges[dia.TofuNFTBinanceSmartChain])
 
 	default:
 		for {

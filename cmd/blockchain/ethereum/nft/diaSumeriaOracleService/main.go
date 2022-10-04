@@ -93,25 +93,33 @@ func main() {
 		"0x059EDD72Cd353dF5106D2B9cC5ab83a52287aC3a", //Chromie Squiggles by Snowfro
 		"0xba30E5F9Bb24caa003E9f2f0497Ad287FDF95623", //Bored Ape Kennel Club
 		"0xaaDc2D4261199ce24A4B0a57370c4FCf43BB60aa", //Damien Hirst - The Currency
+		"0xED5AF388653567Af2F388E6224dC7C4b3241C544", //Azuki
+		"0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03", //Nouns
+		"0x08D7C0242953446436F34b4C78Fe9da38c73668d", //Proof Collective
+		"0xd1258DB6Ac08eB0e625B75b371C023dA478E94A9", //DigiDaigaku
 	}
 	blockchains := []string{
-		"Ethereum",
-		"Ethereum",
-		"Ethereum",
-		"Ethereum",
-		"Ethereum",
-		"Ethereum",
-		"Ethereum",
-		"Ethereum",
-		"Ethereum",
-		"Ethereum",
-		"Ethereum",
-		"Ethereum",
-		"Ethereum",
-		"Ethereum",
-		"Ethereum",
-		"Ethereum",
-		"Ethereum",
+		"Ethereum", //BAYC
+		"Ethereum", //Cryptopunks
+		"Ethereum", //Mutant Ape Y
+		"Ethereum", //Otherdeed fo
+		"Ethereum", //Moonbirds
+		"Ethereum", //Clone X
+		"Ethereum", //Doodles
+		"Ethereum", //Meebits
+		"Ethereum", //Vee Friends
+		"Ethereum", //World of Wom
+		"Ethereum", //Cool Cats
+		"Ethereum", //Invisible Fr
+		"Ethereum", //MetaHero Uni
+		"Ethereum", //Mfers
+		"Ethereum", //Chromie Squi
+		"Ethereum", //Bored Ape Ke
+		"Ethereum", //Damien Hirst
+		"Ethereum", //Azuki
+		"Ethereum", //Nouns
+		"Ethereum", //Proof Collec
+		"Ethereum", //DigiDaigaku
 	}
 
 	//
@@ -180,7 +188,7 @@ func periodicOracleUpdateHelper(oldFloor float64, deviationPermille int, update 
 	// Get floor price
 	floor, err := getFloor(blockchain, address)
 	if err != nil {
-		log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
+		log.Printf("Failed to retrieve %s quotation data from DIA: %v", address, err)
 		return oldFloor, err
 	}
 	data.Floor = floor.Value
@@ -188,7 +196,7 @@ func periodicOracleUpdateHelper(oldFloor float64, deviationPermille int, update 
 	// Get MA of floor price
 	floorMA, err := getFloorMA(blockchain, address)
 	if err != nil {
-		log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
+		log.Printf("Failed to retrieve %s quotation data from DIA: %v", address, err)
 		return oldFloor, err
 	}
 	data.FloorMA = floorMA.Value
@@ -196,7 +204,7 @@ func periodicOracleUpdateHelper(oldFloor float64, deviationPermille int, update 
 	// Get drawdown data
 	drawdown, err := getDrawdown(blockchain, address)
 	if err != nil {
-		log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
+		log.Printf("Failed to retrieve %s quotation data from DIA: %v", address, err)
 		return oldFloor, err
 	}
 	data.Drawdown.Drawdown = drawdown.Drawdown
@@ -211,7 +219,7 @@ func periodicOracleUpdateHelper(oldFloor float64, deviationPermille int, update 
 		log.Println("Entering deviation based update zone")
 		err = updateNFTData(data, auth, contract, conn)
 		if err != nil {
-			log.Fatalf("Failed to update DIA Oracle: %v", err)
+			log.Printf("Failed to update DIA Oracle: %v", err)
 			return oldFloor, err
 		}
 		return newFloor, nil

@@ -15,7 +15,6 @@ import (
 
 type Datastore interface {
 	SetInfluxClient(url string)
-
 	SetBatchFiatPriceInflux(fqs []*FiatQuotation) error
 	SetSingleFiatPriceRedis(fiatQuotation *FiatQuotation) error
 
@@ -27,6 +26,7 @@ type Datastore interface {
 	SaveSynthSupplyInfluxToTable(*dia.SynthAssetSupply, string) error
 	SaveSynthSupplyInflux(*dia.SynthAssetSupply) error
 	GetSynthSupplyInflux(string, string, string, int, time.Time, time.Time) ([]dia.SynthAssetSupply, error)
+	GetSynthAssets(string, string) ([]string, error)
 
 	SetDiaTotalSupply(totalSupply float64) error
 	GetDiaTotalSupply() (float64, error)
@@ -47,7 +47,7 @@ type Datastore interface {
 	GetTradesByExchangesFull(asset dia.Asset, baseAssets []dia.Asset, exchanges []string, returnBasetoken bool, startTime, endTime time.Time) ([]dia.Trade, error)
 	GetTradesByExchangesBatched(asset dia.Asset, baseAssets []dia.Asset, exchanges []string, startTimes, endTimes []time.Time) ([]dia.Trade, error)
 	GetTradesByExchangesBatchedFull(asset dia.Asset, baseAssets []dia.Asset, exchanges []string, returnBasetoken bool, startTimes, endTimes []time.Time) ([]dia.Trade, error)
-	GetActiveExchangesAndPairs(address string, blockchain string, starttime time.Time, endtime time.Time) (map[string][]string, error)
+	GetActiveExchangesAndPairs(address string, blockchain string, starttime time.Time, endtime time.Time) (map[string][]dia.Pair, error)
 	GetOldTradesFromInflux(table string, exchange string, verified bool, timeInit, timeFinal time.Time) ([]dia.Trade, error)
 	CopyInfluxMeasurements(dbOrigin string, dbDestination string, tableOrigin string, tableDestination string, timeInit time.Time, timeFinal time.Time) (int64, error)
 

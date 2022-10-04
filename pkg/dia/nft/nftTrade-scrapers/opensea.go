@@ -85,9 +85,10 @@ type OpenSeaScraperState struct {
 type OpenSeaScraper struct {
 	tradeScraper TradeScraper
 
-	mu    sync.Mutex
-	conf  *OpenSeaScraperConfig
-	state *OpenSeaScraperState
+	mu       sync.Mutex
+	conf     *OpenSeaScraperConfig
+	state    *OpenSeaScraperState
+	exchange dia.NFTExchange
 }
 
 type erc20Transfer struct {
@@ -177,7 +178,7 @@ func init() {
 
 }
 
-func NewOpenSeaScraper(rdb *models.RelDB) *OpenSeaScraper {
+func NewOpenSeaScraper(rdb *models.RelDB, exchange dia.NFTExchange) *OpenSeaScraper {
 	ctx := context.Background()
 
 	eth, err := ethclient.Dial(utils.Getenv("ETH_URI_REST", ""))
@@ -186,14 +187,15 @@ func NewOpenSeaScraper(rdb *models.RelDB) *OpenSeaScraper {
 	}
 
 	s := &OpenSeaScraper{
-		conf:  &OpenSeaScraperConfig{},
-		state: &OpenSeaScraperState{},
+		conf:     &OpenSeaScraperConfig{},
+		state:    &OpenSeaScraperState{},
+		exchange: exchange,
 		tradeScraper: TradeScraper{
 			shutdown:      make(chan nothing),
 			shutdownDone:  make(chan nothing),
 			datastore:     rdb,
 			chanTrade:     make(chan dia.NFTTrade),
-			source:        "OpenSea",
+			source:        exchange.Name,
 			ethConnection: eth,
 		},
 	}
@@ -508,7 +510,7 @@ func (s *OpenSeaScraper) notifyTrade(ev *opensea.ContractOrdersMatched, transfer
 		BlockNumber: ev.Raw.BlockNumber,
 		Timestamp:   timestamp,
 		TxHash:      ev.Raw.TxHash.Hex(),
-		Exchange:    "OpenSea",
+		Exchange:    s.exchange.Name,
 	}
 
 	if asset, ok := assetCacheOpensea[dia.ETHEREUM+"-"+currAddr.Hex()]; ok {

@@ -1339,6 +1339,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "SPA",
+            "ForeignName": "SPA-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "STX",
             "ForeignName": "STX-BTC",
             "Exchange": "KuCoin",

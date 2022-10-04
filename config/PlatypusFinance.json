@@ -1,0 +1,244 @@
+{
+    "Coins": [
+        {
+            "Symbol": "USDT.e",
+            "ForeignName": "USDT.e-USDC.e",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT.e",
+            "ForeignName": "USDC.e-USDT.e",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT.e",
+            "ForeignName": "USDT.e-DAI.e",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT.e",
+            "ForeignName": "DAI.e-USDT.e",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT.e",
+            "ForeignName": "USDT.e-USDC",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT.e",
+            "ForeignName": "USDC-USDT.e",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT.e",
+            "ForeignName": "USDT.e-USDt",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT.e",
+            "ForeignName": "USDt-USDT.e",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC.e",
+            "ForeignName": "USDC.e-DAI.e",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC.e",
+            "ForeignName": "DAI.e-USDC.e",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC.e",
+            "ForeignName": "USDC.e-USDC",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC.e",
+            "ForeignName": "USDC-USDC.e",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC.e",
+            "ForeignName": "USDC.e-USDt",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC.e",
+            "ForeignName": "USDt-USDC.e",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI.e",
+            "ForeignName": "DAI.e-USDC",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI.e",
+            "ForeignName": "USDC-DAI.e",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI.e",
+            "ForeignName": "DAI.e-USDt",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI.e",
+            "ForeignName": "USDt-DAI.e",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDC-USDt",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDt-USDC",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FRAX",
+            "ForeignName": "FRAX-USDC",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FRAX",
+            "ForeignName": "USDC-FRAX",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MIM",
+            "ForeignName": "MIM-USDC",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MIM",
+            "ForeignName": "USDC-MIM",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WAVAX",
+            "ForeignName": "WAVAX-sAVAX",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WAVAX",
+            "ForeignName": "sAVAX-WAVAX",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TUSD",
+            "ForeignName": "TUSD-USDC",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TUSD",
+            "ForeignName": "USDC-TUSD",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YUSD",
+            "ForeignName": "YUSD-USDC",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "YUSD",
+            "ForeignName": "USDC-YUSD",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC.b",
+            "ForeignName": "BTC.b-WBTC.e",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC.b",
+            "ForeignName": "WBTC.e-BTC.b",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MONEY",
+            "ForeignName": "MONEY-USDC",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MONEY",
+            "ForeignName": "USDC-MONEY",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TSD",
+            "ForeignName": "TSD-USDC",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TSD",
+            "ForeignName": "USDC-TSD",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "H2O",
+            "ForeignName": "H2O-USDC",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "H2O",
+            "ForeignName": "USDC-H2O",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USX",
+            "ForeignName": "USX-USDC",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USX",
+            "ForeignName": "USDC-USX",
+            "Exchange": "PlatypusFinance",
+            "Ignore": false
+        }
+    ]
+}

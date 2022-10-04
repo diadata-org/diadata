@@ -86,9 +86,10 @@ type LooksRareScraperState struct {
 type LooksRareScraper struct {
 	tradeScraper TradeScraper
 
-	mu    sync.Mutex
-	conf  *LooksRareScraperConfig
-	state *LooksRareScraperState
+	mu       sync.Mutex
+	conf     *LooksRareScraperConfig
+	state    *LooksRareScraperState
+	exchange dia.NFTExchange
 }
 
 type erc721Metadata struct {
@@ -161,7 +162,7 @@ func init() {
 	}
 }
 
-func NewLooksRareScraper(rdb *models.RelDB) *LooksRareScraper {
+func NewLooksRareScraper(rdb *models.RelDB, exchange dia.NFTExchange) *LooksRareScraper {
 	ctx := context.Background()
 
 	eth, err := ethclient.Dial(utils.Getenv("ETH_URI_REST", ""))
@@ -170,14 +171,15 @@ func NewLooksRareScraper(rdb *models.RelDB) *LooksRareScraper {
 	}
 
 	s := &LooksRareScraper{
-		conf:  &LooksRareScraperConfig{},
-		state: &LooksRareScraperState{},
+		conf:     &LooksRareScraperConfig{},
+		state:    &LooksRareScraperState{},
+		exchange: exchange,
 		tradeScraper: TradeScraper{
 			shutdown:      make(chan nothing),
 			shutdownDone:  make(chan nothing),
 			datastore:     rdb,
 			chanTrade:     make(chan dia.NFTTrade),
-			source:        "LooksRare",
+			source:        exchange.Name,
 			ethConnection: eth,
 		},
 	}
@@ -512,7 +514,7 @@ func (s *LooksRareScraper) notifyTrade(ev *looksRareTakerBidAskEvent, erc721 *er
 		BlockNumber: ev.Raw.BlockNumber,
 		Timestamp:   timestamp,
 		TxHash:      ev.Raw.TxHash.Hex(),
-		Exchange:    "LooksRare",
+		Exchange:    s.exchange.Name,
 	}
 
 	if asset, ok := assetCacheLooksrare[dia.ETHEREUM+"-"+currAddr.Hex()]; ok {

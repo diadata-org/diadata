@@ -1,6 +1,42 @@
 {
     "Tokens": [
         {
+            "Symbol": "AVAX",
+            "Exchange": "CoinBase",
+            "Blockchain": "Avalanche",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "BNT",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C"
+        },
+        {
+            "Symbol": "DOT",
+            "Exchange": "CoinBase",
+            "Blockchain": "Polkadot",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "ETC",
+            "Exchange": "CoinBase",
+            "Blockchain": "EthereumClassic",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "DOGE",
+            "Exchange": "CoinBase",
+            "Blockchain": "Dogechain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "YFI",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
+        },
+        {
             "Symbol": "SHIB",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",

@@ -280,6 +280,7 @@ func (scrapper *BancorScraper) normalizeSwap(swap BancorNetwork.BancorNetworkCon
 	}
 
 	pair := scrapper.GetPair([]common.Address{swap.ToToken, swap.FromToken})
+	pair, _ = scrapper.NormalizePair(pair)
 	normalizedSwap.Pair = pair
 	normalizedSwap.ID = swap.Raw.TxHash.Hex()
 	normalizedSwap.Timestamp = time.Now().Unix()
@@ -294,7 +295,13 @@ func (scrapper *BancorScraper) getSwapData(swap BancorSwap) (price float64, volu
 }
 
 func (scraper *BancorScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
-	return dia.ExchangePair{}, nil
+	if pair.UnderlyingPair.BaseToken.Address == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" {
+		pair.UnderlyingPair.BaseToken.Address = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+	}
+	if pair.UnderlyingPair.QuoteToken.Address == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" {
+		pair.UnderlyingPair.QuoteToken.Address = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+	}
+	return pair, nil
 }
 
 func (scraper *BancorScraper) ConverterTypeZero(address common.Address) (tokenAddress []common.Address, err error) {
@@ -475,8 +482,10 @@ func (scraper *BancorScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, e
 }
 
 func (scraper *BancorScraper) GetPair(address []common.Address) dia.ExchangePair {
-	var symbol0 string
-	var symbol1 string
+	var (
+		symbol0 string
+		symbol1 string
+	)
 
 	token0, err := uniswapcontract.NewIERC20Caller(address[0], scraper.RestClient)
 	if err != nil {
@@ -488,6 +497,7 @@ func (scraper *BancorScraper) GetPair(address []common.Address) dia.ExchangePair
 	}
 
 	if address[0].Hex() == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" {
+		address[0] = common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")
 		symbol0 = "WETH"
 	} else {
 		symbol0, err = token0.Symbol(&bind.CallOpts{})
@@ -496,6 +506,7 @@ func (scraper *BancorScraper) GetPair(address []common.Address) dia.ExchangePair
 		}
 	}
 	if address[1].Hex() == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" {
+		address[0] = common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")
 		symbol1 = "WETH"
 	} else {
 		symbol1, err = token1.Symbol(&bind.CallOpts{})

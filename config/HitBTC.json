@@ -662,7 +662,7 @@
     },
     {
       "Symbol": "XMR",
-      "ForeignName": "XMREOS",
+      "ForeignName": "XMRUSDT",
       "Exchange": "HitBTC",
       "Ignore": false
     },

@@ -21,11 +21,10 @@ type nothing struct{}
 
 func init() {
 	log = logrus.New()
-	batchTimeString := utils.Getenv("BATCH_TIME_SECONDS", "30")
 	var err error
-	batchTimeSeconds, err = strconv.Atoi(batchTimeString)
+	batchTimeSeconds, err = strconv.Atoi(utils.Getenv("BATCH_TIME_SECONDS", "30"))
 	if err != nil {
-		log.Error("parse batchTimeString: ", err)
+		log.Error("parse BATCH_TIME_SECONDS: ", err)
 	}
 	volumeThreshold, err = strconv.ParseFloat(utils.Getenv("VOLUME_THRESHOLD", "100000"), 64)
 	if err != nil {
@@ -436,6 +435,13 @@ func buildBridge(t dia.Trade) dia.Asset {
 
 	basetoken := t.BaseToken
 
+	if basetoken.Blockchain == dia.ETHEREUM && basetoken.Address == "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" {
+		basetoken = dia.Asset{
+			Symbol:     "ETH",
+			Address:    "0x0000000000000000000000000000000000000000",
+			Blockchain: dia.ETHEREUM,
+		}
+	}
 	if basetoken.Blockchain == dia.SOLANA && t.Source == dia.SerumExchange && basetoken.Address == "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" {
 		basetoken = dia.Asset{
 			Symbol:     "USDC",
@@ -538,6 +544,15 @@ func buildBridge(t dia.Trade) dia.Asset {
 				Symbol:     "WAN",
 				Address:    "0x0000000000000000000000000000000000000000",
 				Blockchain: dia.WANCHAIN,
+			}
+		}
+	}
+	if basetoken.Blockchain == dia.ARBITRUM && t.Source == dia.UniswapExchangeV3Arbitrum {
+		if basetoken.Address == common.HexToAddress("0x82aF49447D8a07e3bd95BD0d56f35241523fBab1").Hex() {
+			basetoken = dia.Asset{
+				Symbol:     "ETH",
+				Address:    "0x0000000000000000000000000000000000000000",
+				Blockchain: dia.ETHEREUM,
 			}
 		}
 	}

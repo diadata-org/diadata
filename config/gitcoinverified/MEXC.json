@@ -79,6 +79,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "BOO",
+      "Exchange": "MEXC",
+      "Blockchain": "Fantom",
+      "Address": "0x841FAD6EAe12c286d1Fd18d1d525DFfA75C7EFFE"
+    },
+    {
       "Symbol": "BSV",
       "Exchange": "MEXC",
       "Blockchain": "BitcoinSV",
@@ -125,6 +131,12 @@
       "Exchange": "MEXC",
       "Blockchain": "Polygon",
       "Address": "0xC168E40227E4ebD8C1caE80F7a55a4F0e6D66C97"
+    },
+    {
+      "Symbol": "DOGE",
+      "Exchange": "MEXC",
+      "Blockchain": "Dogechain",
+      "Address": "0x0000000000000000000000000000000000000000"
     },
     {
       "Symbol": "DOT",
@@ -307,6 +319,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "SPA",
+      "Exchange": "MEXC",
+      "Blockchain": "Ethereum",
+      "Address": "0xB4A3B0Faf0Ab53df58001804DdA5Bfc6a3D59008"
+    },
+    {
       "Symbol": "stETH",
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",
@@ -377,6 +395,12 @@
       "Exchange": "MEXC",
       "Blockchain": "Ripple",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "YFI",
+      "Exchange": "MEXC",
+      "Blockchain": "Ethereum",
+      "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
     }
   ]
 }

@@ -88,9 +88,10 @@ type X2Y2ScraperState struct {
 type X2Y2Scraper struct {
 	tradeScraper TradeScraper
 
-	mu    sync.Mutex
-	conf  *X2Y2ScraperConfig
-	state *X2Y2ScraperState
+	mu       sync.Mutex
+	conf     *X2Y2ScraperConfig
+	state    *X2Y2ScraperState
+	exchange dia.NFTExchange
 }
 
 type x2y2ERC20Metadata struct {
@@ -171,7 +172,7 @@ func init() {
 	defX2Y2State.LastBlockNum = uint64(initBlockNum)
 }
 
-func NewX2Y2Scraper(rdb *models.RelDB) *X2Y2Scraper {
+func NewX2Y2Scraper(rdb *models.RelDB, exchange dia.NFTExchange) *X2Y2Scraper {
 	ctx := context.Background()
 
 	eth, err := ethclient.Dial(utils.Getenv("ETH_URI_REST", ""))
@@ -180,14 +181,15 @@ func NewX2Y2Scraper(rdb *models.RelDB) *X2Y2Scraper {
 	}
 
 	s := &X2Y2Scraper{
-		conf:  defX2Y2Conf,
-		state: defX2Y2State,
+		conf:     defX2Y2Conf,
+		state:    defX2Y2State,
+		exchange: exchange,
 		tradeScraper: TradeScraper{
 			shutdown:      make(chan nothing),
 			shutdownDone:  make(chan nothing),
 			datastore:     rdb,
 			chanTrade:     make(chan dia.NFTTrade),
-			source:        "X2Y2",
+			source:        exchange.Name,
 			ethConnection: eth,
 		},
 	}
@@ -479,7 +481,7 @@ func (s *X2Y2Scraper) notifyTrade(tx *utils.EthFilteredTx, transfer *x2y2ERC721T
 		BlockNumber: tx.BlockNum,
 		Timestamp:   timestamp,
 		TxHash:      tx.TXHash.Hex(),
-		Exchange:    "X2Y2",
+		Exchange:    s.exchange.Name,
 	}
 
 	if asset, ok := assetCacheX2Y2[dia.ETHEREUM+"-"+currAddr.Hex()]; ok {
