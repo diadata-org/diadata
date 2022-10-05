@@ -155,22 +155,22 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialEth, wsDialEth, sushiswapWaitMilliseconds)
 	case dia.PanCakeSwap:
-		listenByAddress = true
+		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialBSC, wsDialBSC, pancakeswapWaitMilliseconds)
 	case dia.DfynNetwork:
-		listenByAddress = true
+		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialPolygon, wsDialPolygon, dfynWaitMilliseconds)
 	case dia.QuickswapExchange:
-		listenByAddress = true
+		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialPolygon, wsDialPolygon, quickswapWaitMilliseconds)
 	case dia.UbeswapExchange:
 		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialCelo, wsDialCelo, ubeswapWaitMilliseconds)
 	case dia.SpookyswapExchange:
-		listenByAddress = true
+		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialFantom, wsDialFantom, spookyswapWaitMilliseconds)
 	case dia.SpiritswapExchange:
-		listenByAddress = true
+		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialFantom, wsDialFantom, spookyswapWaitMilliseconds)
 	case dia.SolarbeamExchange:
 		listenByAddress = false
@@ -182,7 +182,7 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialMetis, wsDialMetis, metisWaitMilliseconds)
 	case dia.SushiSwapExchangePolygon:
-		listenByAddress = true
+		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialPolygon, wsDialPolygon, metisWaitMilliseconds)
 	case dia.SushiSwapExchangeFantom:
 		listenByAddress = false
@@ -191,10 +191,10 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialMoonriver, wsDialMoonriver, moonriverWaitMilliseconds)
 	case dia.TraderJoeExchange:
-		listenByAddress = true
+		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialAvalanche, wsDialAvalanche, avalancheWaitMilliseconds)
 	case dia.PangolinExchange:
-		listenByAddress = true
+		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialAvalanche, wsDialAvalanche, avalancheWaitMilliseconds)
 	case dia.TethysExchange:
 		listenByAddress = false
@@ -209,19 +209,19 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialEvmos, wsDialEvmos, evmosWaitMilliseconds)
 	case dia.ApeswapExchange:
-		listenByAddress = true
+		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialBSC, wsDialBSC, pancakeswapWaitMilliseconds)
 	case dia.BiswapExchange:
-		listenByAddress = true
+		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialBSC, wsDialBSC, pancakeswapWaitMilliseconds)
 	case dia.ArthswapExchange:
-		listenByAddress = true
+		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialAstar, wsDialAstar, astarWaitMilliseconds)
 	case dia.StellaswapExchange:
-		listenByAddress = true
+		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialMoonbeam, wsDialMoonbeam, moonbeamWaitMilliseconds)
 	case dia.WanswapExchange:
-		listenByAddress = true
+		listenByAddress = false
 		s = makeUniswapScraper(exchange, listenByAddress, restDialWanchain, wsDialWanchain, wanchainWaitMilliseconds)
 	}
 
