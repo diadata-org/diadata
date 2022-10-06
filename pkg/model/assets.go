@@ -869,62 +869,32 @@ func (rdb *RelDB) GetByLimit(limit, skip uint32) (assets []dia.Asset, assetIds [
 	return
 }
 
-func (rdb *RelDB) GetActiveAssetCount() (count int, err error) {
-	query := fmt.Sprintf("SELECT count(*) FROM %s INNER JOIN %s ON asset.asset_id = exchangesymbol.asset_id  ", assetTable, exchangesymbolTable)
-	rows := rdb.postgresClient.QueryRow(context.Background(), query)
-	err = rows.Scan(&count)
-	return
-}
-
-func (rdb *RelDB) GetActiveAsset(limit, skip int) (assets []dia.Asset, assetIds []string, err error) {
-	query := fmt.Sprintf("SELECT asset.asset_id,asset.symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON asset.asset_id = exchangesymbol.asset_id ORDER BY exchangesymbol.asset_id DESC LIMIT $1 OFFSET $2  ", assetTable, exchangesymbolTable)
-	var rows pgx.Rows
-	// log.Errorln("query", query)
-	rows, err = rdb.postgresClient.Query(context.Background(), query, limit, skip)
-	if err != nil {
-		return
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var (
-			decimals    string
-			decimalsInt int
-			assetID     string
-		)
-
-		asset := dia.Asset{}
-		err = rows.Scan(&assetID, &asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
-		if err != nil {
-			return
-		}
-		decimalsInt, err = strconv.Atoi(decimals)
-		if err != nil {
-			return
-		}
-		asset.Decimals = uint8(decimalsInt)
-		assets = append(assets, asset)
-		assetIds = append(assetIds, assetID)
-
-	}
-	return
-}
-
-// GetAssetsWithVOLRange returns all assets from assetvolume table that have a timestamp in the time-range (@starttime,@endtime].
-func (rdb *RelDB) GetAssetsWithVOLRange(starttime time.Time, endtime time.Time) (assets []dia.AssetVolume, err error) {
+// GetAssetsWithVolByBlockchain returns all assets from assetvolume table that have a timestamp in the time-range (@starttime,@endtime].
+// If blockchain is a non-empty string it only returns assets from @blockchain.
+func (rdb *RelDB) GetAssetsWithVolByBlockchain(starttime time.Time, endtime time.Time, blockchain string) (assets []dia.AssetVolume, err error) {
 	var (
-		queryString string
-		query       string
-		rows        pgx.Rows
+		query string
+		rows  pgx.Rows
 	)
-	queryString = `
-	SELECT symbol,name,address,decimals,blockchain,volume
-	FROM %s INNER JOIN %s
-	ON (asset.asset_id = assetvolume.asset_id)
-	WHERE time_stamp>to_timestamp(%v) and time_stamp<=to_timestamp(%v)
-	ORDER BY assetvolume.volume DESC
-	`
-	query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, starttime.Unix(), endtime.Unix())
+
+	query = fmt.Sprintf(`
+	SELECT * FROM (
+		SELECT DISTINCT ON (address,blockchain) symbol,name,address,decimals,blockchain,volume
+		FROM %s 
+		INNER JOIN %s
+		ON (asset.asset_id = assetvolume.asset_id)
+		WHERE time_stamp>to_timestamp(%v) and time_stamp<=to_timestamp(%v)`,
+		assetTable,
+		assetVolumeTable,
+		starttime.Unix(),
+		endtime.Unix(),
+	)
+	if blockchain != "" {
+		query += fmt.Sprintf(" AND asset.blockchain='%s')", blockchain)
+	} else {
+		query += (")")
+	}
+	query += " sub ORDER BY volume DESC"
 
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
@@ -934,20 +904,17 @@ func (rdb *RelDB) GetAssetsWithVOLRange(starttime time.Time, endtime time.Time) 
 
 	for rows.Next() {
 		var (
-			decimals    string
-			decimalsInt int
-			volume      float64
+			decimals sql.NullInt64
+			volume   float64
 		)
 		asset := dia.Asset{}
 		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain, &volume)
 		if err != nil {
 			return
 		}
-		decimalsInt, err = strconv.Atoi(decimals)
-		if err != nil {
-			return
+		if decimals.Valid {
+			asset.Decimals = uint8(decimals.Int64)
 		}
-		asset.Decimals = uint8(decimalsInt)
 		assetvolume := dia.AssetVolume{Asset: asset, Volume: volume}
 		assets = append(assets, assetvolume)
 	}

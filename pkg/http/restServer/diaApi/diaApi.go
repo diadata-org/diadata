@@ -1214,6 +1214,24 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 	c.JSON(http.StatusOK, assets)
 }
 
+// GetQuotedAssets is the delegate method to fetch all assets that have an asset quotation
+// dating back at most 7 days.
+func (env *Env) GetQuotedAssets(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	endtime := time.Now()
+	starttime := endtime.AddDate(0, 0, -7)
+	assetvolumes, err := env.RelDB.GetAssetsWithVolByBlockchain(starttime, endtime, c.Query("blockchain"))
+	if err != nil {
+		log.Error("get assets with volume: ", err)
+
+	}
+
+	c.JSON(http.StatusOK, assetvolumes)
+}
+
 // -----------------------------------------------------------------------------
 // INTEREST RATES
 // -----------------------------------------------------------------------------
