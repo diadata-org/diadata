@@ -21,7 +21,7 @@ import (
 )
 
 const (
-	rpcEndpointSolana         = "https://nd-646-378-408.p2pify.com/b2b39b407964cd4688015cd3c9027199"
+	rpcEndpointSolana         = "https://solana-api.projectserum.com"
 	MagicEdenV2ProgramAddress = "M2mx93ekt1fmXSVkTrUL9xVFHkmME8HTUi5Cyc5aF7K"
 	SolTokenAddress           = "So11111111111111111111111111111111111111112"
 	SaleTxPrefix              = "f223c68952e1f2b6"
