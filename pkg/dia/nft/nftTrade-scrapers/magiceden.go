@@ -21,7 +21,7 @@ import (
 )
 
 const (
-	rpcEndpointSolana         = "https://solana-api.projectserum.com"
+	rpcEndpointSolana         = "https://nd-646-378-408.p2pify.com/b2b39b407964cd4688015cd3c9027199"
 	MagicEdenV2ProgramAddress = "M2mx93ekt1fmXSVkTrUL9xVFHkmME8HTUi5Cyc5aF7K"
 	SolTokenAddress           = "So11111111111111111111111111111111111111112"
 	SaleTxPrefix              = "f223c68952e1f2b6"
@@ -108,7 +108,7 @@ func (s *MagicEdenScraper) storeState(ctx context.Context) error {
 	return s.tradeScraper.datastore.SetScraperState(ctx, MagicEden, s.state)
 }
 
-func NewMagicEdenScraper(rdb *models.RelDB) *MagicEdenScraper {
+func NewMagicEdenScraper(rdb *models.RelDB, exchange dia.NFTExchange) *MagicEdenScraper {
 	ctx := context.Background()
 	scraper := &MagicEdenScraper{
 		solanaRpcClient: rpc.NewClient(utils.Getenv("SOLANA_URI_REST", rpcEndpointSolana)),
@@ -119,7 +119,7 @@ func NewMagicEdenScraper(rdb *models.RelDB) *MagicEdenScraper {
 			shutdownDone: make(chan nothing),
 			datastore:    rdb,
 			chanTrade:    make(chan dia.NFTTrade),
-			source:       "MagicEden",
+			source:       MagicEden,
 		},
 	}
 	if err := scraper.initScraper(ctx); err != nil {
@@ -145,7 +145,7 @@ func (s *MagicEdenScraper) initScraper(ctx context.Context) error {
 			return err
 		}
 
-		defState := *defMagicEdenState // copy
+		defState := *defMagicEdenState
 		s.state = &defState
 		if err := s.tradeScraper.datastore.SetScraperState(ctx, OpenSea, s.state); err != nil {
 			log.Errorf("unable to store scraper state on rdb: %s", err.Error())
@@ -315,6 +315,7 @@ func (s *MagicEdenScraper) FetchHistoricalTrades() error {
 		log.Warnf("unable to load scraper state: %s", err.Error())
 		return err
 	}
+	log.Info("last tx: ", s.state.LastTxHistorical)
 
 	txList, err := s.solanaRpcClient.GetSignaturesForAddress(solana.MustPublicKeyFromBase58(MagicEdenV2ProgramAddress),
 		&rpc.GetSignaturesForAddressOpts{
@@ -441,7 +442,7 @@ func (s *MagicEdenScraper) notifyTrade(tx *rpc.TransactionSignature, addr, from,
 		BlockNumber: uint64(tx.Slot),
 		Timestamp:   time.Unix(int64(tx.BlockTime), 0),
 		TxHash:      tx.Signature,
-		Exchange:    "MagicEden",
+		Exchange:    MagicEden,
 	}
 
 	if asset, ok := assetCacheMagicEden[dia.SOLANA+"-"+SolTokenAddress]; ok {
