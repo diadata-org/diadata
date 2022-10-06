@@ -2,17 +2,19 @@ package main
 
 import (
 	"flag"
+	"strconv"
 	"sync"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 
 	synthscrapers "github.com/diadata-org/diadata/pkg/dia/scraper/synthetic-scrapers"
 	log "github.com/sirupsen/logrus"
 )
 
-const watchdogDelay = 3600
+var watchdogDelay = 3600
 
 func main() {
 
@@ -21,6 +23,11 @@ func main() {
 	db, err := models.NewDataStore()
 	if err != nil {
 		log.Fatal(" datastore error: ", err)
+	}
+
+	watchdogDelay, err = strconv.Atoi(utils.Getenv("WATCHDOG_DELAY", "3600"))
+	if err != nil {
+		log.Fatalf("Failed to parse watchdogDelay: %v")
 	}
 
 	scraperType := flag.String("synthAsset", "cETH", "which synthetic asset")
