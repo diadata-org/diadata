@@ -105,6 +105,7 @@ const (
 	LooksRare                = "LooksRare"
 	TofuNFTAstar             = "TofuNFT-Astar"
 	TofuNFTBinanceSmartChain = "TofuNFT-BinanceSmartChain"
+	MagicEden                = "MagicEden"
 )
 
 type ConfigApi struct {

@@ -1,7 +1,6 @@
 package scrapers
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"math"
@@ -279,7 +278,7 @@ func (s *SerumScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err erro
 }
 
 func (s *SerumScraper) getEvents(eventQueueAddr solana.PublicKey) (eventQueue solana.Data, err error) {
-	acctInfo, err := s.solanaRpcClient.GetAccountInfo(context.TODO(), eventQueueAddr)
+	acctInfo, err := s.solanaRpcClient.GetAccountInfo(eventQueueAddr)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get events:%w", err)
 	}
@@ -314,7 +313,6 @@ func parseEvent(e *SerumEvent, baseMultiplier, quoteMultiplier float64) (volume,
 
 func (s *SerumScraper) getMarkets() ([]*serum.MarketV2, error) {
 	resp, err := s.solanaRpcClient.GetProgramAccounts(
-		context.TODO(),
 		solana.MustPublicKeyFromBase58(dexProgramAddress),
 		&rpc.GetProgramAccountsOpts{
 			Filters: []rpc.RPCFilter{
@@ -343,7 +341,6 @@ func (s *SerumScraper) getTokenNames() (map[string]tokenMeta, error) {
 	names := make(map[string]tokenMeta)
 	tldPublicKey := solana.MustPublicKeyFromBase58(dotTokenTLD)
 	resp, err := s.solanaRpcClient.GetProgramAccounts(
-		context.TODO(),
 		solana.MustPublicKeyFromBase58(nameServiceProgramAddress),
 		&rpc.GetProgramAccountsOpts{
 			Filters: []rpc.RPCFilter{

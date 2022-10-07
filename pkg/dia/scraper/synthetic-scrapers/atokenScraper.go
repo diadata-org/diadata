@@ -115,7 +115,7 @@ func NewaTokenScraper(blockchain, pooladdress string, version int) *aTokenScrape
 }
 
 func (scraper *aTokenScraper) filterReservedataupdatedV2History() chan *aavepool2.Aavepool2ReserveDataUpdated {
-	filterer, err := aavepool2.NewAavepool2Filterer(common.HexToAddress(scraper.pooladdress), scraper.WsClient)
+	filterer, err := aavepool2.NewAavepool2Filterer(common.HexToAddress(scraper.pooladdress), scraper.RestClient)
 
 	if err != nil {
 		log.Error("new NewAavepool3Filterer caller: ", err)
@@ -147,7 +147,7 @@ func (scraper *aTokenScraper) filterReservedataupdatedV2History() chan *aavepool
 }
 
 func (scraper *aTokenScraper) watchReservedataupdatedV2() chan *aavepool2.Aavepool2ReserveDataUpdated {
-	filterer, err := aavepool2.NewAavepool2Filterer(common.HexToAddress(scraper.pooladdress), scraper.RestClient)
+	filterer, err := aavepool2.NewAavepool2Filterer(common.HexToAddress(scraper.pooladdress), scraper.WsClient)
 
 	if err != nil {
 		log.Error("new NewAavepool3Filterer caller: ", err)
@@ -155,7 +155,13 @@ func (scraper *aTokenScraper) watchReservedataupdatedV2() chan *aavepool2.Aavepo
 	sink := make(chan *aavepool2.Aavepool2ReserveDataUpdated)
 	// if start is zero start from latest
 	if scraper.start == 0 {
-		filterer.WatchReserveDataUpdated(&bind.WatchOpts{}, sink, []common.Address{})
+		log.Error("WatchReserveDataUpdated: ", scraper.start)
+
+		_, err := filterer.WatchReserveDataUpdated(&bind.WatchOpts{}, sink, []common.Address{})
+		if err != nil {
+			log.Error("Error on filterer.WatchReserveDataUpdated: ", err)
+
+		}
 
 	} else {
 		log.Error("WatchReserveDataUpdated starting from block: ", scraper.start)
@@ -169,7 +175,6 @@ func (scraper *aTokenScraper) watchReservedataupdatedV2() chan *aavepool2.Aavepo
 func (scraper *aTokenScraper) mainLoop() {
 	// runs whenever there is  ReserveDataUpdated occurs
 
-	log.Info("looking for watchReservedataupdatedV2")
 	sink := scraper.watchReservedataupdatedV2()
 
 	go func() {
@@ -314,12 +319,12 @@ func (scraper *aTokenScraper) fetchsupplyandbalance(underlyingtokenaddress strin
 		return
 	}
 
-	atokendecimal, err := filterer.Decimals(&bind.CallOpts{BlockNumber: blocknumber})
+	atokendecimal, err := filterer.Decimals(&bind.CallOpts{})
 	if err != nil {
 		log.Error("get Decimals: ", err)
 		return
 	}
-	atokensymbol, err := filterer.Symbol(&bind.CallOpts{BlockNumber: blocknumber})
+	atokensymbol, err := filterer.Symbol(&bind.CallOpts{})
 	if err != nil {
 		log.Error("get Decimals: ", err)
 		return

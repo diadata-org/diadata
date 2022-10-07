@@ -2,15 +2,19 @@ package main
 
 import (
 	"flag"
+	"strconv"
 	"sync"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 
 	synthscrapers "github.com/diadata-org/diadata/pkg/dia/scraper/synthetic-scrapers"
 	log "github.com/sirupsen/logrus"
 )
+
+var watchdogDelay = 3600
 
 func main() {
 
@@ -19,6 +23,11 @@ func main() {
 	db, err := models.NewDataStore()
 	if err != nil {
 		log.Fatal(" datastore error: ", err)
+	}
+
+	watchdogDelay, err = strconv.Atoi(utils.Getenv("WATCHDOG_DELAY", "3600"))
+	if err != nil {
+		log.Fatalf("Failed to parse watchdogDelay: %v")
 	}
 
 	scraperType := flag.String("synthAsset", "cETH", "which synthetic asset")
@@ -57,22 +66,32 @@ func main() {
 
 func handleSynthData(synthChannel chan dia.SynthAssetSupply, wg *sync.WaitGroup, db *models.DB) {
 	defer wg.Done()
+	lastTradeTime := time.Now()
+	t := time.NewTicker(time.Duration(watchdogDelay) * time.Second)
 	for {
-		synthData, ok := <-synthChannel
-		if !ok {
-			log.Error("error")
-			return
-		}
-		log.Infoln("synthData", synthData)
-		err := db.SaveSynthSupplyInflux(&synthData)
-		if err != nil {
-			log.Errorf("Error saving synth data for %s: %v", synthData.Asset.Address, err)
-		} else {
-			log.Infof("successfully set synth data for %s", synthData.Asset.Symbol)
-		}
-		err = db.Flush()
-		if err != nil {
-			log.Error(err)
+		select {
+		case <-t.C:
+			duration := time.Since(lastTradeTime)
+			if duration > time.Duration(watchdogDelay)*time.Second {
+				log.Error(duration)
+				panic("frozen? ")
+			}
+		case synthData, ok := <-synthChannel:
+			if !ok {
+				log.Error("error")
+				return
+			}
+			log.Infoln("synthData", synthData)
+			err := db.SaveSynthSupplyInflux(&synthData)
+			if err != nil {
+				log.Errorf("Error saving synth data for %s: %v", synthData.Asset.Address, err)
+			} else {
+				log.Infof("successfully set synth data for %s", synthData.Asset.Symbol)
+			}
+			err = db.Flush()
+			if err != nil {
+				log.Error(err)
+			}
 		}
 	}
 }

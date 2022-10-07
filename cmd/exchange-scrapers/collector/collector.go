@@ -182,11 +182,13 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wTest 
 					log.Error(err)
 				}
 
-				// Write trade to test Kafka.
-				if mode == "current" {
-					err = writeTradeToKafka(wTest, t)
-					if err != nil {
-						log.Error(err)
+				if scrapers.Exchanges[t.Source].Centralized {
+					// Write CEX trades to test Kafka.
+					if mode == "current" {
+						err = writeTradeToKafka(wTest, t)
+						if err != nil {
+							log.Error(err)
+						}
 					}
 				}
 
