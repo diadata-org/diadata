@@ -921,60 +921,114 @@ func (rdb *RelDB) GetAssetsWithVolByBlockchain(starttime time.Time, endtime time
 	return
 }
 
-// GetAssetsWithVOL returns the first @numAssets assets with entry in the assetvolume table, sorted by volume in descending order.
-// If @numAssets==0, all assets are returned.
-// If @substring is not the empty string, results are filtered by the first letters being @substring.
-func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, skip int64, onlycex bool, substring string) (volumeSortedAssets []dia.AssetVolume, err error) {
+// GetSortedAssetSymbols search asstet by symbol
+func (rdb *RelDB) GetSortedAssetSymbols(numAssets int64, skip int64, search string) (volumeSortedAssets []dia.AssetVolume, err error) {
 	var (
 		queryString string
 		query       string
 		rows        pgx.Rows
 	)
 
-	if !onlycex {
-		if numAssets == 0 {
-			if substring == "" {
-				queryString = "SELECT symbol,name,address,decimals,blockchain,volume FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) ORDER BY assetvolume.volume DESC LIMIT 100"
-				query = fmt.Sprintf(queryString, assetTable, assetVolumeTable)
-			} else {
-				queryString = "SELECT symbol,name,address,decimals,blockchain,volume FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) WHERE symbol ILIKE '%s%%' ORDER BY assetvolume.volume DESC LIMIT 100"
-				query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, substring)
-			}
-		} else {
-			if substring == "" {
-				queryString = "SELECT symbol,name,address,decimals,blockchain,volume FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) ORDER BY assetvolume.volume DESC LIMIT %d OFFSET %d"
-				query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, numAssets, skip)
-			} else {
-				queryString = "SELECT symbol,name,address,decimals,blockchain,volume FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) WHERE symbol ILIKE '%s%%' ORDER BY assetvolume.volume DESC LIMIT %d OFFSET %d"
-				query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, substring, numAssets, skip)
-			}
-		}
+	if numAssets == 0 {
+		queryString = "SELECT symbol,name,address,decimals,blockchain,volume FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) WHERE symbol ILIKE '%s%%' ORDER BY assetvolume.volume DESC LIMIT 100"
+		query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, search)
 	} else {
-		if numAssets == 0 {
-			if substring == "" {
-				// SELECT DISTINCT ON (av.volume,av.asset_id) av.volume,a.address,a.blockchain,a.symbol FROM assetvolume av INNER JOIN asset a ON av.asset_id=a.asset_id INNER JOIN exchangesymbol es ON av.asset_id=es.asset_id INNER JOIN exchange e ON es.exchange=e.name WHERE tralized=true e.cenand a.symbol ILIKE '%BTC%' ORDER BY av.volume DESC LIMIT 5;
-				// SELECT DISTINCT ON (av.volume,av.asset_id) av.volume,a.address,a.blockchain,a.symbol FROM assetvolume av INNER JOIN asset a ON av.asset_id=a.asset_id INNER JOIN exchangesymbol es ON av.asset_id=es.asset_id INNER JOIN exchange e ON es.exchange=e.name WHERE e.centralized=true ORDER BY av.volume DESC LIMIT 5;
-				queryString = "SELECT DISTINCT ON (av.volume,av.asset_id)  a.symbol,a.name,a.address,a.decimals,a.blockchain,av.volume FROM %s  av INNER JOIN %s a ON av.asset_id=a.asset_id INNER JOIN %s es ON av.asset_id=es.asset_id INNER JOIN %s e ON es.exchange=e.name WHERE e.centralized=true ORDER BY av.volume DESC LIMIT 100"
-				query = fmt.Sprintf(queryString, assetVolumeTable, assetTable, exchangesymbolTable, exchangeTable)
-			} else {
-				queryString = "SELECT DISTINCT ON (av.volume,av.asset_id)  a.symbol,a.name,a.address,a.decimals,a.blockchain,av.volume FROM %s  av INNER JOIN %s a ON av.asset_id=a.asset_id INNER JOIN %s es ON av.asset_id=es.asset_id INNER JOIN %s e ON es.exchange=e.name WHERE e.centralized=true  and a.symbol ILIKE '%s%%'  ORDER BY av.volume DESC LIMIT 100"
-				query = fmt.Sprintf(queryString, assetVolumeTable, assetTable, exchangesymbolTable, exchangeTable, substring)
-			}
-		} else {
-			if substring == "" {
-				queryString = "SELECT DISTINCT ON (av.volume,av.asset_id)  a.symbol,a.name,a.address,a.decimals,a.blockchain,av.volume FROM %s  av INNER JOIN %s a ON av.asset_id=a.asset_id INNER JOIN %s es ON av.asset_id=es.asset_id INNER JOIN %s e ON es.exchange=e.name WHERE e.centralized=true ORDER BY av.volume DESC  LIMIT %d OFFSET %d"
-				query = fmt.Sprintf(queryString, assetVolumeTable, assetTable, exchangesymbolTable, exchangeTable, numAssets, skip)
+		queryString = "SELECT DISTINCT ON (av.volume,av.asset_id)  a.symbol,a.name,a.address,a.decimals,a.blockchain,av.volume FROM %s  av INNER JOIN %s a ON av.asset_id=a.asset_id INNER JOIN %s es ON av.asset_id=es.asset_id INNER JOIN %s e ON es.exchange=e.name WHERE e.centralized=true  and a.symbol ILIKE '%s%%' ORDER BY av.volume DESC LIMIT %d OFFSET %d"
+		query = fmt.Sprintf(queryString, assetVolumeTable, assetTable, exchangesymbolTable, exchangeTable, search, numAssets, skip)
+	}
+	log.Infoln("GetSortedAssetSymbols query", query)
 
-			} else {
-				queryString = "SELECT DISTINCT ON (av.volume,av.asset_id)  a.symbol,a.name,a.address,a.decimals,a.blockchain,av.volume FROM %s  av INNER JOIN %s a ON av.asset_id=a.asset_id INNER JOIN %s es ON av.asset_id=es.asset_id INNER JOIN %s e ON es.exchange=e.name WHERE e.centralized=true  and a.symbol ILIKE '%s%%' ORDER BY av.volume DESC LIMIT %d OFFSET %d"
-				query = fmt.Sprintf(queryString, assetVolumeTable, assetTable, exchangesymbolTable, exchangeTable, substring, numAssets, skip)
-
-			}
-
-		}
+	rows, err = rdb.postgresClient.Query(context.Background(), query)
+	if err != nil {
+		return
 	}
 
-	log.Infoln("query query", query)
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			decimals    string
+			decimalsInt int
+			volume      float64
+		)
+		asset := dia.Asset{}
+		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain, &volume)
+		if err != nil {
+			return
+		}
+		decimalsInt, err = strconv.Atoi(decimals)
+		if err != nil {
+			return
+		}
+		asset.Decimals = uint8(decimalsInt)
+		assetvolume := dia.AssetVolume{Asset: asset, Volume: volume}
+		volumeSortedAssets = append(volumeSortedAssets, assetvolume)
+	}
+	return
+
+}
+
+// GetAssetsWithVOL returns the first @numAssets assets with entry in the assetvolume table, sorted by volume in descending order.
+// If @numAssets==0, all assets are returned.
+// If @substring is not the empty string, results are filtered by the first letters being @substring.
+func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, skip int64, onlycex bool, blockchain string) (volumeSortedAssets []dia.AssetVolume, err error) {
+	var (
+		queryString string
+		query       string
+		rows        pgx.Rows
+	)
+	if numAssets == 0 {
+		numAssets = 100
+	}
+
+	if !onlycex {
+
+		if blockchain == "" {
+			queryString = `
+			SELECT symbol,name,address,decimals,blockchain,volume 
+			FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) 
+			ORDER BY assetvolume.volume 
+			DESC LIMIT %d OFFSET %d`
+			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, numAssets, skip)
+		} else {
+			queryString = `
+			SELECT symbol,name,address,decimals,blockchain,volume 
+			FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) 
+			WHERE blockchain= '%s' 
+			ORDER BY assetvolume.volume 
+			DESC LIMIT %d OFFSET %d`
+			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, blockchain, numAssets, skip)
+		}
+
+	} else {
+		if blockchain == "" {
+			queryString = `
+			SELECT DISTINCT ON (av.volume,av.asset_id)  a.symbol,a.name,
+			a.address,a.decimals,a.blockchain,av.volume 
+			FROM %s  av INNER JOIN %s a ON av.asset_id=a.asset_id 
+			INNER JOIN %s es ON av.asset_id=es.asset_id INNER JOIN %s e 
+			ON es.exchange=e.name 
+			WHERE e.centralized=true 
+			ORDER BY av.volume 
+			DESC  LIMIT %d OFFSET %d`
+			query = fmt.Sprintf(queryString, assetVolumeTable, assetTable, exchangesymbolTable, exchangeTable, numAssets, skip)
+		} else {
+			queryString = `
+			SELECT DISTINCT ON (av.volume,av.asset_id) 
+			a.symbol,a.name,a.address,a.decimals,a.blockchain,av.volume 
+			FROM %s  av 
+			INNER JOIN %s a  ON av.asset_id=a.asset_id 
+			INNER JOIN %s es ON av.asset_id=es.asset_id 
+			INNER JOIN %s e ON es.exchange=e.name 
+			WHERE e.centralized=true AND a.blockchain = '%s' 
+			ORDER BY av.volume 
+			DESC  LIMIT %d OFFSET %d`
+			query = fmt.Sprintf(queryString, assetVolumeTable, assetTable, exchangesymbolTable, exchangeTable, blockchain, numAssets, skip)
+		}
+
+	}
+
+	log.Infoln("GetAssetsWithVOL query", query)
 
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
