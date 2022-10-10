@@ -3065,7 +3065,7 @@ func (env *Env) GetSyntheticAsset(c *gin.Context) {
 	} else {
 		synthassets, err := env.DataStore.GetSynthAssets(blockchain, protocol)
 		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
+			restApi.SendError(c, http.StatusInternalServerError, errors.New("no response for quoted timestamp"))
 		}
 		for _, asset := range synthassets {
 			points, _ := env.DataStore.GetSynthSupplyInflux(blockchain, protocol, asset, limit, starttime, endtime)
