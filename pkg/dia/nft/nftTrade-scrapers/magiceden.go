@@ -35,7 +35,7 @@ var (
 		ProgramAddr:      MagicEdenV2ProgramAddress,
 		BatchSize:        1000,
 		WaitPeriod:       30 * time.Second,
-		MaxRetry:         5,
+		MaxRetry:         2,
 		SkipOnErr:        true,
 		ScrapeHistorical: false,
 	}
@@ -189,7 +189,7 @@ func (s *MagicEdenScraper) mainLoop() {
 			}
 		}
 
-		log.Debugf("wait for %s", 5*time.Second)
+		log.Debugf("wait for %s", 1*time.Second)
 
 		select {
 		case <-time.After(2 * time.Second):

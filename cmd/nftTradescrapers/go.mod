@@ -3,7 +3,7 @@ module github.com/diadata-org/diadata/cmd/nftTradescrapers
 go 1.17
 
 require (
-	github.com/diadata-org/diadata v1.4.1-rc-303
+	github.com/diadata-org/diadata v1.4.30
 	github.com/jackc/pgconn v1.10.0
 	github.com/segmentio/kafka-go v0.4.35
 	github.com/sirupsen/logrus v1.8.1
@@ -64,4 +64,3 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-

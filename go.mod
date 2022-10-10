@@ -40,6 +40,7 @@ require (
 	github.com/onsi/ginkgo v1.14.2 // indirect
 	github.com/onsi/gomega v1.10.4 // indirect
 	github.com/pkg/errors v0.9.1
+	github.com/portto/solana-go-sdk v1.22.0
 	github.com/preichenberger/go-coinbasepro/v2 v2.0.5
 	github.com/prometheus/common v0.7.0
 	github.com/prometheus/tsdb v0.10.0 // indirect
@@ -50,7 +51,6 @@ require (
 	github.com/status-im/keycard-go v0.0.0-20200402102358-957c09536969
 	github.com/streamingfast/binary v0.0.0-20210928223119-44fc44e4a0b5
 	github.com/streamingfast/solana-go v0.5.1-0.20220502224452-432fbe84aee8
-	github.com/portto/solana-go-sdk v1.22.0
 	github.com/tidwall/gjson v1.12.1 // indirect
 	github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
