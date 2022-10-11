@@ -1059,20 +1059,26 @@ func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, skip int64, onlycex bool, bl
 	return
 }
 
-func (rdb *RelDB) GetAssetSource(asset dia.Asset, onlycex bool) (exchanges []string, err error) {
+// GetAssetSource returns all exchanges @asset is traded on.
+// For @cex true, only CEXes are returned. Otherwise only DEXes.
+func (rdb *RelDB) GetAssetSource(asset dia.Asset, cex bool) (exchanges []string, err error) {
 	var query string
-	if onlycex {
-		query = fmt.Sprintf("SELECT DISTINCT ON (es.exchange) es.exchange From exchangesymbol es INNER JOIN exchange  e ON es.exchange = e.name where es.symbol ILIKE '%s' and e.centralized=true ", asset.Symbol)
+	if cex {
+		query = fmt.Sprintf(`
+		SELECT DISTINCT ON (es.exchange) es.exchange 
+		FROM %s es 
+		INNER JOIN %s a ON es.asset_id = a.asset_id 
+		WHERE a.blockchain='%s' AND a.address='%s'
+		`, exchangesymbolTable, assetTable, asset.Blockchain, asset.Address)
 	} else {
 		query = fmt.Sprintf(`
-		SELECT  DISTINCT ON (p.exchange) p.exchange from %s a 
-		INNER JOIN %s pa ON pa.asset_id=a.asset_id 
-		INNER JOIN %s p ON pa.pool_id=p.pool_id 
-		WHERE a.symbol='%s' and a.address='%s';
-		`, assetTable, poolassetTable, poolTable, asset.Symbol, asset.Address)
+		SELECT  DISTINCT ON (p.exchange) p.exchange
+		FROM %s p 
+		INNER JOIN %s pa ON p.pool_id=pa.pool_id 
+		INNER JOIN %s a ON pa.asset_id=a.asset_id 
+		WHERE a.blockchain='%s' AND a.address='%s'
+		`, poolTable, poolassetTable, assetTable, asset.Blockchain, asset.Address)
 	}
-
-	log.Infoln("GetAssetSource query", query)
 
 	rows, err := rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
