@@ -27,6 +27,7 @@ type AcalaswapToken struct {
 	Symbol   string
 	Decimals uint8
 	Name     string
+	Address  string
 }
 
 type AcalaswapPair struct {
@@ -221,7 +222,7 @@ func (s *AcalaswapScraper) subscribeToSystemEvents() error {
 				// inner loop for the changes within one of those notifications
 				blockId := set.Block.Hex()
 				// Uncomment for testing the decoders.
-				// hexHash, err := types.NewHashFromHexString("0x015fdc88c003b75d2871978a50238a4c7ac0adf34731a7e5007d3c20e2fae60d")
+				// hexHash, err := types.NewHashFromHexString(hexHash, err := types.NewHashFromHexString("0x015fdc88c003b75d2871978a50238a4c7ac0adf34731a7e5007d3c20e2fae60d"))
 				// if err != nil {
 				// 	panic(err)
 				// }
@@ -242,9 +243,13 @@ func (s *AcalaswapScraper) subscribeToSystemEvents() error {
 					outLs := out.([]interface{})
 					for _, evt := range outLs {
 						evtMap := evt.(map[string]interface{})
+
 						if evtMap["event_id"] == "Swap" && evtMap["module_id"] == "Dex" {
 							id := fmt.Sprintf("%s-%v", blockId, evtMap["event_idx"])
 							log.Debugf("Event found: %s", id)
+							log.Println("event map-------", evtMap)
+							log.Println("event params-------", evtMap["params"])
+
 							s.processSwap(id, evtMap)
 						}
 					}
@@ -268,12 +273,15 @@ func (s *AcalaswapScraper) processSwap(id string, e map[string]interface{}) erro
 			Symbol:     pair.Token0.Symbol,
 			Name:       pair.Token0.Name,
 			Decimals:   pair.Token0.Decimals,
+			Address:    pair.Token0.Address,
 			Blockchain: Exchanges[s.exchangeName].BlockChain.Name,
 		}
 		token1 := dia.Asset{
-			Symbol:     pair.Token1.Symbol,
-			Name:       pair.Token1.Name,
-			Decimals:   pair.Token1.Decimals,
+			Symbol:   pair.Token1.Symbol,
+			Name:     pair.Token1.Name,
+			Decimals: pair.Token1.Decimals,
+			Address:  pair.Token1.Address,
+
 			Blockchain: Exchanges[s.exchangeName].BlockChain.Name,
 		}
 
@@ -462,11 +470,16 @@ func (s *AcalaswapScraper) EncodeAssetId(currencyId map[string]interface{}) ([]b
 }
 
 func (s *AcalaswapScraper) GetPairByToken(currencyIdIn map[string]interface{}, currencyIdOut map[string]interface{}) (pair *AcalaswapPair, err error) {
+	var addressIn, addressOut string
 	argsIn, err := s.EncodeAssetId(currencyIdIn)
 	if err != nil {
 		return nil, err
 	}
-	log.Debugf("currencyIn: %v", currencyIdIn)
+	log.Debugln("currencyIn: %v", currencyIdIn)
+	for k, v := range currencyIdIn {
+		log.Infoln("token address  ", k, v)
+		addressIn = fmt.Sprintf("%v:%v", k, v)
+	}
 	keyIn, err := types.CreateStorageKey(s.Metadata, "AssetRegistry", "AssetMetadatas", argsIn)
 	if err != nil {
 		return nil, err
@@ -476,7 +489,7 @@ func (s *AcalaswapScraper) GetPairByToken(currencyIdIn map[string]interface{}, c
 	if err != nil {
 		return nil, err
 	}
-	log.Debugf("resultIn: 0x%x", *resultIn)
+	log.Debugln("resultIn: 0x%x", *resultIn)
 	// Decode the event records
 	targetIn := acalaswap.AcalaAssetMetadata{}
 	err = scale.NewDecoder(bytes.NewBuffer(*resultIn)).Decode(&targetIn)
@@ -488,7 +501,11 @@ func (s *AcalaswapScraper) GetPairByToken(currencyIdIn map[string]interface{}, c
 	if err != nil {
 		return nil, err
 	}
-	log.Debugf("currencyOut: %v", currencyIdOut)
+	log.Debugln("currencyOut: %v", currencyIdOut)
+	for k, v := range currencyIdOut {
+		log.Debugln("token address  ", k, v)
+		addressOut = fmt.Sprintf("%v:%v", k, v)
+	}
 	keyOut, err := types.CreateStorageKey(s.Metadata, "AssetRegistry", "AssetMetadatas", argsOut)
 	if err != nil {
 		return nil, err
@@ -498,7 +515,7 @@ func (s *AcalaswapScraper) GetPairByToken(currencyIdIn map[string]interface{}, c
 	if err != nil {
 		return nil, err
 	}
-	log.Debugf("resultOut: 0x%x", *resultOut)
+	log.Debugln("resultOut: 0x%x", *resultOut)
 	// Decode the event records
 	targetOut := acalaswap.AcalaAssetMetadata{}
 	err = scale.NewDecoder(bytes.NewBuffer(*resultOut)).Decode(&targetOut)
@@ -509,11 +526,13 @@ func (s *AcalaswapScraper) GetPairByToken(currencyIdIn map[string]interface{}, c
 		Name:     string(targetIn.Name),
 		Symbol:   string(targetIn.Symbol),
 		Decimals: uint8(targetIn.Decimals),
+		Address:  addressIn,
 	}
 	token1 := AcalaswapToken{
 		Name:     string(targetOut.Name),
 		Symbol:   string(targetOut.Symbol),
 		Decimals: uint8(targetOut.Decimals),
+		Address:  addressOut,
 	}
 	foreignName := token0.Symbol + "-" + token1.Symbol
 	pair = &AcalaswapPair{
