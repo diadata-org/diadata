@@ -139,6 +139,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "TLOS",
+      "Exchange": "Huobi",
+      "Blockchain": "Telos",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "TUSD",
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",

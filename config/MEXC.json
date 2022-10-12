@@ -373,6 +373,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "TLOS",
+      "ForeignName": "TLOS_USDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "TRX",
       "ForeignName": "TRX_USDT",
       "Exchange": "MEXC",

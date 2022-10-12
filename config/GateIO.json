@@ -50,6 +50,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "TLOS_BTC",
+      "Ignore": false,
+      "Symbol": "TLOS"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "AURORA_USDT",
       "Ignore": false,
       "Symbol": "AURORA"
