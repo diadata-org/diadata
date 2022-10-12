@@ -974,6 +974,32 @@
             "WsAPI": "wss://api.zb.live/websocket",
             "pairsAPI": "",
             "WatchdogDelay": 1200
+        },
+        {
+            "Name": "AcalaswapExchange",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": "Acala"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 1200
+        },
+        {
+            "Name": "AcalaswapExchangeKarura",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": "Kusama"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 1200
         }
     ]
 }

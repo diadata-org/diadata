@@ -110,6 +110,8 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 		return source.NewCurvefiAssetSource(exchanges[dia.CurveFIExchangePolygon])
 	case dia.PlatypusExchange:
 		return source.NewPlatypusScraper(exchanges[dia.PlatypusExchange])
+	case dia.AcalaswapExchange:
+		return source.NewAcalaAssetScraper(exchanges[dia.AcalaswapExchange])
 	case "assetlists":
 		return source.NewJSONReader(exchange, secret)
 	default:
