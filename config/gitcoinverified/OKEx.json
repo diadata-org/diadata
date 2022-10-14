@@ -229,10 +229,22 @@
             "Address": "0xE3feDAeCD47aa8EAb6b23227b0eE56F092C967a9"
         },
         {
+            "Symbol": "RAY",
+            "Exchange": "OKEx",
+            "Blockchain": "Solana",
+            "Address": "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R"
+        },
+        {
             "Symbol": "REN",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
             "Address": "0x408e41876cCCDC0F92210600ef50372656052a38"
+        },
+        {
+            "Symbol": "SAMO",
+            "Exchange": "OKEx",
+            "Blockchain": "Solana",
+            "Address": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
         },
         {
             "Symbol": "SC",

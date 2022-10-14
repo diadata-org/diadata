@@ -452,6 +452,18 @@
     },
     {
       "Exchange": "LBank",
+      "ForeignName": "RAY_USDT",
+      "Ignore": false,
+      "Symbol": "RAY"
+    },
+    {
+      "Exchange": "LBank",
+      "ForeignName": "SAMO_USDT",
+      "Ignore": false,
+      "Symbol": "SAMO"
+    },
+    {
+      "Exchange": "LBank",
       "ForeignName": "SC_BTC",
       "Ignore": false,
       "Symbol": "SC"

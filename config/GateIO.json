@@ -38,6 +38,36 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "DUST_USDT",
+      "Ignore": false,
+      "Symbol": "DUST"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "mSOL_USDT",
+      "Ignore": false,
+      "Symbol": "mSOL"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "mSOL_ETH",
+      "Ignore": false,
+      "Symbol": "mSOL"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "SAMO_USDT",
+      "Ignore": false,
+      "Symbol": "SAMO"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "SAMO_ETH",
+      "Ignore": false,
+      "Symbol": "SAMO"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "NFTY_USDT",
       "Ignore": false,
       "Symbol": "NFTY"

@@ -277,6 +277,18 @@
       "Ignore": false
     },
     {
+      "Symbol": "RAY",
+      "ForeignName": "RAY_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SAMO",
+      "ForeignName": "SAMO_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
       "Symbol": "SAND",
       "ForeignName": "SAND_USDT",
       "Exchange": "BKEX",
