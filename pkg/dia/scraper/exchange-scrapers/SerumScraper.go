@@ -120,8 +120,8 @@ func (s *SerumScraper) mainLoop() {
 		}
 
 		timeend := time.Now().Unix() - timestart.Unix()
-		log.Error("timeend: ", timeend)
-		log.Error("serumMarkets: ", len(serumMarkets))
+		log.Infoln("time spend to get markets: ", timeend)
+		log.Infoln("Total serumMarkets: ", len(serumMarkets))
 
 		tokenNameRegistry, err := s.getTokenNames()
 		if err != nil {
@@ -196,7 +196,7 @@ func (s *SerumScraper) mainLoop() {
 							// Remark: base and quote token is used the other way around by serum dex than we do at DIA.
 							trade := dia.Trade{
 								Symbol: marketForPair.baseAsset.symbol,
-								// Pair:   pair,
+								Pair:   k,
 								BaseToken: dia.Asset{
 									Symbol:     marketForPair.quoteAsset.symbol,
 									Name:       marketForPair.quoteAsset.name,
@@ -218,6 +218,7 @@ func (s *SerumScraper) mainLoop() {
 								Source:         s.exchangeName,
 								VerifiedPair:   true,
 							}
+
 							log.Infof("got trade -- timestamp: %v, symbol: %s, pair: %s, price %v, volume: %v, tradeID: %s", trade.Time, trade.Symbol, trade.Pair, trade.Price, trade.Volume, trade.ForeignTradeID)
 							s.chanTrades <- &trade
 						}
@@ -370,10 +371,10 @@ func (s *SerumScraper) getTokenNames() (map[string]tokenMeta, error) {
 
 	names["mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"] = tokenMeta{name: "Marinade staked SOL (mSOL)", symbol: "mSOL", decimals: 9, mint: "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"}
 	names["So11111111111111111111111111111111111111112"] = tokenMeta{name: "Wrapped SOL", symbol: "SOL", decimals: 9, mint: "So11111111111111111111111111111111111111112"}
-	names["4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R"] = tokenMeta{name: "Raydium", symbol: "RAY", decimals: 9, mint: "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R"}
+	names["4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R"] = tokenMeta{name: "Raydium", symbol: "RAY", decimals: 6, mint: "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R"}
 	names["8Yv9Jz4z7BUHP68dz8E8m3tMe6NKgpMUKn8KVqrPA6Fr"] = tokenMeta{name: "Wrapped USDC (Allbridge from Avalanche)", symbol: "aaUSDC", decimals: 9, mint: "8Yv9Jz4z7BUHP68dz8E8m3tMe6NKgpMUKn8KVqrPA6Fr"}
 	names["Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"] = tokenMeta{name: "USDT", symbol: "USDT", decimals: 6, mint: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"}
-	names["EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"] = tokenMeta{name: "USD Coin", symbol: "USDC", decimals: 9, mint: "8Yv9Jz4z7BUHP68dz8E8m3tMe6NKgpMUKn8KVqrPA6Fr"}
+	names["EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"] = tokenMeta{name: "USD Coin", symbol: "USDC", decimals: 6, mint: "8Yv9Jz4z7BUHP68dz8E8m3tMe6NKgpMUKn8KVqrPA6Fr"}
 	names["DubwWZNWiNGMMeeQHPnMATNj77YZPZSAz2WVR5WjLJqz"] = tokenMeta{name: "CropperFinance", symbol: "CRP", decimals: 9, mint: "DubwWZNWiNGMMeeQHPnMATNj77YZPZSAz2WVR5WjLJqz"}
 	names["7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"] = tokenMeta{name: "Samoyed Coin", symbol: "SAMO", decimals: 9, mint: "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"}
 	names["kinXdEcpDQeHPEuQnqmUgtYykqKGVFq6CeVX5iAHJq6"] = tokenMeta{name: "KIN", symbol: "KIN", decimals: 5, mint: "kinXdEcpDQeHPEuQnqmUgtYykqKGVFq6CeVX5iAHJq6"}
