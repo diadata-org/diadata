@@ -151,6 +151,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "DUST",
+      "ForeignName": "DUST_USDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "EGLD",
       "ForeignName": "EGLD_USDT",
       "Exchange": "MEXC",
@@ -321,6 +327,24 @@
     {
       "Symbol": "PHX",
       "ForeignName": "PHX_USDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "RAY",
+      "ForeignName": "RAY_USDC",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "RAY",
+      "ForeignName": "RAY_USDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SAMO",
+      "ForeignName": "SAMO_USDT",
       "Exchange": "MEXC",
       "Ignore": false
     },

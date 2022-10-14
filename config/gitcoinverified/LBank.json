@@ -67,6 +67,18 @@
       "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
     },
     {
+      "Symbol": "RAY",
+      "Exchange": "LBank",
+      "Blockchain": "Solana",
+      "Address": "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R"
+    },
+    {
+      "Symbol": "SAMO",
+      "Exchange": "LBank",
+      "Blockchain": "Solana",
+      "Address": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
+    },
+    {
       "Symbol": "UPS",
       "Exchange": "LBank",
       "Blockchain": "Solana",
