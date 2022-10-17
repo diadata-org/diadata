@@ -379,14 +379,14 @@
       "Ignore": false
     },
     {
-      "Symbol": "stETH",
-      "ForeignName": "stETH_USDC",
+      "Symbol": "STETH",
+      "ForeignName": "STETH_USDC",
       "Exchange": "MEXC",
       "Ignore": false
     },
     {
-      "Symbol": "stETH",
-      "ForeignName": "stETH_USDT",
+      "Symbol": "STETH",
+      "ForeignName": "STETH_USDT",
       "Exchange": "MEXC",
       "Ignore": false
     },
