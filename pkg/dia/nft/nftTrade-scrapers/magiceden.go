@@ -201,6 +201,7 @@ func (s *MagicEdenScraper) mainLoop() {
 }
 
 func (s *MagicEdenScraper) FetchTrades() error {
+	log.Info("start fetch trades...")
 	var err error
 	ctx := context.Background()
 
@@ -309,6 +310,7 @@ func (s *MagicEdenScraper) FetchTrades() error {
 }
 
 func (s *MagicEdenScraper) FetchHistoricalTrades() error {
+	log.Info("start fetch historical trades...")
 	var err error
 	ctx := context.Background()
 
@@ -399,6 +401,10 @@ func (s *MagicEdenScraper) FetchHistoricalTrades() error {
 
 func (s *MagicEdenScraper) processTx(ctx context.Context, tx rpc.SignatureWithStatus) (bool, error) {
 	confirmedTx, err := s.solanaRpcClient.GetTransaction(ctx, tx.Signature)
+	if confirmedTx == nil {
+		log.Error("confirmedTx == nil")
+		return false, err
+	}
 	if err != nil || confirmedTx.Meta == nil || confirmedTx.Transaction.Message.Accounts == nil {
 		log.Errorf("unable to get confirmed transaction with signature %q: %v", tx.Signature, err)
 		return false, err
