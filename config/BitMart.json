@@ -2,9 +2,9 @@
   "Coins": [
     {
       "Exchange": "BitMart",
-      "ForeignName": "mSOL_USDT",
+      "ForeignName": "MSOL_USDT",
       "Ignore": false,
-      "Symbol": "mSOL"
+      "Symbol": "MSOL"
     },
     {
       "Exchange": "BitMart",

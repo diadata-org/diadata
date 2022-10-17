@@ -44,15 +44,15 @@
     },
     {
       "Exchange": "GateIO",
-      "ForeignName": "mSOL_USDT",
+      "ForeignName": "MSOL_USDT",
       "Ignore": false,
-      "Symbol": "mSOL"
+      "Symbol": "MSOL"
     },
     {
       "Exchange": "GateIO",
-      "ForeignName": "mSOL_ETH",
+      "ForeignName": "MSOL_ETH",
       "Ignore": false,
-      "Symbol": "mSOL"
+      "Symbol": "MSOL"
     },
     {
       "Exchange": "GateIO",

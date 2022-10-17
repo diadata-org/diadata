@@ -355,8 +355,8 @@
             "Ignore": false
         },
         {
-            "Symbol": "mSOL",
-            "ForeignName": "mSOL/USD",
+            "Symbol": "MSOL",
+            "ForeignName": "MSOL/USD",
             "Exchange": "FTX",
             "Ignore": false
         },
