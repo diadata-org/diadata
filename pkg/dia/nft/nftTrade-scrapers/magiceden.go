@@ -402,7 +402,8 @@ func (s *MagicEdenScraper) FetchHistoricalTrades() error {
 func (s *MagicEdenScraper) processTx(ctx context.Context, tx rpc.SignatureWithStatus) (bool, error) {
 	confirmedTx, err := s.solanaRpcClient.GetTransaction(ctx, tx.Signature)
 	if confirmedTx == nil {
-		log.Error("confirmedTx == nil")
+		err = errors.New("confirmedTx == nil")
+		log.Error(err)
 		return false, err
 	}
 	if err != nil || confirmedTx.Meta == nil || confirmedTx.Transaction.Message.Accounts == nil {
@@ -569,6 +570,10 @@ func (s *MagicEdenScraper) fetchNFTMetadata(ctx context.Context, nftAddr string)
 	var addr common.PublicKey
 	if lastTxFetched != "" {
 		confirmedTx, err := s.solanaRpcClient.GetTransaction(ctx, lastTxFetched)
+		if confirmedTx == nil {
+			log.Error("confirmedTX == nil")
+			return metadata, err
+		}
 		if err != nil || confirmedTx.Meta == nil ||
 			confirmedTx.Meta.Err != nil || confirmedTx.Transaction.Message.Accounts == nil {
 			log.Errorf("unable to get confirmed transaction with signature %q: %v", lastTxFetched, err)
