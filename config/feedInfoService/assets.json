@@ -106,6 +106,11 @@
       "Blockchain": "Ethereum"
     },
     {
+      "Symbol": "DUST",
+      "Address": "DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ",
+      "Blockchain": "Solana"
+    },
+    {
       "Symbol": "ETC",
       "Address": "0x0000000000000000000000000000000000000000",
       "Blockchain": "EthereumClassic"
@@ -161,6 +166,11 @@
       "Blockchain": "Terra"
     },
     {
+      "Symbol": "MATIC",
+      "Address": "0x0000000000000000000000000000000000001010",
+      "Blockchain": "Polygon"
+    },
+    {
       "Symbol": "METIS",
       "Address": "0x9E32b13ce7f2E80A01932B42553652E053D6ed8e",
       "Blockchain": "Ethereum"
@@ -191,6 +201,11 @@
       "Blockchain": "Celo"
     },
     {
+      "Symbol": "mSOL",
+      "Address": "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So",
+      "Blockchain": "Solana"
+    },
+    {
       "Symbol": "NEAR",
       "Address": "0x0000000000000000000000000000000000000000",
       "Blockchain": "NEAR"
@@ -209,6 +224,16 @@
       "Symbol": "PHA",
       "Address": "0x6c5bA91642F10282b576d91922Ae6448C9d52f4E",
       "Blockchain": "Ethereum"
+    },
+    {
+      "Symbol": "RAY",
+      "Address": "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R",
+      "Blockchain": "Solana"
+    },
+    {
+      "Symbol": "SAMO",
+      "Address": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+      "Blockchain": "Solana"
     },
     {
       "Symbol": "SDN",
