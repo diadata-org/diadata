@@ -1,6 +1,7 @@
 package scrapers
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"math"
@@ -9,8 +10,10 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
+	solanav2 "github.com/gagliardetto/solana-go"
+	solanawsclient "github.com/gagliardetto/solana-go/rpc/ws"
+
 	"github.com/mr-tron/base58"
-	bin "github.com/streamingfast/binary"
 	"github.com/streamingfast/solana-go"
 	"github.com/streamingfast/solana-go/programs/serum"
 	"github.com/streamingfast/solana-go/rpc"
@@ -31,43 +34,9 @@ type serumMarket struct {
 	quoteAsset tokenMeta
 }
 
-type SerumEventQueueHeader struct {
-	SerumPadding [5]byte `json:"-"`
-	AccountFlags serum.AccountFlag
-	Head         uint32
-	Zeros1       [4]byte
-	Count        uint32
-	Zeros2       [4]byte
-	Seq          uint32
-	Zeros3       [4]byte
-}
-
-type EventFlag uint8
-
-const (
-	Fill = EventFlag(1 << iota)
-	Out
-	Bid
-	Maker
-)
-
-func (e *EventFlag) Is(flag EventFlag) bool { return *e&flag != 0 }
-
-type SerumEvent struct {
-	EventFlags             EventFlag
-	OpenOrderSlots         uint8
-	FeeTier                uint8
-	Blob                   [5]byte `json:"-"`
-	NativeQuantityReleased bin.Uint64
-	NativeQuantityPaid     bin.Uint64
-	NativeFeeOrRebate      bin.Uint64
-	OrderId                bin.Uint128
-	OpenOrders             solana.PublicKey
-	ClientOrderId          bin.Uint64
-}
-
 type SerumScraper struct {
 	solanaRpcClient *rpc.Client
+	solanaWSClient  *solanawsclient.Client
 	// signaling channels for session initialization and finishing
 	run          bool
 	shutdown     chan nothing
@@ -86,8 +55,14 @@ type SerumScraper struct {
 
 func NewSerumScraper(exchange dia.Exchange, scrape bool) *SerumScraper {
 
+	wsclient, err := solanawsclient.Connect(context.Background(), utils.Getenv("SOLANA_URI_WS", rpcEndpointSolana))
+	if err != nil {
+		log.Errorln("error connecting wsclient", err)
+	}
+
 	scraper := &SerumScraper{
 		solanaRpcClient: rpc.NewClient(utils.Getenv("SOLANA_URI_REST", rpcEndpointSolana)),
+		solanaWSClient:  wsclient,
 		shutdown:        make(chan nothing),
 		shutdownDone:    make(chan nothing),
 		errorLock:       sync.RWMutex{},
@@ -102,8 +77,9 @@ func NewSerumScraper(exchange dia.Exchange, scrape bool) *SerumScraper {
 }
 
 func (s *SerumScraper) mainLoop() {
-	lastSeqNo := make(map[string]uint32)
-	scraperInitialized := make(map[string]bool)
+	// lastSeqNo := make(map[string]uint32)
+	// scraperInitialized := make(map[string]bool)
+	wg := sync.WaitGroup{}
 	markets := make(map[string]serumMarket)
 	s.run = true
 	for s.run {
@@ -141,92 +117,78 @@ func (s *SerumScraper) mainLoop() {
 				}
 			}
 		}
-		for k, _ := range markets {
-			if marketForPair, ok := markets[k]; ok {
-				eventQueue, err := s.getEvents(marketForPair.market.EventQueue)
-				if err != nil {
-					continue
-				}
-				eventStart := 37
-				eventSize := 88
-				headerData := eventQueue[:eventStart]
-				var header SerumEventQueueHeader
-				err = bin.NewDecoder(headerData).Decode(&header)
-				if err != nil {
-					log.Error("unable to parse event header: ", err)
-					continue
-				}
-				eventCount := (len(eventQueue) - eventStart - 7) / eventSize
-				currentEventNo := 0
-				startIndex := 1
-				endIndex := eventCount
-				if lastSeqNo[k] != 0 {
-					missedEvents := (int(header.Seq-lastSeqNo[k]) + uint32Modulo) % uint32Modulo
-					endIndex = int(header.Head+header.Count) % eventCount
-					startIndex = (endIndex - missedEvents + eventCount) % eventCount
-					if startIndex < 0 {
-						startIndex = 1
-					}
-				}
-				lastSeqNo[k] = header.Seq
-				if !scraperInitialized[k] {
-					scraperInitialized[k] = true
-					continue
-				}
-				for i := eventStart; i < len(eventQueue); {
-					eventEnd := i + eventSize
-					if eventEnd >= len(eventQueue) {
-						break
-					}
-					eventData := eventQueue[i:eventEnd]
-					i = eventEnd
-					currentEventNo++
-					if currentEventNo > endIndex {
-						break
-					}
-					if currentEventNo >= startIndex {
-						var event SerumEvent
-						err = bin.NewDecoder(eventData).Decode(&event)
+		for pair, _ := range markets {
+			if marketForPair, ok := markets[pair]; ok {
+
+				wg.Add(1)
+
+				go func(k string) {
+					{
+						log.Infoln("subscribing ", k)
+
+						accountID := solanav2.MustPublicKeyFromBase58(marketForPair.market.EventQueue.String())
+						ac, err := s.solanaWSClient.AccountSubscribe(accountID, "")
 						if err != nil {
-							log.Error("unable to parse event data: ", err)
-							continue
+							log.Errorln("error on AccountSubscribe", err)
 						}
-						if event.EventFlags.Is(Fill) && event.EventFlags.Is(Bid) {
-							volume, price := parseEvent(&event, math.Pow10(int(marketForPair.baseAsset.decimals)), math.Pow10(int(marketForPair.quoteAsset.decimals)))
-							// Remark: base and quote token is used the other way around by serum dex than we do at DIA.
-							trade := dia.Trade{
-								Symbol: marketForPair.baseAsset.symbol,
-								Pair:   k,
-								BaseToken: dia.Asset{
-									Symbol:     marketForPair.quoteAsset.symbol,
-									Name:       marketForPair.quoteAsset.name,
-									Address:    marketForPair.quoteAsset.mint,
-									Decimals:   marketForPair.quoteAsset.decimals,
-									Blockchain: dia.SOLANA,
-								},
-								QuoteToken: dia.Asset{
-									Symbol:     marketForPair.baseAsset.symbol,
-									Name:       marketForPair.baseAsset.name,
-									Address:    marketForPair.baseAsset.mint,
-									Decimals:   marketForPair.baseAsset.decimals,
-									Blockchain: dia.SOLANA,
-								},
-								Price:          price,
-								Volume:         volume,
-								Time:           time.Now(),
-								ForeignTradeID: event.OrderId.DecimalString(),
-								Source:         s.exchangeName,
-								VerifiedPair:   true,
+						for {
+							result, err := ac.Recv()
+							if err != nil {
+								log.Errorf("error on recv %v for pair %s  unsubscribing", err, k)
+								continue
 							}
 
-							log.Infof("got trade -- timestamp: %v, symbol: %s, pair: %s, price %v, volume: %v, tradeID: %s", trade.Time, trade.Symbol, trade.Pair, trade.Price, trade.Volume, trade.ForeignTradeID)
-							s.chanTrades <- &trade
+							databytes := result.Value.Account.Data.GetBinary()
+
+							eq := serum.EventQueue{}
+							eq.Decode(databytes)
+
+							log.Infof("got event for %s  total events %d and account flag is %s  head %d sequence number %d and accountID %v", k, len(eq.Events), eq.AccountFlags.String(), eq.Head, eq.SeqNum, accountID)
+
+							for _, event := range eq.Events {
+								// log.Infoln("event", event)
+
+								if event.Flag.IsFill() && event.Flag.IsBid() {
+									volume, price := parseEvent(event, math.Pow10(int(marketForPair.baseAsset.decimals)), math.Pow10(int(marketForPair.quoteAsset.decimals)))
+									// Remark: base and quote token is used the other way around by serum dex than we do at DIA.
+									trade := dia.Trade{
+										Symbol: marketForPair.baseAsset.symbol,
+										Pair:   k,
+										BaseToken: dia.Asset{
+											Symbol:     marketForPair.quoteAsset.symbol,
+											Name:       marketForPair.quoteAsset.name,
+											Address:    marketForPair.quoteAsset.mint,
+											Decimals:   marketForPair.quoteAsset.decimals,
+											Blockchain: dia.SOLANA,
+										},
+										QuoteToken: dia.Asset{
+											Symbol:     marketForPair.baseAsset.symbol,
+											Name:       marketForPair.baseAsset.name,
+											Address:    marketForPair.baseAsset.mint,
+											Decimals:   marketForPair.baseAsset.decimals,
+											Blockchain: dia.SOLANA,
+										},
+										Price:          price,
+										Volume:         volume,
+										Time:           time.Now(),
+										ForeignTradeID: event.OrderID.HexString(false),
+										Source:         s.exchangeName,
+										VerifiedPair:   true,
+									}
+
+									log.Errorf("got trade -- timestamp: %v, symbol: %s, pair: %s, price %v, volume: %v, tradeID: %s", trade.Time, trade.Symbol, trade.Pair, trade.Price, trade.Volume, trade.ForeignTradeID)
+									s.chanTrades <- &trade
+
+								}
+							}
+
 						}
+
 					}
-				}
+				}(pair)
 			}
 		}
-		time.Sleep(time.Duration(60) * time.Second)
+		wg.Wait()
 	}
 	if s.error == nil {
 		s.error = errors.New("main loop terminated by Close()")
@@ -293,28 +255,28 @@ func (s *SerumScraper) getEvents(eventQueueAddr solana.PublicKey) (eventQueue so
 	return acctInfo.Value.Data, nil
 }
 
-func parseEvent(e *SerumEvent, baseMultiplier, quoteMultiplier float64) (volume, price float64) {
+func parseEvent(e *serum.Event, baseMultiplier, quoteMultiplier float64) (volume, price float64) {
 	var priceBeforeFees float64
-	if e.EventFlags.Is(Bid) {
-		if e.EventFlags.Is(Maker) {
-			priceBeforeFees = float64(e.NativeQuantityPaid + e.NativeFeeOrRebate)
+	if e.Flag.IsBid() {
+		if e.Flag.IsMaker() {
+			priceBeforeFees = float64(e.NativeQtyPaid + e.NativeFeeOrRebate)
 		} else {
-			priceBeforeFees = float64(e.NativeQuantityPaid - e.NativeFeeOrRebate)
+			priceBeforeFees = float64(e.NativeQtyPaid - e.NativeFeeOrRebate)
 		}
-		if quoteMultiplier*float64(e.NativeQuantityReleased) != 0 {
-			price = (priceBeforeFees * baseMultiplier) / (quoteMultiplier * float64(e.NativeQuantityReleased))
+		if quoteMultiplier*float64(e.NativeQtyReleased) != 0 {
+			price = (priceBeforeFees * baseMultiplier) / (quoteMultiplier * float64(e.NativeQtyReleased))
 		}
-		volume = float64(e.NativeQuantityReleased) / baseMultiplier
+		volume = float64(e.NativeQtyReleased) / baseMultiplier
 	} else {
-		if e.EventFlags.Is(Maker) {
-			priceBeforeFees = float64(e.NativeQuantityReleased - e.NativeFeeOrRebate)
+		if e.Flag.IsMaker() {
+			priceBeforeFees = float64(e.NativeQtyReleased - e.NativeFeeOrRebate)
 		} else {
-			priceBeforeFees = float64(e.NativeQuantityReleased + e.NativeFeeOrRebate)
+			priceBeforeFees = float64(e.NativeQtyReleased + e.NativeFeeOrRebate)
 		}
-		if quoteMultiplier*float64(e.NativeQuantityPaid) != 0 {
-			price = (priceBeforeFees * baseMultiplier) / (quoteMultiplier * float64(e.NativeQuantityPaid))
+		if quoteMultiplier*float64(e.NativeQtyPaid) != 0 {
+			price = (priceBeforeFees * baseMultiplier) / (quoteMultiplier * float64(e.NativeQtyPaid))
 		}
-		volume = float64(e.NativeQuantityPaid) / baseMultiplier
+		volume = float64(e.NativeQtyPaid) / baseMultiplier
 	}
 	return
 }
