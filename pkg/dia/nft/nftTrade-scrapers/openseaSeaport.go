@@ -548,9 +548,7 @@ func (s *OpenSeaSeaportScraper) notifyTrade(ev *openseaseaport.OpenseaseaportOrd
 				BlockNumber: ev.Raw.BlockNumber,
 				Timestamp:   timestamp,
 				TxHash:      ev.Raw.TxHash.Hex(),
-				// Exchange:    s.exchange.Name,
-				// Hotfix:
-				Exchange: "OpenSea",
+				Exchange:    s.exchange.Name,
 			}
 
 			if len(ev.Offer) > 1 {
