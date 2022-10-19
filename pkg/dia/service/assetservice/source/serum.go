@@ -5,9 +5,10 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
+	"github.com/gagliardetto/solana-go/programs/serum"
+	solanav2rpc "github.com/gagliardetto/solana-go/rpc"
 	"github.com/mr-tron/base58"
 	"github.com/streamingfast/solana-go"
-	"github.com/streamingfast/solana-go/programs/serum"
 	"github.com/streamingfast/solana-go/rpc"
 )
 
@@ -20,7 +21,8 @@ type SerumPair struct {
 
 const (
 	// Public Solana clients.
-	rpcEndpointSolana         = ""
+	// rpcEndpointSolana         = "https://nd-646-378-408.p2pify.com/b2b39b407964cd4688015cd3c9027199"
+	rpcEndpointSolana         = "https://solana-api.projectserum.com"
 	dexProgramAddress         = "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin" // refer - https://github.com/project-serum/serum-dex
 	nameServiceProgramAddress = "namesLPneVptA9Z5rqUDD9tMTWEJwofgaYwp8cawRkX"
 	dotTokenTLD               = "6NSu2tci4apRKQtt257bAVcvqYjB3zV2H1dWo56vgpa6"
@@ -29,6 +31,7 @@ const (
 
 type SerumAssetSource struct {
 	solanaRpcClient   *rpc.Client
+	rpcv2Client       *solanav2rpc.Client
 	tokenNameRegistry map[string]tokenMeta
 	assetChannel      chan dia.Asset
 	doneChannel       chan bool
@@ -45,6 +48,7 @@ func NewSerumAssetSource(exchange dia.Exchange) *SerumAssetSource {
 
 	sas = &SerumAssetSource{
 		solanaRpcClient: rpc.NewClient(utils.Getenv("SOLANA_URI_REST", rpcEndpointSolana)),
+		rpcv2Client:     solanav2rpc.New(utils.Getenv("SOLANA_URI_REST", rpcEndpointSolana)),
 		assetChannel:    assetChannel,
 		doneChannel:     doneChannel,
 		blockchain:      dia.SOLANA,
@@ -68,7 +72,7 @@ func (sas *SerumAssetSource) Done() chan bool {
 func (sas *SerumAssetSource) fetchAssets() {
 	pairs, err := sas.getPairs()
 	if err != nil {
-		log.Error(err)
+		log.Error("get pairs: ", err)
 		return
 	}
 	log.Info("Found ", len(pairs), " pairs")
@@ -108,17 +112,49 @@ func (sas *SerumAssetSource) fetchAssets() {
 }
 
 func (sas *SerumAssetSource) getPairs() ([]*serum.MarketV2, error) {
+
+	// var dataslice solanav2rpc.DataSlice
+	// offset := uint64(100 * 1e6)
+	// length := uint64(1024)
+	// dataslice.Offset = &offset
+	// dataslice.Length = &length
+
+	// resp, e := sas.rpcv2Client.GetProgramAccountsWithOpts(
+	// 	context.Background(),
+	// 	solanav2.MustPublicKeyFromBase58(dexProgramAddress),
+	// 	&solanav2rpc.GetProgramAccountsOpts{
+	// 		Commitment: solanav2rpc.CommitmentFinalized,
+	// 		Encoding:   solanav2.EncodingBase64,
+	// 		DataSlice:  &dataslice,
+	// 		Filters: []solanav2rpc.RPCFilter{
+	// 			{
+	// 				DataSize: marketDataSize,
+	// 			},
+	// 		},
+	// 	},
+	// )
+	// if e != nil {
+	// 	log.Error("get program accounts v2: ", e)
+	// }
+	// out := make([]*serumv2.MarketV2, 0)
+	// log.Info("here")
+	// for _, keyedAcct := range resp {
+	// 	acct := keyedAcct.Account
+	// 	marketV2 := &serumv2.MarketV2{}
+	// 	if err := marketV2.Decode(acct.Data.GetBinary()); err != nil {
+	// 		return nil, fmt.Errorf("decoding market v2: %w", err)
+	// 	}
+	// 	out = append(out, marketV2)
+	// }
+
 	resp, err := sas.solanaRpcClient.GetProgramAccounts(
 		solana.MustPublicKeyFromBase58(dexProgramAddress),
 		&rpc.GetProgramAccountsOpts{
-			Filters: []rpc.RPCFilter{
-				{
-					DataSize: marketDataSize,
-				},
-			},
+			Filters: []rpc.RPCFilter{},
 		},
 	)
 	if err != nil {
+		log.Error("get program accounts: ", err)
 		return nil, err
 	}
 	out := make([]*serum.MarketV2, 0)
