@@ -526,8 +526,10 @@ func (s *OpenSeaSeaportScraper) notifyTrade(ev *openseaseaport.OpenseaseaportOrd
 
 			if transfer.Symbol == nil || transfer.Name == nil {
 				log.Warn("Could not find symbol and name of class with address: ", transfer.NFTAddress.String())
-				*transfer.Symbol = ""
-				*transfer.Name = ""
+				symbol := ""
+				name := ""
+				transfer.Symbol = &symbol
+				transfer.Name = &name
 			}
 
 			trade := dia.NFTTrade{
