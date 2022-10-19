@@ -308,7 +308,7 @@ func (scraper *aTokenScraper) fetchsupplyandbalance(underlyingtokenaddress strin
 	log.Info("atokenaddress", atokendetail.address)
 	log.Info("underlyingtokenaddress", underlyingtokenaddress)
 
-	filterer, err := ceth.NewERC20Caller(common.HexToAddress(atokendetail.address), scraper.RestClient)
+	filterer, err := ceth.NewERC20Caller(common.HexToAddress(atokendetail.address), scraper.WsClient)
 	if err != nil {
 		log.Error("new erc20 caller: ", err)
 		return
@@ -349,12 +349,12 @@ func (scraper *aTokenScraper) fetchsupplyandbalance(underlyingtokenaddress strin
 	}
 	log.Info("balanceof: ", balanceof)
 
-	underlyingdecimals, err := underlyingfilterer.Decimals(&bind.CallOpts{BlockNumber: blocknumber})
+	underlyingdecimals, err := underlyingfilterer.Decimals(&bind.CallOpts{})
 	if err != nil {
 		log.Error("get Decimals: ", err)
 		return
 	}
-	underlyingsymbol, err := underlyingfilterer.Symbol(&bind.CallOpts{BlockNumber: blocknumber})
+	underlyingsymbol, err := underlyingfilterer.Symbol(&bind.CallOpts{})
 	if err != nil {
 		log.Error("get Symbol: ", err)
 		return
@@ -391,13 +391,13 @@ func (scraper *aTokenScraper) fetchsupplyandbalance(underlyingtokenaddress strin
 
 func (scraper *aTokenScraper) getTokenSupply(address string, blocknumber *big.Int) (float64, error) {
 
-	tokenfilterer, err := ceth.NewERC20Caller(common.HexToAddress(address), scraper.RestClient)
+	tokenfilterer, err := ceth.NewERC20Caller(common.HexToAddress(address), scraper.WsClient)
 	if err != nil {
 		log.Error("new erc20 caller: ", err)
 		return 0.0, err
 
 	}
-	decimal, err := tokenfilterer.Decimals(&bind.CallOpts{BlockNumber: blocknumber})
+	decimal, err := tokenfilterer.Decimals(&bind.CallOpts{})
 	if err != nil {
 		log.Error("get Decimals: ", err)
 		return 0.0, err
