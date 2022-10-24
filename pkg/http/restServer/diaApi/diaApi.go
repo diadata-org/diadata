@@ -2948,11 +2948,11 @@ func (env *Env) GetAssetInfo(c *gin.Context) {
 	} else {
 		quotationExtended.PriceYesterday = quotationYesterday.Price
 	}
-	volumeYesterday, err := env.RelDB.GetAssetVolume24H(asset)
+	volumeYesterday, err := env.DataStore.Get24HoursAssetVolume(asset)
 	if err != nil {
 		log.Warn("get volume yesterday: ", err)
 	} else {
-		quotationExtended.VolumeYesterdayUSD = volumeYesterday
+		quotationExtended.VolumeYesterdayUSD = *volumeYesterday
 	}
 	quotationExtended.Symbol = quotation.Asset.Symbol
 	quotationExtended.Name = quotation.Asset.Name
