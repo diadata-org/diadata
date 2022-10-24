@@ -189,6 +189,7 @@ func (s *FiltersBlockService) createFilters(asset dia.Asset, exchange string, Be
 			NewFilterVOL(asset, exchange, dia.BlockSizeSeconds),
 			NewFilterMAIR(asset, exchange, BeginTime, dia.BlockSizeSeconds),
 			NewFilterMEDIR(asset, exchange, BeginTime, dia.BlockSizeSeconds),
+			NewFilterCOUNT(asset, exchange, dia.BlockSizeSeconds),
 		}
 	}
 }
