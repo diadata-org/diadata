@@ -38,7 +38,7 @@ func NewKeyPair() (publickey, privatekey string) {
 
 }
 
-func GenerateTypedData(chainID, creator, oracleaddress string) (common.Address, error) {
+func GetSigner(chainID, creator, oracleaddress, signed string) (common.Address, error) {
 	typedatastring := `{
 		"types": {
 			"EIP712Domain": [{
@@ -69,7 +69,7 @@ func GenerateTypedData(chainID, creator, oracleaddress string) (common.Address, 
 		"domain": {
 			"name": "Oracle Builder",
 			"version": "1",
-			"chainId": "0x1",
+			"chainId": "` + chainID + `",
 			"verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
 			"salt": ""
 		},
@@ -84,7 +84,7 @@ func GenerateTypedData(chainID, creator, oracleaddress string) (common.Address, 
 	if err := json.Unmarshal([]byte(typedatastring), &typedData); err != nil {
 	}
 
-	signature, _ := HexDecode("0x23a261e9a0885ac1071dcd3d7f238ab77c7a3ca7b45bd5737f019aa5a626f2522a737f1a1ef171a1fac264bca5f380ea93e1f4208d71d1ea60d955861f3513581b")
+	signature, _ := HexDecode(signed)
 
 	return VerifyTypedData("Oracle", typedData.Domain, typedData.Types, typedData.Message, signature)
 

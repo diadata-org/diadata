@@ -150,6 +150,10 @@ type RelDatastore interface {
 	//Oracle builder
 	SetKeyPair(publickey string, privatekey string) error
 	GetKeyPairID(publickey string) string
+	GetFeederAccessByID(id string) (owner, publickey string)
+	SetOracleConfig(address, keypairID, creator, symbols, chainID string) error
+	SetFeederConfig(feederid, oracleconfigid string) error
+	GetFeederID(address string) (feederId string)
 }
 
 const (
@@ -183,7 +187,9 @@ const (
 	nftofferTable        = "nftoffer"
 	scrapersTable        = "scrapers"
 	keypairTable         = "keypair"
-	useroracleTable      = "useroracle"
+	oracleconfigTable    = "oracleconfig"
+	feederconfigTable    = "feederconfig"
+	feederaccessTable    = "feederaccess"
 
 	// time format for blockchain genesis dates
 	// timeFormatBlockchain = "2006-01-02"
