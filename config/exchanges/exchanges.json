@@ -921,7 +921,7 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 1200
         },
         {
             "Name": "UniswapV3-Arbitrum",
