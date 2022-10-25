@@ -44,9 +44,19 @@ func main() {
 
 	routerGroup.POST("/", ob.InitiateOracle)
 
-	err = r.Run(utils.Getenv("LISTEN_PORT", ":8080"))
-	if err != nil {
-		log.Error(err)
+	port := utils.Getenv("LISTEN_PORT", ":8080")
+
+	executionMode := utils.Getenv("EXEC_MODE", "")
+	if executionMode == "production" {
+		err = r.Run(port)
+		if err != nil {
+			log.Error(err)
+		}
+	} else {
+		err = r.Run(":8081")
+		if err != nil {
+			log.Error(err)
+		}
 	}
 
 }
