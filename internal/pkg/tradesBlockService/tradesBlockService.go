@@ -38,6 +38,10 @@ func init() {
 	if err != nil {
 		log.Error("parse env var SMALL_X: ", err)
 	}
+	normalX, err = strconv.ParseFloat(utils.Getenv("NORMAL_X", "10"), 64)
+	if err != nil {
+		log.Error("parse env var NORMAL_X: ", err)
+	}
 	tradeVolumeThresholdExponent, err := strconv.ParseFloat(utils.Getenv("TRADE_VOLUME_THRESHOLD_EXPONENT", ""), 64)
 	if err != nil {
 		log.Error("Parse TRADE_VOLUME_THRESHOLD_EXPONENT: ", err)
@@ -63,6 +67,7 @@ var (
 	volumeThreshold      float64
 	blueChipThreshold    float64
 	smallX               float64
+	normalX              float64
 	tradeVolumeThreshold float64
 )
 
@@ -222,6 +227,9 @@ func (s *TradesBlockService) checkTrade(t dia.Trade) bool {
 			if baseVolume < volumeThreshold {
 				// For small volume assets, quote asset must be a small volume asset too.
 				return quoteVolume < smallX*baseVolume
+			}
+			if normalX*baseVolume < quoteVolume {
+				return false
 			}
 		}
 		// Base asset has enough volume or quote asset has no volume yet.
