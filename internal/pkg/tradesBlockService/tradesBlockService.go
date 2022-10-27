@@ -345,11 +345,13 @@ func buildBridge(t dia.Trade) dia.Asset {
 			Blockchain: dia.TELOS,
 		}
 	}
-	if basetoken.Blockchain == dia.EVMOS && t.Source == dia.DiffusionExchange && basetoken.Address == common.HexToAddress("0x51e44FfaD5C2B122C8b635671FCC8139dc636E82").Hex() {
-		basetoken = dia.Asset{
-			Symbol:     "USDC",
-			Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-			Blockchain: dia.ETHEREUM,
+	if basetoken.Blockchain == dia.EVMOS && t.Source == dia.DiffusionExchange {
+		if basetoken.Address == common.HexToAddress("0xD4949664cD82660AaE99bEdc034a0deA8A0bd517").Hex() {
+			basetoken = dia.Asset{
+				Symbol:     "EVMOS",
+				Address:    "0x0000000000000000000000000000000000000000",
+				Blockchain: dia.EVMOS,
+			}
 		}
 	}
 	if t.Source == dia.StellaswapExchange && basetoken.Blockchain == dia.MOONBEAM && basetoken.Address == common.HexToAddress("0xAcc15dC74880C9944775448304B263D191c6077F").Hex() {
