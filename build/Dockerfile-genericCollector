@@ -1,11 +1,10 @@
 ARG exchange
-
-FROM us.icr.io/dia-registry/devops/build:latest as build
+FROM us.icr.io/dia-registry/devops/build-117:latest as build
 
 WORKDIR $GOPATH/src/
 
 COPY ./cmd/exchange-scrapers/collector ./
-RUN go install
+RUN go mod tidy && go install
 
 FROM gcr.io/distroless/base
 
