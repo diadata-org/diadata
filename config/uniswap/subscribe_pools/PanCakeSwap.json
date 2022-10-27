@@ -103,6 +103,10 @@
         {
             "Address": "0x3147F98B8f9C53Acdf8F16332eaD12B592a1a4ae",
             "ForeignName": "WBNB-ANKR"
+        },
+        {
+            "Address": "0x272c2CF847A49215A3A1D4bFf8760E503A06f880",
+            "ForeignName": "WBNB-aBNBc"
         }
     ]
 }

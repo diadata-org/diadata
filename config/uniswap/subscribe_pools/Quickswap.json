@@ -119,7 +119,10 @@
         {
             "Address": "0x54dB9acC40fd2CE8048FC36330502eEDcECb71BA",
             "ForeignName": "ANKR-WETH"
-        }
-        
+        },
+        {
+            "Address": "0xE7D85cF800119BD280A2e555D3DE7F954452a831",
+            "ForeignName": "WMATIC-aMATICc"
+        }        
     ]
 }
