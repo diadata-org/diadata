@@ -11,6 +11,21 @@
       "Blockchain": "Ethereum"
     },
     {
+      "Symbol": "ANKR",
+      "Address": "0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4",
+      "Blockchain": "Ethereum"
+    },
+    {
+      "Symbol": "ANKR",
+      "Address": "0xf307910A4c7bbc79691fD374889b36d8531B08e3",
+      "Blockchain": "BinanceSmartChain"
+    },
+    {
+      "Symbol": "ANKR",
+      "Address": "0x101A023270368c0D50BFfb62780F4aFd4ea79C35",
+      "Blockchain": "Polygon"
+    },
+    {
       "Symbol": "ARGO",
       "Address": "0x28Cca76f6e8eC81e4550ecd761f899110b060E97",
       "Blockchain": "Ethereum"
@@ -59,7 +74,7 @@
       "Symbol": "BUSD",
       "Address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
       "Blockchain": "BinanceSmartChain"
-    },   
+    },
     {
       "Symbol": "CELO",
       "Address": "0x471EcE3750Da237f93B8E339c536989b8978a438",

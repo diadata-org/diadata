@@ -13,6 +13,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "ANKR",
+            "Exchange": "BKEX",
+            "Blockchain": "Ethereum",
+            "Address": "0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4"
+        },
+        {
             "Symbol": "APE",
             "Exchange": "BKEX",
             "Blockchain": "Ethereum",

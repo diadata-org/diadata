@@ -8,6 +8,12 @@
     },
     {
       "Exchange": "LBank",
+      "ForeignName": "ANKR_USDT",
+      "Ignore": false,
+      "Symbol": "ANKR"
+    },
+    {
+      "Exchange": "LBank",
       "ForeignName": "METIS_USDT",
       "Ignore": false,
       "Symbol": "METIS"

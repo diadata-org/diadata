@@ -19,6 +19,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "ANKR",
+      "ForeignName": "ANKR_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
       "Symbol": "AVAX",
       "ForeignName": "AVAX_USDT",
       "Exchange": "BKEX",

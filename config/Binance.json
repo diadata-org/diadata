@@ -2,6 +2,18 @@
     "Coins": [
         {
             "Exchange": "Binance",
+            "ForeignName": "ANKRUSDT",
+            "Ignore": false,
+            "Symbol": "ANKR"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "ANKRBUSD",
+            "Ignore": false,
+            "Symbol": "ANKR"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "ACAUSDT",
             "Ignore": false,
             "Symbol": "ACA"
