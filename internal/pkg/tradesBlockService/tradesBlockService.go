@@ -58,7 +58,20 @@ var (
 		"PAX":  "",
 		"BUSD": "",
 	}
+	// These should be loaded from postgres once we have a list.
 	USDT             = dia.Asset{Address: "0xdAC17F958D2ee523a2206206994597C13D831ec7", Blockchain: dia.ETHEREUM}
+	USDC             = dia.Asset{Address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", Blockchain: dia.ETHEREUM}
+	BUSD             = dia.Asset{Address: "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", Blockchain: dia.BINANCESMARTCHAIN}
+	DAI              = dia.Asset{Address: "0x6B175474E89094C44Da98b954EedeAC495271d0F", Blockchain: dia.ETHEREUM}
+	TUSD             = dia.Asset{Address: "0x0000000000085d4780B73119b644AE5ecd22b376", Blockchain: dia.ETHEREUM}
+	stablecoinAssets = map[dia.Asset]interface{}{
+		USDT: "",
+		USDC: "",
+		BUSD: "",
+		DAI:  "",
+		TUSD: "",
+	}
+
 	tol              = float64(0.04)
 	log              *logrus.Logger
 	batchTimeSeconds int
@@ -150,10 +163,10 @@ func (s *TradesBlockService) mainLoop() {
 			if err != nil {
 				log.Error("swap trade: ", err)
 			}
-			tradeOk := s.checkTrade(*t)
-			swapppedTradeOk := s.checkTrade(tSwapped)
-			s.process(*t)
-			s.process(tSwapped)
+			tradeOk := s.checkTrade(*t, false)
+			swapppedTradeOk := s.checkTrade(tSwapped, true)
+			s.process(*t, false)
+			s.process(tSwapped, true)
 			if tradeOk {
 				if scrapers.Exchanges[(*t).Source].Centralized {
 					acceptCountCEX++
@@ -196,27 +209,48 @@ func (s *TradesBlockService) mainLoop() {
 }
 
 // checkTrade determines whether a trade should be taken into account for price determination.
-func (s *TradesBlockService) checkTrade(t dia.Trade) bool {
+func (s *TradesBlockService) checkTrade(t dia.Trade, reversed bool) bool {
+
+	// Discard (very) low volume trade.
 	if math.Abs(t.Volume) < tradeVolumeThreshold {
 		log.Info("low volume trade: ", t)
 		return false
 	}
 
+	// Replace basetoken with bridged asset for pricing if necessary.
+	// The basetoken in the stored trade will remain unchanged.
 	basetoken := buildBridge(t)
 
+	// Allow trade with Fiat as basetoken.
 	if basetoken.Blockchain == dia.FIAT {
 		return true
 	}
+	// Discard trade where quotetoken is Fiat.
 	if t.QuoteToken.Blockchain == dia.FIAT {
 		return false
 	}
+
+	// USDT currently plays a central/special role in crypto space.
+	// Therefore, only allow USDT trade if basetoken is Fiat.
 	if t.QuoteToken.Address == USDT.Address && t.QuoteToken.Blockchain == dia.ETHEREUM {
 		if basetoken.Blockchain != dia.FIAT {
 			return false
 		}
 	}
-	if t.BaseToken.Address == USDT.Address && t.BaseToken.Blockchain == dia.ETHEREUM {
+
+	// Allow trade where basetoken is stablecoin.
+	if _, ok := stablecoinAssets[t.BaseToken]; ok {
 		return true
+	}
+
+	// Only reverse stablecoin trade if basetoken is stable coin as well.
+	if reversed {
+		if _, ok := stablecoinAssets[t.QuoteToken]; ok {
+			if _, ok := stablecoinAssets[t.BaseToken]; !ok {
+				return false
+			}
+		}
+
 	}
 
 	if baseVolume, ok := s.volumeCache[assetIdentifier(basetoken)]; ok {
@@ -225,24 +259,23 @@ func (s *TradesBlockService) checkTrade(t dia.Trade) bool {
 		}
 		if quoteVolume, ok := s.volumeCache[assetIdentifier(t.QuoteToken)]; ok {
 			if baseVolume < volumeThreshold {
-				// For small volume assets, quote asset must be a small volume asset too.
+				// For small volume basetoken, quotetoken must be a small volume asset too.
 				return quoteVolume < smallX*baseVolume
 			}
-			if normalX*baseVolume < quoteVolume {
-				return false
-			}
+			// Discard trade if base volume is too small compared to quote volume.
+			return normalX*baseVolume < quoteVolume
 		}
-		// Base asset has enough volume or quote asset has no volume yet.
+		// Base asset has enough volume or quotetoken has no volume yet.
 		return true
 	}
 	return false
 }
 
-func (s *TradesBlockService) process(t dia.Trade) {
+func (s *TradesBlockService) process(t dia.Trade, reversed bool) {
 
 	var verifiedTrade bool
 
-	tradeOk := s.checkTrade(t)
+	tradeOk := s.checkTrade(t, reversed)
 
 	// Price estimation can only be done for verified pairs.
 	// Trades with unverified pairs are still saved, but not sent to the filtersBlockService.
