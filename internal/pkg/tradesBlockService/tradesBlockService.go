@@ -64,12 +64,12 @@ var (
 	BUSD             = dia.Asset{Address: "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", Blockchain: dia.BINANCESMARTCHAIN}
 	DAI              = dia.Asset{Address: "0x6B175474E89094C44Da98b954EedeAC495271d0F", Blockchain: dia.ETHEREUM}
 	TUSD             = dia.Asset{Address: "0x0000000000085d4780B73119b644AE5ecd22b376", Blockchain: dia.ETHEREUM}
-	stablecoinAssets = map[dia.Asset]interface{}{
-		USDT: "",
-		USDC: "",
-		BUSD: "",
-		DAI:  "",
-		TUSD: "",
+	stablecoinAssets = map[string]interface{}{
+		assetIdentifier(USDT): "",
+		assetIdentifier(USDC): "",
+		assetIdentifier(BUSD): "",
+		assetIdentifier(DAI):  "",
+		assetIdentifier(TUSD): "",
 	}
 
 	tol              = float64(0.04)
@@ -239,18 +239,17 @@ func (s *TradesBlockService) checkTrade(t dia.Trade, reversed bool) bool {
 	}
 
 	// Allow trade where basetoken is stablecoin.
-	if _, ok := stablecoinAssets[t.BaseToken]; ok {
+	if _, ok := stablecoinAssets[assetIdentifier(t.BaseToken)]; ok {
 		return true
 	}
 
 	// Only reverse stablecoin trade if basetoken is stable coin as well.
 	if reversed {
-		if _, ok := stablecoinAssets[t.QuoteToken]; ok {
-			if _, ok := stablecoinAssets[t.BaseToken]; !ok {
+		if _, ok := stablecoinAssets[assetIdentifier(t.QuoteToken)]; ok {
+			if _, ok := stablecoinAssets[assetIdentifier(t.BaseToken)]; !ok {
 				return false
 			}
 		}
-
 	}
 
 	if baseVolume, ok := s.volumeCache[assetIdentifier(basetoken)]; ok {
