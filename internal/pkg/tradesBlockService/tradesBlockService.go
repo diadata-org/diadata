@@ -132,6 +132,7 @@ func NewTradesBlockService(datastore models.Datastore, relDB models.RelDatastore
 	log.Info("volume threshold: ", volumeThreshold)
 	log.Info("bluechip threshold: ", blueChipThreshold)
 	log.Info("smallX: ", smallX)
+	log.Info("normalX: ", normalX)
 
 	s.volumeCache = s.loadVolumes()
 	log.Info("...done loading volumes.")
@@ -239,14 +240,14 @@ func (s *TradesBlockService) checkTrade(t dia.Trade, reversed bool) bool {
 	}
 
 	// Allow trade where basetoken is stablecoin.
-	if _, ok := stablecoinAssets[assetIdentifier(t.BaseToken)]; ok {
+	if _, ok := stablecoinAssets[assetIdentifier(basetoken)]; ok {
 		return true
 	}
 
 	// Only reverse stablecoin trade if basetoken is stable coin as well.
 	if reversed {
 		if _, ok := stablecoinAssets[assetIdentifier(t.QuoteToken)]; ok {
-			if _, ok := stablecoinAssets[assetIdentifier(t.BaseToken)]; !ok {
+			if _, ok := stablecoinAssets[assetIdentifier(basetoken)]; !ok {
 				return false
 			}
 		}
@@ -413,6 +414,9 @@ func (s *TradesBlockService) loadVolumes() map[string]float64 {
 	for _, asset := range assets {
 		volumeCache[assetIdentifier(asset.Asset)] = asset.Volume
 	}
+	log.Info("loaded volume BTC: ", volumeCache["Bitcoin-0x0000000000000000000000000000000000000000"])
+	log.Info("loaded volume ETH: ", volumeCache["Ethereum-0x0000000000000000000000000000000000000000"])
+	log.Info("loaded volume OMG: ", volumeCache["Ethereum-0xd26114cd6EE289AccF82350c8d8487fedB8A0C07"])
 	return volumeCache
 }
 
