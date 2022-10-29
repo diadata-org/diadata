@@ -263,7 +263,7 @@ func (s *TradesBlockService) checkTrade(t dia.Trade, reversed bool) bool {
 				return quoteVolume < smallX*baseVolume
 			}
 			// Discard trade if base volume is too small compared to quote volume.
-			return normalX*baseVolume < quoteVolume
+			return quoteVolume < normalX*baseVolume
 		}
 		// Base asset has enough volume or quotetoken has no volume yet.
 		return true
@@ -414,9 +414,6 @@ func (s *TradesBlockService) loadVolumes() map[string]float64 {
 	for _, asset := range assets {
 		volumeCache[assetIdentifier(asset.Asset)] = asset.Volume
 	}
-	log.Info("loaded volume BTC: ", volumeCache["Bitcoin-0x0000000000000000000000000000000000000000"])
-	log.Info("loaded volume ETH: ", volumeCache["Ethereum-0x0000000000000000000000000000000000000000"])
-	log.Info("loaded volume OMG: ", volumeCache["Ethereum-0xd26114cd6EE289AccF82350c8d8487fedB8A0C07"])
 	return volumeCache
 }
 
