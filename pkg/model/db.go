@@ -78,6 +78,7 @@ type Datastore interface {
 		quotetoken dia.Asset,
 		basetoken dia.Asset,
 	) ([]int, error)
+	GetVolumesAllExchanges(asset dia.Asset, starttime time.Time, endtime time.Time) (exchVolumes dia.ExchangeVolumesList, err error)
 
 	// New Asset pricing methods: 23/02/2021
 	SetAssetPriceUSD(asset dia.Asset, price float64, timestamp time.Time) error

@@ -524,7 +524,13 @@ func (datastore *DB) GetNumTradesSeries(
 ) (numTrades []int, err error) {
 	var query string
 	if pair != "" {
-		queryString := "SELECT COUNT(price) FROM %s WHERE exchange='%s' AND pair='%s' AND time<=%d AND time>%d GROUP BY time('%s') ORDER BY ASC"
+		queryString := `SELECT COUNT(price) 
+		FROM %s WHERE exchange='%s' 
+		AND pair='%s' 
+		AND time<=%d 
+		AND time>%d 
+		GROUP BY time('%s') 
+		ORDER BY ASC`
 		query = fmt.Sprintf(
 			queryString,
 			influxDbTradesTable,
@@ -539,8 +545,10 @@ func (datastore *DB) GetNumTradesSeries(
 		WHERE exchange='%s' 
 		AND quotetokenaddress='%s' AND quotetokenblockchain='%s' 
 		AND basetokenaddress='%s' AND basetokenblockchain='%s' 
-		AND time<=%d AND time>%d 
-		GROUP BY time('%s') ORDER BY ASC`
+		AND time<=%d 
+		AND time>%d 
+		GROUP BY time('%s') 
+		ORDER BY ASC`
 		query = fmt.Sprintf(
 			queryString,
 			influxDbTradesTable,
