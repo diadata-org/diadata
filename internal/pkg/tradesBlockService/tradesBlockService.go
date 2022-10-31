@@ -146,9 +146,7 @@ func NewTradesBlockService(datastore models.Datastore, relDB models.RelDatastore
 func (s *TradesBlockService) mainLoop() {
 	var (
 		acceptCount        int
-		acceptCountCEX     int
 		acceptCountDEX     int
-		acceptCountSwapCEX int
 		acceptCountSwapDEX int
 		totalCount         int
 		logTicker          = *time.NewTicker(120 * time.Second)
@@ -160,33 +158,33 @@ func (s *TradesBlockService) mainLoop() {
 			s.cleanup(nil)
 			return
 		case t := <-s.chanTrades:
-			tSwapped, err := dia.SwapTrade(*t)
-			if err != nil {
-				log.Error("swap trade: ", err)
-			}
-			tradeOk := s.checkTrade(*t, false)
-			swapppedTradeOk := s.checkTrade(tSwapped, true)
-			s.process(*t, false)
-			s.process(tSwapped, true)
-			if tradeOk {
-				if scrapers.Exchanges[(*t).Source].Centralized {
-					acceptCountCEX++
-				} else {
-					acceptCountDEX++
-				}
-			}
-			if swapppedTradeOk {
-				if scrapers.Exchanges[(*t).Source].Centralized {
-					acceptCountSwapCEX++
-				} else {
-					acceptCountSwapDEX++
-				}
+
+			// Only take into account original order for CEX trade.
+			if scrapers.Exchanges[(*t).Source].Centralized {
+				s.process(*t, false)
 			}
 
-			if tradeOk || swapppedTradeOk {
-				acceptCount++
+			// Check whether DEX trade passes volume checks.
+			if !scrapers.Exchanges[(*t).Source].Centralized {
+				tSwapped, err := dia.SwapTrade(*t)
+				if err != nil {
+					log.Error("swap trade: ", err)
+				}
+				tradeOk := s.checkTrade(*t, false)
+				swapppedTradeOk := s.checkTrade(tSwapped, true)
+				s.process(*t, false)
+				s.process(tSwapped, true)
+				if tradeOk {
+					acceptCountDEX++
+				}
+				if swapppedTradeOk {
+					acceptCountSwapDEX++
+				}
+				if tradeOk || swapppedTradeOk {
+					acceptCount++
+				}
+				totalCount++
 			}
-			totalCount++
 
 		case <-s.batchTicker.C:
 			err := s.datastore.Flush()
@@ -194,15 +192,11 @@ func (s *TradesBlockService) mainLoop() {
 				log.Error("flush influx batch: ", err)
 			}
 		case <-logTicker.C:
-			log.Info("accepted trades CEX: ", acceptCountCEX)
-			log.Info("accepted swapped trades CEX: ", acceptCountSwapCEX)
 			log.Info("accepted trades DEX: ", acceptCountDEX)
 			log.Info("accepted swapped trades DEX: ", acceptCountSwapDEX)
 			log.Info("discarded trades: ", totalCount-acceptCount)
 			acceptCount = 0
-			acceptCountCEX = 0
 			acceptCountDEX = 0
-			acceptCountSwapCEX = 0
 			acceptCountSwapDEX = 0
 			totalCount = 0
 		}
@@ -222,22 +216,24 @@ func (s *TradesBlockService) checkTrade(t dia.Trade, reversed bool) bool {
 	// The basetoken in the stored trade will remain unchanged.
 	basetoken := buildBridge(t)
 
-	// Allow trade with Fiat as basetoken.
-	if basetoken.Blockchain == dia.FIAT {
-		return true
-	}
-	// Discard trade where quotetoken is Fiat.
-	if t.QuoteToken.Blockchain == dia.FIAT {
-		return false
-	}
+	// // ------ Commented CEX related criteria. ------
 
-	// USDT currently plays a central/special role in crypto space.
-	// Therefore, only allow USDT trade if basetoken is Fiat.
-	if t.QuoteToken.Address == USDT.Address && t.QuoteToken.Blockchain == dia.ETHEREUM {
-		if basetoken.Blockchain != dia.FIAT {
-			return false
-		}
-	}
+	// // Allow trade with Fiat as basetoken.
+	// if basetoken.Blockchain == dia.FIAT {
+	// 	return true
+	// }
+	// // Discard trade where quotetoken is Fiat.
+	// if t.QuoteToken.Blockchain == dia.FIAT {
+	// 	return false
+	// }
+
+	// // USDT currently plays a central/special role in crypto space.
+	// // Therefore, only allow USDT trade if basetoken is Fiat.
+	// if t.QuoteToken.Address == USDT.Address && t.QuoteToken.Blockchain == dia.ETHEREUM {
+	// 	if basetoken.Blockchain != dia.FIAT {
+	// 		return false
+	// 	}
+	// }
 
 	// Allow trade where basetoken is stablecoin.
 	if _, ok := stablecoinAssets[assetIdentifier(basetoken)]; ok {
@@ -273,9 +269,16 @@ func (s *TradesBlockService) checkTrade(t dia.Trade, reversed bool) bool {
 
 func (s *TradesBlockService) process(t dia.Trade, reversed bool) {
 
-	var verifiedTrade bool
+	var (
+		verifiedTrade bool
+		tradeOk       bool
+	)
 
-	tradeOk := s.checkTrade(t, reversed)
+	if scrapers.Exchanges[t.Source].Centralized {
+		tradeOk = true
+	} else {
+		tradeOk = s.checkTrade(t, reversed)
+	}
 
 	// Price estimation can only be done for verified pairs.
 	// Trades with unverified pairs are still saved, but not sent to the filtersBlockService.
