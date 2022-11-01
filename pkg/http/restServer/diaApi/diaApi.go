@@ -1780,21 +1780,16 @@ func (env *Env) GetBenchmarkedIndexValue(c *gin.Context) {
 	c.JSON(http.StatusOK, q)
 }
 
-// GetLastTrades Get last 1000 trades of an asset
-func (env *Env) GetLastTrades(c *gin.Context) {
+func (env *Env) GetLastTradeTime(c *gin.Context) {
 	if !validateInputParams(c) {
 		return
 	}
 
-	symbol := c.Param("symbol")
+	exchange := c.Param("exchange")
+	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 
-	// First get asset with @symbol with largest market cap.
-	topAsset, err := env.DataStore.GetTopAssetByVolume(symbol, &env.RelDB)
-	if err != nil {
-		restApi.SendError(c, http.StatusNotFound, err)
-	}
-
-	q, err := env.DataStore.GetLastTrades(topAsset, "", 1000, true)
+	t, err := env.DataStore.GetLastTradeTimeForExchange(dia.Asset{Address: address, Blockchain: blockchain}, exchange)
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)
@@ -1802,7 +1797,7 @@ func (env *Env) GetLastTrades(c *gin.Context) {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 		}
 	} else {
-		c.JSON(http.StatusOK, q)
+		c.JSON(http.StatusOK, *t)
 	}
 }
 
