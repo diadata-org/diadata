@@ -20,8 +20,8 @@ type SerumPair struct {
 
 const (
 	// Public Solana clients.
-	rpcEndpointSolana         = "https://try-rpc.mainnet.solana.blockdaemon.tech" // refer - https://try.blockdaemon.com/rpc/solana/
-	dexProgramAddress         = "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin"    // refer - https://github.com/project-serum/serum-dex
+	rpcEndpointSolana         = ""                                             // refer - https://try.blockdaemon.com/rpc/solana/
+	dexProgramAddress         = "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin" // refer - https://github.com/project-serum/serum-dex
 	nameServiceProgramAddress = "namesLPneVptA9Z5rqUDD9tMTWEJwofgaYwp8cawRkX"
 	dotTokenTLD               = "6NSu2tci4apRKQtt257bAVcvqYjB3zV2H1dWo56vgpa6"
 	marketDataSize            = 388
