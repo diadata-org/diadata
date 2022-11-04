@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	maxNumSubscriptionsPerConn = 200
+	bitmaxMaxNumSubscriptionsPerConn = 200
 )
 
 type BitMaxPairResponse struct {
@@ -31,6 +31,7 @@ type BitMaxAssets struct {
 	Code int           `json:"code"`
 	Data []BitMaxAsset `json:"data"`
 }
+
 type BitMaxAsset struct {
 	AssetCode        string `json:"assetCode"`
 	AssetName        string `json:"assetName"`
@@ -256,7 +257,7 @@ func (s *BitMaxScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 		Ch: "trades:" + pair.ForeignName,
 		ID: fmt.Sprint(time.Now().Unix()),
 	}
-	if s.numPairsClient1 < maxNumSubscriptionsPerConn {
+	if s.numPairsClient1 < bitmaxMaxNumSubscriptionsPerConn {
 		if err := s.wsClient1.WriteJSON(a); err != nil {
 			log.Error("write pair sub: ", err.Error())
 		}
