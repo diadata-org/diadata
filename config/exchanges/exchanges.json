@@ -492,7 +492,7 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 1800
+            "WatchdogDelay": 2400
         },
         {
             "Name": "Huobi",
