@@ -548,9 +548,13 @@ func (s *MagicEdenScraper) createOrReadNFT(addr common.PublicKey, metadata Solan
 
 		nft = dia.NFT{
 			NFTClass:     nftClass,
-			TokenID:      addr.String(),
 			URI:          strings.ReplaceAll(metadata.uri, "\x00", ""),
 			CreationTime: time.Unix(metadata.creationTime, 0),
+		}
+		if classMetadata.name == "" {
+			nft.TokenID = "1"
+		} else {
+			nft.TokenID = addr.String()
 		}
 
 		maxShare := -1
