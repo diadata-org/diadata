@@ -133,25 +133,6 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, wTest *kafka.Writer, ds
 				return
 			}
 			lastTradeTime = time.Now()
-			// Trades are sent to the tradesblockservice through a kafka channel - either
-			// through trades topic or historical trades topic.
-			if mode == "current" || mode == "historical" || mode == "estimation" {
-
-				// Write trade to productive Kafka.
-				err := writeTradeToKafka(w, t)
-				if err != nil {
-					log.Error(err)
-				}
-
-				if scrapers.Exchanges[t.Source].Centralized {
-					// Write CEX trades to test Kafka.
-					if mode == "current" {
-						err = writeTradeToKafka(wTest, t)
-						if err != nil {
-							log.Error(err)
-						}
-					}
-				}
 
 			// Write trade to test Kafka.
 			err := writeTradeToKafka(wTest, t)

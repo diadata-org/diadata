@@ -968,6 +968,50 @@ func (rdb *RelDB) GetSortedAssetSymbols(numAssets int64, skip int64, search stri
 
 }
 
+// GetAssetsWithVOLRange returns all assets from assetvolume table that have a timestamp in the time-range (@starttime,@endtime].
+func (rdb *RelDB) GetAssetsWithVOLRange(starttime time.Time, endtime time.Time) (assets []dia.AssetVolume, err error) {
+	var (
+		queryString string
+		query       string
+		rows        pgx.Rows
+	)
+	queryString = `
+		SELECT symbol,name,address,decimals,blockchain,volume
+		FROM %s INNER JOIN %s
+		ON (asset.asset_id = assetvolume.asset_id)
+		WHERE time_stamp>to_timestamp(%v) and time_stamp<=to_timestamp(%v)
+		ORDER BY assetvolume.volume DESC
+		`
+	query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, starttime.Unix(), endtime.Unix())
+
+	rows, err = rdb.postgresClient.Query(context.Background(), query)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			decimals    string
+			decimalsInt int
+			volume      float64
+		)
+		asset := dia.Asset{}
+		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain, &volume)
+		if err != nil {
+			return
+		}
+		decimalsInt, err = strconv.Atoi(decimals)
+		if err != nil {
+			return
+		}
+		asset.Decimals = uint8(decimalsInt)
+		assetvolume := dia.AssetVolume{Asset: asset, Volume: volume}
+		assets = append(assets, assetvolume)
+	}
+	return
+}
+
 // GetAssetsWithVOL returns the first @numAssets assets with entry in the assetvolume table, sorted by volume in descending order.
 // If @numAssets==0, all assets are returned.
 // If @substring is not the empty string, results are filtered by the first letters being @substring.
