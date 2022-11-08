@@ -225,7 +225,7 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, blockDuration i
 	req := gql.NewRequest(`
     query  {
 		 GetChart(
-		 	filter: "ma", 
+		 	filter: "mair", 
 			Symbol:"Asset",
 			BlockDurationSeconds: ` + strconv.Itoa(blockDuration) + `, 
 			BlockShiftSeconds: ` + strconv.Itoa(blockDuration) + `,

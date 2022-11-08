@@ -32,7 +32,7 @@ type RelDatastore interface {
 	GetAssetVolume24H(asset dia.Asset) (float64, error)
 	GetAssetsWithVOL(numAssets int64, skip int64, onlycex bool, substring string) ([]dia.AssetVolume, error)
 	GetAssetSource(asset dia.Asset, onlycex bool) ([]string, error)
-	GetAssetsWithVOLRange(starttime time.Time, endtime time.Time) ([]dia.AssetVolume, error)
+	GetAssetsWithVolByBlockchain(starttime time.Time, endtime time.Time, blockchain string) ([]dia.AssetVolume, error)
 	SetAggregatedVolume(aggVol dia.AggregatedVolume) error
 	GetAggregatedVolumes(asset dia.Asset, starttime time.Time, endtime time.Time) ([]dia.AggregatedVolume, error)
 	GetAggVolumesByExchange(asset dia.Asset, starttime time.Time, endtime time.Time) ([]dia.ExchangeVolumesList, error)
@@ -146,6 +146,14 @@ type RelDatastore interface {
 	GetCollectionCountByExchange(exchange string) (int64, error)
 	Get24HoursNFTExchangeVolume(exchange dia.NFTExchange) (float64, error)
 	Get24HoursNFTExchangeTrades(exchange dia.NFTExchange) (int64, error)
+
+	//Oracle builder
+	SetKeyPair(publickey string, privatekey string) error
+	GetKeyPairID(publickey string) string
+	GetFeederAccessByID(id string) (owner, publickey string)
+	SetOracleConfig(address, keypairID, creator, symbols, chainID string) error
+	SetFeederConfig(feederid, oracleconfigid string) error
+	GetFeederID(address string) (feederId string)
 }
 
 const (
@@ -178,6 +186,10 @@ const (
 	nftbidTable          = "nftbid"
 	nftofferTable        = "nftoffer"
 	scrapersTable        = "scrapers"
+	keypairTable         = "keypair"
+	oracleconfigTable    = "oracleconfig"
+	feederconfigTable    = "feederconfig"
+	feederaccessTable    = "feederaccess"
 
 	// time format for blockchain genesis dates
 	// timeFormatBlockchain = "2006-01-02"

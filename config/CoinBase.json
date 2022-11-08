@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "CoinBase",
+      "ForeignName": "ANKR-USD",
+      "Ignore": false,
+      "Symbol": "ANKR"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "AVAX-USD",
       "Ignore": false,
       "Symbol": "AVAX"

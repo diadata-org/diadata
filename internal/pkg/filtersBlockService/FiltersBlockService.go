@@ -185,11 +185,11 @@ func (s *FiltersBlockService) createFilters(asset dia.Asset, exchange string, Be
 	if !ok {
 		s.filters[fa] = []Filter{
 			NewFilterMA(asset, exchange, BeginTime, dia.BlockSizeSeconds),
-			// NewFilterTLT(asset, exchange),
-			NewFilterVOL(asset, exchange, dia.BlockSizeSeconds),
 			NewFilterMAIR(asset, exchange, BeginTime, dia.BlockSizeSeconds),
 			NewFilterMEDIR(asset, exchange, BeginTime, dia.BlockSizeSeconds),
+			NewFilterVOL(asset, exchange, dia.BlockSizeSeconds),
 			NewFilterCOUNT(asset, exchange, dia.BlockSizeSeconds),
+			NewFilterTLT(asset, exchange),
 		}
 	}
 }

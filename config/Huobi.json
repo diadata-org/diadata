@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "Huobi",
+      "ForeignName": "ANKRUSDT",
+      "Ignore": false,
+      "Symbol": "ANKR"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "ANTUSDT",
       "Ignore": false,
       "Symbol": "ANT"
@@ -365,6 +371,12 @@
       "ForeignName": "STEEMETH",
       "Ignore": false,
       "Symbol": "STEEM"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "TLOSUSDT",
+      "Ignore": false,
+      "Symbol": "TLOS"
     },
     {
       "Exchange": "Huobi",

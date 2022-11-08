@@ -2,6 +2,18 @@
     "Coins": [
         {
             "Exchange": "Binance",
+            "ForeignName": "ANKRUSDT",
+            "Ignore": false,
+            "Symbol": "ANKR"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "ANKRBUSD",
+            "Ignore": false,
+            "Symbol": "ANKR"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "ACAUSDT",
             "Ignore": false,
             "Symbol": "ACA"
@@ -1829,6 +1841,18 @@
             "ForeignName": "QTUMUSDT",
             "Ignore": false,
             "Symbol": "QTUM"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "RAYBUSD",
+            "Ignore": false,
+            "Symbol": "RAY"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "RAYUSDT",
+            "Ignore": false,
+            "Symbol": "RAY"
         },
         {
             "Exchange": "Binance",

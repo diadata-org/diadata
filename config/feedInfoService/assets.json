@@ -11,6 +11,21 @@
       "Blockchain": "Ethereum"
     },
     {
+      "Symbol": "ANKR",
+      "Address": "0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4",
+      "Blockchain": "Ethereum"
+    },
+    {
+      "Symbol": "ANKR",
+      "Address": "0xf307910A4c7bbc79691fD374889b36d8531B08e3",
+      "Blockchain": "BinanceSmartChain"
+    },
+    {
+      "Symbol": "ANKR",
+      "Address": "0x101A023270368c0D50BFfb62780F4aFd4ea79C35",
+      "Blockchain": "Polygon"
+    },
+    {
       "Symbol": "ARGO",
       "Address": "0x28Cca76f6e8eC81e4550ecd761f899110b060E97",
       "Blockchain": "Ethereum"
@@ -59,7 +74,7 @@
       "Symbol": "BUSD",
       "Address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
       "Blockchain": "BinanceSmartChain"
-    },   
+    },
     {
       "Symbol": "CELO",
       "Address": "0x471EcE3750Da237f93B8E339c536989b8978a438",
@@ -104,6 +119,11 @@
       "Symbol": "DOWS",
       "Address": "0x661Ab0Ed68000491d98C796146bcF28c20d7c559",
       "Blockchain": "Ethereum"
+    },
+    {
+      "Symbol": "DUST",
+      "Address": "DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ",
+      "Blockchain": "Solana"
     },
     {
       "Symbol": "ETC",
@@ -161,6 +181,11 @@
       "Blockchain": "Terra"
     },
     {
+      "Symbol": "MATIC",
+      "Address": "0x0000000000000000000000000000000000001010",
+      "Blockchain": "Polygon"
+    },
+    {
       "Symbol": "METIS",
       "Address": "0x9E32b13ce7f2E80A01932B42553652E053D6ed8e",
       "Blockchain": "Ethereum"
@@ -191,6 +216,11 @@
       "Blockchain": "Celo"
     },
     {
+      "Symbol": "mSOL",
+      "Address": "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So",
+      "Blockchain": "Solana"
+    },
+    {
       "Symbol": "NEAR",
       "Address": "0x0000000000000000000000000000000000000000",
       "Blockchain": "NEAR"
@@ -209,6 +239,16 @@
       "Symbol": "PHA",
       "Address": "0x6c5bA91642F10282b576d91922Ae6448C9d52f4E",
       "Blockchain": "Ethereum"
+    },
+    {
+      "Symbol": "RAY",
+      "Address": "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R",
+      "Blockchain": "Solana"
+    },
+    {
+      "Symbol": "SAMO",
+      "Address": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+      "Blockchain": "Solana"
     },
     {
       "Symbol": "SDN",

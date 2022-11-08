@@ -492,7 +492,7 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 2400
         },
         {
             "Name": "Huobi",
@@ -726,7 +726,7 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 180
+            "WatchdogDelay": 1800
         },
         {
             "Name": "Spiritswap",
@@ -765,7 +765,7 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 180
+            "WatchdogDelay": 1800
         },
         {
             "Name": "STEX",
@@ -921,7 +921,7 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 1800
         },
         {
             "Name": "UniswapV3-Arbitrum",

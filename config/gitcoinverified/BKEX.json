@@ -13,6 +13,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "ANKR",
+            "Exchange": "BKEX",
+            "Blockchain": "Ethereum",
+            "Address": "0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4"
+        },
+        {
             "Symbol": "APE",
             "Exchange": "BKEX",
             "Blockchain": "Ethereum",
@@ -241,6 +247,18 @@
             "Address": "0x4a220E6096B25EADb88358cb44068A3248254675"
         },
         {
+            "Symbol": "RAY",
+            "Exchange": "BKEX",
+            "Blockchain": "Solana",
+            "Address": "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R"
+        },
+        {
+            "Symbol": "SAMO",
+            "Exchange": "BKEX",
+            "Blockchain": "Solana",
+            "Address": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
+        },
+        {
             "Symbol": "SAND",
             "Exchange": "BKEX",
             "Blockchain": "Ethereum",
@@ -281,6 +299,12 @@
             "Exchange": "BKEX",
             "Blockchain": "Ethereum",
             "Address": "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2"
+        },
+        {
+            "Symbol": "TLOS",
+            "Exchange": "BKEX",
+            "Blockchain": "Telos",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "TOMB",

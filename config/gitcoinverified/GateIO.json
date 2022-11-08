@@ -37,6 +37,24 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "MSOL",
+            "Exchange": "GateIO",
+            "Blockchain": "Solana",
+            "Address": "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"
+        },
+        {
+            "Symbol": "DUST",
+            "Exchange": "GateIO",
+            "Blockchain": "Solana",
+            "Address": "DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ"
+        },
+        {
+            "Symbol": "SAMO",
+            "Exchange": "GateIO",
+            "Blockchain": "Solana",
+            "Address": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
+        },
+        {
             "Symbol": "NFTY",
             "Exchange": "GateIO",
             "Blockchain": "BinanceSmartChain",
@@ -719,7 +737,7 @@
             "Exchange": "GateIO",
             "Blockchain": "Tron",
             "Address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn"
-          },
+        },
         {
             "Symbol": "USDT",
             "Exchange": "GateIO",

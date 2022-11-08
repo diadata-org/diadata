@@ -25,6 +25,12 @@
             "Address": "0x4DC3643DbC642b72C158E7F3d2ff232df61cb6CE"
         },
         {
+            "Symbol": "ANKR",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4"
+        },
+        {
             "Symbol": "ANT",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -449,6 +455,12 @@
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0x99ea4dB9EE77ACD40B119BD1dC4E33e1C070b80d"
+        },
+        {
+            "Symbol": "RAY",
+            "Exchange": "Binance",
+            "Blockchain": "Solana",
+            "Address": "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R"
         },
         {
             "Symbol": "RDN",

@@ -20,15 +20,16 @@ require (
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/ethereum/go-ethereum v1.10.10
 	github.com/fatih/structs v1.1.0
-	github.com/frankban/quicktest v1.7.2 // indirect
+	github.com/gagliardetto/solana-go v1.7.1
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
-	github.com/gin-gonic/gin v1.7.0
+	github.com/gin-gonic/gin v1.8.1
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/gorilla/websocket v1.5.0
 	github.com/graarh/golang-socketio v0.0.0-20170510162725-2c44953b9b5f
 	github.com/graph-gophers/graphql-go v1.1.0
 	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab
+	github.com/jackc/pgconn v1.8.1 // indirect
 	github.com/jackc/pgtype v1.7.0
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
@@ -39,30 +40,27 @@ require (
 	github.com/onflow/flow-go-sdk v0.20.0
 	github.com/onsi/ginkgo v1.14.2 // indirect
 	github.com/onsi/gomega v1.10.4 // indirect
-	github.com/pierrec/lz4 v2.4.1+incompatible // indirect
 	github.com/pkg/errors v0.9.1
+	github.com/portto/solana-go-sdk v1.22.0
 	github.com/preichenberger/go-coinbasepro/v2 v2.0.5
 	github.com/prometheus/common v0.7.0
 	github.com/prometheus/tsdb v0.10.0 // indirect
 	github.com/rjeczalik/notify v0.9.2 // indirect
-	github.com/segmentio/kafka-go v0.3.7
+	github.com/segmentio/kafka-go v0.4.35
 	github.com/shopspring/decimal v1.3.1
 	github.com/sirupsen/logrus v1.7.0
-	github.com/status-im/keycard-go v0.0.0-20200402102358-957c09536969 // indirect
+	github.com/status-im/keycard-go v0.0.0-20200402102358-957c09536969
 	github.com/streamingfast/binary v0.0.0-20210928223119-44fc44e4a0b5
-	github.com/streamingfast/solana-go v0.3.0
-	github.com/stretchr/testify v1.8.0
+	github.com/streamingfast/solana-go v0.5.1-0.20220502224452-432fbe84aee8
 	github.com/tidwall/gjson v1.12.1 // indirect
 	github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
 	github.com/vincent-petithory/dataurl v1.0.0
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
-	github.com/zksync-sdk/zksync-sdk-go v0.0.0-20211119083613-58613b4d3d77 // indirect
 	go.uber.org/ratelimit v0.2.0
-	go.uber.org/zap v1.19.1
-	golang.org/x/crypto v0.0.0-20211117183948-ae814b36b871
-	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2
+	go.uber.org/zap v1.21.0
+	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
+	golang.org/x/net v0.0.0-20220706163947-c90051bbdb60
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
-	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba
 	google.golang.org/grpc v1.40.0
 )

@@ -115,7 +115,7 @@ func NewaTokenScraper(blockchain, pooladdress string, version int) *aTokenScrape
 }
 
 func (scraper *aTokenScraper) filterReservedataupdatedV2History() chan *aavepool2.Aavepool2ReserveDataUpdated {
-	filterer, err := aavepool2.NewAavepool2Filterer(common.HexToAddress(scraper.pooladdress), scraper.WsClient)
+	filterer, err := aavepool2.NewAavepool2Filterer(common.HexToAddress(scraper.pooladdress), scraper.RestClient)
 
 	if err != nil {
 		log.Error("new NewAavepool3Filterer caller: ", err)
@@ -147,7 +147,7 @@ func (scraper *aTokenScraper) filterReservedataupdatedV2History() chan *aavepool
 }
 
 func (scraper *aTokenScraper) watchReservedataupdatedV2() chan *aavepool2.Aavepool2ReserveDataUpdated {
-	filterer, err := aavepool2.NewAavepool2Filterer(common.HexToAddress(scraper.pooladdress), scraper.RestClient)
+	filterer, err := aavepool2.NewAavepool2Filterer(common.HexToAddress(scraper.pooladdress), scraper.WsClient)
 
 	if err != nil {
 		log.Error("new NewAavepool3Filterer caller: ", err)
@@ -155,7 +155,13 @@ func (scraper *aTokenScraper) watchReservedataupdatedV2() chan *aavepool2.Aavepo
 	sink := make(chan *aavepool2.Aavepool2ReserveDataUpdated)
 	// if start is zero start from latest
 	if scraper.start == 0 {
-		filterer.WatchReserveDataUpdated(&bind.WatchOpts{}, sink, []common.Address{})
+		log.Error("WatchReserveDataUpdated: ", scraper.start)
+
+		_, err := filterer.WatchReserveDataUpdated(&bind.WatchOpts{}, sink, []common.Address{})
+		if err != nil {
+			log.Error("Error on filterer.WatchReserveDataUpdated: ", err)
+
+		}
 
 	} else {
 		log.Error("WatchReserveDataUpdated starting from block: ", scraper.start)
@@ -169,7 +175,6 @@ func (scraper *aTokenScraper) watchReservedataupdatedV2() chan *aavepool2.Aavepo
 func (scraper *aTokenScraper) mainLoop() {
 	// runs whenever there is  ReserveDataUpdated occurs
 
-	log.Info("looking for watchReservedataupdatedV2")
 	sink := scraper.watchReservedataupdatedV2()
 
 	go func() {
@@ -303,7 +308,7 @@ func (scraper *aTokenScraper) fetchsupplyandbalance(underlyingtokenaddress strin
 	log.Info("atokenaddress", atokendetail.address)
 	log.Info("underlyingtokenaddress", underlyingtokenaddress)
 
-	filterer, err := ceth.NewERC20Caller(common.HexToAddress(atokendetail.address), scraper.RestClient)
+	filterer, err := ceth.NewERC20Caller(common.HexToAddress(atokendetail.address), scraper.WsClient)
 	if err != nil {
 		log.Error("new erc20 caller: ", err)
 		return
@@ -314,12 +319,12 @@ func (scraper *aTokenScraper) fetchsupplyandbalance(underlyingtokenaddress strin
 		return
 	}
 
-	atokendecimal, err := filterer.Decimals(&bind.CallOpts{BlockNumber: blocknumber})
+	atokendecimal, err := filterer.Decimals(&bind.CallOpts{})
 	if err != nil {
 		log.Error("get Decimals: ", err)
 		return
 	}
-	atokensymbol, err := filterer.Symbol(&bind.CallOpts{BlockNumber: blocknumber})
+	atokensymbol, err := filterer.Symbol(&bind.CallOpts{})
 	if err != nil {
 		log.Error("get Decimals: ", err)
 		return
@@ -344,12 +349,12 @@ func (scraper *aTokenScraper) fetchsupplyandbalance(underlyingtokenaddress strin
 	}
 	log.Info("balanceof: ", balanceof)
 
-	underlyingdecimals, err := underlyingfilterer.Decimals(&bind.CallOpts{BlockNumber: blocknumber})
+	underlyingdecimals, err := underlyingfilterer.Decimals(&bind.CallOpts{})
 	if err != nil {
 		log.Error("get Decimals: ", err)
 		return
 	}
-	underlyingsymbol, err := underlyingfilterer.Symbol(&bind.CallOpts{BlockNumber: blocknumber})
+	underlyingsymbol, err := underlyingfilterer.Symbol(&bind.CallOpts{})
 	if err != nil {
 		log.Error("get Symbol: ", err)
 		return
@@ -386,13 +391,13 @@ func (scraper *aTokenScraper) fetchsupplyandbalance(underlyingtokenaddress strin
 
 func (scraper *aTokenScraper) getTokenSupply(address string, blocknumber *big.Int) (float64, error) {
 
-	tokenfilterer, err := ceth.NewERC20Caller(common.HexToAddress(address), scraper.RestClient)
+	tokenfilterer, err := ceth.NewERC20Caller(common.HexToAddress(address), scraper.WsClient)
 	if err != nil {
 		log.Error("new erc20 caller: ", err)
 		return 0.0, err
 
 	}
-	decimal, err := tokenfilterer.Decimals(&bind.CallOpts{BlockNumber: blocknumber})
+	decimal, err := tokenfilterer.Decimals(&bind.CallOpts{})
 	if err != nil {
 		log.Error("get Decimals: ", err)
 		return 0.0, err

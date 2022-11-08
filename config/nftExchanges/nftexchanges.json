@@ -65,6 +65,17 @@
             "RestAPI": "",
             "WsAPI": "",
             "WatchdogDelay": 7200
+        },
+        {
+            "Name": "MagicEden",
+            "Centralized": false,
+            "Contract": "M2mx93ekt1fmXSVkTrUL9xVFHkmME8HTUi5Cyc5aF7K",
+            "Blockchain": {
+                "Name": "Solana"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "WatchdogDelay": 7200
         }
     ]
 }

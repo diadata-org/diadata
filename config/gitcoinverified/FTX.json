@@ -1,6 +1,18 @@
 {
     "Tokens": [
         {
+            "Symbol": "RAY",
+            "Exchange": "FTX",
+            "Blockchain": "Solana",
+            "Address": "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R"
+        },
+        {
+            "Symbol": "MSOL",
+            "Exchange": "FTX",
+            "Blockchain": "Solana",
+            "Address": "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"
+        },
+        {
             "Symbol": "AXS",
             "Exchange": "FTX",
             "Blockchain": "Ethereum",

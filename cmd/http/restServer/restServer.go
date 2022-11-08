@@ -208,7 +208,7 @@ func main() {
 		// Trades and prices endpoints.
 		diaGroup.GET("/quotation/:symbol", cache.CachePageAtomic(memoryStore, cachingTime20Secs, diaApiEnv.GetQuotation))
 		diaGroup.GET("/assetQuotation/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTime20Secs, diaApiEnv.GetAssetQuotation))
-		diaGroup.GET("/lastTrades/:symbol", diaApiEnv.GetLastTrades)
+		diaGroup.GET("/lastTradeTime/:exchange/:blockchain/:address", diaApiEnv.GetLastTradeTime)
 		diaGroup.GET("/lastTradesAsset/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetLastTradesAsset))
 
 		// Filters endpoints.
@@ -225,6 +225,7 @@ func main() {
 		diaGroup.GET("/topAssets/:numAssets", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetTopAssets))
 		diaGroup.GET("/symbols", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetAllSymbols))
 		diaGroup.GET("/symbols/:substring", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetAllSymbols))
+		diaGroup.GET("/quotedAssets", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetQuotedAssets))
 
 		// (DEX) pools/liquidity endpoints.
 		diaGroup.GET("/poolLiquidity/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetPoolLiquidityByAddress))

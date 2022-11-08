@@ -879,7 +879,7 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 
 		sort.Strings(s)
 		// Sort all symbols by volume, append if they have no volume.
-		sortedAssets, err = env.RelDB.GetAssetsWithVOL(int64(0), int64(0), false, substring)
+		sortedAssets, err = env.RelDB.GetSortedAssetSymbols(int64(0), int64(0), substring)
 		if err != nil {
 			log.Error("get assets with volume: ", err)
 		}
@@ -1144,6 +1144,7 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 	numAssetsString := c.Param("numAssets")
 	pageString := c.DefaultQuery("Page", "1")
 	onlycexString := c.DefaultQuery("Cex", "false")
+	blokchain := c.DefaultQuery("Network", "")
 
 	var (
 		numAssets    int64
@@ -1170,7 +1171,7 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 
 	offset = (pageNumber - 1) * numAssets
 
-	sortedAssets, err = env.RelDB.GetAssetsWithVOL(numAssets, offset, onlycex, "")
+	sortedAssets, err = env.RelDB.GetAssetsWithVOL(numAssets, offset, onlycex, blokchain)
 	if err != nil {
 		log.Error("get assets with volume: ", err)
 
@@ -1212,6 +1213,24 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 
 	}
 	c.JSON(http.StatusOK, assets)
+}
+
+// GetQuotedAssets is the delegate method to fetch all assets that have an asset quotation
+// dating back at most 7 days.
+func (env *Env) GetQuotedAssets(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	endtime := time.Now()
+	starttime := endtime.AddDate(0, 0, -7)
+	assetvolumes, err := env.RelDB.GetAssetsWithVolByBlockchain(starttime, endtime, c.Query("blockchain"))
+	if err != nil {
+		log.Error("get assets with volume: ", err)
+
+	}
+
+	c.JSON(http.StatusOK, assetvolumes)
 }
 
 // -----------------------------------------------------------------------------
@@ -1761,21 +1780,16 @@ func (env *Env) GetBenchmarkedIndexValue(c *gin.Context) {
 	c.JSON(http.StatusOK, q)
 }
 
-// GetLastTrades Get last 1000 trades of an asset
-func (env *Env) GetLastTrades(c *gin.Context) {
+func (env *Env) GetLastTradeTime(c *gin.Context) {
 	if !validateInputParams(c) {
 		return
 	}
 
-	symbol := c.Param("symbol")
+	exchange := c.Param("exchange")
+	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 
-	// First get asset with @symbol with largest market cap.
-	topAsset, err := env.DataStore.GetTopAssetByVolume(symbol, &env.RelDB)
-	if err != nil {
-		restApi.SendError(c, http.StatusNotFound, err)
-	}
-
-	q, err := env.DataStore.GetLastTrades(topAsset, "", 1000, true)
+	t, err := env.DataStore.GetLastTradeTimeForExchange(dia.Asset{Address: address, Blockchain: blockchain}, exchange)
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)
@@ -1783,7 +1797,7 @@ func (env *Env) GetLastTrades(c *gin.Context) {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 		}
 	} else {
-		c.JSON(http.StatusOK, q)
+		c.JSON(http.StatusOK, *t)
 	}
 }
 
@@ -2929,11 +2943,11 @@ func (env *Env) GetAssetInfo(c *gin.Context) {
 	} else {
 		quotationExtended.PriceYesterday = quotationYesterday.Price
 	}
-	volumeYesterday, err := env.RelDB.GetAssetVolume24H(asset)
+	volumeYesterday, err := env.DataStore.Get24HoursAssetVolume(asset)
 	if err != nil {
 		log.Warn("get volume yesterday: ", err)
 	} else {
-		quotationExtended.VolumeYesterdayUSD = volumeYesterday
+		quotationExtended.VolumeYesterdayUSD = *volumeYesterday
 	}
 	quotationExtended.Symbol = quotation.Asset.Symbol
 	quotationExtended.Name = quotation.Asset.Name
@@ -3047,7 +3061,7 @@ func (env *Env) GetSyntheticAsset(c *gin.Context) {
 	} else {
 		synthassets, err := env.DataStore.GetSynthAssets(blockchain, protocol)
 		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
+			restApi.SendError(c, http.StatusInternalServerError, errors.New("no response for quoted timestamp"))
 		}
 		for _, asset := range synthassets {
 			points, _ := env.DataStore.GetSynthSupplyInflux(blockchain, protocol, asset, limit, starttime, endtime)

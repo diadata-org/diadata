@@ -14,7 +14,7 @@ import (
 	ws "github.com/gorilla/websocket"
 )
 
-var _LBankSocketurl string = "wss://api.lbkex.com/ws/V2/"
+var _LBankSocketurl string = "wss://www.lbkex.net/ws/V2/"
 
 const (
 	timeZoneLBank      = "Asia/Singapore"
@@ -160,7 +160,6 @@ func (s *LBankScraper) mainLoop() {
 			}
 		}
 	}
-
 }
 
 // Pong sends the string "pong" to the server.

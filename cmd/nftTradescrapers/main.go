@@ -93,6 +93,9 @@ func main() {
 	case dia.TofuNFTBinanceSmartChain:
 		log.Infoln("NFT Trades Scraper: Start scraping trades from TofuNFT on BinanceSmartChain")
 		scraper = nfttradescrapers.NewTofuNFTScraper(rdb, NFTExchanges[dia.TofuNFTBinanceSmartChain])
+	case dia.MagicEden:
+		log.Infoln("NFT Trades Scraper: Start scraping trades from MagicEden on Solana")
+		scraper = nfttradescrapers.NewMagicEdenScraper(rdb, NFTExchanges[dia.MagicEden])
 
 	default:
 		for {

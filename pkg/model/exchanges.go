@@ -6,49 +6,10 @@ import (
 	"database/sql"
 	"fmt"
 	"sort"
-	"strconv"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 )
-
-func getKeyLastTradeTimeForExchange(asset dia.Asset, exchange string) string {
-	if exchange == "" {
-		return "dia_TLT_" + asset.Blockchain + "_" + asset.Address
-
-	} else {
-		return "dia_TLT_" + asset.Blockchain + "_" + asset.Address + "_" + exchange
-	}
-}
-
-func (datastore *DB) GetLastTradeTimeForExchange(asset dia.Asset, exchange string) (*time.Time, error) {
-	key := getKeyLastTradeTimeForExchange(asset, exchange)
-	t, err := datastore.redisClient.Get(key).Result()
-	if err != nil {
-		log.Errorln("Error: on GetLastTradeTimeForExchange", err, key)
-		return nil, err
-	}
-	i64, err := strconv.ParseInt(t, 10, 64)
-	if err == nil {
-		t2 := time.Unix(i64, 0)
-		return &t2, nil
-	} else {
-		return nil, err
-	}
-}
-
-func (datastore *DB) SetLastTradeTimeForExchange(asset dia.Asset, exchange string, t time.Time) error {
-	if datastore.redisClient == nil {
-		return nil
-	}
-	key := getKeyLastTradeTimeForExchange(asset, exchange)
-	log.Debug("setting ", key, t)
-	err := datastore.redisPipe.Set(key, t.Unix(), TimeOutRedis).Err()
-	if err != nil {
-		log.Printf("Error: %v on SetLastTradeTimeForExchange %v\n", err, asset.Symbol)
-	}
-	return err
-}
 
 // GetActiveExchangesAndPairs returns all exchanges the asset with @address and @blockchain was
 // traded on in the given time-range as keys of a map.

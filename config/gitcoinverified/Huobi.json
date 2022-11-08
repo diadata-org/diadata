@@ -7,6 +7,12 @@
       "Address": "0x8Ab7404063Ec4DBcfd4598215992DC3F8EC853d7"
     },
     {
+      "Symbol": "ANKR",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4"
+    },
+    {
       "Symbol": "ANT",
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",
@@ -136,6 +142,12 @@
       "Symbol": "STEEM",
       "Exchange": "Huobi",
       "Blockchain": "Steem",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "TLOS",
+      "Exchange": "Huobi",
+      "Blockchain": "Telos",
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {

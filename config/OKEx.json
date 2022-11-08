@@ -2,6 +2,18 @@
   "Coins": [
     {
       "Exchange": "OKEx",
+      "ForeignName": "RAY-USDT",
+      "Ignore": false,
+      "Symbol": "RAY"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "SAMO-USDT",
+      "Ignore": false,
+      "Symbol": "SAMO"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "YFI-USDT",
       "Ignore": false,
       "Symbol": "YFI"
