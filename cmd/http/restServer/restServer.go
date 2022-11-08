@@ -208,7 +208,7 @@ func main() {
 		// Trades and prices endpoints.
 		diaGroup.GET("/quotation/:symbol", cache.CachePageAtomic(memoryStore, cachingTime20Secs, diaApiEnv.GetQuotation))
 		diaGroup.GET("/assetQuotation/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTime20Secs, diaApiEnv.GetAssetQuotation))
-		diaGroup.GET("/lastTradeTime/:exchange/:blockchain/:address", diaApiEnv.GetLastTradeTime)
+		diaGroup.GET("/lastTradeTime/:exchange/:quotetokenblockchain/:quotetokenaddress/:basetokenblockchain/:basetokenaddress", diaApiEnv.GetLastTradeTime)
 		diaGroup.GET("/lastTradesAsset/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetLastTradesAsset))
 
 		// Filters endpoints.

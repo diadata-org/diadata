@@ -13,13 +13,13 @@ import (
 )
 
 // SetFilter stores a filter point
-func (datastore *DB) SetFilter(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error {
+func (datastore *DB) SetFilter(filter string, pair dia.Pair, exchange string, value float64, t time.Time) error {
 	// return datastore.SaveFilterInflux(filter, asset, exchange, value, t)
-	err := datastore.SaveFilterInflux(filter, asset, exchange, value, t)
+	err := datastore.SaveFilterInflux(filter, pair, exchange, value, t)
 	if err != nil {
 		return err
 	}
-	err = datastore.setZSETValue(getKeyFilterZSET(getKey(filter, asset, exchange)), value, t.Unix(), BiggestWindow)
+	err = datastore.setZSETValue(getKeyFilterZSET(getKey(filter, pair, exchange)), value, t.Unix(), BiggestWindow)
 	if err != nil {
 		return err
 	}
@@ -155,8 +155,8 @@ func (datastore *DB) GetFilter(filter string, topAsset dia.Asset, scale string, 
 	return allFilters, err
 }
 
-func getKey(filter string, asset dia.Asset, exchange string) string {
-	key := filter + "_" + asset.Blockchain + "_" + asset.Address
+func getKey(filter string, pair dia.Pair, exchange string) string {
+	key := filter + "_" + pair.QuoteToken.Blockchain + "_" + pair.QuoteToken.Address + "-" + pair.BaseToken.Blockchain + "_" + pair.BaseToken.Address
 	if exchange != "" {
 		key = key + "_" + exchange
 	}
@@ -176,14 +176,16 @@ func getKeyFilterSymbolAndExchangeZSET(filter string, asset dia.Asset, exchange 
 }
 
 // SaveFilterInflux stores a filter point in influx.
-func (datastore *DB) SaveFilterInflux(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error {
+func (datastore *DB) SaveFilterInflux(filter string, pair dia.Pair, exchange string, value float64, t time.Time) error {
 	// Create a point and add to batch
 	tags := map[string]string{
-		"filter":     filter,
-		"symbol":     asset.Symbol,
-		"address":    asset.Address,
-		"blockchain": asset.Blockchain,
-		"exchange":   exchange,
+		"filter":               filter,
+		"symbol":               pair.QuoteToken.Symbol + "-" + pair.BaseToken.Symbol,
+		"quotetokenaddress":    pair.QuoteToken.Address,
+		"basetokenaddress":     pair.BaseToken.Address,
+		"quotetokenblockchain": pair.QuoteToken.Blockchain,
+		"basetokenblockchain":  pair.BaseToken.Blockchain,
+		"exchange":             exchange,
 	}
 	fields := map[string]interface{}{
 		"value":        value,

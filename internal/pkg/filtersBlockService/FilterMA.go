@@ -13,7 +13,7 @@ import (
 // FilterMA is the struct for a moving average filter implementing
 // the Filter interface.
 type FilterMA struct {
-	asset       dia.Asset
+	pair        dia.Pair
 	exchange    string
 	currentTime time.Time
 	prices      []float64
@@ -29,9 +29,9 @@ type FilterMA struct {
 
 // NewFilterMA returns a moving average filter.
 // @currentTime is the begin time of the filtersBlock.
-func NewFilterMA(asset dia.Asset, exchange string, currentTime time.Time, memory int) *FilterMA {
+func NewFilterMA(pair dia.Pair, exchange string, currentTime time.Time, memory int) *FilterMA {
 	filter := &FilterMA{
-		asset:       asset,
+		pair:        pair,
 		exchange:    exchange,
 		prices:      []float64{},
 		volumes:     []float64{},
@@ -107,7 +107,7 @@ func (filter *FilterMA) finalCompute(t time.Time) float64 {
 		totalPrice += price * math.Abs(filter.volumes[priceIndex])
 		totalVolume += math.Abs(filter.volumes[priceIndex])
 	}
-	if filter.asset.Symbol == "USDT" || filter.asset.Symbol == "USDC" {
+	if filter.pair.QuoteToken.Symbol == "USDT" || filter.pair.QuoteToken.Symbol == "USDC" {
 		var nonweightedPrice float64
 		for _, price := range filter.prices {
 			nonweightedPrice += price
@@ -126,7 +126,7 @@ func (filter *FilterMA) finalCompute(t time.Time) float64 {
 
 func (filter *FilterMA) FilterPointForBlock() *dia.FilterPoint {
 	return &dia.FilterPoint{
-		Asset: filter.asset,
+		Pair:  filter.pair,
 		Value: filter.value,
 		Name:  "MA" + strconv.Itoa(filter.memory),
 		Time:  filter.currentTime,
@@ -138,7 +138,7 @@ func (filter *FilterMA) filterPointForBlock() *dia.FilterPoint {
 		return nil
 	}
 	return &dia.FilterPoint{
-		Asset: filter.asset,
+		Pair:  filter.pair,
 		Value: filter.value,
 		Name:  "MA" + strconv.Itoa(filter.memory),
 		Time:  filter.currentTime,
@@ -148,7 +148,7 @@ func (filter *FilterMA) filterPointForBlock() *dia.FilterPoint {
 func (filter *FilterMA) save(ds models.Datastore) error {
 	if filter.modified {
 		filter.modified = false
-		err := ds.SetFilter(filter.filterName, filter.asset, filter.exchange, filter.value, filter.currentTime)
+		err := ds.SetFilter(filter.filterName, filter.pair, filter.exchange, filter.value, filter.currentTime)
 		if err != nil {
 			log.Errorln("FilterMA: Error:", err)
 		}

@@ -11,7 +11,7 @@ import (
 
 // FilterVWAP ...
 type FilterVWAP struct {
-	asset       dia.Asset
+	pair        dia.Pair
 	exchange    string
 	currentTime time.Time
 	prices      []float64
@@ -24,9 +24,9 @@ type FilterVWAP struct {
 }
 
 // NewFilterVWAP ...
-func NewFilterVWAP(asset dia.Asset, exchange string, currentTime time.Time, param int) *FilterVWAP {
+func NewFilterVWAP(pair dia.Pair, exchange string, currentTime time.Time, param int) *FilterVWAP {
 	s := &FilterVWAP{
-		asset:       asset,
+		pair:        pair,
 		exchange:    exchange,
 		prices:      []float64{},
 		volumes:     []float64{},
@@ -109,14 +109,14 @@ func (s *FilterVWAP) filterPointForBlock() *dia.FilterPoint {
 			Value: s.value,
 			Name:  "VWAP" + strconv.Itoa(s.param),
 			Time:  s.currentTime,
-			Asset: s.asset,
+			Pair:  s.pair,
 		}
 	} else {
 		return &dia.FilterPoint{
 			Value: s.value,
 			Name:  "VWAP" + strconv.Itoa(s.param),
 			Time:  s.currentTime,
-			Asset: s.asset,
+			Pair:  s.pair,
 		}
 	}
 }

@@ -34,13 +34,13 @@ type Datastore interface {
 	GetDiaCirculatingSupply() (float64, error)
 
 	GetSymbols(exchange string) ([]string, error)
-	GetLastTradeTimeForExchange(asset dia.Asset, exchange string) (*time.Time, error)
-	SetLastTradeTimeForExchange(asset dia.Asset, exchange string, t time.Time) error
+	GetLastTradeTimeForExchange(pair dia.Pair, exchange string) (*time.Time, error)
+	SetLastTradeTimeForExchange(pair dia.Pair, exchange string, t time.Time) error
 	GetFirstTradeDate(table string) (time.Time, error)
 	SaveTradeInflux(t *dia.Trade) error
 	SaveTradeInfluxToTable(t *dia.Trade, table string) error
 	GetTradeInflux(dia.Asset, string, time.Time, time.Duration) (*dia.Trade, error)
-	SaveFilterInflux(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error
+	SaveFilterInflux(filter string, pair dia.Pair, exchange string, value float64, t time.Time) error
 	GetLastTrades(asset dia.Asset, exchange string, maxTrades int, fullAsset bool) ([]dia.Trade, error)
 	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
 	GetTradesByExchanges(asset dia.Asset, baseAssets []dia.Asset, exchange []string, startTime, endTime time.Time) ([]dia.Trade, error)
@@ -56,7 +56,7 @@ type Datastore interface {
 	FlushRedisPipe() error
 	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
 	GetFilterPointsAsset(filter string, exchange string, address string, blockchain string, starttime time.Time, endtime time.Time) (*Points, error)
-	SetFilter(filterName string, asset dia.Asset, exchange string, value float64, t time.Time) error
+	SetFilter(filterName string, pair dia.Pair, exchange string, value float64, t time.Time) error
 	GetLastPriceBefore(asset dia.Asset, filter string, exchange string, timestamp time.Time) (Price, error)
 	SetAvailablePairs(exchange string, pairs []dia.ExchangePair) error
 	GetAvailablePairs(exchange string) ([]dia.ExchangePair, error)

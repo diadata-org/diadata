@@ -11,14 +11,14 @@ import (
 )
 
 type FilterTLT struct {
-	asset         dia.Asset
+	pair          dia.Pair
 	exchange      string
 	lastTradeTime time.Time
 }
 
-func NewFilterTLT(asset dia.Asset, exchange string) *FilterTLT {
+func NewFilterTLT(pair dia.Pair, exchange string) *FilterTLT {
 	s := &FilterTLT{
-		asset:    asset,
+		pair:     pair,
 		exchange: exchange,
 	}
 	return s
@@ -33,7 +33,7 @@ func (s *FilterTLT) compute(trade dia.Trade) {
 }
 
 func (s *FilterTLT) save(ds models.Datastore) error {
-	err := ds.SetLastTradeTimeForExchange(s.asset, s.exchange, s.lastTradeTime)
+	err := ds.SetLastTradeTimeForExchange(s.pair, s.exchange, s.lastTradeTime)
 	if err != nil {
 		log.Errorln("FilterTLT Error:", err)
 	}

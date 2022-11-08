@@ -1,4 +1,4 @@
-package filters
+package pairfilters
 
 import (
 	"errors"
@@ -37,15 +37,15 @@ type filtersPair struct {
 
 // FiltersBlockService is the data structure containing all objects
 // necessary for the processing of a tradesBlock.
-type FiltersBlockService struct {
-	shutdown         chan nothing
-	shutdownDone     chan nothing
-	chanTradesBlock  chan *dia.TradesBlock
-	chanFiltersBlock chan *dia.FiltersBlock
-	errorLock        sync.RWMutex
-	error            error
-	closed           bool
-	started          bool
+type PairFiltersBlockService struct {
+	shutdown             chan nothing
+	shutdownDone         chan nothing
+	chanFiltersBlock     chan *dia.FiltersBlock
+	chanPairFiltersBlock chan *dia.PairFiltersBlock
+	errorLock            sync.RWMutex
+	error                error
+	closed               bool
+	started              bool
 	// currentTime          time.Time
 	filters              map[filtersPair][]Filter
 	lastLog              time.Time
@@ -56,8 +56,8 @@ type FiltersBlockService struct {
 
 // NewFiltersBlockService returns a new FiltersBlockService and
 // runs mainLoop() in a go routine.
-func NewFiltersBlockService(previousBlockFilters []dia.FilterPoint, datastore models.Datastore, chanFiltersBlock chan *dia.FiltersBlock) *FiltersBlockService {
-	s := &FiltersBlockService{
+func NewPairFiltersBlockService(previousBlockFilters []dia.FilterPoint, datastore models.Datastore, chanFiltersBlock chan *dia.FiltersBlock) *PairFiltersBlockService {
+	s := &PairFiltersBlockService{
 		shutdown:             make(chan nothing),
 		shutdownDone:         make(chan nothing),
 		chanTradesBlock:      make(chan *dia.TradesBlock),
@@ -77,7 +77,7 @@ func NewFiltersBlockService(previousBlockFilters []dia.FilterPoint, datastore mo
 }
 
 // mainLoop runs processTradesBlock until FiltersBlockService @s is shut down.
-func (s *FiltersBlockService) mainLoop() {
+func (s *PairFiltersBlockService) mainLoop() {
 	for {
 		log.Info("x FiltersBlockService mainloop")
 		select {
@@ -85,16 +85,18 @@ func (s *FiltersBlockService) mainLoop() {
 			log.Println("Filters shutting down")
 			s.cleanup(nil)
 			return
-		case tb, ok := <-s.chanTradesBlock:
+		case fb, ok := <-s.chanFiltersBlock:
 			log.Info("receive tradesBlock for further processing ok: ", ok)
-			s.processTradesBlock(tb)
+			s.processFiltersBlock(fb)
 		}
 	}
 }
 
 // processTradesBlock is the 'main' function in the sense that all mathematical
 // computations are done here.
-func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
+func (s *PairFiltersBlockService) processFiltersBlock(fb *dia.FiltersBlock) {
+	filterpoints := fb.FiltersBlockData.FilterPoints
+	fp := filterpoints[0]
 
 	log.Infoln("processTradesBlock starting")
 	t0 := time.Now()
@@ -177,7 +179,7 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 
 }
 
-func (s *FiltersBlockService) createFilters(trade dia.Trade, exchange string, BeginTime time.Time) {
+func (s *PairFiltersBlockService) createFilters(trade dia.Trade, exchange string, BeginTime time.Time) {
 	fa := filtersPair{
 		IdentifierQuotetoken: getIdentifier(trade.QuoteToken),
 		IdentifierBasetoken:  getIdentifier(trade.BaseToken),
@@ -197,7 +199,7 @@ func (s *FiltersBlockService) createFilters(trade dia.Trade, exchange string, Be
 	}
 }
 
-func (s *FiltersBlockService) computeFilters(trade dia.Trade, exchange string) {
+func (s *PairFiltersBlockService) computeFilters(trade dia.Trade, exchange string) {
 	fa := filtersPair{
 		IdentifierQuotetoken: getIdentifier(trade.QuoteToken),
 		IdentifierBasetoken:  getIdentifier(trade.BaseToken),
@@ -250,14 +252,14 @@ func addMissingPoints(previousBlockFilters []dia.FilterPoint, newFilters []dia.F
 	return result
 }
 
-// ProcessTradesBlock sends a filled tradesBlock into the filtersBlock channel.
-func (s *FiltersBlockService) ProcessTradesBlock(tradesBlock *dia.TradesBlock) {
-	s.chanTradesBlock <- tradesBlock
+// ProcessFiltersBlock sends a filled fitlersBlock into the filtersBlock channel.
+func (s *PairFiltersBlockService) ProcessFiltersBlock(filtersBlock *dia.FiltersBlock) {
+	s.chanFiltersBlock <- filtersBlock
 	log.Info("Processing TradesBlock done.")
 }
 
 // Close gracefully closes the Filtersblockservice
-func (s *FiltersBlockService) Close() error {
+func (s *PairFiltersBlockService) Close() error {
 	if s.closed {
 		return errors.New("filters: Already closed")
 	}
@@ -267,7 +269,7 @@ func (s *FiltersBlockService) Close() error {
 }
 
 // cleanup must only be called from mainLoop
-func (s *FiltersBlockService) cleanup(err error) {
+func (s *PairFiltersBlockService) cleanup(err error) {
 	s.errorLock.Lock()
 	defer s.errorLock.Unlock()
 	if err != nil {

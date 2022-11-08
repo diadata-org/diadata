@@ -17,7 +17,10 @@ func TestFilterMa(t *testing.T) {
 		Symbol: "XRP",
 		Name:   "XRP",
 	}
-	f := NewFilterMA(assetXRP, "", d, filterParam)
+	assetUSDT := dia.Asset{
+		Symbol: "USDT",
+	}
+	f := NewFilterMA(dia.Pair{QuoteToken: assetXRP, BaseToken: assetUSDT}, "", d, filterParam)
 	steps := filterParam
 	p := firstPrice
 	i := 0
@@ -57,7 +60,10 @@ func TestFilterMa2(t *testing.T) {
 		Symbol: "XRP",
 		Name:   "XRP",
 	}
-	f := NewFilterMA(assetXRP, "", d, filterParam)
+	assetUSDT := dia.Asset{
+		Symbol: "USDT",
+	}
+	f := NewFilterMA(dia.Pair{QuoteToken: assetXRP, BaseToken: assetUSDT}, "", d, filterParam)
 	steps := filterParam
 	p := firstPrice
 	i := 0
@@ -98,7 +104,10 @@ func TestFilterMaIgnore(t *testing.T) {
 		Symbol: "XRP",
 		Name:   "XRP",
 	}
-	f := NewFilterMA(assetXRP, "", d, filterParam)
+	assetUSDT := dia.Asset{
+		Symbol: "USDT",
+	}
+	f := NewFilterMA(dia.Pair{QuoteToken: assetXRP, BaseToken: assetUSDT}, "", d, filterParam)
 	steps := filterParam
 	p := firstPrice
 	priceIncrements := 1.0

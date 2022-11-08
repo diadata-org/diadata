@@ -479,7 +479,7 @@ type FiltersBlockData struct {
 
 // FilterPoint contains the resulting value of a filter applied to an asset.
 type FilterPoint struct {
-	Asset      Asset
+	Pair       Pair
 	Value      float64
 	Name       string
 	Time       time.Time

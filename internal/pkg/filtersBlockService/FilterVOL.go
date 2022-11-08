@@ -11,7 +11,7 @@ import (
 )
 
 type FilterVOL struct {
-	asset       dia.Asset
+	pair        dia.Pair
 	exchange    string
 	currentTime time.Time
 	volumeUSD   float64
@@ -21,9 +21,9 @@ type FilterVOL struct {
 	modified    bool
 }
 
-func NewFilterVOL(asset dia.Asset, exchange string, memory int) *FilterVOL {
+func NewFilterVOL(pair dia.Pair, exchange string, memory int) *FilterVOL {
 	filter := &FilterVOL{
-		asset:      asset,
+		pair:       pair,
 		exchange:   exchange,
 		volumeUSD:  0.0,
 		filterName: "VOL" + strconv.Itoa(memory),
@@ -57,7 +57,7 @@ func (filter *FilterVOL) filterPointForBlock() *dia.FilterPoint {
 
 func (filter *FilterVOL) FilterPointForBlock() *dia.FilterPoint {
 	return &dia.FilterPoint{
-		Asset: filter.asset,
+		Pair:  filter.pair,
 		Value: filter.value,
 		Name:  filter.filterName,
 		Time:  filter.currentTime,
@@ -67,7 +67,7 @@ func (filter *FilterVOL) FilterPointForBlock() *dia.FilterPoint {
 func (filter *FilterVOL) save(ds models.Datastore) error {
 	if filter.modified {
 		filter.modified = false
-		err := ds.SetFilter(filter.filterName, filter.asset, filter.exchange, filter.value, filter.currentTime)
+		err := ds.SetFilter(filter.filterName, filter.pair, filter.exchange, filter.value, filter.currentTime)
 		if err != nil {
 			log.Errorln("FilterVOL Error:", err)
 		}

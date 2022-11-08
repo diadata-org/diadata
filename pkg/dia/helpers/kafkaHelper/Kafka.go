@@ -27,11 +27,10 @@ type KafkaMessageWithAHash interface {
 }
 
 const (
-	TopicIndexBlock = 0
-
-	TopicFiltersBlock = 1
-	TopicTrades       = 2
-	TopicTradesBlock  = 3
+	TopicPairFiltersBlock = 0
+	TopicFiltersBlock     = 1
+	TopicTrades           = 2
+	TopicTradesBlock      = 3
 
 	TopicFiltersBlockHistorical = 4
 	TopicTradesHistorical       = 5

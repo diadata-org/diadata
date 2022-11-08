@@ -13,7 +13,7 @@ import (
 // It implements a trimmed median. Outliers are eliminated using interquartile range
 // see: https://en.wikipedia.org/wiki/Interquartile_range
 type FilterMEDIR struct {
-	asset       dia.Asset
+	pair        dia.Pair
 	exchange    string
 	currentTime time.Time
 	prices      []float64
@@ -24,10 +24,10 @@ type FilterMEDIR struct {
 	modified    bool
 }
 
-//NewFilterMEDIR creates a FilterMEDIR
-func NewFilterMEDIR(asset dia.Asset, exchange string, currentTime time.Time, memory int) *FilterMEDIR {
+// NewFilterMEDIR creates a FilterMEDIR
+func NewFilterMEDIR(pair dia.Pair, exchange string, currentTime time.Time, memory int) *FilterMEDIR {
 	filter := &FilterMEDIR{
-		asset:       asset,
+		pair:        pair,
 		exchange:    exchange,
 		prices:      []float64{},
 		currentTime: currentTime,
@@ -81,7 +81,7 @@ func (filter *FilterMEDIR) filterPointForBlock() *dia.FilterPoint {
 		return nil
 	}
 	return &dia.FilterPoint{
-		Asset: filter.asset,
+		Pair:  filter.pair,
 		Value: filter.value,
 		Name:  filter.filterName,
 		Time:  filter.currentTime,
@@ -90,7 +90,7 @@ func (filter *FilterMEDIR) filterPointForBlock() *dia.FilterPoint {
 
 func (filter *FilterMEDIR) FilterPointForBlock() *dia.FilterPoint {
 	return &dia.FilterPoint{
-		Asset: filter.asset,
+		Pair:  filter.pair,
 		Value: filter.value,
 		Name:  filter.filterName,
 		Time:  filter.currentTime,
@@ -99,7 +99,7 @@ func (filter *FilterMEDIR) FilterPointForBlock() *dia.FilterPoint {
 func (filter *FilterMEDIR) save(ds models.Datastore) error {
 	if filter.modified {
 		filter.modified = false
-		err := ds.SetFilter(filter.filterName, filter.asset, filter.exchange, filter.value, filter.currentTime)
+		err := ds.SetFilter(filter.filterName, filter.pair, filter.exchange, filter.value, filter.currentTime)
 		if err != nil {
 			log.Errorln("FilterMEDIR: Error:", err)
 		}

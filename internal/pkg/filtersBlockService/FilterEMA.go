@@ -12,7 +12,7 @@ import (
 // FilterEMA is the struct for a moving average filter implementing
 // the Filter interface.
 type FilterEMA struct {
-	asset           dia.Asset
+	pair            dia.Pair
 	exchange        string
 	currentTime     time.Time
 	previousPrices  []float64
@@ -26,10 +26,10 @@ type FilterEMA struct {
 }
 
 // NewFilterEMA returns a moving average filter.
-func NewFilterEMA(asset dia.Asset, exchange string, currentTime time.Time, blockSize int) *FilterEMA {
+func NewFilterEMA(pair dia.Pair, exchange string, currentTime time.Time, blockSize int) *FilterEMA {
 
 	s := &FilterEMA{
-		asset:           asset,
+		pair:            pair,
 		exchange:        exchange,
 		previousPrices:  []float64{},
 		previousVolumes: []float64{},
@@ -60,19 +60,19 @@ func (s *FilterEMA) compute(trade dia.FilterPoint) {
 	s.lastTrade = &trade
 }
 
-func (e *FilterEMA) fill(t time.Time, trade dia.FilterPoint) {
+func (s *FilterEMA) fill(t time.Time, trade dia.FilterPoint) {
 	log.Println("FilterEMA fill ", trade)
-	log.Println("FilterEMA e.multiplier ", e.multiplier)
-	log.Println("FilterEMA e.value ", e.value)
-	e.currentTime = trade.Time
-	if e.value == 0 { // this is a proxy for "uninitialized"
-		e.value = trade.Value
+	log.Println("FilterEMA e.multiplier ", s.multiplier)
+	log.Println("FilterEMA e.value ", s.value)
+	s.currentTime = trade.Time
+	if s.value == 0 { // this is a proxy for "uninitialized"
+		s.value = trade.Value
 	} else {
-		e.value = (trade.Value * float64(e.multiplier)) + (e.value * (1 - float64(e.multiplier)))
-		log.Println("FilterEMA e.value and multiplier ", e.value, e.multiplier)
+		s.value = (trade.Value * float64(s.multiplier)) + (s.value * (1 - float64(s.multiplier)))
+		log.Println("FilterEMA e.value and multiplier ", s.value, s.multiplier)
 
 	}
-	log.Println("FilterEMA e.value ", e.value)
+	log.Println("FilterEMA e.value ", s.value)
 
 }
 
@@ -80,18 +80,18 @@ func (s *FilterEMA) FinalCompute(t time.Time) float64 {
 	return s.finalCompute(t)
 }
 
-func (e *FilterEMA) finalCompute(t time.Time) float64 {
-	return e.value
+func (s *FilterEMA) finalCompute(t time.Time) float64 {
+	return s.value
 }
 
-func (e *FilterEMA) FilterPointForBlock() *dia.FilterPoint {
-	log.Println("FilterPointForBlock", e.value, e.currentTime, e.asset)
+func (s *FilterEMA) FilterPointForBlock() *dia.FilterPoint {
+	log.Println("FilterPointForBlock", s.value, s.currentTime, s.pair)
 
 	return &dia.FilterPoint{
-		Asset: e.asset,
-		Value: e.value,
-		Name:  "EMA" + strconv.Itoa(e.param),
-		Time:  e.currentTime,
+		Pair:  s.pair,
+		Value: s.value,
+		Name:  "EMA" + strconv.Itoa(s.param),
+		Time:  s.currentTime,
 	}
 
 }
@@ -101,7 +101,7 @@ func (s *FilterEMA) filterPointForBlock() *dia.FilterPoint {
 		return nil
 	}
 	return &dia.FilterPoint{
-		Asset: s.asset,
+		Pair:  s.pair,
 		Value: s.value,
 		Name:  "EMA" + strconv.Itoa(s.param),
 		Time:  s.currentTime,
@@ -112,7 +112,7 @@ func (s *FilterEMA) save(ds models.Datastore) error {
 
 	if s.modified {
 		s.modified = false
-		err := ds.SetFilter(s.filterName, s.asset, s.exchange, s.value, s.currentTime)
+		err := ds.SetFilter(s.filterName, s.pair, s.exchange, s.value, s.currentTime)
 		if err != nil {
 			log.Errorln("FilterMA: Error:", err)
 		}

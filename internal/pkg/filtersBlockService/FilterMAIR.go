@@ -13,7 +13,7 @@ import (
 // Outliers are eliminated using interquartile range.
 // see: https://en.wikipedia.org/wiki/Interquartile_range
 type FilterMAIR struct {
-	asset       dia.Asset
+	pair        dia.Pair
 	exchange    string
 	currentTime time.Time
 	prices      []float64
@@ -25,10 +25,10 @@ type FilterMAIR struct {
 	modified    bool
 }
 
-//NewFilterMAIR returns a FilterMAIR
-func NewFilterMAIR(asset dia.Asset, exchange string, currentTime time.Time, memory int) *FilterMAIR {
+// NewFilterMAIR returns a FilterMAIR
+func NewFilterMAIR(pair dia.Pair, exchange string, currentTime time.Time, memory int) *FilterMAIR {
 	filter := &FilterMAIR{
-		asset:       asset,
+		pair:        pair,
 		exchange:    exchange,
 		prices:      []float64{},
 		volumes:     []float64{},
@@ -115,7 +115,7 @@ func (filter *FilterMAIR) finalCompute(t time.Time) float64 {
 
 func (filter *FilterMAIR) FilterPointForBlock() *dia.FilterPoint {
 	return &dia.FilterPoint{
-		Asset: filter.asset,
+		Pair:  filter.pair,
 		Value: filter.value,
 		Name:  filter.filterName,
 		Time:  filter.currentTime,
@@ -127,7 +127,7 @@ func (filter *FilterMAIR) filterPointForBlock() *dia.FilterPoint {
 		return nil
 	}
 	return &dia.FilterPoint{
-		Asset: filter.asset,
+		Pair:  filter.pair,
 		Value: filter.value,
 		Name:  filter.filterName,
 		Time:  filter.currentTime,
@@ -137,7 +137,7 @@ func (filter *FilterMAIR) filterPointForBlock() *dia.FilterPoint {
 func (filter *FilterMAIR) save(ds models.Datastore) error {
 	if filter.modified {
 		filter.modified = false
-		err := ds.SetFilter(filter.filterName, filter.asset, filter.exchange, filter.value, filter.currentTime)
+		err := ds.SetFilter(filter.filterName, filter.pair, filter.exchange, filter.value, filter.currentTime)
 		if err != nil {
 			log.Errorln("FilterMAIR: Error:", err)
 		}
@@ -145,7 +145,7 @@ func (filter *FilterMAIR) save(ds models.Datastore) error {
 		// Additionally, the price across exchanges is saved in influx as a quotation.
 		// This price is used for the estimation of quote tokens' prices in the tradesBlockService.
 		if filter.exchange == "" {
-			err = ds.SetAssetPriceUSD(filter.asset, filter.value, filter.currentTime)
+			err = ds.SetAssetPriceUSD(filter.pair, filter.value, filter.currentTime)
 			if err != nil {
 				log.Errorln("FilterMAIR: Error:", err)
 			}

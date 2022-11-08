@@ -1786,10 +1786,16 @@ func (env *Env) GetLastTradeTime(c *gin.Context) {
 	}
 
 	exchange := c.Param("exchange")
-	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	quotetokenblockchain := c.Param("quotetokenblockchain")
+	quotetokenaddress := makeAddressEIP55Compliant(c.Param("quotetokenaddress"), quotetokenblockchain)
+	basetokenblockchain := c.Param("basetokenblockchain")
+	basetokenaddress := makeAddressEIP55Compliant(c.Param("basetokenaddress"), basetokenblockchain)
+	pair := dia.Pair{
+		QuoteToken: dia.Asset{Blockchain: quotetokenblockchain, Address: quotetokenaddress},
+		BaseToken:  dia.Asset{Blockchain: basetokenblockchain, Address: basetokenaddress},
+	}
 
-	t, err := env.DataStore.GetLastTradeTimeForExchange(dia.Asset{Address: address, Blockchain: blockchain}, exchange)
+	t, err := env.DataStore.GetLastTradeTimeForExchange(pair, exchange)
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)

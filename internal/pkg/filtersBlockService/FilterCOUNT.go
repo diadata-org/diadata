@@ -10,7 +10,7 @@ import (
 )
 
 type FilterCOUNT struct {
-	asset       dia.Asset
+	pair        dia.Pair
 	exchange    string
 	currentTime time.Time
 	numTrades   int64
@@ -20,9 +20,9 @@ type FilterCOUNT struct {
 	modified    bool
 }
 
-func NewFilterCOUNT(asset dia.Asset, exchange string, memory int) *FilterCOUNT {
+func NewFilterCOUNT(quotetoken dia.Asset, basetoken dia.Asset, exchange string, memory int) *FilterCOUNT {
 	filter := &FilterCOUNT{
-		asset:      asset,
+		pair:       dia.Pair{QuoteToken: quotetoken, BaseToken: basetoken},
 		exchange:   exchange,
 		numTrades:  int64(0),
 		filterName: "COUNT" + strconv.Itoa(memory),
@@ -56,7 +56,7 @@ func (filter *FilterCOUNT) filterPointForBlock() *dia.FilterPoint {
 
 func (filter *FilterCOUNT) FilterPointForBlock() *dia.FilterPoint {
 	return &dia.FilterPoint{
-		Asset: filter.asset,
+		Pair:  filter.pair,
 		Value: float64(filter.value),
 		Name:  filter.filterName,
 		Time:  filter.currentTime,
@@ -66,7 +66,7 @@ func (filter *FilterCOUNT) FilterPointForBlock() *dia.FilterPoint {
 func (filter *FilterCOUNT) save(ds models.Datastore) error {
 	if filter.modified {
 		filter.modified = false
-		err := ds.SetFilter(filter.filterName, filter.asset, filter.exchange, float64(filter.value), filter.currentTime)
+		err := ds.SetFilter(filter.filterName, filter.pair, filter.exchange, float64(filter.value), filter.currentTime)
 		if err != nil {
 			log.Errorln("FilterCOUNT Error:", err)
 		}

@@ -20,13 +20,13 @@ type FilterVWAPIR struct {
 	value       float64
 	modified    bool
 	filterName  string
-	asset       dia.Asset
+	pair        dia.Pair
 }
 
 // NewFilterVWAP ...
-func NewFilterVWAPIR(asset dia.Asset, exchange string, currentTime time.Time, param int) *FilterVWAPIR {
+func NewFilterVWAPIR(pair dia.Pair, exchange string, currentTime time.Time, param int) *FilterVWAPIR {
 	s := &FilterVWAPIR{
-		asset:       asset,
+		pair:        pair,
 		exchange:    exchange,
 		prices:      []float64{},
 		volumes:     []float64{},
@@ -118,14 +118,14 @@ func (s *FilterVWAPIR) filterPointForBlock() *dia.FilterPoint {
 			Value: s.value,
 			Name:  s.filterName,
 			Time:  s.currentTime,
-			Asset: s.asset,
+			Pair:  s.pair,
 		}
 	} else {
 		return &dia.FilterPoint{
 			Value: s.value,
 			Name:  s.filterName,
 			Time:  s.currentTime,
-			Asset: s.asset,
+			Pair:  s.pair,
 		}
 	}
 }
