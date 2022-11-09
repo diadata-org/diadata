@@ -48,11 +48,13 @@ type SerumScraper struct {
 	error     error
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
-	pairScrapers map[string]*SerumPairScraper
-	exchangeName string
-	chanTrades   chan *dia.Trade
-	waitTime     int
-	db           *models.RelDB
+	pairScrapers      map[string]*SerumPairScraper
+	exchangeName      string
+	chanTrades        chan *dia.Trade
+	waitTime          int
+	db                *models.RelDB
+	markets           map[string]serumMarket
+	tokenNameRegistry map[string]tokenMeta
 }
 
 func NewSerumScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *SerumScraper {
@@ -62,29 +64,69 @@ func NewSerumScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *S
 		log.Errorln("error connecting wsclient", err)
 	}
 
-	scraper := &SerumScraper{
-		solanaRpcClient: rpc.NewClient(utils.Getenv("SOLANA_URI_REST", rpcEndpointSolana)),
-		solanaWSClient:  wsclient,
-		shutdown:        make(chan nothing),
-		shutdownDone:    make(chan nothing),
-		errorLock:       sync.RWMutex{},
-		pairScrapers:    make(map[string]*SerumPairScraper),
-		exchangeName:    exchange.Name,
-		chanTrades:      make(chan *dia.Trade),
-		db:              relDB,
+	markets := make(map[string]serumMarket)
+	tokenNameRegistry := make(map[string]tokenMeta)
+	s := &SerumScraper{
+		solanaRpcClient:   rpc.NewClient(utils.Getenv("SOLANA_URI_REST", rpcEndpointSolana)),
+		solanaWSClient:    wsclient,
+		shutdown:          make(chan nothing),
+		shutdownDone:      make(chan nothing),
+		errorLock:         sync.RWMutex{},
+		pairScrapers:      make(map[string]*SerumPairScraper),
+		exchangeName:      exchange.Name,
+		chanTrades:        make(chan *dia.Trade),
+		db:                relDB,
+		markets:           markets,
+		tokenNameRegistry: tokenNameRegistry,
+	}
+
+	timestart := time.Now()
+	serumMarkets, err := s.getMarkets()
+	if err != nil {
+		log.Error("get markets: ", err)
+
+	}
+
+	timeend := time.Now().Unix() - timestart.Unix()
+	log.Infoln("time spend to get markets: ", timeend)
+	log.Infoln("Total serumMarkets: ", len(serumMarkets))
+
+	for _, v := range serumMarkets {
+		s.tokenNameRegistry[v.BaseMint.String()] = tokenMeta{}
+		s.tokenNameRegistry[v.QuoteMint.String()] = tokenMeta{}
+	}
+
+	err = s.getTokenNames(s.tokenNameRegistry)
+	if err != nil {
+		log.Error("get token names: ", err)
+
+	}
+	log.Infoln("Total asset watching: ", len(s.tokenNameRegistry))
+
+	for _, market := range serumMarkets {
+
+		baseToken, baseTokenValid := s.tokenNameRegistry[market.BaseMint.String()]
+		quoteToken, quoteTokenValid := s.tokenNameRegistry[market.QuoteMint.String()]
+		if baseTokenValid && quoteTokenValid {
+			marketName := baseToken.symbol + "/" + quoteToken.symbol
+			s.markets[marketName] = serumMarket{
+				market:     market,
+				baseAsset:  baseToken,
+				quoteAsset: quoteToken,
+			}
+		}
 	}
 	if scrape {
-		go scraper.mainLoop()
+		go s.mainLoop()
 	}
-	return scraper
+	return s
 }
 
 func (s *SerumScraper) mainLoop() {
 	// lastSeqNo := make(map[string]uint32)
 	// scraperInitialized := make(map[string]bool)
 	wg := sync.WaitGroup{}
-	markets := make(map[string]serumMarket)
-	tokenNameRegistry := make(map[string]tokenMeta)
+
 	s.run = true
 	for s.run {
 		// if len(s.pairScrapers) == 0 {
@@ -92,44 +134,9 @@ func (s *SerumScraper) mainLoop() {
 		// 	log.Error(s.error.Error())
 		// 	break
 		// }
-		timestart := time.Now()
-		serumMarkets, err := s.getMarkets()
-		if err != nil {
-			log.Error("get markets: ", err)
-			return
-		}
 
-		timeend := time.Now().Unix() - timestart.Unix()
-		log.Infoln("time spend to get markets: ", timeend)
-		log.Infoln("Total serumMarkets: ", len(serumMarkets))
-
-		for _, v := range serumMarkets {
-			tokenNameRegistry[v.BaseMint.String()] = tokenMeta{}
-			tokenNameRegistry[v.QuoteMint.String()] = tokenMeta{}
-		}
-
-		err = s.getTokenNames(tokenNameRegistry)
-		if err != nil {
-			log.Error("get token names: ", err)
-			return
-		}
-		log.Infoln("Total asset watching: ", len(tokenNameRegistry))
-
-		for _, market := range serumMarkets {
-
-			baseToken, baseTokenValid := tokenNameRegistry[market.BaseMint.String()]
-			quoteToken, quoteTokenValid := tokenNameRegistry[market.QuoteMint.String()]
-			if baseTokenValid && quoteTokenValid {
-				marketName := baseToken.symbol + "/" + quoteToken.symbol
-				markets[marketName] = serumMarket{
-					market:     market,
-					baseAsset:  baseToken,
-					quoteAsset: quoteToken,
-				}
-			}
-		}
-		for pair, _ := range markets {
-			if marketForPair, ok := markets[pair]; ok {
+		for pair, _ := range s.markets {
+			if marketForPair, ok := s.markets[pair]; ok {
 				fmt.Println(pair)
 
 				wg.Add(1)
