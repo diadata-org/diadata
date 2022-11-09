@@ -151,6 +151,8 @@ func (s *SerumScraper) mainLoop() {
 				go func(k string, ac *solanawsclient.AccountSubscription) {
 					{
 
+						var eq serum.EventQueue
+
 						for {
 							result, err := ac.Recv()
 							if err != nil {
@@ -158,17 +160,13 @@ func (s *SerumScraper) mainLoop() {
 								continue
 							}
 
-							databytes := result.Value.Account.Data.GetBinary()
-
-							eq := serum.EventQueue{}
-							err = eq.Decode(databytes)
+							err = eq.Decode(result.Value.Account.Data.GetBinary())
 							if err != nil {
-								log.Errorln("error decodind databytes for pair: ", k)
+								log.Errorln("decoding databytes for pair: ", k)
 								continue
 							}
 
 							for _, event := range eq.Events {
-								// log.Infoln("event", event)
 
 								if event.Flag.IsFill() && event.Flag.IsBid() {
 									volume, price := parseEvent(event, math.Pow10(int(marketForPair.baseAsset.decimals)), math.Pow10(int(marketForPair.quoteAsset.decimals)))
@@ -203,9 +201,7 @@ func (s *SerumScraper) mainLoop() {
 
 								}
 							}
-
 						}
-
 					}
 				}(pair, ac)
 			}
