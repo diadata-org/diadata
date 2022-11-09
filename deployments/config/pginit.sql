@@ -277,3 +277,37 @@ CREATE TABLE nftexchange (
 );
 
 
+CREATE TABLE oracleconfig (
+    id UUID DEFAULT gen_random_uuid(),
+    address text NOT NULL,
+    keypair_id UUID NOT NULL,
+    creator text NOT NULL,
+    symbols text NOT NULL,
+    chainID text NOT NULL,
+    UNIQUE (address),
+    UNIQUE (id)
+);
+
+CREATE TABLE keypair (
+    id UUID DEFAULT gen_random_uuid(),
+    publickey text NOT NULL,
+    privatekey text NOT NULL,
+    UNIQUE (publickey),
+    UNIQUE (id)
+);
+
+CREATE TABLE feederconfig (
+    id  SERIAL PRIMARY KEY,
+    oracleconfig_id  UUID REFERENCES oracleconfig(id),
+    UNIQUE (id)
+);
+
+CREATE TABLE feederaccess (
+    id  SERIAL PRIMARY KEY,
+    owner text NOT NULL,
+    publickey text NOT NULL,
+    UNIQUE (id)
+);
+
+
+
