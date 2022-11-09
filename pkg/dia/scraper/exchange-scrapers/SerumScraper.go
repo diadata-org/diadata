@@ -140,16 +140,17 @@ func (s *SerumScraper) mainLoop() {
 				fmt.Println(pair)
 
 				wg.Add(1)
+				log.Infoln("subscribing ", pair)
 
-				go func(k string) {
+				accountID := solanav2.MustPublicKeyFromBase58(marketForPair.market.EventQueue.String())
+				ac, err := s.solanaWSClient.AccountSubscribe(accountID, "")
+				if err != nil {
+					log.Errorln("error on AccountSubscribe", err)
+				}
+
+				go func(k string, ac *solanawsclient.AccountSubscription) {
 					{
-						log.Infoln("subscribing ", k)
 
-						accountID := solanav2.MustPublicKeyFromBase58(marketForPair.market.EventQueue.String())
-						ac, err := s.solanaWSClient.AccountSubscribe(accountID, "")
-						if err != nil {
-							log.Errorln("error on AccountSubscribe", err)
-						}
 						for {
 							result, err := ac.Recv()
 							if err != nil {
@@ -204,7 +205,7 @@ func (s *SerumScraper) mainLoop() {
 						}
 
 					}
-				}(pair)
+				}(pair, ac)
 			}
 		}
 		wg.Wait()
