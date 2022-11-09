@@ -84,6 +84,7 @@ func (s *SerumScraper) mainLoop() {
 	// scraperInitialized := make(map[string]bool)
 	wg := sync.WaitGroup{}
 	markets := make(map[string]serumMarket)
+	tokenNameRegistry := make(map[string]tokenMeta)
 	s.run = true
 	for s.run {
 		// if len(s.pairScrapers) == 0 {
@@ -102,15 +103,12 @@ func (s *SerumScraper) mainLoop() {
 		log.Infoln("time spend to get markets: ", timeend)
 		log.Infoln("Total serumMarkets: ", len(serumMarkets))
 
-		var tokenNameRegistry map[string]tokenMeta
-		tokenNameRegistry = make(map[string]tokenMeta)
-
 		for _, v := range serumMarkets {
 			tokenNameRegistry[v.BaseMint.String()] = tokenMeta{}
 			tokenNameRegistry[v.QuoteMint.String()] = tokenMeta{}
 		}
 
-		tokenNameRegistry, err = s.getTokenNames(tokenNameRegistry)
+		err = s.getTokenNames(tokenNameRegistry)
 		if err != nil {
 			log.Error("get token names: ", err)
 			return
@@ -216,14 +214,13 @@ func (s *SerumScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err erro
 		log.Error(err)
 		return
 	}
-	var tokenNameRegistry map[string]tokenMeta
-	tokenNameRegistry = make(map[string]tokenMeta)
+	tokenNameRegistry := make(map[string]tokenMeta)
 
 	for _, v := range serumMarkets {
 		tokenNameRegistry[v.BaseMint.String()] = tokenMeta{}
 		tokenNameRegistry[v.QuoteMint.String()] = tokenMeta{}
 	}
-	tokenNameRegistry, err = s.getTokenNames(tokenNameRegistry)
+	err = s.getTokenNames(tokenNameRegistry)
 	if err != nil {
 		log.Error(err)
 		return
@@ -328,7 +325,7 @@ func (s *SerumScraper) getMarkets() ([]*serum.MarketV2, error) {
 	return out, nil
 }
 
-func (s *SerumScraper) getTokenNames(names map[string]tokenMeta) (map[string]tokenMeta, error) {
+func (s *SerumScraper) getTokenNames(names map[string]tokenMeta) error {
 	// tldPublicKey := solana.MustPublicKeyFromBase58(dotTokenTLD)
 	// resp, err := s.solanaRpcClient.GetProgramAccounts(
 	// 	solana.MustPublicKeyFromBase58(nameServiceProgramAddress),
@@ -380,7 +377,7 @@ func (s *SerumScraper) getTokenNames(names map[string]tokenMeta) (map[string]tok
 	// names["BQcdHdAQW1hczDbBi9hiegXAR7A98Q9jx3X3iBBBDiq4"] = tokenMeta{name: "Wrapped USDT (Sollet)", symbol: "soUSDT", decimals: 6, mint: "BQcdHdAQW1hczDbBi9hiegXAR7A98Q9jx3X3iBBBDiq4"}
 	// names["SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"] = tokenMeta{name: "Serum", symbol: "SRM", decimals: 6, mint: "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"}
 
-	return names, nil
+	return nil
 }
 
 type tokenMeta struct {
