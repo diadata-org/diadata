@@ -161,9 +161,11 @@ func (s *SerumScraper) mainLoop() {
 							databytes := result.Value.Account.Data.GetBinary()
 
 							eq := serum.EventQueue{}
-							eq.Decode(databytes)
-
-							log.Infof("got event for %s  total events %d and account flag is %s  head %d sequence number %d and accountID %v", k, len(eq.Events), eq.AccountFlags.String(), eq.Head, eq.SeqNum, accountID)
+							err = eq.Decode(databytes)
+							if err != nil {
+								log.Errorln("error decodind databytes for pair: ", k)
+								continue
+							}
 
 							for _, event := range eq.Events {
 								// log.Infoln("event", event)
@@ -196,7 +198,7 @@ func (s *SerumScraper) mainLoop() {
 										VerifiedPair:   true,
 									}
 
-									log.Errorf("got trade -- timestamp: %v, symbol: %s, pair: %s, price %v, volume: %v, tradeID: %s", trade.Time, trade.Symbol, trade.Pair, trade.Price, trade.Volume, trade.ForeignTradeID)
+									log.Infof("got trade -- timestamp: %v, symbol: %s, pair: %s, price %v, volume: %v, tradeID: %s", trade.Time, trade.Symbol, trade.Pair, trade.Price, trade.Volume, trade.ForeignTradeID)
 									s.chanTrades <- &trade
 
 								}
