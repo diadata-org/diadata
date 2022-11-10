@@ -16,6 +16,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var mode *string
+
 func main() {
 
 	var (
@@ -36,29 +38,31 @@ func main() {
 		NFTExchanges[exchange.Name] = exchange
 	}
 
-	if testOpenSeaScraper := false; testOpenSeaScraper {
-		w = kafkaHelper.NewWriter(kafkaHelper.TopicNFTTradesTest)
+	// if testOpenSeaScraper := false; testOpenSeaScraper {
+	// 	w = kafkaHelper.NewWriter(kafkaHelper.TopicNFTTradesTest)
 
-		rdb, err := models.NewRelDataStore()
-		if err != nil {
-			panic(err)
-		}
+	// 	rdb, err := models.NewRelDataStore()
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
 
-		scraper := nfttradescrapers.NewOpenSeaScraper(rdb, NFTExchanges[dia.Opensea])
-		go func() { time.Sleep(3 * time.Minute); scraper.Close() }()
+	// 	scraper := nfttradescrapers.NewOpenSeaScraper(rdb, NFTExchanges[dia.Opensea])
+	// 	go func() { time.Sleep(3 * time.Minute); scraper.Close() }()
 
-		wg := sync.WaitGroup{}
-		wg.Add(1)
-		go handleData(scraper.GetTradeChannel(), &wg, w, rdb)
-		wg.Wait()
+	// 	wg := sync.WaitGroup{}
+	// 	wg.Add(1)
+	// 	go handleData(scraper.GetTradeChannel(), &wg, w, rdb)
+	// 	wg.Wait()
 
-		return
-	}
+	// 	return
+	// }
 	w = kafkaHelper.NewWriter(kafkaHelper.TopicNFTTrades)
 
 	wg := sync.WaitGroup{}
 
 	scraperType := flag.String("nftclass", "Cryptopunk", "which NFT class")
+	mode = flag.String("mode", "", "run local without kafka.")
+
 	flag.Parse()
 	var scraper nfttradescrapers.NFTTradeScraper
 
@@ -121,7 +125,6 @@ func handleData(tradeChannel chan dia.NFTTrade, wg *sync.WaitGroup, w *kafka.Wri
 		log.Infof("got trade: %s -> (%s) -> %s for %v %s (%.4f USD) \n", trade.FromAddress, trade.NFT.NFTClass.Name, trade.ToAddress, trade.Price, trade.Currency.Symbol, trade.PriceUSD)
 
 		err := rdb.SetNFTTradeToTable(trade, models.NfttradeCurrTable)
-		writeNFTTradeToKafka(w, &trade)
 		// err := rdb.SetNFTTradeToTable(trade, models.NfttradeSumeriaTable)
 		if err != nil {
 			var pgErr *pgconn.PgError
@@ -136,6 +139,13 @@ func handleData(tradeChannel chan dia.NFTTrade, wg *sync.WaitGroup, w *kafka.Wri
 				log.Errorf("Error saving trade with tx hash %s: %v", trade.TxHash, err)
 			}
 		} else {
+			if *mode != "local" {
+				err = writeNFTTradeToKafka(w, &trade)
+				if err != nil {
+					log.Errorf("Error writing trade to kafka with tx hash %s: %v", trade.TxHash, err)
+				}
+			}
+
 			log.Infof("successfully set trade with tx hash %s", trade.TxHash)
 		}
 	}
