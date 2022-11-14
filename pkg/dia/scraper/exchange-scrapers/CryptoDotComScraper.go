@@ -93,11 +93,11 @@ type cryptoDotComWSSubscriptionResult struct {
 
 // cryptoDotComWSInstrument represents a trade
 type cryptoDotComWSInstrument struct {
-	Price     float64 `json:"p"`
-	Quantity  float64 `json:"q"`
-	Side      string  `json:"s"`
-	TradeID   int     `json:"d"`
-	TradeTime int64   `json:"t"`
+	Price     string `json:"p"`
+	Quantity  string `json:"q"`
+	Side      string `json:"s"`
+	TradeID   string `json:"d"`
+	TradeTime int64  `json:"t"`
 }
 
 // cryptoDotComInstrument represents a trading pair
@@ -321,19 +321,29 @@ func (s *CryptoDotComScraper) mainLoop() {
 					log.Errorf("CryptoDotComScraper: Shutting down main loop due to instrument unmarshaling failure, err=%s", err.Error())
 				}
 
-				volume := i.Quantity
+				volume, err := strconv.ParseFloat(i.Quantity, 64)
+				if err != nil {
+					log.Error("parse volume: ", err)
+					continue
+				}
 				if i.Side != cryptoDotComSpotTradingBuy {
 					volume = -volume
+				}
+
+				price, err := strconv.ParseFloat(i.Price, 64)
+				if err != nil {
+					log.Error("parse price: ", err)
+					continue
 				}
 
 				trade := &dia.Trade{
 					Symbol:         baseCurrency,
 					Pair:           subscription.InstrumentName,
-					Price:          i.Price,
+					Price:          price,
 					Time:           time.Unix(0, i.TradeTime*int64(time.Millisecond)),
 					Volume:         volume,
 					Source:         s.exchangeName,
-					ForeignTradeID: strconv.Itoa(i.TradeID),
+					ForeignTradeID: i.TradeID,
 					VerifiedPair:   pair.Verified,
 					BaseToken:      pair.UnderlyingPair.BaseToken,
 					QuoteToken:     pair.UnderlyingPair.QuoteToken,
