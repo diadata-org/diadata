@@ -354,34 +354,34 @@ func (s *SerumScraper) getTokenNames(names map[string]tokenMeta) error {
 	// 	}
 	// }
 
-	for assetaddress, _ := range names {
-		asset, err := s.db.GetAsset(assetaddress, "Solana")
-		if err != nil {
-			log.Warn("asset not exists address: ", assetaddress)
-			delete(names, assetaddress)
-		} else {
+	// for assetaddress, _ := range names {
+	// 	asset, err := s.db.GetAsset(assetaddress, "Solana")
+	// 	if err != nil {
+	// 		log.Warn("asset not exists address: ", assetaddress)
+	// 		delete(names, assetaddress)
+	// 	} else {
 
-			names[assetaddress] = tokenMeta{name: asset.Name, symbol: asset.Symbol, decimals: asset.Decimals, mint: assetaddress}
-			log.Infoln("asset : ", asset)
+	// 		names[assetaddress] = tokenMeta{name: asset.Name, symbol: asset.Symbol, decimals: asset.Decimals, mint: assetaddress}
+	// 		log.Infoln("asset : ", asset)
 
-		}
-	}
+	// 	}
+	// }
 
-	// names["mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"] = tokenMeta{name: "Marinade staked SOL (mSOL)", symbol: "mSOL", decimals: 9, mint: "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"}
-	// names["So11111111111111111111111111111111111111112"] = tokenMeta{name: "Wrapped SOL", symbol: "SOL", decimals: 9, mint: "So11111111111111111111111111111111111111112"}
-	// names["4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R"] = tokenMeta{name: "Raydium", symbol: "RAY", decimals: 6, mint: "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R"}
-	// names["8Yv9Jz4z7BUHP68dz8E8m3tMe6NKgpMUKn8KVqrPA6Fr"] = tokenMeta{name: "Wrapped USDC (Allbridge from Avalanche)", symbol: "aaUSDC", decimals: 9, mint: "8Yv9Jz4z7BUHP68dz8E8m3tMe6NKgpMUKn8KVqrPA6Fr"}
-	// names["Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"] = tokenMeta{name: "USDT", symbol: "USDT", decimals: 6, mint: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"}
-	// names["EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"] = tokenMeta{name: "USD Coin", symbol: "USDC", decimals: 6, mint: "8Yv9Jz4z7BUHP68dz8E8m3tMe6NKgpMUKn8KVqrPA6Fr"}
-	// names["DubwWZNWiNGMMeeQHPnMATNj77YZPZSAz2WVR5WjLJqz"] = tokenMeta{name: "CropperFinance", symbol: "CRP", decimals: 9, mint: "DubwWZNWiNGMMeeQHPnMATNj77YZPZSAz2WVR5WjLJqz"}
-	// names["7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"] = tokenMeta{name: "Samoyed Coin", symbol: "SAMO", decimals: 9, mint: "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"}
-	// names["kinXdEcpDQeHPEuQnqmUgtYykqKGVFq6CeVX5iAHJq6"] = tokenMeta{name: "KIN", symbol: "KIN", decimals: 5, mint: "kinXdEcpDQeHPEuQnqmUgtYykqKGVFq6CeVX5iAHJq6"}
-	// names["DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ"] = tokenMeta{name: "DUST Protocol", symbol: "DUST", decimals: 9, mint: "DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ"}
-	// names["USDH1SM1ojwWUga67PGrgFWUHibbjqMvuMaDkRJTgkX"] = tokenMeta{name: "USDH Hubble Stablecoin", symbol: "USDH", decimals: 6, mint: "USDH1SM1ojwWUga67PGrgFWUHibbjqMvuMaDkRJTgkX"}
-	// names["5goWRao6a3yNC4d6UjMdQxonkCMvKBwdpubU3qhfcdf1"] = tokenMeta{name: "Tether USD (Portal from Polygon)", symbol: "USDTpo", decimals: 6, mint: "5goWRao6a3yNC4d6UjMdQxonkCMvKBwdpubU3qhfcdf1"}
-	// names["2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk"] = tokenMeta{name: "Wrapped Ethereum (Sollet)", symbol: "soETH", decimals: 6, mint: "2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk"}
-	// names["BQcdHdAQW1hczDbBi9hiegXAR7A98Q9jx3X3iBBBDiq4"] = tokenMeta{name: "Wrapped USDT (Sollet)", symbol: "soUSDT", decimals: 6, mint: "BQcdHdAQW1hczDbBi9hiegXAR7A98Q9jx3X3iBBBDiq4"}
-	// names["SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"] = tokenMeta{name: "Serum", symbol: "SRM", decimals: 6, mint: "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"}
+	names["mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"] = tokenMeta{name: "Marinade staked SOL (mSOL)", symbol: "mSOL", decimals: 9, mint: "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"}
+	names["So11111111111111111111111111111111111111112"] = tokenMeta{name: "Wrapped SOL", symbol: "SOL", decimals: 9, mint: "So11111111111111111111111111111111111111112"}
+	names["4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R"] = tokenMeta{name: "Raydium", symbol: "RAY", decimals: 6, mint: "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R"}
+	names["8Yv9Jz4z7BUHP68dz8E8m3tMe6NKgpMUKn8KVqrPA6Fr"] = tokenMeta{name: "Wrapped USDC (Allbridge from Avalanche)", symbol: "aaUSDC", decimals: 9, mint: "8Yv9Jz4z7BUHP68dz8E8m3tMe6NKgpMUKn8KVqrPA6Fr"}
+	names["Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"] = tokenMeta{name: "USDT", symbol: "USDT", decimals: 6, mint: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"}
+	names["EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"] = tokenMeta{name: "USD Coin", symbol: "USDC", decimals: 6, mint: "8Yv9Jz4z7BUHP68dz8E8m3tMe6NKgpMUKn8KVqrPA6Fr"}
+	names["DubwWZNWiNGMMeeQHPnMATNj77YZPZSAz2WVR5WjLJqz"] = tokenMeta{name: "CropperFinance", symbol: "CRP", decimals: 9, mint: "DubwWZNWiNGMMeeQHPnMATNj77YZPZSAz2WVR5WjLJqz"}
+	names["7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"] = tokenMeta{name: "Samoyed Coin", symbol: "SAMO", decimals: 9, mint: "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"}
+	names["kinXdEcpDQeHPEuQnqmUgtYykqKGVFq6CeVX5iAHJq6"] = tokenMeta{name: "KIN", symbol: "KIN", decimals: 5, mint: "kinXdEcpDQeHPEuQnqmUgtYykqKGVFq6CeVX5iAHJq6"}
+	names["DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ"] = tokenMeta{name: "DUST Protocol", symbol: "DUST", decimals: 9, mint: "DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ"}
+	names["USDH1SM1ojwWUga67PGrgFWUHibbjqMvuMaDkRJTgkX"] = tokenMeta{name: "USDH Hubble Stablecoin", symbol: "USDH", decimals: 6, mint: "USDH1SM1ojwWUga67PGrgFWUHibbjqMvuMaDkRJTgkX"}
+	names["5goWRao6a3yNC4d6UjMdQxonkCMvKBwdpubU3qhfcdf1"] = tokenMeta{name: "Tether USD (Portal from Polygon)", symbol: "USDTpo", decimals: 6, mint: "5goWRao6a3yNC4d6UjMdQxonkCMvKBwdpubU3qhfcdf1"}
+	names["2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk"] = tokenMeta{name: "Wrapped Ethereum (Sollet)", symbol: "soETH", decimals: 6, mint: "2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk"}
+	names["BQcdHdAQW1hczDbBi9hiegXAR7A98Q9jx3X3iBBBDiq4"] = tokenMeta{name: "Wrapped USDT (Sollet)", symbol: "soUSDT", decimals: 6, mint: "BQcdHdAQW1hczDbBi9hiegXAR7A98Q9jx3X3iBBBDiq4"}
+	names["SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"] = tokenMeta{name: "Serum", symbol: "SRM", decimals: 6, mint: "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"}
 
 	return nil
 }
