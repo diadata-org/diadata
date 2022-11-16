@@ -551,12 +551,13 @@ func (env *Env) Get24hVolume(c *gin.Context) {
 // GetExchanges is the delegate method for fetching all exchanges available in Postgres.
 func (env *Env) GetExchanges(c *gin.Context) {
 	type exchangeReturn struct {
-		Name       string
-		Volume24h  float64
-		Trades     int64
-		Pairs      int
-		Type       string
-		Blockchain string
+		Name          string
+		Volume24h     float64
+		Trades        int64
+		Pairs         int
+		Type          string
+		Blockchain    string
+		ScraperActive bool
 	}
 	var exchangereturns []exchangeReturn
 	exchanges, err := env.RelDB.GetAllExchanges()
@@ -582,11 +583,12 @@ func (env *Env) GetExchanges(c *gin.Context) {
 		}
 
 		exchangereturn := exchangeReturn{
-			Name:       exchange.Name,
-			Volume24h:  *vol,
-			Trades:     numTrades,
-			Pairs:      numPairs,
-			Blockchain: exchange.BlockChain.Name,
+			Name:          exchange.Name,
+			Volume24h:     *vol,
+			Trades:        numTrades,
+			Pairs:         numPairs,
+			Blockchain:    exchange.BlockChain.Name,
+			ScraperActive: exchange.ScraperActive,
 		}
 		exchangereturn.Type = models.GetExchangeType(exchange)
 		exchangereturns = append(exchangereturns, exchangereturn)

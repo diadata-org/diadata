@@ -300,6 +300,7 @@ type Exchange struct {
 	WsAPI         string     `json:"WsAPI"`
 	PairsAPI      string     `json:"PairsAPI"`
 	WatchdogDelay int        `json:"WatchdogDelay"`
+	ScraperActive bool       `json:"ScraperActive"`
 }
 
 type NFTExchange struct {

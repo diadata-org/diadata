@@ -93,9 +93,9 @@ func (datastore *DB) GetAvailablePairs(exchange string) ([]dia.ExchangePair, err
 }
 
 func (rdb *RelDB) SetExchange(exchange dia.Exchange) (err error) {
-	fields := fmt.Sprintf("INSERT INTO %s (name,centralized,bridge,contract,blockchain,rest_api,ws_api,pairs_api,watchdog_delay) VALUES ", exchangeTable)
-	values := "($1,$2,$3,NULLIF($4,''),$5,NULLIF($6,''),NULLIF($7,''),NULLIF($8,''),$9)"
-	conflict := " ON CONFLICT (name) DO UPDATE SET contract=NULLIF($4,''),rest_api=$6,ws_api=$7,pairs_api=$8,watchdog_delay=$9"
+	fields := fmt.Sprintf("INSERT INTO %s (name,centralized,bridge,contract,blockchain,rest_api,ws_api,pairs_api,watchdog_delay,scraper_active) VALUES ", exchangeTable)
+	values := "($1,$2,$3,NULLIF($4,''),$5,NULLIF($6,''),NULLIF($7,''),NULLIF($8,''),$9,$10)"
+	conflict := " ON CONFLICT (name) DO UPDATE SET contract=NULLIF($4,''),rest_api=$6,ws_api=$7,pairs_api=$8,watchdog_delay=$9,scraper_active=$10"
 
 	query := fields + values + conflict
 	_, err = rdb.postgresClient.Exec(context.Background(), query,
@@ -108,6 +108,7 @@ func (rdb *RelDB) SetExchange(exchange dia.Exchange) (err error) {
 		exchange.WsAPI,
 		exchange.PairsAPI,
 		exchange.WatchdogDelay,
+		exchange.ScraperActive,
 	)
 	if err != nil {
 		return err
@@ -116,7 +117,7 @@ func (rdb *RelDB) SetExchange(exchange dia.Exchange) (err error) {
 }
 
 func (rdb *RelDB) GetExchange(name string) (exchange dia.Exchange, err error) {
-	query := fmt.Sprintf("SELECT centralized,bridge,contract,blockchain,rest_api,ws_api,pairs_api,watchdog_delay FROM %s WHERE name=$1", exchangeTable)
+	query := fmt.Sprintf("SELECT centralized,bridge,contract,blockchain,rest_api,ws_api,pairs_api,watchdog_delay,scraper_active FROM %s WHERE name=$1", exchangeTable)
 	var contract sql.NullString
 	var blockchainName sql.NullString
 	var restAPI sql.NullString
@@ -131,6 +132,7 @@ func (rdb *RelDB) GetExchange(name string) (exchange dia.Exchange, err error) {
 		&wsAPI,
 		&pairsAPI,
 		&exchange.WatchdogDelay,
+		&exchange.ScraperActive,
 	)
 	if err != nil {
 		return
@@ -156,7 +158,7 @@ func (rdb *RelDB) GetExchange(name string) (exchange dia.Exchange, err error) {
 
 // GetAllExchanges returns all exchanges existent in the exchange table.
 func (rdb *RelDB) GetAllExchanges() (exchanges []dia.Exchange, err error) {
-	query := fmt.Sprintf("SELECT name,centralized,bridge,contract,blockchain,rest_api,ws_api,pairs_api,watchdog_delay FROM %s", exchangeTable)
+	query := fmt.Sprintf("SELECT name,centralized,bridge,contract,blockchain,rest_api,ws_api,pairs_api,watchdog_delay,scraper_active FROM %s", exchangeTable)
 	rows, err := rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return []dia.Exchange{}, err
@@ -180,6 +182,7 @@ func (rdb *RelDB) GetAllExchanges() (exchanges []dia.Exchange, err error) {
 			&wsAPI,
 			&pairsAPI,
 			&exchange.WatchdogDelay,
+			&exchange.ScraperActive,
 		)
 		if err != nil {
 			return []dia.Exchange{}, err

@@ -52,6 +52,7 @@ CREATE TABLE exchange (
     ws_api text,
     pairs_api text,
     watchdog_delay numeric NOT NULL,
+    scraper_active boolean,
     UNIQUE(exchange_id),
     UNIQUE (name)
 );
