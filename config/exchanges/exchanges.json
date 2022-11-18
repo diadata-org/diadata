@@ -740,7 +740,7 @@
             "WsAPI": "wss://tap.liquid.com/app/LiquidTapClient",
             "pairsAPI": "http://api.liquid.com/products",
             "WatchdogDelay": 1200,
-            "ScraperActive": true
+            "ScraperActive": false
         },
         {
             "Name": "Serum",
