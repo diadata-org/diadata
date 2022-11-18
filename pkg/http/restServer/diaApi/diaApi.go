@@ -1004,7 +1004,7 @@ func (env *Env) GetPoolSlippage(c *gin.Context) {
 		restApi.SendError(c, http.StatusInternalServerError, errors.New("error parsing priceDeviation."))
 		return
 	}
-	if priceDeviationInt < 0 || priceDeviationInt > 1000 {
+	if priceDeviationInt < 0 || priceDeviationInt >= 1000 {
 		restApi.SendError(c, http.StatusInternalServerError, errors.New("priceDeviation measured in per mille is out of range."))
 		return
 	}
@@ -1022,7 +1022,6 @@ func (env *Env) GetPoolSlippage(c *gin.Context) {
 
 	pool, err := env.RelDB.GetPoolByAddress(blockchain, addressPool)
 	if err != nil {
-		log.Info("err: ", err)
 		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find pool"))
 		return
 	}
@@ -1033,16 +1032,24 @@ func (env *Env) GetPoolSlippage(c *gin.Context) {
 	l.Time = pool.Time
 	l.Liquidity = pool.Assetvolumes
 
-	var assetInIndex int
+	var (
+		assetInIndex int
+		foundAsset   bool
+	)
 	for i := range pool.Assetvolumes {
 		if pool.Assetvolumes[i].Asset.Address == addressAsset {
 			assetInIndex = i
+			foundAsset = true
 		}
+	}
+	if !foundAsset {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("asset %s not in pool", addressAsset))
+		return
 	}
 
 	switch poolType {
 	case "UniswapV2":
-		l.VolumeNeeded = pool.Assetvolumes[assetInIndex].Volume * (1/math.Sqrt(1-priceDeviation) - 1)
+		l.VolumeNeeded = pool.Assetvolumes[assetInIndex].Volume * (1/(1-priceDeviation) - 1)
 	}
 
 	c.JSON(http.StatusOK, l)

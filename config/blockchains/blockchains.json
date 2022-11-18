@@ -155,7 +155,8 @@
             "NativeToken": {
                 "Address": "0x0000000000000000000000000000000000000000"
             },
-            "VerificationMechanism": "pos"
+            "VerificationMechanism": "pos",
+            "ChainID": "Ethereum592"
         },
         {
             "Name": "Shiden",
