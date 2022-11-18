@@ -230,6 +230,7 @@ func main() {
 		// (DEX) pools/liquidity endpoints.
 		diaGroup.GET("/poolLiquidity/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetPoolLiquidityByAddress))
 		diaGroup.GET("/poolSlippage/:blockchain/:addressPool/:addressAsset/:poolType/:priceDeviation", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetPoolSlippage))
+		diaGroup.GET("/poolPriceImpact/:blockchain/:addressPool/:addressAsset/:poolType/:priceDeviation", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetPoolPriceImpact))
 
 		// Pairs endpoints
 		diaGroup.GET("/pairsCex/:exchange", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetExchangePairs))

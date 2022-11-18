@@ -952,42 +952,74 @@ func (env *Env) GetPoolLiquidityByAddress(c *gin.Context) {
 	blockchain := c.Param("blockchain")
 	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 
-	type localReturn struct {
-		Exchange          string
-		Blockchain        string
-		Address           string
-		Time              time.Time
-		TotalLiquidityUSD float64
-		Liquidity         []dia.AssetVolume
-	}
-
 	pool, err := env.RelDB.GetPoolByAddress(blockchain, address)
 	if err != nil {
 		log.Info("err: ", err)
 		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find pool"))
 		return
 	}
-	var l localReturn
-	l.Exchange = pool.Exchange.Name
-	l.Blockchain = pool.Blockchain.Name
-	l.Address = pool.Address
-	l.Time = pool.Time
-	l.Liquidity = pool.Assetvolumes
 
 	// Get total liquidity.
-	var totalLiquidity float64
+	var (
+		totalLiquidity float64
+		noPrice        bool
+	)
 	for _, assetvol := range pool.Assetvolumes {
 		price, err := env.DataStore.GetAssetPriceUSDCache(assetvol.Asset)
 		if err != nil {
 			log.Warnf("no quotation for %v: %v", assetvol.Asset, err)
 			totalLiquidity = 0
+			noPrice = true
 			break
 		}
 		totalLiquidity += price * assetvol.Volume
 	}
-	l.TotalLiquidityUSD = totalLiquidity
+	if noPrice {
+		type localReturn struct {
+			Exchange          string
+			Blockchain        string
+			Address           string
+			Time              time.Time
+			TotalLiquidityUSD string
+			Liquidity         []dia.AssetLiquidity
+		}
 
-	c.JSON(http.StatusOK, l)
+		var l localReturn
+		l.TotalLiquidityUSD = "Not enough US-Dollar price information on one or more pool assets available."
+		l.Exchange = pool.Exchange.Name
+		l.Blockchain = pool.Blockchain.Name
+		l.Address = pool.Address
+		l.Time = pool.Time
+		for i := range pool.Assetvolumes {
+			var al dia.AssetLiquidity = dia.AssetLiquidity(pool.Assetvolumes[i])
+			l.Liquidity = append(l.Liquidity, al)
+		}
+
+		c.JSON(http.StatusOK, l)
+
+	} else {
+		type localReturn struct {
+			Exchange          string
+			Blockchain        string
+			Address           string
+			Time              time.Time
+			TotalLiquidityUSD float64
+			Liquidity         []dia.AssetLiquidity
+		}
+
+		var l localReturn
+		l.TotalLiquidityUSD = totalLiquidity
+		l.Exchange = pool.Exchange.Name
+		l.Blockchain = pool.Blockchain.Name
+		l.Address = pool.Address
+		l.Time = pool.Time
+		for i := range pool.Assetvolumes {
+			var al dia.AssetLiquidity = dia.AssetLiquidity(pool.Assetvolumes[i])
+			l.Liquidity = append(l.Liquidity, al)
+		}
+
+		c.JSON(http.StatusOK, l)
+	}
 
 }
 
@@ -1011,13 +1043,13 @@ func (env *Env) GetPoolSlippage(c *gin.Context) {
 	priceDeviation := float64(priceDeviationInt) / 1000
 
 	type localReturn struct {
-		VolumeNeeded      float64
-		Exchange          string
-		Blockchain        string
-		Address           string
-		Time              time.Time
-		TotalLiquidityUSD float64
-		Liquidity         []dia.AssetVolume
+		VolumeRequired float64
+		AssetIn        string
+		Exchange       string
+		Blockchain     string
+		Address        string
+		Time           time.Time
+		Liquidity      []dia.AssetLiquidity
 	}
 
 	pool, err := env.RelDB.GetPoolByAddress(blockchain, addressPool)
@@ -1030,7 +1062,10 @@ func (env *Env) GetPoolSlippage(c *gin.Context) {
 	l.Blockchain = pool.Blockchain.Name
 	l.Address = pool.Address
 	l.Time = pool.Time
-	l.Liquidity = pool.Assetvolumes
+	for i := range pool.Assetvolumes {
+		var al dia.AssetLiquidity = dia.AssetLiquidity(pool.Assetvolumes[i])
+		l.Liquidity = append(l.Liquidity, al)
+	}
 
 	var (
 		assetInIndex int
@@ -1046,10 +1081,79 @@ func (env *Env) GetPoolSlippage(c *gin.Context) {
 		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("asset %s not in pool", addressAsset))
 		return
 	}
+	l.AssetIn = pool.Assetvolumes[assetInIndex].Asset.Symbol
 
 	switch poolType {
 	case "UniswapV2":
-		l.VolumeNeeded = pool.Assetvolumes[assetInIndex].Volume * (1/(1-priceDeviation) - 1)
+		l.VolumeRequired = pool.Assetvolumes[assetInIndex].Volume * (1/(1-priceDeviation) - 1)
+	}
+
+	c.JSON(http.StatusOK, l)
+}
+
+func (env *Env) GetPoolPriceImpact(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+	blockchain := c.Param("blockchain")
+	addressPool := makeAddressEIP55Compliant(c.Param("addressPool"), blockchain)
+	addressAsset := makeAddressEIP55Compliant(c.Param("addressAsset"), blockchain)
+	poolType := c.Param("poolType")
+	priceDeviationInt, err := strconv.ParseInt(c.Param("priceDeviation"), 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("error parsing priceDeviation."))
+		return
+	}
+	if priceDeviationInt < 0 || priceDeviationInt >= 1000 {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("priceDeviation measured in per mille is out of range."))
+		return
+	}
+	priceDeviation := float64(priceDeviationInt) / 1000
+
+	type localReturn struct {
+		VolumeRequired float64
+		AssetIn        string
+		Exchange       string
+		Blockchain     string
+		Address        string
+		Time           time.Time
+		Liquidity      []dia.AssetLiquidity
+	}
+
+	pool, err := env.RelDB.GetPoolByAddress(blockchain, addressPool)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find pool"))
+		return
+	}
+	var l localReturn
+	l.Exchange = pool.Exchange.Name
+	l.Blockchain = pool.Blockchain.Name
+	l.Address = pool.Address
+	l.Time = pool.Time
+	for i := range pool.Assetvolumes {
+		var al dia.AssetLiquidity = dia.AssetLiquidity(pool.Assetvolumes[i])
+		l.Liquidity = append(l.Liquidity, al)
+	}
+
+	var (
+		assetInIndex int
+		foundAsset   bool
+	)
+	for i := range pool.Assetvolumes {
+		if pool.Assetvolumes[i].Asset.Address == addressAsset {
+			assetInIndex = i
+			foundAsset = true
+		}
+	}
+	if !foundAsset {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("asset %s not in pool", addressAsset))
+		return
+	}
+	l.AssetIn = pool.Assetvolumes[assetInIndex].Asset.Symbol
+
+	switch poolType {
+	case "UniswapV2":
+		l.VolumeRequired = pool.Assetvolumes[assetInIndex].Volume * (1/math.Sqrt(1-priceDeviation) - 1)
 	}
 
 	c.JSON(http.StatusOK, l)
