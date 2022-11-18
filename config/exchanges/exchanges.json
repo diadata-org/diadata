@@ -757,6 +757,20 @@
             "ScraperActive": false
         },
         {
+            "Name": "Orca",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP",
+            "Blockchain": {
+                "Name": "Solana"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200,
+            "ScraperActive": false
+        },
+        {
             "Name": "Simex",
             "Centralized": true,
             "Bridge": false,

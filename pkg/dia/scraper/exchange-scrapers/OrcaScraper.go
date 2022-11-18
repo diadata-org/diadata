@@ -16,6 +16,95 @@ const (
 	orcaProgramAddrWhirlpool = "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc"
 )
 
+type OrcaEndpointWhirlpoolsResponse struct {
+	Whirlpools []struct {
+		Address string `json:"address"`
+		TokenA  struct {
+			Mint        string `json:"mint"`
+			Symbol      string `json:"symbol"`
+			Name        string `json:"name"`
+			Decimals    int    `json:"decimals"`
+			LogoURI     string `json:"logoURI"`
+			CoingeckoID string `json:"coingeckoId"`
+			Whitelisted bool   `json:"whitelisted"`
+			PoolToken   bool   `json:"poolToken"`
+		} `json:"tokenA"`
+		TokenB struct {
+			Mint        string `json:"mint"`
+			Symbol      string `json:"symbol"`
+			Name        string `json:"name"`
+			Decimals    int    `json:"decimals"`
+			LogoURI     string `json:"logoURI"`
+			CoingeckoID string `json:"coingeckoId"`
+			Whitelisted bool   `json:"whitelisted"`
+			PoolToken   bool   `json:"poolToken"`
+		} `json:"tokenB"`
+		Whitelisted      bool    `json:"whitelisted"`
+		TickSpacing      int     `json:"tickSpacing"`
+		Price            float64 `json:"price"`
+		LpFeeRate        float64 `json:"lpFeeRate"`
+		ProtocolFeeRate  float64 `json:"protocolFeeRate"`
+		WhirlpoolsConfig string  `json:"whirlpoolsConfig"`
+		ModifiedTimeMs   int64   `json:"modifiedTimeMs"`
+		Tvl              float64 `json:"tvl"`
+		Volume           struct {
+			Day   float64 `json:"day"`
+			Week  float64 `json:"week"`
+			Month float64 `json:"month"`
+		} `json:"volume"`
+		VolumeDenominatedA struct {
+			Day   float64 `json:"day"`
+			Week  float64 `json:"week"`
+			Month float64 `json:"month"`
+		} `json:"volumeDenominatedA"`
+		VolumeDenominatedB struct {
+			Day   float64 `json:"day"`
+			Week  float64 `json:"week"`
+			Month float64 `json:"month"`
+		} `json:"volumeDenominatedB"`
+		PriceRange struct {
+			Day struct {
+				Min float64 `json:"min"`
+				Max float64 `json:"max"`
+			} `json:"day"`
+			Week struct {
+				Min float64 `json:"min"`
+				Max float64 `json:"max"`
+			} `json:"week"`
+			Month struct {
+				Min float64 `json:"min"`
+				Max float64 `json:"max"`
+			} `json:"month"`
+		} `json:"priceRange,omitempty"`
+		FeeApr struct {
+			Day   float64 `json:"day"`
+			Week  float64 `json:"week"`
+			Month float64 `json:"month"`
+		} `json:"feeApr"`
+		Reward0Apr struct {
+			Day   float64 `json:"day"`
+			Week  float64 `json:"week"`
+			Month float64 `json:"month"`
+		} `json:"reward0Apr"`
+		Reward1Apr struct {
+			Day   float64 `json:"day"`
+			Week  float64 `json:"week"`
+			Month float64 `json:"month"`
+		} `json:"reward1Apr"`
+		Reward2Apr struct {
+			Day   float64 `json:"day"`
+			Week  float64 `json:"week"`
+			Month float64 `json:"month"`
+		} `json:"reward2Apr"`
+		TotalApr struct {
+			Day   float64 `json:"day"`
+			Week  float64 `json:"week"`
+			Month float64 `json:"month"`
+		} `json:"totalApr"`
+	}
+	HasMore bool `json:"hasMore"`
+}
+
 type OrcaScraper struct {
 	exchangeName string
 
@@ -60,6 +149,21 @@ func NewOrcaScraper(exchange dia.Exchange, scrape bool) *OrcaScraper {
 		go scraper.mainLoop()
 	}
 	return scraper
+}
+
+// Closes any existing API connections, as well as channels of
+// pairScrapers from calls to ScrapePair
+func (s *OrcaScraper) Close() error {
+	s.run = false
+	for _, pairScraper := range s.pairScrapers {
+		pairScraper.closed = true
+	}
+	s.WsClient.Close()
+	s.RestClient.Close()
+
+	close(s.shutdown)
+	<-s.shutdownDone
+	return nil
 }
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from the scraper

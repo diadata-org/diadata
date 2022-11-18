@@ -229,6 +229,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewByBitScraper(Exchanges[dia.ByBitExchange], scrape, relDB)
 	case dia.SerumExchange:
 		return NewSerumScraper(Exchanges[dia.SerumExchange], scrape, relDB)
+	case dia.OrcaExchange:
+		return NewOrcaScraper(Exchanges[dia.OrcaExchange], scrape)
 	case dia.AnyswapExchange:
 		return NewAnyswapScraper(Exchanges[dia.AnyswapExchange], scrape, relDB)
 	case dia.NetswapExchange:
