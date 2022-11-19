@@ -11,10 +11,29 @@ import (
 )
 
 const (
-	orcaRestDialSolana       = ""
-	orcaWsDialSolana         = ""
+	solanaHttpDial           = "https://rpc.ankr.com/solana"
+	solanaWsDial             = "wss://api.mainnet-beta.solana.com"
 	orcaProgramAddrWhirlpool = "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc"
+	orcaHttpRestApi          = "https://api.mainnet.orca.so/v1"
 )
+
+type OrcaScraper struct {
+	exchangeName string
+
+	// state variables to signal events
+	run          bool
+	shutdown     chan nothing
+	shutdownDone chan nothing
+
+	errorLock sync.RWMutex
+	error     error
+
+	pairScrapers map[string]*OrcaPairScraper
+	chanTrades   chan *dia.Trade
+
+	RestClient *rpc.Client
+	WsClient   *ws.Client
+}
 
 type OrcaEndpointWhirlpoolsResponse struct {
 	Whirlpools []struct {
@@ -105,39 +124,17 @@ type OrcaEndpointWhirlpoolsResponse struct {
 	HasMore bool `json:"hasMore"`
 }
 
-type OrcaScraper struct {
-	exchangeName string
-
-	RestClient *rpc.Client
-	WsClient   *ws.Client
-
-	// state variables to signal events
-	run          bool
-	shutdown     chan nothing
-	shutdownDone chan nothing
-
-	errorLock sync.RWMutex
-	error     error
-
-	pairScrapers map[string]*OrcaPairScraper
-	chanTrades   chan *dia.Trade
-}
-
-func (s *OrcaScraper) mainLoop() {
-	s.run = true
-}
-
 func NewOrcaScraper(exchange dia.Exchange, scrape bool) *OrcaScraper {
 
 	log.Infof("init rest and ws client for %s", exchange.BlockChain.Name)
-	wsClient, err := ws.Connect(context.Background(), orcaWsDialSolana)
+	wsClient, err := ws.Connect(context.Background(), solanaWsDial)
 	if err != nil {
 		log.Fatal("init ws client: ", err)
 	}
 
 	scraper := &OrcaScraper{
 		exchangeName: exchange.Name,
-		RestClient:   rpc.New(orcaRestDialSolana),
+		RestClient:   rpc.New(solanaHttpDial),
 		WsClient:     wsClient,
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
@@ -145,10 +142,24 @@ func NewOrcaScraper(exchange dia.Exchange, scrape bool) *OrcaScraper {
 		chanTrades:   make(chan *dia.Trade),
 	}
 
+	err = scraper.loadMarketsAndTokensMetadata()
+	if err != nil {
+		log.Errorf("load metadata: %s", err)
+	}
+
 	if scrape {
 		go scraper.mainLoop()
 	}
 	return scraper
+}
+
+func (s *OrcaScraper) mainLoop() {
+	s.run = true
+}
+
+// Load markets and tokens metadata
+func (s *OrcaScraper) loadMarketsAndTokensMetadata() (err error) {
+	return
 }
 
 // Closes any existing API connections, as well as channels of

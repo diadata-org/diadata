@@ -764,8 +764,8 @@
             "Blockchain": {
                 "Name": "Solana"
             },
-            "RestAPI": "",
-            "WsAPI": "",
+            "RestAPI": "https://rpc.ankr.com/solana",
+            "WsAPI": "wss://api.mainnet-beta.solana.com",
             "pairsAPI": "",
             "WatchdogDelay": 7200,
             "ScraperActive": false
