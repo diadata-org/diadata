@@ -221,12 +221,12 @@ func (rdb *RelDB) GetLastBlockheightTopshot(upperBound time.Time) (uint64, error
 	return currentBlock, nil
 }
 
-//SetNFTTTrade is a wrapper for SetNFTTradeToTable that stores @trade into the main nfttrade table.
+// SetNFTTTrade is a wrapper for SetNFTTradeToTable that stores @trade into the main nfttrade table.
 func (rdb *RelDB) SetNFTTrade(trade dia.NFTTrade) error {
 	return rdb.SetNFTTradeToTable(trade, NfttradeCurrTable)
 }
 
-//  SetNFTTradeToTable  stores into @table.
+// SetNFTTradeToTable  stores into @table.
 func (rdb *RelDB) SetNFTTradeToTable(trade dia.NFTTrade, table string) error {
 	nftclassID, err := rdb.GetNFTClassID(trade.NFT.NFTClass.Address, trade.NFT.NFTClass.Blockchain)
 	if err != nil {
@@ -418,6 +418,7 @@ func (rdb *RelDB) GetNFTFloorLevel(
 	currencies []dia.Asset,
 	level float64,
 	noBundles bool,
+	exchange string,
 ) (floor float64, err error) {
 
 	query := fmt.Sprintf(`
@@ -435,6 +436,10 @@ func (rdb *RelDB) GetNFTFloorLevel(
 		nftclass.Address,
 		nftclass.Blockchain,
 	)
+	if exchange != "" {
+		query += fmt.Sprintf(" AND tr.marketplace='%s'", exchange)
+	}
+
 	// Only take into account selected currencies for payment.
 	if nftclass.Blockchain == dia.ETHEREUM || nftclass.Blockchain == dia.ASTAR {
 		for i, currency := range currencies {
@@ -474,7 +479,13 @@ func (rdb *RelDB) GetNFTFloorLevel(
 }
 
 // GetNFTFloor returns the floor price of @nftclass w.r.t. the last 24h.
-func (rdb *RelDB) GetNFTFloor(nftclass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, noBundles bool) (floor float64, err error) {
+func (rdb *RelDB) GetNFTFloor(
+	nftclass dia.NFTClass,
+	timestamp time.Time,
+	floorWindowSeconds time.Duration,
+	noBundles bool,
+	exchange string,
+) (floor float64, err error) {
 	var paymentCurrencies []dia.Asset
 	switch nftclass.Blockchain {
 	case dia.ETHEREUM:
@@ -487,16 +498,23 @@ func (rdb *RelDB) GetNFTFloor(nftclass dia.NFTClass, timestamp time.Time, floorW
 		paymentCurrencies = append(paymentCurrencies, dia.Asset{Blockchain: dia.BINANCESMARTCHAIN, Address: "0x0000000000000000000000000000000000000000"})
 		paymentCurrencies = append(paymentCurrencies, dia.Asset{Blockchain: dia.BINANCESMARTCHAIN, Address: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"})
 	}
-	return rdb.GetNFTFloorLevel(nftclass, timestamp, floorWindowSeconds, paymentCurrencies, float64(0), noBundles)
+	return rdb.GetNFTFloorLevel(nftclass, timestamp, floorWindowSeconds, paymentCurrencies, float64(0), noBundles, exchange)
 }
 
 // GetNFTFloorRecursive returns the floor price of @nftclass. If necessary, it iterates back in time until it finds a floor price.
-func (rdb *RelDB) GetNFTFloorRecursive(nftClass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, stepBackLimit int, noBundles bool) (floor float64, err error) {
+func (rdb *RelDB) GetNFTFloorRecursive(
+	nftClass dia.NFTClass,
+	timestamp time.Time,
+	floorWindowSeconds time.Duration,
+	stepBackLimit int,
+	noBundles bool,
+	exchange string,
+) (floor float64, err error) {
 	count := 0
 	foundFloor := false
 
 	for !foundFloor && count < stepBackLimit {
-		floor, err = rdb.GetNFTFloor(nftClass, timestamp, floorWindowSeconds, noBundles)
+		floor, err = rdb.GetNFTFloor(nftClass, timestamp, floorWindowSeconds, noBundles, exchange)
 		if err != nil {
 			if strings.Contains(err.Error(), "no result") {
 				count++
@@ -513,10 +531,18 @@ func (rdb *RelDB) GetNFTFloorRecursive(nftClass dia.NFTClass, timestamp time.Tim
 }
 
 // GetNFTFloorRange returns a slice of floor prices in the given time range @starttime -- @endtime.
-func (rdb *RelDB) GetNFTFloorRange(nftClass dia.NFTClass, starttime time.Time, endtime time.Time, floorWindowSeconds time.Duration, stepBackLimit int, noBundles bool) (floorPrices []float64, err error) {
+func (rdb *RelDB) GetNFTFloorRange(
+	nftClass dia.NFTClass,
+	starttime time.Time,
+	endtime time.Time,
+	floorWindowSeconds time.Duration,
+	stepBackLimit int,
+	noBundles bool,
+	exchange string,
+) (floorPrices []float64, err error) {
 
 	// Find initial floor price by going back in time if necessary.
-	floor, err := rdb.GetNFTFloorRecursive(nftClass, starttime, floorWindowSeconds, stepBackLimit, noBundles)
+	floor, err := rdb.GetNFTFloorRecursive(nftClass, starttime, floorWindowSeconds, stepBackLimit, noBundles, exchange)
 	if err != nil {
 		if strings.Contains(err.Error(), "no result") {
 			log.Warn("could not find initial floor price.")
@@ -529,7 +555,7 @@ func (rdb *RelDB) GetNFTFloorRange(nftClass dia.NFTClass, starttime time.Time, e
 
 	// Continue filling floor prices. If none is found add the last one.
 	for starttime.Before(endtime) {
-		floor, err := rdb.GetNFTFloor(nftClass, starttime, floorWindowSeconds, noBundles)
+		floor, err := rdb.GetNFTFloor(nftClass, starttime, floorWindowSeconds, noBundles, exchange)
 		if err != nil {
 			if len(floorPrices) > 0 {
 				floorPrices = append(floorPrices, floorPrices[len(floorPrices)-1])

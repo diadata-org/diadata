@@ -2263,13 +2263,16 @@ func (env *Env) GetNFTFloor(c *gin.Context) {
 		log.Error("parse bundles string: ", err)
 	}
 
+	// Optional parameter @exchange.
+	exchange := c.Query("exchange")
+
 	nftClass := dia.NFTClass{Address: address, Blockchain: blockchain}
 
 	// Look for floor price. Iterate backwards in time if no sales are found.
 	var floor float64
 	windowDuration := time.Duration(floorWindow) * time.Second
 	stepBackLimit := 40
-	floor, err = env.RelDB.GetNFTFloorRecursive(nftClass, timestamp, windowDuration, stepBackLimit, !bundles)
+	floor, err = env.RelDB.GetNFTFloorRecursive(nftClass, timestamp, windowDuration, stepBackLimit, !bundles, exchange)
 	if err != nil {
 		restApi.SendError(c, http.StatusBadRequest, err)
 		return
@@ -2300,6 +2303,11 @@ func (env *Env) GetNFTFloorMA(c *gin.Context) {
 	lookbackInt, err := strconv.ParseInt(lookbackString, 10, 64)
 	if err != nil {
 		restApi.SendError(c, http.StatusBadRequest, nil)
+		return
+	}
+	if lookbackInt > 7776000 {
+		restApi.SendError(c, http.StatusBadRequest, errors.New("time-range must not be larger than 90 days."))
+		return
 	}
 
 	// floor price window is 24h per default.
@@ -2307,8 +2315,13 @@ func (env *Env) GetNFTFloorMA(c *gin.Context) {
 	floorWindowInt, err := strconv.ParseInt(floorWindowString, 10, 64)
 	if err != nil {
 		restApi.SendError(c, http.StatusBadRequest, nil)
+		return
 	}
 	floorWindow := time.Duration(floorWindowInt) * time.Second
+	if floorWindow > time.Duration(lookbackInt)*time.Second {
+		restApi.SendError(c, http.StatusBadRequest, errors.New("floor window must be smaller than entire time-range"))
+		return
+	}
 
 	// Exclude bundle sales by default.
 	bundlesString := c.DefaultQuery("bundles", "false")
@@ -2317,13 +2330,26 @@ func (env *Env) GetNFTFloorMA(c *gin.Context) {
 		log.Error("parse bundles string: ", err)
 	}
 
-	endtime := time.Now()
+	timestampUnixString := c.Query("timestamp")
+	var endtime time.Time
+	if timestampUnixString != "" {
+		timestampUnix, err := strconv.ParseInt(timestampUnixString, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusBadRequest, err)
+		}
+		endtime = time.Unix(timestampUnix, 0)
+	} else {
+		endtime = time.Now()
+	}
+
 	starttime := endtime.Add(-time.Duration(lookbackInt) * time.Second)
 	stepBackLimit := 120
 
-	t := time.Now()
-	floorPrices, err := env.RelDB.GetNFTFloorRange(nftClass, starttime, endtime, floorWindow, stepBackLimit, !bundles)
-	log.Infof("took %v time to compute floorPrices: %v", time.Since(t), floorPrices)
+	floorPrices, err := env.RelDB.GetNFTFloorRange(nftClass, starttime, endtime, floorWindow, stepBackLimit, !bundles, "")
+	if err != nil {
+		restApi.SendError(c, http.StatusBadRequest, err)
+		return
+	}
 
 	cleanFloorPrices, indices := filters.RemoveOutliers(floorPrices, 1.5)
 	var floorMA float64
@@ -2389,7 +2415,7 @@ func (env *Env) GetNFTDownday(c *gin.Context) {
 	endtime := time.Now()
 	starttime := endtime.Add(-time.Duration(lookbackInt) * time.Second)
 	stepBackLimit := 120
-	floorPrices, err := env.RelDB.GetNFTFloorRange(nftClass, starttime, endtime, floorWindow, stepBackLimit, !bundles)
+	floorPrices, err := env.RelDB.GetNFTFloorRange(nftClass, starttime, endtime, floorWindow, stepBackLimit, !bundles, "")
 
 	log.Info("floorPrices: ", floorPrices)
 
@@ -2504,7 +2530,7 @@ func (env *Env) GetNFTFloorVola(c *gin.Context) {
 
 	starttime := endtime.Add(-time.Duration(lookbackInt) * time.Second)
 	stepBackLimit := 120
-	floorPrices, err := env.RelDB.GetNFTFloorRange(nftClass, starttime, endtime, floorWindow, stepBackLimit, !bundles)
+	floorPrices, err := env.RelDB.GetNFTFloorRange(nftClass, starttime, endtime, floorWindow, stepBackLimit, !bundles, "")
 	if err != nil {
 		log.Error("get nft floor range: ", err)
 	}
@@ -2623,6 +2649,7 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 			endtime,
 			window24h,
 			!bundles,
+			"",
 		)
 		if err != nil {
 			log.Errorf("get number of nft trades for address %s: %v", nftvolume.Address, err)
@@ -2636,6 +2663,7 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 			window24h,
 			20,
 			!bundles,
+			"",
 		)
 		if err != nil {
 			log.Errorf("get floor range for address %s: %v", nftvolume.Address, err)
@@ -2655,6 +2683,7 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 			endtime.Add(-window24h),
 			window24h,
 			!bundles,
+			"",
 		)
 		if err != nil {
 			log.Errorf("get floor yesterday for address %s: %v", nftvolume.Address, err)
@@ -2767,6 +2796,7 @@ func (env *Env) GetNFTVolume(c *gin.Context) {
 		timeWindow,
 		10,
 		!bundles,
+		"",
 	)
 	if err != nil {
 		log.Error("get floor: ", err)
@@ -2777,6 +2807,7 @@ func (env *Env) GetNFTVolume(c *gin.Context) {
 		timeWindow,
 		10,
 		!bundles,
+		"",
 	)
 	if err != nil {
 		log.Error("get floor yesterday: ", err)
