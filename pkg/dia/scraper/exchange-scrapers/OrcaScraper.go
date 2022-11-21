@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	orcaWhirlpoolIdlBind "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/orca/whirlpool"
 
 	"github.com/gagliardetto/solana-go/rpc"
 	"github.com/gagliardetto/solana-go/rpc/ws"
