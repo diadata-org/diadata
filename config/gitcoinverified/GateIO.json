@@ -745,6 +745,12 @@
             "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
         },
         {
+            "Symbol": "VLX",
+            "Exchange": "GateIO",
+            "Blockchain": "Velas",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "WINGS",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",

@@ -259,6 +259,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "VLX",
+            "ForeignName": "VLX-USDT",
+            "Exchange": "Bitforex",
+            "Ignore": false
+        },
+        {
             "Symbol": "XRP",
             "ForeignName": "XRP-USDT",
             "Exchange": "Bitforex",

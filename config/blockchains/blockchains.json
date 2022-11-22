@@ -158,6 +158,15 @@
             "VerificationMechanism": "pos",
             "ChainID": "Ethereum592"
         },
+          {
+            "Name": "Velas",
+            "GenesisDate": 1618834090,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pos",
+            "ChainID": "Ethereum106"
+        },
         {
             "Name": "Shiden",
             "GenesisDate": 1625097600,

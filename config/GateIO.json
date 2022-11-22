@@ -2178,6 +2178,12 @@
       "Ignore": false,
       "Symbol": "USDT"
     },
+     {
+      "Exchange": "GateIO",
+      "ForeignName": "VLX_USDT",
+      "Ignore": false,
+      "Symbol": "VLX"
+    },
     {
       "Exchange": "GateIO",
       "ForeignName": "WAVES_BTC",
