@@ -67,6 +67,10 @@
         {
             "Address": "0x996D73aC8F97cf15BD476b77CB92ce47cA0E71Fe",
             "ForeignName": "USDC-DAI"
+        },
+        {
+            "Address": "0xb4461721d3AD256CD59D207fEfBfE05791Ef8568",
+            "ForeignName": "nASTR-WASTR"
         }
     ]
 }
