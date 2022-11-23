@@ -2306,6 +2306,9 @@ func (env *Env) GetNFTTradesCollection(c *gin.Context) {
 		var t nftTradesCollReturn
 		t.Name = nftClass.Name
 		price, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(trade.Price), new(big.Float).SetFloat64(math.Pow10(int(trade.Currency.Decimals)))).Float64()
+		if price == 0 {
+			continue
+		}
 		t.Price = price
 		t.Currency = trade.Currency
 		t.NFTid = trade.NFT.TokenID
