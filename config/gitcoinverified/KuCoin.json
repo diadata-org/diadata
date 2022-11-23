@@ -715,6 +715,12 @@
             "Address": "0xfeF4185594457050cC9c23980d301908FE057Bb1"
         },
         {
+            "Symbol": "VLX",
+            "Exchange": "KuCoin",
+            "Blockchain": "Velas",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "VRA",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

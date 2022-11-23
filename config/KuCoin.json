@@ -1543,6 +1543,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "VLX",
+            "ForeignName": "VLX-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "VRA",
             "ForeignName": "VRA-BTC",
             "Exchange": "KuCoin",

@@ -316,6 +316,13 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "VLX",
+      "Name": "VLX",
+      "Decimals": 18,
+      "Blockchain": "Velas",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "ZEC",
       "Name": "Zcash",
       "Decimals": 8,

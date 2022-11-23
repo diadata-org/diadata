@@ -73,6 +73,18 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "EVMOS",
+      "Exchange": "Huobi",
+      "Blockchain": "Evmos",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "VLX",
+      "Exchange": "Huobi",
+      "Blockchain": "Velas",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "FLOW",
       "Exchange": "Huobi",
       "Blockchain": "Flow",
