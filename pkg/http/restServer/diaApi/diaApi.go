@@ -1159,6 +1159,106 @@ func (env *Env) GetPoolPriceImpact(c *gin.Context) {
 	c.JSON(http.StatusOK, l)
 }
 
+func (env *Env) GetPriceImpactSimulation(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	poolType := c.Param("poolType")
+	priceDeviationInt, err := strconv.ParseInt(c.Param("priceDeviation"), 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("error parsing priceDeviation."))
+		return
+	}
+	if priceDeviationInt < 0 || priceDeviationInt >= 1000 {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("priceDeviation measured in per mille is out of range."))
+		return
+	}
+	priceDeviation := float64(priceDeviationInt) / 1000
+	liquidityA, err := strconv.ParseFloat(c.Param("liquidityA"), 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("error parsing liquidityA."))
+		return
+	}
+	if liquidityA <= 0 {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("Liquidity must be a non-negative number."))
+		return
+	}
+	liquidityB, err := strconv.ParseFloat(c.Param("liquidityB"), 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("error parsing liquidityB."))
+		return
+	}
+	if liquidityB <= 0 {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("Liquidity must be a non-negative number."))
+		return
+	}
+
+	type dummyLiquidity struct {
+		Asset     string
+		Liquidity float64
+	}
+
+	type localReturn struct {
+		PriceDeviation  float64
+		PriceAssetA     float64
+		PriceAssetB     float64
+		VolumesRequired []struct {
+			AssetIn                string
+			VolumeRequired         float64
+			InitialPriceAssetIn    float64
+			ResultingPriceAssetIn  float64
+			ResultingPriceAssetOut float64
+		}
+		Liquidity []dummyLiquidity
+	}
+
+	l := []dummyLiquidity{
+		{Asset: "A", Liquidity: liquidityA},
+		{Asset: "B", Liquidity: liquidityB},
+	}
+	var lr localReturn
+	lr.PriceDeviation = priceDeviation
+	lr.PriceAssetA = liquidityB / liquidityA
+	lr.PriceAssetB = liquidityA / liquidityB
+
+	switch poolType {
+	case "UniswapV2":
+		volRequiredA := liquidityA * (1/math.Sqrt(1-priceDeviation) - 1)
+		volRequiredB := liquidityB * (1/math.Sqrt(1-priceDeviation) - 1)
+		lr.VolumesRequired = append(lr.VolumesRequired, struct {
+			AssetIn                string
+			VolumeRequired         float64
+			InitialPriceAssetIn    float64
+			ResultingPriceAssetIn  float64
+			ResultingPriceAssetOut float64
+		}{
+			"A",
+			volRequiredA,
+			liquidityB / liquidityA,
+			liquidityA * liquidityB / math.Pow(volRequiredA+liquidityA, 2),
+			math.Pow(volRequiredA+liquidityA, 2) / liquidityA / liquidityB,
+		})
+		lr.Liquidity = l
+		lr.VolumesRequired = append(lr.VolumesRequired, struct {
+			AssetIn                string
+			VolumeRequired         float64
+			InitialPriceAssetIn    float64
+			ResultingPriceAssetIn  float64
+			ResultingPriceAssetOut float64
+		}{
+			"B",
+			volRequiredB,
+			liquidityA / liquidityB,
+			liquidityB * liquidityA / math.Pow(volRequiredB+liquidityB, 2),
+			math.Pow(volRequiredB+liquidityB, 2) / liquidityA / liquidityB,
+		})
+
+	}
+
+	c.JSON(http.StatusOK, lr)
+}
+
 // -----------------------------------------------------------------------------
 // EXCHANGE PAIRS
 // -----------------------------------------------------------------------------
