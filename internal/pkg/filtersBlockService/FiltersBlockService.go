@@ -230,11 +230,11 @@ func addMissingPoints(previousBlockFilters []dia.FilterPoint, newFilters []dia.F
 			_, ok := newFiltersMap[fa]
 			if !ok {
 				result = append(result, filter)
-				log.Debug("Adding", filter.Name+filter.Asset.Symbol)
+				log.Infof("Adding old filter %s on blockchain %s with age %v", filter.Name+filter.Asset.Symbol, filter.Asset.Blockchain, d)
 				missingPoints++
 			}
 		} else {
-			// log.Warn("ignoring old filter", filter.Asset.Symbol)
+			log.Warnf("ignoring old filter %s on blockchain %s with age %v", filter.Asset.Symbol, filter.Asset.Blockchain, d)
 		}
 	}
 	if missingPoints != 0 {
