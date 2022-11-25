@@ -477,16 +477,31 @@ type FiltersBlockData struct {
 	FiltersNumber   int
 }
 
-// FilterPoint contains the resulting value of a filter applied to an asset.
+// FilterPoint contains the resulting value of a filter applied to a pair.
 type FilterPoint struct {
-	Pair       Pair
-	Value      float64
-	Name       string
-	Time       time.Time
-	Max        float64
-	Min        float64
-	FirstTrade Trade
-	LastTrade  Trade
+	Pair        Pair
+	Source      string
+	Value       float64
+	Name        string
+	BlockVolume float64
+	Time        time.Time
+	Max         float64
+	Min         float64
+	FirstTrade  Trade
+	LastTrade   Trade
+}
+
+// MetaFilterPoint contains the resulting value of a filter applied to an asset.
+type MetaFilterPoint struct {
+	Asset            Asset
+	Source           string
+	Value            float64
+	Name             string
+	Time             time.Time
+	Max              float64
+	Min              float64
+	FirstFilterValue FilterPoint
+	LastFilterValue  FilterPoint
 }
 
 type IndexBlock struct {

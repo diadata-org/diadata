@@ -1,6 +1,7 @@
 package filters
 
 import (
+	"math"
 	"strconv"
 	"time"
 
@@ -18,6 +19,7 @@ type FilterMAIR struct {
 	currentTime time.Time
 	prices      []float64
 	volumes     []float64
+	blockVolume float64
 	lastTrade   dia.Trade
 	memory      int
 	value       float64
@@ -86,6 +88,7 @@ func (filter *FilterMAIR) processDataPoint(trade dia.Trade) {
 	}
 	filter.prices = append([]float64{trade.EstimatedUSDPrice}, filter.prices...)
 	filter.volumes = append([]float64{trade.Volume}, filter.volumes...)
+	filter.blockVolume += math.Abs(trade.Volume)
 }
 
 func (filter *FilterMAIR) FinalCompute(t time.Time) float64 {
@@ -115,10 +118,12 @@ func (filter *FilterMAIR) finalCompute(t time.Time) float64 {
 
 func (filter *FilterMAIR) FilterPointForBlock() *dia.FilterPoint {
 	return &dia.FilterPoint{
-		Pair:  filter.pair,
-		Value: filter.value,
-		Name:  filter.filterName,
-		Time:  filter.currentTime,
+		Pair:        filter.pair,
+		Source:      filter.exchange,
+		Value:       filter.value,
+		Name:        filter.filterName,
+		BlockVolume: filter.blockVolume,
+		Time:        filter.currentTime,
 	}
 }
 
@@ -127,10 +132,12 @@ func (filter *FilterMAIR) filterPointForBlock() *dia.FilterPoint {
 		return nil
 	}
 	return &dia.FilterPoint{
-		Pair:  filter.pair,
-		Value: filter.value,
-		Name:  filter.filterName,
-		Time:  filter.currentTime,
+		Pair:        filter.pair,
+		Source:      filter.exchange,
+		Value:       filter.value,
+		Name:        filter.filterName,
+		BlockVolume: filter.blockVolume,
+		Time:        filter.currentTime,
 	}
 }
 

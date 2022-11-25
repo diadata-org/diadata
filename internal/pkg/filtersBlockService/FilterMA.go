@@ -126,10 +126,11 @@ func (filter *FilterMA) finalCompute(t time.Time) float64 {
 
 func (filter *FilterMA) FilterPointForBlock() *dia.FilterPoint {
 	return &dia.FilterPoint{
-		Pair:  filter.pair,
-		Value: filter.value,
-		Name:  "MA" + strconv.Itoa(filter.memory),
-		Time:  filter.currentTime,
+		Pair:   filter.pair,
+		Source: filter.exchange,
+		Value:  filter.value,
+		Name:   "MA" + strconv.Itoa(filter.memory),
+		Time:   filter.currentTime,
 	}
 }
 
@@ -138,10 +139,11 @@ func (filter *FilterMA) filterPointForBlock() *dia.FilterPoint {
 		return nil
 	}
 	return &dia.FilterPoint{
-		Pair:  filter.pair,
-		Value: filter.value,
-		Name:  "MA" + strconv.Itoa(filter.memory),
-		Time:  filter.currentTime,
+		Pair:   filter.pair,
+		Source: filter.exchange,
+		Value:  filter.value,
+		Name:   "MA" + strconv.Itoa(filter.memory),
+		Time:   filter.currentTime,
 	}
 }
 

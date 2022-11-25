@@ -19,6 +19,7 @@ var (
 	historical            = flag.Bool("historical", false, "digest historical or current trades")
 	testing               = flag.Bool("testing", false, "set true for testing environment")
 	filtersBlockTopic     int
+	metaFilterTopic       int
 	tradesBlockTopic      int
 	filtersblockDoneTopic int
 	fbsDoneWriter         *kafka.Writer
@@ -30,6 +31,7 @@ func init() {
 	if !*historical {
 		filtersBlockTopic = kafkaHelper.TopicFiltersBlock
 		tradesBlockTopic = kafkaHelper.TopicTradesBlock
+		metaFilterTopic = kafkaHelper.TopicMetaFilter
 	}
 	if *historical {
 		filtersBlockTopic = kafkaHelper.TopicFiltersBlockHistorical
@@ -39,6 +41,7 @@ func init() {
 	if *testing {
 		filtersBlockTopic = kafkaHelper.TopicFiltersBlockTest
 		tradesBlockTopic = kafkaHelper.TopicTradesBlockTest
+		metaFilterTopic = kafkaHelper.TopicMetaFilter
 	}
 }
 
@@ -61,6 +64,7 @@ func main() {
 		f := filters.NewFiltersBlockService(loadFilterPointsFromPreviousBlock(), s, channel)
 
 		w := kafkaHelper.NewSyncWriterWithCompression(filtersBlockTopic)
+		wMeta := kafkaHelper.NewSyncWriterWithCompression(metaFilterTopic)
 
 		defer func() {
 			err := w.Close()
@@ -71,7 +75,7 @@ func main() {
 
 		wg := sync.WaitGroup{}
 
-		go handler(channel, &wg, w)
+		go handler(channel, &wg, w, wMeta)
 
 		r := kafkaHelper.NewReaderNextMessage(tradesBlockTopic)
 		defer func() {
@@ -121,7 +125,7 @@ func main() {
 	}
 }
 
-func handler(channel chan *dia.FiltersBlock, wg *sync.WaitGroup, w *kafka.Writer) {
+func handler(channel chan *dia.FiltersBlock, wg *sync.WaitGroup, w *kafka.Writer, wMeta *kafka.Writer) {
 	var block int
 	for {
 		filtersblock, ok := <-channel
@@ -133,6 +137,13 @@ func handler(channel chan *dia.FiltersBlock, wg *sync.WaitGroup, w *kafka.Writer
 		block++
 		log.Infoln("kafka: generated ", block, " blocks")
 		err := kafkaHelper.WriteMessage(w, filtersblock)
+		if err != nil {
+			log.Errorln("kafka: handleBlocks", err)
+		}
+
+		// Possibly process filtersblock for meta filters, i.e. extract filter
+		// data from one filter such as MAIR.
+		err = kafkaHelper.WriteMessage(wMeta, filtersblock)
 		if err != nil {
 			log.Errorln("kafka: handleBlocks", err)
 		}

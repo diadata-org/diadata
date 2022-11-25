@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	pairfilters "github.com/diadata-org/diadata/internal/pkg/pairFiltersBlockService"
+	metafilters "github.com/diadata-org/diadata/internal/pkg/metaFilterService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -15,15 +15,17 @@ import (
 )
 
 var (
-	filtersBlockTopic     int
-	pairFiltersBlockTopic int
+	filtersBlockTopic  int
+	metaFilterInTopic  int
+	metaFilterOutTopic int
 )
 
 func init() {
 	flag.Parse()
 
 	filtersBlockTopic = kafkaHelper.TopicFiltersBlock
-	pairFiltersBlockTopic = kafkaHelper.TopicPairFiltersBlock
+	metaFilterInTopic = kafkaHelper.TopicMetaFilter
+	metaFilterOutTopic = kafkaHelper.TopicMetaFilterOut
 
 }
 
@@ -35,9 +37,9 @@ func main() {
 	}
 	channel := make(chan *dia.FiltersBlock)
 
-	f := pairfilters.NewPairFiltersBlockService(loadPairFilterPointsFromPreviousBlock(), datastore, channel)
+	f := metafilters.NewMetaFilterService(loadPairFilterPointsFromPreviousBlock(), datastore, channel)
 
-	w := kafkaHelper.NewSyncWriterWithCompression(pairFiltersBlockTopic)
+	w := kafkaHelper.NewSyncWriterWithCompression(metaFilterOutTopic)
 
 	defer func() {
 		err := w.Close()
@@ -50,7 +52,7 @@ func main() {
 
 	go handler(channel, &wg, w)
 
-	fbsReader := kafkaHelper.NewReaderNextMessage(filtersBlockTopic)
+	fbsReader := kafkaHelper.NewReaderNextMessage(metaFilterInTopic)
 	defer func() {
 		err := fbsReader.Close()
 		if err != nil {
@@ -104,7 +106,7 @@ func loadPairFilterPointsFromPreviousBlock() []dia.FilterPoint {
 	// load the previous block points so that we have a value even if
 	// there is no filter values
 	lastFilterPoints := []dia.FilterPoint{}
-	lastFilterBlock, err := kafkaHelper.GetLastElement(pairFiltersBlockTopic)
+	lastFilterBlock, err := kafkaHelper.GetLastElement(metaFilterOutTopic)
 	if err == nil {
 		lastFilterPoints = lastFilterBlock.(dia.FiltersBlock).FiltersBlockData.FilterPoints
 	}

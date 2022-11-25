@@ -115,17 +115,19 @@ func (s *FilterVWAPIR) FilterPointForBlock() *dia.FilterPoint {
 func (s *FilterVWAPIR) filterPointForBlock() *dia.FilterPoint {
 	if s.exchange != "" {
 		return &dia.FilterPoint{
-			Value: s.value,
-			Name:  s.filterName,
-			Time:  s.currentTime,
-			Pair:  s.pair,
+			Value:  s.value,
+			Source: s.exchange,
+			Name:   s.filterName,
+			Time:   s.currentTime,
+			Pair:   s.pair,
 		}
 	} else {
 		return &dia.FilterPoint{
-			Value: s.value,
-			Name:  s.filterName,
-			Time:  s.currentTime,
-			Pair:  s.pair,
+			Value:  s.value,
+			Source: s.exchange,
+			Name:   s.filterName,
+			Time:   s.currentTime,
+			Pair:   s.pair,
 		}
 	}
 }

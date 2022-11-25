@@ -57,10 +57,11 @@ func (filter *FilterVOL) filterPointForBlock() *dia.FilterPoint {
 
 func (filter *FilterVOL) FilterPointForBlock() *dia.FilterPoint {
 	return &dia.FilterPoint{
-		Pair:  filter.pair,
-		Value: filter.value,
-		Name:  filter.filterName,
-		Time:  filter.currentTime,
+		Pair:   filter.pair,
+		Source: filter.exchange,
+		Value:  filter.value,
+		Name:   filter.filterName,
+		Time:   filter.currentTime,
 	}
 }
 

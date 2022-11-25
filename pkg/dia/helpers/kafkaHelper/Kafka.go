@@ -27,10 +27,11 @@ type KafkaMessageWithAHash interface {
 }
 
 const (
-	TopicPairFiltersBlock = 0
-	TopicFiltersBlock     = 1
-	TopicTrades           = 2
-	TopicTradesBlock      = 3
+	TopicMetaFilterOut = -1
+	TopicMetaFilterIn  = 0
+	TopicFiltersBlock  = 1
+	TopicTrades        = 2
+	TopicTradesBlock   = 3
 
 	TopicFiltersBlockHistorical = 4
 	TopicTradesHistorical       = 5
@@ -61,6 +62,8 @@ func GetTopic(topic int) string {
 
 func getTopic(topic int) string {
 	topicMap := map[int]string{
+		-1: "metaFilterOut",
+		0:  "metaFilterIn",
 		1:  "filtersBlock",
 		2:  "trades",
 		3:  "tradesBlock",
