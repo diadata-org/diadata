@@ -24,7 +24,7 @@ func init() {
 	flag.Parse()
 
 	filtersBlockTopic = kafkaHelper.TopicFiltersBlock
-	metaFilterInTopic = kafkaHelper.TopicMetaFilter
+	metaFilterInTopic = kafkaHelper.TopicMetaFilterIn
 	metaFilterOutTopic = kafkaHelper.TopicMetaFilterOut
 
 }
