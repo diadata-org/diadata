@@ -21,18 +21,18 @@ import (
 )
 
 const (
-	rpcEndpointSolana         = "https://solana-api.projectserum.com"
-	MagicEdenV2ProgramAddress = "M2mx93ekt1fmXSVkTrUL9xVFHkmME8HTUi5Cyc5aF7K"
-	SolTokenAddress           = "So11111111111111111111111111111111111111112"
-	MetadataProgramAddress    = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
-	SaleTxPrefix              = "f223c68952e1f2b6"
-	MetadataFee               = 0.00561672
-	MagicEden                 = "MagicEden"
+	rpcEndpointSolana            = "https://solana-api.projectserum.com"
+	MagicEdenV2ProgramAddress    = "M2mx93ekt1fmXSVkTrUL9xVFHkmME8HTUi5Cyc5aF7K"
+	SolTokenAddress              = "So11111111111111111111111111111111111111112"
+	MetadataProgramAddress       = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+	SaleInstructionPrefix        = "f223c68952e1f2b6"
+	ExecuteSaleInstructionPrefix = "254ad99d4f312306"
+	MetadataFee                  = 0.00561672
+	MagicEden                    = "MagicEden"
 )
 
 var (
 	defMagicEdenConf = &MagicEdenScraperConfig{
-		SolanaRestUri:    SaleTxPrefix,
 		ProgramAddr:      MagicEdenV2ProgramAddress,
 		BatchSize:        1000,
 		WaitPeriod:       30 * time.Second,
@@ -414,46 +414,47 @@ func (s *MagicEdenScraper) processTx(ctx context.Context, tx rpc.SignatureWithSt
 	} else if confirmedTx.Meta.Err != nil {
 		return true, err
 	}
-	instDataEncoded := confirmedTx.Transaction.Message.Instructions[0].Data
 
-	instDataStr := hexutils.BytesToHex(instDataEncoded)
-	instDataLowerCase := strings.ToLower(instDataStr)
-
-	if strings.HasPrefix(instDataLowerCase, SaleTxPrefix) && len(confirmedTx.Transaction.Message.Instructions) > 2 {
-		nftAddrIndex := confirmedTx.Transaction.Message.Instructions[1].Accounts[2]
-		nftAddr := confirmedTx.Transaction.Message.Accounts[nftAddrIndex]
-		toIndex := confirmedTx.Transaction.Message.Instructions[0].Accounts[0]
-		to := confirmedTx.Transaction.Message.Accounts[toIndex]
-		fromIndex := confirmedTx.Transaction.Message.Instructions[2].Accounts[1]
-		from := confirmedTx.Transaction.Message.Accounts[fromIndex]
-
-		price := big.NewInt(int64(float64(confirmedTx.Meta.PreBalances[0]) - float64(confirmedTx.Meta.PostBalances[0])))
-		normPrice := decimal.NewFromBigInt(price, 0).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(9)))
-		usdPrice, err := s.calcUSDPrice(normPrice)
-		if err != nil {
-			return false, err
-		}
-
-		metadata, collectionFound, err := s.fetchNFTMetadata(ctx, nftAddr.String())
-		if err != nil {
-			return false, err
-		}
-
-		classMetadata := SolanaNFTMetadata{}
-		if collectionFound {
-			classMetadata, _, err = s.fetchNFTMetadata(ctx, metadata.collectionAccount.String())
+	for _, inst := range confirmedTx.Transaction.Message.Instructions {
+		instDataEncoded := inst.Data
+		instDataStr := hexutils.BytesToHex(instDataEncoded)
+		instDataLowerCase := strings.ToLower(instDataStr)
+		if strings.HasPrefix(instDataLowerCase, ExecuteSaleInstructionPrefix) && len(inst.Accounts) > 4 {
+			nftAddrIndex := inst.Accounts[4]
+			nftAddr := confirmedTx.Transaction.Message.Accounts[nftAddrIndex]
+			toIndex := inst.Accounts[0]
+			to := confirmedTx.Transaction.Message.Accounts[toIndex]
+			fromIndex := inst.Accounts[1]
+			from := confirmedTx.Transaction.Message.Accounts[fromIndex]
+			price := big.NewInt(int64(float64(confirmedTx.Meta.PreBalances[0]) - float64(confirmedTx.Meta.PostBalances[0])))
+			normPrice := decimal.NewFromBigInt(price, 0).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(9)))
+			usdPrice, err := s.calcUSDPrice(normPrice)
 			if err != nil {
 				return false, err
 			}
-		}
+			if usdPrice < 0 {
+				usdPrice = -usdPrice
+			}
+			metadata, collectionFound, err := s.fetchNFTMetadata(ctx, nftAddr.String())
+			if err != nil {
+				return false, err
+			}
 
-		if err := s.notifyTrade(tx, nftAddr, from, to, metadata, classMetadata, price, usdPrice); err != nil {
-			return false, err
+			classMetadata := SolanaNFTMetadata{}
+			if collectionFound {
+				classMetadata, _, err = s.fetchNFTMetadata(ctx, metadata.collectionAccount.String())
+				if err != nil {
+					return false, err
+				}
+			}
+
+			if err := s.notifyTrade(tx, nftAddr, from, to, metadata, classMetadata, price, usdPrice); err != nil {
+				return false, err
+			}
+			return false, nil
 		}
-		return false, nil
-	} else {
-		return true, nil
 	}
+	return true, nil
 }
 
 func (s *MagicEdenScraper) notifyTrade(tx rpc.SignatureWithStatus, addr, from, to common.PublicKey,
