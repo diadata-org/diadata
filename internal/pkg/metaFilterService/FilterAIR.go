@@ -9,10 +9,14 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var (
+	childFilterName = "MAIR" + strconv.Itoa(dia.BlockSizeSeconds)
+)
+
 // FilterMAIR implements a trimmed moving average.
 // Outliers are eliminated using interquartile range.
 // see: https://en.wikipedia.org/wiki/Interquartile_range
-type FilterMAIR struct {
+type FilterAIR struct {
 	asset           dia.Asset
 	currentTime     time.Time
 	values          []float64
@@ -23,26 +27,26 @@ type FilterMAIR struct {
 	modified        bool
 }
 
-// NewFilterMAIR returns a FilterMAIR
-func NewFilterMAIR(asset dia.Asset, currentTime time.Time, memory int) *FilterMAIR {
-	filter := &FilterMAIR{
+// NewFilterAIR returns a FilterAIR
+func NewFilterAIR(asset dia.Asset, currentTime time.Time) *FilterAIR {
+	filter := &FilterAIR{
 		asset:       asset,
 		values:      []float64{},
 		volumes:     []float64{},
 		currentTime: currentTime,
-		name:        "MAIR" + strconv.Itoa(memory),
+		name:        "AIR",
 	}
 	return filter
 }
 
-func (filter *FilterMAIR) Collect(filterPoint dia.FilterPoint) {
+func (filter *FilterAIR) Collect(filterPoint dia.FilterPoint) {
 	filter.collect(filterPoint)
 }
 
-func (filter *FilterMAIR) collect(filterPoint dia.FilterPoint) {
+func (filter *FilterAIR) collect(filterPoint dia.FilterPoint) {
 	filter.modified = true
-	if filterPoint.Name != filter.name {
-		// Filter method does not match metafilter's name.
+	if filterPoint.Name != childFilterName {
+		// Child filter method does not match metafilter's name.
 		return
 	}
 	if filter.lastFilterValue != (dia.FilterPoint{}) {
@@ -55,16 +59,16 @@ func (filter *FilterMAIR) collect(filterPoint dia.FilterPoint) {
 	filter.lastFilterValue = filterPoint
 }
 
-func (filter *FilterMAIR) processDataPoint(filterPoint dia.FilterPoint) {
+func (filter *FilterAIR) processDataPoint(filterPoint dia.FilterPoint) {
 	filter.values = append([]float64{filterPoint.Value}, filter.values...)
 	filter.volumes = append([]float64{filterPoint.BlockVolume}, filter.volumes...)
 }
 
-func (filter *FilterMAIR) FinalCompute(t time.Time) float64 {
+func (filter *FilterAIR) FinalCompute(t time.Time) float64 {
 	return filter.finalCompute(t)
 }
 
-func (filter *FilterMAIR) finalCompute(t time.Time) float64 {
+func (filter *FilterAIR) finalCompute(t time.Time) float64 {
 	if filter.lastFilterValue == (dia.FilterPoint{}) {
 		return 0.0
 	}
@@ -82,7 +86,7 @@ func (filter *FilterMAIR) finalCompute(t time.Time) float64 {
 	return filter.value
 }
 
-func (filter *FilterMAIR) FilterPointForBlock() *dia.MetaFilterPoint {
+func (filter *FilterAIR) FilterPointForBlock() *dia.MetaFilterPoint {
 	return &dia.MetaFilterPoint{
 		Asset: filter.asset,
 		Value: filter.value,
@@ -91,7 +95,7 @@ func (filter *FilterMAIR) FilterPointForBlock() *dia.MetaFilterPoint {
 	}
 }
 
-func (filter *FilterMAIR) filterPointForBlock() *dia.MetaFilterPoint {
+func (filter *FilterAIR) filterPointForBlock() *dia.MetaFilterPoint {
 	if filter.name != dia.FilterKing {
 		return nil
 	}
@@ -103,17 +107,17 @@ func (filter *FilterMAIR) filterPointForBlock() *dia.MetaFilterPoint {
 	}
 }
 
-func (filter *FilterMAIR) save(ds models.Datastore) error {
+func (filter *FilterAIR) save(ds models.Datastore) error {
 	if filter.modified {
 		filter.modified = false
-		err := ds.SetMetaFilter(filter.name, filter.pair, filter.value, filter.currentTime)
+		err := ds.SetMetaFilter(filter.name, filter.asset, filter.value, filter.currentTime)
 		if err != nil {
 			log.Errorln("FilterMAIR: Error:", err)
 		}
 
 		// Additionally, the price across exchanges is saved in influx as a quotation.
 		// This price is used for the estimation of quote tokens' prices in the tradesBlockService.
-		err = ds.SetAssetPriceUSD(filter.pair, filter.value, filter.currentTime)
+		err = ds.SetAssetPriceUSD(filter.asset, filter.value, filter.currentTime)
 		if err != nil {
 			log.Errorln("FilterMAIR: Error:", err)
 		}

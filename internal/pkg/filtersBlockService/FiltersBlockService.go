@@ -47,28 +47,26 @@ type FiltersBlockService struct {
 	closed           bool
 	started          bool
 	// currentTime          time.Time
-	filters              map[filtersPair][]Filter
-	lastLog              time.Time
-	calculationValues    []int
-	previousBlockFilters []dia.FilterPoint
-	datastore            models.Datastore
+	filters           map[filtersPair][]Filter
+	lastLog           time.Time
+	calculationValues []int
+	datastore         models.Datastore
 }
 
 // NewFiltersBlockService returns a new FiltersBlockService and
 // runs mainLoop() in a go routine.
-func NewFiltersBlockService(previousBlockFilters []dia.FilterPoint, datastore models.Datastore, chanFiltersBlock chan *dia.FiltersBlock) *FiltersBlockService {
+func NewFiltersBlockService(datastore models.Datastore, chanFiltersBlock chan *dia.FiltersBlock) *FiltersBlockService {
 	s := &FiltersBlockService{
-		shutdown:             make(chan nothing),
-		shutdownDone:         make(chan nothing),
-		chanTradesBlock:      make(chan *dia.TradesBlock),
-		chanFiltersBlock:     chanFiltersBlock,
-		error:                nil,
-		started:              false,
-		filters:              make(map[filtersPair][]Filter),
-		lastLog:              time.Now(),
-		calculationValues:    make([]int, 0),
-		previousBlockFilters: previousBlockFilters,
-		datastore:            datastore,
+		shutdown:          make(chan nothing),
+		shutdownDone:      make(chan nothing),
+		chanTradesBlock:   make(chan *dia.TradesBlock),
+		chanFiltersBlock:  chanFiltersBlock,
+		error:             nil,
+		started:           false,
+		filters:           make(map[filtersPair][]Filter),
+		lastLog:           time.Now(),
+		calculationValues: make([]int, 0),
+		datastore:         datastore,
 	}
 	s.calculationValues = append(s.calculationValues, dia.BlockSizeSeconds)
 
@@ -122,10 +120,6 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 		}
 	}
 	log.Info("time spent for final compute: ", time.Since(t0))
-
-	resultFilters = addMissingPoints(s.previousBlockFilters, resultFilters)
-
-	s.previousBlockFilters = resultFilters
 
 	fb := &dia.FiltersBlock{
 		FiltersBlockData: dia.FiltersBlockData{
@@ -206,48 +200,6 @@ func (s *FiltersBlockService) computeFilters(trade dia.Trade, exchange string) {
 	for _, f := range s.filters[fa] {
 		f.compute(trade)
 	}
-}
-
-func addMissingPoints(previousBlockFilters []dia.FilterPoint, newFilters []dia.FilterPoint) []dia.FilterPoint {
-	log.Debug("previousBlockFilters", previousBlockFilters)
-	log.Debug("newFilters:", newFilters)
-	missingPoints := 0
-	result := newFilters
-	newFiltersMap := make(map[filtersPair]*dia.FilterPoint)
-	for i, filter := range newFilters {
-		fa := filtersPair{
-			IdentifierQuotetoken: getIdentifier(filter.Pair.QuoteToken),
-			IdentifierBasetoken:  getIdentifier(filter.Pair.BaseToken),
-			Source:               filter.Name,
-		}
-		newFiltersMap[fa] = &newFilters[i]
-	}
-
-	for _, filter := range previousBlockFilters {
-
-		d := time.Since(filter.Time)
-		// log.Info("filter:", filter, " age:", d)
-		fa := filtersPair{
-			IdentifierQuotetoken: getIdentifier(filter.Pair.QuoteToken),
-			IdentifierBasetoken:  getIdentifier(filter.Pair.BaseToken),
-			Source:               filter.Name,
-		}
-		if d > time.Hour*24 {
-			_, ok := newFiltersMap[fa]
-			if !ok {
-				result = append(result, filter)
-				log.Debug("Adding", filter.Name+filter.Pair.QuoteToken.Symbol+"-"+filter.Pair.BaseToken.Symbol)
-				missingPoints++
-			}
-		} else {
-			// log.Warn("ignoring old filter", filter.Asset.Symbol)
-		}
-	}
-	if missingPoints != 0 {
-		log.Printf("Added %v missing point from previous block", missingPoints)
-	}
-	log.Debug("result:", result)
-	return result
 }
 
 // ProcessTradesBlock sends a filled tradesBlock into the filtersBlock channel.
