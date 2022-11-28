@@ -44,7 +44,7 @@ func (filter *FilterAIR) Collect(filterPoint dia.FilterPoint) {
 
 func (filter *FilterAIR) collect(filterPoint dia.FilterPoint) {
 	filter.modified = true
-	if filterPoint.Name != filter.name {
+	if filterPoint.Name != filter.childName {
 		// Child filter method does not match metafilter's name.
 		return
 	}
@@ -72,6 +72,7 @@ func (filter *FilterAIR) finalCompute(t time.Time) float64 {
 		return 0.0
 	}
 
+	// TO DO: Find reasonable outlier detection for very small datasets (ranging from 1 to ~20)
 	var err error
 	cleanPrices, bounds := removeOutliers(filter.values)
 	if len(bounds) > 1 {
@@ -83,11 +84,11 @@ func (filter *FilterAIR) finalCompute(t time.Time) float64 {
 		filter.value = cleanPrices[0]
 	}
 
-	// Reduce the filter values to the last recorded value for the next filtersblock.
-	// if len(filter.values) > 0 && len(filter.volumes) > 0 {
-	// 	filter.values = []float64{filter.lastFilterValue.Value}
-	// 	filter.volumes = []float64{filter.lastFilterValue.BlockVolume}
-	// }
+	// Reset the filter values for the next filtersblock.
+	if len(filter.values) > 0 && len(filter.volumes) > 0 {
+		filter.values = []float64{}
+		filter.volumes = []float64{}
+	}
 	return filter.value
 }
 
