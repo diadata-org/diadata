@@ -21,11 +21,12 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type FloorReturn struct {
+type DataReturn struct {
 	Blockchain string
 	Address    string
 	Floor      float64
 	FloorMA    float64
+	Drawdown   Drawdown
 }
 
 type Floor struct {
@@ -34,12 +35,16 @@ type Floor struct {
 	Source    string    `json:"Source"`
 }
 
-const (
-	diaAPIBaseURL = "https://api.diadata.org/v1"
-)
-
 type FloorMA struct {
 	Value     float64   `json:"Moving_Average_Floor_Price"`
+	Timestamp time.Time `json:"Time"`
+	Source    string    `json:"Source"`
+}
+
+type Drawdown struct {
+	Drawdown  float64   `json:"Weekly_Drawdown"`
+	Average   float64   `json:"Downday_Average"`
+	Deviation float64   `json:"Downday_Deviation"`
 	Timestamp time.Time `json:"Time"`
 	Source    string    `json:"Source"`
 }
@@ -57,7 +62,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse frequencySeconds: %v", err)
 	}
-	timeBasedUpdateSeconds, err := strconv.Atoi(utils.Getenv("TIME_BASED_UPDATE_SECONDS", "86400"))
+	timeBasedUpdateSeconds, err := strconv.Atoi(utils.Getenv("TIME_BASED_UPDATE_SECONDS", "28800"))
 	if err != nil {
 		log.Fatalf("Failed to parse frequencySeconds: %v", err)
 	}
@@ -65,17 +70,17 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse chainId: %v", err)
 	}
-	deviationPermille, err := strconv.Atoi(utils.Getenv("DEVIATION_PERMILLE", "50"))
+	deviationPermille, err := strconv.Atoi(utils.Getenv("DEVIATION_PERMILLE", "10"))
 	if err != nil {
 		log.Fatalf("Failed to parse deviationPermille: %v", err)
 	}
 
 	addresses := []string{
 		"0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D", //BAYC
-		"0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB", //Cryptopunks
-		"0x34d85c9CDeB23FA97cb08333b511ac86E1C4E258", //Otherdeed for Otherside
-		"0x23581767a106ae21c074b2276D25e5C3e136a68b", //Moonbirds
 		"0x8a90CAb2b38dba80c64b7734e58Ee1dB38B8992e", //Doodles
+		"0x059EDD72Cd353dF5106D2B9cC5ab83a52287aC3a", //Chromie Squiggles by Snowfro
+		"0xd4e4078ca3495de5b1d4db434bebc5a986197782", //Autoglyphs
+		"0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB", //Cryptopunks
 	}
 	blockchains := []string{
 		"Ethereum",
@@ -144,17 +149,12 @@ func main() {
 // 1. The difference of the (new) floor price and @oldFloor exceeds @deviationPermille.
 // 2. @update is true.
 func periodicOracleUpdateHelper(oldFloor float64, deviationPermille int, update bool, auth *bind.TransactOpts, contract *diaNFTOracleService.DIANFTOracle, conn *ethclient.Client, blockchain string, address string) (float64, error) {
-	var data FloorReturn
+	var data DataReturn
 	data.Blockchain = blockchain
 	data.Address = address
 
 	// Get floor price
-	floor, err := getFloor(blockchain, address)
-	if err != nil {
-		log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
-		return oldFloor, err
-	}
-	data.Floor = floor.Value
+	data.Floor = 0.0
 
 	// Get MA of floor price
 	floorMA, err := getFloorMA(blockchain, address)
@@ -164,8 +164,14 @@ func periodicOracleUpdateHelper(oldFloor float64, deviationPermille int, update 
 	}
 	data.FloorMA = floorMA.Value
 
+	// Get drawdown data
+	data.Drawdown.Drawdown = 0.0
+	data.Drawdown.Average = 0.0
+	data.Drawdown.Deviation = 0.0
+
 	// Check for deviation in floor price.
-	newFloor := floor.Value
+	// TO DO: I suggest to take MA of floor price here instead.
+	newFloor := floorMA.Value
 
 	if math.Abs(newFloor-oldFloor) > oldFloor*float64(deviationPermille)/1000 || update {
 		log.Println("Entering deviation based update zone")
@@ -180,7 +186,7 @@ func periodicOracleUpdateHelper(oldFloor float64, deviationPermille int, update 
 	return newFloor, nil
 }
 
-func updateNFTData(data FloorReturn, auth *bind.TransactOpts, contract *diaNFTOracleService.DIANFTOracle, conn *ethclient.Client) error {
+func updateNFTData(data DataReturn, auth *bind.TransactOpts, contract *diaNFTOracleService.DIANFTOracle, conn *ethclient.Client) error {
 	timestamp := uint64(time.Now().Unix())
 
 	// Update floor
@@ -188,7 +194,9 @@ func updateNFTData(data FloorReturn, auth *bind.TransactOpts, contract *diaNFTOr
 	var values []uint64
 	values = append(values, uint64(data.Floor*100000000))
 	values = append(values, uint64(data.FloorMA*100000000))
-	values = append(values, []uint64{0, 0, 0}...)
+	values = append(values, uint64(-data.Drawdown.Drawdown*100000000))
+	values = append(values, uint64(-data.Drawdown.Average*100000000))
+	values = append(values, uint64(data.Drawdown.Deviation*100000000))
 
 	err := updateOracle(conn, contract, auth, symbol, values, timestamp)
 	if err != nil {
@@ -207,42 +215,36 @@ func updateOracle(
 	values []uint64,
 	timestamp uint64) error {
 
-	/*gasPrice, err := client.SuggestGasPrice(context.Background())
-	if err != nil {
-		log.Fatal(err)
-	}*/
-	gasTipCap, err := client.SuggestGasTipCap(context.Background())
+	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fGasTip := new(big.Float).SetInt(gasTipCap)
-	fGasTip.Mul(fGasTip, big.NewFloat(1.1))
-	gasTipCap, _ = fGasTip.Int(nil)
+	// Get 110% of the gas price
+	fmt.Println(gasPrice)
+	fGas := new(big.Float).SetInt(gasPrice)
+	fGas.Mul(fGas, big.NewFloat(1.1))
+	gasPrice, _ = fGas.Int(nil)
+	fmt.Println(gasPrice)
 	// Write values to smart contract
 	tx, err := contract.SetValue(&bind.TransactOpts{
 		From:     auth.From,
 		Signer:   auth.Signer,
 		GasLimit: 1000725,
-		//GasPrice: gasPrice,
-		GasTipCap: gasTipCap,
+		GasPrice: gasPrice,
 	}, key, values[0], values[1], values[2], values[3], values[4], timestamp)
 	if err != nil {
 		return err
 	}
 	fmt.Println(tx.GasPrice())
 	log.Printf("key: %s\n", key)
-	log.Printf("nonce: %d\n", tx.Nonce())
-	//log.Printf("gas price: %d\n", tx.GasPrice())
-	log.Printf("gas fee cap: %d\n", tx.GasFeeCap())
-	log.Printf("gas tip cap: %d\n", tx.GasTipCap())
 	log.Printf("Tx To: %s\n", tx.To().String())
 	log.Printf("Tx Hash: 0x%x\n", tx.Hash())
 	return nil
 }
 
 func getFloor(blockchain, address string) (Floor, error) {
-	response, err := http.Get(diaAPIBaseURL + "/NFTFloor/" + blockchain + "/" + address)
+	response, err := http.Get("https://api.diadata.org/v1/NFTFloor/" + blockchain + "/" + address + "?lookbackWindow=604800")
 	if err != nil {
 		return Floor{}, err
 	}
@@ -266,7 +268,7 @@ func getFloor(blockchain, address string) (Floor, error) {
 }
 
 func getFloorMA(blockchain, address string) (FloorMA, error) {
-	response, err := http.Get(diaAPIBaseURL + "/NFTFloorMA/" + blockchain + "/" + address)
+	response, err := http.Get("https://api.diadata.org/v1/NFTFloorMA/" + blockchain + "/" + address)
 	if err != nil {
 		return FloorMA{}, err
 	}
@@ -284,6 +286,31 @@ func getFloorMA(blockchain, address string) (FloorMA, error) {
 	err = json.Unmarshal(contents, &resp)
 	if err != nil {
 		return FloorMA{}, err
+	}
+
+	return resp, err
+}
+
+func getDrawdown(blockchain, address string) (Drawdown, error) {
+	response, err := http.Get("https://api.diadata.org/v1/NFTDownday/" + blockchain + "/" + address)
+	if err != nil {
+		log.Error(err)
+		return Drawdown{}, err
+	}
+	defer response.Body.Close()
+	if 200 != response.StatusCode {
+		return Drawdown{}, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	}
+
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return Drawdown{}, err
+	}
+
+	var resp Drawdown
+	err = json.Unmarshal(contents, &resp)
+	if err != nil {
+		return Drawdown{}, err
 	}
 
 	return resp, err
