@@ -16,6 +16,7 @@ type FilterCOUNT struct {
 	numTrades   int64
 	value       int64
 	name        string
+	childName   string
 	memory      int
 	modified    bool
 }
@@ -25,7 +26,8 @@ func NewFilterCOUNT(asset dia.Asset, source string, memory int) *FilterCOUNT {
 		asset:     asset,
 		source:    source,
 		numTrades: int64(0),
-		name:      "COUNT" + strconv.Itoa(memory),
+		name:      dia.COUNT_META_FILTER,
+		childName: dia.COUNT_FILTER + strconv.Itoa(memory),
 		memory:    memory,
 	}
 	return filter
@@ -67,7 +69,7 @@ func (filter *FilterCOUNT) FilterPointForBlock() *dia.MetaFilterPoint {
 func (filter *FilterCOUNT) save(ds models.Datastore) error {
 	if filter.modified {
 		filter.modified = false
-		err := ds.SetMetaFilter(filter.name, filter.asset, float64(filter.value), filter.currentTime)
+		err := ds.SetFilter(getFilterName(filter.name, filter.childName), filter.asset, filter.source, float64(filter.value), filter.currentTime)
 		if err != nil {
 			log.Errorln("FilterCOUNT Error:", err)
 		}

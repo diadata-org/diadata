@@ -108,6 +108,21 @@ const (
 	MagicEden                = "MagicEden"
 )
 
+const (
+	MAIR_FILTER   = "MAIR"
+	MA_FILTER     = "MA"
+	MEDIR_FILTER  = "MEDIR"
+	VWAP_FILTER   = "VWAP"
+	VWAPIR_FILTER = "VWAPIR"
+	VOL_FILTER    = "VOL"
+	TLT_FILTER    = "TLT"
+	COUNT_FILTER  = "COUNT"
+
+	AIR_META_FILTER   = "AIR_META"
+	COUNT_META_FILTER = "COUNT"
+	VOL_META_FILTER   = "VOL"
+)
+
 type ConfigApi struct {
 	ApiKey    string
 	SecretKey string

@@ -144,7 +144,7 @@ func (filter *FilterMAIR) filterPointForBlock() *dia.FilterPoint {
 func (filter *FilterMAIR) save(ds models.Datastore) error {
 	if filter.modified {
 		filter.modified = false
-		err := ds.SetFilter(filter.filterName, filter.pair, filter.exchange, filter.value, filter.currentTime)
+		err := ds.SetPairFilter(filter.filterName, filter.pair, filter.exchange, filter.value, filter.currentTime)
 		if err != nil {
 			log.Errorln("FilterMAIR: Error:", err)
 		}

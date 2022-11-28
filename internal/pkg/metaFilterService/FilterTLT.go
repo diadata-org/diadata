@@ -1,6 +1,7 @@
 package metafilters
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -11,13 +12,15 @@ import (
 type FilterTLT struct {
 	asset         dia.Asset
 	source        string
+	name          string
 	lastTradeTime time.Time
 }
 
-func NewFilterTLT(asset dia.Asset, source string) *FilterTLT {
+func NewFilterTLT(asset dia.Asset, source string, memory int) *FilterTLT {
 	s := &FilterTLT{
 		asset:  asset,
 		source: source,
+		name:   "TLT" + strconv.Itoa(memory),
 	}
 	return s
 }
@@ -32,7 +35,7 @@ func (s *FilterTLT) collect(filterPoint dia.FilterPoint) {
 
 func (s *FilterTLT) save(ds models.Datastore) error {
 	// TO DO: Write method SetLastTradeTimeForExchangeAsset
-	err := ds.SetLastTradeTimeForExchange(s.asset, s.source, s.lastTradeTime)
+	err := ds.SetLastTradeTimeForExchangeAsset(s.asset, s.source, s.lastTradeTime)
 	if err != nil {
 		log.Errorln("FilterTLT Error:", err)
 	}

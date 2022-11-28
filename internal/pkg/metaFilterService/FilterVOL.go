@@ -11,10 +11,12 @@ import (
 
 type FilterVOL struct {
 	asset       dia.Asset
+	source      string
 	currentTime time.Time
 	volumeUSD   float64
 	value       float64
 	name        string
+	childName   string
 	modified    bool
 }
 
@@ -22,7 +24,8 @@ func NewFilterVOL(asset dia.Asset, exchange string, memory int) *FilterVOL {
 	filter := &FilterVOL{
 		asset:     asset,
 		volumeUSD: 0.0,
-		name:      "VOL" + strconv.Itoa(memory),
+		name:      dia.VOL_META_FILTER,
+		childName: dia.VOL_FILTER + strconv.Itoa(memory),
 	}
 	return filter
 }
@@ -56,17 +59,18 @@ func (filter *FilterVOL) filterPointForBlock() *dia.MetaFilterPoint {
 
 func (filter *FilterVOL) FilterPointForBlock() *dia.MetaFilterPoint {
 	return &dia.MetaFilterPoint{
-		Asset: filter.asset,
-		Value: filter.value,
-		Name:  filter.name,
-		Time:  filter.currentTime,
+		Asset:  filter.asset,
+		Source: filter.source,
+		Value:  filter.value,
+		Name:   filter.name,
+		Time:   filter.currentTime,
 	}
 }
 
 func (filter *FilterVOL) save(ds models.Datastore) error {
 	if filter.modified {
 		filter.modified = false
-		err := ds.SetMetaFilter(filter.name, filter.asset, filter.value, filter.currentTime)
+		err := ds.SetFilter(getFilterName(filter.name, filter.childName), filter.asset, filter.source, filter.value, filter.currentTime)
 		if err != nil {
 			log.Errorln("FilterVOL Error:", err)
 		}

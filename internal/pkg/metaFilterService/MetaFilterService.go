@@ -31,6 +31,7 @@ func getIdentifier(asset dia.Asset) string {
 type metaFilterIdentifier struct {
 	IdentifierQuotetoken string
 	filterName           string
+	source               string
 }
 
 // FiltersBlockService is the data structure containing all objects
@@ -95,21 +96,16 @@ func (s *MetaFilterService) processFiltersBlock(fb *dia.FiltersBlock) {
 	t0 := time.Now()
 
 	for _, filterPoint := range fb.FiltersBlockData.FilterPoints {
-		s.createMetaFilters(filterPoint, fb.FiltersBlockData.BeginTime)
-		s.computeMetaFilters(filterPoint)
+		s.createMetaFilters(filterPoint, filterPoint.Source, fb.FiltersBlockData.BeginTime)
+		s.createMetaFilters(filterPoint, "", fb.FiltersBlockData.BeginTime)
+		s.computeMetaFilters(filterPoint, filterPoint.Source)
+		s.computeMetaFilters(filterPoint, "")
 	}
 
-	resultFilters := []dia.MetaFilterPoint{}
-
 	t0 = time.Now()
-
 	for _, filters := range s.metaFilters {
 		for _, f := range filters {
 			f.finalCompute(fb.FiltersBlockData.EndTime)
-			mfp := f.filterPointForBlock()
-			if mfp != nil {
-				resultFilters = append(resultFilters, *mfp)
-			}
 		}
 	}
 	log.Info("time spent for final compute: ", time.Since(t0))
@@ -143,28 +139,30 @@ func (s *MetaFilterService) processFiltersBlock(fb *dia.FiltersBlock) {
 
 }
 
-func (s *MetaFilterService) createMetaFilters(filterPoint dia.FilterPoint, BeginTime time.Time) {
+func (s *MetaFilterService) createMetaFilters(filterPoint dia.FilterPoint, source string, BeginTime time.Time) {
 	mfi := metaFilterIdentifier{
 		IdentifierQuotetoken: getIdentifier(filterPoint.Pair.QuoteToken),
 		filterName:           filterPoint.Name,
+		source:               source,
 	}
 	_, ok := s.metaFilters[mfi]
 	if !ok {
 		s.metaFilters[mfi] = []MetaFilter{
 			// NewFilterMA(filterPoint.Pair.QuoteToken, BeginTime, dia.BlockSizeSeconds),
-			NewFilterAIR(filterPoint.Pair.QuoteToken, BeginTime),
+			NewFilterAIR(filterPoint.Pair.QuoteToken, BeginTime, dia.BlockSizeSeconds),
 			// NewFilterMEDIR(pair, exchange, BeginTime, dia.BlockSizeSeconds),
 			NewFilterVOL(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.BlockSizeSeconds),
 			NewFilterCOUNT(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.BlockSizeSeconds),
-			NewFilterTLT(filterPoint.Pair.QuoteToken, filterPoint.Source),
+			NewFilterTLT(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.BlockSizeSeconds),
 		}
 	}
 }
 
-func (s *MetaFilterService) computeMetaFilters(filterPoint dia.FilterPoint) {
+func (s *MetaFilterService) computeMetaFilters(filterPoint dia.FilterPoint, source string) {
 	mfi := metaFilterIdentifier{
 		IdentifierQuotetoken: getIdentifier(filterPoint.Pair.QuoteToken),
 		filterName:           filterPoint.Name,
+		source:               source,
 	}
 	for _, f := range s.metaFilters[mfi] {
 		f.collect(filterPoint)

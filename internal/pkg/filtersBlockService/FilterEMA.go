@@ -112,7 +112,7 @@ func (s *FilterEMA) save(ds models.Datastore) error {
 
 	if s.modified {
 		s.modified = false
-		err := ds.SetFilter(s.filterName, s.pair, s.exchange, s.value, s.currentTime)
+		err := ds.SetPairFilter(s.filterName, s.pair, s.exchange, s.value, s.currentTime)
 		if err != nil {
 			log.Errorln("FilterMA: Error:", err)
 		}

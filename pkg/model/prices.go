@@ -15,24 +15,24 @@ func (datastore *DB) GetPrice(asset dia.Asset, exchange string) (float64, error)
 	return v, err
 }
 
-func (datastore *DB) GetPriceYesterday(pair dia.Pair, exchange string) (float64, error) {
-	return datastore.getZSETValue(getKeyFilterZSET(getKey(dia.FilterKing, pair, exchange)), time.Now().Unix()-WindowYesterday)
+func (datastore *DB) GetPriceYesterday(asset dia.Asset, exchange string) (float64, error) {
+	return datastore.getZSETValue(getKeyFilterZSET(getAssetFilterKey(dia.FilterKing, asset, exchange)), time.Now().Unix()-WindowYesterday)
 }
 
-func (datastore *DB) GetPrice1h(pair dia.Pair, exchange string) (float64, error) {
-	return datastore.getZSETValue(getKeyFilterZSET(getKey(dia.FilterKing, pair, exchange)), time.Now().Unix()-Window1h)
+func (datastore *DB) GetPrice1h(asset dia.Asset, exchange string) (float64, error) {
+	return datastore.getZSETValue(getKeyFilterZSET(getAssetFilterKey(dia.FilterKing, asset, exchange)), time.Now().Unix()-Window1h)
 }
 
-func (datastore *DB) GetPrice7d(pair dia.Pair, exchange string) (float64, error) {
-	return datastore.getZSETValue(getKeyFilterZSET(getKey(dia.FilterKing, pair, exchange)), time.Now().Unix()-Window7d)
+func (datastore *DB) GetPrice7d(asset dia.Asset, exchange string) (float64, error) {
+	return datastore.getZSETValue(getKeyFilterZSET(getAssetFilterKey(dia.FilterKing, asset, exchange)), time.Now().Unix()-Window7d)
 }
 
-func (datastore *DB) GetPrice14d(pair dia.Pair, exchange string) (float64, error) {
-	return datastore.getZSETValue(getKeyFilterZSET(getKey(dia.FilterKing, pair, exchange)), time.Now().Unix()-Window14d)
+func (datastore *DB) GetPrice14d(asset dia.Asset, exchange string) (float64, error) {
+	return datastore.getZSETValue(getKeyFilterZSET(getAssetFilterKey(dia.FilterKing, asset, exchange)), time.Now().Unix()-Window14d)
 }
 
-func (datastore *DB) GetPrice30d(pair dia.Pair, exchange string) (float64, error) {
-	return datastore.getZSETValue(getKeyFilterZSET(getKey(dia.FilterKing, pair, exchange)), time.Now().Unix()-Window30d)
+func (datastore *DB) GetPrice30d(asset dia.Asset, exchange string) (float64, error) {
+	return datastore.getZSETValue(getKeyFilterZSET(getAssetFilterKey(dia.FilterKing, asset, exchange)), time.Now().Unix()-Window30d)
 }
 
 func (datastore *DB) GetTradePriceBefore(asset dia.Asset, exchange string, timestamp time.Time, window time.Duration) (*dia.Trade, error) {

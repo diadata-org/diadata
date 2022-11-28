@@ -13,29 +13,74 @@ import (
 )
 
 // SetFilter stores a filter point
-func (datastore *DB) SetMetaFilter(filter string, asset dia.Asset, value float64, t time.Time) error {
-	// return datastore.SaveFilterInflux(filter, asset, exchange, value, t)
-	err := datastore.SaveMetaFilterInflux(filter, asset, value, t)
+func (datastore *DB) SetFilter(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error {
+	err := datastore.SaveFilterInflux(filter, asset, exchange, value, t)
 	if err != nil {
 		return err
 	}
-	// err = datastore.setZSETValue(getKeyFilterZSET(getKey(filter, pair, exchange)), value, t.Unix(), BiggestWindow)
-	// if err != nil {
-	// 	return err
-	// }
+	err = datastore.setZSETValue(getKeyFilterZSET(getAssetFilterKey(filter, asset, exchange)), value, t.Unix(), BiggestWindow)
+	if err != nil {
+		return err
+	}
 	return err
 }
 
 // SetFilter stores a filter point
-func (datastore *DB) SetFilter(filter string, pair dia.Pair, exchange string, value float64, t time.Time) error {
-	// return datastore.SaveFilterInflux(filter, asset, exchange, value, t)
-	err := datastore.SaveFilterInflux(filter, pair, exchange, value, t)
+func (datastore *DB) SetPairFilter(filter string, pair dia.Pair, exchange string, value float64, t time.Time) error {
+	err := datastore.SavePairFilterInflux(filter, pair, exchange, value, t)
 	if err != nil {
 		return err
 	}
-	err = datastore.setZSETValue(getKeyFilterZSET(getKey(filter, pair, exchange)), value, t.Unix(), BiggestWindow)
+	err = datastore.setZSETValue(getKeyFilterZSET(getPairFilterKey(filter, pair, exchange)), value, t.Unix(), BiggestWindow)
 	if err != nil {
 		return err
+	}
+	return err
+}
+
+// SaveMetaFilterInflux stores a metaFilter point in influx.
+func (datastore *DB) SaveFilterInflux(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error {
+	// Create a point and add to batch
+	tags := map[string]string{
+		"filter":     filter,
+		"symbol":     asset.Symbol,
+		"address":    asset.Address,
+		"blockchain": asset.Blockchain,
+		"exchange":   exchange,
+	}
+	fields := map[string]interface{}{
+		"value": value,
+	}
+	pt, err := clientInfluxdb.NewPoint(influxDbFiltersTable, tags, fields, t)
+	if err != nil {
+		log.Errorln("new filter influx:", err)
+	} else {
+		datastore.addPoint(pt)
+	}
+	return err
+}
+
+// SaveFilterInflux stores a filter point in influx.
+func (datastore *DB) SavePairFilterInflux(filter string, pair dia.Pair, exchange string, value float64, t time.Time) error {
+	// Create a point and add to batch
+	tags := map[string]string{
+		"filter":               filter,
+		"symbol":               pair.QuoteToken.Symbol + "-" + pair.BaseToken.Symbol,
+		"quotetokenaddress":    pair.QuoteToken.Address,
+		"basetokenaddress":     pair.BaseToken.Address,
+		"quotetokenblockchain": pair.QuoteToken.Blockchain,
+		"basetokenblockchain":  pair.BaseToken.Blockchain,
+		"exchange":             exchange,
+	}
+	fields := map[string]interface{}{
+		"value":        value,
+		"allExchanges": exchange == "",
+	}
+	pt, err := clientInfluxdb.NewPoint(influxDbPairFiltersTable, tags, fields, t)
+	if err != nil {
+		log.Errorln("new filter influx:", err)
+	} else {
+		datastore.addPoint(pt)
 	}
 	return err
 }
@@ -169,8 +214,16 @@ func (datastore *DB) GetFilter(filter string, topAsset dia.Asset, scale string, 
 	return allFilters, err
 }
 
-func getKey(filter string, pair dia.Pair, exchange string) string {
+func getPairFilterKey(filter string, pair dia.Pair, exchange string) string {
 	key := filter + "_" + pair.QuoteToken.Blockchain + "_" + pair.QuoteToken.Address + "-" + pair.BaseToken.Blockchain + "_" + pair.BaseToken.Address
+	if exchange != "" {
+		key = key + "_" + exchange
+	}
+	return key
+}
+
+func getAssetFilterKey(filter string, asset dia.Asset, exchange string) string {
+	key := filter + "_" + asset.Blockchain + "_" + asset.Address
 	if exchange != "" {
 		key = key + "_" + exchange
 	}
@@ -187,52 +240,6 @@ func getKeyFilterSymbolAndExchangeZSET(filter string, asset dia.Asset, exchange 
 	} else {
 		return "dia_" + filter + "_" + asset.Blockchain + "_" + asset.Address + "_ZSET"
 	}
-}
-
-// SaveMetaFilterInflux stores a metaFilter point in influx.
-func (datastore *DB) SaveMetaFilterInflux(filter string, asset dia.Asset, value float64, t time.Time) error {
-	// Create a point and add to batch
-	tags := map[string]string{
-		"filter":     filter,
-		"symbol":     asset.Symbol,
-		"address":    asset.Address,
-		"blockchain": asset.Blockchain,
-	}
-	fields := map[string]interface{}{
-		"value": value,
-	}
-	pt, err := clientInfluxdb.NewPoint(influxDbMetaFiltersTable, tags, fields, t)
-	if err != nil {
-		log.Errorln("new filter influx:", err)
-	} else {
-		datastore.addPoint(pt)
-	}
-	return err
-}
-
-// SaveFilterInflux stores a filter point in influx.
-func (datastore *DB) SaveFilterInflux(filter string, pair dia.Pair, exchange string, value float64, t time.Time) error {
-	// Create a point and add to batch
-	tags := map[string]string{
-		"filter":               filter,
-		"symbol":               pair.QuoteToken.Symbol + "-" + pair.BaseToken.Symbol,
-		"quotetokenaddress":    pair.QuoteToken.Address,
-		"basetokenaddress":     pair.BaseToken.Address,
-		"quotetokenblockchain": pair.QuoteToken.Blockchain,
-		"basetokenblockchain":  pair.BaseToken.Blockchain,
-		"exchange":             exchange,
-	}
-	fields := map[string]interface{}{
-		"value":        value,
-		"allExchanges": exchange == "",
-	}
-	pt, err := clientInfluxdb.NewPoint(influxDbFiltersTable, tags, fields, t)
-	if err != nil {
-		log.Errorln("new filter influx:", err)
-	} else {
-		datastore.addPoint(pt)
-	}
-	return err
 }
 
 func (datastore *DB) setZSETValue(key string, value float64, unixTime int64, maxWindow int64) error {

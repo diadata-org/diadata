@@ -67,7 +67,7 @@ func (filter *FilterCOUNT) FilterPointForBlock() *dia.FilterPoint {
 func (filter *FilterCOUNT) save(ds models.Datastore) error {
 	if filter.modified {
 		filter.modified = false
-		err := ds.SetFilter(filter.filterName, filter.pair, filter.exchange, float64(filter.value), filter.currentTime)
+		err := ds.SetPairFilter(filter.filterName, filter.pair, filter.exchange, float64(filter.value), filter.currentTime)
 		if err != nil {
 			log.Errorln("FilterCOUNT Error:", err)
 		}

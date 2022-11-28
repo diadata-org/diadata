@@ -635,6 +635,14 @@ func getKeyLastTradeTimeForExchange(pair dia.Pair, exchange string) string {
 	}
 }
 
+func getKeyLastTradeTimeForExchangeAsset(asset dia.Asset, exchange string) string {
+	if exchange == "" {
+		return "dia_TLT_" + asset.Blockchain + "_" + asset.Address
+	} else {
+		return "dia_TLT_" + asset.Blockchain + "_" + asset.Address + "_" + exchange
+	}
+}
+
 func (datastore *DB) GetLastTradeTimeForExchange(pair dia.Pair, exchange string) (*time.Time, error) {
 	key := getKeyLastTradeTimeForExchange(pair, exchange)
 	t, err := datastore.redisClient.Get(key).Result()
@@ -660,6 +668,19 @@ func (datastore *DB) SetLastTradeTimeForExchange(pair dia.Pair, exchange string,
 	err := datastore.redisPipe.Set(key, t.Unix(), TimeOutRedis).Err()
 	if err != nil {
 		log.Printf("Error: %v on SetLastTradeTimeForExchange %v\n", err, pair.QuoteToken.Symbol+"-"+pair.BaseToken.Symbol)
+	}
+	return err
+}
+
+func (datastore *DB) SetLastTradeTimeForExchangeAsset(asset dia.Asset, exchange string, t time.Time) error {
+	if datastore.redisClient == nil {
+		return nil
+	}
+	key := getKeyLastTradeTimeForExchangeAsset(asset, exchange)
+	log.Debug("setting ", key, t)
+	err := datastore.redisPipe.Set(key, t.Unix(), TimeOutRedis).Err()
+	if err != nil {
+		log.Errorf("Error: %v on SetLastTradeTimeForExchange %v\n", err, asset.Symbol)
 	}
 	return err
 }

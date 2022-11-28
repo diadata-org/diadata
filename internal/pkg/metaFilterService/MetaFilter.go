@@ -18,6 +18,10 @@ type MetaFilter interface {
 	save(ds models.Datastore) error
 }
 
+func getFilterName(name string, childName string) string {
+	return name + "_" + childName
+}
+
 func RemoveOutliers(samples []float64, scale float64) ([]float64, []int) {
 	return removeOutliersScaled(samples, scale)
 }
