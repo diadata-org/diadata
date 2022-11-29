@@ -166,11 +166,11 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 	} else {
 		quotationExtended.PriceYesterday = quotationYesterday.Price
 	}
-	volumeYesterday, err := env.RelDB.GetAssetVolume24H(asset)
+	volumeYesterday, err := env.DataStore.Get24HoursAssetVolume(asset)
 	if err != nil {
 		log.Warn("get volume yesterday: ", err)
 	} else {
-		quotationExtended.VolumeYesterdayUSD = volumeYesterday
+		quotationExtended.VolumeYesterdayUSD = *volumeYesterday
 	}
 
 	// Appropriate formatting.
@@ -221,11 +221,11 @@ func (env *Env) GetQuotation(c *gin.Context) {
 	} else {
 		quotationExtended.PriceYesterday = quotationYesterday.Price
 	}
-	volumeYesterday, err := env.RelDB.GetAssetVolume24H(topAsset)
+	volumeYesterday, err := env.DataStore.Get24HoursAssetVolume(topAsset)
 	if err != nil {
 		log.Warn("get volume yesterday: ", err)
 	} else {
-		quotationExtended.VolumeYesterdayUSD = volumeYesterday
+		quotationExtended.VolumeYesterdayUSD = *volumeYesterday
 	}
 	quotationExtended.Symbol = quotation.Asset.Symbol
 	quotationExtended.Name = quotation.Asset.Name
@@ -293,7 +293,7 @@ func (env *Env) GetAssetMap(c *gin.Context) {
 		} else {
 			quotationExtended.PriceYesterday = quotationYesterday.Price
 		}
-		volumeYesterday, err := env.RelDB.GetAssetVolume24H(topAsset)
+		volumeYesterday, err := env.RelDB.GetLastAssetVolume24H(topAsset)
 		if err != nil {
 			log.Warn("get volume yesterday: ", err)
 		} else {
