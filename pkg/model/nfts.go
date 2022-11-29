@@ -510,8 +510,10 @@ func (rdb *RelDB) GetNFTFloorRecursive(
 	noBundles bool,
 	exchange string,
 ) (floor float64, err error) {
-	count := 0
-	foundFloor := false
+	var (
+		count      int
+		foundFloor bool
+	)
 
 	for !foundFloor && count < stepBackLimit {
 		floor, err = rdb.GetNFTFloor(nftClass, timestamp, floorWindowSeconds, noBundles, exchange)

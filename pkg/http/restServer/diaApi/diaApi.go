@@ -2331,6 +2331,7 @@ func (env *Env) GetNFTFloor(c *gin.Context) {
 		return
 	}
 
+	// ------ Parse parameters -----
 	blockchain := c.Param("blockchain")
 	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 
@@ -2347,17 +2348,6 @@ func (env *Env) GetNFTFloor(c *gin.Context) {
 	}
 
 	floorWindowSeconds := c.Query("floorWindow")
-	var floorWindow int64
-	var err error
-	if floorWindowSeconds != "" {
-		floorWindow, err = strconv.ParseInt(floorWindowSeconds, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusBadRequest, err)
-		}
-	} else {
-		// Set floor window to default 24h.
-		floorWindow = 24 * 60 * 60
-	}
 
 	// Exclude bundle sales by default.
 	bundlesString := c.DefaultQuery("bundles", "false")
@@ -2369,23 +2359,49 @@ func (env *Env) GetNFTFloor(c *gin.Context) {
 	// Optional parameter @exchange.
 	exchange := c.Query("exchange")
 
+	// ------ Set vars -----
 	nftClass := dia.NFTClass{Address: address, Blockchain: blockchain}
 
-	// Look for floor price. Iterate backwards in time if no sales are found.
-	var floor float64
-	windowDuration := time.Duration(floorWindow) * time.Second
-	stepBackLimit := 40
-	floor, err = env.RelDB.GetNFTFloorRecursive(nftClass, timestamp, windowDuration, stepBackLimit, !bundles, exchange)
-	if err != nil {
-		restApi.SendError(c, http.StatusBadRequest, err)
-		return
-	}
 	type returnStruct struct {
 		Floor  float64   `json:"Floor_Price"`
 		Time   time.Time `json:"Time"`
 		Source string    `json:"Source"`
 	}
-	var resp returnStruct
+
+	var (
+		floorWindow    int64
+		floorWindowSet bool
+		stepBackLimit  int
+		floor          float64
+		resp           returnStruct
+	)
+
+	if floorWindowSeconds != "" {
+		floorWindow, err = strconv.ParseInt(floorWindowSeconds, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusBadRequest, err)
+		}
+		floorWindowSet = true
+	} else {
+		// Set floor window to default 24h.
+		floorWindow = 24 * 60 * 60
+	}
+
+	// In default case, i.e. floorWindow is not set by user, go back up to 30
+	// days in order to find a floor price. Otherwise, don't go back at all.
+	if floorWindowSet {
+		stepBackLimit = 1
+	} else {
+		stepBackLimit = 30
+	}
+
+	// ------ Get Floor Price -----
+	floor, err = env.RelDB.GetNFTFloorRecursive(nftClass, timestamp, time.Duration(floorWindow)*time.Second, stepBackLimit, !bundles, exchange)
+	if err != nil {
+		restApi.SendError(c, http.StatusBadRequest, err)
+		return
+	}
+
 	resp.Floor = floor
 	resp.Time = timestamp
 	resp.Source = dia.Diadata
