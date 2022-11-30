@@ -36,6 +36,7 @@ func NewFilterCOUNT(asset dia.Asset, source string, memory int) *FilterCOUNT {
 func (filter *FilterCOUNT) Collect(filterPoint dia.FilterPoint) {
 	filter.collect(filterPoint)
 }
+
 func (filter *FilterCOUNT) FinalCompute(t time.Time) {
 	filter.finalCompute(t)
 }

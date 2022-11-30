@@ -121,6 +121,7 @@ const (
 	AIR_META_FILTER   = "AIR_META"
 	COUNT_META_FILTER = "COUNT"
 	VOL_META_FILTER   = "VOL"
+	TLT_META_FILTER   = "TLT"
 )
 
 type ConfigApi struct {

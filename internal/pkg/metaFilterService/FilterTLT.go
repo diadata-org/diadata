@@ -13,14 +13,16 @@ type FilterTLT struct {
 	asset         dia.Asset
 	source        string
 	name          string
+	childName     string
 	lastTradeTime time.Time
 }
 
 func NewFilterTLT(asset dia.Asset, source string, memory int) *FilterTLT {
 	s := &FilterTLT{
-		asset:  asset,
-		source: source,
-		name:   "TLT" + strconv.Itoa(memory),
+		asset:     asset,
+		source:    source,
+		name:      dia.TLT_META_FILTER,
+		childName: dia.TLT_FILTER + strconv.Itoa(memory),
 	}
 	return s
 }
@@ -30,11 +32,11 @@ func (s *FilterTLT) filterPointForBlock() *dia.MetaFilterPoint {
 }
 
 func (s *FilterTLT) collect(filterPoint dia.FilterPoint) {
+
 	s.lastTradeTime = filterPoint.LastTrade.Time
 }
 
 func (s *FilterTLT) save(ds models.Datastore) error {
-	// TO DO: Write method SetLastTradeTimeForExchangeAsset
 	err := ds.SetLastTradeTimeForExchangeAsset(s.asset, s.source, s.lastTradeTime)
 	if err != nil {
 		log.Errorln("FilterTLT Error:", err)

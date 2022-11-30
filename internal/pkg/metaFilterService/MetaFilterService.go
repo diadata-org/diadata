@@ -147,13 +147,24 @@ func (s *MetaFilterService) createMetaFilters(filterPoint dia.FilterPoint, sourc
 	}
 	_, ok := s.metaFilters[mfi]
 	if !ok {
-		s.metaFilters[mfi] = []MetaFilter{
-			// NewFilterMA(filterPoint.Pair.QuoteToken, BeginTime, dia.BlockSizeSeconds),
-			NewFilterAIR(filterPoint.Pair.QuoteToken, BeginTime, dia.BlockSizeSeconds),
-			// NewFilterMEDIR(pair, exchange, BeginTime, dia.BlockSizeSeconds),
-			NewFilterVOL(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.BlockSizeSeconds),
-			NewFilterCOUNT(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.BlockSizeSeconds),
-			NewFilterTLT(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.BlockSizeSeconds),
+		switch filterPoint.Name {
+		case dia.MAIR_FILTER:
+			s.metaFilters[mfi] = []MetaFilter{
+				NewFilterAIR(filterPoint.Pair.QuoteToken, BeginTime, dia.BlockSizeSeconds),
+				// NewFilter...
+			}
+		case dia.VOL_FILTER:
+			s.metaFilters[mfi] = []MetaFilter{
+				NewFilterVOL(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.BlockSizeSeconds),
+			}
+		case dia.COUNT_FILTER:
+			s.metaFilters[mfi] = []MetaFilter{
+				NewFilterCOUNT(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.BlockSizeSeconds),
+			}
+		case dia.TLT_FILTER:
+			s.metaFilters[mfi] = []MetaFilter{
+				NewFilterTLT(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.BlockSizeSeconds),
+			}
 		}
 	}
 }
