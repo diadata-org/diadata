@@ -25,6 +25,7 @@ require (
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-redis/redis v6.15.9+incompatible
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.5.0
 	github.com/graarh/golang-socketio v0.0.0-20170510162725-2c44953b9b5f
 	github.com/graph-gophers/graphql-go v1.1.0
