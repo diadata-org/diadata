@@ -21,7 +21,7 @@ import (
 )
 
 const (
-	rpcEndpointSolana            = "https://solana-api.projectserum.com"
+	rpcEndpointSolana            = "https://try-rpc.mainnet.solana.blockdaemon.tech"
 	MagicEdenV2ProgramAddress    = "M2mx93ekt1fmXSVkTrUL9xVFHkmME8HTUi5Cyc5aF7K"
 	SolTokenAddress              = "So11111111111111111111111111111111111111112"
 	MetadataProgramAddress       = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
@@ -435,14 +435,23 @@ func (s *MagicEdenScraper) processTx(ctx context.Context, tx rpc.SignatureWithSt
 			if usdPrice < 0 {
 				usdPrice = -usdPrice
 			}
-			metadata, collectionFound, err := s.fetchNFTMetadata(ctx, nftAddr.String())
+
+			nftMetaAcct, err := s.fetchMetadataAcctForNft(ctx, nftAddr.String())
+			if err != nil {
+				return false, err
+			}
+			metadata, collectionFound, err := s.fetchNFTMetadata(ctx, nftMetaAcct)
 			if err != nil {
 				return false, err
 			}
 
 			classMetadata := SolanaNFTMetadata{}
 			if collectionFound {
-				classMetadata, _, err = s.fetchNFTMetadata(ctx, metadata.collectionAccount.String())
+				collectionMetaAcct, err := s.fetchMetadataAcctForNftCollection(ctx, nftAddr.String(), metadata.collectionAccount.String())
+				if err != nil {
+					return false, err
+				}
+				classMetadata, _, err = s.fetchNFTMetadata(ctx, collectionMetaAcct)
 				if err != nil {
 					return false, err
 				}
@@ -576,9 +585,106 @@ func (s *MagicEdenScraper) createOrReadNFT(addr common.PublicKey, metadata Solan
 	return &nft, nil
 }
 
-func (s *MagicEdenScraper) fetchNFTMetadata(ctx context.Context, nftAddr string) (SolanaNFTMetadata, bool, error) {
-	metadata := SolanaNFTMetadata{}
+func (s *MagicEdenScraper) fetchMetadataAcctForNft(ctx context.Context, nftAddr string) (string, error) {
+	var metadataAcctAddr string
+	txList, err := s.solanaRpcClient.GetSignaturesForAddressWithConfig(ctx, nftAddr,
+		rpc.GetSignaturesForAddressConfig{
+			Limit: 100,
+		})
+	if err != nil {
+		log.Warnf("unable to retrieve confirmed transaction signatures for account: %s, %s", nftAddr, err.Error())
+		return metadataAcctAddr, err
+	}
+	for j, tx := range txList {
+		if tx.Signature != "" {
+			confirmedTx, err := s.solanaRpcClient.GetTransaction(ctx, tx.Signature)
+			if confirmedTx == nil {
+				err = errors.New("confirmedTx == nil for nft")
+				log.Error(err)
+				continue
+			}
+			if err != nil || confirmedTx.Meta == nil || confirmedTx.Transaction.Message.Accounts == nil {
+				log.Errorf("unable to get confirmed transaction with signature %q: %v", tx.Signature, err)
+				continue
+			} else if confirmedTx.Meta.Err != nil {
+				continue
+			}
 
+			for i, postBalance := range confirmedTx.Meta.PostBalances {
+				normPrice := decimal.NewFromInt(postBalance).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(9)))
+				if normPrice.Equals(decimal.NewFromFloat(MetadataFee)) {
+					metadataAcctAddr = confirmedTx.Transaction.Message.Accounts[i].String()
+					break
+				}
+			}
+		}
+		if metadataAcctAddr != "" {
+			break
+		}
+	}
+	if metadataAcctAddr == "" {
+		return metadataAcctAddr, errors.New("no metadata account for : " + nftAddr)
+	}
+	return metadataAcctAddr, nil
+}
+
+func (s *MagicEdenScraper) fetchMetadataAcctForNftCollection(ctx context.Context, nftAddr, nftCollectionAddr string) (string, error) {
+	var metadataAcctAddr string
+	var creationTxList rpc.GetSignaturesForAddress
+	lastTxFetched := ""
+	for {
+		txList, err := s.solanaRpcClient.GetSignaturesForAddressWithConfig(context.TODO(), nftCollectionAddr,
+			rpc.GetSignaturesForAddressConfig{
+				Before: lastTxFetched,
+				Limit:  1000,
+			})
+		if err != nil {
+			log.Warnf("unable to retrieve confirmed transaction signatures for account: %s, %s", nftAddr, err.Error())
+			return metadataAcctAddr, err
+		}
+
+		if len(txList) == 0 {
+			break
+		}
+		lastTxFetched = txList[len(txList)-1].Signature
+		creationTxList = txList
+	}
+	for i := len(creationTxList) - 1; i >= 0; i-- {
+		tx := creationTxList[i]
+		if tx.Signature != "" {
+			confirmedTx, err := s.solanaRpcClient.GetTransaction(ctx, tx.Signature)
+			if confirmedTx == nil {
+				err = errors.New("confirmedTx == nil for nft")
+				log.Error(err)
+				continue
+			}
+			if err != nil || confirmedTx.Meta == nil || confirmedTx.Transaction.Message.Accounts == nil {
+				log.Errorf("unable to get confirmed transaction with signature %q: %v", tx.Signature, err)
+				continue
+			} else if confirmedTx.Meta.Err != nil {
+				continue
+			}
+
+			for j, postBalance := range confirmedTx.Meta.PostBalances {
+				normPrice := decimal.NewFromInt(postBalance).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(9)))
+				if normPrice.Equals(decimal.NewFromFloat(MetadataFee)) {
+					metadataAcctAddr = confirmedTx.Transaction.Message.Accounts[j].String()
+					break
+				}
+			}
+		}
+		if metadataAcctAddr != "" {
+			break
+		}
+	}
+	if metadataAcctAddr == "" {
+		return metadataAcctAddr, errors.New("no metadata account for : " + nftAddr)
+	}
+	return metadataAcctAddr, nil
+}
+
+// TODO - move to this generic method to fetch metadata on availability of a strong RPC
+func (s *MagicEdenScraper) fetchMetadataAcct(ctx context.Context, nftAddr string) (string, error) {
 	res, err := s.solanaRpcClient.RpcClient.GetProgramAccountsWithConfig(ctx, MetadataProgramAddress,
 		rpc.GetProgramAccountsConfig{
 			Encoding:  rpc.AccountEncodingBase64,
@@ -598,14 +704,22 @@ func (s *MagicEdenScraper) fetchNFTMetadata(ctx context.Context, nftAddr string)
 
 	if err != nil {
 		log.Warnf("unable to retrieve metadata account for : %s", err.Error())
-		return metadata, false, err
+		return "", err
 	}
 
-	var metadataAcctAddr string
+	if res.Error != nil {
+		return "", err
+	}
+
 	if len(res.Result) > 0 {
-		metadataAcctAddr = res.Result[0].Pubkey
+		return res.Result[0].Pubkey, nil
 	}
 
+	return "", errors.New("no metadata available")
+}
+
+func (s *MagicEdenScraper) fetchNFTMetadata(ctx context.Context, metadataAcctAddr string) (SolanaNFTMetadata, bool, error) {
+	metadata := SolanaNFTMetadata{}
 	if out, err := s.solanaRpcClient.GetAccountInfo(ctx, metadataAcctAddr); err != nil {
 		return metadata, false, err
 	} else {
