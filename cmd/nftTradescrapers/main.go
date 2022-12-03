@@ -58,7 +58,7 @@ func main() {
 
 	wg := sync.WaitGroup{}
 
-	scraperType := flag.String("nftclass", "Cryptopunk", "which NFT class")
+	scraperType := flag.String("nftclass", "MagicEden", "which NFT class")
 	flag.Parse()
 	var scraper nfttradescrapers.NFTTradeScraper
 
