@@ -54,11 +54,15 @@ func Variance(series []float64) (variance float64) {
 	if length == 0 {
 		return
 	}
-
-	for _, item := range series {
-		variance += math.Pow(float64(int64(item))-Average(series), float64(2))
+	if length == 1 {
+		return 0
 	}
-	variance /= length
+
+	avg := Average(series)
+	for _, item := range series {
+		variance += math.Pow(item-avg, float64(2))
+	}
+	variance /= (length - 1)
 	return
 }
 
