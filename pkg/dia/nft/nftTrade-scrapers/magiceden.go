@@ -35,8 +35,8 @@ var (
 	defMagicEdenConf = &MagicEdenScraperConfig{
 		ProgramAddr:      MagicEdenV2ProgramAddress,
 		BatchSize:        1000,
-		WaitPeriod:       30 * time.Second,
-		MaxRetry:         2,
+		WaitPeriod:       10 * time.Second,
+		MaxRetry:         0,
 		SkipOnErr:        true,
 		ScrapeHistorical: false,
 	}
@@ -427,6 +427,9 @@ func (s *MagicEdenScraper) processTx(ctx context.Context, tx rpc.SignatureWithSt
 			fromIndex := inst.Accounts[1]
 			from := confirmedTx.Transaction.Message.Accounts[fromIndex]
 			price := big.NewInt(int64(float64(confirmedTx.Meta.PreBalances[0]) - float64(confirmedTx.Meta.PostBalances[0])))
+			if price.Cmp(big.NewInt(0)) < 0 {
+				price.Mul(price, big.NewInt(-1))
+			}
 			normPrice := decimal.NewFromBigInt(price, 0).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(9)))
 			usdPrice, err := s.calcUSDPrice(normPrice)
 			if err != nil {
@@ -585,7 +588,6 @@ func (s *MagicEdenScraper) createOrReadNFT(addr common.PublicKey, metadata Solan
 	return &nft, nil
 }
 
-
 func (s *MagicEdenScraper) fetchMetadataAcctForNft(ctx context.Context, nftAddr string) (string, error) {
 	var metadataAcctAddr string
 	txList, err := s.solanaRpcClient.GetSignaturesForAddressWithConfig(ctx, nftAddr,
@@ -596,7 +598,7 @@ func (s *MagicEdenScraper) fetchMetadataAcctForNft(ctx context.Context, nftAddr 
 		log.Warnf("unable to retrieve confirmed transaction signatures for account: %s, %s", nftAddr, err.Error())
 		return metadataAcctAddr, err
 	}
-	for j, tx := range txList {
+	for _, tx := range txList {
 		if tx.Signature != "" {
 			confirmedTx, err := s.solanaRpcClient.GetTransaction(ctx, tx.Signature)
 			if confirmedTx == nil {
@@ -628,7 +630,6 @@ func (s *MagicEdenScraper) fetchMetadataAcctForNft(ctx context.Context, nftAddr 
 	}
 	return metadataAcctAddr, nil
 }
-
 
 func (s *MagicEdenScraper) fetchMetadataAcctForNftCollection(ctx context.Context, nftAddr, nftCollectionAddr string) (string, error) {
 	var metadataAcctAddr string
