@@ -47,6 +47,7 @@ func (datastore *DB) GetVolumeInflux(asset dia.Asset, exchange string, starttime
 		SELECT SUM(value) 
 		FROM %s 
 		WHERE address='%s' AND blockchain='%s' 
+		AND exchange=''
 		AND filter='%s' 
 		AND time > %d AND time<= %d
 		`
@@ -104,6 +105,59 @@ func (datastore *DB) Get24HoursExchangeVolume(exchange string) (*float64, error)
 	return datastore.GetVolumeInflux(dia.Asset{}, exchange, endtime.AddDate(0, 0, -1), endtime)
 }
 
+// Returns aggregated volumes from filters measurement on all exchanges.
+// Will deprecate GetAggVolumesByExchange below.
+func (datastore *DB) GetVolumesAllExchanges(asset dia.Asset, starttime time.Time, endtime time.Time) (exchVolumes dia.ExchangeVolumesList, err error) {
+	q := fmt.Sprintf(
+		`SELECT SUM(value) 
+		FROM %s 
+		WHERE filter='VOL120' 
+		AND address='%s' 
+		AND blockchain='%s'
+		AND exchange!='' 
+		AND time>%d 
+		AND time<=%d 
+		GROUP BY exchange`,
+		influxDbFiltersTable,
+		asset.Address,
+		asset.Blockchain,
+		starttime.UnixNano(),
+		endtime.UnixNano(),
+	)
+
+	res, err := queryInfluxDB(datastore.influxClient, q)
+	if err != nil {
+		log.Errorln("GetLastTrades", err)
+		return
+	}
+
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for i, group := range res[0].Series {
+			var exchangevolume dia.ExchangeVolume
+			if val, ok := group.Tags["exchange"]; ok {
+				exchangevolume.Exchange = val
+			}
+			if len(group.Values) > 0 && len(group.Values[0]) > 1 {
+				exchangevolume.Volume, err = group.Values[0][1].(json.Number).Float64()
+				if err != nil {
+					return
+				}
+			}
+			exchVolumes.Volumes = append(exchVolumes.Volumes, exchangevolume)
+			if i == 0 {
+				exchVolumes.Timestamp, err = time.Parse(time.RFC3339, res[0].Series[0].Values[0][0].(string))
+				if err != nil {
+					return
+				}
+			}
+		}
+
+	} else {
+		log.Error("Empty response GetVolumesAllExchanges")
+	}
+	return
+}
+
 // SetAggregatedVolume sets the aggregated volume @aggVol in postgres.
 func (rdb *RelDB) SetAggregatedVolume(aggVol dia.AggregatedVolume) error {
 	quotetokenQuery := fmt.Sprintf("(SELECT asset_id FROM %s WHERE blockchain=$1 and address=$2)", assetTable)
@@ -130,7 +184,18 @@ func (rdb *RelDB) SetAggregatedVolume(aggVol dia.AggregatedVolume) error {
 func (rdb *RelDB) GetAggregatedVolumes(asset dia.Asset, starttime time.Time, endtime time.Time) (aggVolumes []dia.AggregatedVolume, err error) {
 	valuesQuery := "a.volume,a.exchange,a.time_range_seconds,a.compute_time"
 	pairQuery := "b.address,b.blockchain,b.name,b.symbol,b.decimals,c.address,c.blockchain,c.name,c.symbol,c.decimals"
-	query := fmt.Sprintf("SELECT %s,%s FROM %s a INNER JOIN %s b ON a.quotetoken_id=b.asset_id INNER JOIN %s c ON a.basetoken_id=c.asset_id WHERE b.address=$1 AND b.blockchain=$2 AND compute_time>$3 AND compute_time<=$4 ORDER BY compute_time DESC",
+	query := fmt.Sprintf(`
+	SELECT %s,%s 
+	FROM %s a 
+	INNER JOIN %s b 
+	ON a.quotetoken_id=b.asset_id 
+	INNER JOIN %s c
+	ON a.basetoken_id=c.asset_id 
+	WHERE b.address=$1 
+	AND b.blockchain=$2 
+	AND compute_time>$3 
+	AND compute_time<=$4 
+	ORDER BY compute_time DESC`,
 		valuesQuery,
 		pairQuery,
 		aggregatedVolumeTable,

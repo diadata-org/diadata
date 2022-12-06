@@ -355,8 +355,20 @@
             "Ignore": false
         },
         {
+            "Symbol": "MSOL",
+            "ForeignName": "MSOL/USD",
+            "Exchange": "FTX",
+            "Ignore": false
+        },
+        {
             "Symbol": "OMG",
             "ForeignName": "OMG/USD",
+            "Exchange": "FTX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RAY",
+            "ForeignName": "RAY/USD",
             "Exchange": "FTX",
             "Ignore": false
         },

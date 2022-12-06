@@ -23,8 +23,9 @@ import (
 )
 
 const (
-	CryptoPunkRefreshDelay = time.Second * 60 * 10
-	cryptoPunksFirstBlock  = 3918000
+	CryptoPunkRefreshDelay     = time.Second * 60 * 2
+	blockDelayCryptopunkTrades = 16
+	cryptoPunksFirstBlock      = 3918000
 )
 
 var (
@@ -113,7 +114,7 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 	}
 
 	// It's a good practise to stay a little behind the head.
-	endBlockNumber := header.Number.Uint64() - blockDelayEthereum
+	endBlockNumber := header.Number.Uint64() - blockDelayCryptopunkTrades
 
 	// We need the cryptopunk abi to unpack the transfer event.
 	abi, err := abi.JSON(strings.NewReader(string(cryptopunk.CryptoPunksMarketABI)))

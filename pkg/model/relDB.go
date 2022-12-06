@@ -29,7 +29,7 @@ type RelDatastore interface {
 	GetPage(pageNumber uint32) ([]dia.Asset, bool, error)
 	Count() (uint32, error)
 	SetAssetVolume24H(asset dia.Asset, volume float64, timestamp time.Time) error
-	GetAssetVolume24H(asset dia.Asset) (float64, error)
+	GetLastAssetVolume24H(asset dia.Asset) (float64, error)
 	GetAssetsWithVOL(numAssets int64, skip int64, onlycex bool, substring string) ([]dia.AssetVolume, error)
 	GetAssetSource(asset dia.Asset, onlycex bool) ([]string, error)
 	GetAssetsWithVolByBlockchain(starttime time.Time, endtime time.Time, blockchain string) ([]dia.AssetVolume, error)
@@ -101,10 +101,10 @@ type RelDatastore interface {
 	GetNFTTradesCollection(address string, blockchain string, starttime time.Time, endtime time.Time) ([]dia.NFTTrade, error)
 	GetNFTOffers(address string, blockchain string, tokenID string) ([]dia.NFTOffer, error)
 	GetNFTBids(address string, blockchain string, tokenID string) ([]dia.NFTBid, error)
-	GetNFTFloor(nftclass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, noBundles bool) (float64, error)
-	GetNFTFloorLevel(nftclass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, currencies []dia.Asset, level float64, noBundles bool) (float64, error)
-	GetNFTFloorRecursive(nftClass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, stepBackLimit int, noBundles bool) (float64, error)
-	GetNFTFloorRange(nftClass dia.NFTClass, starttime time.Time, endtime time.Time, floorWindowSeconds time.Duration, stepBackLimit int, noBundles bool) ([]float64, error)
+	GetNFTFloor(nftclass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, noBundles bool, exchange string) (float64, error)
+	GetNFTFloorLevel(nftclass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, currencies []dia.Asset, level float64, noBundles bool, exchange string) (float64, error)
+	GetNFTFloorRecursive(nftClass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, stepBackLimit int, noBundles bool, exchange string) (float64, error)
+	GetNFTFloorRange(nftClass dia.NFTClass, starttime time.Time, endtime time.Time, floorWindowSeconds time.Duration, stepBackLimit int, noBundles bool, exchange string) ([]float64, error)
 	GetLastBlockheightTopshot(upperBound time.Time) (uint64, error)
 	SetNFTBid(bid dia.NFTBid) error
 	GetLastNFTBid(address string, blockchain string, tokenID string, blockNumber uint64, blockPosition uint) (dia.NFTBid, error)
@@ -146,6 +146,14 @@ type RelDatastore interface {
 	GetCollectionCountByExchange(exchange string) (int64, error)
 	Get24HoursNFTExchangeVolume(exchange dia.NFTExchange) (float64, error)
 	Get24HoursNFTExchangeTrades(exchange dia.NFTExchange) (int64, error)
+
+	//Oracle builder
+	SetKeyPair(publickey string, privatekey string) error
+	GetKeyPairID(publickey string) string
+	GetFeederAccessByID(id string) (owner, publickey string)
+	SetOracleConfig(address, keypairID, creator, symbols, chainID string) error
+	SetFeederConfig(feederid, oracleconfigid string) error
+	GetFeederID(address string) (feederId string)
 }
 
 const (
@@ -178,6 +186,10 @@ const (
 	nftbidTable          = "nftbid"
 	nftofferTable        = "nftoffer"
 	scrapersTable        = "scrapers"
+	keypairTable         = "keypair"
+	oracleconfigTable    = "oracleconfig"
+	feederconfigTable    = "feederconfig"
+	feederaccessTable    = "feederaccess"
 
 	// time format for blockchain genesis dates
 	// timeFormatBlockchain = "2006-01-02"

@@ -585,6 +585,7 @@ func (s *MagicEdenScraper) createOrReadNFT(addr common.PublicKey, metadata Solan
 	return &nft, nil
 }
 
+
 func (s *MagicEdenScraper) fetchMetadataAcctForNft(ctx context.Context, nftAddr string) (string, error) {
 	var metadataAcctAddr string
 	txList, err := s.solanaRpcClient.GetSignaturesForAddressWithConfig(ctx, nftAddr,
@@ -628,11 +629,13 @@ func (s *MagicEdenScraper) fetchMetadataAcctForNft(ctx context.Context, nftAddr 
 	return metadataAcctAddr, nil
 }
 
+
 func (s *MagicEdenScraper) fetchMetadataAcctForNftCollection(ctx context.Context, nftAddr, nftCollectionAddr string) (string, error) {
 	var metadataAcctAddr string
 	var creationTxList rpc.GetSignaturesForAddress
 	lastTxFetched := ""
 	for {
+
 		txList, err := s.solanaRpcClient.GetSignaturesForAddressWithConfig(context.TODO(), nftCollectionAddr,
 			rpc.GetSignaturesForAddressConfig{
 				Before: lastTxFetched,
@@ -722,6 +725,7 @@ func (s *MagicEdenScraper) fetchNFTMetadata(ctx context.Context, metadataAcctAdd
 	metadata := SolanaNFTMetadata{}
 	if out, err := s.solanaRpcClient.GetAccountInfo(ctx, metadataAcctAddr); err != nil {
 		return metadata, false, err
+
 	} else {
 		if out.Data != nil {
 			data := out.Data

@@ -218,7 +218,6 @@ func updateOracle(
 	tx, err := contract.SetValue(&bind.TransactOpts{
 		From:     auth.From,
 		Signer:   auth.Signer,
-		GasLimit: 1000725,
 		GasPrice: gasPrice,
 	}, key, big.NewInt(value), big.NewInt(timestamp))
 	if err != nil {
@@ -228,6 +227,7 @@ func updateOracle(
 	log.Printf("price: %d\n", value)
 	log.Printf("key: %s\n", key)
 	log.Printf("nonce: %d\n", tx.Nonce())
+	log.Printf("gas price: %d\n", tx.GasPrice())
 	log.Printf("Tx To: %s\n", tx.To().String())
 	log.Printf("Tx Hash: 0x%x\n", tx.Hash())
 	return nil
@@ -297,7 +297,7 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, blockDuration i
 }
 
 func getGasSuggestion() (*big.Int, error) {
-	response, err := http.Get("http://astargasstation.dia-services:3000/api/astar/gasnow")
+	response, err := http.Get("https://gas.astar.network/api/gasnow?network=astar")
 	if err != nil {
 		return nil, err
 	}

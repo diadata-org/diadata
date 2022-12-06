@@ -272,11 +272,9 @@ func (s *BitMexScraper) mainLoop() {
 			if retryErr := s.retryConnection(); retryErr != nil {
 				s.setError(retryErr)
 				log.Errorf("BitMexScraper: Shutting down main loop after retrying to create a new connection, err=%s", retryErr.Error())
-				return
 			}
 
 			log.Info("BitMexScraper: Successfully created a new connection")
-
 			continue
 
 		}
@@ -323,8 +321,6 @@ func (s *BitMexScraper) mainLoop() {
 		} else {
 			log.Println(err)
 		}
-
-		// log.Printf("Unhandled WS message: %s", bytes.NewBuffer(msg))
 
 	}
 

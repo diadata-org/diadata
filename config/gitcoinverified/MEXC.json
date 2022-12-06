@@ -145,6 +145,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "DUST",
+      "Exchange": "MEXC",
+      "Blockchain": "Solana",
+      "Address": "DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ"
+    },
+    {
       "Symbol": "EGLD",
       "Exchange": "MEXC",
       "Blockchain": "Elrond",
@@ -295,6 +301,18 @@
       "Address": "0xF17c59bF0f6326dA7A8cC2CE417e4F53a26707bd"
     },
     {
+      "Symbol": "RAY",
+      "Exchange": "MEXC",
+      "Blockchain": "Solana",
+      "Address": "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R"
+    },
+    {
+      "Symbol": "SAMO",
+      "Exchange": "MEXC",
+      "Blockchain": "Solana",
+      "Address": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
+    },
+    {
       "Symbol": "SAND",
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",
@@ -325,7 +343,7 @@
       "Address": "0xB4A3B0Faf0Ab53df58001804DdA5Bfc6a3D59008"
     },
     {
-      "Symbol": "stETH",
+      "Symbol": "STETH",
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",
       "Address": "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84"
@@ -335,6 +353,12 @@
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",
       "Address": "0x16594930D16f3970e1a4317c6016555cb2e7b7Fc"
+    },
+    {
+      "Symbol": "TLOS",
+      "Exchange": "MEXC",
+      "Blockchain": "Telos",
+      "Address": "0x0000000000000000000000000000000000000000"
     },
     {
       "Symbol": "TRX",

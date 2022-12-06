@@ -99,7 +99,7 @@ const (
 	CryptoKitties            = "CryptoKitties"
 	Topshot                  = "Topshot"
 	X2Y2                     = "X2Y2"
-	Opensea                  = "Opensea"
+	Opensea                  = "OpenSea"
 	OpenseaBAYC              = "OpenseaBAYC"
 	OpenseaSeaport           = "OpenseaSeaport"
 	LooksRare                = "LooksRare"

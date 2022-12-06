@@ -403,7 +403,7 @@ func (datastore *DB) GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, erro
 	log.Debug(q)
 	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
-		log.Errorln("GetLastTrades", err)
+		log.Errorln("GetAllTrades", err)
 		return r, err
 	}
 	if len(res) > 0 && len(res[0].Series) > 0 {
@@ -424,21 +424,50 @@ func (datastore *DB) GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, erro
 // If exchange is empty string it returns trades from all exchanges.
 // If fullAsset=true, blockchain and address of both involved assets is returned as well
 func (datastore *DB) GetLastTrades(asset dia.Asset, exchange string, maxTrades int, fullAsset bool) ([]dia.Trade, error) {
-	var r []dia.Trade
-	var queryString string
-	var q string
+	var (
+		r           []dia.Trade
+		queryString string
+		q           string
+	)
+
 	if exchange == "" {
-		queryString = "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume,\"verified\"," +
-			"\"basetokenblockchain\",\"basetokenaddress\"" +
-			" FROM %s WHERE time<now() AND time>now()-30d AND quotetokenaddress='%s' AND quotetokenblockchain='%s' AND estimatedUSDPrice>0 ORDER BY DESC LIMIT %d"
+		queryString = `
+		SELECT estimatedUSDPrice,"exchange",foreignTradeID,"pair",price,"symbol",volume,"verified","basetokenblockchain","basetokenaddress" 
+		FROM %s 
+		WHERE time<now() 
+		AND time>now()-10d 
+		AND quotetokenaddress='%s' 
+		AND quotetokenblockchain='%s' 
+		AND estimatedUSDPrice>0 
+		ORDER BY DESC LIMIT %d
+		`
 		q = fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain, maxTrades)
+	} else if (dia.Asset{}) == asset {
+		queryString = `
+		SELECT estimatedUSDPrice,"exchange",foreignTradeID,"pair",price,"symbol",volume,"verified","basetokenblockchain","basetokenaddress" 
+		FROM %s 
+		WHERE time<now() 
+		AND time>now()-10d 
+		AND exchange='%s' 
+		AND estimatedUSDPrice>0 
+		ORDER BY DESC LIMIT %d
+		`
+		q = fmt.Sprintf(queryString, influxDbTradesTable, exchange, maxTrades)
 	} else {
-		queryString = "SELECT estimatedUSDPrice,\"exchange\",foreignTradeID,\"pair\",price,\"symbol\",volume,\"verified\"," +
-			"\"basetokenblockchain\",\"basetokenaddress\"" +
-			" FROM %s WHERE time<now() AND time>now()-30d AND exchange='%s' AND quotetokenaddress='%s' AND quotetokenblockchain='%s' AND estimatedUSDPrice>0 ORDER BY DESC LIMIT %d"
+		queryString = `
+		SELECT estimatedUSDPrice,"exchange",foreignTradeID,"pair",price,"symbol",volume,"verified","basetokenblockchain","basetokenaddress" 
+		FROM %s 
+		WHERE time<now() 
+		AND time>now()-10d 
+		AND exchange='%s' 
+		AND quotetokenaddress='%s' 
+		AND quotetokenblockchain='%s' 
+		AND estimatedUSDPrice>0 
+		ORDER BY DESC LIMIT %d
+		`
 		q = fmt.Sprintf(queryString, influxDbTradesTable, exchange, asset.Address, asset.Blockchain, maxTrades)
 	}
-	log.Info("query: ", q)
+
 	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		log.Errorln("GetLastTrades", err)
@@ -524,7 +553,13 @@ func (datastore *DB) GetNumTradesSeries(
 ) (numTrades []int, err error) {
 	var query string
 	if pair != "" {
-		queryString := "SELECT COUNT(price) FROM %s WHERE exchange='%s' AND pair='%s' AND time<=%d AND time>%d GROUP BY time('%s') ORDER BY ASC"
+		queryString := `SELECT COUNT(price) 
+		FROM %s WHERE exchange='%s' 
+		AND pair='%s' 
+		AND time<=%d 
+		AND time>%d 
+		GROUP BY time('%s') 
+		ORDER BY ASC`
 		query = fmt.Sprintf(
 			queryString,
 			influxDbTradesTable,
@@ -539,8 +574,10 @@ func (datastore *DB) GetNumTradesSeries(
 		WHERE exchange='%s' 
 		AND quotetokenaddress='%s' AND quotetokenblockchain='%s' 
 		AND basetokenaddress='%s' AND basetokenblockchain='%s' 
-		AND time<=%d AND time>%d 
-		GROUP BY time('%s') ORDER BY ASC`
+		AND time<=%d 
+		AND time>%d 
+		GROUP BY time('%s') 
+		ORDER BY ASC`
 		query = fmt.Sprintf(
 			queryString,
 			influxDbTradesTable,
@@ -587,4 +624,42 @@ func (datastore *DB) GetFirstTradeDate(table string) (time.Time, error) {
 	}
 	return time.Time{}, errors.New("no trade found")
 
+}
+
+func getKeyLastTradeTimeForExchange(asset dia.Asset, exchange string) string {
+	if exchange == "" {
+		return "dia_TLT_" + asset.Blockchain + "_" + asset.Address
+
+	} else {
+		return "dia_TLT_" + asset.Blockchain + "_" + asset.Address + "_" + exchange
+	}
+}
+
+func (datastore *DB) GetLastTradeTimeForExchange(asset dia.Asset, exchange string) (*time.Time, error) {
+	key := getKeyLastTradeTimeForExchange(asset, exchange)
+	t, err := datastore.redisClient.Get(key).Result()
+	if err != nil {
+		log.Errorln("Error: on GetLastTradeTimeForExchange", err, key)
+		return nil, err
+	}
+	i64, err := strconv.ParseInt(t, 10, 64)
+	if err == nil {
+		t2 := time.Unix(i64, 0)
+		return &t2, nil
+	} else {
+		return nil, err
+	}
+}
+
+func (datastore *DB) SetLastTradeTimeForExchange(asset dia.Asset, exchange string, t time.Time) error {
+	if datastore.redisClient == nil {
+		return nil
+	}
+	key := getKeyLastTradeTimeForExchange(asset, exchange)
+	log.Debug("setting ", key, t)
+	err := datastore.redisPipe.Set(key, t.Unix(), TimeOutRedis).Err()
+	if err != nil {
+		log.Printf("Error: %v on SetLastTradeTimeForExchange %v\n", err, asset.Symbol)
+	}
+	return err
 }

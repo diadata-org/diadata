@@ -5,7 +5,13 @@
       "Exchange": "LBank",
       "Blockchain": "Acala",
       "Address": "Token:ACA"
-  },
+    },
+    {
+      "Symbol": "ANKR",
+      "Exchange": "LBank",
+      "Blockchain": "Ethereum",
+      "Address": "0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4"
+    },
     {
       "Symbol": "AXS",
       "Exchange": "LBank",
@@ -41,7 +47,7 @@
       "Exchange": "LBank",
       "Blockchain": "EthereumClassic",
       "Address": "0x0000000000000000000000000000000000000000"
-  },
+    },
     {
       "Symbol": "ILV",
       "Exchange": "LBank",
@@ -65,6 +71,18 @@
       "Exchange": "LBank",
       "Blockchain": "Metis",
       "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
+    },
+    {
+      "Symbol": "RAY",
+      "Exchange": "LBank",
+      "Blockchain": "Solana",
+      "Address": "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R"
+    },
+    {
+      "Symbol": "SAMO",
+      "Exchange": "LBank",
+      "Blockchain": "Solana",
+      "Address": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
     },
     {
       "Symbol": "UPS",

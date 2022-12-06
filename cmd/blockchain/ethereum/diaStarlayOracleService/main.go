@@ -43,6 +43,8 @@ func main() {
 		log.Fatalf("Failed to parse deviationPermille: %v")
 	}
 
+	var nnc big.Int
+	nnc.SetUint64(95779)
 	addresses := []string{
 		"0xdAC17F958D2ee523a2206206994597C13D831ec7", //USDT
 		"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", //USDC
@@ -105,7 +107,7 @@ func main() {
 					blockchain := blockchains[i]
 					oldPrice := oldPrices[i]
 					log.Println("old price", oldPrice)
-					oldPrice, err = periodicOracleUpdateHelper(oldPrice, deviationPermille, auth, contract, conn, blockchain, address, chainId)
+					oldPrice, err = periodicOracleUpdateHelper(oldPrice, deviationPermille, auth, contract, conn, blockchain, address, chainId, &nnc)
 					oldPrices[i] = oldPrice
 					if err != nil {
 						log.Println(err)
@@ -118,7 +120,7 @@ func main() {
 	select {}
 }
 
-func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string, chainId int64) (float64, error) {
+func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string, chainId int64, nnc *big.Int) (float64, error) {
 
 	// Get quotation for token and update Oracle
 	rawQ, err := getAssetQuotationFromDia(blockchain, address)
@@ -133,7 +135,7 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 
 	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
 		log.Println("Entering deviation based update zone")
-		err = updateQuotation(rawQ, auth, contract, conn, chainId)
+		err = updateQuotation(rawQ, auth, contract, conn, chainId, nnc)
 		if err != nil {
 			log.Fatalf("Failed to update DIA Oracle: %v", err)
 			return oldPrice, err
@@ -167,15 +169,16 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 	return nil
 }
 
-func updateQuotation(quotation *models.Quotation, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, chainId int64) error {
+func updateQuotation(quotation *models.Quotation, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, chainId int64, nnc *big.Int) error {
 	symbol := quotation.Symbol + "/USD"
 	price := quotation.Price
 	timestamp := time.Now().Unix()
-	err := updateOracle(conn, contract, auth, symbol, int64(price*100000000), timestamp, chainId)
+	err := updateOracle(conn, contract, auth, symbol, int64(price*100000000), timestamp, chainId, nnc)
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err
 	}
+	nnc.Add(nnc, big.NewInt(1))
 
 	return nil
 }
@@ -187,7 +190,8 @@ func updateOracle(
 	key string,
 	value int64,
 	timestamp int64,
-	chainId int64) error {
+	chainId int64,
+  nnc *big.Int) error {
 
 	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if chainId == 592 || chainId == 336 { //Astar and Shiden need their own gas oracle
@@ -207,6 +211,7 @@ func updateOracle(
 	tx, err := contract.SetValue(&bind.TransactOpts{
 		From:     auth.From,
 		Signer:   auth.Signer,
+		Nonce:    nnc,
 		GasLimit: 1000725,
 		GasPrice: gasPrice,
 	}, key, big.NewInt(value), big.NewInt(timestamp))
@@ -216,13 +221,14 @@ func updateOracle(
 	fmt.Println(tx.GasPrice())
 	log.Printf("key: %s\n", key)
 	log.Printf("nonce: %d\n", tx.Nonce())
+	log.Printf("gas price: %d\n", tx.GasPrice())
 	log.Printf("Tx To: %s\n", tx.To().String())
 	log.Printf("Tx Hash: 0x%x\n", tx.Hash())
 	return nil
 }
 
 func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, error) {
-	response, err := http.Get("https://rest.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
+	response, err := http.Get("https://api.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
 	if err != nil {
 		return nil, err
 	}
@@ -248,7 +254,7 @@ func getGasSuggestion(chainId int64) (*big.Int, error) {
 	if chainId == 592 {
 		chainName = "astar"
 	}
-	response, err := http.Get("http://astargasstation.dia-services:3000/api/" + chainName + "/gasnow")
+	response, err := http.Get("https://gas.astar.network/api/gasnow?network=" + chainName)
 	if err != nil {
 		return nil, err
 	}

@@ -247,6 +247,12 @@
       "Address": "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"
     },
     {
+      "Symbol": "MSOL",
+      "Exchange": "BitMart",
+      "Blockchain": "Solana",
+      "Address": "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"
+    },
+    {
       "Symbol": "NEAR",
       "Exchange": "BitMart",
       "Blockchain": "NEAR",
@@ -263,6 +269,12 @@
       "Exchange": "BitMart",
       "Blockchain": "Ethereum",
       "Address": "0x4a220E6096B25EADb88358cb44068A3248254675"
+    },
+    {
+      "Symbol": "RAY",
+      "Exchange": "BitMart",
+      "Blockchain": "Solana",
+      "Address": "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R"
     },
     {
       "Symbol": "SAND",

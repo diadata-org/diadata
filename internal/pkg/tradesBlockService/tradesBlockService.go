@@ -299,11 +299,20 @@ func buildBridge(t dia.Trade) dia.Asset {
 			Blockchain: dia.ETHEREUM,
 		}
 	}
-	if basetoken.Blockchain == dia.SOLANA && t.Source == dia.SerumExchange && basetoken.Address == "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" {
-		basetoken = dia.Asset{
-			Symbol:     "USDC",
-			Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-			Blockchain: dia.ETHEREUM,
+	if basetoken.Blockchain == dia.SOLANA && t.Source == dia.SerumExchange {
+		if basetoken.Address == "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" {
+			basetoken = dia.Asset{
+				Symbol:     "USDC",
+				Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+				Blockchain: dia.ETHEREUM,
+			}
+		}
+		if basetoken.Address == "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB" {
+			basetoken = dia.Asset{
+				Symbol:     "USDT",
+				Address:    "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+				Blockchain: dia.ETHEREUM,
+			}
 		}
 	}
 	if basetoken.Blockchain == dia.METIS && (t.Source == dia.NetswapExchange || t.Source == dia.TethysExchange || t.Source == dia.HermesExchange) && basetoken.Address == "0xEA32A96608495e54156Ae48931A7c20f0dcc1a21" {
@@ -336,11 +345,13 @@ func buildBridge(t dia.Trade) dia.Asset {
 			Blockchain: dia.TELOS,
 		}
 	}
-	if basetoken.Blockchain == dia.EVMOS && t.Source == dia.DiffusionExchange && basetoken.Address == common.HexToAddress("0x51e44FfaD5C2B122C8b635671FCC8139dc636E82").Hex() {
-		basetoken = dia.Asset{
-			Symbol:     "USDC",
-			Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-			Blockchain: dia.ETHEREUM,
+	if basetoken.Blockchain == dia.EVMOS && t.Source == dia.DiffusionExchange {
+		if basetoken.Address == common.HexToAddress("0xD4949664cD82660AaE99bEdc034a0deA8A0bd517").Hex() {
+			basetoken = dia.Asset{
+				Symbol:     "EVMOS",
+				Address:    "0x0000000000000000000000000000000000000000",
+				Blockchain: dia.EVMOS,
+			}
 		}
 	}
 	if t.Source == dia.StellaswapExchange && basetoken.Blockchain == dia.MOONBEAM && basetoken.Address == common.HexToAddress("0xAcc15dC74880C9944775448304B263D191c6077F").Hex() {

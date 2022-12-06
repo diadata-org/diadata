@@ -6,49 +6,10 @@ import (
 	"database/sql"
 	"fmt"
 	"sort"
-	"strconv"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 )
-
-func getKeyLastTradeTimeForExchange(asset dia.Asset, exchange string) string {
-	if exchange == "" {
-		return "dia_TLT_" + asset.Blockchain + "_" + asset.Address
-
-	} else {
-		return "dia_TLT_" + asset.Blockchain + "_" + asset.Address + "_" + exchange
-	}
-}
-
-func (datastore *DB) GetLastTradeTimeForExchange(asset dia.Asset, exchange string) (*time.Time, error) {
-	key := getKeyLastTradeTimeForExchange(asset, exchange)
-	t, err := datastore.redisClient.Get(key).Result()
-	if err != nil {
-		log.Errorln("Error: on GetLastTradeTimeForExchange", err, key)
-		return nil, err
-	}
-	i64, err := strconv.ParseInt(t, 10, 64)
-	if err == nil {
-		t2 := time.Unix(i64, 0)
-		return &t2, nil
-	} else {
-		return nil, err
-	}
-}
-
-func (datastore *DB) SetLastTradeTimeForExchange(asset dia.Asset, exchange string, t time.Time) error {
-	if datastore.redisClient == nil {
-		return nil
-	}
-	key := getKeyLastTradeTimeForExchange(asset, exchange)
-	log.Debug("setting ", key, t)
-	err := datastore.redisPipe.Set(key, t.Unix(), TimeOutRedis).Err()
-	if err != nil {
-		log.Printf("Error: %v on SetLastTradeTimeForExchange %v\n", err, asset.Symbol)
-	}
-	return err
-}
 
 // GetActiveExchangesAndPairs returns all exchanges the asset with @address and @blockchain was
 // traded on in the given time-range as keys of a map.
@@ -132,9 +93,9 @@ func (datastore *DB) GetAvailablePairs(exchange string) ([]dia.ExchangePair, err
 }
 
 func (rdb *RelDB) SetExchange(exchange dia.Exchange) (err error) {
-	fields := fmt.Sprintf("INSERT INTO %s (name,centralized,bridge,contract,blockchain,rest_api,ws_api,pairs_api,watchdog_delay) VALUES ", exchangeTable)
-	values := "($1,$2,$3,NULLIF($4,''),$5,NULLIF($6,''),NULLIF($7,''),NULLIF($8,''),$9)"
-	conflict := " ON CONFLICT (name) DO UPDATE SET contract=NULLIF($4,''),rest_api=$6,ws_api=$7,pairs_api=$8,watchdog_delay=$9"
+	fields := fmt.Sprintf("INSERT INTO %s (name,centralized,bridge,contract,blockchain,rest_api,ws_api,pairs_api,watchdog_delay,scraper_active) VALUES ", exchangeTable)
+	values := "($1,$2,$3,NULLIF($4,''),$5,NULLIF($6,''),NULLIF($7,''),NULLIF($8,''),$9,$10)"
+	conflict := " ON CONFLICT (name) DO UPDATE SET contract=NULLIF($4,''),rest_api=$6,ws_api=$7,pairs_api=$8,watchdog_delay=$9,scraper_active=$10"
 
 	query := fields + values + conflict
 	_, err = rdb.postgresClient.Exec(context.Background(), query,
@@ -147,6 +108,7 @@ func (rdb *RelDB) SetExchange(exchange dia.Exchange) (err error) {
 		exchange.WsAPI,
 		exchange.PairsAPI,
 		exchange.WatchdogDelay,
+		exchange.ScraperActive,
 	)
 	if err != nil {
 		return err
@@ -155,7 +117,7 @@ func (rdb *RelDB) SetExchange(exchange dia.Exchange) (err error) {
 }
 
 func (rdb *RelDB) GetExchange(name string) (exchange dia.Exchange, err error) {
-	query := fmt.Sprintf("SELECT centralized,bridge,contract,blockchain,rest_api,ws_api,pairs_api,watchdog_delay FROM %s WHERE name=$1", exchangeTable)
+	query := fmt.Sprintf("SELECT centralized,bridge,contract,blockchain,rest_api,ws_api,pairs_api,watchdog_delay,scraper_active FROM %s WHERE name=$1", exchangeTable)
 	var contract sql.NullString
 	var blockchainName sql.NullString
 	var restAPI sql.NullString
@@ -170,6 +132,7 @@ func (rdb *RelDB) GetExchange(name string) (exchange dia.Exchange, err error) {
 		&wsAPI,
 		&pairsAPI,
 		&exchange.WatchdogDelay,
+		&exchange.ScraperActive,
 	)
 	if err != nil {
 		return
@@ -195,7 +158,7 @@ func (rdb *RelDB) GetExchange(name string) (exchange dia.Exchange, err error) {
 
 // GetAllExchanges returns all exchanges existent in the exchange table.
 func (rdb *RelDB) GetAllExchanges() (exchanges []dia.Exchange, err error) {
-	query := fmt.Sprintf("SELECT name,centralized,bridge,contract,blockchain,rest_api,ws_api,pairs_api,watchdog_delay FROM %s", exchangeTable)
+	query := fmt.Sprintf("SELECT name,centralized,bridge,contract,blockchain,rest_api,ws_api,pairs_api,watchdog_delay,scraper_active FROM %s", exchangeTable)
 	rows, err := rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return []dia.Exchange{}, err
@@ -219,6 +182,7 @@ func (rdb *RelDB) GetAllExchanges() (exchanges []dia.Exchange, err error) {
 			&wsAPI,
 			&pairsAPI,
 			&exchange.WatchdogDelay,
+			&exchange.ScraperActive,
 		)
 		if err != nil {
 			return []dia.Exchange{}, err

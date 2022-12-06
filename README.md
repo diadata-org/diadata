@@ -80,7 +80,7 @@ Oracles can be customised to trigger updates based on:
 
 ## Contribute
 
-DIA through its DAO operations is working towards building the biggest open-source data platform of Web3. To reach this goal, DIA leverages the power of communities and decentralisation on many levels to scale its product developmet and growth.&#x20;
+DIA through its DAO operations is working towards building the biggest open-source data platform of Web3. To reach this goal, DIA leverages the power of communities and decentralisation on many levels to scale its product development and growth.&#x20;
 
 Contribute to the DAO through the two verticals below:
 

@@ -18,6 +18,10 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 )
 
+const (
+	bitmaxMaxNumSubscriptionsPerConn = 200
+)
+
 type BitMaxPairResponse struct {
 	Code int          `json:"code"`
 	Data []BitMaxPair `json:"data"`
@@ -27,6 +31,7 @@ type BitMaxAssets struct {
 	Code int           `json:"code"`
 	Data []BitMaxAsset `json:"data"`
 }
+
 type BitMaxAsset struct {
 	AssetCode        string `json:"assetCode"`
 	AssetName        string `json:"assetName"`
@@ -67,7 +72,10 @@ type BitMaxScraper struct {
 	pairScrapers           map[string]*BitMaxPairScraper // dia.Pair -> BitMaxPairScraper
 	exchangeName           string
 	chanTrades             chan *dia.Trade
-	wsClient               *ws.Conn
+	wsClient1              *ws.Conn
+	wsClient2              *ws.Conn
+	numPairsClient1        int
+	numPairsClient2        int
 	currencySymbolName     map[string]string
 	isTickerMapInitialised bool
 	db                     *models.RelDB
@@ -90,14 +98,20 @@ func NewBitMaxScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *
 
 	// establish connection in the background
 	var wsDialer ws.Dialer
-	SwConn, _, err := wsDialer.Dial(bitmaxSocketURL, nil)
+	SwConn1, _, err := wsDialer.Dial(bitmaxSocketURL, nil)
 	if err != nil {
-		println(err.Error())
+		log.Fatal("connect to websocket server: ", err)
 	}
+	s.wsClient1 = SwConn1
+	SwConn2, _, err := wsDialer.Dial(bitmaxSocketURL, nil)
+	if err != nil {
+		log.Fatal("connect to websocket server: ", err)
+	}
+	s.wsClient2 = SwConn2
 
-	s.wsClient = SwConn
 	if scrape {
-		go s.mainLoop()
+		go s.mainLoop(s.wsClient1)
+		go s.mainLoop(s.wsClient2)
 	}
 	return s
 }
@@ -115,16 +129,15 @@ type BitMaxTradeResponse struct {
 }
 
 // runs in a goroutine until s is closed
-func (s *BitMaxScraper) mainLoop() {
+func (s *BitMaxScraper) mainLoop(client *ws.Conn) {
 	var err error
 	for {
 		message := &BitMaxTradeResponse{}
-		if err = s.wsClient.ReadJSON(&message); err != nil {
+		if err = client.ReadJSON(&message); err != nil {
 			log.Error("read message: ", err.Error())
 			// break
 		}
 		switch message.M {
-
 		case "trades":
 			{
 				for _, trade := range message.Data {
@@ -133,7 +146,7 @@ func (s *BitMaxScraper) mainLoop() {
 					volumeFloat, _ := strconv.ParseFloat(trade.Q, 64)
 					exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, message.Symbol)
 					if err != nil {
-						log.Error(err)
+						log.Error("get exchange pair from cache: ", err)
 					}
 					t := &dia.Trade{
 						Symbol:         strings.Split(message.Symbol, "/")[0],
@@ -159,14 +172,13 @@ func (s *BitMaxScraper) mainLoop() {
 				a := &BitMaxRequest{
 					Op: "pong",
 				}
-				err := s.wsClient.WriteJSON(a)
+				err := client.WriteJSON(a)
 				if err != nil {
 					log.Warn("send pong to server: ", err)
 				}
 				log.Infoln("Send Pong to keep connection alive")
 
 			}
-
 		}
 	}
 
@@ -245,8 +257,16 @@ func (s *BitMaxScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 		Ch: "trades:" + pair.ForeignName,
 		ID: fmt.Sprint(time.Now().Unix()),
 	}
-	if err := s.wsClient.WriteJSON(a); err != nil {
-		log.Error("write pair sub: ", err.Error())
+	if s.numPairsClient1 < bitmaxMaxNumSubscriptionsPerConn {
+		if err := s.wsClient1.WriteJSON(a); err != nil {
+			log.Error("write pair sub: ", err.Error())
+		}
+		s.numPairsClient1++
+	} else {
+		if err := s.wsClient2.WriteJSON(a); err != nil {
+			log.Error("write pair sub: ", err.Error())
+		}
+		s.numPairsClient2++
 	}
 	log.Info("Subscribed to get trades for ", pair.ForeignName)
 	s.pairScrapers[pair.ForeignName] = ps

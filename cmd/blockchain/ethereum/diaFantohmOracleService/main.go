@@ -254,11 +254,9 @@ func updateOracle(
 	}
 
 	// Get 110% of the gas price
-	fmt.Println(gasPrice)
 	fGas := new(big.Float).SetInt(gasPrice)
 	fGas.Mul(fGas, big.NewFloat(1.1))
 	gasPrice, _ = fGas.Int(nil)
-	fmt.Println(gasPrice)
 	// Write values to smart contract
 	tx, err := contract.SetValue(&bind.TransactOpts{
 		From:     auth.From,
@@ -271,6 +269,8 @@ func updateOracle(
 	}
 	fmt.Println(tx.GasPrice())
 	log.Printf("key: %s\n", key)
+	log.Printf("nonce: %d\n", tx.Nonce())
+	log.Printf("gas price: %d\n", tx.GasPrice())
 	log.Printf("Tx To: %s\n", tx.To().String())
 	log.Printf("Tx Hash: 0x%x\n", tx.Hash())
 	return nil
