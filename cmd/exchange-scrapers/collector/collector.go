@@ -128,12 +128,6 @@ func main() {
 
 	wg := sync.WaitGroup{}
 
-	// Debugging
-	kafkaurl := utils.Getenv("KAFKAURL", "")
-	log.Info("KAFKAURL=", kafkaurl)
-	redisurl := utils.Getenv("REDISURL", "")
-	log.Info("REDISURL=", redisurl)
-
 	if scrapers.Exchanges[*exchange].Centralized {
 
 		// Scrape pairs for CEX scrapers.

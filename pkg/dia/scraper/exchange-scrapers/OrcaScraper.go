@@ -291,15 +291,15 @@ func (s *OrcaScraper) mainLoop() {
 																	}
 																}
 																if *instDecoded.Impl.(*orcaWhirlpoolIdlBind.Swap).AToB {
-																	price = amountB / amountA
-																	volume = -amountA
+																	price = amountA / amountB
+																	volume = -amountB
 																} else {
-																	price = amountB / amountA
-																	volume = amountA
+																	price = amountA / amountB
+																	volume = amountB
 																}
 																trade := &dia.Trade{
-																	Symbol:         baseToken.Symbol,
-																	Pair:           k,
+																	Symbol:         quoteToken.Symbol,
+																	Pair:           quoteToken.Symbol + "-" + baseToken.Symbol,
 																	BaseToken:      baseToken,
 																	QuoteToken:     quoteToken,
 																	Price:          price,
@@ -309,7 +309,8 @@ func (s *OrcaScraper) mainLoop() {
 																	Source:         s.exchangeName,
 																	VerifiedPair:   true,
 																}
-																log.Infof("got trade %88s", k)
+																log.Infof("pair -- price -- volume: %s -- %v -- %v", trade.Pair, trade.Price, trade.Volume)
+																log.Info("tx hash: ", k)
 																s.chanTrades <- trade
 															}
 														}
