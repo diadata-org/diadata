@@ -299,7 +299,7 @@ func buildBridge(t dia.Trade) dia.Asset {
 			Blockchain: dia.ETHEREUM,
 		}
 	}
-	if basetoken.Blockchain == dia.SOLANA && t.Source == dia.SerumExchange {
+	if basetoken.Blockchain == dia.SOLANA && t.Source == dia.OrcaExchange {
 		if basetoken.Address == "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" {
 			basetoken = dia.Asset{
 				Symbol:     "USDC",

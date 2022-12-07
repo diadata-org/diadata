@@ -33,6 +33,7 @@ var (
 		dia.HermesExchange,
 		dia.HuckleberryExchange,
 		dia.NetswapExchange,
+		dia.OrcaExchange,
 	}
 
 	exchange = flag.String("exchange", "", "which exchange")
