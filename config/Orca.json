@@ -1,0 +1,10 @@
+{
+  "Coins": [
+    {
+      "Symbol": "USD Coin",
+      "ForeignName": "USDC/USDT",
+      "Exchange": "Orca",
+      "Ignore": false
+    }
+  ]
+}

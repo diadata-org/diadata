@@ -6,6 +6,9 @@ require (
 	github.com/diadata-org/diadata v1.4.77
 	github.com/segmentio/kafka-go v0.4.35
 	github.com/sirupsen/logrus v1.8.1
+)
+
+require (
 	contrib.go.opencensus.io/exporter/stackdriver v0.13.4 // indirect
 	filippo.io/edwards25519 v1.0.0-rc.1 // indirect
 	github.com/GeertJohan/go.rice v1.0.0 // indirect
@@ -37,8 +40,8 @@ require (
 	github.com/ethereum/go-ethereum v1.10.10 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
-	github.com/gagliardetto/binary v0.7.3 // indirect
-	github.com/gagliardetto/solana-go v1.7.1 // indirect
+	github.com/gagliardetto/binary v0.7.7 // indirect
+	github.com/gagliardetto/solana-go v1.8.1 // indirect
 	github.com/gagliardetto/treeout v0.1.4 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-ole/go-ole v1.2.4 // indirect
