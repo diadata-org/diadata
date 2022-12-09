@@ -1,7 +1,6 @@
 package metafilters
 
 import (
-	"strconv"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -17,12 +16,12 @@ type FilterTLT struct {
 	lastTradeTime time.Time
 }
 
-func NewFilterTLT(asset dia.Asset, source string, memory int) *FilterTLT {
+func NewFilterTLT(asset dia.Asset, source string, childFilter string, memory int) *FilterTLT {
 	s := &FilterTLT{
 		asset:     asset,
 		source:    source,
 		name:      dia.TLT_META_FILTER,
-		childName: dia.TLT_FILTER + strconv.Itoa(memory),
+		childName: childFilter,
 	}
 	return s
 }

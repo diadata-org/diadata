@@ -10,12 +10,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-/*
-const (
-	filtersParam = dia.BlockSizeSeconds
-)
-*/
-
 type nothing struct{}
 
 // getIdentifier returns the unique identifier for pair @p.
@@ -93,7 +87,6 @@ func (s *MetaFilterService) mainLoop() {
 func (s *MetaFilterService) processFiltersBlock(fb *dia.FiltersBlock) {
 
 	log.Infoln("processFiltersBlock starting")
-	t0 := time.Now()
 
 	for _, filterPoint := range fb.FiltersBlockData.FilterPoints {
 		s.createMetaFilters(filterPoint, filterPoint.Source, fb.FiltersBlockData.BeginTime)
@@ -102,7 +95,7 @@ func (s *MetaFilterService) processFiltersBlock(fb *dia.FiltersBlock) {
 		s.computeMetaFilters(filterPoint, "")
 	}
 
-	t0 = time.Now()
+	t0 := time.Now()
 	for _, filters := range s.metaFilters {
 		for _, f := range filters {
 			f.finalCompute(fb.FiltersBlockData.EndTime)
@@ -110,8 +103,8 @@ func (s *MetaFilterService) processFiltersBlock(fb *dia.FiltersBlock) {
 	}
 	log.Info("time spent for final compute: ", time.Since(t0))
 
-	t0 = time.Now()
 	var err error
+	t0 = time.Now()
 	for _, filters := range s.metaFilters {
 		for _, f := range filters {
 			err = f.save(s.datastore)
@@ -150,20 +143,20 @@ func (s *MetaFilterService) createMetaFilters(filterPoint dia.FilterPoint, sourc
 		switch filterPoint.Name {
 		case dia.MAIR_FILTER:
 			s.metaFilters[mfi] = []MetaFilter{
-				NewFilterAIR(filterPoint.Pair.QuoteToken, BeginTime, dia.BlockSizeSeconds),
+				NewFilterAIR(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.MAIR_FILTER, BeginTime, dia.BlockSizeSeconds),
 				// NewFilter...
 			}
 		case dia.VOL_FILTER:
 			s.metaFilters[mfi] = []MetaFilter{
-				NewFilterVOL(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.BlockSizeSeconds),
+				NewFilterVOL(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.VOL_FILTER, dia.BlockSizeSeconds),
 			}
 		case dia.COUNT_FILTER:
 			s.metaFilters[mfi] = []MetaFilter{
-				NewFilterCOUNT(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.BlockSizeSeconds),
+				NewFilterCOUNT(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.COUNT_FILTER, dia.BlockSizeSeconds),
 			}
 		case dia.TLT_FILTER:
 			s.metaFilters[mfi] = []MetaFilter{
-				NewFilterTLT(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.BlockSizeSeconds),
+				NewFilterTLT(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.TLT_FILTER, dia.BlockSizeSeconds),
 			}
 		}
 	}

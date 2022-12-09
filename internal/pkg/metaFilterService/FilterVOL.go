@@ -1,7 +1,6 @@
 package metafilters
 
 import (
-	"strconv"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -20,12 +19,12 @@ type FilterVOL struct {
 	modified    bool
 }
 
-func NewFilterVOL(asset dia.Asset, exchange string, memory int) *FilterVOL {
+func NewFilterVOL(asset dia.Asset, exchange string, childFilter string, memory int) *FilterVOL {
 	filter := &FilterVOL{
 		asset:     asset,
 		volumeUSD: 0.0,
 		name:      dia.VOL_META_FILTER,
-		childName: dia.VOL_FILTER + strconv.Itoa(memory),
+		childName: childFilter,
 	}
 	return filter
 }

@@ -1,7 +1,6 @@
 package metafilters
 
 import (
-	"strconv"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -15,9 +14,9 @@ import (
 type FilterAIR struct {
 	asset           dia.Asset
 	source          string
-	currentTime     time.Time
 	values          []float64
 	volumes         []float64
+	currentTime     time.Time
 	lastFilterValue dia.FilterPoint
 	value           float64
 	name            string
@@ -26,14 +25,15 @@ type FilterAIR struct {
 }
 
 // NewFilterAIR returns a FilterAIR
-func NewFilterAIR(asset dia.Asset, currentTime time.Time, memory int) *FilterAIR {
+func NewFilterAIR(asset dia.Asset, source string, childFilter string, currentTime time.Time, memory int) *FilterAIR {
 	filter := &FilterAIR{
 		asset:       asset,
+		source:      source,
 		values:      []float64{},
 		volumes:     []float64{},
 		currentTime: currentTime,
 		name:        dia.AIR_META_FILTER,
-		childName:   dia.MAIR_FILTER + strconv.Itoa(memory),
+		childName:   childFilter,
 	}
 	return filter
 }

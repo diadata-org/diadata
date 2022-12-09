@@ -1,7 +1,6 @@
 package metafilters
 
 import (
-	"strconv"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -21,13 +20,13 @@ type FilterCOUNT struct {
 	modified    bool
 }
 
-func NewFilterCOUNT(asset dia.Asset, source string, memory int) *FilterCOUNT {
+func NewFilterCOUNT(asset dia.Asset, source string, childFilter string, memory int) *FilterCOUNT {
 	filter := &FilterCOUNT{
 		asset:     asset,
 		source:    source,
 		numTrades: int64(0),
 		name:      dia.COUNT_META_FILTER,
-		childName: dia.COUNT_FILTER + strconv.Itoa(memory),
+		childName: childFilter,
 		memory:    memory,
 	}
 	return filter
