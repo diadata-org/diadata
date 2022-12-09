@@ -83,6 +83,7 @@ const (
 	SpiritswapExchange        = "Spiritswap"
 	QuickswapExchange         = "Quickswap"
 	SerumExchange             = "Serum"
+	OrcaExchange              = "Orca"
 	SolarbeamExchange         = "Solarbeam"
 	TrisolarisExchange        = "Trisolaris"
 	ByBitExchange             = "ByBit"

@@ -2678,6 +2678,114 @@ func (env *Env) GetNFTFloorVola(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+func (env *Env) GetNFTDistribution(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	// NFT collection.
+	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
+	nftClass, err := env.RelDB.GetNFTClass(address, blockchain)
+	if err != nil {
+		log.Error("get nft class: ", err)
+	}
+
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(30*24*60)*time.Minute)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	// lower bound is 0 by default. upper bound is large by default.
+	// User input for both is int with 6 digits.
+	digits := 6
+	var lowerBoundLong, upperBoundLong int64
+	if c.Query("lowerBound") == "" {
+		lowerBoundLong = 0
+	} else {
+		lowerBoundLong, err = strconv.ParseInt(c.Query("lowerBound"), 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusBadRequest, nil)
+		}
+	}
+	if c.Query("upperBound") == "" {
+		upperBoundLong = int64(1000000000000000000)
+	} else {
+		upperBoundLong, err = strconv.ParseInt(c.Query("upperBound"), 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusBadRequest, nil)
+		}
+	}
+	lowerBound := float64(lowerBoundLong) * math.Pow10(-digits)
+	upperBound := float64(upperBoundLong) * math.Pow10(-digits)
+
+	// // Exclude bundle sales by default.
+	// bundlesString := c.DefaultQuery("bundles", "false")
+	// bundles, err := strconv.ParseBool(bundlesString)
+	// if err != nil {
+	// 	log.Error("parse bundles string: ", err)
+	// }
+
+	trades, err := env.RelDB.GetNFTTradesCollection(address, blockchain, starttime, endtime)
+	if err != nil {
+		log.Error("get nft floor range: ", err)
+	}
+
+	var (
+		prices           []float64
+		totalVolume      float64
+		paymentAddresses []string
+	)
+
+	switch nftClass.Blockchain {
+	case dia.ETHEREUM:
+		paymentAddresses = append(paymentAddresses, "0x0000000000000000000000000000000000000000")
+		paymentAddresses = append(paymentAddresses, "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")
+	case dia.ASTAR:
+		paymentAddresses = append(paymentAddresses, "0x0000000000000000000000000000000000000000")
+		paymentAddresses = append(paymentAddresses, "0x9dA4A3a345bf6371f8e47c63Cad2293e532022dE")
+	case dia.BINANCESMARTCHAIN:
+		paymentAddresses = append(paymentAddresses, "0x0000000000000000000000000000000000000000")
+		paymentAddresses = append(paymentAddresses, "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c")
+	}
+
+	// Select trades from price channel.
+	for _, trade := range trades {
+		if utils.Contains(&paymentAddresses, trade.Currency.Address) {
+			price, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(trade.Price), new(big.Float).SetFloat64(math.Pow10(int(trade.Currency.Decimals)))).Float64()
+			if lowerBound < price && price < upperBound {
+				prices = append(prices, price)
+				totalVolume += price
+			}
+		}
+	}
+
+	type PriceStats struct {
+		Average           float64   `json:"Average"`
+		StandardDeviation float64   `json:"Standard_Deviation"`
+		NumTrades         int       `json:"Number_Of_Trades"`
+		Volume            float64   `json:"Volume"`
+		Collection        string    `json:"Collection"`
+		Starttime         time.Time `json:"Starttime"`
+		Endtime           time.Time `json:"Endtime"`
+		Source            string    `json:"Source"`
+	}
+
+	var response PriceStats
+	response.Average = utils.Average(prices)
+	response.StandardDeviation = utils.StandardDeviation(prices)
+	response.NumTrades = len(prices)
+	response.Volume = totalVolume
+	response.Collection = nftClass.Name
+	response.Starttime = starttime
+	response.Endtime = endtime
+	response.Source = dia.Diadata
+
+	c.JSON(http.StatusOK, response)
+}
+
 func (env *Env) GetTopNFTClasses(c *gin.Context) {
 	if !validateInputParams(c) {
 		return

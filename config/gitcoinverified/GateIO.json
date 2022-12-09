@@ -355,6 +355,12 @@
             "Address": "0xEda8B016efA8b1161208Cf041cD86972eeE0F31E"
         },
         {
+            "Symbol": "INJ",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0xe28b3B32B6c345A34Ff64674606124Dd5Aceca30"
+        },
+        {
             "Symbol": "JNT",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
