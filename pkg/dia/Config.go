@@ -47,7 +47,7 @@ const (
 	QuoineExchange            = "Quoine"
 	UnknownExchange           = "Unknown"
 	BlockSizeSeconds          = 120
-	FilterKing                = "MAIR120"
+	FilterKing                = "MAIR"
 	BancorExchange            = "Bancor"
 	UniswapExchange           = "Uniswap"
 	UniswapExchangeV3         = "UniswapV3"

@@ -116,7 +116,7 @@ func (filter *FilterAIR) save(ds models.Datastore) error {
 			log.Errorln("FilterMAIR: Error:", err)
 		}
 
-		if filter.name == dia.FilterKing {
+		if filter.childName == dia.FilterKing {
 			// Additionally, the price across exchanges is saved in influx as a quotation.
 			// This price is used for the estimation of quote tokens' prices in the tradesBlockService.
 			err = ds.SetAssetPriceUSD(filter.asset, filter.value, filter.currentTime)
