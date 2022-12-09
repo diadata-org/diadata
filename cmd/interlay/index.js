@@ -1,16 +1,72 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api");
-const { totalIssuance, oracleaggregrate,totalUserVaultCollateral,collateralCurrencies } = require("./helper");
+const {
+  totalIssuance,
+  oracleaggregrate,
+  totalUserVaultCollateral,
+  collateralCurrencies,
+} = require("./helper");
+const { tokenPool, bifrosttokenIssuance } = require("./bifrosthelper");
 
 const ethers = require("ethers");
 const bignumber = ethers.BigNumber;
 
-let express = require('express');
+let express = require("express");
 let app = express();
 
+async function getBiFrostValues(token) {
+  let providerurl = "";
 
-async function getValues() {
+  switch (token) {
+    case "KSM":
+      providerurl = "wss://bifrost-parachain.api.onfinality.io/public-ws";
+      break;
+  }
+
   const wsProvider = new WsProvider(
-    "wss://interlay.api.onfinality.io/public-ws"
+    // "wss://interlay.api.onfinality.io/public-ws"
+    providerurl
+  );
+  const api = await ApiPromise.create({
+    provider: wsProvider,
+  });
+
+  let tokeninpool = await tokenPool(api, token);
+  let tokenIssuance = await bifrosttokenIssuance(api, token);
+
+  bignumber.from(
+    tokeninpool.replaceAll(",", "")
+  ).toString()
+
+  console.log("tokeninpool",tokeninpool)
+  console.log("tokenIssuance",tokenIssuance)
+
+
+  return {
+    total_backable:  bignumber.from(
+      tokeninpool.replaceAll(",", "")
+    ).toString(),
+    total_issued:  bignumber.from(
+      tokenIssuance.replaceAll(",", "")
+    ).toString(),
+    decimal: 12,
+    token: token,
+  };
+}
+
+async function getValues(token) {
+  let providerurl = "";
+
+  switch (token) {
+    case "IBTC":
+      providerurl = "wss://interlay.api.onfinality.io/public-ws";
+      break;
+    case "KBTC":
+      providerurl = "wss://kintsugi.api.onfinality.io/public-ws";
+      break;
+  }
+  const wsProvider = new WsProvider(
+    // "wss://interlay.api.onfinality.io/public-ws"
+    providerurl
   );
   const api = await ApiPromise.create({
     provider: wsProvider,
@@ -73,31 +129,60 @@ assert!(total_issued < total_backable);
     );
   }
 
+  console.log("totalIssuancesemap", totalIssuancesemap);
+
   let total_issued = bignumber.from(
-    totalIssuancesemap.get("IBTC").replaceAll(",", "")
+    totalIssuancesemap.get(token).replaceAll(",", "")
   );
   // total_issued = total_issued.div(1e8);
 
   await api.disconnect();
   total_backable = total_backable.div(1e2);
-  return {total_backable:total_backable.toString(),total_issued:total_issued.toString(), decimal:8}
+  return {
+    total_backable: total_backable.toString(),
+    total_issued: total_issued.toString(),
+    decimal: 8,
+    token: token,
+  };
 
   // return total_backable,total_issued;
 
   // console.log("total_backable", total_backable.toString());
   // console.log("total_issued", total_issued.toString());
-
 }
 
-app.get('/customer/interlay/state', async function (req, res) {
-  let values =  await getValues();
-  res.send(values);
-})
+app.get("/customer/interlay/state/:token", async function (req, res) {
+  // kbtc, ibtc
+  const allowedtokens = ["IBTC", "KBTC"];
+
+  let token = req.params.token;
+  token = token.toUpperCase();
+
+  if (allowedtokens.includes(token)) {
+    let values = await getValues(token);
+    res.send(values);
+  } else {
+    res.send({ err: "invalid token use, IBTC or KBTC" });
+  }
+});
+
+app.get("/customer/bifrost/state/:token", async function (req, res) {
+  // kbtc, ibtc
+  const allowedtokens = ["KSM"];
+
+  let token = req.params.token;
+  token = token.toUpperCase();
+
+  if (allowedtokens.includes(token)) {
+    let values = await getBiFrostValues(token);
+    res.send(values);
+  } else {
+    res.send({ err: "invalid token use, IBTC or KBTC" });
+  }
+});
 
 let server = app.listen(8081, function () {
-  var host = server.address().address
-  var port = server.address().port
-  console.log(" App listening at http://%s:%s", host, port)
-})
-
-
+  var host = server.address().address;
+  var port = server.address().port;
+  console.log(" App listening at http://%s:%s", host, port);
+});
