@@ -146,6 +146,10 @@ func (s *MetaFilterService) createMetaFilters(filterPoint dia.FilterPoint, sourc
 				NewFilterAIR(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.MAIR_FILTER, BeginTime, dia.BlockSizeSeconds),
 				// NewFilter...
 			}
+		case dia.MEDIR_FILTER:
+			s.metaFilters[mfi] = []MetaFilter{
+				NewFilterAIR(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.MEDIR_FILTER, BeginTime, dia.BlockSizeSeconds),
+			}
 		case dia.VOL_FILTER:
 			s.metaFilters[mfi] = []MetaFilter{
 				NewFilterVOL(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.VOL_FILTER, dia.BlockSizeSeconds),

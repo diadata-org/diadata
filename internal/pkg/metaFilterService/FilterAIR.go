@@ -8,9 +8,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// FilterMAIR implements a trimmed moving average.
-// Outliers are eliminated using interquartile range.
-// see: https://en.wikipedia.org/wiki/Interquartile_range
 type FilterAIR struct {
 	asset           dia.Asset
 	source          string
@@ -45,7 +42,7 @@ func (filter *FilterAIR) Collect(filterPoint dia.FilterPoint) {
 func (filter *FilterAIR) collect(filterPoint dia.FilterPoint) {
 	filter.modified = true
 	if filterPoint.Name != filter.childName {
-		// Child filter method does not match metafilter's name.
+		// Additional safety check. Child filter method does not match metafilter's name.
 		return
 	}
 	if filter.lastFilterValue != (dia.FilterPoint{}) {
@@ -72,16 +69,12 @@ func (filter *FilterAIR) finalCompute(t time.Time) float64 {
 		return 0.0
 	}
 
-	// TO DO: Find reasonable outlier detection for very small datasets (ranging from 1 to ~20)
+	// For now rely on the outlier analysis from the pair filters and only take into account
+	// volume weighting here.
 	var err error
-	cleanPrices, bounds := removeOutliers(filter.values)
-	if len(bounds) > 1 {
-		filter.value, err = computeMean(cleanPrices, filter.volumes[bounds[0]:bounds[1]])
-		if err != nil {
-			return 0.0
-		}
-	} else {
-		filter.value = cleanPrices[0]
+	filter.value, err = computeMean(filter.values, filter.volumes)
+	if err != nil {
+		return 0.0
 	}
 
 	// Reset the filter values for the next filtersblock.
@@ -123,11 +116,13 @@ func (filter *FilterAIR) save(ds models.Datastore) error {
 			log.Errorln("FilterMAIR: Error:", err)
 		}
 
-		// Additionally, the price across exchanges is saved in influx as a quotation.
-		// This price is used for the estimation of quote tokens' prices in the tradesBlockService.
-		err = ds.SetAssetPriceUSD(filter.asset, filter.value, filter.currentTime)
-		if err != nil {
-			log.Errorln("FilterMAIR: Error:", err)
+		if filter.name == dia.FilterKing {
+			// Additionally, the price across exchanges is saved in influx as a quotation.
+			// This price is used for the estimation of quote tokens' prices in the tradesBlockService.
+			err = ds.SetAssetPriceUSD(filter.asset, filter.value, filter.currentTime)
+			if err != nil {
+				log.Errorln("FilterMAIR: Error:", err)
+			}
 		}
 
 		return err
