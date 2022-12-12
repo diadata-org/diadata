@@ -20,9 +20,10 @@ const (
 type nothing struct{}
 
 var (
-	Exchanges    = make(map[string]dia.Exchange)
-	blockchains  map[string]dia.BlockChain
-	chainConfigs map[string]dia.ChainConfig
+	Exchanges          = make(map[string]dia.Exchange)
+	ExchangeDuplicates = make(map[string]dia.Exchange)
+	blockchains        map[string]dia.BlockChain
+	chainConfigs       map[string]dia.ChainConfig
 )
 
 var evmID map[string]string
@@ -71,6 +72,8 @@ func init() {
 		chainConfigs[chainconfig.ChainID] = chainconfig
 	}
 
+	ExchangeDuplicates[dia.Binance2Exchange] = dia.Exchange{Name: "Binance2", Centralized: true, WatchdogDelay: 300}
+
 }
 
 // APIScraper provides common methods needed to get Trade information from
@@ -112,6 +115,8 @@ type PairScraper interface {
 func NewAPIScraper(exchange string, scrape bool, key string, secret string, relDB *models.RelDB) APIScraper {
 	switch exchange {
 	case dia.BinanceExchange:
+		return NewBinanceScraper(key, secret, Exchanges[dia.BinanceExchange], scrape, relDB)
+	case dia.Binance2Exchange:
 		return NewBinanceScraper(key, secret, Exchanges[dia.BinanceExchange], scrape, relDB)
 	case dia.BinanceExchangeUS:
 		return NewBinanceScraperUS(key, secret, Exchanges[dia.BinanceExchangeUS], scrape, relDB)
