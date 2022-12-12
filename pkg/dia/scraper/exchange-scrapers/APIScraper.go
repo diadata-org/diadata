@@ -115,9 +115,9 @@ type PairScraper interface {
 func NewAPIScraper(exchange string, scrape bool, key string, secret string, relDB *models.RelDB) APIScraper {
 	switch exchange {
 	case dia.BinanceExchange:
-		return NewBinanceScraper(key, secret, Exchanges[dia.BinanceExchange], scrape, relDB)
+		return NewBinanceScraper(key, secret, Exchanges[dia.BinanceExchange], Exchanges[dia.BinanceExchange].Name, scrape, relDB)
 	case dia.Binance2Exchange:
-		return NewBinanceScraper(key, secret, Exchanges[dia.BinanceExchange], scrape, relDB)
+		return NewBinanceScraper(key, secret, Exchanges[dia.BinanceExchange], dia.Binance2Exchange, scrape, relDB)
 	case dia.BinanceExchangeUS:
 		return NewBinanceScraperUS(key, secret, Exchanges[dia.BinanceExchangeUS], scrape, relDB)
 	case dia.BitBayExchange:
