@@ -439,22 +439,14 @@ func (s *MagicEdenScraper) processTx(ctx context.Context, tx rpc.SignatureWithSt
 				usdPrice = -usdPrice
 			}
 
-			nftMetaAcct, err := s.fetchMetadataAcctForNft(ctx, nftAddr.String())
-			if err != nil {
-				return false, err
-			}
-			metadata, collectionFound, err := s.fetchNFTMetadata(ctx, nftMetaAcct)
+			metadata, collectionFound, err := s.fetchMetadataForToken(ctx, nftAddr.String())
 			if err != nil {
 				return false, err
 			}
 
 			classMetadata := SolanaNFTMetadata{}
 			if collectionFound {
-				collectionMetaAcct, err := s.fetchMetadataAcctForNftCollection(ctx, nftAddr.String(), metadata.collectionAccount.String())
-				if err != nil {
-					return false, err
-				}
-				classMetadata, _, err = s.fetchNFTMetadata(ctx, collectionMetaAcct)
+				classMetadata, _, err = s.fetchMetadataForToken(ctx, metadata.collectionAccount.String())
 				if err != nil {
 					return false, err
 				}
@@ -553,7 +545,8 @@ func (s *MagicEdenScraper) createOrReadNFT(addr common.PublicKey, metadata Solan
 		}
 	}
 
-	nft, err := s.tradeScraper.datastore.GetNFT(nftClass.Address, dia.SOLANA, "1")
+	tokenId := addr.String()
+	nft, err := s.tradeScraper.datastore.GetNFT(nftClass.Address, dia.SOLANA, tokenId)
 	if err != nil {
 		if !errors.Is(err, pgx.ErrNoRows) {
 			log.Warnf("unable to read nft from reldb: %s", err.Error())
@@ -564,11 +557,7 @@ func (s *MagicEdenScraper) createOrReadNFT(addr common.PublicKey, metadata Solan
 			NFTClass:     nftClass,
 			URI:          strings.ReplaceAll(metadata.uri, "\x00", ""),
 			CreationTime: time.Unix(metadata.creationTime, 0),
-		}
-		if classMetadata.name == "" {
-			nft.TokenID = "1"
-		} else {
-			nft.TokenID = addr.String()
+			TokenID:      tokenId,
 		}
 
 		maxShare := -1
@@ -588,103 +577,53 @@ func (s *MagicEdenScraper) createOrReadNFT(addr common.PublicKey, metadata Solan
 	return &nft, nil
 }
 
-func (s *MagicEdenScraper) fetchMetadataAcctForNft(ctx context.Context, nftAddr string) (string, error) {
-	var metadataAcctAddr string
-	txList, err := s.solanaRpcClient.GetSignaturesForAddressWithConfig(ctx, nftAddr,
-		rpc.GetSignaturesForAddressConfig{
-			Limit: 100,
-		})
-	if err != nil {
-		log.Warnf("unable to retrieve confirmed transaction signatures for account: %s, %s", nftAddr, err.Error())
-		return metadataAcctAddr, err
-	}
-	for _, tx := range txList {
-		if tx.Signature != "" {
-			confirmedTx, err := s.solanaRpcClient.GetTransaction(ctx, tx.Signature)
-			if confirmedTx == nil {
-				err = errors.New("confirmedTx == nil for nft")
-				log.Error(err)
-				continue
-			}
-			if err != nil || confirmedTx.Meta == nil || confirmedTx.Transaction.Message.Accounts == nil {
-				log.Errorf("unable to get confirmed transaction with signature %q: %v", tx.Signature, err)
-				continue
-			} else if confirmedTx.Meta.Err != nil {
-				continue
-			}
-
-			for i, postBalance := range confirmedTx.Meta.PostBalances {
-				normPrice := decimal.NewFromInt(postBalance).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(9)))
-				if normPrice.Equals(decimal.NewFromFloat(MetadataFee)) {
-					metadataAcctAddr = confirmedTx.Transaction.Message.Accounts[i].String()
-					break
-				}
-			}
-		}
-		if metadataAcctAddr != "" {
-			break
-		}
-	}
-	if metadataAcctAddr == "" {
-		return metadataAcctAddr, errors.New("no metadata account for : " + nftAddr)
-	}
-	return metadataAcctAddr, nil
-}
-
-func (s *MagicEdenScraper) fetchMetadataAcctForNftCollection(ctx context.Context, nftAddr, nftCollectionAddr string) (string, error) {
-	var metadataAcctAddr string
-	var creationTxList rpc.GetSignaturesForAddress
+func (s *MagicEdenScraper) fetchMetadataForToken(ctx context.Context, addr string) (SolanaNFTMetadata, bool, error) {
+	metadata := SolanaNFTMetadata{}
 	lastTxFetched := ""
 	for {
-
-		txList, err := s.solanaRpcClient.GetSignaturesForAddressWithConfig(context.TODO(), nftCollectionAddr,
+		txList, err := s.solanaRpcClient.GetSignaturesForAddressWithConfig(context.TODO(), addr,
 			rpc.GetSignaturesForAddressConfig{
 				Before: lastTxFetched,
 				Limit:  1000,
 			})
 		if err != nil {
-			log.Warnf("unable to retrieve confirmed transaction signatures for account: %s, %s", nftAddr, err.Error())
-			return metadataAcctAddr, err
+			log.Warnf("unable to retrieve confirmed transaction signatures for account: %s, %s", addr, err.Error())
+			return metadata, false, err
+		}
+		for _, tx := range txList {
+			if tx.Signature != "" {
+				confirmedTx, err := s.solanaRpcClient.GetTransaction(ctx, tx.Signature)
+				if confirmedTx == nil {
+					err = errors.New("confirmedTx == nil for nft")
+					log.Error(err)
+					continue
+				}
+				if err != nil || confirmedTx.Meta == nil || confirmedTx.Transaction.Message.Accounts == nil {
+					log.Errorf("unable to get confirmed transaction with signature %q: %v", tx.Signature, err)
+					continue
+				} else if confirmedTx.Meta.Err != nil {
+					continue
+				}
+
+				for j, postBalance := range confirmedTx.Meta.PostBalances {
+					normPrice := decimal.NewFromInt(postBalance).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(9)))
+					if normPrice.Equals(decimal.NewFromFloat(MetadataFee)) {
+						metadataAcctAddr := confirmedTx.Transaction.Message.Accounts[j].String()
+						meta, collectionFound, err := s.fetchNFTMetadata(ctx, metadataAcctAddr)
+						if meta.mintAccount.String() == addr {
+							return meta, collectionFound, err
+						}
+					}
+				}
+			}
 		}
 
 		if len(txList) == 0 {
 			break
 		}
 		lastTxFetched = txList[len(txList)-1].Signature
-		creationTxList = txList
 	}
-	for i := len(creationTxList) - 1; i >= 0; i-- {
-		tx := creationTxList[i]
-		if tx.Signature != "" {
-			confirmedTx, err := s.solanaRpcClient.GetTransaction(ctx, tx.Signature)
-			if confirmedTx == nil {
-				err = errors.New("confirmedTx == nil for nft")
-				log.Error(err)
-				continue
-			}
-			if err != nil || confirmedTx.Meta == nil || confirmedTx.Transaction.Message.Accounts == nil {
-				log.Errorf("unable to get confirmed transaction with signature %q: %v", tx.Signature, err)
-				continue
-			} else if confirmedTx.Meta.Err != nil {
-				continue
-			}
-
-			for j, postBalance := range confirmedTx.Meta.PostBalances {
-				normPrice := decimal.NewFromInt(postBalance).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(9)))
-				if normPrice.Equals(decimal.NewFromFloat(MetadataFee)) {
-					metadataAcctAddr = confirmedTx.Transaction.Message.Accounts[j].String()
-					break
-				}
-			}
-		}
-		if metadataAcctAddr != "" {
-			break
-		}
-	}
-	if metadataAcctAddr == "" {
-		return metadataAcctAddr, errors.New("no metadata account for : " + nftAddr)
-	}
-	return metadataAcctAddr, nil
+	return metadata, false, errors.New("no metadata account for : " + addr)
 }
 
 // TODO - move to this generic method to fetch metadata on availability of a strong RPC
