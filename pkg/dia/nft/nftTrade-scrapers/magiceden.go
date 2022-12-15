@@ -34,7 +34,7 @@ const (
 var (
 	defMagicEdenConf = &MagicEdenScraperConfig{
 		ProgramAddr:      MagicEdenV2ProgramAddress,
-		BatchSize:        1000,
+		BatchSize:        10,
 		WaitPeriod:       10 * time.Second,
 		MaxRetry:         0,
 		SkipOnErr:        true,
@@ -191,7 +191,7 @@ func (s *MagicEdenScraper) mainLoop() {
 			}
 		}
 
-		log.Debugf("wait for %s", 1*time.Second)
+		log.Debugf("wait for %s", 250*time.Millisecond)
 
 		select {
 		case <-time.After(2 * time.Second):
@@ -256,47 +256,11 @@ func (s *MagicEdenScraper) FetchTrades() error {
 		s.state.LastTxHistorical = txToProcess[len(txToProcess)-1].Signature
 	}
 
-	numTrades := 0
-
+	var numTrades int
 	for i := len(txToProcess) - 1; i >= 0; i-- {
-		tx := txToProcess[i]
-		s.state.LastErr = ""
-		if s.state.ErrCounter != 0 {
-			log.Info("current state.ErrCounter: ", s.state.ErrCounter)
-		}
-
-		skipped, err := s.processTx(ctx, tx)
-
+		err = s.processTxConcurrent(ctx, txToProcess[i], &numTrades)
 		if err != nil {
-			s.state.ErrCounter++
-
-			if s.state.ErrCounter <= s.conf.MaxRetry {
-				s.state.LastErr = fmt.Sprintf("unable to process trade transaction(%s): %s", tx.Signature, err.Error())
-				log.Error(s.state.LastErr)
-				// store state
-				if err := s.storeState(ctx); err != nil {
-					log.Warnf("unable to store scraper state: %s", err.Error())
-					return err
-				}
-				return err
-			}
-
-		}
-
-		if !skipped {
-			numTrades++
-		}
-
-		// reset consecutive error counter
-		s.state.ErrCounter = 0
-
-		// move next
-		s.state.LastTx = tx.Signature
-
-		// store state
-		if err := s.storeState(ctx); err != nil {
-			log.Warnf("unable to store scraper state: %s", err.Error())
-			return err
+			log.Error("processTxConcurrent: ", err)
 		}
 	}
 
@@ -311,94 +275,47 @@ func (s *MagicEdenScraper) FetchTrades() error {
 
 }
 
-func (s *MagicEdenScraper) FetchHistoricalTrades() error {
-	log.Info("start fetch historical trades...")
-	var err error
-	ctx := context.Background()
+func (s *MagicEdenScraper) processTxConcurrent(ctx context.Context, tx rpc.SignatureWithStatus, numTrades *int) error {
 
-	// it must be run once at a time
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	// read config
-	if err = s.loadConfig(ctx); err != nil {
-		log.Warnf("unable to load scraper config: %s", err.Error())
-		return err
+	s.state.LastErr = ""
+	if s.state.ErrCounter != 0 {
+		log.Info("current state.ErrCounter: ", s.state.ErrCounter)
 	}
 
-	// read state
-	if err = s.loadState(ctx); err != nil {
-		log.Warnf("unable to load scraper state: %s", err.Error())
-		return err
-	}
-	log.Info("last tx: ", s.state.LastTxHistorical)
-
-	if s.state.LastTxHistorical == "" {
-		return nil
-	}
-
-	txList, err := s.solanaRpcClient.GetSignaturesForAddressWithConfig(ctx, MagicEdenV2ProgramAddress,
-		rpc.GetSignaturesForAddressConfig{
-			Before: s.state.LastTxHistorical,
-			Limit:  s.conf.BatchSize,
-		})
-
+	skipped, err := s.processTx(ctx, tx)
 	if err != nil {
-		log.Warnf("unable to retrieve confirmed transaction signatures for account: %s", err.Error())
-		return err
-	}
+		s.state.ErrCounter++
+		log.Error("processTx: ", err)
 
-	log.Infof("processing magiceden %d historical transactions", len(txList))
-
-	numTrades := 0
-
-	for i := 0; i < len(txList); i++ {
-		tx := txList[i]
-		s.state.LastErrHistorical = ""
-
-		skipped, err := s.processTx(ctx, tx)
-
-		if err != nil {
-			s.state.ErrCounterHistorical++
-
-			if s.state.ErrCounterHistorical <= s.conf.MaxRetry {
-				s.state.LastErrHistorical = fmt.Sprintf("unable to process trade transaction(%s): %s", tx.Signature, err.Error())
-				log.Error(s.state.LastErrHistorical)
-				// store state
-				if err := s.storeState(ctx); err != nil {
-					log.Warnf("unable to store scraper state: %s", err.Error())
-					return err
-				}
+		if s.state.ErrCounter <= s.conf.MaxRetry {
+			s.state.LastErr = fmt.Sprintf("unable to process trade transaction(%s): %s", tx.Signature, err.Error())
+			log.Error(s.state.LastErr)
+			// store state
+			if err := s.storeState(ctx); err != nil {
+				log.Warnf("unable to store scraper state: %s", err.Error())
 				return err
 			}
-		}
-
-		if !skipped {
-			numTrades++
-		}
-
-		// reset consecutive error counter
-		s.state.ErrCounterHistorical = 0
-
-		// move next
-		s.state.LastTxHistorical = tx.Signature
-
-		// store state
-		if err := s.storeState(ctx); err != nil {
-			log.Warnf("unable to store scraper state: %s", err.Error())
 			return err
 		}
+
 	}
 
+	if !skipped {
+		*numTrades++
+	}
+
+	// reset consecutive error counter
+	s.state.ErrCounter = 0
+
+	// move next
+	s.state.LastTx = tx.Signature
+
+	// store state
 	if err := s.storeState(ctx); err != nil {
 		log.Warnf("unable to store scraper state: %s", err.Error())
 		return err
 	}
-
-	log.Infof("processed %d historical trades", numTrades)
-
 	return nil
-
 }
 
 func (s *MagicEdenScraper) processTx(ctx context.Context, tx rpc.SignatureWithStatus) (bool, error) {
@@ -443,13 +360,14 @@ func (s *MagicEdenScraper) processTx(ctx context.Context, tx rpc.SignatureWithSt
 			if err != nil {
 				return false, err
 			}
-
 			classMetadata := SolanaNFTMetadata{}
 			if collectionFound {
 				classMetadata, _, err = s.fetchMetadataForToken(ctx, metadata.collectionAccount.String())
 				if err != nil {
-					return false, err
+					log.Warn("collection found, but error in fetching corresponding metadata: ", err)
+					// return false, err
 				}
+				classMetadata.collectionAccount = metadata.collectionAccount
 			}
 
 			if err := s.notifyTrade(tx, nftAddr, from, to, metadata, classMetadata, price, usdPrice); err != nil {
@@ -461,8 +379,16 @@ func (s *MagicEdenScraper) processTx(ctx context.Context, tx rpc.SignatureWithSt
 	return true, nil
 }
 
-func (s *MagicEdenScraper) notifyTrade(tx rpc.SignatureWithStatus, addr, from, to common.PublicKey,
-	metadata SolanaNFTMetadata, classMetadata SolanaNFTMetadata, price *big.Int, usdPrice float64) error {
+func (s *MagicEdenScraper) notifyTrade(
+	tx rpc.SignatureWithStatus,
+	addr common.PublicKey,
+	from common.PublicKey,
+	to common.PublicKey,
+	metadata SolanaNFTMetadata,
+	classMetadata SolanaNFTMetadata,
+	price *big.Int,
+	usdPrice float64,
+) error {
 	nft, err := s.createOrReadNFT(addr, metadata, classMetadata)
 	if err != nil {
 		return err
@@ -841,4 +767,94 @@ func (s *MagicEdenScraper) calcUSDPrice(price decimal.Decimal) (float64, error) 
 
 func (s *MagicEdenScraper) GetTradeChannel() chan dia.NFTTrade {
 	return s.tradeScraper.chanTrade
+}
+
+func (s *MagicEdenScraper) FetchHistoricalTrades() error {
+	log.Info("start fetch historical trades...")
+	var err error
+	ctx := context.Background()
+
+	// it must be run once at a time
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	// read config
+	if err = s.loadConfig(ctx); err != nil {
+		log.Warnf("unable to load scraper config: %s", err.Error())
+		return err
+	}
+
+	// read state
+	if err = s.loadState(ctx); err != nil {
+		log.Warnf("unable to load scraper state: %s", err.Error())
+		return err
+	}
+	log.Info("last tx: ", s.state.LastTxHistorical)
+
+	if s.state.LastTxHistorical == "" {
+		return nil
+	}
+
+	txList, err := s.solanaRpcClient.GetSignaturesForAddressWithConfig(ctx, MagicEdenV2ProgramAddress,
+		rpc.GetSignaturesForAddressConfig{
+			Before: s.state.LastTxHistorical,
+			Limit:  s.conf.BatchSize,
+		})
+
+	if err != nil {
+		log.Warnf("unable to retrieve confirmed transaction signatures for account: %s", err.Error())
+		return err
+	}
+
+	log.Infof("processing magiceden %d historical transactions", len(txList))
+
+	numTrades := 0
+
+	for i := 0; i < len(txList); i++ {
+		tx := txList[i]
+		s.state.LastErrHistorical = ""
+
+		skipped, err := s.processTx(ctx, tx)
+
+		if err != nil {
+			s.state.ErrCounterHistorical++
+
+			if s.state.ErrCounterHistorical <= s.conf.MaxRetry {
+				s.state.LastErrHistorical = fmt.Sprintf("unable to process trade transaction(%s): %s", tx.Signature, err.Error())
+				log.Error(s.state.LastErrHistorical)
+				// store state
+				if err := s.storeState(ctx); err != nil {
+					log.Warnf("unable to store scraper state: %s", err.Error())
+					return err
+				}
+				return err
+			}
+		}
+
+		if !skipped {
+			numTrades++
+		}
+
+		// reset consecutive error counter
+		s.state.ErrCounterHistorical = 0
+
+		// move next
+		s.state.LastTxHistorical = tx.Signature
+
+		// store state
+		if err := s.storeState(ctx); err != nil {
+			log.Warnf("unable to store scraper state: %s", err.Error())
+			return err
+		}
+	}
+
+	if err := s.storeState(ctx); err != nil {
+		log.Warnf("unable to store scraper state: %s", err.Error())
+		return err
+	}
+
+	log.Infof("processed %d historical trades", numTrades)
+
+	return nil
+
 }
