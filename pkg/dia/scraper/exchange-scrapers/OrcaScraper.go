@@ -411,7 +411,7 @@ func (s *OrcaScraper) loadMarketWhirlpools() (pairs []dia.ExchangePair, err erro
 					}
 				} else {
 					tokenA.Symbol = strings.TrimRight(metadata.Data.Symbol, "\x00")
-					tokenA.Name = metadata.Data.Name
+					tokenA.Name = strings.TrimRight(metadata.Data.Name, "\x00")
 				}
 				tokenA.Address = w.TokenMintA.String()
 				tokenA.Blockchain = "Solana"
@@ -432,7 +432,7 @@ func (s *OrcaScraper) loadMarketWhirlpools() (pairs []dia.ExchangePair, err erro
 					}
 				} else {
 					tokenB.Symbol = strings.TrimRight(metadata.Data.Symbol, "\x00")
-					tokenB.Name = metadata.Data.Name
+					tokenB.Name = strings.TrimRight(metadata.Data.Name, "\x00")
 				}
 				tokenB.Address = w.TokenMintB.String()
 				tokenB.Blockchain = "Solana"
@@ -590,6 +590,7 @@ func GetOrcaTokensMetadata() map[string]interface{} {
 	tokenMetadata["Ca5eaXbfQQ6gjZ5zPVfybtDpqWndNdACtKVtxxNHsgcz"] = &orcaTokenMetadata{Name: "Solana Monkey Business Solvent Droplet", Symbol: "svtSMB"}
 	tokenMetadata["5Wsd311hY8NXQhkt9cWHwTnqafk7BGEbLu8Py3DSnPAr"] = &orcaTokenMetadata{Name: "Compendium Finance", Symbol: "CMFI"}
 	tokenMetadata["GWsZd8k85q2ie9SNycVSLeKkX7HLZfSsgx6Jdat9cjY1"] = &orcaTokenMetadata{Name: "Pollen Coin", Symbol: "PCN"}
+
 	return tokenMetadata
 }
 

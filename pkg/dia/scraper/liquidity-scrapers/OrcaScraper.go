@@ -133,7 +133,7 @@ func (s *OrcaScraper) loadMarketWhirlpools() (err error) {
 					}
 				} else {
 					tokenA.Symbol = strings.TrimRight(metadata.Data.Symbol, "\x00")
-					tokenA.Name = metadata.Data.Name
+					tokenA.Name = strings.TrimRight(metadata.Data.Name, "\x00")
 				}
 				tokenA.Address = w.TokenMintA.String()
 				tokenA.Blockchain = "Solana"
@@ -154,7 +154,7 @@ func (s *OrcaScraper) loadMarketWhirlpools() (err error) {
 					}
 				} else {
 					tokenB.Symbol = strings.TrimRight(metadata.Data.Symbol, "\x00")
-					tokenB.Name = metadata.Data.Name
+					tokenB.Name = strings.TrimRight(metadata.Data.Name, "\x00")
 				}
 				tokenB.Address = w.TokenMintB.String()
 				tokenB.Blockchain = "Solana"
