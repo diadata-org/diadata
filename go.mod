@@ -20,7 +20,8 @@ require (
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/ethereum/go-ethereum v1.10.10
 	github.com/fatih/structs v1.1.0
-	github.com/gagliardetto/solana-go v1.7.1
+	github.com/gagliardetto/binary v0.7.7 // indirect
+	github.com/gagliardetto/solana-go v1.8.1
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-ole/go-ole v1.2.4 // indirect
