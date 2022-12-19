@@ -223,6 +223,7 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 			if blockShiftSeconds <= blockSizeSeconds {
 				trades, err = r.DS.GetTradesByExchangesAndBaseAssets(asset, baseAssets, exchangesString, starttime, endtime)
 				if err != nil {
+					log.Error("GetTradesByExchangesAndBaseAssets: ", err)
 					return sr, err
 				}
 			} else {
@@ -322,7 +323,6 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 	var fpr []*FilterPointResolver
 
 	for _, fp := range filterPoints {
-		log.Println("Filter point", fp)
 		fpr = append(fpr, &FilterPointResolver{q: fp})
 
 	}

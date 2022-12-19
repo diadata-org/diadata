@@ -24,13 +24,13 @@ import (
 )
 
 const (
-	orcaSolanaHttpEndpoint               = "https://rpc.ankr.com/solana"
-	orcaSolanaWsEndpoint                 = rpc.MainNetBeta_WS
-	orcaProgramAddrWhirlpool             = "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc"
-	orcaWhirlpoolConfigProgram           = "2LecshUwdy9xi7meFgHtFJQNSKk4KdTrcpvaB56dP2NQ"
-	PROG_ORCAWHIRLPOOL_ACCOUNT_DATA_SIZE = 653
-	ORCA_MAX_RETRIES                     = 5
-	ORCA_RETRY_DELAY                     = 3 * time.Second
+	orcaSolanaHttpEndpoint           = "https://rpc.ankr.com/solana"
+	orcaSolanaWsEndpoint             = rpc.MainNetBeta_WS
+	OrcaProgWhirlpoolConfigAddr      = "2LecshUwdy9xi7meFgHtFJQNSKk4KdTrcpvaB56dP2NQ"
+	OrcaProgWhirlpoolAddr            = "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc"
+	OrcaProgWhirlpoolAccountDataSize = 653
+	OrcaMaxRetries                   = 5
+	OrcaRetryDelay                   = 3 * time.Second
 )
 
 // The scraper object for Orca
@@ -74,7 +74,7 @@ func NewOrcaScraper(exchange dia.Exchange, scrape bool) *OrcaScraper {
 
 	_, err = scraper.loadMarketsMetadata()
 	if err != nil {
-		log.Fatal("load metadata: %s", err)
+		log.Error("load metadata: %s", err)
 	}
 
 	if scrape {
@@ -163,7 +163,7 @@ func (s *OrcaScraper) mainLoop() {
 
 		go func() {
 			sub, err := s.WsClient.LogsSubscribeMentions(
-				solana.MustPublicKeyFromBase58(orcaProgramAddrWhirlpool),
+				solana.MustPublicKeyFromBase58(OrcaProgWhirlpoolAddr),
 				rpc.CommitmentFinalized,
 			)
 			if err != nil {
@@ -184,16 +184,16 @@ func (s *OrcaScraper) mainLoop() {
 						log.Warnf("recv error: %s", err)
 					}
 					retries := 0
-					for retries <= ORCA_MAX_RETRIES {
+					for retries <= OrcaMaxRetries {
 						retries++
-						log.Warnf("Recovering websocket connection %d/%d ...", retries, ORCA_MAX_RETRIES)
+						log.Warnf("Recovering websocket connection %d/%d ...", retries, OrcaMaxRetries)
 						s.WsClient, err = ws.Connect(context.Background(), orcaSolanaWsEndpoint)
-						time.Sleep(ORCA_RETRY_DELAY)
+						time.Sleep(OrcaRetryDelay)
 						if err != nil {
 							log.Warnf("retry failed: ", err)
 						} else {
 							sub, err = s.WsClient.LogsSubscribeMentions(
-								solana.MustPublicKeyFromBase58(orcaProgramAddrWhirlpool),
+								solana.MustPublicKeyFromBase58(OrcaProgWhirlpoolAddr),
 								rpc.CommitmentFinalized,
 							)
 							if err != nil {
@@ -252,7 +252,7 @@ func (s *OrcaScraper) mainLoop() {
 										accMetaList, err := txParsed.AccountMetaList()
 										if err == nil && accMetaList != nil {
 											for i, inst := range txParsed.Message.Instructions {
-												if txParsed.Message.AccountKeys[inst.ProgramIDIndex].String() == orcaProgramAddrWhirlpool {
+												if txParsed.Message.AccountKeys[inst.ProgramIDIndex].String() == OrcaProgWhirlpoolAddr {
 													instDecoded, err := orcaWhirlpoolIdlBind.DecodeInstruction(accMetaList, inst.Data)
 													if err != nil {
 														log.Warnf("  %88s cannot-decode\n", k)
@@ -360,14 +360,14 @@ func (s *OrcaScraper) loadMarketPools() (pairs []dia.ExchangePair, err error) {
 
 // Get Orca market whirlpools
 func (s *OrcaScraper) loadMarketWhirlpools() (pairs []dia.ExchangePair, err error) {
-	hardcodedTokenMeta := s.getTokensMetadata()
+	hardcodedTokenMeta := GetOrcaTokensMetadata()
 	resp, err := s.RestClient.GetProgramAccountsWithOpts(
 		context.TODO(),
-		solana.MustPublicKeyFromBase58(orcaProgramAddrWhirlpool),
+		solana.MustPublicKeyFromBase58(OrcaProgWhirlpoolAddr),
 		&rpc.GetProgramAccountsOpts{
 			Filters: []rpc.RPCFilter{
 				{
-					DataSize: PROG_ORCAWHIRLPOOL_ACCOUNT_DATA_SIZE,
+					DataSize: OrcaProgWhirlpoolAccountDataSize,
 				},
 			},
 		},
@@ -382,7 +382,7 @@ func (s *OrcaScraper) loadMarketWhirlpools() (pairs []dia.ExchangePair, err erro
 	for _, progAcc := range resp {
 		acct := progAcc.Account
 		pubKey := progAcc.Pubkey.String()
-		if acct.Owner.String() == orcaProgramAddrWhirlpool {
+		if acct.Owner.String() == OrcaProgWhirlpoolAddr {
 			d := bin.NewBorshDecoder(acct.Data.GetBinary())
 			var w orcaWhirlpoolIdlBind.Whirlpool
 			d.Decode(&w)
@@ -390,7 +390,7 @@ func (s *OrcaScraper) loadMarketWhirlpools() (pairs []dia.ExchangePair, err erro
 			if pubKey == "FfBeru58Q7hjqHq9T2Trw1BeyjE1YwHsx9MivKUwoTLQ" || pubKey == "9vqFu6v9CcVDaSx2oRD3jo8H5gqkE2urYQgpT16V1BTa" || pubKey == "DahhciLA89UkZoqrqVWL2nojwPLmSVkXQGTiEhAtkaFa" {
 				continue
 			}
-			if w.WhirlpoolsConfig.String() == orcaWhirlpoolConfigProgram {
+			if w.WhirlpoolsConfig.String() == OrcaProgWhirlpoolConfigAddr {
 				var tokenA, tokenB dia.Asset
 
 				// Get token A mint data and metadata
@@ -403,14 +403,18 @@ func (s *OrcaScraper) loadMarketWhirlpools() (pairs []dia.ExchangePair, err erro
 				}
 				if metadata, err := s.getTokenMetadata(w.TokenMintA.String()); err != nil {
 					if v, ok := hardcodedTokenMeta[w.TokenMintA.String()]; ok {
-						tokenA.Symbol = v.Symbol
-						tokenA.Name = v.Name
+						tokenA.Symbol = v.(OrcaTokenMetadata).GetSymbol()
+						tokenA.Name = v.(OrcaTokenMetadata).GetName()
 					} else {
-						return nil, fmt.Errorf("token metadata not found for %s: %s", w.TokenMintA.String(), err)
+						log.Warnf("token metadata not found for %s: %s", w.TokenMintA.String(), err)
+						if strings.Contains(err.Error(), "not found") {
+							err = nil
+						}
+						continue
 					}
 				} else {
 					tokenA.Symbol = strings.TrimRight(metadata.Data.Symbol, "\x00")
-					tokenA.Name = metadata.Data.Name
+					tokenA.Name = strings.TrimRight(metadata.Data.Name, "\x00")
 				}
 				tokenA.Address = w.TokenMintA.String()
 				tokenA.Blockchain = "Solana"
@@ -423,14 +427,18 @@ func (s *OrcaScraper) loadMarketWhirlpools() (pairs []dia.ExchangePair, err erro
 				}
 				if metadata, err := s.getTokenMetadata(w.TokenMintB.String()); err != nil {
 					if v, ok := hardcodedTokenMeta[w.TokenMintB.String()]; ok {
-						tokenB.Symbol = v.Symbol
-						tokenB.Name = v.Name
+						tokenB.Symbol = v.(OrcaTokenMetadata).GetSymbol()
+						tokenB.Name = v.(OrcaTokenMetadata).GetName()
 					} else {
-						return nil, fmt.Errorf("token metadata not found for %s: %s", w.TokenMintB.String(), err)
+						log.Warnf("token metadata not found for %s: %s", w.TokenMintB.String(), err)
+						if strings.Contains(err.Error(), "not found") {
+							err = nil
+						}
+						continue
 					}
 				} else {
 					tokenB.Symbol = strings.TrimRight(metadata.Data.Symbol, "\x00")
-					tokenB.Name = metadata.Data.Name
+					tokenB.Name = strings.TrimRight(metadata.Data.Name, "\x00")
 				}
 				tokenB.Address = w.TokenMintB.String()
 				tokenB.Blockchain = "Solana"
@@ -502,79 +510,93 @@ func (s *OrcaScraper) getTokenMetadata(account string) (metadata tokenmetadata.M
 	return tokenmetadata.Metadata{Data: tokenmetadata.Data{Symbol: tMeta.Symbol.String()}}, nil
 }
 
+type OrcaTokenMetadata interface {
+	GetName() string
+	GetSymbol() string
+}
+
+func (t *orcaTokenMetadata) GetName() string {
+	return t.Name
+}
+
+func (t *orcaTokenMetadata) GetSymbol() string {
+	return t.Symbol
+}
+
 type orcaTokenMetadata struct {
 	Name   string
 	Symbol string
 }
 
-func (s *OrcaScraper) getTokensMetadata() map[string]orcaTokenMetadata {
-	tokenMetadata := make(map[string]orcaTokenMetadata)
-	tokenMetadata["zebeczgi5fSEtbpfQKVZKCJ3WgYXxjkMUkNNx7fLKAF"] = orcaTokenMetadata{Name: "ZEBEC", Symbol: "ZBC"}
-	tokenMetadata["GEJpt3Wjmr628FqXxTgxMce1pLntcPV4uFi8ksxMyPQh"] = orcaTokenMetadata{Name: "daoSOL Token", Symbol: "daoSOL"}
-	tokenMetadata["CT1iZ7MJzm8Riy6MTgVht2PowGetEWrnq1SfmUjKvz8c"] = orcaTokenMetadata{Name: "Balloonsville Solvent Droplet", Symbol: "svtBV"}
-	tokenMetadata["7Q2afV64in6N6SeZsAAB81TJzwDoD6zpqmHkzi9Dcavn"] = orcaTokenMetadata{Name: "JPOOL Solana Token", Symbol: "JSOL"}
-	tokenMetadata["USDH1SM1ojwWUga67PGrgFWUHibbjqMvuMaDkRJTgkX"] = orcaTokenMetadata{Name: "USDH Hubble Stablecoin", Symbol: "USDH"}
-	tokenMetadata["6naWDMGNWwqffJnnXFLBCLaYu1y5U9Rohe5wwJPHvf1p"] = orcaTokenMetadata{Name: "SCRAP", Symbol: "SCRAP"}
-	tokenMetadata["SLNDpmoWTVADgEdndyvWzroNL7zSi1dF9PC3xHGtPwp"] = orcaTokenMetadata{Name: "Solend", Symbol: "SLND"}
-	tokenMetadata["EiasWmzy9MrkyekABHLfFRkGhRakaWNvmQ8h5DV86zyn"] = orcaTokenMetadata{Name: "Visionary Studios Solvent Droplet", Symbol: "svtVSNRY"}
-	tokenMetadata["DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ"] = orcaTokenMetadata{Name: "DUST Protocol", Symbol: "DUST"}
-	tokenMetadata["BoeDfSFRyaeuaLP97dhxkHnsn7hhhes3w3X8GgQj5obK"] = orcaTokenMetadata{Name: "Famous Fox Federation Solvent Droplet", Symbol: "svtFFF"}
-	tokenMetadata["ANAxByE6G2WjFp7A4NqtWYXb3mgruyzZYg3spfxe6Lbo"] = orcaTokenMetadata{Name: "ANA", Symbol: "ANA"}
-	tokenMetadata["9iLH8T7zoWhY7sBmj1WK9ENbWdS1nL8n9wAxaeRitTa6"] = orcaTokenMetadata{Name: "Hedge USD", Symbol: "USH"}
-	tokenMetadata["HBB111SCo9jkCejsZfz8Ec8nH7T6THF8KEKSnvwT6XK6"] = orcaTokenMetadata{Name: "Hubble Protocol Token", Symbol: "HBB"}
-	tokenMetadata["52GzcLDMfBveMRnWXKX7U3Pa5Lf7QLkWWvsJRDjWDBSk"] = orcaTokenMetadata{Name: "NGN Coin", Symbol: "NGNC"}
-	tokenMetadata["5PmpMzWjraf3kSsGEKtqdUsCoLhptg4yriZ17LKKdBBy"] = orcaTokenMetadata{Name: "Hedge Token", Symbol: "HDG"}
-	tokenMetadata["9tzZzEHsKnwFL1A3DyFJwj36KnZj3gZ7g4srWp9YTEoh"] = orcaTokenMetadata{Name: "ARB Protocol", Symbol: "ARB"}
-	tokenMetadata["AG5j4hhrd1ReYi7d1JsZL8ZpcoHdjXvc8sdpWF74RaQh"] = orcaTokenMetadata{Name: "Okay Bears Solvent Droplet", Symbol: "svtOKAY"}
-	tokenMetadata["7kbnvuGBxxj8AG9qp8Scn56muWGaRaFqxg1FsRp3PaFT"] = orcaTokenMetadata{Name: "UXD Stablecoin", Symbol: "UXD"}
-	tokenMetadata["SHDWyBxihqiCj6YekG2GUr7wqKLeLAMK1gHZck9pL6y"] = orcaTokenMetadata{Name: "Shadow Token", Symbol: "SHDW"}
-	tokenMetadata["GENEtH5amGSi8kHAtQoezp1XEXwZJ8vcuePYnXdKrMYz"] = orcaTokenMetadata{Name: "Genopets", Symbol: "GENE"}
-	tokenMetadata["EsPKhGTMf3bGoy4Qm7pCv3UCcWqAmbC1UGHBTDxRjjD4"] = orcaTokenMetadata{Name: "FTM (Allbridge from Fantom)", Symbol: "FTM"}
-	tokenMetadata["bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1"] = orcaTokenMetadata{Name: "BlazeStake Staked SOL (bSOL)", Symbol: "bSOL"}
-	tokenMetadata["SuperbZyz7TsSdSoFAZ6RYHfAWe9NmjXBLVQpS8hqdx"] = orcaTokenMetadata{Name: "SuperBonds Token", Symbol: "SB"}
-	tokenMetadata["8W2ZFYag9zTdnVpiyR4sqDXszQfx2jAZoMcvPtCSQc7D"] = orcaTokenMetadata{Name: "The Catalina Whale Mixer Solvent Droplet", Symbol: "svtCWM"}
-	tokenMetadata["PsyFiqqjiv41G7o5SMRzDJCu4psptThNR2GtfeGHfSq"] = orcaTokenMetadata{Name: "PsyOptions", Symbol: "PSY"}
-	tokenMetadata["GePFQaZKHcWE5vpxHfviQtH5jgxokSs51Y5Q4zgBiMDs"] = orcaTokenMetadata{Name: "Jungle DeFi", Symbol: "JFI"}
-	tokenMetadata["METAmTMXwdb8gYzyCPfXXFmZZw4rUsXX58PNsDg7zjL"] = orcaTokenMetadata{Name: "Solice", Symbol: "SLC"}
-	tokenMetadata["USDrbBQwQbQ2oWHUPfA8QBHcyVxKUq1xHyXsSLKdUq2"] = orcaTokenMetadata{Name: "Ratio stable Token", Symbol: "USDr"}
-	tokenMetadata["4MSMKZwGnkT8qxK8LsdH28Uu8UfKRT2aNaGTU8TEMuHz"] = orcaTokenMetadata{Name: "Genopets Genesis - Solvent Droplet", Symbol: "svtGENE"}
-	tokenMetadata["F3nefJBcejYbtdREjui1T9DPh5dBgpkKq7u2GAAMXs5B"] = orcaTokenMetadata{Name: "ALL ART", Symbol: "AART"}
-	tokenMetadata["BKipkearSqAUdNKa1WDstvcMjoPsSKBuNyvKDQDDu9WE"] = orcaTokenMetadata{Name: "Hawksight", Symbol: "HAWK"}
-	tokenMetadata["CowKesoLUaHSbAMaUxJUj7eodHHsaLsS65cy8NFyRDGP"] = orcaTokenMetadata{Name: "Cash Cow", Symbol: "COW"}
-	tokenMetadata["Ez2zVjw85tZan1ycnJ5PywNNxR6Gm4jbXQtZKyQNu3Lv"] = orcaTokenMetadata{Name: "Fluid USDC", Symbol: "fUSDC"}
-	tokenMetadata["AFbX8oGjGpmVFywbVouvhQSRmiW2aR1mohfahi4Y2AdB"] = orcaTokenMetadata{Name: "GST", Symbol: "GST"}
-	tokenMetadata["svtMpL5eQzdmB3uqK9NXaQkq8prGZoKQFNVJghdWCkV"] = orcaTokenMetadata{Name: "Solvent", Symbol: "SVT"}
-	tokenMetadata["6F5A4ZAtQfhvi3ZxNex9E1UN5TK7VM2enDCYG1sx1AXT"] = orcaTokenMetadata{Name: "Degenerate Ape Academy Solvent Droplet", Symbol: "svtDAPE"}
-	tokenMetadata["UXPhBoR3qG4UCiGNJfV7MqhHyFqKN68g45GoYvAeL2M"] = orcaTokenMetadata{Name: "UXP Governance Token", Symbol: "UXP"}
-	tokenMetadata["FANTafPFBAt93BNJVpdu25pGPmca3RfwdsDsRrT3LX1r"] = orcaTokenMetadata{Name: "Phantasia", Symbol: "FANT"}
-	tokenMetadata["Bp6k6xacSc4KJ5Bmk9D5xfbw8nN42ZHtPAswEPkNze6U"] = orcaTokenMetadata{Name: "Pesky Penguins Solvent Droplet", Symbol: "svtPSK"}
-	tokenMetadata["2zzC22UBgJGCYPdFyo7GDwz7YHq5SozJc1nnBqLU8oZb"] = orcaTokenMetadata{Name: "1SPACE", Symbol: "1SP"}
-	tokenMetadata["EmLJ8cNEsUtboiV2eiD6VgaEscSJ6zu3ELhqixUP4J56"] = orcaTokenMetadata{Name: "Thugbirdz - Solvent Droplet", Symbol: "svtTHUGZ"}
-	tokenMetadata["9acdc5M9F9WVM4nVZ2gPtVvkeYiWenmzLW9EsTkKdsUJ"] = orcaTokenMetadata{Name: "Gooney Toons Solvent Droplet", Symbol: "svtGOON"}
-	tokenMetadata["GNCjk3FmPPgZTkbQRSxr6nCvLtYMbXKMnRxg8BgJs62e"] = orcaTokenMetadata{Name: "CELO (Allbridge from Celo)", Symbol: "CELO"}
-	tokenMetadata["DXA9itWDGmGgqqUoHnBhw6CjvJKMUmTMKB17hBuoYkfQ"] = orcaTokenMetadata{Name: "Honey Genesis Bee Solvent Droplet", Symbol: "svtHNYG"}
-	tokenMetadata["HYtdDGdMFqBrtyUe5z74bKCtH2WUHZiWRicjNVaHSfkg"] = orcaTokenMetadata{Name: "Aurory - Solvent Droplet", Symbol: "svtAURY"}
-	tokenMetadata["G9tt98aYSznRk7jWsfuz9FnTdokxS6Brohdo9hSmjTRB"] = orcaTokenMetadata{Name: "PUFF", Symbol: "PUFF"}
-	tokenMetadata["8vkTew1mT8w5NapTqpAoNUNHW2MSnAGVNeu8QPmumSJM"] = orcaTokenMetadata{Name: "Playground Waves Solvent Droplet", Symbol: "svtWAVE"}
-	tokenMetadata["PRSMNsEPqhGVCH1TtWiJqPjJyh2cKrLostPZTNy1o5x"] = orcaTokenMetadata{Name: "PRISM", Symbol: "PRISM"}
-	tokenMetadata["seedEDBqu63tJ7PFqvcbwvThrYUkQeqT6NLf81kLibs"] = orcaTokenMetadata{Name: "Seeded Network", Symbol: "SEEDED"}
-	tokenMetadata["FoXyMu5xwXre7zEoSvzViRk3nGawHUp9kUh97y2NDhcq"] = orcaTokenMetadata{Name: "Famous Fox Federation", Symbol: "FOXY"}
-	tokenMetadata["BDrL8huis6S5tpmozaAaT5zhE5A7ZBAB2jMMvpKEeF8A"] = orcaTokenMetadata{Name: "NOVA FINANCE", Symbol: "NOVA"}
-	tokenMetadata["3GQqCi9cuGhAH4VwkmWD32gFHHJhxujurzkRCQsjxLCT"] = orcaTokenMetadata{Name: "Galactic Geckos Space Garage Solvent Droplet", Symbol: "svtGGSG"}
-	tokenMetadata["DCgRa2RR7fCsD63M3NgHnoQedMtwH1jJCwZYXQqk9x3v"] = orcaTokenMetadata{Name: "DeGods Solvent Droplet", Symbol: "svtDGOD"}
-	tokenMetadata["F8Wh3zT1ydxPYfQ3p1oo9SCJbjedqDsaC1WaBwh64NHA"] = orcaTokenMetadata{Name: "Serum Surfers Droplet", Symbol: "SSURF"}
-	tokenMetadata["Fm9rHUTF5v3hwMLbStjZXqNBBoZyGriQaFM6sTFz3K8A"] = orcaTokenMetadata{Name: "MonkeyBucks", Symbol: "MBS"}
-	tokenMetadata["4h41QKUkQPd2pCAFXNNgZUyGUxQ6E7fMexaZZHziCvhh"] = orcaTokenMetadata{Name: "The Suites Token", Symbol: "SUITE"}
-	tokenMetadata["7i5KKsX2weiTkry7jA4ZwSuXGhs5eJBEjY8vVxR4pfRx"] = orcaTokenMetadata{Name: "GMT", Symbol: "GMT"}
-	tokenMetadata["ratioMVg27rSZbSvBopUvsdrGUzeALUfFma61mpxc8J"] = orcaTokenMetadata{Name: "Ratio Governance Token", Symbol: "RATIO"}
-	tokenMetadata["3b9wtU4VP6qSUDL6NidwXxK6pMvYLFUTBR1QHWCtYKTS"] = orcaTokenMetadata{Name: "Playground Epochs Solvent Droplet", Symbol: "svtEPOCH"}
-	tokenMetadata["FoRGERiW7odcCBGU1bztZi16osPBHjxharvDathL5eds"] = orcaTokenMetadata{Name: "FORGE", Symbol: "FORGE"}
-	tokenMetadata["4wGimtLPQhbRT1cmKFJ7P7jDTgBqDnRBWsFXEhLoUep2"] = orcaTokenMetadata{Name: "Lifinity Flares Solvent Droplet", Symbol: "svtFLARE"}
-	tokenMetadata["SNSNkV9zfG5ZKWQs6x4hxvBRV6s8SqMfSGCtECDvdMd"] = orcaTokenMetadata{Name: "SynesisOne", Symbol: "SNS"}
-	tokenMetadata["9WMwGcY6TcbSfy9XPpQymY3qNEsvEaYL3wivdwPG2fpp"] = orcaTokenMetadata{Name: "Jelly", Symbol: "JELLY"}
-	tokenMetadata["Ca5eaXbfQQ6gjZ5zPVfybtDpqWndNdACtKVtxxNHsgcz"] = orcaTokenMetadata{Name: "Solana Monkey Business Solvent Droplet", Symbol: "svtSMB"}
-	tokenMetadata["5Wsd311hY8NXQhkt9cWHwTnqafk7BGEbLu8Py3DSnPAr"] = orcaTokenMetadata{Name: "Compendium Finance", Symbol: "CMFI"}
-	tokenMetadata["GWsZd8k85q2ie9SNycVSLeKkX7HLZfSsgx6Jdat9cjY1"] = orcaTokenMetadata{Name: "Pollen Coin", Symbol: "PCN"}
+func GetOrcaTokensMetadata() map[string]interface{} {
+	tokenMetadata := make(map[string]interface{})
+	tokenMetadata["zebeczgi5fSEtbpfQKVZKCJ3WgYXxjkMUkNNx7fLKAF"] = &orcaTokenMetadata{Name: "ZEBEC", Symbol: "ZBC"}
+	tokenMetadata["GEJpt3Wjmr628FqXxTgxMce1pLntcPV4uFi8ksxMyPQh"] = &orcaTokenMetadata{Name: "daoSOL Token", Symbol: "daoSOL"}
+	tokenMetadata["CT1iZ7MJzm8Riy6MTgVht2PowGetEWrnq1SfmUjKvz8c"] = &orcaTokenMetadata{Name: "Balloonsville Solvent Droplet", Symbol: "svtBV"}
+	tokenMetadata["7Q2afV64in6N6SeZsAAB81TJzwDoD6zpqmHkzi9Dcavn"] = &orcaTokenMetadata{Name: "JPOOL Solana Token", Symbol: "JSOL"}
+	tokenMetadata["USDH1SM1ojwWUga67PGrgFWUHibbjqMvuMaDkRJTgkX"] = &orcaTokenMetadata{Name: "USDH Hubble Stablecoin", Symbol: "USDH"}
+	tokenMetadata["6naWDMGNWwqffJnnXFLBCLaYu1y5U9Rohe5wwJPHvf1p"] = &orcaTokenMetadata{Name: "SCRAP", Symbol: "SCRAP"}
+	tokenMetadata["SLNDpmoWTVADgEdndyvWzroNL7zSi1dF9PC3xHGtPwp"] = &orcaTokenMetadata{Name: "Solend", Symbol: "SLND"}
+	tokenMetadata["EiasWmzy9MrkyekABHLfFRkGhRakaWNvmQ8h5DV86zyn"] = &orcaTokenMetadata{Name: "Visionary Studios Solvent Droplet", Symbol: "svtVSNRY"}
+	tokenMetadata["DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ"] = &orcaTokenMetadata{Name: "DUST Protocol", Symbol: "DUST"}
+	tokenMetadata["BoeDfSFRyaeuaLP97dhxkHnsn7hhhes3w3X8GgQj5obK"] = &orcaTokenMetadata{Name: "Famous Fox Federation Solvent Droplet", Symbol: "svtFFF"}
+	tokenMetadata["ANAxByE6G2WjFp7A4NqtWYXb3mgruyzZYg3spfxe6Lbo"] = &orcaTokenMetadata{Name: "ANA", Symbol: "ANA"}
+	tokenMetadata["9iLH8T7zoWhY7sBmj1WK9ENbWdS1nL8n9wAxaeRitTa6"] = &orcaTokenMetadata{Name: "Hedge USD", Symbol: "USH"}
+	tokenMetadata["HBB111SCo9jkCejsZfz8Ec8nH7T6THF8KEKSnvwT6XK6"] = &orcaTokenMetadata{Name: "Hubble Protocol Token", Symbol: "HBB"}
+	tokenMetadata["52GzcLDMfBveMRnWXKX7U3Pa5Lf7QLkWWvsJRDjWDBSk"] = &orcaTokenMetadata{Name: "NGN Coin", Symbol: "NGNC"}
+	tokenMetadata["5PmpMzWjraf3kSsGEKtqdUsCoLhptg4yriZ17LKKdBBy"] = &orcaTokenMetadata{Name: "Hedge Token", Symbol: "HDG"}
+	tokenMetadata["9tzZzEHsKnwFL1A3DyFJwj36KnZj3gZ7g4srWp9YTEoh"] = &orcaTokenMetadata{Name: "ARB Protocol", Symbol: "ARB"}
+	tokenMetadata["AG5j4hhrd1ReYi7d1JsZL8ZpcoHdjXvc8sdpWF74RaQh"] = &orcaTokenMetadata{Name: "Okay Bears Solvent Droplet", Symbol: "svtOKAY"}
+	tokenMetadata["7kbnvuGBxxj8AG9qp8Scn56muWGaRaFqxg1FsRp3PaFT"] = &orcaTokenMetadata{Name: "UXD Stablecoin", Symbol: "UXD"}
+	tokenMetadata["SHDWyBxihqiCj6YekG2GUr7wqKLeLAMK1gHZck9pL6y"] = &orcaTokenMetadata{Name: "Shadow Token", Symbol: "SHDW"}
+	tokenMetadata["GENEtH5amGSi8kHAtQoezp1XEXwZJ8vcuePYnXdKrMYz"] = &orcaTokenMetadata{Name: "Genopets", Symbol: "GENE"}
+	tokenMetadata["EsPKhGTMf3bGoy4Qm7pCv3UCcWqAmbC1UGHBTDxRjjD4"] = &orcaTokenMetadata{Name: "FTM (Allbridge from Fantom)", Symbol: "FTM"}
+	tokenMetadata["bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1"] = &orcaTokenMetadata{Name: "BlazeStake Staked SOL (bSOL)", Symbol: "bSOL"}
+	tokenMetadata["SuperbZyz7TsSdSoFAZ6RYHfAWe9NmjXBLVQpS8hqdx"] = &orcaTokenMetadata{Name: "SuperBonds Token", Symbol: "SB"}
+	tokenMetadata["8W2ZFYag9zTdnVpiyR4sqDXszQfx2jAZoMcvPtCSQc7D"] = &orcaTokenMetadata{Name: "The Catalina Whale Mixer Solvent Droplet", Symbol: "svtCWM"}
+	tokenMetadata["PsyFiqqjiv41G7o5SMRzDJCu4psptThNR2GtfeGHfSq"] = &orcaTokenMetadata{Name: "PsyOptions", Symbol: "PSY"}
+	tokenMetadata["GePFQaZKHcWE5vpxHfviQtH5jgxokSs51Y5Q4zgBiMDs"] = &orcaTokenMetadata{Name: "Jungle DeFi", Symbol: "JFI"}
+	tokenMetadata["METAmTMXwdb8gYzyCPfXXFmZZw4rUsXX58PNsDg7zjL"] = &orcaTokenMetadata{Name: "Solice", Symbol: "SLC"}
+	tokenMetadata["USDrbBQwQbQ2oWHUPfA8QBHcyVxKUq1xHyXsSLKdUq2"] = &orcaTokenMetadata{Name: "Ratio stable Token", Symbol: "USDr"}
+	tokenMetadata["4MSMKZwGnkT8qxK8LsdH28Uu8UfKRT2aNaGTU8TEMuHz"] = &orcaTokenMetadata{Name: "Genopets Genesis - Solvent Droplet", Symbol: "svtGENE"}
+	tokenMetadata["F3nefJBcejYbtdREjui1T9DPh5dBgpkKq7u2GAAMXs5B"] = &orcaTokenMetadata{Name: "ALL ART", Symbol: "AART"}
+	tokenMetadata["BKipkearSqAUdNKa1WDstvcMjoPsSKBuNyvKDQDDu9WE"] = &orcaTokenMetadata{Name: "Hawksight", Symbol: "HAWK"}
+	tokenMetadata["CowKesoLUaHSbAMaUxJUj7eodHHsaLsS65cy8NFyRDGP"] = &orcaTokenMetadata{Name: "Cash Cow", Symbol: "COW"}
+	tokenMetadata["Ez2zVjw85tZan1ycnJ5PywNNxR6Gm4jbXQtZKyQNu3Lv"] = &orcaTokenMetadata{Name: "Fluid USDC", Symbol: "fUSDC"}
+	tokenMetadata["AFbX8oGjGpmVFywbVouvhQSRmiW2aR1mohfahi4Y2AdB"] = &orcaTokenMetadata{Name: "GST", Symbol: "GST"}
+	tokenMetadata["svtMpL5eQzdmB3uqK9NXaQkq8prGZoKQFNVJghdWCkV"] = &orcaTokenMetadata{Name: "Solvent", Symbol: "SVT"}
+	tokenMetadata["6F5A4ZAtQfhvi3ZxNex9E1UN5TK7VM2enDCYG1sx1AXT"] = &orcaTokenMetadata{Name: "Degenerate Ape Academy Solvent Droplet", Symbol: "svtDAPE"}
+	tokenMetadata["UXPhBoR3qG4UCiGNJfV7MqhHyFqKN68g45GoYvAeL2M"] = &orcaTokenMetadata{Name: "UXP Governance Token", Symbol: "UXP"}
+	tokenMetadata["FANTafPFBAt93BNJVpdu25pGPmca3RfwdsDsRrT3LX1r"] = &orcaTokenMetadata{Name: "Phantasia", Symbol: "FANT"}
+	tokenMetadata["Bp6k6xacSc4KJ5Bmk9D5xfbw8nN42ZHtPAswEPkNze6U"] = &orcaTokenMetadata{Name: "Pesky Penguins Solvent Droplet", Symbol: "svtPSK"}
+	tokenMetadata["2zzC22UBgJGCYPdFyo7GDwz7YHq5SozJc1nnBqLU8oZb"] = &orcaTokenMetadata{Name: "1SPACE", Symbol: "1SP"}
+	tokenMetadata["EmLJ8cNEsUtboiV2eiD6VgaEscSJ6zu3ELhqixUP4J56"] = &orcaTokenMetadata{Name: "Thugbirdz - Solvent Droplet", Symbol: "svtTHUGZ"}
+	tokenMetadata["9acdc5M9F9WVM4nVZ2gPtVvkeYiWenmzLW9EsTkKdsUJ"] = &orcaTokenMetadata{Name: "Gooney Toons Solvent Droplet", Symbol: "svtGOON"}
+	tokenMetadata["GNCjk3FmPPgZTkbQRSxr6nCvLtYMbXKMnRxg8BgJs62e"] = &orcaTokenMetadata{Name: "CELO (Allbridge from Celo)", Symbol: "CELO"}
+	tokenMetadata["DXA9itWDGmGgqqUoHnBhw6CjvJKMUmTMKB17hBuoYkfQ"] = &orcaTokenMetadata{Name: "Honey Genesis Bee Solvent Droplet", Symbol: "svtHNYG"}
+	tokenMetadata["HYtdDGdMFqBrtyUe5z74bKCtH2WUHZiWRicjNVaHSfkg"] = &orcaTokenMetadata{Name: "Aurory - Solvent Droplet", Symbol: "svtAURY"}
+	tokenMetadata["G9tt98aYSznRk7jWsfuz9FnTdokxS6Brohdo9hSmjTRB"] = &orcaTokenMetadata{Name: "PUFF", Symbol: "PUFF"}
+	tokenMetadata["8vkTew1mT8w5NapTqpAoNUNHW2MSnAGVNeu8QPmumSJM"] = &orcaTokenMetadata{Name: "Playground Waves Solvent Droplet", Symbol: "svtWAVE"}
+	tokenMetadata["PRSMNsEPqhGVCH1TtWiJqPjJyh2cKrLostPZTNy1o5x"] = &orcaTokenMetadata{Name: "PRISM", Symbol: "PRISM"}
+	tokenMetadata["seedEDBqu63tJ7PFqvcbwvThrYUkQeqT6NLf81kLibs"] = &orcaTokenMetadata{Name: "Seeded Network", Symbol: "SEEDED"}
+	tokenMetadata["FoXyMu5xwXre7zEoSvzViRk3nGawHUp9kUh97y2NDhcq"] = &orcaTokenMetadata{Name: "Famous Fox Federation", Symbol: "FOXY"}
+	tokenMetadata["BDrL8huis6S5tpmozaAaT5zhE5A7ZBAB2jMMvpKEeF8A"] = &orcaTokenMetadata{Name: "NOVA FINANCE", Symbol: "NOVA"}
+	tokenMetadata["3GQqCi9cuGhAH4VwkmWD32gFHHJhxujurzkRCQsjxLCT"] = &orcaTokenMetadata{Name: "Galactic Geckos Space Garage Solvent Droplet", Symbol: "svtGGSG"}
+	tokenMetadata["DCgRa2RR7fCsD63M3NgHnoQedMtwH1jJCwZYXQqk9x3v"] = &orcaTokenMetadata{Name: "DeGods Solvent Droplet", Symbol: "svtDGOD"}
+	tokenMetadata["F8Wh3zT1ydxPYfQ3p1oo9SCJbjedqDsaC1WaBwh64NHA"] = &orcaTokenMetadata{Name: "Serum Surfers Droplet", Symbol: "SSURF"}
+	tokenMetadata["Fm9rHUTF5v3hwMLbStjZXqNBBoZyGriQaFM6sTFz3K8A"] = &orcaTokenMetadata{Name: "MonkeyBucks", Symbol: "MBS"}
+	tokenMetadata["4h41QKUkQPd2pCAFXNNgZUyGUxQ6E7fMexaZZHziCvhh"] = &orcaTokenMetadata{Name: "The Suites Token", Symbol: "SUITE"}
+	tokenMetadata["7i5KKsX2weiTkry7jA4ZwSuXGhs5eJBEjY8vVxR4pfRx"] = &orcaTokenMetadata{Name: "GMT", Symbol: "GMT"}
+	tokenMetadata["ratioMVg27rSZbSvBopUvsdrGUzeALUfFma61mpxc8J"] = &orcaTokenMetadata{Name: "Ratio Governance Token", Symbol: "RATIO"}
+	tokenMetadata["3b9wtU4VP6qSUDL6NidwXxK6pMvYLFUTBR1QHWCtYKTS"] = &orcaTokenMetadata{Name: "Playground Epochs Solvent Droplet", Symbol: "svtEPOCH"}
+	tokenMetadata["FoRGERiW7odcCBGU1bztZi16osPBHjxharvDathL5eds"] = &orcaTokenMetadata{Name: "FORGE", Symbol: "FORGE"}
+	tokenMetadata["4wGimtLPQhbRT1cmKFJ7P7jDTgBqDnRBWsFXEhLoUep2"] = &orcaTokenMetadata{Name: "Lifinity Flares Solvent Droplet", Symbol: "svtFLARE"}
+	tokenMetadata["SNSNkV9zfG5ZKWQs6x4hxvBRV6s8SqMfSGCtECDvdMd"] = &orcaTokenMetadata{Name: "SynesisOne", Symbol: "SNS"}
+	tokenMetadata["9WMwGcY6TcbSfy9XPpQymY3qNEsvEaYL3wivdwPG2fpp"] = &orcaTokenMetadata{Name: "Jelly", Symbol: "JELLY"}
+	tokenMetadata["Ca5eaXbfQQ6gjZ5zPVfybtDpqWndNdACtKVtxxNHsgcz"] = &orcaTokenMetadata{Name: "Solana Monkey Business Solvent Droplet", Symbol: "svtSMB"}
+	tokenMetadata["5Wsd311hY8NXQhkt9cWHwTnqafk7BGEbLu8Py3DSnPAr"] = &orcaTokenMetadata{Name: "Compendium Finance", Symbol: "CMFI"}
+	tokenMetadata["GWsZd8k85q2ie9SNycVSLeKkX7HLZfSsgx6Jdat9cjY1"] = &orcaTokenMetadata{Name: "Pollen Coin", Symbol: "PCN"}
+
 	return tokenMetadata
 }
 

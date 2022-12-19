@@ -33,12 +33,13 @@ type BinanceScraper struct {
 	// pairSubscriptions sync.Map // dia.ExchangePair -> string (subscription ID)
 	// pairLocks         sync.Map // dia.ExchangePair -> sync.Mutex
 	exchangeName string
+	scraperName  string
 	chanTrades   chan *dia.Trade
 	db           *models.RelDB
 }
 
 // NewBinanceScraper returns a new BinanceScraper for the given pair
-func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BinanceScraper {
+func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange, scraperName string, scrape bool, relDB *models.RelDB) *BinanceScraper {
 
 	s := &BinanceScraper{
 		client:       binance.NewClient(apiKey, secretKey),
@@ -46,6 +47,7 @@ func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange, s
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		exchangeName: exchange.Name,
+		scraperName:  scraperName,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 		db:           relDB,
@@ -147,7 +149,7 @@ func (s *BinanceScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) 
 				volume = -volume
 			}
 			pairNormalized, _ := s.NormalizePair(pair)
-			exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, pair.ForeignName)
+			exchangepair, err = s.db.GetExchangePairCache(s.scraperName, pair.ForeignName)
 			if err != nil {
 				log.Error(err)
 			}

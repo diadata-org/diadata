@@ -30,7 +30,11 @@ func init() {
 	exchange = *exch
 	exchangeStruct, ok := scrapers.Exchanges[exchange]
 	if (!exchangeStruct.Centralized || !ok) && *mode == "verification" {
-		log.Fatalf("%s cannot be found in the list of centralized exchanges.", exchange)
+		log.Warnf("%s cannot be found in the list of centralized exchanges.", exchange)
+		exchangeStruct, ok := scrapers.ExchangeDuplicates[exchange]
+		if (!exchangeStruct.Centralized || !ok) && *mode == "verification" {
+			log.Fatalf("%s cannot be found in exchange scraper duplicates either.", exchange)
+		}
 	}
 }
 

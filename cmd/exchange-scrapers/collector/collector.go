@@ -128,7 +128,7 @@ func main() {
 
 	wg := sync.WaitGroup{}
 
-	if scrapers.Exchanges[*exchange].Centralized {
+	if scrapers.Exchanges[*exchange].Centralized || scrapers.ExchangeDuplicates[*exchange].Centralized {
 
 		// Scrape pairs for CEX scrapers.
 		for _, configPair := range pairsExchange {
@@ -157,6 +157,9 @@ func main() {
 func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wTest *kafka.Writer, ds *models.DB, exchange string, mode string) {
 	lastTradeTime := time.Now()
 	watchdogDelay := scrapers.Exchanges[exchange].WatchdogDelay
+	if watchdogDelay == 0 {
+		watchdogDelay = scrapers.ExchangeDuplicates[exchange].WatchdogDelay
+	}
 	t := time.NewTicker(time.Duration(watchdogDelay) * time.Second)
 	for {
 		select {
@@ -237,6 +240,11 @@ func writeTradeToKafka(w *kafka.Writer, t *dia.Trade) error {
 
 func isValidExchange(estring string) bool {
 	for e := range scrapers.Exchanges {
+		if e == estring {
+			return true
+		}
+	}
+	for e := range scrapers.ExchangeDuplicates {
 		if e == estring {
 			return true
 		}

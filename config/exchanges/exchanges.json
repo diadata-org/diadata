@@ -151,7 +151,7 @@
             "RestAPI": "",
             "WsAPI": "wss://stream.binance.com:9443/ws",
             "pairsAPI": "https://api.binance.com/api/v1/exchangeInfo",
-            "WatchdogDelay": 1200,
+            "WatchdogDelay": 300,
             "ScraperActive": true
         },
         {
@@ -165,7 +165,7 @@
             "RestAPI": "",
             "WsAPI": "wss://stream.binance.us:9443/ws",
             "pairsAPI": "https://api.binance.us/api/v1/exchangeInfo",
-            "WatchdogDelay": 1200,
+            "WatchdogDelay": 300,
             "ScraperActive": true
         },
         {
@@ -207,7 +207,7 @@
             "RestAPI": "",
             "WsAPI": "wss://api-pub.bitfinex.com/ws/2",
             "pairsAPI": "https://api.bitfinex.com/v1/symbols",
-            "WatchdogDelay": 1200,
+            "WatchdogDelay": 300,
             "ScraperActive": true
         },
         {
@@ -221,7 +221,7 @@
             "RestAPI": "https://api-cloud.bitmart.com/spot/v1/",
             "WsAPI": "wss://ws-manager-compress.bitmart.com/api?protocol=1.1",
             "pairsAPI": "https://api-cloud.bitmart.com/spot/v1/symbols",
-            "WatchdogDelay": 1200,
+            "WatchdogDelay": 300,
             "ScraperActive": true
         },
         {
@@ -249,7 +249,7 @@
             "RestAPI": "https://api.mexc.com/api/v3",
             "WsAPI": "wss://wbs.mexc.com/ws",
             "pairsAPI": "https://api.mexc.com/api/v3/exchangeInfo",
-            "WatchdogDelay": 1200,
+            "WatchdogDelay": 300,
             "ScraperActive": true
         },
         {
@@ -263,7 +263,7 @@
             "RestAPI": "https://api.bkex.com/v2",
             "WsAPI": "wss://api.bkex.com/socket.io/?EIO=3&transport=websocket",
             "pairsAPI": "https://api.bkex.com/v2/common/symbols",
-            "WatchdogDelay": 1200,
+            "WatchdogDelay": 300,
             "ScraperActive": true
         },
         {
@@ -277,7 +277,7 @@
             "RestAPI": "https://www.bitMex.com/api/v1",
             "WsAPI": "wss://ws.bitMex.com/realtime",
             "pairsAPI": "https://www.bitMex.com/api/v1/instruments",
-            "WatchdogDelay": 1200,
+            "WatchdogDelay": 300,
             "ScraperActive": true
         },
         {
@@ -305,7 +305,7 @@
             "RestAPI": "https://api.bitforex.com/api/v1",
             "WsAPI": "wss://www.bitforex.com/mkapi/coinGroup1/ws",
             "pairsAPI": "https://api.bitforex.com/api/v1/market/symbols",
-            "WatchdogDelay": 1200,
+            "WatchdogDelay": 300,
             "ScraperActive": true
         },
         {
@@ -319,7 +319,7 @@
             "RestAPI": "https://api.bybit.com/v2",
             "WsAPI": "wss://stream.bybit.com/realtime",
             "pairsAPI": "https://api.bybit.com/v2/public/symbols",
-            "WatchdogDelay": 1200,
+            "WatchdogDelay": 300,
             "ScraperActive": true
         },
         {
@@ -333,7 +333,7 @@
             "RestAPI": "",
             "WsAPI": "wss://ws-feed.pro.coinbase.com",
             "pairsAPI": "https://api.pro.coinbase.com/products",
-            "WatchdogDelay": 1200,
+            "WatchdogDelay": 300,
             "ScraperActive": true
         },
         {
@@ -361,7 +361,7 @@
             "RestAPI": "https://api.crypto.com/v2",
             "WsAPI": "wss://stream.crypto.com/v2/market",
             "pairsAPI": "https://api.crypto.com/v2/public/get-instruments",
-            "WatchdogDelay": 180,
+            "WatchdogDelay": 300,
             "ScraperActive": true
         },
         {
@@ -487,7 +487,7 @@
             "RestAPI": "",
             "WsAPI": "wss://api.gateio.ws/ws/v4/",
             "pairsAPI": "https://data.gate.io/api2/1/pairs",
-            "WatchdogDelay": 1200,
+            "WatchdogDelay": 300,
             "ScraperActive": true
         },
         {
@@ -515,7 +515,7 @@
             "RestAPI": "",
             "WsAPI": "wss://api.hitbtc.com/api/2/ws",
             "pairsAPI": "https://api.hitbtc.com/api/2/public/symbol",
-            "WatchdogDelay": 1200,
+            "WatchdogDelay": 300,
             "ScraperActive": true
         },
         {
@@ -543,7 +543,7 @@
             "RestAPI": "",
             "WsAPI": "wss://api.huobi.pro/ws",
             "pairsAPI": "http://api.huobi.pro/v1/common/symbols",
-            "WatchdogDelay": 1200,
+            "WatchdogDelay": 300,
             "ScraperActive": true
         },
         {
@@ -557,7 +557,7 @@
             "RestAPI": "https://api.kraken.com",
             "WsAPI": "wss://ws.kraken.com",
             "pairsAPI": "https://api.kraken.com/0/public/AssetPairs",
-            "WatchdogDelay": 1200,
+            "WatchdogDelay": 300,
             "ScraperActive": true
         },
         {
@@ -571,7 +571,7 @@
             "RestAPI": "https://api.kucoin.com",
             "WsAPI": "wss://push1-v2.kucoin.com/endpoint",
             "pairsAPI": "https://api.kucoin.com/api/v1/market/allTickers",
-            "WatchdogDelay": 1200,
+            "WatchdogDelay": 300,
             "ScraperActive": true
         },
         {
@@ -599,7 +599,7 @@
             "RestAPI": "",
             "WsAPI": "wss://api.lbkex.com/ws/V2/",
             "pairsAPI": "https://api.lbkex.com/v1/currencyPairs.do",
-            "WatchdogDelay": 1200,
+            "WatchdogDelay": 300,
             "ScraperActive": false
         },
         {
@@ -655,7 +655,7 @@
             "RestAPI": "https://aws.okex.com/api/v5/public/instruments?instType=SPOT",
             "WsAPI": "wss://ws.okex.com:8443/ws/v5/public",
             "pairsAPI": "https://www.okex.com/api/spot/v3/products",
-            "WatchdogDelay": 1200,
+            "WatchdogDelay": 300,
             "ScraperActive": true
         },
         {
