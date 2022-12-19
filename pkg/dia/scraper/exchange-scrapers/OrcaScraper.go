@@ -74,7 +74,7 @@ func NewOrcaScraper(exchange dia.Exchange, scrape bool) *OrcaScraper {
 
 	_, err = scraper.loadMarketsMetadata()
 	if err != nil {
-		log.Fatal("load metadata: %s", err)
+		log.Error("load metadata: %s", err)
 	}
 
 	if scrape {
@@ -407,6 +407,9 @@ func (s *OrcaScraper) loadMarketWhirlpools() (pairs []dia.ExchangePair, err erro
 						tokenA.Name = v.(OrcaTokenMetadata).GetName()
 					} else {
 						log.Warnf("token metadata not found for %s: %s", w.TokenMintA.String(), err)
+						if strings.Contains(err.Error(), "not found") {
+							err = nil
+						}
 						continue
 					}
 				} else {
@@ -428,6 +431,9 @@ func (s *OrcaScraper) loadMarketWhirlpools() (pairs []dia.ExchangePair, err erro
 						tokenB.Name = v.(OrcaTokenMetadata).GetName()
 					} else {
 						log.Warnf("token metadata not found for %s: %s", w.TokenMintB.String(), err)
+						if strings.Contains(err.Error(), "not found") {
+							err = nil
+						}
 						continue
 					}
 				} else {
