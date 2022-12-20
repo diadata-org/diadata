@@ -299,7 +299,7 @@ func (s *TradesBlockService) checkTrade(t dia.Trade) bool {
 
 func tradeIdentifier(t dia.Trade) string {
 	timeString := strconv.Itoa(int(t.Time.UnixNano()))
-	return timeString + t.Source + t.QuoteToken.Address + t.QuoteToken.Blockchain + t.BaseToken.Address + t.BaseToken.Blockchain
+	return timeString + t.ForeignTradeID + t.Source + t.QuoteToken.Address + t.QuoteToken.Blockchain + t.BaseToken.Address + t.BaseToken.Blockchain
 }
 
 func buildBridge(t dia.Trade) dia.Asset {
