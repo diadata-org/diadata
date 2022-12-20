@@ -268,7 +268,7 @@ func getFloor(blockchain, address string) (Floor, error) {
 }
 
 func getFloorMA(blockchain, address string) (FloorMA, error) {
-	response, err := http.Get("https://api.diadata.org/v1/NFTFloorMA/" + blockchain + "/" + address)
+	response, err := http.Get("https://api.diadata.org/v1/NFTFloorMA/" + blockchain + "/" + address + "?lookbackWindow=")
 	if err != nil {
 		return FloorMA{}, err
 	}

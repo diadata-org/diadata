@@ -245,8 +245,8 @@ func getLiquidityValuesFromDia(blockchain, poolAddress string) ([]float64, []str
 		return []float64{}, []string{}, err
 	}
 
-	liqA := gjson.Get(string(contents), "Liquidity.0.Volume")
-	liqB := gjson.Get(string(contents), "Liquidity.1.Volume")
+	liqA := gjson.Get(string(contents), "Liquidity.0.Liquidity")
+	liqB := gjson.Get(string(contents), "Liquidity.1.Liquidity")
 	symbolA := gjson.Get(string(contents), "Liquidity.0.Asset.Symbol")
 	symbolB := gjson.Get(string(contents), "Liquidity.1.Asset.Symbol")
 	return []float64{liqA.Float(), liqB.Float()}, []string{symbolA.String(), symbolB.String()}, nil
