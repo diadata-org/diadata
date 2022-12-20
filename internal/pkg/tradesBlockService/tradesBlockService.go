@@ -46,6 +46,7 @@ var (
 	log                  *logrus.Logger
 	batchTimeSeconds     int
 	tradeVolumeThreshold float64
+	checkTradesDuplicate = make(map[string]struct{})
 )
 
 type TradesBlockService struct {
@@ -230,7 +231,13 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				log.Error(err)
 			}
 		}
-		s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
+		// Check if trade is not in the block yet (we have observed ws APIs sending identical trades.)
+		if _, ok := checkTradesDuplicate[tradeIdentifier(t)]; !ok {
+			s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
+			checkTradesDuplicate[tradeIdentifier(t)] = struct{}{}
+		} else {
+			log.Warn("duplicate trade within one tradesblock: ", t)
+		}
 	} else {
 		log.Debugf("ignore trade  %v", t)
 	}
@@ -249,6 +256,8 @@ func (s *TradesBlockService) finaliseCurrentBlock() {
 	}
 	s.currentBlock.BlockHash = hash
 	s.currentBlock.TradesBlockData.TradesNumber = len(s.currentBlock.TradesBlockData.Trades)
+	// Reset duplicate trades identifier.
+	checkTradesDuplicate = make(map[string]struct{})
 	s.chanTradesBlock <- s.currentBlock
 }
 
@@ -286,6 +295,11 @@ func (s *TradesBlockService) checkTrade(t dia.Trade) bool {
 		return false
 	}
 	return true
+}
+
+func tradeIdentifier(t dia.Trade) string {
+	timeString := strconv.Itoa(int(t.Time.UnixNano()))
+	return timeString + t.Source + t.QuoteToken.Address + t.QuoteToken.Blockchain + t.BaseToken.Address + t.BaseToken.Blockchain
 }
 
 func buildBridge(t dia.Trade) dia.Asset {
