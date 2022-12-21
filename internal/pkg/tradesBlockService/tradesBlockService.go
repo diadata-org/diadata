@@ -2,6 +2,7 @@ package tradesBlockService
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"sort"
 	"strconv"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/cnf/structhash"
 	"github.com/diadata-org/diadata/pkg/dia"
+	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/common"
@@ -231,12 +233,17 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				log.Error(err)
 			}
 		}
-		// Check if trade is not in the block yet (we have observed ws APIs sending identical trades.)
-		if _, ok := checkTradesDuplicate[tradeIdentifier(t)]; !ok {
-			s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
-			checkTradesDuplicate[tradeIdentifier(t)] = struct{}{}
+		// For centralized exchanges check if trade is not in the block yet
+		// (we have observed ws APIs sending identical trades).
+		if scrapers.Exchanges[t.Source].Centralized {
+			if _, ok := checkTradesDuplicate[tradeIdentifier(t)]; !ok {
+				s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
+				checkTradesDuplicate[tradeIdentifier(t)] = struct{}{}
+			} else {
+				log.Warn("duplicate trade within one tradesblock: ", t)
+			}
 		} else {
-			log.Warn("duplicate trade within one tradesblock: ", t)
+			s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
 		}
 	} else {
 		log.Debugf("ignore trade  %v", t)
@@ -299,7 +306,9 @@ func (s *TradesBlockService) checkTrade(t dia.Trade) bool {
 
 func tradeIdentifier(t dia.Trade) string {
 	timeString := strconv.Itoa(int(t.Time.UnixNano()))
-	return timeString + t.ForeignTradeID + t.Source + t.QuoteToken.Address + t.QuoteToken.Blockchain + t.BaseToken.Address + t.BaseToken.Blockchain
+	priceString := fmt.Sprintf("%f", t.Price)
+	volumeString := fmt.Sprintf("%f", t.Volume)
+	return timeString + priceString + volumeString + t.ForeignTradeID + t.Source + t.QuoteToken.Address + t.QuoteToken.Blockchain + t.BaseToken.Address + t.BaseToken.Blockchain
 }
 
 func buildBridge(t dia.Trade) dia.Asset {
