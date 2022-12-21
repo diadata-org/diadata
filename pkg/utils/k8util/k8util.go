@@ -36,7 +36,7 @@ func (k *K8Bridge) GenerateKey(keyname string) (publickey string, err error) {
 		secret.Data = data
 		secret.Type = "Opaque"
 		secret.Kind = "Secret"
-		_, err = k.clientset.CoreV1().Secrets("default").Create(context.TODO(), secret, metav1.CreateOptions{})
+		_, err = k.clientset.CoreV1().Secrets("dia-oracle-feeder").Create(context.TODO(), secret, metav1.CreateOptions{})
 		return
 	}
 
