@@ -190,6 +190,7 @@ const (
 	oracleconfigTable    = "oracleconfig"
 	feederconfigTable    = "feederconfig"
 	feederaccessTable    = "feederaccess"
+	feederResourceTable  = "feederresource"
 
 	// time format for blockchain genesis dates
 	// timeFormatBlockchain = "2006-01-02"

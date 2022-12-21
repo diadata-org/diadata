@@ -1,9 +1,5 @@
 package utils
 
-import (
-	log "github.com/sirupsen/logrus"
-)
-
 // UniqueStrings returns a subslice of @s such that each entry only appears once
 func UniqueStrings(s []string) []string {
 	if len(s) == 0 {

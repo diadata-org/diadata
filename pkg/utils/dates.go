@@ -4,8 +4,6 @@ import (
 	"errors"
 	"strconv"
 	"time"
-
-	log "github.com/sirupsen/logrus"
 )
 
 // StrToUnixtime converts a string corresponding to an int to Unix time
