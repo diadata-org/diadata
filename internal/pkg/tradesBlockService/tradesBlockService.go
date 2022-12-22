@@ -240,7 +240,9 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
 				checkTradesDuplicate[tradeIdentifier(t)] = struct{}{}
 			} else {
-				log.Warn("duplicate trade within one tradesblock: ", t)
+				if scrapers.Exchanges[t.Source].Name != dia.BitforexExchange {
+					log.Warn("duplicate trade within one tradesblock: ", t)
+				}
 			}
 		} else {
 			s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
