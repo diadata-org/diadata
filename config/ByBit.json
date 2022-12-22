@@ -301,6 +301,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "GMT",
+            "ForeignName": "GMTUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "GRT",
             "ForeignName": "GRTUSDT",
             "Exchange": "ByBit",

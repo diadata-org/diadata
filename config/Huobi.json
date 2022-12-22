@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "Huobi",
+      "ForeignName": "ANKRUSDT",
+      "Ignore": false,
+      "Symbol": "ANKR"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "ANTUSDT",
       "Ignore": false,
       "Symbol": "ANT"
@@ -17,6 +23,12 @@
       "ForeignName": "AXSUSDT",
       "Ignore": false,
       "Symbol": "AXS"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "AVAXUSDT",
+      "Ignore": false,
+      "Symbol": "AVAX"
     },
     {
       "Exchange": "Huobi",
@@ -53,6 +65,18 @@
       "ForeignName": "CRVUSDT",
       "Ignore": false,
       "Symbol": "CRV"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "EVMOSUSDT",
+      "Ignore": false,
+      "Symbol": "EVMOS"
+    },
+     {
+      "Exchange": "Huobi",
+      "ForeignName": "VLXUSDT",
+      "Ignore": false,
+      "Symbol": "VLX"
     },
     {
       "Exchange": "Huobi",
@@ -135,6 +159,12 @@
     {
       "Exchange": "Huobi",
       "ForeignName": "BTCUSDT",
+      "Ignore": false,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "BTCUSDC",
       "Ignore": false,
       "Symbol": "BTC"
     },
@@ -233,6 +263,12 @@
       "ForeignName": "FLOWUSDT",
       "Ignore": false,
       "Symbol": "FLOW"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "FTMUSDT",
+      "Ignore": false,
+      "Symbol": "FTM"
     },
     {
       "Exchange": "Huobi",
@@ -347,6 +383,12 @@
       "ForeignName": "STEEMETH",
       "Ignore": false,
       "Symbol": "STEEM"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "TLOSUSDT",
+      "Ignore": false,
+      "Symbol": "TLOS"
     },
     {
       "Exchange": "Huobi",

@@ -99,6 +99,8 @@ func NewLiquidityScraper(source string) LiquidityScraper {
 		return NewUniswapV3Scraper(exchanges[dia.UniswapExchangeV3Arbitrum])
 	case dia.BancorExchange:
 		return NewBancorPoolScraper(exchanges[dia.BancorExchange])
+	case dia.OrcaExchange:
+		return NewOrcaScraper(exchanges[dia.OrcaExchange])
 
 	default:
 		return nil

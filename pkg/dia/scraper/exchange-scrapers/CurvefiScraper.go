@@ -532,10 +532,10 @@ func (scraper *CurveFIScraper) loadPoolData(pool string, registry curveRegistry)
 		if c == common.HexToAddress("0x0000000000000000000000000000000000000000") {
 			continue
 		} else if c == common.HexToAddress("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
-			symbol = "ETH"
+			symbol = "WETH"
 			decimals = big.NewInt(int64(18))
-			name = "Ether"
-			c = common.HexToAddress("0x0000000000000000000000000000000000000000")
+			name = "Wrapped Ether"
+			c = common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")
 		} else {
 			coinCaller, err = token.NewTokenCaller(c, scraper.RestClient)
 			if err != nil {

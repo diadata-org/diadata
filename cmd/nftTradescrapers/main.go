@@ -16,47 +16,60 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var mode *string
+
 func main() {
 
 	var (
-		w *kafka.Writer
+		w            *kafka.Writer
+		NFTExchanges = make(map[string]dia.NFTExchange)
 	)
 
-	if testOpenSeaScraper := false; testOpenSeaScraper {
-		w = kafkaHelper.NewWriter(kafkaHelper.TopicNFTTradesTest)
-
-		rdb, err := models.NewRelDataStore()
-		if err != nil {
-			panic(err)
-		}
-
-		scraper := nfttradescrapers.NewOpenSeaScraper(rdb)
-		go func() { time.Sleep(3 * time.Minute); scraper.Close() }()
-
-		wg := sync.WaitGroup{}
-		wg.Add(1)
-		go handleData(scraper.GetTradeChannel(), &wg, w, rdb)
-		wg.Wait()
-
-		return
+	rdb, err := models.NewRelDataStore()
+	if err != nil {
+		log.Fatal("get rel datastore: ", err)
 	}
+
+	exchanges, err := rdb.GetAllNFTExchanges()
+	if err != nil {
+		log.Fatal("get all exchanges: ", err)
+	}
+	for _, exchange := range exchanges {
+		NFTExchanges[exchange.Name] = exchange
+	}
+
+	// if testOpenSeaScraper := false; testOpenSeaScraper {
+	// 	w = kafkaHelper.NewWriter(kafkaHelper.TopicNFTTradesTest)
+
+	// 	rdb, err := models.NewRelDataStore()
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+
+	// 	scraper := nfttradescrapers.NewOpenSeaScraper(rdb, NFTExchanges[dia.Opensea])
+	// 	go func() { time.Sleep(3 * time.Minute); scraper.Close() }()
+
+	// 	wg := sync.WaitGroup{}
+	// 	wg.Add(1)
+	// 	go handleData(scraper.GetTradeChannel(), &wg, w, rdb)
+	// 	wg.Wait()
+
+	// 	return
+	// }
 	w = kafkaHelper.NewWriter(kafkaHelper.TopicNFTTrades)
 
 	wg := sync.WaitGroup{}
 
-	rdb, err := models.NewRelDataStore()
-	if err != nil {
-		log.Fatal("relational datastore error: ", err)
-	}
 
 	scraperType := flag.String("nftclass", "Cryptopunk", "which NFT class")
+	mode = flag.String("mode", "", "run local without kafka.")
 	flag.Parse()
 	var scraper nfttradescrapers.NFTTradeScraper
 
 	switch *scraperType {
 	case dia.CryptoPunks:
 		log.Infoln("NFT Trades Scraper: Start scraping trades from Cryptopunks")
-		scraper = nfttradescrapers.NewCryptoPunkScraper(rdb)
+		scraper = nfttradescrapers.NewCryptoPunkScraper(rdb, NFTExchanges[dia.CryptoPunks])
 	case dia.CryptoKitties:
 		log.Infoln("NFT Trades Scraper: Start scraping trades from CryptoKitties")
 		scraper = nfttradescrapers.NewCryptoKittiesScraper(rdb)
@@ -65,25 +78,28 @@ func main() {
 		scraper = nfttradescrapers.NewNBATopshotScraper(rdb)
 	case dia.X2Y2:
 		log.Infoln("NFT Trades Scraper: Start scraping trades from X2Y2")
-		scraper = nfttradescrapers.NewX2Y2Scraper(rdb)
+		scraper = nfttradescrapers.NewX2Y2Scraper(rdb, NFTExchanges[dia.X2Y2])
 	case dia.Opensea:
 		log.Infoln("NFT Trades Scraper: Start scraping trades from Opensea")
-		scraper = nfttradescrapers.NewOpenSeaScraper(rdb)
+		scraper = nfttradescrapers.NewOpenSeaScraper(rdb, NFTExchanges[dia.Opensea])
 	case dia.OpenseaBAYC:
 		log.Infoln("NFT Trades Scraper: Start scraping trades from Opensea")
-		scraper = nfttradescrapers.NewOpenSeaBAYCScraper(rdb)
+		scraper = nfttradescrapers.NewOpenSeaBAYCScraper(rdb, NFTExchanges[dia.Opensea])
 	case dia.OpenseaSeaport:
 		log.Infoln("NFT Trades Scraper: Start scraping trades from Opensea Seaport contract")
-		scraper = nfttradescrapers.NewOpenSeaSeaportScraper(rdb)
+		scraper = nfttradescrapers.NewOpenSeaSeaportScraper(rdb, NFTExchanges[dia.Opensea])
 	case dia.LooksRare:
 		log.Infoln("NFT Trades Scraper: Start scraping trades from LooksRare")
-		scraper = nfttradescrapers.NewLooksRareScraper(rdb)
+		scraper = nfttradescrapers.NewLooksRareScraper(rdb, NFTExchanges[dia.LooksRare])
 	case dia.TofuNFTAstar:
 		log.Infoln("NFT Trades Scraper: Start scraping trades from TofuNFT on Astar")
-		scraper = nfttradescrapers.NewTofuNFTScraper(dia.ASTAR, rdb)
+		scraper = nfttradescrapers.NewTofuNFTScraper(rdb, NFTExchanges[dia.TofuNFTAstar])
 	case dia.TofuNFTBinanceSmartChain:
 		log.Infoln("NFT Trades Scraper: Start scraping trades from TofuNFT on BinanceSmartChain")
-		scraper = nfttradescrapers.NewTofuNFTScraper(dia.BINANCESMARTCHAIN, rdb)
+		scraper = nfttradescrapers.NewTofuNFTScraper(rdb, NFTExchanges[dia.TofuNFTBinanceSmartChain])
+	case dia.MagicEden:
+		log.Infoln("NFT Trades Scraper: Start scraping trades from MagicEden on Solana")
+		scraper = nfttradescrapers.NewMagicEdenScraper(rdb, NFTExchanges[dia.MagicEden])
 
 	default:
 		for {
@@ -109,7 +125,6 @@ func handleData(tradeChannel chan dia.NFTTrade, wg *sync.WaitGroup, w *kafka.Wri
 		log.Infof("got trade: %s -> (%s) -> %s for %v %s (%.4f USD) \n", trade.FromAddress, trade.NFT.NFTClass.Name, trade.ToAddress, trade.Price, trade.Currency.Symbol, trade.PriceUSD)
 
 		err := rdb.SetNFTTradeToTable(trade, models.NfttradeCurrTable)
-		writeNFTTradeToKafka(w, &trade)
 		// err := rdb.SetNFTTradeToTable(trade, models.NfttradeSumeriaTable)
 		if err != nil {
 			var pgErr *pgconn.PgError
@@ -124,6 +139,13 @@ func handleData(tradeChannel chan dia.NFTTrade, wg *sync.WaitGroup, w *kafka.Wri
 				log.Errorf("Error saving trade with tx hash %s: %v", trade.TxHash, err)
 			}
 		} else {
+			if *mode != "local" {
+				err = writeNFTTradeToKafka(w, &trade)
+				if err != nil {
+					log.Errorf("Error writing trade to kafka with tx hash %s: %v", trade.TxHash, err)
+				}
+			}
+
 			log.Infof("successfully set trade with tx hash %s", trade.TxHash)
 		}
 	}

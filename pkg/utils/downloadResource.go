@@ -11,8 +11,6 @@ import (
 	"net/url"
 	"os"
 	"time"
-
-	log "github.com/sirupsen/logrus"
 )
 
 var openseaKey string

@@ -52,6 +52,7 @@ CREATE TABLE exchange (
     ws_api text,
     pairs_api text,
     watchdog_delay numeric NOT NULL,
+    scraper_active boolean,
     UNIQUE(exchange_id),
     UNIQUE (name)
 );
@@ -262,5 +263,61 @@ CREATE TABLE synthassetdata (
     UNIQUE(synthassetdata_id),
     UNIQUE(synthasset_id,time_stamp)
 );
+
+CREATE TABLE nftexchange (
+    exchange_id UUID DEFAULT gen_random_uuid(),
+    name text NOT NULL,
+    centralized boolean default false,
+    contract text,
+    blockchain text,
+    rest_api text,
+    ws_api text,
+    watchdog_delay numeric NOT NULL,
+    UNIQUE(exchange_id),
+    UNIQUE (name)
+);
+
+
+CREATE TABLE oracleconfig (
+    id UUID DEFAULT gen_random_uuid(),
+    address text NOT NULL,
+    feeder_id text NOT NULL,
+    owner text NOT NULL,
+    symbols text NOT NULL,
+    chainID text NOT NULL,
+    UNIQUE (id),
+    UNIQUE (feeder_id)
+);
+
+-- CREATE TABLE keypair (
+--     id UUID DEFAULT gen_random_uuid(),
+--     publickey text NOT NULL,
+--     privatekey text NOT NULL,
+--     UNIQUE (publickey),
+--     UNIQUE (id)
+-- );
+
+-- CREATE TABLE feederconfig (
+--     id  SERIAL PRIMARY KEY,
+--     oracleconfig_id  UUID REFERENCES oracleconfig(id),
+--     UNIQUE (id)
+-- );
+
+-- CREATE TABLE feederaccess (
+--     id  SERIAL PRIMARY KEY,
+--     owner text NOT NULL,
+--     publickey text NOT NULL,
+--     UNIQUE (id)
+-- );
+
+
+CREATE TABLE feederresource (
+    id  SERIAL PRIMARY KEY,
+    owner text NOT NULL,
+    total numeric NOT NULL,
+    UNIQUE (id),
+    UNIQUE (owner)
+);
+
 
 

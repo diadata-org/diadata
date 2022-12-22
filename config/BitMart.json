@@ -2,15 +2,29 @@
   "Coins": [
     {
       "Exchange": "BitMart",
+      "ForeignName": "MSOL_USDT",
+      "Ignore": false,
+      "Symbol": "MSOL"
+    },
+    {
+      "Exchange": "BitMart",
+      "ForeignName": "RAY_USDT",
+      "Ignore": false,
+      "Symbol": "RAY"
+    },
+    {
+      "Exchange": "BitMart",
       "ForeignName": "BTC_USDT",
       "Ignore": false,
       "Symbol": "BTC"
-    }, {
+    },
+    {
       "Exchange": "BitMart",
       "ForeignName": "BUSD_USDT",
       "Ignore": false,
       "Symbol": "BUSD"
-    }, {
+    },
+    {
       "Exchange": "BitMart",
       "ForeignName": "BUSD_USDC",
       "Ignore": false,
@@ -76,7 +90,7 @@
       "Ignore": false,
       "Symbol": "TUSD"
     },
-     {
+    {
       "Exchange": "BitMart",
       "ForeignName": "DAI_USDT",
       "Ignore": false,
@@ -435,6 +449,6 @@
       "ForeignName": "ZRX_USDT",
       "Ignore": false,
       "Symbol": "ZRX"
-    }    
+    }
   ]
 }

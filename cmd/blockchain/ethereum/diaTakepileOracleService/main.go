@@ -195,7 +195,7 @@ func updateOracle(
 	tx, err := contract.SetValue(&bind.TransactOpts{
 		From:     auth.From,
 		Signer:   auth.Signer,
-		GasLimit: 1000725,
+		//GasLimit: 1000725,
 		GasPrice: gasPrice,
 	}, key, big.NewInt(value), big.NewInt(timestamp))
 	if err != nil {
@@ -225,7 +225,7 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, blockDuration i
 	req := gql.NewRequest(`
     query  {
 		 GetChart(
-		 	filter: "ma", 
+		 	filter: "mair", 
 			Symbol:"Asset",
 			BlockDurationSeconds: ` + strconv.Itoa(blockDuration) + `, 
 			BlockShiftSeconds: ` + strconv.Itoa(blockDuration) + `,

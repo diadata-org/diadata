@@ -8,6 +8,12 @@
     },
     {
       "Exchange": "LBank",
+      "ForeignName": "ANKR_USDT",
+      "Ignore": false,
+      "Symbol": "ANKR"
+    },
+    {
+      "Exchange": "LBank",
       "ForeignName": "METIS_USDT",
       "Ignore": false,
       "Symbol": "METIS"
@@ -449,6 +455,18 @@
       "ForeignName": "QTUM_USDT",
       "Ignore": false,
       "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "LBank",
+      "ForeignName": "RAY_USDT",
+      "Ignore": false,
+      "Symbol": "RAY"
+    },
+    {
+      "Exchange": "LBank",
+      "ForeignName": "SAMO_USDT",
+      "Ignore": false,
+      "Symbol": "SAMO"
     },
     {
       "Exchange": "LBank",

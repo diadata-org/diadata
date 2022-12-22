@@ -10,6 +10,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/segmentio/kafka-go"
+	"github.com/segmentio/kafka-go/compress"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -157,6 +158,17 @@ func NewSyncWriter(topic int) *kafka.Writer {
 		Balancer:   &kafka.LeastBytes{},
 		Async:      false,
 		BatchBytes: 1e9, // 1GB
+	})
+}
+
+func NewSyncWriterWithCompression(topic int) *kafka.Writer {
+	return kafka.NewWriter(kafka.WriterConfig{
+		Brokers:          KafkaConfig.KafkaUrl,
+		Topic:            getTopic(topic),
+		Balancer:         &kafka.LeastBytes{},
+		Async:            false,
+		BatchBytes:       1e9, // 1GB
+		CompressionCodec: &compress.GzipCodec,
 	})
 }
 

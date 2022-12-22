@@ -234,6 +234,11 @@ type AssetVolume struct {
 	Volume float64 `json:"Volume"`
 }
 
+type AssetLiquidity struct {
+	Asset  Asset   `json:"Asset"`
+	Volume float64 `json:"Liquidity"`
+}
+
 type TopAsset struct {
 	Asset          Asset               `json:"Asset"`
 	Volume         float64             `json:"Volume"`
@@ -299,6 +304,17 @@ type Exchange struct {
 	RestAPI       string     `json:"RestAPI"`
 	WsAPI         string     `json:"WsAPI"`
 	PairsAPI      string     `json:"PairsAPI"`
+	WatchdogDelay int        `json:"WatchdogDelay"`
+	ScraperActive bool       `json:"ScraperActive"`
+}
+
+type NFTExchange struct {
+	Name          string     `json:"Name"`
+	Centralized   bool       `json:"Centralized"`
+	Contract      string     `json:"Contract"`
+	BlockChain    BlockChain `json:"BlockChain"`
+	RestAPI       string     `json:"RestAPI"`
+	WsAPI         string     `json:"WsAPI"`
 	WatchdogDelay int        `json:"WatchdogDelay"`
 }
 

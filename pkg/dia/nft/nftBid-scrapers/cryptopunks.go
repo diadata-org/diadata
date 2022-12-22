@@ -21,8 +21,9 @@ import (
 )
 
 const (
-	CryptoPunkRefreshDelay = time.Minute * 60 * 10
-	cryptoPunksFirstBlock  = 3918000
+	CryptoPunkRefreshDelay  = time.Second * 60 * 1
+	cryptoPunksFirstBlock   = 3918000
+	blockDelayEthereumShort = 2
 )
 
 type CryptoPunksScraper struct {
@@ -106,7 +107,7 @@ func (scraper *CryptoPunksScraper) FetchBids() error {
 	}
 
 	// It's a good practise to stay a little behind the head.
-	endBlockNumber := header.Number.Uint64() - 18
+	endBlockNumber := header.Number.Uint64() - blockDelayEthereumShort
 
 	nftclass, err := scraper.bidScraper.datastore.GetNFTClass(scraper.contractAddress.Hex(), dia.ETHEREUM)
 	if err != nil {

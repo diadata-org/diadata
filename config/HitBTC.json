@@ -1,6 +1,12 @@
 {
   "Coins": [
     {
+      "Symbol": "ANKR",
+      "ForeignName": "ANKRUSDT",
+      "Exchange": "HitBTC",
+      "Ignore": false
+    },
+    {
       "Symbol": "MIMO",
       "ForeignName": "MIMOBTC",
       "Exchange": "HitBTC",
@@ -662,7 +668,7 @@
     },
     {
       "Symbol": "XMR",
-      "ForeignName": "XMREOS",
+      "ForeignName": "XMRUSDT",
       "Exchange": "HitBTC",
       "Ignore": false
     },

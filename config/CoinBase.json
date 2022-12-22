@@ -2,7 +2,25 @@
   "Coins": [
     {
       "Exchange": "CoinBase",
-      "ForeignName": "YFIUSD",
+      "ForeignName": "ANKR-USD",
+      "Ignore": false,
+      "Symbol": "ANKR"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "AVAX-USD",
+      "Ignore": false,
+      "Symbol": "AVAX"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "BNT-USD",
+      "Ignore": false,
+      "Symbol": "BNT"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "YFI-USD",
       "Ignore": false,
       "Symbol": "YFI"
     },

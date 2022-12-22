@@ -3,7 +3,7 @@ FROM us.icr.io/dia-registry/devops/build:latest as build
 WORKDIR $GOPATH/src/
 
 COPY ./cmd/services/feedInfoService ./
-RUN go install
+RUN go mod tidy && go install
 
 FROM gcr.io/distroless/base
 

@@ -13,6 +13,18 @@
             "Address": "0x31429d1856aD1377A8A0079410B297e1a9e214c2"
         },
         {
+            "Symbol": "AVAX",
+            "Exchange": "GateIO",
+            "Blockchain": "Avalanche",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "BFC",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x0c7D5ae016f806603CB1782bEa29AC69471CAb9c"
+        },
+        {
             "Symbol": "CFG",
             "Exchange": "GateIO",
             "Blockchain": "Centrifuge",
@@ -29,6 +41,24 @@
             "Exchange": "GateIO",
             "Blockchain": "Nervos",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "MSOL",
+            "Exchange": "GateIO",
+            "Blockchain": "Solana",
+            "Address": "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"
+        },
+        {
+            "Symbol": "DUST",
+            "Exchange": "GateIO",
+            "Blockchain": "Solana",
+            "Address": "DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ"
+        },
+        {
+            "Symbol": "SAMO",
+            "Exchange": "GateIO",
+            "Blockchain": "Solana",
+            "Address": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
         },
         {
             "Symbol": "NFTY",
@@ -329,6 +359,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0xEda8B016efA8b1161208Cf041cD86972eeE0F31E"
+        },
+        {
+            "Symbol": "INJ",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0xe28b3B32B6c345A34Ff64674606124Dd5Aceca30"
         },
         {
             "Symbol": "JNT",
@@ -713,12 +749,18 @@
             "Exchange": "GateIO",
             "Blockchain": "Tron",
             "Address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn"
-          },
+        },
         {
             "Symbol": "USDT",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+        },
+        {
+            "Symbol": "VLX",
+            "Exchange": "GateIO",
+            "Blockchain": "Velas",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "WINGS",

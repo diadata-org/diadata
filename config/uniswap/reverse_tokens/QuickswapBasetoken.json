@@ -7,6 +7,10 @@
     {
       "Address": "0xC168E40227E4ebD8C1caE80F7a55a4F0e6D66C97",
       "Symbol": "DFYN"
+    },
+    {
+      "Address": "0x0E9b89007eEE9c958c0EDA24eF70723C2C93dD58",
+      "Symbol": "aMATICc"
     }
   ]
 }

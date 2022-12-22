@@ -1,7 +1,6 @@
 package source
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -21,7 +20,7 @@ type SerumPair struct {
 
 const (
 	// Public Solana clients.
-	rpcEndpointSolana         = ""
+	rpcEndpointSolana         = ""                                             // refer - https://try.blockdaemon.com/rpc/solana/
 	dexProgramAddress         = "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin" // refer - https://github.com/project-serum/serum-dex
 	nameServiceProgramAddress = "namesLPneVptA9Z5rqUDD9tMTWEJwofgaYwp8cawRkX"
 	dotTokenTLD               = "6NSu2tci4apRKQtt257bAVcvqYjB3zV2H1dWo56vgpa6"
@@ -110,7 +109,6 @@ func (sas *SerumAssetSource) fetchAssets() {
 
 func (sas *SerumAssetSource) getPairs() ([]*serum.MarketV2, error) {
 	resp, err := sas.solanaRpcClient.GetProgramAccounts(
-		context.TODO(),
 		solana.MustPublicKeyFromBase58(dexProgramAddress),
 		&rpc.GetProgramAccountsOpts{
 			Filters: []rpc.RPCFilter{
@@ -139,7 +137,6 @@ func (sas *SerumAssetSource) getTokenNames() (map[string]tokenMeta, error) {
 	names := make(map[string]tokenMeta)
 	tldPublicKey := solana.MustPublicKeyFromBase58(dotTokenTLD)
 	resp, err := sas.solanaRpcClient.GetProgramAccounts(
-		context.TODO(),
 		solana.MustPublicKeyFromBase58(nameServiceProgramAddress),
 		&rpc.GetProgramAccountsOpts{
 			Filters: []rpc.RPCFilter{

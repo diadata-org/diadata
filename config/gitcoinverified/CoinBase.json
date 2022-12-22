@@ -1,6 +1,24 @@
 {
     "Tokens": [
         {
+            "Symbol": "ANKR",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4"
+        },
+        {
+            "Symbol": "AVAX",
+            "Exchange": "CoinBase",
+            "Blockchain": "Avalanche",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "BNT",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C"
+        },
+        {
             "Symbol": "DOT",
             "Exchange": "CoinBase",
             "Blockchain": "Polkadot",

@@ -114,7 +114,7 @@ func (rdb *RelDB) SetPool(pool dia.Pool) error {
 		query1 = fmt.Sprintf(
 			`INSERT INTO %s (pool_id,asset_id,liquidity,time_stamp)
 				VALUES ((SELECT pool_id from %s where address=$1 and blockchain=$2),(SELECT asset_id from %s where address=$3 and blockchain=$4),$5,$6)
-				ON CONFLICT (pool_id,asset_id) DO UPDATE SET liquidity=EXCLUDED.liquidity`,
+				ON CONFLICT (pool_id,asset_id) DO UPDATE SET liquidity=EXCLUDED.liquidity, time_stamp=EXCLUDED.time_stamp`,
 			poolassetTable,
 			poolTable,
 			assetTable,

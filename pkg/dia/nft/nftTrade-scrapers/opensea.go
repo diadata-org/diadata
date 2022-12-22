@@ -14,6 +14,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/diadata-org/diadata/config/nftContracts/erc1155"
 	"github.com/diadata-org/diadata/config/nftContracts/erc20"
 	"github.com/diadata-org/diadata/config/nftContracts/erc721"
 	"github.com/diadata-org/diadata/config/nftContracts/opensea"
@@ -85,9 +86,10 @@ type OpenSeaScraperState struct {
 type OpenSeaScraper struct {
 	tradeScraper TradeScraper
 
-	mu    sync.Mutex
-	conf  *OpenSeaScraperConfig
-	state *OpenSeaScraperState
+	mu       sync.Mutex
+	conf     *OpenSeaScraperConfig
+	state    *OpenSeaScraperState
+	exchange dia.NFTExchange
 }
 
 type erc20Transfer struct {
@@ -143,6 +145,7 @@ var (
 	openSeaABI abi.ABI
 	erc20ABI   abi.ABI
 	erc721ABI  abi.ABI
+	erc1155ABI abi.ABI
 
 	assetCacheOpensea = make(map[string]dia.Asset)
 )
@@ -165,6 +168,11 @@ func init() {
 		panic(err)
 	}
 
+	erc1155ABI, err = abi.JSON(strings.NewReader(erc1155.Erc1155ABI))
+	if err != nil {
+		panic(err)
+	}
+
 	OpenSea = utils.Getenv("SCRAPER_NAME_STATE", "")
 
 	// If scraper state is not set yet, start from this block
@@ -177,7 +185,7 @@ func init() {
 
 }
 
-func NewOpenSeaScraper(rdb *models.RelDB) *OpenSeaScraper {
+func NewOpenSeaScraper(rdb *models.RelDB, exchange dia.NFTExchange) *OpenSeaScraper {
 	ctx := context.Background()
 
 	eth, err := ethclient.Dial(utils.Getenv("ETH_URI_REST", ""))
@@ -186,14 +194,15 @@ func NewOpenSeaScraper(rdb *models.RelDB) *OpenSeaScraper {
 	}
 
 	s := &OpenSeaScraper{
-		conf:  &OpenSeaScraperConfig{},
-		state: &OpenSeaScraperState{},
+		conf:     &OpenSeaScraperConfig{},
+		state:    &OpenSeaScraperState{},
+		exchange: exchange,
 		tradeScraper: TradeScraper{
 			shutdown:      make(chan nothing),
 			shutdownDone:  make(chan nothing),
 			datastore:     rdb,
 			chanTrade:     make(chan dia.NFTTrade),
-			source:        "OpenSea",
+			source:        exchange.Name,
 			ethConnection: eth,
 		},
 	}
@@ -508,7 +517,7 @@ func (s *OpenSeaScraper) notifyTrade(ev *opensea.ContractOrdersMatched, transfer
 		BlockNumber: ev.Raw.BlockNumber,
 		Timestamp:   timestamp,
 		TxHash:      ev.Raw.TxHash.Hex(),
-		Exchange:    "OpenSea",
+		Exchange:    s.exchange.Name,
 	}
 
 	if asset, ok := assetCacheOpensea[dia.ETHEREUM+"-"+currAddr.Hex()]; ok {

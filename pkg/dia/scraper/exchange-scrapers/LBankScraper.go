@@ -11,10 +11,11 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
+	"github.com/google/uuid"
 	ws "github.com/gorilla/websocket"
 )
 
-var _LBankSocketurl string = "wss://api.lbkex.com/ws/V2/"
+var _LBankSocketurl string = "wss://www.lbkex.net/ws/V2/"
 
 const (
 	timeZoneLBank      = "Asia/Singapore"
@@ -37,6 +38,7 @@ type SubscribeLBank struct {
 
 type SubscribePing struct {
 	Action string `json:"action"`
+	Value  string `json:"ping"`
 }
 
 type PongMessage struct {
@@ -63,7 +65,6 @@ type LBankScraper struct {
 
 // NewLBankScraper returns a new LBankScraper for the given pair
 func NewLBankScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *LBankScraper {
-
 	s := &LBankScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
@@ -160,7 +161,6 @@ func (s *LBankScraper) mainLoop() {
 			}
 		}
 	}
-
 }
 
 // Pong sends the string "pong" to the server.
@@ -173,10 +173,12 @@ func (s *LBankScraper) pong(message []byte) error {
 }
 
 func (s *LBankScraper) subscribePing() error {
-	a := &SubscribePing{
+	id := uuid.New()
+	pingMessage := &SubscribePing{
 		Action: "ping",
+		Value:  id.String(),
 	}
-	return s.wsClient.WriteJSON(a)
+	return s.wsClient.WriteJSON(pingMessage)
 }
 
 func parseAsianTime(timestring string) (time.Time, error) {

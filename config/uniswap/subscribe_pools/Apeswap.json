@@ -27,6 +27,14 @@
         {
             "Address": "0x51e6D27FA57373d8d4C256231241053a70Cb1d93",
             "ForeignName": "WBNB-BUSD"
-        }       
+        },
+        {
+            "Address": "0x540Ebc5c92839c300Cb64D8350811AEEE0C2b91D",
+            "ForeignName": "WBNB-ANKR"
+        },
+        {
+            "Address": "0x1C3BFdA8d788689ab2Fb935a9499c67e098A9E84",
+            "ForeignName": "WBNB-aBNBc"
+        }  
     ]
 }

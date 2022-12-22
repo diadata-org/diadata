@@ -289,6 +289,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "LDO",
+            "ForeignName": "LDO/USD",
+            "Exchange": "FTX",
+            "Ignore": false
+        },
+        {
             "Symbol": "LINK",
             "ForeignName": "LINK/BTC",
             "Exchange": "FTX",
@@ -349,8 +355,20 @@
             "Ignore": false
         },
         {
+            "Symbol": "MSOL",
+            "ForeignName": "MSOL/USD",
+            "Exchange": "FTX",
+            "Ignore": false
+        },
+        {
             "Symbol": "OMG",
             "ForeignName": "OMG/USD",
+            "Exchange": "FTX",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RAY",
+            "ForeignName": "RAY/USD",
             "Exchange": "FTX",
             "Ignore": false
         },

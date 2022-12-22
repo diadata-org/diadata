@@ -55,7 +55,12 @@ func (bg *Blockgenerator) GenerateShift(firstBlockStartTime, blockSizeSeconds, b
 
 	nextBlockStarttime := firstBlockStartTime
 	tradeBlock.TimeStamp = firstBlockStartTime
-	//nextBlockStartTime := currentBlockStartTime + (blockShiftSeconds * 1e9)
+
+	if len(bg.trades) == 1 {
+		tradeBlock = Block{Trades: []dia.Trade{bg.trades[0]}, TimeStamp: nextBlockStarttime}
+		tradeBlocks = append(tradeBlocks, tradeBlock)
+		return
+	}
 
 	for _, trade := range bg.trades {
 		if trade.Time.UnixNano() >= firstBlockStartTime {
@@ -69,7 +74,7 @@ func (bg *Blockgenerator) GenerateShift(firstBlockStartTime, blockSizeSeconds, b
 			}
 
 		} else {
-			log.Infoln("Trade is out of initial block time Trdae time", trade.Time.UnixNano(), firstBlockStartTime)
+			log.Infoln("Trade is out of initial block time Trade time", trade.Time.UnixNano(), firstBlockStartTime)
 		}
 
 	}

@@ -1,9 +1,9 @@
 module github.com/diadata-org/diadata/assetCollectionService
 
-go 1.14
+go 1.17
 
 require (
-	github.com/cryptwire/go-binance/v2 v2.2.3 // indirect
-	github.com/diadata-org/diadata v1.4.1-rc-427
+	github.com/diadata-org/diadata v1.4.88
+	github.com/gagliardetto/metaplex-go v0.2.1 // indirect
 	github.com/sirupsen/logrus v1.8.1
 )

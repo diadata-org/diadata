@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
-	"strings"
 	"sync"
 	"time"
 
@@ -15,9 +14,11 @@ import (
 	ws "github.com/gorilla/websocket"
 )
 
-const mexc_socketurl string = "wss://wbs.mexc.com/ws"
-
-const api_url = "https://api.mexc.com"
+const (
+	mexc_socketurl    = "wss://wbs.mexc.com/ws"
+	api_url           = "https://api.mexc.com"
+	mexcMaxSubPerConn = 20
+)
 
 type MEXCExchangeSymbol struct {
 	Symbol                     string   `json:"symbol"`
@@ -50,9 +51,33 @@ type MEXCExchangeInfo struct {
 	Symbols         []MEXCExchangeSymbol `json:"symbols"`
 }
 
+type MEXCRequest struct {
+	Method string   `json:"method"`
+	Params []string `json:"params"`
+	ID     int64    `json:"id"`
+}
+
+type MEXCTradeResponse struct {
+	C string `json:"c"`
+	D struct {
+		Deals []struct {
+			Side   int    `json:"S"`
+			Price  string `json:"p"`
+			Volume string `json:"v"`
+			TS     int64  `json:"t"`
+		} `json:"deals"`
+	} `json:"d"`
+	Symbol string `json:"s"`
+}
+
+type MEXCWSConnection struct {
+	wsConn           *ws.Conn
+	numSubscriptions int
+}
+
 // MEXCScraper is a scraper for MEXC
 type MEXCScraper struct {
-	wsClient *ws.Conn
+	connections map[int]MEXCWSConnection
 	// signaling channels for session initialization and finishing
 	shutdown     chan nothing
 	shutdownDone chan nothing
@@ -72,6 +97,7 @@ func NewMEXCScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *ME
 	s := &MEXCScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
+		connections:  make(map[int]MEXCWSConnection),
 		pairScrapers: make(map[string]*MEXCPairScraper),
 		exchangeName: exchange.Name,
 		error:        nil,
@@ -79,13 +105,10 @@ func NewMEXCScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *ME
 		db:           relDB,
 	}
 
-	var wsDialer ws.Dialer
-	SwConn, _, err := wsDialer.Dial(mexc_socketurl, nil)
-
+	err := s.newConn()
 	if err != nil {
-		println(err.Error())
+		log.Fatal("new connection: ", err)
 	}
-	s.wsClient = SwConn
 
 	if scrape {
 		go s.mainLoop()
@@ -94,42 +117,39 @@ func NewMEXCScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *ME
 	return s
 }
 
-type MEXCTradeResponse struct {
-	C string `json:"c"`
-	D struct {
-		Deals []struct {
-			T  int    `json:"T"`
-			P  string `json:"p"`
-			Q  string `json:"q"`
-			TS int64  `json:"t"`
-		} `json:"deals"`
-	} `json:"d"`
-	S string `json:"s"`
+func (s *MEXCScraper) mainLoop() {
+
+	// Wait for subscription to all pairs.
+	time.Sleep(5 * time.Second)
+	for _, c := range s.connections {
+		go s.subLoop(c.wsConn)
+	}
+
 }
 
-func (s *MEXCScraper) mainLoop() {
+func (s *MEXCScraper) subLoop(client *ws.Conn) {
 	var err error
 	for {
 		message := &MEXCTradeResponse{}
-		if err = s.wsClient.ReadJSON(&message); err != nil {
+		if err = client.ReadJSON(&message); err != nil {
 			log.Error("read message: ", err.Error())
 			continue
 			// deal it
 		}
 		for _, trade := range message.D.Deals {
 			var exchangePair dia.ExchangePair
-			priceFloat, _ := strconv.ParseFloat(trade.P, 64)
-			volumeFloat, _ := strconv.ParseFloat(trade.Q, 64)
-			if trade.T == 2 {
+			priceFloat, _ := strconv.ParseFloat(trade.Price, 64)
+			volumeFloat, _ := strconv.ParseFloat(trade.Volume, 64)
+			if trade.Side == 2 {
 				volumeFloat *= -1
 			}
-			exchangePair, err = s.db.GetExchangePairCache(s.exchangeName, message.S)
+			exchangePair, err = s.db.GetExchangePairCache(s.exchangeName, message.Symbol)
 			if err != nil {
-				log.Error(err)
+				log.Error("get exchange pair from cache: ", err)
 			}
 			t := &dia.Trade{
-				Symbol:       strings.Split(message.S, "_")[0],
-				Pair:         message.S,
+				Symbol:       exchangePair.Symbol,
+				Pair:         message.Symbol,
 				Price:        priceFloat,
 				Volume:       volumeFloat,
 				Time:         time.Unix(0, trade.TS*int64(time.Millisecond)),
@@ -145,39 +165,6 @@ func (s *MEXCScraper) mainLoop() {
 			s.chanTrades <- t
 		}
 	}
-}
-
-// FillSymbolData from MEXCScraper
-// @todo more update
-func (s *MEXCScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
-	asset.Symbol = symbol
-	return
-}
-
-func (s *MEXCScraper) Close() error {
-	if s.closed {
-		return errors.New("MEXCScraper: Already closed")
-	}
-	close(s.shutdown)
-	err := s.wsClient.Close()
-	if err != nil {
-		return err
-	}
-
-	<-s.shutdownDone
-	s.errorLock.RLock()
-	defer s.errorLock.RUnlock()
-	return s.error
-}
-
-func (s *MEXCScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
-	return dia.ExchangePair{}, nil
-}
-
-type MEXCRequest struct {
-	Method string   `json:"method"`
-	Params []string `json:"params"`
-	ID     int64    `json:"id"`
 }
 
 func (s *MEXCScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
@@ -197,20 +184,72 @@ func (s *MEXCScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 		pair:   pair,
 	}
 
-	a := &MEXCRequest{
-		Method: "SUBSCRIPTION",
-		Params: []string{"spot@public.aggre.deals@" + pair.ForeignName},
-		ID:     time.Now().Unix(),
+	err := s.subscribe(pair)
+	if err != nil {
+		log.Error("subscribe pair: ", err)
+		return nil, err
 	}
 
-	log.Info("spot@public.aggre.deals@" + pair.ForeignName)
-
-	if err := s.wsClient.WriteJSON(a); err != nil {
-		log.Error("write pair sub: ", err.Error())
-	}
-	log.Info("Subscribed to get trades for ", pair.ForeignName)
 	s.pairScrapers[pair.ForeignName] = ps
 	return ps, nil
+}
+
+// Subscribe to @pair, taking into account the max subscription number.
+func (s *MEXCScraper) subscribe(pair dia.ExchangePair) error {
+	id := len(s.connections)
+
+	a := &MEXCRequest{
+		Method: "SUBSCRIPTION",
+		Params: []string{"spot@public.deals.v3.api@" + pair.ForeignName},
+	}
+
+	if s.connections[id-1].numSubscriptions < mexcMaxSubPerConn {
+		a.ID = int64(id)
+		if err := s.connections[id-1].wsConn.WriteJSON(a); err != nil {
+			return err
+		}
+		conn := s.connections[id-1]
+		conn.numSubscriptions++
+		s.connections[id-1] = conn
+
+	} else {
+		err := s.newConn()
+		if err != nil {
+			return err
+		}
+		id++
+		a.ID = int64(id)
+		if err := s.connections[id-1].wsConn.WriteJSON(a); err != nil {
+			return err
+		}
+		conn := s.connections[id-1]
+		conn.numSubscriptions++
+		s.connections[id-1] = conn
+
+	}
+	return nil
+}
+
+// Add a connection to the connection pool.
+func (s *MEXCScraper) newConn() error {
+	var wsDialer ws.Dialer
+	wsConn, _, err := wsDialer.Dial(mexc_socketurl, nil)
+	if err != nil {
+		return err
+	}
+	s.connections[len(s.connections)] = MEXCWSConnection{wsConn: wsConn, numSubscriptions: 0}
+	return nil
+}
+
+// FillSymbolData from MEXCScraper
+// @todo more update
+func (s *MEXCScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
+	asset.Symbol = symbol
+	return
+}
+
+func (s *MEXCScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return dia.ExchangePair{}, nil
 }
 
 func (s *MEXCScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
@@ -237,12 +276,30 @@ func (s *MEXCScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error
 	for _, p := range mexcExchangeInfo.Symbols {
 		pairToNormalized := dia.ExchangePair{
 			Symbol:      p.BaseAsset,
-			ForeignName: p.BaseAsset + "_" + p.QuoteAsset,
+			ForeignName: p.BaseAsset + p.QuoteAsset,
 			Exchange:    s.exchangeName,
 		}
 		pairs = append(pairs, pairToNormalized)
 	}
 	return
+}
+
+func (s *MEXCScraper) Close() error {
+	if s.closed {
+		return errors.New("MEXCScraper: Already closed")
+	}
+	close(s.shutdown)
+	for i := range s.connections {
+		err := s.connections[i].wsConn.Close()
+		if err != nil {
+			return err
+		}
+	}
+
+	<-s.shutdownDone
+	s.errorLock.RLock()
+	defer s.errorLock.RUnlock()
+	return s.error
 }
 
 // Channel returns a channel that can be used to receive trades

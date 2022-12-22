@@ -371,10 +371,6 @@ func (s *UniswapScraper) ListenToPair(i int, address common.Address, byAddress b
 		return
 	}
 
-	// Normalize WETH on Ethereum
-	if Exchanges[s.exchangeName].BlockChain.Name == dia.ETHEREUM {
-		pair.normalizeUniPair()
-	}
 	// ps := s.pairScrapers[pair.ForeignName]
 	// if ok {
 	log.Info(i, ": add pair scraper for: ", pair.ForeignName, " with address ", pair.Address.Hex())
@@ -433,8 +429,8 @@ func (s *UniswapScraper) ListenToPair(i int, address common.Address, byAddress b
 					if err == nil {
 						t = &tSwapped
 					}
-				case token0.Address == "0x0000000000000000000000000000000000000000" && !utils.Contains(&mainBaseAssets, token1.Address):
-					// Reverse almost all pairs ETH-XXX ...
+				case token0.Address == "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" && !utils.Contains(&mainBaseAssets, token1.Address):
+					// Reverse almost all pairs WETH-XXX ...
 					if s.exchangeName == dia.UniswapExchange || s.exchangeName == dia.SushiSwapExchange {
 						tSwapped, err := dia.SwapTrade(*t)
 						if err == nil {
@@ -688,7 +684,6 @@ func (s *UniswapScraper) GetAllPairs() ([]UniswapPair, error) {
 				log.Error("error retrieving pair by ID: ", err)
 				return
 			}
-			uniPair.normalizeUniPair()
 			pairs[index] = uniPair
 		}(i)
 	}
@@ -697,20 +692,6 @@ func (s *UniswapScraper) GetAllPairs() ([]UniswapPair, error) {
 
 func (up *UniswapScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	return pair, nil
-}
-
-// Account for WETH is identified with ETH
-func (up *UniswapPair) normalizeUniPair() {
-	if up.Token0.Address == common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2") {
-		up.Token0.Symbol = "ETH"
-		up.Token0.Address = common.HexToAddress("0x0000000000000000000000000000000000000000")
-		up.ForeignName = up.Token0.Symbol + "-" + up.Token1.Symbol
-	}
-	if up.Token1.Address == common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2") {
-		up.Token1.Symbol = "ETH"
-		up.Token1.Address = common.HexToAddress("0x0000000000000000000000000000000000000000")
-		up.ForeignName = up.Token0.Symbol + "-" + up.Token1.Symbol
-	}
 }
 
 // GetPairByID returns the UniswapPair with the integer id @num
