@@ -57,6 +57,8 @@ func (kh *PodHelper) CreateOracleFeeder(name string, owner string, oracle string
 	sleepsecondenv := corev1.EnvVar{Name: "SLEEP_SECONDS", Value: "2"}
 	deviationenv := corev1.EnvVar{Name: "DEVIATION_PERMILLE", Value: "0"}
 
+	imagepullrequest := corev1.LocalObjectReference{Name: "all-icr-io"}
+
 	pod := &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   name,
@@ -70,6 +72,7 @@ func (kh *PodHelper) CreateOracleFeeder(name string, owner string, oracle string
 					Env:   []corev1.EnvVar{privatekeyenv, deployedcontractenv, chainidenv, sleepsecondenv, deviationenv},
 				},
 			},
+			ImagePullSecrets: []corev1.LocalObjectReference{imagepullrequest},
 		},
 	}
 

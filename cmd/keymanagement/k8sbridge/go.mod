@@ -2,9 +2,8 @@ module k8sbridge
 
 go 1.19
 
-
 require (
-	github.com/diadata-org/diadata v0.0.0-00010101000000-000000000000
+	github.com/diadata-org/diadata v1.4.101
 	github.com/sirupsen/logrus v1.9.0
 	google.golang.org/grpc v1.51.0
 	k8s.io/api v0.26.0
