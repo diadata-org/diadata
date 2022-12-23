@@ -16,9 +16,11 @@ import (
 
 type PodHelper struct {
 	k8sclient *kubernetes.Clientset
+	Image     string
+	NameSpace string
 }
 
-func NewPodHelper() *PodHelper {
+func NewPodHelper(image, namespace string) *PodHelper {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		// try using kube config
@@ -40,7 +42,7 @@ func NewPodHelper() *PodHelper {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return &PodHelper{k8sclient: client}
+	return &PodHelper{k8sclient: client, Image: image, NameSpace: namespace}
 }
 
 func (kh *PodHelper) CreateOracleFeeder(name string, owner string, oracle string, chainID string) error {
@@ -64,14 +66,14 @@ func (kh *PodHelper) CreateOracleFeeder(name string, owner string, oracle string
 			Containers: []corev1.Container{
 				{
 					Name:  name,
-					Image: "",
+					Image: kh.Image,
 					Env:   []corev1.EnvVar{privatekeyenv, deployedcontractenv, chainidenv, sleepsecondenv, deviationenv},
 				},
 			},
 		},
 	}
 
-	result, err := kh.k8sclient.CoreV1().Pods("default").Create(context.TODO(), pod, metav1.CreateOptions{})
+	result, err := kh.k8sclient.CoreV1().Pods(kh.NameSpace).Create(context.TODO(), pod, metav1.CreateOptions{})
 	if err != nil {
 		return err
 	}
