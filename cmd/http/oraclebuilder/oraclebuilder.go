@@ -6,6 +6,8 @@ import (
 
 	//jwt "github.com/blockstatecom/gin-jwt"
 
+	builderutils "oraclebuilder/utils"
+
 	"github.com/99designs/keyring"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/oraclebuilder"
@@ -40,7 +42,7 @@ func main() {
 	oraclebaseimage := utils.Getenv("ORACLE_BASE_IMAGE", "us.icr.io/dia-registry/oracles/oracle-baseimage:latest")
 	oraclenamespace := utils.Getenv("ORACLE_NAMESPACE", "dia-oracle-feeder")
 
-	ph := utils.NewPodHelper(oraclebaseimage, oraclenamespace)
+	ph := builderutils.NewPodHelper(oraclebaseimage, oraclenamespace)
 
 	ring, _ := keyring.Open(keyring.Config{
 		ServiceName:     "oraclebuilder",

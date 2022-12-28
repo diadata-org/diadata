@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	builderutils "oraclebuilder/utils"
 
-	"github.com/99designs/keyring"
 	kr "github.com/99designs/keyring"
 	k8sbridge "github.com/99designs/keyring/cmd/k8sbridge"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -22,7 +22,7 @@ Auth using EIP712 spec
 type Env struct {
 	DataStore models.Datastore
 	RelDB     *models.RelDB
-	PodHelper *utils.PodHelper
+	PodHelper *builderutils.PodHelper
 	Keyring   kr.Keyring
 }
 
@@ -41,6 +41,8 @@ func (ob *Env) InitiateOracle(context *gin.Context) {
 	symbols := context.PostForm("symbols")
 	signedData := context.PostForm("signeddata")
 	feederID := context.PostForm("feederID")
+
+	blockchainnode := context.PostForm("blockchainnode")
 
 	k := make(map[string]string)
 
@@ -78,7 +80,7 @@ func (ob *Env) InitiateOracle(context *gin.Context) {
 
 		feederID = utils.GenerateAutoname("-")
 
-		err = ob.Keyring.Set(keyring.Item{
+		err = ob.Keyring.Set(kr.Item{
 			Key: feederID,
 		})
 
@@ -100,7 +102,7 @@ func (ob *Env) InitiateOracle(context *gin.Context) {
 		log.Infoln("public key", keypair.GetPublickey())
 		address = keypair.GetPublickey()
 
-		err = ob.PodHelper.CreateOracleFeeder(feederID, creator, oracleaddress, chainID)
+		err = ob.PodHelper.CreateOracleFeeder(feederID, creator, oracleaddress, chainID, symbols, blockchainnode)
 		if err != nil {
 			log.Errorln("error CreateOracleFeeder ", err)
 			context.JSON(http.StatusInternalServerError, errors.New("error creating oraclefeeder"))
