@@ -60,6 +60,8 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 	deployedcontractenv := corev1.EnvVar{Name: "DEPLOYED_CONTRACT", Value: oracle}
 	chainidenv := corev1.EnvVar{Name: "CHAIN_ID", Value: chainID}
 
+	signerservice := corev1.EnvVar{Name: "ORACLE_SIGNER", Value: "signer.dia-oracle-feeder:50052"}
+
 	sleepsecondenv := corev1.EnvVar{Name: "ORACLE_SLEEPSECONDS", Value: "2"}
 	deviationenv := corev1.EnvVar{Name: "DEVIATION_PERMILLE", Value: "0"}
 	frequencyseconds := corev1.EnvVar{Name: "ORACLE_FREQUENCYSECONDS", Value: "1"}
@@ -69,7 +71,7 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 	// -- oracle config ends here
 
 	// ---
-	postgreshost := corev1.EnvVar{Name: "POSTGRES_HOST", Value: "1"}
+	postgreshost := corev1.EnvVar{Name: "POSTGRES_HOST", Value: "dia-postgresql.dia-db"}
 	postgresuser := corev1.EnvVar{Name: "POSTGRES_USER", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: "user", LocalObjectReference: corev1.LocalObjectReference{Name: "user.graphqlserver"}}}}
 	postgrespassword := corev1.EnvVar{Name: "POSTGRES_PASSWORD", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: "password", LocalObjectReference: corev1.LocalObjectReference{Name: "user.graphqlserver"}}}}
 	postgresdb := corev1.EnvVar{Name: "POSTGRES_DB", Value: "postgres"}
@@ -91,7 +93,7 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 					Image: kh.Image,
 					Env: []corev1.EnvVar{publickeyenv, deployedcontractenv, chainidenv,
 						sleepsecondenv, deviationenv, frequencyseconds, oracletype,
-						oraclesymbols, oraclefeederid, postgreshost, postgresuser,
+						oraclesymbols, oraclefeederid, postgreshost, postgresuser, signerservice,
 						postgrespassword, postgresdb, updateconfigseconds, useenv},
 				},
 			},
