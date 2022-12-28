@@ -102,7 +102,7 @@ func (ob *Env) InitiateOracle(context *gin.Context) {
 		log.Infoln("public key", keypair.GetPublickey())
 		address = keypair.GetPublickey()
 
-		err = ob.PodHelper.CreateOracleFeeder(feederID, creator, oracleaddress, chainID, symbols, blockchainnode)
+		err = ob.PodHelper.CreateOracleFeeder(feederID, address, oracleaddress, chainID, symbols, blockchainnode)
 		if err != nil {
 			log.Errorln("error CreateOracleFeeder ", err)
 			context.JSON(http.StatusInternalServerError, errors.New("error creating oraclefeeder"))

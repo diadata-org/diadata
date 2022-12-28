@@ -59,6 +59,8 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 	privatekeyenv := corev1.EnvVar{Name: "PRIVATE_KEY", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: ".private", LocalObjectReference: corev1.LocalObjectReference{Name: feederID}}}}
 	deployedcontractenv := corev1.EnvVar{Name: "DEPLOYED_CONTRACT", Value: oracle}
 	chainidenv := corev1.EnvVar{Name: "CHAIN_ID", Value: chainID}
+	publickey := corev1.EnvVar{Name: "PUBLIC_KEY", Value: owner}
+
 	sleepsecondenv := corev1.EnvVar{Name: "ORACLE_SLEEPSECONDS", Value: "2"}
 	deviationenv := corev1.EnvVar{Name: "DEVIATION_PERMILLE", Value: "0"}
 	frequencyseconds := corev1.EnvVar{Name: "ORACLE_FREQUENCYSECONDS", Value: "1"}
@@ -69,8 +71,8 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 
 	// ---
 	postgreshost := corev1.EnvVar{Name: "POSTGRES_HOST", Value: "1"}
-	postgresuser := corev1.EnvVar{Name: "POSTGRES_USER", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: "user.graphqlserver", LocalObjectReference: corev1.LocalObjectReference{Name: "user"}}}}
-	postgrespassword := corev1.EnvVar{Name: "POSTGRES_PASSWORD", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: "password", LocalObjectReference: corev1.LocalObjectReference{Name: "password"}}}}
+	postgresuser := corev1.EnvVar{Name: "POSTGRES_USER", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: "user", LocalObjectReference: corev1.LocalObjectReference{Name: "user.graphqlserver"}}}}
+	postgrespassword := corev1.EnvVar{Name: "POSTGRES_PASSWORD", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: "password", LocalObjectReference: corev1.LocalObjectReference{Name: "user.graphqlserver"}}}}
 	postgresdb := corev1.EnvVar{Name: "POSTGRES_DB", Value: "postgres"}
 	updateconfigseconds := corev1.EnvVar{Name: "ORACLE_UPDATECONFIGSECONDS", Value: "120"}
 	useenv := corev1.EnvVar{Name: "USE_ENV", Value: "true"}
@@ -90,7 +92,7 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 					Image: kh.Image,
 					Env: []corev1.EnvVar{privatekeyenv, deployedcontractenv, chainidenv,
 						sleepsecondenv, deviationenv, frequencyseconds, oracletype,
-						oraclesymbols, oraclefeederid, postgreshost, postgresuser,
+						oraclesymbols, oraclefeederid, postgreshost, postgresuser, publickey,
 						postgrespassword, postgresdb, updateconfigseconds, useenv},
 				},
 			},
