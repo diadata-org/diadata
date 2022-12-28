@@ -56,10 +56,9 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 	fields["owner"] = owner
 
 	// -- oracle config
-	privatekeyenv := corev1.EnvVar{Name: "PRIVATE_KEY", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: ".private", LocalObjectReference: corev1.LocalObjectReference{Name: feederID}}}}
+	privatekeyenv := corev1.EnvVar{Name: "ORACLE_PUBLICKEY", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: ".public", LocalObjectReference: corev1.LocalObjectReference{Name: feederID}}}}
 	deployedcontractenv := corev1.EnvVar{Name: "DEPLOYED_CONTRACT", Value: oracle}
 	chainidenv := corev1.EnvVar{Name: "CHAIN_ID", Value: chainID}
-	publickey := corev1.EnvVar{Name: "PUBLIC_KEY", Value: owner}
 
 	sleepsecondenv := corev1.EnvVar{Name: "ORACLE_SLEEPSECONDS", Value: "2"}
 	deviationenv := corev1.EnvVar{Name: "DEVIATION_PERMILLE", Value: "0"}
