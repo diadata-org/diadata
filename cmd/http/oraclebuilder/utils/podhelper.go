@@ -58,7 +58,7 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 	// -- oracle config
 	publickeyenv := corev1.EnvVar{Name: "ORACLE_PUBLICKEY", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: ".public", LocalObjectReference: corev1.LocalObjectReference{Name: feederID}}}}
 	deployedcontractenv := corev1.EnvVar{Name: "DEPLOYED_CONTRACT", Value: oracle}
-	chainidenv := corev1.EnvVar{Name: "CHAIN_ID", Value: chainID}
+	chainidenv := corev1.EnvVar{Name: "ORACLE_CHAINID", Value: chainID}
 
 	signerservice := corev1.EnvVar{Name: "ORACLE_SIGNER", Value: "signer.dia-oracle-feeder:50052"}
 
