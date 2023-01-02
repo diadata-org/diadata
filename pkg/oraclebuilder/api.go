@@ -42,6 +42,8 @@ func (ob *Env) InitiateOracle(context *gin.Context) {
 	signedData := context.PostForm("signeddata")
 	feederID := context.PostForm("feederID")
 	frequency := context.PostForm("frequency")
+	sleepSeconds := context.PostForm("sleepseconds")
+	deviationPermille := context.PostForm("deviationpermille")
 
 	blockchainnode := context.PostForm("blockchainnode")
 
@@ -54,6 +56,7 @@ func (ob *Env) InitiateOracle(context *gin.Context) {
 	log.Println("signeddata", signedData)
 	log.Println("feederId", feederID)
 	log.Println("frequency", frequency)
+	log.Println("sleepSeconds", sleepSeconds)
 
 	signer, _ := utils.GetSigner(chainID, creator, oracleaddress, signedData)
 
@@ -104,7 +107,7 @@ func (ob *Env) InitiateOracle(context *gin.Context) {
 		log.Infoln("public key", keypair.GetPublickey())
 		address = keypair.GetPublickey()
 
-		err = ob.PodHelper.CreateOracleFeeder(feederID, address, oracleaddress, chainID, symbols, blockchainnode, frequency)
+		err = ob.PodHelper.CreateOracleFeeder(feederID, address, oracleaddress, chainID, symbols, blockchainnode, frequency, sleepSeconds, deviationPermille)
 		if err != nil {
 			log.Errorln("error CreateOracleFeeder ", err)
 			context.JSON(http.StatusInternalServerError, errors.New("error creating oraclefeeder"))

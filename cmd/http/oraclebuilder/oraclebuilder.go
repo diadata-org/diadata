@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
 	//jwt "github.com/blockstatecom/gin-jwt"
@@ -58,8 +57,6 @@ func main() {
 		AllowHeaders: []string{"Content-Type,access-control-allow-origin, access-control-allow-headers"},
 	}))
 	routerGroup := r.Group("/oraclebuilder")
-
-	fmt.Println("--")
 
 	routerGroup.POST("/", ob.InitiateOracle)
 

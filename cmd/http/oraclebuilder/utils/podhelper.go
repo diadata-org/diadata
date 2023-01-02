@@ -48,7 +48,7 @@ func NewPodHelper(image, namespace string) *PodHelper {
 	return &PodHelper{k8sclient: client, Image: image, NameSpace: namespace}
 }
 
-func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle string, chainID string, symbols, blockchainnode string, frequency string) error {
+func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle string, chainID string, symbols, blockchainnode string, frequency, sleepSeconds, deviationPermille string) error {
 	fields := make(map[string]string)
 	fields["oracle"] = oracle
 	fields["chainID"] = chainID
@@ -62,8 +62,8 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 
 	signerservice := corev1.EnvVar{Name: "ORACLE_SIGNER", Value: "signer.dia-oracle-feeder:50052"}
 
-	sleepsecondenv := corev1.EnvVar{Name: "ORACLE_SLEEPSECONDS", Value: "2"}
-	deviationenv := corev1.EnvVar{Name: "DEVIATION_PERMILLE", Value: "0"}
+	sleepsecondenv := corev1.EnvVar{Name: "ORACLE_SLEEPSECONDS", Value: sleepSeconds}
+	deviationenv := corev1.EnvVar{Name: "DEVIATION_PERMILLE", Value: deviationPermille}
 	frequencyseconds := corev1.EnvVar{Name: "ORACLE_FREQUENCYSECONDS", Value: frequency}
 	oracletype := corev1.EnvVar{Name: "ORACLE_ORACLETYPE", Value: "3"}
 	oraclesymbols := corev1.EnvVar{Name: "ORACLE_SYMBOLS", Value: symbols}
