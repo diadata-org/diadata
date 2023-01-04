@@ -206,7 +206,12 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 		}
 
 		// (Potentially) decrease starttime such that an integer number of bins fits into the whole range.
-		starttime = time.Unix(starttime.Unix()-(blockShiftSeconds-((endtime.Unix()-starttime.Unix()-blockSizeSeconds)%blockShiftSeconds)), 0)
+		if endtime.Unix()-starttime.Unix() < blockSizeSeconds {
+			// Just one block.
+			starttime = time.Unix(endtime.Unix()-blockSizeSeconds, 0)
+		} else {
+			starttime = time.Unix(starttime.Unix()-(blockShiftSeconds-((endtime.Unix()-starttime.Unix()-blockSizeSeconds)%blockShiftSeconds)), 0)
+		}
 
 		// Make time bins according to block size and block shift parameters.
 		bins := utils.MakeBins(starttime, endtime, blockSizeSeconds, blockShiftSeconds)
