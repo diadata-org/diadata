@@ -10,9 +10,11 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	// "github.com/storyicon/sigverify"
 )
+
+var log = logrus.New()
 
 func NewKeyPair() (publickey, privatekey string) {
 	privateKey, err := crypto.GenerateKey()

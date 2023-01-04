@@ -27,6 +27,7 @@ type SumeriaReturn struct {
 	Floor      float64
 	FloorMA    float64
 	Drawdown   Drawdown
+	Exchange   string
 }
 
 type Floor struct {
@@ -122,6 +123,12 @@ func main() {
 		"Ethereum", //DigiDaigaku
 	}
 
+	exchanges := []string{
+		"LooksRare",
+		"OpenSea",
+		"X2Y2",
+	}
+
 	//
 	oldFloors := make(map[string]float64)
 
@@ -162,15 +169,20 @@ func main() {
 			}
 			// Update all collections depending on @oldFloor and @timeBasedUpdate.
 			for i, address := range addresses {
-				blockchain := blockchains[i]
-				oldFloor := oldFloors[address]
-				log.Println("old price", oldFloor)
-				newFloor, err := periodicOracleUpdateHelper(oldFloor, deviationPermille, timeBasedUpdate, auth, contract, conn, blockchain, address)
-				oldFloors[address] = newFloor
-				if err != nil {
-					log.Println(err)
+				for _, exchange := range exchanges {
+					blockchain := blockchains[i]
+					oldFloor := oldFloors[address + "-" + exchange]
+					log.Println("old price", oldFloor)
+					newFloor, err := periodicOracleUpdateHelper(oldFloor, deviationPermille, timeBasedUpdate, auth, contract, conn, blockchain, address, exchange)
+					oldFloors[address + "-" + exchange] = newFloor
+					//Only sleep if an update was actually executed
+					if newFloor != oldFloor {
+						time.Sleep(time.Duration(sleepSeconds) * time.Second)
+					}
+					if err != nil {
+						log.Println(err)
+					}
 				}
-				time.Sleep(time.Duration(sleepSeconds) * time.Second)
 			}
 		}
 	}()
@@ -180,13 +192,14 @@ func main() {
 // periodicOracleUpdateHelper updates a collection on either of the two conditions:
 // 1. The difference of the (new) floor price and @oldFloor exceeds @deviationPermille.
 // 2. @update is true.
-func periodicOracleUpdateHelper(oldFloor float64, deviationPermille int, update bool, auth *bind.TransactOpts, contract *diaNFTOracleService.DIANFTOracle, conn *ethclient.Client, blockchain string, address string) (float64, error) {
+func periodicOracleUpdateHelper(oldFloor float64, deviationPermille int, update bool, auth *bind.TransactOpts, contract *diaNFTOracleService.DIANFTOracle, conn *ethclient.Client, blockchain string, address string, exchange string) (float64, error) {
 	var data SumeriaReturn
 	data.Blockchain = blockchain
 	data.Address = address
+	data.Exchange = exchange
 
 	// Get floor price
-	floor, err := getFloor(blockchain, address)
+	floor, err := getFloorPerExchange(blockchain, address, exchange)
 	if err != nil {
 		log.Printf("Failed to retrieve %s quotation data from DIA: %v", address, err)
 		return oldFloor, err
@@ -232,7 +245,7 @@ func updateNFTData(data SumeriaReturn, auth *bind.TransactOpts, contract *diaNFT
 	timestamp := uint64(time.Now().Unix())
 
 	// Update floor
-	symbol := data.Blockchain + "-" + data.Address
+	symbol := data.Blockchain + "-" + data.Address + "-" + data.Exchange
 	var values []uint64
 	values = append(values, uint64(data.Floor*100000000))
 	values = append(values, uint64(data.FloorMA*100000000))
@@ -287,6 +300,30 @@ func updateOracle(
 
 func getFloor(blockchain, address string) (Floor, error) {
 	response, err := http.Get("https://api.diadata.org/v1/NFTFloor/" + blockchain + "/" + address)
+	if err != nil {
+		return Floor{}, err
+	}
+	defer response.Body.Close()
+	if 200 != response.StatusCode {
+		return Floor{}, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	}
+
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return Floor{}, err
+	}
+
+	var resp Floor
+	err = json.Unmarshal(contents, &resp)
+	if err != nil {
+		return Floor{}, err
+	}
+
+	return resp, err
+}
+
+func getFloorPerExchange(blockchain, address, exchange string) (Floor, error) {
+	response, err := http.Get("https://api.diadata.org/v1/NFTFloor/" + blockchain + "/" + address + "?exchange=" + exchange)
 	if err != nil {
 		return Floor{}, err
 	}

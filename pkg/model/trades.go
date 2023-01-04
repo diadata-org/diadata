@@ -278,14 +278,19 @@ func parseTrade(row []interface{}, fullBasetoken bool) *dia.Trade {
 	return nil
 }
 
-func (datastore *DB) GetTradesByExchanges(asset dia.Asset, baseassets []dia.Asset, exchanges []string, startTime, endTime time.Time) ([]dia.Trade, error) {
-	return datastore.GetTradesByExchangesFull(asset, baseassets, exchanges, false, startTime, endTime)
-}
-func (datastore *DB) GetTradesByExchangesAndBaseAssets(asset dia.Asset, baseassets []dia.Asset, exchanges []string, startTime, endTime time.Time) ([]dia.Trade, error) {
-	return datastore.GetTradesByExchangesFull(asset, baseassets, exchanges, false, startTime, endTime)
+func (datastore *DB) GetTradesByExchangesAndBaseAssets(asset dia.Asset, baseassets []dia.Asset, exchanges []string, startTime, endTime time.Time, maxTrades int) ([]dia.Trade, error) {
+	return datastore.GetTradesByExchangesFull(asset, baseassets, exchanges, false, startTime, endTime, maxTrades)
 }
 
-func (datastore *DB) GetTradesByExchangesFull(asset dia.Asset, baseassets []dia.Asset, exchanges []string, returnBasetoken bool, startTime, endTime time.Time) ([]dia.Trade, error) {
+func (datastore *DB) GetTradesByExchangesFull(
+	asset dia.Asset,
+	baseassets []dia.Asset,
+	exchanges []string,
+	returnBasetoken bool,
+	startTime time.Time,
+	endTime time.Time,
+	maxTrades int,
+) ([]dia.Trade, error) {
 	var r []dia.Trade
 	subQuery := ""
 	subQueryBase := ""
@@ -307,7 +312,16 @@ func (datastore *DB) GetTradesByExchangesFull(asset dia.Asset, baseassets []dia.
 			subQueryBase = subQueryBase + ") "
 		}
 	}
-	query := fmt.Sprintf("SELECT time,estimatedUSDPrice,exchange,foreignTradeID,pair,price,symbol,volume,verified,basetokenblockchain,basetokenaddress FROM %s WHERE (quotetokenaddress='%s' and quotetokenblockchain='%s') %s %s AND estimatedUSDPrice > 0 AND time >= %d AND time <= %d ", influxDbTradesTable, asset.Address, asset.Blockchain, subQuery, subQueryBase, startTime.UnixNano(), endTime.UnixNano())
+	query := fmt.Sprintf(`
+	SELECT time,estimatedUSDPrice,exchange,foreignTradeID,pair,price,symbol,volume,verified,basetokenblockchain,basetokenaddress 
+	FROM %s 
+	WHERE (quotetokenaddress='%s' and quotetokenblockchain='%s') %s %s 
+	AND estimatedUSDPrice > 0 
+	AND time > %d AND time <= %d `,
+		influxDbTradesTable, asset.Address, asset.Blockchain, subQuery, subQueryBase, startTime.UnixNano(), endTime.UnixNano())
+	if maxTrades > 0 {
+		query += fmt.Sprintf("ORDER BY DESC LIMIT %d ", maxTrades)
+	}
 	res, err := queryInfluxDB(datastore.influxClient, query)
 	if err != nil {
 		return r, err
@@ -328,14 +342,28 @@ func (datastore *DB) GetTradesByExchangesFull(asset dia.Asset, baseassets []dia.
 
 // GetTradesByExchangesBatched executes multiple select queries on the trades table in one batch.
 // The time ranges of the queries are given by the intervals [startTimes[i], endTimes[i]].
-func (datastore *DB) GetTradesByExchangesBatched(quoteasset dia.Asset, baseassets []dia.Asset, exchanges []string, startTimes, endTimes []time.Time) ([]dia.Trade, error) {
-	return datastore.GetTradesByExchangesBatchedFull(quoteasset, baseassets, exchanges, false, startTimes, endTimes)
+func (datastore *DB) GetTradesByExchangesBatched(
+	quoteasset dia.Asset,
+	baseassets []dia.Asset,
+	exchanges []string,
+	startTimes []time.Time,
+	endTimes []time.Time,
+	maxTrades int,
+) ([]dia.Trade, error) {
+	return datastore.GetTradesByExchangesBatchedFull(quoteasset, baseassets, exchanges, false, startTimes, endTimes, maxTrades)
 }
 
 // GetTradesByExchangesBatchedFull executes multiple select queries on the trades table in one batch.
 // The time ranges of the queries are given by the intervals [startTimes[i], endTimes[i]].
-func (datastore *DB) GetTradesByExchangesBatchedFull(quoteasset dia.Asset, baseassets []dia.Asset, exchanges []string, returnBasetoken bool, startTimes, endTimes []time.Time) ([]dia.Trade, error) {
-	log.Errorln("GetTradesByExchangesBatchedFull baseassets", baseassets)
+func (datastore *DB) GetTradesByExchangesBatchedFull(
+	quoteasset dia.Asset,
+	baseassets []dia.Asset,
+	exchanges []string,
+	returnBasetoken bool,
+	startTimes []time.Time,
+	endTimes []time.Time,
+	maxTrades int,
+) ([]dia.Trade, error) {
 
 	var r []dia.Trade
 	if len(startTimes) != len(endTimes) {
@@ -365,10 +393,15 @@ func (datastore *DB) GetTradesByExchangesBatchedFull(quoteasset dia.Asset, basea
 			subQueryBase = subQueryBase + ") "
 
 		}
-		log.Errorln("subQueryBase", subQueryBase)
-		query = query + fmt.Sprintf("SELECT time,estimatedUSDPrice,exchange,foreignTradeID,pair,price,symbol,volume,verified,basetokenblockchain,basetokenaddress FROM %s WHERE (quotetokenaddress='%s' AND quotetokenblockchain='%s') %s %s AND estimatedUSDPrice > 0 AND time > %d AND time <= %d ;", influxDbTradesTable, quoteasset.Address, quoteasset.Blockchain, subQuery, subQueryBase, startTimes[i].UnixNano(), endTimes[i].UnixNano())
+		query = query + fmt.Sprintf(`
+		SELECT time,estimatedUSDPrice,exchange,foreignTradeID,pair,price,symbol,volume,verified,basetokenblockchain,basetokenaddress 
+		FROM %s 
+		WHERE (quotetokenaddress='%s' AND quotetokenblockchain='%s') %s %s 
+		AND estimatedUSDPrice > 0 
+		AND time > %d AND time <= %d ; `,
+			influxDbTradesTable, quoteasset.Address, quoteasset.Blockchain, subQuery, subQueryBase, startTimes[i].UnixNano(), endTimes[i].UnixNano())
 	}
-	log.Errorln("query", query)
+
 	res, err := queryInfluxDB(datastore.influxClient, query)
 	if err != nil {
 		return r, err
@@ -420,10 +453,10 @@ func (datastore *DB) GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, erro
 	return r, nil
 }
 
-// GetLastTrades returns the last @maxTrades of @asset on @exchange.
+// GetLastTrades returns the last @maxTrades of @asset on @exchange before @timestamp.
 // If exchange is empty string it returns trades from all exchanges.
 // If fullAsset=true, blockchain and address of both involved assets is returned as well
-func (datastore *DB) GetLastTrades(asset dia.Asset, exchange string, maxTrades int, fullAsset bool) ([]dia.Trade, error) {
+func (datastore *DB) GetLastTrades(asset dia.Asset, exchange string, timestamp time.Time, maxTrades int, fullAsset bool) ([]dia.Trade, error) {
 	var (
 		r           []dia.Trade
 		queryString string
@@ -434,38 +467,38 @@ func (datastore *DB) GetLastTrades(asset dia.Asset, exchange string, maxTrades i
 		queryString = `
 		SELECT estimatedUSDPrice,"exchange",foreignTradeID,"pair",price,"symbol",volume,"verified","basetokenblockchain","basetokenaddress" 
 		FROM %s 
-		WHERE time<now() 
-		AND time>now()-10d 
+		WHERE time<%d 
+		AND time>%d-10d 
 		AND quotetokenaddress='%s' 
 		AND quotetokenblockchain='%s' 
 		AND estimatedUSDPrice>0 
 		ORDER BY DESC LIMIT %d
 		`
-		q = fmt.Sprintf(queryString, influxDbTradesTable, asset.Address, asset.Blockchain, maxTrades)
+		q = fmt.Sprintf(queryString, influxDbTradesTable, timestamp.UnixNano(), timestamp.UnixNano(), asset.Address, asset.Blockchain, maxTrades)
 	} else if (dia.Asset{}) == asset {
 		queryString = `
 		SELECT estimatedUSDPrice,"exchange",foreignTradeID,"pair",price,"symbol",volume,"verified","basetokenblockchain","basetokenaddress" 
 		FROM %s 
-		WHERE time<now() 
-		AND time>now()-10d 
+		WHERE time<%d 
+		AND time>%d-10d 
 		AND exchange='%s' 
 		AND estimatedUSDPrice>0 
 		ORDER BY DESC LIMIT %d
 		`
-		q = fmt.Sprintf(queryString, influxDbTradesTable, exchange, maxTrades)
+		q = fmt.Sprintf(queryString, influxDbTradesTable, timestamp.UnixNano(), timestamp.UnixNano(), exchange, maxTrades)
 	} else {
 		queryString = `
 		SELECT estimatedUSDPrice,"exchange",foreignTradeID,"pair",price,"symbol",volume,"verified","basetokenblockchain","basetokenaddress" 
 		FROM %s 
-		WHERE time<now() 
-		AND time>now()-10d 
+		WHERE time<%d
+		AND time>%d-10d 
 		AND exchange='%s' 
 		AND quotetokenaddress='%s' 
 		AND quotetokenblockchain='%s' 
 		AND estimatedUSDPrice>0 
 		ORDER BY DESC LIMIT %d
 		`
-		q = fmt.Sprintf(queryString, influxDbTradesTable, exchange, asset.Address, asset.Blockchain, maxTrades)
+		q = fmt.Sprintf(queryString, influxDbTradesTable, timestamp.UnixNano(), timestamp.UnixNano(), exchange, asset.Address, asset.Blockchain, maxTrades)
 	}
 
 	res, err := queryInfluxDB(datastore.influxClient, q)

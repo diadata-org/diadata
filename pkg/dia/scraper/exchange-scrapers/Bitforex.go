@@ -219,7 +219,6 @@ func (s *BitforexScraper) mainLoop() {
 		select {
 		case <-s.shutdown:
 			log.Info("BitforexScraper: Shutting down main loop")
-			return
 		default:
 		}
 
@@ -230,8 +229,6 @@ func (s *BitforexScraper) mainLoop() {
 			if retryErr := s.retryConnection(); retryErr != nil {
 				s.setError(retryErr)
 				log.Errorf("BitforexScraper: Shutting down main loop after retrying to create a new connection, err=%s", retryErr.Error())
-
-				return
 			}
 
 			log.Info("BitforexScraper: Successfully created a new connection")
@@ -247,16 +244,12 @@ func (s *BitforexScraper) mainLoop() {
 		if err := json.Unmarshal(msg, &res); err != nil {
 			s.setError(err)
 			log.Errorf("BitforexScraper: Shutting down main loop due to unmarshalling failure, err=%s", err.Error())
-
-			return
 		}
 		if res.Success != nil && !*res.Success {
 			err := fmt.Errorf("BitforexScraper: Websocket error, code=%d, event=%s", res.Code, res.Event)
 			msg := fmt.Sprintf("BitforexScraper: Shutting down main loop due to non-retryable, err=%s", err.Error())
 			s.setError(err)
 			log.Error(msg)
-
-			return
 		}
 
 		switch res.Event {

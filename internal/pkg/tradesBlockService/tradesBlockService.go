@@ -2,6 +2,7 @@ package tradesBlockService
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"sort"
 	"strconv"
@@ -82,6 +83,7 @@ var (
 	smallX               float64
 	normalX              float64
 	tradeVolumeThreshold float64
+	checkTradesDuplicate = make(map[string]struct{})
 )
 
 type TradesBlockService struct {
@@ -400,7 +402,20 @@ func (s *TradesBlockService) process(t dia.Trade, reversed bool) {
 				log.Error(err)
 			}
 		}
-		s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
+		// For centralized exchanges check if trade is not in the block yet
+		// (we have observed ws APIs sending identical trades).
+		if scrapers.Exchanges[t.Source].Centralized {
+			if _, ok := checkTradesDuplicate[tradeIdentifier(t)]; !ok {
+				s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
+				checkTradesDuplicate[tradeIdentifier(t)] = struct{}{}
+			} else {
+				if scrapers.Exchanges[t.Source].Name != dia.BitforexExchange {
+					log.Warn("duplicate trade within one tradesblock: ", t)
+				}
+			}
+		} else {
+			s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
+		}
 	} else {
 		log.Debugf("ignore trade  %v", t)
 	}
@@ -444,6 +459,8 @@ func (s *TradesBlockService) finaliseCurrentBlock() {
 	}
 	s.currentBlock.BlockHash = hash
 	s.currentBlock.TradesBlockData.TradesNumber = len(s.currentBlock.TradesBlockData.Trades)
+	// Reset duplicate trades identifier.
+	checkTradesDuplicate = make(map[string]struct{})
 	s.chanTradesBlock <- s.currentBlock
 }
 
@@ -475,6 +492,13 @@ func (s *TradesBlockService) Channel() chan *dia.TradesBlock {
 	return s.chanTradesBlock
 }
 
+func tradeIdentifier(t dia.Trade) string {
+	timeString := strconv.Itoa(int(t.Time.UnixNano()))
+	priceString := fmt.Sprintf("%f", t.Price)
+	volumeString := fmt.Sprintf("%f", t.Volume)
+	return timeString + priceString + volumeString + t.ForeignTradeID + t.Source + t.QuoteToken.Address + t.QuoteToken.Blockchain + t.BaseToken.Address + t.BaseToken.Blockchain
+}
+
 func buildBridge(t dia.Trade) dia.Asset {
 
 	basetoken := t.BaseToken
@@ -486,7 +510,7 @@ func buildBridge(t dia.Trade) dia.Asset {
 			Blockchain: dia.ETHEREUM,
 		}
 	}
-	if basetoken.Blockchain == dia.SOLANA && t.Source == dia.SerumExchange {
+	if basetoken.Blockchain == dia.SOLANA && t.Source == dia.OrcaExchange {
 		if basetoken.Address == "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" {
 			basetoken = dia.Asset{
 				Symbol:     "USDC",

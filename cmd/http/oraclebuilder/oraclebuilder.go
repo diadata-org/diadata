@@ -5,13 +5,18 @@ import (
 
 	//jwt "github.com/blockstatecom/gin-jwt"
 
+	builderutils "oraclebuilder/utils"
+
+	"github.com/99designs/keyring"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/oraclebuilder"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/prometheus/common/log"
+	"github.com/sirupsen/logrus"
 )
+
+var log = logrus.New()
 
 const (
 	cachingTime1Sec   = 1 * time.Second
@@ -32,8 +37,19 @@ func main() {
 	if err != nil {
 		log.Errorln("NewRelDataStore", err)
 	}
+	k8bridgeurl := utils.Getenv("K8SBRIDGE_URL", "127.0.0.1:50051")
+	oraclebaseimage := utils.Getenv("ORACLE_BASE_IMAGE", "us.icr.io/dia-registry/oracles/oracle-baseimage:latest")
+	oraclenamespace := utils.Getenv("ORACLE_NAMESPACE", "dia-oracle-feeder")
 
-	ob := &oraclebuilder.Env{RelDB: relStore}
+	ph := builderutils.NewPodHelper(oraclebaseimage, oraclenamespace)
+
+	ring, _ := keyring.Open(keyring.Config{
+		ServiceName:     "oraclebuilder",
+		Server:          k8bridgeurl,
+		AllowedBackends: []keyring.BackendType{keyring.K8Secret},
+	})
+
+	ob := &oraclebuilder.Env{RelDB: relStore, PodHelper: ph, Keyring: ring}
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{"*"},

@@ -1,14 +1,17 @@
 package oraclebuilder
 
 import (
+	"encoding/json"
 	"errors"
-	"fmt"
-	"log"
 	"net/http"
+	builderutils "oraclebuilder/utils"
 
+	kr "github.com/99designs/keyring"
+	k8sbridge "github.com/99designs/keyring/cmd/k8sbridge"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 /*
@@ -19,88 +22,111 @@ Auth using EIP712 spec
 type Env struct {
 	DataStore models.Datastore
 	RelDB     *models.RelDB
+	PodHelper *builderutils.PodHelper
+	Keyring   kr.Keyring
 }
+
+var log = logrus.New()
 
 func (ob *Env) InitiateOracle(context *gin.Context) {
 
 	var (
-		address    string
-		privatekey string
+		address string
+		err     error
 	)
 
 	oracleaddress := context.PostForm("oracleaddress")
-	chainId := context.PostForm("chainId")
+	chainID := context.PostForm("chainID")
 	creator := context.PostForm("creator")
 	symbols := context.PostForm("symbols")
 	signedData := context.PostForm("signeddata")
-	// feederId := context.PostForm("feederId")
+	feederID := context.PostForm("feederID")
+	frequency := context.PostForm("frequency")
+	sleepSeconds := context.PostForm("sleepseconds")
+	deviationPermille := context.PostForm("deviationpermille")
+
+	blockchainnode := context.PostForm("blockchainnode")
 
 	k := make(map[string]string)
 
 	log.Println("oracleaddress", oracleaddress)
-	log.Println("chainId", chainId)
+	log.Println("chainId", chainID)
 	log.Println("creator", creator)
 	log.Println("symbols", symbols)
 	log.Println("signeddata", signedData)
-	// log.Println("feederId", feederId)
+	log.Println("feederId", feederID)
+	log.Println("frequency", frequency)
+	log.Println("sleepSeconds", sleepSeconds)
 
-	signer, err := utils.GetSigner(chainId, creator, oracleaddress, signedData)
+	signer, _ := utils.GetSigner(chainID, creator, oracleaddress, signedData)
 
-	log.Println("signer", signer)
+	log.Infoln("signer", signer)
 
 	if signer.Hex() != creator {
 		context.JSON(http.StatusUnauthorized, errors.New("sign err"))
 		return
 	}
 
-	feederId := ob.RelDB.GetFeederID(creator)
+	log.Infoln("feederId from creator", feederID)
 
-	log.Println("feederId from creator", feederId)
+	if feederID == "" {
+		limit := ob.RelDB.GetFeederLimit(creator)
 
-	if feederId == "" {
-		// address, privatekey = utils.NewKeyPair()
-		context.JSON(http.StatusUnauthorized, errors.New("need access to this feeder"))
-		return
-	} else {
-		log.Println("getting GetFeederAccessByID", feederId)
+		total := ob.RelDB.GetTotalFeeder(creator)
 
-		var owneraddress string
-		owneraddress, address = ob.RelDB.GetFeederAccessByID(feederId)
-		if owneraddress != creator {
+		log.Infoln("limit", limit)
+		log.Infoln("total", total)
+
+		if total >= limit {
+			log.Errorln("not enought resource left ", creator)
+			context.JSON(http.StatusUnauthorized, errors.New("limit over"))
+			return
+		}
+
+		feederID = utils.GenerateAutoname("-")
+
+		err = ob.Keyring.Set(kr.Item{
+			Key: feederID,
+		})
+
+		if err != nil {
+			log.Errorln("error getting key", err)
 			context.JSON(http.StatusUnauthorized, errors.New("need access to this feeder"))
 			return
 		}
 
-	}
-	log.Println("owneraddress GetFeederAccessByID", address)
+		var keypair *k8sbridge.KeyPair
 
-	err = ob.RelDB.SetKeyPair(address, privatekey)
-	if err != nil {
-		context.JSON(http.StatusInternalServerError, err)
-		return
-	}
-	id := ob.RelDB.GetKeyPairID(address)
-
-	err = ob.RelDB.SetOracleConfig(oracleaddress, id, creator, symbols, chainId)
-	if err != nil {
-		context.JSON(http.StatusInternalServerError, err)
-		return
-	}
-	if feederId != "" {
-		oracleconfigid := ob.RelDB.GetOracleConfig(oracleaddress)
-		fmt.Println("err oracleconfigid", oracleconfigid)
-
-		err = ob.RelDB.SetFeederConfig(feederId, oracleconfigid)
-
+		item, err := ob.Keyring.Get(feederID)
 		if err != nil {
-			fmt.Println("err SetFeederConfig", err)
+			log.Infoln("error getting key", err)
+			context.JSON(http.StatusInternalServerError, errors.New("error getting key"))
+			return
+		}
+		json.Unmarshal(item.Data, &keypair)
+		log.Infoln("public key", keypair.GetPublickey())
+		address = keypair.GetPublickey()
+
+		err = ob.PodHelper.CreateOracleFeeder(feederID, address, oracleaddress, chainID, symbols, blockchainnode, frequency, sleepSeconds, deviationPermille)
+		if err != nil {
+			log.Errorln("error CreateOracleFeeder ", err)
+			context.JSON(http.StatusInternalServerError, errors.New("error creating oraclefeeder"))
+			return
+		}
+
+		err = ob.RelDB.SetOracleConfig(oracleaddress, feederID, creator, symbols, chainID)
+		if err != nil {
+			log.Errorln("error SetOracleConfig ", err)
 			context.JSON(http.StatusInternalServerError, err)
 			return
 		}
+
 	}
 
+	log.Println("owneraddress GetFeederAccessByID", address)
+
 	k["oracleaddress"] = oracleaddress
-	k["chainId"] = chainId
+	k["chainId"] = chainID
 	k["creator"] = creator
 	k["symbols"] = symbols
 	k["publicKey"] = address

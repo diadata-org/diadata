@@ -14,6 +14,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/diadata-org/diadata/config/nftContracts/erc1155"
 	"github.com/diadata-org/diadata/config/nftContracts/erc20"
 	"github.com/diadata-org/diadata/config/nftContracts/erc721"
 	"github.com/diadata-org/diadata/config/nftContracts/opensea"
@@ -144,6 +145,7 @@ var (
 	openSeaABI abi.ABI
 	erc20ABI   abi.ABI
 	erc721ABI  abi.ABI
+	erc1155ABI abi.ABI
 
 	assetCacheOpensea = make(map[string]dia.Asset)
 )
@@ -162,6 +164,11 @@ func init() {
 	}
 
 	erc721ABI, err = abi.JSON(strings.NewReader(erc721.ERC721ABI))
+	if err != nil {
+		panic(err)
+	}
+
+	erc1155ABI, err = abi.JSON(strings.NewReader(erc1155.Erc1155ABI))
 	if err != nil {
 		panic(err)
 	}

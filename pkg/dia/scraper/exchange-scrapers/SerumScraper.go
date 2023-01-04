@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	solanav2 "github.com/gagliardetto/solana-go"
 	solanawsclient "github.com/gagliardetto/solana-go/rpc/ws"
@@ -47,40 +48,85 @@ type SerumScraper struct {
 	error     error
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
-	pairScrapers map[string]*SerumPairScraper
-	exchangeName string
-	chanTrades   chan *dia.Trade
-	waitTime     int
+	pairScrapers      map[string]*SerumPairScraper
+	exchangeName      string
+	chanTrades        chan *dia.Trade
+	waitTime          int
+	db                *models.RelDB
+	markets           map[string]serumMarket
+	tokenNameRegistry map[string]tokenMeta
 }
 
-func NewSerumScraper(exchange dia.Exchange, scrape bool) *SerumScraper {
+func NewSerumScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *SerumScraper {
 
 	wsclient, err := solanawsclient.Connect(context.Background(), utils.Getenv("SOLANA_URI_WS", rpcEndpointSolana))
 	if err != nil {
 		log.Errorln("error connecting wsclient", err)
 	}
 
-	scraper := &SerumScraper{
-		solanaRpcClient: rpc.NewClient(utils.Getenv("SOLANA_URI_REST", rpcEndpointSolana)),
-		solanaWSClient:  wsclient,
-		shutdown:        make(chan nothing),
-		shutdownDone:    make(chan nothing),
-		errorLock:       sync.RWMutex{},
-		pairScrapers:    make(map[string]*SerumPairScraper),
-		exchangeName:    exchange.Name,
-		chanTrades:      make(chan *dia.Trade),
+	markets := make(map[string]serumMarket)
+	tokenNameRegistry := make(map[string]tokenMeta)
+	s := &SerumScraper{
+		solanaRpcClient:   rpc.NewClient(utils.Getenv("SOLANA_URI_REST", rpcEndpointSolana)),
+		solanaWSClient:    wsclient,
+		shutdown:          make(chan nothing),
+		shutdownDone:      make(chan nothing),
+		errorLock:         sync.RWMutex{},
+		pairScrapers:      make(map[string]*SerumPairScraper),
+		exchangeName:      exchange.Name,
+		chanTrades:        make(chan *dia.Trade),
+		db:                relDB,
+		markets:           markets,
+		tokenNameRegistry: tokenNameRegistry,
+	}
+
+	timestart := time.Now()
+	serumMarkets, err := s.getMarkets()
+	if err != nil {
+		log.Error("get markets: ", err)
+
+	}
+
+	timeend := time.Now().Unix() - timestart.Unix()
+	log.Infoln("time spend to get markets: ", timeend)
+	log.Infoln("Total serumMarkets: ", len(serumMarkets))
+
+	for _, v := range serumMarkets {
+		s.tokenNameRegistry[v.BaseMint.String()] = tokenMeta{}
+		s.tokenNameRegistry[v.QuoteMint.String()] = tokenMeta{}
+	}
+
+	err = s.getTokenNames(s.tokenNameRegistry)
+	if err != nil {
+		log.Error("get token names: ", err)
+
+	}
+	log.Infoln("Total asset watching: ", len(s.tokenNameRegistry))
+
+	for _, market := range serumMarkets {
+
+		baseToken, baseTokenValid := s.tokenNameRegistry[market.BaseMint.String()]
+		quoteToken, quoteTokenValid := s.tokenNameRegistry[market.QuoteMint.String()]
+		if baseTokenValid && quoteTokenValid {
+			marketName := baseToken.symbol + "/" + quoteToken.symbol
+			s.markets[marketName] = serumMarket{
+				market:     market,
+				baseAsset:  baseToken,
+				quoteAsset: quoteToken,
+			}
+		}
 	}
 	if scrape {
-		go scraper.mainLoop()
+		go s.mainLoop()
 	}
-	return scraper
+	return s
 }
 
 func (s *SerumScraper) mainLoop() {
 	// lastSeqNo := make(map[string]uint32)
 	// scraperInitialized := make(map[string]bool)
 	wg := sync.WaitGroup{}
-	markets := make(map[string]serumMarket)
+
 	s.run = true
 	for s.run {
 		// if len(s.pairScrapers) == 0 {
@@ -88,49 +134,25 @@ func (s *SerumScraper) mainLoop() {
 		// 	log.Error(s.error.Error())
 		// 	break
 		// }
-		timestart := time.Now()
-		serumMarkets, err := s.getMarkets()
-		if err != nil {
-			log.Error("get markets: ", err)
-			return
-		}
 
-		timeend := time.Now().Unix() - timestart.Unix()
-		log.Infoln("time spend to get markets: ", timeend)
-		log.Infoln("Total serumMarkets: ", len(serumMarkets))
-
-		tokenNameRegistry, err := s.getTokenNames()
-		if err != nil {
-			log.Error("get token names: ", err)
-			return
-		}
-		for _, market := range serumMarkets {
-
-			baseToken, baseTokenValid := tokenNameRegistry[market.BaseMint.String()]
-			quoteToken, quoteTokenValid := tokenNameRegistry[market.QuoteMint.String()]
-			if baseTokenValid && quoteTokenValid {
-				marketName := baseToken.symbol + "/" + quoteToken.symbol
-				markets[marketName] = serumMarket{
-					market:     market,
-					baseAsset:  baseToken,
-					quoteAsset: quoteToken,
-				}
-			}
-		}
-		for pair, _ := range markets {
-			if marketForPair, ok := markets[pair]; ok {
+		for pair, _ := range s.markets {
+			if marketForPair, ok := s.markets[pair]; ok {
+				fmt.Println(pair)
 
 				wg.Add(1)
+				log.Infoln("subscribing ", pair)
 
-				go func(k string) {
+				accountID := solanav2.MustPublicKeyFromBase58(marketForPair.market.EventQueue.String())
+				ac, err := s.solanaWSClient.AccountSubscribe(accountID, "")
+				if err != nil {
+					log.Errorln("error on AccountSubscribe", err)
+				}
+
+				go func(k string, ac *solanawsclient.AccountSubscription) {
 					{
-						log.Infoln("subscribing ", k)
 
-						accountID := solanav2.MustPublicKeyFromBase58(marketForPair.market.EventQueue.String())
-						ac, err := s.solanaWSClient.AccountSubscribe(accountID, "")
-						if err != nil {
-							log.Errorln("error on AccountSubscribe", err)
-						}
+						var eq serum.EventQueue
+
 						for {
 							result, err := ac.Recv()
 							if err != nil {
@@ -138,15 +160,13 @@ func (s *SerumScraper) mainLoop() {
 								continue
 							}
 
-							databytes := result.Value.Account.Data.GetBinary()
-
-							eq := serum.EventQueue{}
-							eq.Decode(databytes)
-
-							log.Infof("got event for %s  total events %d and account flag is %s  head %d sequence number %d and accountID %v", k, len(eq.Events), eq.AccountFlags.String(), eq.Head, eq.SeqNum, accountID)
+							err = eq.Decode(result.Value.Account.Data.GetBinary())
+							if err != nil {
+								log.Errorln("decoding databytes for pair: ", k)
+								continue
+							}
 
 							for _, event := range eq.Events {
-								// log.Infoln("event", event)
 
 								if event.Flag.IsFill() && event.Flag.IsBid() {
 									volume, price := parseEvent(event, math.Pow10(int(marketForPair.baseAsset.decimals)), math.Pow10(int(marketForPair.quoteAsset.decimals)))
@@ -176,16 +196,14 @@ func (s *SerumScraper) mainLoop() {
 										VerifiedPair:   true,
 									}
 
-									log.Errorf("got trade -- timestamp: %v, symbol: %s, pair: %s, price %v, volume: %v, tradeID: %s", trade.Time, trade.Symbol, trade.Pair, trade.Price, trade.Volume, trade.ForeignTradeID)
+									log.Infof("got trade -- timestamp: %v, symbol: %s, pair: %s, price %v, volume: %v, tradeID: %s", trade.Time, trade.Symbol, trade.Pair, trade.Price, trade.Volume, trade.ForeignTradeID)
 									s.chanTrades <- &trade
 
 								}
 							}
-
 						}
-
 					}
-				}(pair)
+				}(pair, ac)
 			}
 		}
 		wg.Wait()
@@ -202,7 +220,13 @@ func (s *SerumScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err erro
 		log.Error(err)
 		return
 	}
-	tokenNameRegistry, err := s.getTokenNames()
+	tokenNameRegistry := make(map[string]tokenMeta)
+
+	for _, v := range serumMarkets {
+		tokenNameRegistry[v.BaseMint.String()] = tokenMeta{}
+		tokenNameRegistry[v.QuoteMint.String()] = tokenMeta{}
+	}
+	err = s.getTokenNames(tokenNameRegistry)
 	if err != nil {
 		log.Error(err)
 		return
@@ -307,8 +331,7 @@ func (s *SerumScraper) getMarkets() ([]*serum.MarketV2, error) {
 	return out, nil
 }
 
-func (s *SerumScraper) getTokenNames() (map[string]tokenMeta, error) {
-	names := make(map[string]tokenMeta)
+func (s *SerumScraper) getTokenNames(names map[string]tokenMeta) error {
 	// tldPublicKey := solana.MustPublicKeyFromBase58(dotTokenTLD)
 	// resp, err := s.solanaRpcClient.GetProgramAccounts(
 	// 	solana.MustPublicKeyFromBase58(nameServiceProgramAddress),
@@ -331,6 +354,19 @@ func (s *SerumScraper) getTokenNames() (map[string]tokenMeta, error) {
 	// 	}
 	// }
 
+	// for assetaddress, _ := range names {
+	// 	asset, err := s.db.GetAsset(assetaddress, "Solana")
+	// 	if err != nil {
+	// 		log.Warn("asset not exists address: ", assetaddress)
+	// 		delete(names, assetaddress)
+	// 	} else {
+
+	// 		names[assetaddress] = tokenMeta{name: asset.Name, symbol: asset.Symbol, decimals: asset.Decimals, mint: assetaddress}
+	// 		log.Infoln("asset : ", asset)
+
+	// 	}
+	// }
+
 	names["mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"] = tokenMeta{name: "Marinade staked SOL (mSOL)", symbol: "mSOL", decimals: 9, mint: "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"}
 	names["So11111111111111111111111111111111111111112"] = tokenMeta{name: "Wrapped SOL", symbol: "SOL", decimals: 9, mint: "So11111111111111111111111111111111111111112"}
 	names["4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R"] = tokenMeta{name: "Raydium", symbol: "RAY", decimals: 6, mint: "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R"}
@@ -347,7 +383,7 @@ func (s *SerumScraper) getTokenNames() (map[string]tokenMeta, error) {
 	names["BQcdHdAQW1hczDbBi9hiegXAR7A98Q9jx3X3iBBBDiq4"] = tokenMeta{name: "Wrapped USDT (Sollet)", symbol: "soUSDT", decimals: 6, mint: "BQcdHdAQW1hczDbBi9hiegXAR7A98Q9jx3X3iBBBDiq4"}
 	names["SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"] = tokenMeta{name: "Serum", symbol: "SRM", decimals: 6, mint: "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"}
 
-	return names, nil
+	return nil
 }
 
 type tokenMeta struct {

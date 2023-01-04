@@ -68,6 +68,18 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "EVMOSUSDT",
+      "Ignore": false,
+      "Symbol": "EVMOS"
+    },
+     {
+      "Exchange": "Huobi",
+      "ForeignName": "VLXUSDT",
+      "Ignore": false,
+      "Symbol": "VLX"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "FUSEUSDT",
       "Ignore": false,
       "Symbol": "FUSE"

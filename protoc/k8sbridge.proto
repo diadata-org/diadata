@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+
+
+
+package rpc;
+  
+option go_package = "github.com/diadata-org/diadata/pkg/dia/helper/k8sbridge";
+
+ service K8SHelper {
+  rpc CreateKeypair (K8SHelperRequest) returns ( KeyPair) {}
+  rpc GetKey (K8SHelperRequest) returns ( KeyPair) {}
+
+}
+
+// The request message containing the user's name.
+message KeyPair {
+  string publickey = 1;
+  string privatekey = 2;
+
+}
+
+
+message K8SHelperRequest {
+  string keyname = 1;
+}
+
+

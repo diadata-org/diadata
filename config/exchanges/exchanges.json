@@ -11,7 +11,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": false
         },
         {
             "Name": "Anyswap",
@@ -24,7 +25,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": false
         },
         {
             "Name": "MultiChain",
@@ -37,7 +39,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": false
         },
         {
             "Name": "Apeswap",
@@ -50,7 +53,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
         },
         {
             "Name": "Arthswap",
@@ -63,7 +67,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
         },
         {
             "Name": "Balancer",
@@ -76,7 +81,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 1200,
+            "ScraperActive": false
         },
         {
             "Name": "BalancerV2",
@@ -89,7 +95,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
         },
         {
             "Name": "BalancerV2-Polygon",
@@ -102,7 +109,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
         },
         {
             "Name": "Bancor",
@@ -115,7 +123,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 1200,
+            "ScraperActive": true
         },
         {
             "Name": "Beets",
@@ -128,7 +137,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
         },
         {
             "Name": "Binance",
@@ -141,7 +151,8 @@
             "RestAPI": "",
             "WsAPI": "wss://stream.binance.com:9443/ws",
             "pairsAPI": "https://api.binance.com/api/v1/exchangeInfo",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 300,
+            "ScraperActive": true
         },
         {
             "Name": "BinanceUS",
@@ -154,7 +165,8 @@
             "RestAPI": "",
             "WsAPI": "wss://stream.binance.us:9443/ws",
             "pairsAPI": "https://api.binance.us/api/v1/exchangeInfo",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 300,
+            "ScraperActive": true
         },
         {
             "Name": "Biswap",
@@ -167,7 +179,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
         },
         {
             "Name": "BitBay",
@@ -180,7 +193,8 @@
             "RestAPI": "",
             "WsAPI": "wss://api.zonda.exchange/websocket/",
             "pairsAPI": "https://api.zonda.exchange/rest/trading/ticker",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 1200,
+            "ScraperActive": true
         },
         {
             "Name": "Bitfinex",
@@ -193,7 +207,8 @@
             "RestAPI": "",
             "WsAPI": "wss://api-pub.bitfinex.com/ws/2",
             "pairsAPI": "https://api.bitfinex.com/v1/symbols",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 300,
+            "ScraperActive": true
         },
         {
             "Name": "BitMart",
@@ -206,7 +221,8 @@
             "RestAPI": "https://api-cloud.bitmart.com/spot/v1/",
             "WsAPI": "wss://ws-manager-compress.bitmart.com/api?protocol=1.1",
             "pairsAPI": "https://api-cloud.bitmart.com/spot/v1/symbols",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 300,
+            "ScraperActive": true
         },
         {
             "Name": "Bitmax",
@@ -219,7 +235,8 @@
             "RestAPI": "https://ascendex.com/api/pro/v1",
             "WsAPI": "wss://ascendex.com/0/api/pro/v1/stream",
             "pairsAPI": "https://ascendex.com/api/pro/v1/products",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 1200,
+            "ScraperActive": true
         },
         {
             "Name": "MEXC",
@@ -232,7 +249,8 @@
             "RestAPI": "https://api.mexc.com/api/v3",
             "WsAPI": "wss://wbs.mexc.com/ws",
             "pairsAPI": "https://api.mexc.com/api/v3/exchangeInfo",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 300,
+            "ScraperActive": true
         },
         {
             "Name": "BKEX",
@@ -245,7 +263,8 @@
             "RestAPI": "https://api.bkex.com/v2",
             "WsAPI": "wss://api.bkex.com/socket.io/?EIO=3&transport=websocket",
             "pairsAPI": "https://api.bkex.com/v2/common/symbols",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 300,
+            "ScraperActive": true
         },
         {
             "Name": "BitMex",
@@ -258,7 +277,8 @@
             "RestAPI": "https://www.bitMex.com/api/v1",
             "WsAPI": "wss://ws.bitMex.com/realtime",
             "pairsAPI": "https://www.bitMex.com/api/v1/instruments",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 300,
+            "ScraperActive": true
         },
         {
             "Name": "Bittrex",
@@ -271,7 +291,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 1200,
+            "ScraperActive": true
         },
         {
             "Name": "Bitforex",
@@ -284,7 +305,8 @@
             "RestAPI": "https://api.bitforex.com/api/v1",
             "WsAPI": "wss://www.bitforex.com/mkapi/coinGroup1/ws",
             "pairsAPI": "https://api.bitforex.com/api/v1/market/symbols",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 300,
+            "ScraperActive": true
         },
         {
             "Name": "ByBit",
@@ -297,7 +319,8 @@
             "RestAPI": "https://api.bybit.com/v2",
             "WsAPI": "wss://stream.bybit.com/realtime",
             "pairsAPI": "https://api.bybit.com/v2/public/symbols",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 300,
+            "ScraperActive": true
         },
         {
             "Name": "CoinBase",
@@ -310,7 +333,8 @@
             "RestAPI": "",
             "WsAPI": "wss://ws-feed.pro.coinbase.com",
             "pairsAPI": "https://api.pro.coinbase.com/products",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 300,
+            "ScraperActive": true
         },
         {
             "Name": "CREX24",
@@ -323,7 +347,8 @@
             "RestAPI": "",
             "WsAPI": "api.crex24.com",
             "pairsAPI": "https://api.crex24.com/v2/public/instruments",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 1200,
+            "ScraperActive": false
         },
         {
             "Name": "Crypto.com",
@@ -336,7 +361,8 @@
             "RestAPI": "https://api.crypto.com/v2",
             "WsAPI": "wss://stream.crypto.com/v2/market",
             "pairsAPI": "https://api.crypto.com/v2/public/get-instruments",
-            "WatchdogDelay": 180
+            "WatchdogDelay": 300,
+            "ScraperActive": true
         },
         {
             "Name": "Curvefi",
@@ -349,7 +375,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
         },
         {
             "Name": "Curvefi-Fantom",
@@ -362,7 +389,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
         },
         {
             "Name": "Curvefi-Moonbeam",
@@ -375,7 +403,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
         },
         {
             "Name": "Curvefi-Polygon",
@@ -388,7 +417,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
         },
         {
             "Name": "Dforce",
@@ -401,7 +431,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": false
         },
         {
             "Name": "Diffusion",
@@ -414,7 +445,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
         },
         {
             "Name": "DFYN",
@@ -427,7 +459,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
         },
         {
             "Name": "FTX",
@@ -440,7 +473,8 @@
             "RestAPI": "https://ftx.com/api",
             "WsAPI": "wss://ftx.com/ws",
             "pairsAPI": "https://otc.ftx.com/api/otc/pairs",
-            "WatchdogDelay": 180
+            "WatchdogDelay": 180,
+            "ScraperActive": false
         },
         {
             "Name": "GateIO",
@@ -453,7 +487,8 @@
             "RestAPI": "",
             "WsAPI": "wss://api.gateio.ws/ws/v4/",
             "pairsAPI": "https://data.gate.io/api2/1/pairs",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 300,
+            "ScraperActive": true
         },
         {
             "Name": "Hermes",
@@ -466,7 +501,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
         },
         {
             "Name": "HitBTC",
@@ -479,7 +515,8 @@
             "RestAPI": "",
             "WsAPI": "wss://api.hitbtc.com/api/2/ws",
             "pairsAPI": "https://api.hitbtc.com/api/2/public/symbol",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 300,
+            "ScraperActive": true
         },
         {
             "Name": "Huckleberry",
@@ -492,7 +529,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 2400
+            "WatchdogDelay": 2400,
+            "ScraperActive": true
         },
         {
             "Name": "Huobi",
@@ -505,7 +543,8 @@
             "RestAPI": "",
             "WsAPI": "wss://api.huobi.pro/ws",
             "pairsAPI": "http://api.huobi.pro/v1/common/symbols",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 300,
+            "ScraperActive": true
         },
         {
             "Name": "Kraken",
@@ -518,7 +557,8 @@
             "RestAPI": "https://api.kraken.com",
             "WsAPI": "wss://ws.kraken.com",
             "pairsAPI": "https://api.kraken.com/0/public/AssetPairs",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 300,
+            "ScraperActive": true
         },
         {
             "Name": "KuCoin",
@@ -531,7 +571,8 @@
             "RestAPI": "https://api.kucoin.com",
             "WsAPI": "wss://push1-v2.kucoin.com/endpoint",
             "pairsAPI": "https://api.kucoin.com/api/v1/market/allTickers",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 300,
+            "ScraperActive": true
         },
         {
             "Name": "Kyber",
@@ -544,7 +585,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 1200,
+            "ScraperActive": false
         },
         {
             "Name": "LBank",
@@ -557,7 +599,8 @@
             "RestAPI": "",
             "WsAPI": "wss://api.lbkex.com/ws/V2/",
             "pairsAPI": "https://api.lbkex.com/v1/currencyPairs.do",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 300,
+            "ScraperActive": false
         },
         {
             "Name": "Loopring",
@@ -570,7 +613,8 @@
             "RestAPI": "https://api3.loopring.io/api/v3",
             "WsAPI": "wss://ws.api3.loopring.io/v3/ws",
             "pairsAPI": "https://api3.loopring.io/api/v3/exchange/markets",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 1200,
+            "ScraperActive": false
         },
         {
             "Name": "Maker",
@@ -583,7 +627,8 @@
             "RestAPI": "https://api.oasisdex.com/v2",
             "WsAPI": "",
             "pairsAPI": "https://api.oasisdex.com/v2/pairs",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 1200,
+            "ScraperActive": false
         },
         {
             "Name": "Netswap",
@@ -596,7 +641,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
         },
         {
             "Name": "OKEx",
@@ -609,7 +655,8 @@
             "RestAPI": "https://aws.okex.com/api/v5/public/instruments?instType=SPOT",
             "WsAPI": "wss://ws.okex.com:8443/ws/v5/public",
             "pairsAPI": "https://www.okex.com/api/spot/v3/products",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 300,
+            "ScraperActive": true
         },
         {
             "Name": "OmniDex",
@@ -622,7 +669,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": false
         },
         {
             "Name": "PanCakeSwap",
@@ -635,7 +683,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 1200,
+            "ScraperActive": true
         },
         {
             "Name": "Pangolin",
@@ -648,7 +697,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 1200,
+            "ScraperActive": true
         },
         {
             "Name": "PlatypusFinance",
@@ -661,7 +711,8 @@
             "RestAPI": "https://api.avax.network/ext/bc/C/rpc",
             "WsAPI": "wss://api.avax.network/ext/bc/C/ws",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
         },
         {
             "Name": "Quickswap",
@@ -674,7 +725,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
         },
         {
             "Name": "Quoine",
@@ -687,7 +739,8 @@
             "RestAPI": "http://api.liquid.com",
             "WsAPI": "wss://tap.liquid.com/app/LiquidTapClient",
             "pairsAPI": "http://api.liquid.com/products",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 1200,
+            "ScraperActive": false
         },
         {
             "Name": "Serum",
@@ -700,7 +753,22 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": false
+        },
+        {
+            "Name": "Orca",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP",
+            "Blockchain": {
+                "Name": "Solana"
+            },
+            "RestAPI": "https://rpc.ankr.com/solana",
+            "WsAPI": "wss://api.mainnet-beta.solana.com",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200,
+            "ScraperActive": false
         },
         {
             "Name": "Simex",
@@ -713,7 +781,8 @@
             "RestAPI": "https://simex.global/api",
             "WsAPI": "",
             "pairsAPI": "https://simex.global/api/pairs",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 1200,
+            "ScraperActive": false
         },
         {
             "Name": "Solarbeam",
@@ -726,7 +795,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 1800
+            "WatchdogDelay": 1800,
+            "ScraperActive": true
         },
         {
             "Name": "Spiritswap",
@@ -739,7 +809,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
         },
         {
             "Name": "Spookyswap",
@@ -752,7 +823,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
         },
         {
             "Name": "Stellaswap",
@@ -765,7 +837,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 1800
+            "WatchdogDelay": 1800,
+            "ScraperActive": true
         },
         {
             "Name": "STEX",
@@ -778,7 +851,8 @@
             "RestAPI": "https://api3.stex.com/public",
             "WsAPI": "socket.stex.com",
             "pairsAPI": "https://api3.stex.com/public/currency_pairs/list/ALL",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 1200,
+            "ScraperActive": false
         },
         {
             "Name": "SushiSwap",
@@ -791,7 +865,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 1200,
+            "ScraperActive": true
         },
         {
             "Name": "SushiSwap-arbitrum",
@@ -804,7 +879,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": false
         },
         {
             "Name": "SushiSwap-fantom",
@@ -817,7 +893,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": false
         },
         {
             "Name": "SushiSwap-polygon",
@@ -830,7 +907,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
         },
         {
             "Name": "Tethys",
@@ -843,7 +921,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
         },
         {
             "Name": "TraderJoe",
@@ -856,7 +935,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 1200,
+            "ScraperActive": true
         },
         {
             "Name": "Trisolaris",
@@ -869,7 +949,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 1200,
+            "ScraperActive": true
         },
         {
             "Name": "Ubeswap",
@@ -882,7 +963,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 1800
+            "WatchdogDelay": 1800,
+            "ScraperActive": true
         },
         {
             "Name": "Uniswap",
@@ -895,7 +977,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 1200,
+            "ScraperActive": true
         },
         {
             "Name": "UniswapV3",
@@ -908,7 +991,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 1200,
+            "ScraperActive": true
         },
         {
             "Name": "UniswapV3-polygon",
@@ -921,7 +1005,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 1800
+            "WatchdogDelay": 1800,
+            "ScraperActive": true
         },
         {
             "Name": "UniswapV3-Arbitrum",
@@ -934,7 +1019,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 300
+            "WatchdogDelay": 300,
+            "ScraperActive": true
         },
         {
             "Name": "Unkown",
@@ -947,7 +1033,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 300,
+            "ScraperActive": false
         },
         {
             "Name": "Wanswap",
@@ -960,7 +1047,8 @@
             "RestAPI": "",
             "WsAPI": "",
             "pairsAPI": "",
-            "WatchdogDelay": 7200
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
         },
         {
             "Name": "ZB",
@@ -973,7 +1061,8 @@
             "RestAPI": "",
             "WsAPI": "wss://api.zb.live/websocket",
             "pairsAPI": "",
-            "WatchdogDelay": 1200
+            "WatchdogDelay": 1200,
+            "ScraperActive": false
         }
     ]
 }

@@ -52,6 +52,7 @@ CREATE TABLE exchange (
     ws_api text,
     pairs_api text,
     watchdog_delay numeric NOT NULL,
+    scraper_active boolean,
     UNIQUE(exchange_id),
     UNIQUE (name)
 );
@@ -275,5 +276,30 @@ CREATE TABLE nftexchange (
     UNIQUE(exchange_id),
     UNIQUE (name)
 );
+
+
+CREATE TABLE oracleconfig (
+    id UUID DEFAULT gen_random_uuid(),
+    address text NOT NULL,
+    feeder_id text NOT NULL,
+    owner text NOT NULL,
+    symbols text NOT NULL,
+    chainID text NOT NULL,
+    UNIQUE (id),
+    UNIQUE (feeder_id)
+);
+
+
+
+
+
+CREATE TABLE feederresource (
+    id  SERIAL PRIMARY KEY,
+    owner text NOT NULL,
+    total numeric NOT NULL,
+    UNIQUE (id),
+    UNIQUE (owner)
+);
+
 
 

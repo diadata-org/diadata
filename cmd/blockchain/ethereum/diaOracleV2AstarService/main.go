@@ -232,7 +232,7 @@ func getGasSuggestion(chainId int64) (*big.Int, error) {
 	if chainId == 81 {
 		chainName = "shibuya"
 	}
-	response, err := http.Get("http://astargasstation.dia-services:3000/api/" + chainName + "/gasnow")
+	response, err := http.Get("https://gas.astar.network/api/gasnow?network=" + chainName)
 	if err != nil {
 		return nil, err
 	}

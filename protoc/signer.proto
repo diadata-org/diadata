@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+
+
+
+package rpc;
+  
+option go_package = "github.com/diadata-org/diadata/pkg/dia/helper/signer";
+
+ service Signer {
+  rpc Sign (DataToSign) returns ( SignedData) {}
+
+}
+
+// The request message containing the user's name.
+message SignedData {
+  bytes signed = 1;
+
+}
+
+
+message DataToSign {
+  bytes data = 1;
+  string by = 2 ;
+
+}
+
+
+
+
+

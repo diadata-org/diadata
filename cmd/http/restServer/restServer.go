@@ -69,8 +69,8 @@ const (
 	cachingTime1Sec   = 1 * time.Second
 	cachingTime20Secs = 20 * time.Second
 	cachingTimeShort  = time.Minute * 2
-	// cachingTimeMedium = time.Minute * 10
-	cachingTimeLong = time.Minute * 100
+	cachingTimeMedium = time.Minute * 10
+	cachingTimeLong   = time.Minute * 100
 )
 
 var identityKey = "id"
@@ -229,6 +229,9 @@ func main() {
 
 		// (DEX) pools/liquidity endpoints.
 		diaGroup.GET("/poolLiquidity/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetPoolLiquidityByAddress))
+		diaGroup.GET("/poolSlippage/:blockchain/:addressPool/:addressAsset/:poolType/:priceDeviation", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetPoolSlippage))
+		diaGroup.GET("/poolPriceImpact/:blockchain/:addressPool/:addressAsset/:poolType/:priceDeviation", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetPoolPriceImpact))
+		diaGroup.GET("/priceImpactSimulation/:poolType/:liquidityA/:liquidityB/:priceDeviation", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetPriceImpactSimulation))
 
 		// Pairs endpoints
 		diaGroup.GET("/pairsCex/:exchange", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetExchangePairs))
@@ -298,6 +301,7 @@ func main() {
 		diaGroup.GET("/NFTFloorMA/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetNFTFloorMA))
 		diaGroup.GET("/NFTDownday/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetNFTDownday))
 		diaGroup.GET("/NFTVolatility/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetNFTFloorVola))
+		diaGroup.GET("/NFTDistribution/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeMedium, diaApiEnv.GetNFTDistribution))
 		diaGroup.GET("/topNFT/:numCollections", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetTopNFTClasses))
 		diaGroup.GET("/NFTVolume/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetNFTVolume))
 		diaGroup.GET("/assetmap/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetAssetMap))

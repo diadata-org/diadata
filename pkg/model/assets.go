@@ -803,7 +803,7 @@ func (rdb *RelDB) SetAssetVolume24H(asset dia.Asset, volume float64, timestamp t
 	return nil
 }
 
-func (rdb *RelDB) GetAssetVolume24H(asset dia.Asset) (volume float64, err error) {
+func (rdb *RelDB) GetLastAssetVolume24H(asset dia.Asset) (volume float64, err error) {
 	query := fmt.Sprintf("SELECT volume FROM %s INNER JOIN %s ON assetvolume.asset_id = asset.asset_id WHERE address=$1 AND blockchain=$2", assetVolumeTable, assetTable)
 	err = rdb.postgresClient.QueryRow(context.Background(), query, asset.Address, asset.Blockchain).Scan(&volume)
 	return

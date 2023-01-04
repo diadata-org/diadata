@@ -33,9 +33,9 @@ func (rdb *RelDB) GetKeyPairID(publickey string) string {
 
 func (rdb *RelDB) SetOracleConfig(address, keypairID, creator, symbols, chainID string) error {
 	query := fmt.Sprintf(`INSERT INTO %s 
-	(address,keypair_id,creator,symbols,chainID) VALUES ($1,$2,$3,$4,$5) on conflict(address)  
+	(address,feeder_id,owner,symbols,chainID) VALUES ($1,$2,$3,$4,$5) on conflict(feeder_id)  
 	do
-	update set address=EXCLUDED.address`, oracleconfigTable)
+	update set feeder_id=EXCLUDED.feeder_id`, oracleconfigTable)
 	_, err := rdb.postgresClient.Exec(context.Background(), query, address, keypairID, creator, symbols, chainID)
 	if err != nil {
 		return err
@@ -82,5 +82,19 @@ func (rdb *RelDB) GetFeederAccessByID(id string) (owner, publickey string) {
 	query := fmt.Sprintf(`SELECT owner,publickey from   %s 
 	WHERE id=$1`, feederaccessTable)
 	rdb.postgresClient.QueryRow(context.Background(), query, id).Scan(&owner, &publickey)
+	return
+}
+
+func (rdb *RelDB) GetFeederLimit(owner string) (limit int) {
+	query := fmt.Sprintf(`SELECT total from  %s 
+	WHERE owner=$1`, feederResourceTable)
+	rdb.postgresClient.QueryRow(context.Background(), query, owner).Scan(&limit)
+	return
+}
+
+func (rdb *RelDB) GetTotalFeeder(owner string) (total int) {
+	query := fmt.Sprintf(`SELECT count(*) from  %s 
+	WHERE owner=$1`, oracleconfigTable)
+	rdb.postgresClient.QueryRow(context.Background(), query, owner).Scan(&total)
 	return
 }

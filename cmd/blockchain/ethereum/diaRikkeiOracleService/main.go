@@ -191,7 +191,7 @@ func updateOracle(
 	tx, err := contract.SetValue(&bind.TransactOpts{
 		From:     auth.From,
 		Signer:   auth.Signer,
-		GasLimit: 1000725,
+		//GasLimit: 1000725,
 		GasPrice: gasPrice,
 	}, key, big.NewInt(value), big.NewInt(timestamp))
 	if err != nil {
@@ -200,13 +200,14 @@ func updateOracle(
 	fmt.Println(tx.GasPrice())
 	log.Printf("key: %s\n", key)
 	log.Printf("nonce: %d\n", tx.Nonce())
+	log.Printf("gas price: %d\n", tx.GasPrice())
 	log.Printf("Tx To: %s\n", tx.To().String())
 	log.Printf("Tx Hash: 0x%x\n", tx.Hash())
 	return nil
 }
 
 func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, error) {
-	response, err := http.Get("https://rest.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
+	response, err := http.Get("https://api.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
 	if err != nil {
 		return nil, err
 	}
@@ -232,7 +233,7 @@ func getGasSuggestion(chainId int64) (*big.Int, error) {
 	if chainId == 592 {
 		chainName = "astar"
 	}
-	response, err := http.Get("http://astargasstation.dia-services:3000/api/" + chainName + "/gasnow")
+	response, err := http.Get("https://gas.astar.network/api/gasnow?network=" + chainName)
 	if err != nil {
 		return nil, err
 	}

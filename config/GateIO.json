@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "BFC_USDT",
+      "Ignore": false,
+      "Symbol": "BFC"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "ACA_USDT",
       "Ignore": false,
       "Symbol": "ACA"
@@ -2177,6 +2183,12 @@
       "ForeignName": "USDT_USD",
       "Ignore": false,
       "Symbol": "USDT"
+    },
+     {
+      "Exchange": "GateIO",
+      "ForeignName": "VLX_USDT",
+      "Ignore": false,
+      "Symbol": "VLX"
     },
     {
       "Exchange": "GateIO",
