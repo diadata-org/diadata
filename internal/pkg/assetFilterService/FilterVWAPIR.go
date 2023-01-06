@@ -1,4 +1,4 @@
-package filters
+package assetfilters
 
 import (
 	"math"
@@ -20,13 +20,13 @@ type FilterVWAPIR struct {
 	value       float64
 	modified    bool
 	filterName  string
-	pair        dia.Pair
+	asset       dia.Asset
 }
 
 // NewFilterVWAP ...
-func NewFilterVWAPIR(pair dia.Pair, exchange string, currentTime time.Time, param int) *FilterVWAPIR {
+func NewFilterVWAPIR(asset dia.Asset, exchange string, currentTime time.Time, param int) *FilterVWAPIR {
 	s := &FilterVWAPIR{
-		pair:        pair,
+		asset:       asset,
 		exchange:    exchange,
 		prices:      []float64{},
 		volumes:     []float64{},
@@ -109,25 +109,24 @@ func (s *FilterVWAPIR) finalCompute(t time.Time) float64 {
 }
 
 // FilterPointForBlock ...
-func (s *FilterVWAPIR) FilterPointForBlock() *dia.FilterPoint {
+func (s *FilterVWAPIR) FilterPointForBlock() *dia.AssetFilterPoint {
 	return s.filterPointForBlock()
 }
-func (s *FilterVWAPIR) filterPointForBlock() *dia.FilterPoint {
+
+func (s *FilterVWAPIR) filterPointForBlock() *dia.AssetFilterPoint {
 	if s.exchange != "" {
-		return &dia.FilterPoint{
-			Value:  s.value,
-			Source: s.exchange,
-			Name:   s.filterName,
-			Time:   s.currentTime,
-			Pair:   s.pair,
+		return &dia.AssetFilterPoint{
+			Value: s.value,
+			Name:  s.filterName,
+			Time:  s.currentTime,
+			Asset: s.asset,
 		}
 	} else {
-		return &dia.FilterPoint{
-			Value:  s.value,
-			Source: s.exchange,
-			Name:   s.filterName,
-			Time:   s.currentTime,
-			Pair:   s.pair,
+		return &dia.AssetFilterPoint{
+			Value: s.value,
+			Name:  s.filterName,
+			Time:  s.currentTime,
+			Asset: s.asset,
 		}
 	}
 }

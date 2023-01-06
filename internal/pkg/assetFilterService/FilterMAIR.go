@@ -1,7 +1,6 @@
-package filters
+package assetfilters
 
 import (
-	"math"
 	"strconv"
 	"time"
 
@@ -14,12 +13,11 @@ import (
 // Outliers are eliminated using interquartile range.
 // see: https://en.wikipedia.org/wiki/Interquartile_range
 type FilterMAIR struct {
-	pair        dia.Pair
+	asset       dia.Asset
 	exchange    string
 	currentTime time.Time
 	prices      []float64
 	volumes     []float64
-	blockVolume float64
 	lastTrade   dia.Trade
 	memory      int
 	value       float64
@@ -28,9 +26,9 @@ type FilterMAIR struct {
 }
 
 // NewFilterMAIR returns a FilterMAIR
-func NewFilterMAIR(pair dia.Pair, exchange string, currentTime time.Time, memory int) *FilterMAIR {
+func NewFilterMAIR(asset dia.Asset, exchange string, currentTime time.Time, memory int) *FilterMAIR {
 	filter := &FilterMAIR{
-		pair:        pair,
+		asset:       asset,
 		exchange:    exchange,
 		prices:      []float64{},
 		volumes:     []float64{},
@@ -88,7 +86,6 @@ func (filter *FilterMAIR) processDataPoint(trade dia.Trade) {
 	}
 	filter.prices = append([]float64{trade.EstimatedUSDPrice}, filter.prices...)
 	filter.volumes = append([]float64{trade.Volume}, filter.volumes...)
-	filter.blockVolume += math.Abs(trade.Volume)
 }
 
 func (filter *FilterMAIR) FinalCompute(t time.Time) float64 {
@@ -122,37 +119,42 @@ func (filter *FilterMAIR) finalCompute(t time.Time) float64 {
 	return filter.value
 }
 
-func (filter *FilterMAIR) FilterPointForBlock() *dia.FilterPoint {
-	return &dia.FilterPoint{
-		Pair:        filter.pair,
-		Source:      filter.exchange,
-		Value:       filter.value,
-		Name:        filter.filterName,
-		BlockVolume: filter.blockVolume,
-		Time:        filter.currentTime,
+func (filter *FilterMAIR) FilterPointForBlock() *dia.AssetFilterPoint {
+	return &dia.AssetFilterPoint{
+		Asset: filter.asset,
+		Value: filter.value,
+		Name:  filter.filterName,
+		Time:  filter.currentTime,
 	}
 }
 
-func (filter *FilterMAIR) filterPointForBlock() *dia.FilterPoint {
+func (filter *FilterMAIR) filterPointForBlock() *dia.AssetFilterPoint {
 	if filter.exchange != "" || filter.filterName != dia.FilterKing {
 		return nil
 	}
-	return &dia.FilterPoint{
-		Pair:        filter.pair,
-		Source:      filter.exchange,
-		Value:       filter.value,
-		Name:        filter.filterName,
-		BlockVolume: filter.blockVolume,
-		Time:        filter.currentTime,
+	return &dia.AssetFilterPoint{
+		Asset: filter.asset,
+		Value: filter.value,
+		Name:  filter.filterName,
+		Time:  filter.currentTime,
 	}
 }
 
 func (filter *FilterMAIR) save(ds models.Datastore) error {
 	if filter.modified {
 		filter.modified = false
-		err := ds.SetPairFilter(filter.filterName, filter.pair, filter.exchange, filter.value, filter.currentTime)
+		err := ds.SetFilter(filter.filterName, filter.asset, filter.exchange, filter.value, filter.currentTime)
 		if err != nil {
 			log.Errorln("FilterMAIR: Error:", err)
+		}
+
+		// Additionally, the price across exchanges is saved in influx as a quotation.
+		// This price is used for the estimation of quote tokens' prices in the tradesBlockService.
+		if filter.exchange == "" {
+			err = ds.SetAssetPriceUSD(filter.asset, filter.value, filter.currentTime)
+			if err != nil {
+				log.Errorln("FilterMAIR: Error:", err)
+			}
 		}
 		return err
 	}

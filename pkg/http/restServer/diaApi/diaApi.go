@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	filters "github.com/diadata-org/diadata/internal/pkg/filtersBlockService"
+	assetfilters "github.com/diadata-org/diadata/internal/pkg/assetFilterService"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/http/restApi"
@@ -2476,7 +2476,7 @@ func (env *Env) GetNFTFloorMA(c *gin.Context) {
 		return
 	}
 
-	cleanFloorPrices, indices := filters.RemoveOutliers(floorPrices, 1.5)
+	cleanFloorPrices, indices := assetfilters.RemoveOutliers(floorPrices, 1.5)
 	var floorMA float64
 	if len(indices) == 2 {
 		floorMA = utils.Average(cleanFloorPrices)
@@ -2591,7 +2591,7 @@ func (env *Env) GetNFTDownday(c *gin.Context) {
 			drawdowns = append(drawdowns, movement[i]-movement[i-1])
 		}
 	}
-	cleanDrawdowns, _ := filters.RemoveOutliers(drawdowns, float64(1.5))
+	cleanDrawdowns, _ := assetfilters.RemoveOutliers(drawdowns, float64(1.5))
 	min := cleanDrawdowns[0]
 	for _, x := range cleanDrawdowns {
 		if x < min {
@@ -2902,7 +2902,7 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 			log.Errorf("get floor range for address %s: %v", nftvolume.Address, err)
 		}
 
-		cleanFloorPrices, indices := filters.RemoveOutliers(floorPrices, 1.5)
+		cleanFloorPrices, indices := assetfilters.RemoveOutliers(floorPrices, 1.5)
 		var floorMA float64
 		if len(indices) == 2 {
 			floorMA = utils.Average(cleanFloorPrices)

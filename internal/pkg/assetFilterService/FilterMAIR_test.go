@@ -1,4 +1,4 @@
-package filters
+package assetfilters
 
 import (
 	"math"
@@ -113,10 +113,7 @@ func TestFilterMAIRIgnore(t *testing.T) {
 		Symbol: "XRP",
 		Name:   "XRP",
 	}
-	assetUSDT := dia.Asset{
-		Symbol: "USDT",
-	}
-	f := NewFilterMAIR(dia.Pair{QuoteToken: assetXRP, BaseToken: assetUSDT}, "", d, filterParam)
+	f := NewFilterMAIR(assetXRP, "", d, filterParam)
 	p := firstPrice
 	priceIncrements := 1.0
 	for i := 0; i <= steps; i++ {
@@ -138,10 +135,7 @@ func TestFilterMAIRAverage(t *testing.T) {
 		Symbol: "XRP",
 		Name:   "XRP",
 	}
-	assetUSDT := dia.Asset{
-		Symbol: "USDT",
-	}
-	f := NewFilterMAIR(dia.Pair{QuoteToken: assetXRP, BaseToken: assetUSDT}, "", d, filterParam)
+	f := NewFilterMAIR(assetXRP, "", d, filterParam)
 	p := firstPrice
 	priceIncrements := 1.0
 	samples := 15
@@ -168,10 +162,7 @@ func TestFilterMAIRAverageOutsideRange(t *testing.T) {
 		Symbol: "XRP",
 		Name:   "XRP",
 	}
-	assetUSDT := dia.Asset{
-		Symbol: "USDT",
-	}
-	f := NewFilterMAIR(dia.Pair{QuoteToken: assetXRP, BaseToken: assetUSDT}, "", d, memory)
+	f := NewFilterMAIR(assetXRP, "", d, memory)
 	p := firstPrice
 	priceIncrements := 1.0
 	samples := 15
@@ -212,10 +203,7 @@ func TestFilterMAIRAverageCleanOutliers(t *testing.T) {
 			Symbol: "XRP",
 			Name:   "XRP",
 		}
-		assetUSDT := dia.Asset{
-			Symbol: "USDT",
-		}
-		f := NewFilterMAIR(dia.Pair{QuoteToken: assetXRP, BaseToken: assetUSDT}, "", d, memory)
+		f := NewFilterMAIR(assetXRP, "", d, memory)
 		for _, p := range c.samples {
 			f.compute(dia.Trade{EstimatedUSDPrice: p, Time: d})
 			d = d.Add(time.Second)

@@ -1,4 +1,4 @@
-package filters
+package pairfilters
 
 import (
 	"testing"

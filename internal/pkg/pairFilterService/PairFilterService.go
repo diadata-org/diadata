@@ -1,4 +1,4 @@
-package filters
+package pairfilters
 
 import (
 	"errors"
@@ -106,13 +106,14 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 
 	log.Info("time spent for create and compute filters: ", time.Since(t0))
 	log.Info("filter begin time: ", tb.TradesBlockData.BeginTime)
-	resultFilters := []dia.FilterPoint{}
+	resultFilters := []dia.PairFilterPoint{}
 
 	t0 = time.Now()
 
 	for _, filters := range s.filters {
 		for _, f := range filters {
 			f.finalCompute(tb.TradesBlockData.EndTime)
+
 			fp := f.filterPointForBlock()
 			if fp != nil {
 				resultFilters = append(resultFilters, *fp)

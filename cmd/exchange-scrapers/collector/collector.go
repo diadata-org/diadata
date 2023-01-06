@@ -77,7 +77,7 @@ func main() {
 	es := scrapers.NewAPIScraper(*exchange, true, configApi.ApiKey, configApi.SecretKey, relDB)
 
 	// Set up kafka writer.
-	wTest := kafkaHelper.NewWriter(kafkaHelper.TopicTradesTest)
+	wTest := kafkaHelper.NewWriter(kafkaHelper.TopicTrades)
 
 	defer func() {
 		err := wTest.Close()

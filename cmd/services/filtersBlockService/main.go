@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	filters "github.com/diadata-org/diadata/internal/pkg/filtersBlockService"
+	pairfilters "github.com/diadata-org/diadata/internal/pkg/pairFilterService"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -40,7 +40,7 @@ func main() {
 	}
 	channel := make(chan *dia.FiltersBlock)
 
-	f := filters.NewFiltersBlockService(s, channel)
+	f := pairfilters.NewFiltersBlockService(s, channel)
 
 	// Writer that sends filter blocks to the metaFilter service.
 	w := kafkaHelper.NewSyncWriterWithCompression(filtersBlockTopic)
@@ -90,7 +90,9 @@ func main() {
 func handler(channel chan *dia.FiltersBlock, wg *sync.WaitGroup, w *kafka.Writer) {
 	var block int
 	for {
+		log.Info("enter filtersblock write loop...")
 		filtersblock, ok := <-channel
+		log.Info("...got filtersblock")
 		if !ok {
 			log.Printf("handler: finishing channel")
 			wg.Done()

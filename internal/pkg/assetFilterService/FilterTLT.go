@@ -1,30 +1,29 @@
 // TLT Time last trade
 
-package filters
+package assetfilters
 
 import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
-	log "github.com/sirupsen/logrus"
 )
 
 type FilterTLT struct {
-	pair          dia.Pair
+	asset         dia.Asset
 	exchange      string
 	lastTradeTime time.Time
 }
 
-func NewFilterTLT(pair dia.Pair, exchange string) *FilterTLT {
+func NewFilterTLT(asset dia.Asset, exchange string) *FilterTLT {
 	s := &FilterTLT{
-		pair:     pair,
+		asset:    asset,
 		exchange: exchange,
 	}
 	return s
 }
 
-func (s *FilterTLT) filterPointForBlock() *dia.FilterPoint {
+func (s *FilterTLT) filterPointForBlock() *dia.AssetFilterPoint {
 	return nil
 }
 
@@ -33,11 +32,13 @@ func (s *FilterTLT) compute(trade dia.Trade) {
 }
 
 func (s *FilterTLT) save(ds models.Datastore) error {
-	err := ds.SetLastTradeTimeForExchange(s.pair, s.exchange, s.lastTradeTime)
-	if err != nil {
-		log.Errorln("FilterTLT Error:", err)
-	}
-	return err
+	// TO DO: Implement setter for asset.
+
+	// err := ds.SetLastTradeTimeForExchange(s.asset, s.exchange, s.lastTradeTime)
+	// if err != nil {
+	// 	log.Errorln("FilterTLT Error:", err)
+	// }
+	return nil
 }
 
 func (s *FilterTLT) finalCompute(time time.Time) float64 {

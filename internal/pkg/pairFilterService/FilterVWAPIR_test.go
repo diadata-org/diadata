@@ -1,4 +1,4 @@
-package filters
+package pairfilters
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 )
 
 func TestVWAPIR(t *testing.T) {
-	var filterPoints []dia.FilterPoint
+	var filterPoints []dia.PairFilterPoint
 	trades := getTrades()
 	maFilter := NewFilterVWAPIR(dia.Pair{}, "Binance", trades[len(trades)-1].Time, dia.BlockSizeSeconds)
 

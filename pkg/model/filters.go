@@ -38,7 +38,7 @@ func (datastore *DB) SetPairFilter(filter string, pair dia.Pair, exchange string
 	return err
 }
 
-// SaveMetaFilterInflux stores a metaFilter point in influx.
+// SaveMetaFilterInflux stores a (meta)Filter point in influx.
 func (datastore *DB) SaveFilterInflux(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error {
 	// Create a point and add to batch
 	tags := map[string]string{
@@ -154,8 +154,8 @@ func (datastore *DB) GetFilterPoints(filter string, exchange string, symbol stri
 	}, err
 }
 
-func (datastore *DB) GetFilter(filter string, topAsset dia.Asset, scale string, starttime time.Time, endtime time.Time) ([]dia.FilterPoint, error) {
-	var allFilters []dia.FilterPoint
+func (datastore *DB) GetFilter(filter string, topAsset dia.Asset, scale string, starttime time.Time, endtime time.Time) ([]dia.AssetFilterPoint, error) {
+	var allFilters []dia.AssetFilterPoint
 	table := ""
 	//	5m 30m 1h 4h 1d 1w
 	if scale != "" {
@@ -182,7 +182,7 @@ func (datastore *DB) GetFilter(filter string, topAsset dia.Asset, scale string, 
 	if len(res) > 0 && len(res[0].Series) > 0 {
 		for i := 0; i < len(res[0].Series[0].Values); i++ {
 
-			var filterpoint dia.FilterPoint
+			var filterpoint dia.AssetFilterPoint
 
 			filterpoint.Time, err = time.Parse(time.RFC3339, res[0].Series[0].Values[i][0].(string))
 			if err != nil {

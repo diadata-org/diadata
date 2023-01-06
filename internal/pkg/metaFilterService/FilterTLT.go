@@ -30,7 +30,7 @@ func (s *FilterTLT) filterPointForBlock() *dia.MetaFilterPoint {
 	return nil
 }
 
-func (s *FilterTLT) collect(filterPoint dia.FilterPoint) {
+func (s *FilterTLT) collect(filterPoint dia.PairFilterPoint) {
 
 	s.lastTradeTime = filterPoint.LastTrade.Time
 }

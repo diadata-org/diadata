@@ -14,7 +14,7 @@ type FilterAIR struct {
 	values          []float64
 	volumes         []float64
 	currentTime     time.Time
-	lastFilterValue dia.FilterPoint
+	lastFilterValue dia.PairFilterPoint
 	value           float64
 	name            string
 	childName       string
@@ -35,17 +35,17 @@ func NewFilterAIR(asset dia.Asset, source string, childFilter string, currentTim
 	return filter
 }
 
-func (filter *FilterAIR) Collect(filterPoint dia.FilterPoint) {
+func (filter *FilterAIR) Collect(filterPoint dia.PairFilterPoint) {
 	filter.collect(filterPoint)
 }
 
-func (filter *FilterAIR) collect(filterPoint dia.FilterPoint) {
+func (filter *FilterAIR) collect(filterPoint dia.PairFilterPoint) {
 	filter.modified = true
 	if filterPoint.Name != filter.childName {
 		// Additional safety check. Child filter method does not match metafilter's name.
 		return
 	}
-	if filter.lastFilterValue != (dia.FilterPoint{}) {
+	if filter.lastFilterValue != (dia.PairFilterPoint{}) {
 		if filterPoint.Time.Before(filter.currentTime) {
 			log.Errorln("FilterMAIR: Ignoring filterPoint out of order ", filter.currentTime, filterPoint.Time)
 			return
@@ -55,7 +55,7 @@ func (filter *FilterAIR) collect(filterPoint dia.FilterPoint) {
 	filter.lastFilterValue = filterPoint
 }
 
-func (filter *FilterAIR) processDataPoint(filterPoint dia.FilterPoint) {
+func (filter *FilterAIR) processDataPoint(filterPoint dia.PairFilterPoint) {
 	filter.values = append([]float64{filterPoint.Value}, filter.values...)
 	filter.volumes = append([]float64{filterPoint.BlockVolume}, filter.volumes...)
 }
@@ -65,7 +65,8 @@ func (filter *FilterAIR) FinalCompute(t time.Time) float64 {
 }
 
 func (filter *FilterAIR) finalCompute(t time.Time) float64 {
-	if filter.lastFilterValue == (dia.FilterPoint{}) {
+	if filter.lastFilterValue == (dia.PairFilterPoint{}) {
+		log.Info("last filter point empty.")
 		return 0.0
 	}
 

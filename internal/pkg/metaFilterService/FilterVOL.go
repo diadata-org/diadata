@@ -29,14 +29,14 @@ func NewFilterVOL(asset dia.Asset, exchange string, childFilter string, memory i
 	return filter
 }
 
-func (filter *FilterVOL) Collect(filterPoint dia.FilterPoint) {
+func (filter *FilterVOL) Collect(filterPoint dia.PairFilterPoint) {
 	filter.collect(filterPoint)
 }
 func (filter *FilterVOL) FinalCompute(t time.Time) {
 	filter.finalCompute(t)
 }
 
-func (filter *FilterVOL) collect(filterPoint dia.FilterPoint) {
+func (filter *FilterVOL) collect(filterPoint dia.PairFilterPoint) {
 	filter.modified = true
 	if filterPoint.Name != filter.name {
 		// Child filter method does not match metafilter's name.

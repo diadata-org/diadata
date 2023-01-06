@@ -1,4 +1,4 @@
-package metafilters
+package assetfilters
 
 import (
 	"errors"
@@ -11,15 +11,11 @@ import (
 )
 
 // Filter interface defines a filter's methods processing trades from the tradesBlockService.
-type MetaFilter interface {
-	collect(filterPoint dia.PairFilterPoint)
+type Filter interface {
+	compute(trade dia.Trade)
 	finalCompute(t time.Time) float64
-	filterPointForBlock() *dia.MetaFilterPoint
+	filterPointForBlock() *dia.AssetFilterPoint
 	save(ds models.Datastore) error
-}
-
-func getFilterName(name string, childName string) string {
-	return name + "_" + childName
 }
 
 func RemoveOutliers(samples []float64, scale float64) ([]float64, []int) {

@@ -8,7 +8,7 @@ import (
 )
 
 type FilterPointResolver struct {
-	q dia.FilterPoint
+	q dia.AssetFilterPoint
 }
 type TradeResolver struct {
 	q dia.Trade

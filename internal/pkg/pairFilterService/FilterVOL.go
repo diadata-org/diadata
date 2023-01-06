@@ -1,4 +1,4 @@
-package filters
+package pairfilters
 
 import (
 	"math"
@@ -51,12 +51,12 @@ func (filter *FilterVOL) finalCompute(time time.Time) float64 {
 	return filter.value
 }
 
-func (filter *FilterVOL) filterPointForBlock() *dia.FilterPoint {
+func (filter *FilterVOL) filterPointForBlock() *dia.PairFilterPoint {
 	return nil
 }
 
-func (filter *FilterVOL) FilterPointForBlock() *dia.FilterPoint {
-	return &dia.FilterPoint{
+func (filter *FilterVOL) FilterPointForBlock() *dia.PairFilterPoint {
+	return &dia.PairFilterPoint{
 		Pair:   filter.pair,
 		Source: filter.exchange,
 		Value:  filter.value,

@@ -1,4 +1,4 @@
-package filters
+package pairfilters
 
 import (
 	"math"
@@ -10,8 +10,7 @@ import (
 )
 
 // FilterVWAP ...
-type FilterVWAP struct {
-	pair        dia.Pair
+type FilterVWAPIR struct {
 	exchange    string
 	currentTime time.Time
 	prices      []float64
@@ -19,13 +18,14 @@ type FilterVWAP struct {
 	lastTrade   dia.Trade
 	param       int
 	value       float64
-	filterName  string
 	modified    bool
+	filterName  string
+	pair        dia.Pair
 }
 
 // NewFilterVWAP ...
-func NewFilterVWAP(pair dia.Pair, exchange string, currentTime time.Time, param int) *FilterVWAP {
-	s := &FilterVWAP{
+func NewFilterVWAPIR(pair dia.Pair, exchange string, currentTime time.Time, param int) *FilterVWAPIR {
+	s := &FilterVWAPIR{
 		pair:        pair,
 		exchange:    exchange,
 		prices:      []float64{},
@@ -38,11 +38,11 @@ func NewFilterVWAP(pair dia.Pair, exchange string, currentTime time.Time, param 
 }
 
 // Compute ...
-func (s *FilterVWAP) Compute(trade dia.Trade) {
+func (s *FilterVWAPIR) Compute(trade dia.Trade) {
 	s.compute(trade)
 }
 
-func (filter *FilterVWAP) compute(trade dia.Trade) {
+func (filter *FilterVWAPIR) compute(trade dia.Trade) {
 	filter.modified = true
 	if filter.lastTrade != (dia.Trade{}) {
 		if trade.Time.Before(filter.currentTime) {
@@ -55,68 +55,77 @@ func (filter *FilterVWAP) compute(trade dia.Trade) {
 }
 
 // fill just adds a trade to the prices and volumes slices.
-func (filter *FilterVWAP) fill(trade dia.Trade) {
+func (filter *FilterVWAPIR) fill(trade dia.Trade) {
 	// filter.currentTime is the timestamp of the last filled trade.
 	filter.processDataPoint(trade)
 	filter.currentTime = trade.Time
 }
 
-func (filter *FilterVWAP) processDataPoint(trade dia.Trade) {
+func (filter *FilterVWAPIR) processDataPoint(trade dia.Trade) {
 	filter.prices = append([]float64{trade.EstimatedUSDPrice}, filter.prices...)
 	filter.volumes = append([]float64{trade.Volume}, filter.volumes...)
 }
 
 // FinalCompute ...
-func (s *FilterVWAP) FinalCompute(t time.Time) float64 {
+func (s *FilterVWAPIR) FinalCompute(t time.Time) float64 {
 	return s.finalCompute(t)
 }
 
-func (s *FilterVWAP) finalCompute(t time.Time) float64 {
+func (s *FilterVWAPIR) finalCompute(t time.Time) float64 {
 	if s.lastTrade == (dia.Trade{}) {
 		return 0.0
 	}
 
-	var totalVolume float64 = 0
-	var priceVolume []float64
-	var totalPriceVolume float64 = 0
+	// s.processDataPoint(*s.lastTrade)
+	cleanPrices, bounds := removeOutliers(s.prices)
 
-	for index, price := range s.prices {
-		priceVolume = append(priceVolume, price*math.Abs(s.volumes[index]))
+	priceVolume := []float64{}
+
+	// TODO handle bounds
+	if len(bounds) == 0 {
+		return 0.0
 	}
 
-	for _, v := range s.volumes {
+	cleanedVolumes := s.volumes[bounds[0]:bounds[1]]
+
+	for index, price := range cleanPrices {
+		priceVolume = append(priceVolume, price*math.Abs(cleanedVolumes[index]))
+	}
+
+	var total float64 = 0
+	var totalVolume float64 = 0
+
+	for _, v := range cleanedVolumes {
 		totalVolume += math.Abs(v)
 	}
 
 	for _, v := range priceVolume {
-		totalPriceVolume += v
+		total += v
 	}
 
-	if totalVolume > 0 {
-		s.value = totalPriceVolume / totalVolume
-	}
+	s.value = total / totalVolume
 
 	return s.value
 }
 
 // FilterPointForBlock ...
-func (s *FilterVWAP) FilterPointForBlock() *dia.FilterPoint {
+func (s *FilterVWAPIR) FilterPointForBlock() *dia.PairFilterPoint {
 	return s.filterPointForBlock()
 }
-func (s *FilterVWAP) filterPointForBlock() *dia.FilterPoint {
+func (s *FilterVWAPIR) filterPointForBlock() *dia.PairFilterPoint {
 	if s.exchange != "" {
-		return &dia.FilterPoint{
+		return &dia.PairFilterPoint{
 			Value:  s.value,
 			Source: s.exchange,
-			Name:   "VWAP" + strconv.Itoa(s.param),
+			Name:   s.filterName,
 			Time:   s.currentTime,
 			Pair:   s.pair,
 		}
 	} else {
-		return &dia.FilterPoint{
+		return &dia.PairFilterPoint{
 			Value:  s.value,
 			Source: s.exchange,
-			Name:   "VWAP" + strconv.Itoa(s.param),
+			Name:   s.filterName,
 			Time:   s.currentTime,
 			Pair:   s.pair,
 		}

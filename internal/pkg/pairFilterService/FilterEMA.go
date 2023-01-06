@@ -1,4 +1,4 @@
-package filters
+package pairfilters
 
 import (
 	"strconv"
@@ -17,7 +17,7 @@ type FilterEMA struct {
 	currentTime     time.Time
 	previousPrices  []float64
 	previousVolumes []float64
-	lastTrade       *dia.FilterPoint
+	lastTrade       *dia.PairFilterPoint
 	param           int
 	value           float64
 	modified        bool
@@ -41,11 +41,11 @@ func NewFilterEMA(pair dia.Pair, exchange string, currentTime time.Time, blockSi
 	return s
 }
 
-func (s *FilterEMA) Compute(trade dia.FilterPoint) {
+func (s *FilterEMA) Compute(trade dia.PairFilterPoint) {
 	s.compute(trade)
 }
 
-func (s *FilterEMA) compute(trade dia.FilterPoint) {
+func (s *FilterEMA) compute(trade dia.PairFilterPoint) {
 	s.modified = true
 	if s.lastTrade != nil {
 		if trade.Time.After(s.currentTime) {
@@ -60,7 +60,7 @@ func (s *FilterEMA) compute(trade dia.FilterPoint) {
 	s.lastTrade = &trade
 }
 
-func (s *FilterEMA) fill(t time.Time, trade dia.FilterPoint) {
+func (s *FilterEMA) fill(t time.Time, trade dia.PairFilterPoint) {
 	log.Println("FilterEMA fill ", trade)
 	log.Println("FilterEMA e.multiplier ", s.multiplier)
 	log.Println("FilterEMA e.value ", s.value)
@@ -84,10 +84,10 @@ func (s *FilterEMA) finalCompute(t time.Time) float64 {
 	return s.value
 }
 
-func (s *FilterEMA) FilterPointForBlock() *dia.FilterPoint {
+func (s *FilterEMA) FilterPointForBlock() *dia.PairFilterPoint {
 	log.Println("FilterPointForBlock", s.value, s.currentTime, s.pair)
 
-	return &dia.FilterPoint{
+	return &dia.PairFilterPoint{
 		Pair:  s.pair,
 		Value: s.value,
 		Name:  "EMA" + strconv.Itoa(s.param),
@@ -96,11 +96,11 @@ func (s *FilterEMA) FilterPointForBlock() *dia.FilterPoint {
 
 }
 
-func (s *FilterEMA) filterPointForBlock() *dia.FilterPoint {
+func (s *FilterEMA) filterPointForBlock() *dia.PairFilterPoint {
 	if s.exchange != "" || s.filterName != dia.FilterKing {
 		return nil
 	}
-	return &dia.FilterPoint{
+	return &dia.PairFilterPoint{
 		Pair:  s.pair,
 		Value: s.value,
 		Name:  "EMA" + strconv.Itoa(s.param),

@@ -1,4 +1,4 @@
-package filters
+package assetfilters
 
 import (
 	"strconv"
@@ -13,7 +13,7 @@ import (
 // It implements a trimmed median. Outliers are eliminated using interquartile range
 // see: https://en.wikipedia.org/wiki/Interquartile_range
 type FilterMEDIR struct {
-	pair        dia.Pair
+	asset       dia.Asset
 	exchange    string
 	currentTime time.Time
 	prices      []float64
@@ -25,9 +25,9 @@ type FilterMEDIR struct {
 }
 
 // NewFilterMEDIR creates a FilterMEDIR
-func NewFilterMEDIR(pair dia.Pair, exchange string, currentTime time.Time, memory int) *FilterMEDIR {
+func NewFilterMEDIR(asset dia.Asset, exchange string, currentTime time.Time, memory int) *FilterMEDIR {
 	filter := &FilterMEDIR{
-		pair:        pair,
+		asset:       asset,
 		exchange:    exchange,
 		prices:      []float64{},
 		currentTime: currentTime,
@@ -76,32 +76,30 @@ func (filter *FilterMEDIR) finalCompute(t time.Time) float64 {
 	return filter.value
 }
 
-func (filter *FilterMEDIR) filterPointForBlock() *dia.FilterPoint {
+func (filter *FilterMEDIR) filterPointForBlock() *dia.AssetFilterPoint {
 	if filter.exchange != "" || filter.filterName != dia.FilterKing {
 		return nil
 	}
-	return &dia.FilterPoint{
-		Pair:   filter.pair,
-		Source: filter.exchange,
-		Value:  filter.value,
-		Name:   filter.filterName,
-		Time:   filter.currentTime,
+	return &dia.AssetFilterPoint{
+		Asset: filter.asset,
+		Value: filter.value,
+		Name:  filter.filterName,
+		Time:  filter.currentTime,
 	}
 }
 
-func (filter *FilterMEDIR) FilterPointForBlock() *dia.FilterPoint {
-	return &dia.FilterPoint{
-		Pair:   filter.pair,
-		Source: filter.exchange,
-		Value:  filter.value,
-		Name:   filter.filterName,
-		Time:   filter.currentTime,
+func (filter *FilterMEDIR) FilterPointForBlock() *dia.AssetFilterPoint {
+	return &dia.AssetFilterPoint{
+		Asset: filter.asset,
+		Value: filter.value,
+		Name:  filter.filterName,
+		Time:  filter.currentTime,
 	}
 }
 func (filter *FilterMEDIR) save(ds models.Datastore) error {
 	if filter.modified {
 		filter.modified = false
-		err := ds.SetPairFilter(filter.filterName, filter.pair, filter.exchange, filter.value, filter.currentTime)
+		err := ds.SetFilter(filter.filterName, filter.asset, filter.exchange, filter.value, filter.currentTime)
 		if err != nil {
 			log.Errorln("FilterMEDIR: Error:", err)
 		}

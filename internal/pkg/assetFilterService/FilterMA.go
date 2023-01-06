@@ -1,4 +1,4 @@
-package filters
+package assetfilters
 
 import (
 	"math"
@@ -13,7 +13,7 @@ import (
 // FilterMA is the struct for a moving average filter implementing
 // the Filter interface.
 type FilterMA struct {
-	pair        dia.Pair
+	asset       dia.Asset
 	exchange    string
 	currentTime time.Time
 	prices      []float64
@@ -29,9 +29,9 @@ type FilterMA struct {
 
 // NewFilterMA returns a moving average filter.
 // @currentTime is the begin time of the filtersBlock.
-func NewFilterMA(pair dia.Pair, exchange string, currentTime time.Time, memory int) *FilterMA {
+func NewFilterMA(asset dia.Asset, exchange string, currentTime time.Time, memory int) *FilterMA {
 	filter := &FilterMA{
-		pair:        pair,
+		asset:       asset,
 		exchange:    exchange,
 		prices:      []float64{},
 		volumes:     []float64{},
@@ -107,7 +107,7 @@ func (filter *FilterMA) finalCompute(t time.Time) float64 {
 		totalPrice += price * math.Abs(filter.volumes[priceIndex])
 		totalVolume += math.Abs(filter.volumes[priceIndex])
 	}
-	if filter.pair.QuoteToken.Symbol == "USDT" || filter.pair.QuoteToken.Symbol == "USDC" {
+	if filter.asset.Symbol == "USDT" || filter.asset.Symbol == "USDC" {
 		var nonweightedPrice float64
 		for _, price := range filter.prices {
 			nonweightedPrice += price
@@ -124,33 +124,31 @@ func (filter *FilterMA) finalCompute(t time.Time) float64 {
 	return filter.value
 }
 
-func (filter *FilterMA) FilterPointForBlock() *dia.FilterPoint {
-	return &dia.FilterPoint{
-		Pair:   filter.pair,
-		Source: filter.exchange,
-		Value:  filter.value,
-		Name:   "MA" + strconv.Itoa(filter.memory),
-		Time:   filter.currentTime,
+func (filter *FilterMA) FilterPointForBlock() *dia.AssetFilterPoint {
+	return &dia.AssetFilterPoint{
+		Asset: filter.asset,
+		Value: filter.value,
+		Name:  "MA" + strconv.Itoa(filter.memory),
+		Time:  filter.currentTime,
 	}
 }
 
-func (filter *FilterMA) filterPointForBlock() *dia.FilterPoint {
+func (filter *FilterMA) filterPointForBlock() *dia.AssetFilterPoint {
 	if filter.exchange != "" || filter.filterName != dia.FilterKing {
 		return nil
 	}
-	return &dia.FilterPoint{
-		Pair:   filter.pair,
-		Source: filter.exchange,
-		Value:  filter.value,
-		Name:   "MA" + strconv.Itoa(filter.memory),
-		Time:   filter.currentTime,
+	return &dia.AssetFilterPoint{
+		Asset: filter.asset,
+		Value: filter.value,
+		Name:  "MA" + strconv.Itoa(filter.memory),
+		Time:  filter.currentTime,
 	}
 }
 
 func (filter *FilterMA) save(ds models.Datastore) error {
 	if filter.modified {
 		filter.modified = false
-		err := ds.SetPairFilter(filter.filterName, filter.pair, filter.exchange, filter.value, filter.currentTime)
+		err := ds.SetFilter(filter.filterName, filter.asset, filter.exchange, filter.value, filter.currentTime)
 		if err != nil {
 			log.Errorln("FilterMA: Error:", err)
 		}

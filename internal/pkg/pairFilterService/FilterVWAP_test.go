@@ -1,4 +1,4 @@
-package filters
+package pairfilters
 
 import (
 	"encoding/json"
@@ -15,7 +15,7 @@ func getTrades() (trades []dia.Trade) {
 }
 
 func TestVWAP(t *testing.T) {
-	var filterPoints []dia.FilterPoint
+	var filterPoints []dia.PairFilterPoint
 	trades := getTrades()
 	maFilter := NewFilterVWAP(dia.Pair{}, "Binance", trades[len(trades)-1].Time, dia.BlockSizeSeconds)
 

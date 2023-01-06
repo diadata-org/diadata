@@ -46,7 +46,7 @@ func main() {
 		if err != nil {
 			log.Printf(err.Error())
 		} else {
-			log.Info("get block from tradesBlock")
+			log.Info("get block from filtersBlock")
 			var fb dia.FiltersBlock
 			err := fb.UnmarshalBinary(m.Value)
 			if err != nil {
@@ -54,7 +54,7 @@ func main() {
 			}
 			if err == nil {
 				t0 := time.Now()
-				log.Info("number of trades in received filtersblock: ", len(fb.FiltersBlockData.FilterPoints))
+				log.Info("number of filters in received metafiltersblock: ", len(fb.FiltersBlockData.FilterPoints))
 				f.ProcessFiltersBlock(&fb)
 				log.Info("time spent by filtersblockservice for processing filtersblock: ", time.Since(t0))
 				// In historical mode, send timestamp of last trade as soon as fbs is done.

@@ -1,4 +1,4 @@
-package filters
+package pairfilters
 
 import (
 	"errors"
@@ -14,7 +14,7 @@ import (
 type Filter interface {
 	compute(trade dia.Trade)
 	finalCompute(t time.Time) float64
-	filterPointForBlock() *dia.FilterPoint
+	filterPointForBlock() *dia.PairFilterPoint
 	save(ds models.Datastore) error
 }
 

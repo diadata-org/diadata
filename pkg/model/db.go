@@ -170,7 +170,8 @@ const (
 	influxDbVwapFireflyTable          = "vwapFirefly"
 	influxDbSynthSupplyTable          = "synthsupply"
 
-	influxDBDefaultURL = "http://influxdb:8086"
+	// influxDBDefaultURL = "http://influxdb:8086"
+	influxDBDefaultURL = "http://localhost:8086"
 )
 
 // queryInfluxDB convenience function to query the database.

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"os"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -82,8 +81,8 @@ func getTopic(topic int) string {
 }
 
 func init() {
-	KafkaConfig.KafkaUrl = []string{os.Getenv("KAFKAURL")}
-	// KafkaConfig.KafkaUrl = []string{"localhost:9092"}
+	// KafkaConfig.KafkaUrl = []string{os.Getenv("KAFKAURL")}
+	KafkaConfig.KafkaUrl = []string{"localhost:9092"}
 }
 
 // WithRetryOnError

@@ -32,7 +32,7 @@ func NewFilterCOUNT(asset dia.Asset, source string, childFilter string, memory i
 	return filter
 }
 
-func (filter *FilterCOUNT) Collect(filterPoint dia.FilterPoint) {
+func (filter *FilterCOUNT) Collect(filterPoint dia.PairFilterPoint) {
 	filter.collect(filterPoint)
 }
 
@@ -40,7 +40,7 @@ func (filter *FilterCOUNT) FinalCompute(t time.Time) {
 	filter.finalCompute(t)
 }
 
-func (filter *FilterCOUNT) collect(filterPoint dia.FilterPoint) {
+func (filter *FilterCOUNT) collect(filterPoint dia.PairFilterPoint) {
 	filter.modified = true
 	filter.numTrades += int64(filterPoint.Value)
 	filter.currentTime = filterPoint.LastTrade.Time

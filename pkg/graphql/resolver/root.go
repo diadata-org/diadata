@@ -184,7 +184,7 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 
 	log.Infoln("Asset Selected", asset)
 	var (
-		filterPoints, emaFilterPoints []dia.FilterPoint
+		filterPoints, emaFilterPoints []dia.AssetFilterPoint
 		filterMetadata                *dia.FilterPointMetadata
 	)
 

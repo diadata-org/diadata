@@ -1,0 +1,157 @@
+package pairfilters
+
+import (
+	"math"
+	"strconv"
+	"time"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
+)
+
+// FilterMAIR implements a trimmed moving average.
+// Outliers are eliminated using interquartile range.
+// see: https://en.wikipedia.org/wiki/Interquartile_range
+type FilterMAIR struct {
+	pair        dia.Pair
+	exchange    string
+	currentTime time.Time
+	prices      []float64
+	volumes     []float64
+	blockVolume float64
+	lastTrade   dia.Trade
+	memory      int
+	value       float64
+	filterName  string
+	modified    bool
+}
+
+// NewFilterMAIR returns a FilterMAIR
+func NewFilterMAIR(pair dia.Pair, exchange string, currentTime time.Time, memory int) *FilterMAIR {
+	filter := &FilterMAIR{
+		pair:        pair,
+		exchange:    exchange,
+		prices:      []float64{},
+		volumes:     []float64{},
+		currentTime: currentTime,
+		memory:      memory,
+		filterName:  "MAIR" + strconv.Itoa(memory),
+	}
+	return filter
+}
+
+func (filter *FilterMAIR) Compute(trade dia.Trade) {
+	filter.compute(trade)
+}
+
+func (filter *FilterMAIR) compute(trade dia.Trade) {
+	filter.modified = true
+	if filter.lastTrade != (dia.Trade{}) {
+		if trade.Time.Before(filter.currentTime) {
+			log.Errorln("FilterMAIR: Ignoring Trade out of order ", filter.currentTime, trade.Time)
+			return
+		}
+	}
+	filter.fill(trade)
+	filter.lastTrade = trade
+}
+
+// fill fills up the 120 seconds slots with trades.
+func (filter *FilterMAIR) fill(trade dia.Trade) {
+	// filter.currentTime is the timestamp of the last filled trade.
+	// It is initialized with begin time of tradesblock upon creation of the filter.
+	diff := int(trade.Time.Sub(filter.currentTime).Seconds())
+	if diff > 1 {
+		for diff > 1 {
+			filter.processDataPoint(trade)
+			diff--
+		}
+	} else {
+		if diff == 0.0 {
+			if len(filter.prices) >= 1 {
+				/// Remove latest data point and update with newer
+				filter.prices = filter.prices[1:]
+				filter.volumes = filter.volumes[1:]
+			}
+		}
+		filter.processDataPoint(trade)
+	}
+	filter.currentTime = trade.Time
+}
+
+func (filter *FilterMAIR) processDataPoint(trade dia.Trade) {
+	/// first remove extra value from buffer if already full
+	if len(filter.prices) >= filter.memory {
+		filter.prices = filter.prices[0 : filter.memory-1]
+		filter.volumes = filter.volumes[0 : filter.memory-1]
+	}
+	filter.prices = append([]float64{trade.EstimatedUSDPrice}, filter.prices...)
+	filter.volumes = append([]float64{trade.Volume}, filter.volumes...)
+	filter.blockVolume += math.Abs(trade.Volume)
+}
+
+func (filter *FilterMAIR) FinalCompute(t time.Time) float64 {
+	return filter.finalCompute(t)
+}
+
+func (filter *FilterMAIR) finalCompute(t time.Time) float64 {
+	if filter.lastTrade == (dia.Trade{}) {
+		return 0.0
+	}
+
+	if len(filter.prices) < 2 {
+		filter.value = filter.prices[0]
+		return filter.prices[0]
+	}
+
+	// Add the last trade again to compensate for the delay since measurement to EOB
+	// adopted behaviour from FilterMA
+	filter.processDataPoint(filter.lastTrade)
+	cleanPrices, bounds := removeOutliers(filter.prices)
+	mean, err := computeMean(cleanPrices, filter.volumes[bounds[0]:bounds[1]])
+	if err != nil {
+		return 0.0
+	}
+	filter.value = mean
+	// Reduce the filter values to the last recorded value for the next tradesblock.
+	if len(filter.prices) > 0 && len(filter.volumes) > 0 {
+		filter.prices = []float64{filter.lastTrade.EstimatedUSDPrice}
+		filter.volumes = []float64{filter.lastTrade.Volume}
+	}
+	return filter.value
+}
+
+func (filter *FilterMAIR) FilterPointForBlock() *dia.PairFilterPoint {
+	return &dia.PairFilterPoint{
+		Pair:        filter.pair,
+		Source:      filter.exchange,
+		Value:       filter.value,
+		Name:        filter.filterName,
+		BlockVolume: filter.blockVolume,
+		Time:        filter.currentTime,
+	}
+}
+
+func (filter *FilterMAIR) filterPointForBlock() *dia.PairFilterPoint {
+	return &dia.PairFilterPoint{
+		Pair:        filter.pair,
+		Source:      filter.exchange,
+		Value:       filter.value,
+		Name:        filter.filterName,
+		BlockVolume: filter.blockVolume,
+		Time:        filter.currentTime,
+	}
+}
+
+func (filter *FilterMAIR) save(ds models.Datastore) error {
+	if filter.modified {
+		filter.modified = false
+		err := ds.SetPairFilter(filter.filterName, filter.pair, filter.exchange, filter.value, filter.currentTime)
+		if err != nil {
+			log.Errorln("FilterMAIR: Error:", err)
+		}
+		return err
+	}
+	return nil
+}

@@ -2,6 +2,7 @@ package metafilters
 
 import (
 	"errors"
+	"strconv"
 	"sync"
 	"time"
 
@@ -86,7 +87,7 @@ func (s *MetaFilterService) mainLoop() {
 // computations are done here.
 func (s *MetaFilterService) processFiltersBlock(fb *dia.FiltersBlock) {
 
-	log.Infoln("processFiltersBlock starting")
+	log.Infof("processFiltersBlock starting with %v filter points. ", len(fb.FiltersBlockData.FilterPoints))
 
 	for _, filterPoint := range fb.FiltersBlockData.FilterPoints {
 		s.createMetaFilters(filterPoint, filterPoint.Source, fb.FiltersBlockData.BeginTime)
@@ -105,6 +106,7 @@ func (s *MetaFilterService) processFiltersBlock(fb *dia.FiltersBlock) {
 
 	var err error
 	t0 = time.Now()
+	log.Info("number of meta filters: ", len(s.metaFilters))
 	for _, filters := range s.metaFilters {
 		for _, f := range filters {
 			err = f.save(s.datastore)
@@ -132,41 +134,43 @@ func (s *MetaFilterService) processFiltersBlock(fb *dia.FiltersBlock) {
 
 }
 
-func (s *MetaFilterService) createMetaFilters(filterPoint dia.FilterPoint, source string, BeginTime time.Time) {
+func (s *MetaFilterService) createMetaFilters(filterPoint dia.PairFilterPoint, source string, BeginTime time.Time) {
 	mfi := metaFilterIdentifier{
 		IdentifierQuotetoken: getIdentifier(filterPoint.Pair.QuoteToken),
 		filterName:           filterPoint.Name,
 		source:               source,
 	}
 	_, ok := s.metaFilters[mfi]
+	blockSizeString := strconv.Itoa(dia.BlockSizeSeconds)
+
 	if !ok {
 		switch filterPoint.Name {
-		case dia.MAIR_FILTER:
+		case dia.MAIR_FILTER + blockSizeString:
 			s.metaFilters[mfi] = []MetaFilter{
-				NewFilterAIR(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.MAIR_FILTER, BeginTime, dia.BlockSizeSeconds),
+				NewFilterAIR(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.MAIR_FILTER+blockSizeString, BeginTime, dia.BlockSizeSeconds),
 				// NewFilter...
 			}
-		case dia.MEDIR_FILTER:
+		case dia.MEDIR_FILTER + blockSizeString:
 			s.metaFilters[mfi] = []MetaFilter{
-				NewFilterAIR(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.MEDIR_FILTER, BeginTime, dia.BlockSizeSeconds),
+				NewFilterAIR(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.MEDIR_FILTER+blockSizeString, BeginTime, dia.BlockSizeSeconds),
 			}
-		case dia.VOL_FILTER:
+		case dia.VOL_FILTER + blockSizeString:
 			s.metaFilters[mfi] = []MetaFilter{
-				NewFilterVOL(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.VOL_FILTER, dia.BlockSizeSeconds),
+				NewFilterVOL(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.VOL_FILTER+blockSizeString, dia.BlockSizeSeconds),
 			}
-		case dia.COUNT_FILTER:
+		case dia.COUNT_FILTER + blockSizeString:
 			s.metaFilters[mfi] = []MetaFilter{
-				NewFilterCOUNT(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.COUNT_FILTER, dia.BlockSizeSeconds),
+				NewFilterCOUNT(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.COUNT_FILTER+blockSizeString, dia.BlockSizeSeconds),
 			}
-		case dia.TLT_FILTER:
+		case dia.TLT_FILTER + blockSizeString:
 			s.metaFilters[mfi] = []MetaFilter{
-				NewFilterTLT(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.TLT_FILTER, dia.BlockSizeSeconds),
+				NewFilterTLT(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.TLT_FILTER+blockSizeString, dia.BlockSizeSeconds),
 			}
 		}
 	}
 }
 
-func (s *MetaFilterService) computeMetaFilters(filterPoint dia.FilterPoint, source string) {
+func (s *MetaFilterService) computeMetaFilters(filterPoint dia.PairFilterPoint, source string) {
 	mfi := metaFilterIdentifier{
 		IdentifierQuotetoken: getIdentifier(filterPoint.Pair.QuoteToken),
 		filterName:           filterPoint.Name,
