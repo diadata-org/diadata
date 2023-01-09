@@ -25,7 +25,7 @@ type FilterMAIR struct {
 	modified    bool
 }
 
-//NewFilterMAIR returns a FilterMAIR
+// NewFilterMAIR returns a FilterMAIR
 func NewFilterMAIR(asset dia.Asset, exchange string, currentTime time.Time, memory int) *FilterMAIR {
 	filter := &FilterMAIR{
 		asset:       asset,
@@ -96,6 +96,12 @@ func (filter *FilterMAIR) finalCompute(t time.Time) float64 {
 	if filter.lastTrade == (dia.Trade{}) {
 		return 0.0
 	}
+
+	if len(filter.prices) < 2 {
+		filter.value = filter.prices[0]
+		return filter.prices[0]
+	}
+
 	// Add the last trade again to compensate for the delay since measurement to EOB
 	// adopted behaviour from FilterMA
 	filter.processDataPoint(filter.lastTrade)

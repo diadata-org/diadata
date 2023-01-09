@@ -31,10 +31,10 @@ func FilterMA(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints
 			fp.LastTrade = block.Trades[len(block.Trades)-1]
 
 			if fp != nil {
+				fp.Time = time.Unix(block.TimeStamp/1e9, 0)
 				filterPoints = append(filterPoints, *fp)
 				lastfp = fp
 			} else if lastfp != nil {
-				log.Println("block.TimeStamp", block.TimeStamp)
 				lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
 				filterPoints = append(filterPoints, *lastfp)
 
@@ -42,12 +42,12 @@ func FilterMA(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints
 		} else {
 			lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
 			filterPoints = append(filterPoints, *lastfp)
-
 		}
 	}
 
 	return
 }
+
 func FilterMAIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint, metadata *dia.FilterPointMetadata) {
 	var lastfp *dia.FilterPoint
 	metadata = dia.NewFilterPointMetadata()
@@ -74,7 +74,6 @@ func FilterMAIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoin
 				filterPoints = append(filterPoints, *fp)
 				lastfp = fp
 			} else if lastfp != nil {
-				log.Println("block.TimeStamp", block.TimeStamp)
 				lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
 				filterPoints = append(filterPoints, *lastfp)
 			}
@@ -224,6 +223,7 @@ func FilterEMA(points []dia.FilterPoint, asset dia.Asset, blockSize int) (filter
 func FilterVOL(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint, metadata *dia.FilterPointMetadata) {
 	metadata = dia.NewFilterPointMetadata()
 
+	lastfp := &dia.FilterPoint{}
 	for _, block := range tradeBlocks {
 		if len(block.Trades) > 0 {
 			volFilter := filters.NewFilterVOL(asset, "", blockSize)
@@ -240,7 +240,12 @@ func FilterVOL(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoint
 			if fp != nil {
 				fp.Time = time.Unix(block.TimeStamp/1e9, 0)
 				filterPoints = append(filterPoints, *fp)
+				lastfp = fp
 			}
+		} else {
+			lastfp.Value = 0
+			lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
+			filterPoints = append(filterPoints, *lastfp)
 		}
 	}
 	return

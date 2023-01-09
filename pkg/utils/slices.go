@@ -3,6 +3,7 @@ package utils
 import (
 	"math"
 	"sort"
+	"time"
 )
 
 // ArgsortableSlice is a wrapper struct around the sort interface. It allows
@@ -10,6 +11,11 @@ import (
 type ArgsortableSlice struct {
 	sort.Interface
 	idx []int
+}
+
+type TimeBin struct {
+	Starttime time.Time
+	Endtime   time.Time
 }
 
 func (as ArgsortableSlice) Ind() []int {
@@ -68,4 +74,29 @@ func Variance(series []float64) (variance float64) {
 
 func StandardDeviation(series []float64) float64 {
 	return math.Sqrt(Variance(series))
+}
+
+// MakeBins returns a slice of @TimeBin according to block sizes and time shifts.
+func MakeBins(starttime time.Time, endtime time.Time, blockSizeSeconds int64, blockShiftSeconds int64) (bins []TimeBin) {
+	timeInit := starttime
+	blockDuration := time.Duration(blockSizeSeconds) * time.Second
+
+	for timeInit.Add(blockDuration).Before(endtime) || timeInit.Add(blockDuration) == endtime {
+		b := TimeBin{Starttime: timeInit, Endtime: timeInit.Add(time.Duration(blockSizeSeconds) * time.Second)}
+		bins = append(bins, b)
+		timeInit = timeInit.Add(time.Duration(blockShiftSeconds) * time.Second)
+	}
+
+	return
+}
+
+// IsInBin returns true in case @timestamp is in half-open interval @bin.
+func IsInBin(timestamp time.Time, bin TimeBin) bool {
+	if timestamp.After(bin.Starttime) && timestamp.Before(bin.Endtime) {
+		return true
+	}
+	if timestamp == bin.Endtime {
+		return true
+	}
+	return false
 }
