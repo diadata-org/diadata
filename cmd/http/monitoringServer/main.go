@@ -76,6 +76,7 @@ type MonitoringGroup struct {
 	id            uuid.UUID
 	groupName     string
 	groupParentId uuid.UUID
+	sectionType   enums.SectionType
 }
 
 type MonitoringItem struct {
@@ -93,7 +94,7 @@ func getMonitoringGroupConfigStates(conn *pgxpool.Pool, groupParentId uuid.UUID)
 	if groupParentId != uuid.Nil {
 		parentWhere = fmt.Sprintf(" and group_parent_id = %s", groupParentId)
 	}
-	query := fmt.Sprintf("select id, group_name from monitoring_groups where active = true %s", parentWhere)
+	query := fmt.Sprintf("select id, group_name, section_type from monitoring_groups where active = true %s", parentWhere)
 
 	log.Info("reading service monitoring endpoints")
 	rows, err := conn.Query(context.Background(), query)
@@ -106,11 +107,22 @@ func getMonitoringGroupConfigStates(conn *pgxpool.Pool, groupParentId uuid.UUID)
 
 	for rows.Next() {
 		var monitoringGroup MonitoringGroup
+		var section string
 		err := rows.Scan(
 			&monitoringGroup.id,
 			&monitoringGroup.groupName,
+			&section,
 		)
-		monitorState := config.GetOperationalHealthState(monitoringGroup.groupName)
+		if err != nil {
+			log.Error("error scanning row from postgres ", err)
+			return nil
+		}
+		monitoringGroup.sectionType, err = enums.GetSectionTypeFromString(section)
+		if err != nil {
+			log.Error("error getting section from postgres ", err)
+			return nil
+		}
+		monitorState := config.GetOperationalHealthStateWithSection(monitoringGroup.groupName, monitoringGroup.sectionType)
 		itemQuery := fmt.Sprintf("select item_name, k8s_namespace, k8s_servicename from monitoring_items WHERE monitoring_group_id = '%s' AND active = true", monitoringGroup.id.String())
 		itemRows, err := conn.Query(context.Background(), itemQuery)
 		if err != nil {
@@ -124,7 +136,7 @@ func getMonitoringGroupConfigStates(conn *pgxpool.Pool, groupParentId uuid.UUID)
 				&monitoringItem.k8sNamespace,
 				&monitoringItem.k8sServiceName,
 			)
-			itemState := config.GetOperationalHealthState(monitoringItem.itemName)
+			itemState := config.GetOperationalHealthStateWithSection(monitoringItem.itemName, monitoringGroup.sectionType)
 			listOptions := metaV1.ListOptions{
 				LabelSelector: "app=" + monitoringItem.k8sServiceName,
 			}
@@ -183,13 +195,22 @@ func getMonitoringGroupConfigStates(conn *pgxpool.Pool, groupParentId uuid.UUID)
 }
 
 func mergeStateSlicesAsSubsection(name string, states []config.State) (configState config.State) {
-	configState = config.GetOperationalHealthState(name)
 
 	for _, oneSlice := range states {
+		configState = config.GetOperationalHealthStateWithSection(name, oneSlice.SectionType)
 		configState.Subsection = append(configState.Subsection, oneSlice)
-		configState.State = enums.CompareStates(oneSlice.State, configState.State)
 	}
 
+	switch configState.SectionType {
+	case enums.DatabaseSection:
+		configState.State = appendDatabaseSlicesStateLogic(states)
+		break
+	case enums.ScraperSection:
+		configState.State = appendScraperSlicesStateLogic(states)
+		break
+	case enums.ServiceSection:
+		configState.State = appendServiceSlicesStateLogic(states)
+	}
 	return
 }
 
@@ -213,4 +234,52 @@ func readAllStates() {
 	states = append(states, mergeStateSlicesAsSubsection("platform", platformStates))
 
 	CacheGlobalState = states
+}
+
+func countHealthyStates(states []config.State) (count int) {
+	count = 0
+	for _, state := range states {
+		if state.State == enums.HealthStateOperational {
+			count++
+		}
+	}
+	return
+}
+
+func appendScraperSlicesStateLogic(states []config.State) enums.HealthSate {
+	operational := float64(countHealthyStates(states)) / float64(len(states))
+	if operational >= 0.8 {
+		return enums.HealthStateOperational
+	} else if operational >= 0.5 {
+		return enums.HealthStateMinor
+	} else if operational <= 0.5 {
+		return enums.HealthStateMajor
+	}
+	return enums.HealthStateMaintenance
+}
+
+func appendServiceSlicesStateLogic(states []config.State) enums.HealthSate {
+	operational := countHealthyStates(states)
+	all := len(states)
+	if operational == len(states) {
+		return enums.HealthStateOperational
+	} else if (all - operational) == 1 {
+		return enums.HealthStateMinor
+	} else if (all - operational) > 1 {
+		return enums.HealthStateMajor
+	}
+	return enums.HealthStateMaintenance
+}
+
+func appendDatabaseSlicesStateLogic(states []config.State) enums.HealthSate {
+	operational := countHealthyStates(states)
+	all := len(states)
+	if operational == len(states) {
+		return enums.HealthStateOperational
+	} else if (all - operational) == 1 {
+		return enums.HealthStateMinor
+	} else if (all - operational) > 1 {
+		return enums.HealthStateMajor
+	}
+	return enums.HealthStateMaintenance
 }
