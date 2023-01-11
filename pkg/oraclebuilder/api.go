@@ -135,7 +135,7 @@ func (ob *Env) Create(context *gin.Context) {
 
 // list owner oracles
 func (ob *Env) List(context *gin.Context) {
-	creator := context.PostForm("creator")
+	creator := context.Query("creator")
 	oracles, err := ob.RelDB.GetOraclesByOwner(creator)
 	if err != nil {
 		log.Errorln("error GetOraclesByOwner ", err)
@@ -151,7 +151,7 @@ func (ob *Env) View(context *gin.Context) {
 		// address string
 		err error
 	)
-	oracleaddress := context.PostForm("oracleaddress")
+	oracleaddress := context.Query("oracleaddress")
 	// creator := context.PostForm("creator")
 
 	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress)
