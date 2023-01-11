@@ -32,18 +32,23 @@ func NewFilterCOUNT(asset dia.Asset, source string, childFilter string, memory i
 	return filter
 }
 
-func (filter *FilterCOUNT) Collect(filterPoint dia.PairFilterPoint) {
-	filter.collect(filterPoint)
+func (filter *FilterCOUNT) Collect(filterPoint dia.PairFilterPoint, starttime time.Time, endtime time.Time) {
+	filter.collect(filterPoint, starttime, endtime)
 }
 
 func (filter *FilterCOUNT) FinalCompute(t time.Time) {
 	filter.finalCompute(t)
 }
 
-func (filter *FilterCOUNT) collect(filterPoint dia.PairFilterPoint) {
-	filter.modified = true
+func (filter *FilterCOUNT) collect(filterPoint dia.PairFilterPoint, starttime time.Time, endtime time.Time) {
+	if filterPoint.Name != filter.childName {
+		// Additional safety check. Child filter method does not match metafilter's name.
+		log.Warn("filter point does not come from the correct child filter.")
+		return
+	}
 	filter.numTrades += int64(filterPoint.Value)
-	filter.currentTime = filterPoint.LastTrade.Time
+	filter.currentTime = endtime
+	filter.modified = true
 }
 
 func (filter *FilterCOUNT) finalCompute(t time.Time) float64 {

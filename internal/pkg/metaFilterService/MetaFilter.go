@@ -12,7 +12,7 @@ import (
 
 // Filter interface defines a filter's methods processing trades from the tradesBlockService.
 type MetaFilter interface {
-	collect(filterPoint dia.PairFilterPoint)
+	collect(filterPoint dia.PairFilterPoint, starttime time.Time, endtime time.Time)
 	finalCompute(t time.Time) float64
 	filterPointForBlock() *dia.MetaFilterPoint
 	save(ds models.Datastore) error
@@ -59,8 +59,10 @@ func removeOutliersScaled(samples []float64, scale float64) ([]float64, []int) {
 // computeMean returns the weighted mean of @samples with @weights.
 // Special case of non-weighted mean is obtained by setting weights to constant 1-slice.
 func computeMean(samples []float64, weights []float64) (mean float64, err error) {
-	var totalPrice float64
-	var totalVolume float64
+	var (
+		totalPrice  float64
+		totalVolume float64
+	)
 	length := float64(len(samples))
 	if length == 0 {
 		return 0, nil

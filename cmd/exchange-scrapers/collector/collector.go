@@ -77,10 +77,11 @@ func main() {
 	es := scrapers.NewAPIScraper(*exchange, true, configApi.ApiKey, configApi.SecretKey, relDB)
 
 	// Set up kafka writer.
-	wTest := kafkaHelper.NewWriter(kafkaHelper.TopicTrades)
+	w := kafkaHelper.NewWriter(kafkaHelper.TopicTrades)
+	log.Info("writer topic: ", w.Topic)
 
 	defer func() {
-		err := wTest.Close()
+		err := w.Close()
 		if err != nil {
 			log.Error(err)
 		}
@@ -111,10 +112,10 @@ func main() {
 		defer wg.Wait()
 
 	}
-	go handleTrades(es.Channel(), &wg, wTest, ds, *exchange)
+	go handleTrades(es.Channel(), &wg, w, ds, *exchange)
 }
 
-func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, wTest *kafka.Writer, ds *models.DB, exchange string) {
+func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, ds *models.DB, exchange string) {
 	lastTradeTime := time.Now()
 	watchdogDelay := scrapers.Exchanges[exchange].WatchdogDelay
 	if watchdogDelay == 0 {
@@ -138,9 +139,9 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, wTest *kafka.Writer, ds
 			lastTradeTime = time.Now()
 
 			// Write trade to test Kafka.
-			err := writeTradeToKafka(wTest, t)
+			err := writeTradeToKafka(w, t)
 			if err != nil {
-				log.Error(err)
+				log.Error("write to kafka: ", err)
 			}
 
 		}

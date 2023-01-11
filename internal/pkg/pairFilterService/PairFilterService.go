@@ -206,7 +206,7 @@ func (s *FiltersBlockService) computeFilters(trade dia.Trade, exchange string) {
 // ProcessTradesBlock sends a filled tradesBlock into the filtersBlock channel.
 func (s *FiltersBlockService) ProcessTradesBlock(tradesBlock *dia.TradesBlock) {
 	s.chanTradesBlock <- tradesBlock
-	log.Info("Processing TradesBlock done.")
+	log.Info("Processing TradesBlock in PairFilterService done.")
 }
 
 // Close gracefully closes the Filtersblockservice

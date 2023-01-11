@@ -114,7 +114,7 @@ func (filter *FilterMAIR) finalCompute(t time.Time) float64 {
 		return 0.0
 	}
 	filter.value = mean
-	// Reduce the filter values to the last recorded value for the next tradesblock.
+	// Reduce the filter values to the last recorded value for the next filtersblock.
 	if len(filter.prices) > 0 && len(filter.volumes) > 0 {
 		filter.prices = []float64{filter.lastTrade.EstimatedUSDPrice}
 		filter.volumes = []float64{filter.lastTrade.Volume}

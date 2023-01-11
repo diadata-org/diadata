@@ -51,10 +51,6 @@ func (filter *FilterCOUNT) finalCompute(t time.Time) float64 {
 }
 
 func (filter *FilterCOUNT) filterPointForBlock() *dia.PairFilterPoint {
-	return nil
-}
-
-func (filter *FilterCOUNT) FilterPointForBlock() *dia.PairFilterPoint {
 	return &dia.PairFilterPoint{
 		Pair:   filter.pair,
 		Source: filter.exchange,
@@ -62,6 +58,10 @@ func (filter *FilterCOUNT) FilterPointForBlock() *dia.PairFilterPoint {
 		Name:   filter.filterName,
 		Time:   filter.currentTime,
 	}
+}
+
+func (filter *FilterCOUNT) FilterPointForBlock() *dia.PairFilterPoint {
+	return filter.filterPointForBlock()
 }
 
 func (filter *FilterCOUNT) save(ds models.Datastore) error {

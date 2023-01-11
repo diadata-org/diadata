@@ -277,7 +277,7 @@ func (rdb *RelDB) GetNumPairs(exchange dia.Exchange) (numPairs int, err error) {
 		}
 		numPairs = len(pairs)
 	case "DEX":
-		pools, err := rdb.GetAllPoolAddrsExchange(exchange.Name)
+		pools, err := rdb.GetAllPoolAddrsExchange(exchange.Name, float64(0))
 		if err != nil {
 			return len(pools), err
 		}

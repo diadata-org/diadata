@@ -76,8 +76,9 @@ func (s *MetaFilterService) mainLoop() {
 			log.Println("Filters shutting down")
 			s.cleanup(nil)
 			return
-		case fb, ok := <-s.chanFiltersBlock:
-			log.Info("receive tradesBlock for further processing ok: ", ok)
+		case fb := <-s.chanFiltersBlock:
+			log.Infof("receive %v pairFilters for further processing: ", len(fb.FiltersBlockData.FilterPoints))
+			log.Info("filtersblock begin and endtime: ", fb.FiltersBlockData.BeginTime, fb.FiltersBlockData.EndTime)
 			s.processFiltersBlock(fb)
 		}
 	}
@@ -87,13 +88,15 @@ func (s *MetaFilterService) mainLoop() {
 // computations are done here.
 func (s *MetaFilterService) processFiltersBlock(fb *dia.FiltersBlock) {
 
-	log.Infof("processFiltersBlock starting with %v filter points. ", len(fb.FiltersBlockData.FilterPoints))
+	blockStarttime := fb.FiltersBlockData.BeginTime
+	blockEndtime := fb.FiltersBlockData.EndTime
+	log.Infof("%v -- %v : processFiltersBlock starting with %v filter points. ", blockStarttime, blockEndtime, len(fb.FiltersBlockData.FilterPoints))
 
 	for _, filterPoint := range fb.FiltersBlockData.FilterPoints {
 		s.createMetaFilters(filterPoint, filterPoint.Source, fb.FiltersBlockData.BeginTime)
 		s.createMetaFilters(filterPoint, "", fb.FiltersBlockData.BeginTime)
-		s.computeMetaFilters(filterPoint, filterPoint.Source)
-		s.computeMetaFilters(filterPoint, "")
+		s.computeMetaFilters(filterPoint, filterPoint.Source, blockStarttime, blockEndtime)
+		s.computeMetaFilters(filterPoint, "", blockStarttime, blockEndtime)
 	}
 
 	t0 := time.Now()
@@ -170,21 +173,21 @@ func (s *MetaFilterService) createMetaFilters(filterPoint dia.PairFilterPoint, s
 	}
 }
 
-func (s *MetaFilterService) computeMetaFilters(filterPoint dia.PairFilterPoint, source string) {
+func (s *MetaFilterService) computeMetaFilters(filterPoint dia.PairFilterPoint, source string, starttime time.Time, endtime time.Time) {
 	mfi := metaFilterIdentifier{
 		IdentifierQuotetoken: getIdentifier(filterPoint.Pair.QuoteToken),
 		filterName:           filterPoint.Name,
 		source:               source,
 	}
 	for _, f := range s.metaFilters[mfi] {
-		f.collect(filterPoint)
+		f.collect(filterPoint, starttime, endtime)
 	}
 }
 
 // ProcessFiltersBlock sends a filled fitlersBlock into the filtersBlock channel.
 func (s *MetaFilterService) ProcessFiltersBlock(filtersBlock *dia.FiltersBlock) {
 	s.chanFiltersBlock <- filtersBlock
-	log.Info("Processing TradesBlock done.")
+	log.Info("Processing PairFilters in MetaFilterService done.")
 }
 
 // Close gracefully closes the Filtersblockservice

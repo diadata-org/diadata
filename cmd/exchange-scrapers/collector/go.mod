@@ -8,6 +8,8 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 )
 
+replace github.com/diadata-org/diadata => /home/philipp/go/src/github.com/diadata-org/diadata
+
 require (
 	contrib.go.opencensus.io/exporter/stackdriver v0.13.4 // indirect
 	filippo.io/edwards25519 v1.0.0-rc.1 // indirect
@@ -114,5 +116,3 @@ require (
 	gopkg.in/sourcemap.v1 v1.0.5 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
-
-replace github.com/diadata-org/diadata => /home/philipp/go/src/github.com/diadata-org/diadata

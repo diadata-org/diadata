@@ -103,6 +103,7 @@ func (s *FilterVWAP) finalCompute(t time.Time) float64 {
 func (s *FilterVWAP) FilterPointForBlock() *dia.PairFilterPoint {
 	return s.filterPointForBlock()
 }
+
 func (s *FilterVWAP) filterPointForBlock() *dia.PairFilterPoint {
 	if s.exchange != "" {
 		return &dia.PairFilterPoint{

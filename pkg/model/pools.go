@@ -11,7 +11,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
-	"github.com/jackc/pgx/v4"
+	pgx "github.com/jackc/pgx/v4"
 )
 
 // SavePoolInflux stores a DEX pool in influx.
@@ -200,9 +200,22 @@ func (rdb *RelDB) GetPoolByAddress(blockchain string, address string) (pool dia.
 }
 
 // GetAllPoolAddrsExchange returns all pool addresses available for @exchange.
-func (rdb *RelDB) GetAllPoolAddrsExchange(exchange string) (addresses []string, err error) {
-	var rows pgx.Rows
-	query := fmt.Sprintf("SELECT address FROM %s WHERE exchange=$1", poolTable)
+func (rdb *RelDB) GetAllPoolAddrsExchange(exchange string, liquiThreshold float64) (addresses []string, err error) {
+	var (
+		rows  pgx.Rows
+		query string
+	)
+	if liquiThreshold == float64(0) {
+		query = fmt.Sprintf("SELECT address FROM %s WHERE exchange=$1", poolTable)
+	} else {
+		query = fmt.Sprintf(`
+		SELECT address 
+		FROM %s p 
+		INNER JOIN %s pa 
+		ON p.pool_id=pa.pool_id 
+		WHERE pa.liquidity>%v
+		`, poolTable, poolassetTable, liquiThreshold)
+	}
 	rows, err = rdb.postgresClient.Query(context.Background(), query, exchange)
 	if err != nil {
 		return

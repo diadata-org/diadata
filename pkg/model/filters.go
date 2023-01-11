@@ -14,6 +14,7 @@ import (
 
 // SetFilter stores a filter point
 func (datastore *DB) SetFilter(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error {
+	// log.Infof("%v -- set filter %s of asset %v. value: %v ", t, filter, asset, value)
 	err := datastore.SaveFilterInflux(filter, asset, exchange, value, t)
 	if err != nil {
 		return err
@@ -53,7 +54,7 @@ func (datastore *DB) SaveFilterInflux(filter string, asset dia.Asset, exchange s
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbFiltersTable, tags, fields, t)
 	if err != nil {
-		log.Errorln("new filter influx:", err)
+		log.Errorln("set filter influx:", err)
 	} else {
 		datastore.addPoint(pt)
 	}
@@ -78,7 +79,7 @@ func (datastore *DB) SavePairFilterInflux(filter string, pair dia.Pair, exchange
 	}
 	pt, err := clientInfluxdb.NewPoint(influxDbPairFiltersTable, tags, fields, t)
 	if err != nil {
-		log.Errorln("new filter influx:", err)
+		log.Errorln("set pairfilter influx:", err)
 	} else {
 		datastore.addPoint(pt)
 	}

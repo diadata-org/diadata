@@ -77,9 +77,6 @@ func (filter *FilterMEDIR) finalCompute(t time.Time) float64 {
 }
 
 func (filter *FilterMEDIR) filterPointForBlock() *dia.PairFilterPoint {
-	if filter.exchange != "" || filter.filterName != dia.FilterKing {
-		return nil
-	}
 	return &dia.PairFilterPoint{
 		Pair:   filter.pair,
 		Source: filter.exchange,
@@ -90,14 +87,9 @@ func (filter *FilterMEDIR) filterPointForBlock() *dia.PairFilterPoint {
 }
 
 func (filter *FilterMEDIR) FilterPointForBlock() *dia.PairFilterPoint {
-	return &dia.PairFilterPoint{
-		Pair:   filter.pair,
-		Source: filter.exchange,
-		Value:  filter.value,
-		Name:   filter.filterName,
-		Time:   filter.currentTime,
-	}
+	return filter.filterPointForBlock()
 }
+
 func (filter *FilterMEDIR) save(ds models.Datastore) error {
 	if filter.modified {
 		filter.modified = false
