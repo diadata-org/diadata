@@ -28,7 +28,7 @@ type Env struct {
 
 var log = logrus.New()
 
-func (ob *Env) InitiateOracle(context *gin.Context) {
+func (ob *Env) Create(context *gin.Context) {
 
 	var (
 		address string
@@ -49,14 +49,14 @@ func (ob *Env) InitiateOracle(context *gin.Context) {
 
 	k := make(map[string]string)
 
-	log.Println("oracleaddress", oracleaddress)
-	log.Println("chainId", chainID)
-	log.Println("creator", creator)
-	log.Println("symbols", symbols)
-	log.Println("signeddata", signedData)
-	log.Println("feederId", feederID)
-	log.Println("frequency", frequency)
-	log.Println("sleepSeconds", sleepSeconds)
+	log.Infoln("oracleaddress", oracleaddress)
+	log.Infoln("chainId", chainID)
+	log.Infoln("creator", creator)
+	log.Infoln("symbols", symbols)
+	log.Infoln("signeddata", signedData)
+	log.Infoln("feederId", feederID)
+	log.Infoln("frequency", frequency)
+	log.Infoln("sleepSeconds", sleepSeconds)
 
 	signer, _ := utils.GetSigner(chainID, creator, oracleaddress, signedData)
 
@@ -71,7 +71,6 @@ func (ob *Env) InitiateOracle(context *gin.Context) {
 
 	if feederID == "" {
 		limit := ob.RelDB.GetFeederLimit(creator)
-
 		total := ob.RelDB.GetTotalFeeder(creator)
 
 		log.Infoln("limit", limit)
@@ -123,7 +122,7 @@ func (ob *Env) InitiateOracle(context *gin.Context) {
 
 	}
 
-	log.Println("owneraddress GetFeederAccessByID", address)
+	log.Infoln("owneraddress GetFeederAccessByID", address)
 
 	k["oracleaddress"] = oracleaddress
 	k["chainId"] = chainID
@@ -132,4 +131,35 @@ func (ob *Env) InitiateOracle(context *gin.Context) {
 	k["publicKey"] = address
 
 	context.JSON(http.StatusCreated, k)
+}
+
+// list owner oracles
+func (ob *Env) List(context *gin.Context) {
+	creator := context.PostForm("creator")
+	oracles, err := ob.RelDB.GetOraclesByOwner(creator)
+	if err != nil {
+		log.Errorln("error GetOraclesByOwner ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	context.JSON(http.StatusOK, oracles)
+}
+
+// view oracle config
+func (ob *Env) View(context *gin.Context) {
+	var (
+		// address string
+		err error
+	)
+	oracleaddress := context.PostForm("oracleaddress")
+	// creator := context.PostForm("creator")
+
+	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress)
+	if err != nil {
+		log.Errorln("error GetOracleConfig ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	context.JSON(http.StatusOK, oracleconfig)
+
 }

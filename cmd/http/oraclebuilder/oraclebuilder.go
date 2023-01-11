@@ -49,7 +49,7 @@ func main() {
 		AllowedBackends: []keyring.BackendType{keyring.K8Secret},
 	})
 
-	ob := &oraclebuilder.Env{RelDB: relStore, PodHelper: ph, Keyring: ring}
+	oracle := &oraclebuilder.Env{RelDB: relStore, PodHelper: ph, Keyring: ring}
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{"*"},
@@ -58,7 +58,9 @@ func main() {
 	}))
 	routerGroup := r.Group("/oraclebuilder")
 
-	routerGroup.POST("/", ob.InitiateOracle)
+	routerGroup.POST("/create", oracle.Create)
+	routerGroup.GET("/list", oracle.List)
+	routerGroup.GET("/view", oracle.View)
 
 	port := utils.Getenv("LISTEN_PORT", ":8080")
 

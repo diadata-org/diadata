@@ -4,6 +4,10 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/jackc/pgx/v4"
 )
 
 func (rdb *RelDB) SetKeyPair(publickey string, privatekey string) error {
@@ -55,17 +59,6 @@ func (rdb *RelDB) GetFeederID(address string) (feederId string) {
 	return
 }
 
-func (rdb *RelDB) GetOracleConfig(address string) (oracleconfigid string) {
-	query := fmt.Sprintf(`SELECT id FROM %s 
-	WHERE address=$1`, oracleconfigTable)
-	log.Infoln("GetOracleConfig query", query)
-	log.Infoln("GetOracleConfig address", address)
-
-	rdb.postgresClient.QueryRow(context.Background(), query, address).Scan(&oracleconfigid)
-
-	return
-}
-
 func (rdb *RelDB) SetFeederConfig(feederid, oracleconfigid string) error {
 	query := fmt.Sprintf(`INSERT INTO %s 
 	(id, oracleconfig_id) VALUES ($1,$2) on conflict(id)  
@@ -96,5 +89,54 @@ func (rdb *RelDB) GetTotalFeeder(owner string) (total int) {
 	query := fmt.Sprintf(`SELECT count(*) from  %s 
 	WHERE owner=$1`, oracleconfigTable)
 	rdb.postgresClient.QueryRow(context.Background(), query, owner).Scan(&total)
+	return
+}
+
+func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleConfig, err error) {
+	var (
+		rows pgx.Rows
+	)
+
+	query := fmt.Sprintf(`
+	SELECT address, feeder_id, owner,symbols, chainid 
+	FROM %s 
+	WHERE owner=$1`, oracleconfigTable)
+	rows, err = rdb.postgresClient.Query(context.Background(), query, owner)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			oracleconfig dia.OracleConfig
+			symbols      string
+		)
+		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID)
+		if err != nil {
+			log.Error(err)
+		}
+
+		oracleconfig.Symbols = strings.Split(symbols, " ")
+
+		oracleconfigs = append(oracleconfigs, oracleconfig)
+	}
+	return
+}
+
+func (rdb *RelDB) GetOracleConfig(address string) (oracleconfig dia.OracleConfig, err error) {
+	var (
+		symbols string
+	)
+	query := fmt.Sprintf(`
+	SELECT address, feeder_id, owner,symbols, chainid 
+	FROM %s 
+	WHERE address=$1`, oracleconfigTable)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, address).Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID)
+	if err != nil {
+		return
+	}
+	oracleconfig.Symbols = strings.Split(symbols, " ")
+
 	return
 }

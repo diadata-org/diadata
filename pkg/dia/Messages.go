@@ -653,3 +653,11 @@ func (e *SuppliesBlock) UnmarshalBinary(data []byte) error {
 	}
 	return nil
 }
+
+type OracleConfig struct {
+	Symbols  []string
+	FeederID string
+	Address  string
+	Owner    string
+	ChainID  string
+}

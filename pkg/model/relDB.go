@@ -154,6 +154,9 @@ type RelDatastore interface {
 	SetOracleConfig(address, keypairID, creator, symbols, chainID string) error
 	SetFeederConfig(feederid, oracleconfigid string) error
 	GetFeederID(address string) (feederId string)
+	GetFeederLimit(owner string) (limit int)
+	GetTotalFeeder(owner string) (total int)
+	GetOracleConfig(address string) (oracleconfig dia.OracleConfig, err error)
 }
 
 const (
