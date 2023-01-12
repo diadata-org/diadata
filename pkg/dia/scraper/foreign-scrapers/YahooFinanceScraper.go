@@ -70,9 +70,11 @@ func NewYahooFinScraper(datastore models.Datastore) (s *YahooFinScraper) {
 	}
 
 	// Because Yahoo Finance don't have any public endpoint to discover available currency's symbols,
-	//   we need to scrape webpage to extract metadata. This map is the fallback in case crawling procces fail.
+	// we need to scrape webpage to extract metadata. This map is the fallback in case crawling procces fail.
 	// The data was extracted on Jan10 2023, maps the Yahoo Finance symbols to a pair of ISO 4217 friendly format.
 	currencyMapDefault := map[string]string{
+		"TRYUSD=X": "TRY/USD",
+		"NGNUSD=X": "NGN/USD",
 		"EURUSD=X": "EUR/USD",
 		"JPY=X":    "USD/JPY",
 		"GBPUSD=X": "GBP/USD",
@@ -108,9 +110,12 @@ func NewYahooFinScraper(datastore models.Datastore) (s *YahooFinScraper) {
 		for _, currency := range data {
 			currencyMap[currency.Symbol] = currency.Name
 		}
-		if len(currencyMap) == 0 {
-			log.Warnln("Crawling process does not find any currency, using default map")
-			currencyMap = currencyMapDefault
+		if len(currencyMap) < len(currencyMapDefault) {
+			for symbol, name := range currencyMapDefault {
+				if _, ok := currencyMap[symbol]; !ok {
+					currencyMap[symbol] = name
+				}
+			}
 		}
 	}
 
@@ -210,7 +215,6 @@ func (scraper *YahooFinScraper) getCurrencies() (quoteResp yahooFinHttpQuoteResp
 	}
 	q.Add("symbols", strings.Join(symbols, ","))
 	req.URL.RawQuery = q.Encode()
-
 	// Make the request and unmarshal the response
 	resp, err := client.Do(req)
 	if err != nil {
