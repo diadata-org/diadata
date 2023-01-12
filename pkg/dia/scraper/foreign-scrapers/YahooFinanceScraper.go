@@ -42,6 +42,7 @@ type yahooFinHttpQuoteResp struct {
 const (
 	yahooFinSource            = "YahooFinance"
 	yahooFinUpdateFreqDefault = 60 * 2 // Default update frequency (in seconds)
+	yahooFinUpdateFreqEnv     = "YAHOOFIN_UPDATE_FREQ"
 	yahooFinWebCurrencies     = "https://finance.yahoo.com/currencies"
 	yahooFinHttpV10Host       = "https://query1.finance.yahoo.com"
 	yahooFinHttpV11Host       = "https://query2.finance.yahoo.com"
@@ -49,7 +50,7 @@ const (
 	yahooFinTypeCurrency      = "CURRENCY"
 )
 
-func NewYahooFinScraper(datastore models.Datastore) *YahooFinScraper {
+func NewYahooFinScraper(datastore models.Datastore) (s *YahooFinScraper) {
 	foreignScrapper := ForeignScraper{
 		shutdown:      make(chan nothing),
 		error:         nil,
@@ -59,15 +60,18 @@ func NewYahooFinScraper(datastore models.Datastore) *YahooFinScraper {
 
 	// Define the update frequency
 	updateFreq := yahooFinUpdateFreqDefault * time.Second
-	yahooFinUpdateFreqEnv, err := strconv.ParseInt(utils.Getenv("YAHOOFIN_UPDATE_FREQ", "0"), 10, 64)
+	yahooFinUpdateFreqEnv, err := strconv.ParseInt(utils.Getenv(yahooFinUpdateFreqEnv, "0"), 10, 64)
 	if err != nil {
-		log.Error("Parse YAHOOFIN_UPDATE_FREQ: ", err)
+		log.Errorf("parse fail to %s env variable: %s", yahooFinUpdateFreqEnv, err)
+		return
 	}
 	if yahooFinUpdateFreqEnv != 0 {
 		updateFreq = time.Duration(yahooFinUpdateFreqEnv) * time.Second
 	}
 
-	// Map Yahoo currency's symbols to a ISO 4217 friendly format
+	// Because Yahoo Finance don't have any public endpoint to discover available currency's symbols,
+	//   we need to scrape webpage to extract metadata. This map is the fallback in case crawling procces fail.
+	// The data was extracted on Jan10 2023, maps the Yahoo Finance symbols to a pair of ISO 4217 friendly format.
 	currencyMapDefault := map[string]string{
 		"EURUSD=X": "EUR/USD",
 		"JPY=X":    "USD/JPY",
@@ -93,13 +97,24 @@ func NewYahooFinScraper(datastore models.Datastore) *YahooFinScraper {
 		"ZAR=X":    "USD/ZAR",
 		"RUB=X":    "USD/RUB",
 	}
-	currencyMap, err := discoverCurrencies()
-	if err != nil || len(currencyMap) == 0 {
-		log.Warnln(err)
+
+	log.Infoln("Trying to extract symbol/name metadata from Yahoo by crawling the webpage")
+	currencyMap := make(map[string]string)
+	data, err := crawlCurrencies()
+	if err != nil {
+		log.Warnf("Failed to crawl currencies, using default map: %s", err)
 		currencyMap = currencyMapDefault
+	} else {
+		for _, currency := range data {
+			currencyMap[currency.Symbol] = currency.Name
+		}
+		if len(currencyMap) == 0 {
+			log.Warnln("Crawling process does not find any currency, using default map")
+			currencyMap = currencyMapDefault
+		}
 	}
 
-	s := &YahooFinScraper{
+	s = &YahooFinScraper{
 		ticker:          time.NewTicker(updateFreq),
 		foreignScrapper: foreignScrapper,
 		currenciesMap:   currencyMap,
@@ -208,20 +223,6 @@ func (scraper *YahooFinScraper) getCurrencies() (quoteResp yahooFinHttpQuoteResp
 	}
 
 	return quoteResp, nil
-}
-
-// discoverCurrencies crawl Yahoo Finance currencies webpage and return a map of currency symbol to name
-func discoverCurrencies() (map[string]string, error) {
-	log.Infoln("Discovering currency's metadata")
-	data, err := crawlCurrencies()
-	if err != nil {
-		return map[string]string{}, err
-	}
-	currencyMap := make(map[string]string)
-	for _, currency := range data {
-		currencyMap[currency.Symbol] = currency.Name
-	}
-	return currencyMap, nil
 }
 
 // crawlCurrencies crawl Yahoo Finance currencies webpage and return a slice of currency metadata
