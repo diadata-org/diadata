@@ -50,6 +50,8 @@ async function getBiFrostValues(token) {
     total_issued: vtokenIssuance.toString(),
     decimal: 12,
     token: token,
+    time: Date.now(),
+
   };
 }
 
