@@ -5,7 +5,7 @@ const {
   totalUserVaultCollateral,
   collateralCurrencies,
 } = require("./helper");
-const { tokenPool, bifrosttokenIssuance } = require("./bifrosthelper");
+const { tokenPool, bifrosttokenIssuance ,vTokenIssuance} = require("./bifrosthelper");
 
 const ethers = require("ethers");
 const bignumber = ethers.BigNumber;
@@ -31,23 +31,23 @@ async function getBiFrostValues(token) {
   });
 
   let tokeninpool = await tokenPool(api, token);
-  let tokenIssuance = await bifrosttokenIssuance(api, token);
+  // let tokenIssuance = await bifrosttokenIssuance(api, token);
+  let vtokenIssuance = await vTokenIssuance(api,token)
 
   bignumber.from(
     tokeninpool.replaceAll(",", "")
   ).toString()
 
   console.log("tokeninpool",tokeninpool)
-  console.log("tokenIssuance",tokenIssuance)
+
+  
 
 
   return {
     total_backable:  bignumber.from(
       tokeninpool.replaceAll(",", "")
     ).toString(),
-    total_issued:  bignumber.from(
-      tokenIssuance.replaceAll(",", "")
-    ).toString(),
+    total_issued: vtokenIssuance.toString(),
     decimal: 12,
     token: token,
   };

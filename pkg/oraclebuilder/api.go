@@ -58,7 +58,7 @@ func (ob *Env) Create(context *gin.Context) {
 	log.Infoln("frequency", frequency)
 	log.Infoln("sleepSeconds", sleepSeconds)
 
-	signer, _ := utils.GetSigner(chainID, creator, oracleaddress, signedData)
+	signer, _ := utils.GetSigner(chainID, creator, oracleaddress, "Verify its your address to call oracle builder", signedData)
 
 	log.Infoln("signer", signer)
 
@@ -157,6 +157,30 @@ func (ob *Env) View(context *gin.Context) {
 	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress)
 	if err != nil {
 		log.Errorln("error GetOracleConfig ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	context.JSON(http.StatusOK, oracleconfig)
+
+}
+
+func (ob *Env) Delete(context *gin.Context) {
+	var (
+		// address string
+		err error
+	)
+	oracleaddress := context.Query("oracleaddress")
+	// creator := context.PostForm("creator")
+
+	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress)
+	if err != nil {
+		log.Errorln("error GetOracleConfig ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	err = ob.PodHelper.DeleteOracleFeeder(oracleconfig.FeederID)
+	if err != nil {
+		log.Errorln("error DeleteOracleFeeder ", err)
 		context.JSON(http.StatusInternalServerError, err)
 		return
 	}
