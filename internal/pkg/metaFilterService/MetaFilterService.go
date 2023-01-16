@@ -93,6 +93,9 @@ func (s *MetaFilterService) processFiltersBlock(fb *dia.FiltersBlock) {
 	log.Infof("%v -- %v : processFiltersBlock starting with %v filter points. ", blockStarttime, blockEndtime, len(fb.FiltersBlockData.FilterPoints))
 
 	for _, filterPoint := range fb.FiltersBlockData.FilterPoints {
+		if filterPoint.Pair.QuoteToken.Blockchain == "BitcoinCash" && filterPoint.Name == "MAIR120" {
+			log.Warnf("filter point block volume on exchange %s: %v", filterPoint.Source, filterPoint.BlockVolume)
+		}
 		s.createMetaFilters(filterPoint, filterPoint.Source, fb.FiltersBlockData.BeginTime)
 		s.createMetaFilters(filterPoint, "", fb.FiltersBlockData.BeginTime)
 		s.computeMetaFilters(filterPoint, filterPoint.Source, blockStarttime, blockEndtime)
@@ -153,22 +156,22 @@ func (s *MetaFilterService) createMetaFilters(filterPoint dia.PairFilterPoint, s
 				NewFilterAIR(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.MAIR_FILTER+blockSizeString, BeginTime, dia.BlockSizeSeconds),
 				// NewFilter...
 			}
-		case dia.MEDIR_FILTER + blockSizeString:
-			s.metaFilters[mfi] = []MetaFilter{
-				NewFilterAIR(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.MEDIR_FILTER+blockSizeString, BeginTime, dia.BlockSizeSeconds),
-			}
-		case dia.VOL_FILTER + blockSizeString:
-			s.metaFilters[mfi] = []MetaFilter{
-				NewFilterVOL(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.VOL_FILTER+blockSizeString, dia.BlockSizeSeconds),
-			}
-		case dia.COUNT_FILTER + blockSizeString:
-			s.metaFilters[mfi] = []MetaFilter{
-				NewFilterCOUNT(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.COUNT_FILTER+blockSizeString, dia.BlockSizeSeconds),
-			}
-		case dia.TLT_FILTER + blockSizeString:
-			s.metaFilters[mfi] = []MetaFilter{
-				NewFilterTLT(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.TLT_FILTER+blockSizeString, dia.BlockSizeSeconds),
-			}
+			// case dia.MEDIR_FILTER + blockSizeString:
+			// 	s.metaFilters[mfi] = []MetaFilter{
+			// 		NewFilterAIR(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.MEDIR_FILTER+blockSizeString, BeginTime, dia.BlockSizeSeconds),
+			// 	}
+			// case dia.VOL_FILTER + blockSizeString:
+			// 	s.metaFilters[mfi] = []MetaFilter{
+			// 		NewFilterVOL(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.VOL_FILTER+blockSizeString, dia.BlockSizeSeconds),
+			// 	}
+			// case dia.COUNT_FILTER + blockSizeString:
+			// 	s.metaFilters[mfi] = []MetaFilter{
+			// 		NewFilterCOUNT(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.COUNT_FILTER+blockSizeString, dia.BlockSizeSeconds),
+			// 	}
+			// case dia.TLT_FILTER + blockSizeString:
+			// 	s.metaFilters[mfi] = []MetaFilter{
+			// 		NewFilterTLT(filterPoint.Pair.QuoteToken, filterPoint.Source, dia.TLT_FILTER+blockSizeString, dia.BlockSizeSeconds),
+			// 	}
 		}
 	}
 }

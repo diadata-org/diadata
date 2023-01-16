@@ -17,6 +17,7 @@ type FilterMAIR struct {
 	pair        dia.Pair
 	exchange    string
 	currentTime time.Time
+	endTime     time.Time
 	prices      []float64
 	volumes     []float64
 	blockVolume float64
@@ -28,13 +29,14 @@ type FilterMAIR struct {
 }
 
 // NewFilterMAIR returns a FilterMAIR
-func NewFilterMAIR(pair dia.Pair, exchange string, currentTime time.Time, memory int) *FilterMAIR {
+func NewFilterMAIR(pair dia.Pair, exchange string, currentTime time.Time, endTime time.Time, memory int) *FilterMAIR {
 	filter := &FilterMAIR{
 		pair:        pair,
 		exchange:    exchange,
 		prices:      []float64{},
 		volumes:     []float64{},
 		currentTime: currentTime,
+		endTime:     endTime,
 		memory:      memory,
 		filterName:  "MAIR" + strconv.Itoa(memory),
 	}
@@ -46,13 +48,14 @@ func (filter *FilterMAIR) Compute(trade dia.Trade) {
 }
 
 func (filter *FilterMAIR) compute(trade dia.Trade) {
-	filter.modified = true
 	if filter.lastTrade != (dia.Trade{}) {
 		if trade.Time.Before(filter.currentTime) {
 			log.Errorln("FilterMAIR: Ignoring Trade out of order ", filter.currentTime, trade.Time)
 			return
 		}
 	}
+	filter.modified = true
+	filter.blockVolume += math.Abs(trade.Volume)
 	filter.fill(trade)
 	filter.lastTrade = trade
 }
@@ -88,7 +91,6 @@ func (filter *FilterMAIR) processDataPoint(trade dia.Trade) {
 	}
 	filter.prices = append([]float64{trade.EstimatedUSDPrice}, filter.prices...)
 	filter.volumes = append([]float64{trade.Volume}, filter.volumes...)
-	filter.blockVolume += math.Abs(trade.Volume)
 }
 
 func (filter *FilterMAIR) FinalCompute(t time.Time) float64 {
@@ -119,6 +121,12 @@ func (filter *FilterMAIR) finalCompute(t time.Time) float64 {
 		filter.prices = []float64{filter.lastTrade.EstimatedUSDPrice}
 		filter.volumes = []float64{filter.lastTrade.Volume}
 	}
+	// if filter.pair.QuoteToken.Blockchain == "BitcoinCash" {
+	// 	log.Info("pair: ", filter.pair.QuoteToken.Symbol+"-"+filter.pair.BaseToken.Symbol)
+	// 	log.Info("prices: ", filter.prices)
+	// 	log.Info("volumes: ", filter.volumes)
+	// 	log.Info("block volume: ", filter.blockVolume)
+	// }
 	return filter.value
 }
 
@@ -129,7 +137,7 @@ func (filter *FilterMAIR) FilterPointForBlock() *dia.PairFilterPoint {
 		Value:       filter.value,
 		Name:        filter.filterName,
 		BlockVolume: filter.blockVolume,
-		Time:        filter.currentTime,
+		Time:        filter.endTime,
 	}
 }
 
@@ -140,14 +148,15 @@ func (filter *FilterMAIR) filterPointForBlock() *dia.PairFilterPoint {
 		Value:       filter.value,
 		Name:        filter.filterName,
 		BlockVolume: filter.blockVolume,
-		Time:        filter.currentTime,
+		Time:        filter.endTime,
 	}
 }
 
 func (filter *FilterMAIR) save(ds models.Datastore) error {
 	if filter.modified {
 		filter.modified = false
-		err := ds.SetPairFilter(filter.filterName, filter.pair, filter.exchange, filter.value, filter.currentTime)
+		filter.blockVolume = 0
+		err := ds.SetPairFilter(filter.filterName, filter.pair, filter.exchange, filter.value, filter.endTime)
 		if err != nil {
 			log.Errorln("FilterMAIR: Error:", err)
 		}

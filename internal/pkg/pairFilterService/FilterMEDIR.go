@@ -16,6 +16,7 @@ type FilterMEDIR struct {
 	pair        dia.Pair
 	exchange    string
 	currentTime time.Time
+	endTime     time.Time
 	prices      []float64
 	lastTrade   dia.Trade
 	memory      int
@@ -25,12 +26,13 @@ type FilterMEDIR struct {
 }
 
 // NewFilterMEDIR creates a FilterMEDIR
-func NewFilterMEDIR(pair dia.Pair, exchange string, currentTime time.Time, memory int) *FilterMEDIR {
+func NewFilterMEDIR(pair dia.Pair, exchange string, currentTime time.Time, endTime time.Time, memory int) *FilterMEDIR {
 	filter := &FilterMEDIR{
 		pair:        pair,
 		exchange:    exchange,
 		prices:      []float64{},
 		currentTime: currentTime,
+		endTime:     endTime,
 		memory:      memory,
 		filterName:  "MEDIR" + strconv.Itoa(memory),
 	}
@@ -93,7 +95,7 @@ func (filter *FilterMEDIR) FilterPointForBlock() *dia.PairFilterPoint {
 func (filter *FilterMEDIR) save(ds models.Datastore) error {
 	if filter.modified {
 		filter.modified = false
-		err := ds.SetPairFilter(filter.filterName, filter.pair, filter.exchange, filter.value, filter.currentTime)
+		err := ds.SetPairFilter(filter.filterName, filter.pair, filter.exchange, filter.value, filter.endTime)
 		if err != nil {
 			log.Errorln("FilterMEDIR: Error:", err)
 		}

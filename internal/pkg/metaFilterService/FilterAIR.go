@@ -62,6 +62,9 @@ func (filter *FilterAIR) collect(filterPoint dia.PairFilterPoint, starttime time
 }
 
 func (filter *FilterAIR) processDataPoint(filterPoint dia.PairFilterPoint) {
+	if filter.asset.Blockchain == "BitcoinCash" {
+		log.Infof("add point from %s on %s with block volume %v in AIR meta filter.", filterPoint.Name, filterPoint.Source, filterPoint.BlockVolume)
+	}
 	filter.values = append([]float64{filterPoint.Value}, filter.values...)
 	filter.volumes = append([]float64{filterPoint.BlockVolume}, filter.volumes...)
 }

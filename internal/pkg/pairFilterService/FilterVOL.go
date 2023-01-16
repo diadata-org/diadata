@@ -14,6 +14,7 @@ type FilterVOL struct {
 	pair        dia.Pair
 	exchange    string
 	currentTime time.Time
+	endTime     time.Time
 	volumeUSD   float64
 	value       float64
 	filterName  string
@@ -21,12 +22,13 @@ type FilterVOL struct {
 	modified    bool
 }
 
-func NewFilterVOL(pair dia.Pair, exchange string, memory int) *FilterVOL {
+func NewFilterVOL(pair dia.Pair, exchange string, endTime time.Time, memory int) *FilterVOL {
 	filter := &FilterVOL{
 		pair:       pair,
 		exchange:   exchange,
 		volumeUSD:  0.0,
 		filterName: "VOL" + strconv.Itoa(memory),
+		endTime:    endTime,
 		memory:     memory,
 	}
 	return filter
@@ -68,7 +70,7 @@ func (filter *FilterVOL) FilterPointForBlock() *dia.PairFilterPoint {
 func (filter *FilterVOL) save(ds models.Datastore) error {
 	if filter.modified {
 		filter.modified = false
-		err := ds.SetPairFilter(filter.filterName, filter.pair, filter.exchange, filter.value, filter.currentTime)
+		err := ds.SetPairFilter(filter.filterName, filter.pair, filter.exchange, filter.value, filter.endTime)
 		if err != nil {
 			log.Errorln("FilterVOL Error:", err)
 		}

@@ -16,6 +16,7 @@ type FilterMA struct {
 	pair        dia.Pair
 	exchange    string
 	currentTime time.Time
+	endTime     time.Time
 	prices      []float64
 	volumes     []float64
 	lastTrade   dia.Trade
@@ -29,13 +30,14 @@ type FilterMA struct {
 
 // NewFilterMA returns a moving average filter.
 // @currentTime is the begin time of the filtersBlock.
-func NewFilterMA(pair dia.Pair, exchange string, currentTime time.Time, memory int) *FilterMA {
+func NewFilterMA(pair dia.Pair, exchange string, currentTime time.Time, endTime time.Time, memory int) *FilterMA {
 	filter := &FilterMA{
 		pair:        pair,
 		exchange:    exchange,
 		prices:      []float64{},
 		volumes:     []float64{},
 		currentTime: currentTime,
+		endTime:     endTime,
 		memory:      memory,
 		filterName:  "MA" + strconv.Itoa(memory),
 		min:         -1,
@@ -147,7 +149,7 @@ func (filter *FilterMA) filterPointForBlock() *dia.PairFilterPoint {
 func (filter *FilterMA) save(ds models.Datastore) error {
 	if filter.modified {
 		filter.modified = false
-		err := ds.SetPairFilter(filter.filterName, filter.pair, filter.exchange, filter.value, filter.currentTime)
+		err := ds.SetPairFilter(filter.filterName, filter.pair, filter.exchange, filter.value, filter.endTime)
 		if err != nil {
 			log.Errorln("FilterMA: Error:", err)
 		}

@@ -85,6 +85,13 @@ func (s *FiltersBlockService) mainLoop() {
 			return
 		case tb, ok := <-s.chanTradesBlock:
 			log.Info("receive tradesBlock for further processing ok: ", ok)
+			trCount := 0
+			for _, tr := range tb.TradesBlockData.Trades {
+				if tr.QuoteToken.Blockchain == "BitcoinCash" {
+					trCount++
+				}
+			}
+			log.Warn("number of BCH trades in tradesblock: ", trCount)
 			s.processTradesBlock(tb)
 		}
 	}
@@ -98,14 +105,14 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 	t0 := time.Now()
 
 	for _, trade := range tb.TradesBlockData.Trades {
-		s.createFilters(trade, "", tb.TradesBlockData.BeginTime)
-		s.createFilters(trade, trade.Source, tb.TradesBlockData.BeginTime)
+		s.createFilters(trade, "", tb.TradesBlockData.BeginTime, tb.TradesBlockData.EndTime)
+		s.createFilters(trade, trade.Source, tb.TradesBlockData.BeginTime, tb.TradesBlockData.EndTime)
 		s.computeFilters(trade, "")
 		s.computeFilters(trade, trade.Source)
 	}
 
 	log.Info("time spent for create and compute filters: ", time.Since(t0))
-	log.Info("filter begin time: ", tb.TradesBlockData.BeginTime)
+	log.Infof("filter begin time: %v -- %v ", tb.TradesBlockData.BeginTime.UnixNano(), tb.TradesBlockData.BeginTime)
 	resultFilters := []dia.PairFilterPoint{}
 
 	t0 = time.Now()
@@ -113,9 +120,14 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 	for _, filters := range s.filters {
 		for _, f := range filters {
 			f.finalCompute(tb.TradesBlockData.EndTime)
-
 			fp := f.filterPointForBlock()
+
 			if fp != nil {
+				// if fp.Pair.QuoteToken.Blockchain == "BitcoinCash" {
+				// 	log.Warnf("fp name %s and source %s", fp.Name, fp.Source)
+				// 	log.Warn("fp value", fp.Value)
+				// 	log.Warn("fp blockvolume: ", fp.BlockVolume)
+				// }
 				resultFilters = append(resultFilters, *fp)
 			}
 		}
@@ -130,6 +142,17 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 			BeginTime:       tb.TradesBlockData.BeginTime,
 			TradesBlockHash: tb.BlockHash,
 		},
+	}
+	log.Info("ready to send filtersblock with endtime: ", fb.FiltersBlockData.EndTime)
+	for _, d := range fb.FiltersBlockData.FilterPoints {
+		if d.Pair.QuoteToken.Blockchain == "BitcoinCash" {
+			if d.Name == "MAIR120" {
+				log.Info("pair: ", d.Pair.QuoteToken.Symbol+"-"+d.Pair.BaseToken.Symbol)
+				log.Info("source: ", d.Source)
+				log.Info("value: ", d.Value)
+				log.Info("blockVolume: ", d.BlockVolume)
+			}
+		}
 	}
 
 	hash, err := structhash.Hash(fb.FiltersBlockData, 1)
@@ -172,7 +195,7 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 
 }
 
-func (s *FiltersBlockService) createFilters(trade dia.Trade, exchange string, BeginTime time.Time) {
+func (s *FiltersBlockService) createFilters(trade dia.Trade, exchange string, beginTime time.Time, endTime time.Time) {
 	fa := filtersPair{
 		IdentifierQuotetoken: getIdentifier(trade.QuoteToken),
 		IdentifierBasetoken:  getIdentifier(trade.BaseToken),
@@ -182,12 +205,12 @@ func (s *FiltersBlockService) createFilters(trade dia.Trade, exchange string, Be
 	_, ok := s.filters[fa]
 	if !ok {
 		s.filters[fa] = []Filter{
-			NewFilterMA(pair, exchange, BeginTime, dia.BlockSizeSeconds),
-			NewFilterMAIR(pair, exchange, BeginTime, dia.BlockSizeSeconds),
-			NewFilterMEDIR(pair, exchange, BeginTime, dia.BlockSizeSeconds),
-			NewFilterVOL(pair, exchange, dia.BlockSizeSeconds),
-			NewFilterCOUNT(trade.QuoteToken, trade.BaseToken, exchange, dia.BlockSizeSeconds),
-			NewFilterTLT(pair, exchange),
+			// NewFilterMA(pair, exchange, beginTime, endTime, dia.BlockSizeSeconds),
+			NewFilterMAIR(pair, exchange, beginTime, endTime, dia.BlockSizeSeconds),
+			// NewFilterMEDIR(pair, exchange, beginTime, endTime, dia.BlockSizeSeconds),
+			// NewFilterVOL(pair, exchange, endTime, dia.BlockSizeSeconds),
+			// NewFilterCOUNT(trade.QuoteToken, trade.BaseToken, exchange, endTime, dia.BlockSizeSeconds),
+			// NewFilterTLT(pair, exchange),
 		}
 	}
 }
