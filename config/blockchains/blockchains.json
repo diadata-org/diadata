@@ -18,6 +18,15 @@
             "ChainID": "Ethereum1"
         },
         {
+            "Name": "Cronos",
+            "GenesisDate": 1573732800,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pos",
+            "ChainID": "Ethereum25"
+        },
+        {
             "Name": "Telos",
             "GenesisDate": 1636713366,
             "NativeToken": {
