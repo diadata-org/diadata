@@ -73,31 +73,31 @@ func NewYahooFinScraper(datastore models.Datastore) (s *YahooFinScraper) {
 	// we need to scrape webpage to extract metadata. This map is the fallback in case crawling procces fail.
 	// The data was extracted on Jan10 2023, maps the Yahoo Finance symbols to a pair of ISO 4217 friendly format.
 	currencyMapDefault := map[string]string{
-		"TRYUSD=X": "TRY/USD",
-		"NGNUSD=X": "NGN/USD",
-		"EURUSD=X": "EUR/USD",
-		"JPY=X":    "USD/JPY",
-		"GBPUSD=X": "GBP/USD",
-		"AUDUSD=X": "AUD/USD",
-		"NZDUSD=X": "NZD/USD",
-		"EURJPY=X": "EUR/JPY",
-		"GBPJPY=X": "GBP/JPY",
-		"EURGBP=X": "EUR/GBP",
-		"EURCAD=X": "EUR/CAD",
-		"EURSEK=X": "EUR/SEK",
-		"EURCHF=X": "EUR/CHF",
-		"EURHUF=X": "EUR/HUF",
-		"CNY=X":    "USD/CNY",
-		"HKD=X":    "USD/HKD",
-		"SGD=X":    "USD/SGD",
-		"INR=X":    "USD/INR",
-		"MXN=X":    "USD/MXN",
-		"PHP=X":    "USD/PHP",
-		"IDR=X":    "USD/IDR",
-		"THB=X":    "USD/THB",
-		"MYR=X":    "USD/MYR",
-		"ZAR=X":    "USD/ZAR",
-		"RUB=X":    "USD/RUB",
+		"TRYUSD=X": "TRY-USD",
+		"NGNUSD=X": "NGN-USD",
+		"EURUSD=X": "EUR-USD",
+		"JPY=X":    "USD-JPY",
+		"GBPUSD=X": "GBP-USD",
+		"AUDUSD=X": "AUD-USD",
+		"NZDUSD=X": "NZD-USD",
+		"EURJPY=X": "EUR-JPY",
+		"GBPJPY=X": "GBP-JPY",
+		"EURGBP=X": "EUR-GBP",
+		"EURCAD=X": "EUR-CAD",
+		"EURSEK=X": "EUR-SEK",
+		"EURCHF=X": "EUR-CHF",
+		"EURHUF=X": "EUR-HUF",
+		"CNY=X":    "USD-CNY",
+		"HKD=X":    "USD-HKD",
+		"SGD=X":    "USD-SGD",
+		"INR=X":    "USD-INR",
+		"MXN=X":    "USD-MXN",
+		"PHP=X":    "USD-PHP",
+		"IDR=X":    "USD-IDR",
+		"THB=X":    "USD-THB",
+		"MYR=X":    "USD-MYR",
+		"ZAR=X":    "USD-ZAR",
+		"RUB=X":    "USD-RUB",
 	}
 
 	log.Infoln("Trying to extract symbol/name metadata from Yahoo by crawling the webpage")
@@ -255,7 +255,7 @@ func crawlCurrencies() (currencies []yahooFinWebCurrency, err error) {
 			}
 			currency := yahooFinWebCurrency{
 				Symbol: symbol,
-				Name:   name,
+				Name:   strings.Split(name, "/")[0] + "-" + strings.Split(name, "/")[1],
 			}
 			currencies = append(currencies, currency)
 		})
