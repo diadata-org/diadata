@@ -24,38 +24,24 @@ func main() {
 
 	log.Println("Liquidity Scraper: Start scraping liquidity")
 
-	datastore, err := models.NewDataStore()
-	if err != nil {
-		log.Errorln("Error connecting to datastore: ", err)
-		return
-	}
-
 	relDB, err := models.NewRelDataStore()
 	if err != nil {
 		log.Errorln("Error connecting to postgres: ", err)
 		return
 	}
 
-	runLiquiditySource(relDB, datastore, *exchangeName)
+	runLiquiditySource(relDB, *exchangeName)
 	log.Infof("Successfully ran pool collector for %s", *exchangeName)
 
 }
 
-func runLiquiditySource(relDB *models.RelDB, datastore *models.DB, source string) {
+func runLiquiditySource(relDB *models.RelDB, source string) {
 	log.Info("Fetching pools from ", source)
 	scraper := liquidityscraper.NewLiquidityScraper(source)
 
 	for {
 		select {
 		case receivedPool := <-scraper.Pool():
-
-			// Set time-series to Influx.
-			// err := datastore.SavePoolInflux(receivedPool)
-			// if err != nil {
-			// 	log.Errorf("Error saving pool %sv on echange %s: %v", receivedPool.Address, receivedPool.Exchange.Name, err)
-			// } else {
-			// 	log.Info("successfully set pool ", receivedPool)
-			// }
 
 			// Set to persistent DB.
 			err := relDB.SetPool(receivedPool)
