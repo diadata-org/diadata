@@ -54,13 +54,14 @@ func main() {
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{"POST", "PUT", "PATCH", "DELETE"},
-		AllowHeaders: []string{"Content-Type,access-control-allow-origin, access-control-allow-headers"},
+		AllowHeaders: []string{"Content-Type,access-control-allow-origin, access-control-allow-headers, Authorization"},
 	}))
 	routerGroup := r.Group("/oraclebuilder")
 
-	routerGroup.POST("/create", oracle.Create)
+	routerGroup.POST("create", oracle.Create)
 	routerGroup.GET("/list", oracle.List)
 	routerGroup.GET("/view", oracle.View)
+	routerGroup.GET("/delete", oracle.Delete)
 
 	port := utils.Getenv("LISTEN_PORT", ":8080")
 

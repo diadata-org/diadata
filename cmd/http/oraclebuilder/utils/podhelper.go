@@ -52,16 +52,13 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 	fields := make(map[string]string)
 	fields["oracle"] = oracle
 	fields["chainID"] = chainID
-	// fields["publickey"] = "0xc"
 	fields["owner"] = owner
 
 	// -- oracle config
 	publickeyenv := corev1.EnvVar{Name: "ORACLE_PUBLICKEY", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: ".public", LocalObjectReference: corev1.LocalObjectReference{Name: feederID}}}}
 	deployedcontractenv := corev1.EnvVar{Name: "DEPLOYED_CONTRACT", Value: oracle}
 	chainidenv := corev1.EnvVar{Name: "ORACLE_CHAINID", Value: chainID}
-
 	signerservice := corev1.EnvVar{Name: "ORACLE_SIGNER", Value: "signer.dia-oracle-feeder:50052"}
-
 	sleepsecondenv := corev1.EnvVar{Name: "ORACLE_SLEEPSECONDS", Value: sleepSeconds}
 	deviationenv := corev1.EnvVar{Name: "DEVIATION_PERMILLE", Value: deviationPermille}
 	frequencyseconds := corev1.EnvVar{Name: "ORACLE_FREQUENCYSECONDS", Value: frequency}
@@ -108,4 +105,12 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 	log.Infof("Pod %s started\n", result.GetObjectMeta().GetName())
 	return err
 
+}
+func (kh *PodHelper) DeleteOracleFeeder(feederID string) error {
+	err := kh.k8sclient.CoreV1().Pods(kh.NameSpace).Delete(context.TODO(), feederID, metav1.DeleteOptions{})
+	if err != nil {
+		return err
+	}
+	log.Infof("Pod %s deleted\n", feederID)
+	return err
 }
