@@ -78,7 +78,7 @@ func GetETHSuppliesFromCG() (supplies []dia.Supply, err error) {
 
 func getCGCoinInfo(id string) (coin CGCoin, status int, err error) {
 	var resp []byte
-	resp, status, err = utils.GetRequest("https://pro-api.coingecko.com/api/v3/coins/" + id + "&x_cg_pro_api_key=" + apiKey)
+	resp, status, err = utils.GetRequest("https://pro-api.coingecko.com/api/v3/coins/" + id + "?x_cg_pro_api_key=" + apiKey)
 	if err != nil {
 		return
 	}
