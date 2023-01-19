@@ -3,8 +3,10 @@ package utils
 import (
 	"context"
 	"flag"
-	"path/filepath"
+ 	"path/filepath"
+ 	"time"
 
+	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/sirupsen/logrus"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -78,6 +80,7 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 
 	imagepullrequest := corev1.LocalObjectReference{Name: "all-icr-io"}
 
+
 	pod := &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   feederID,
@@ -106,11 +109,89 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 	return err
 
 }
+
+func (kh *PodHelper) UpdateOracleFeeder(feederID string, owner string, oracle string, chainID string, symbols, blockchainnode string, frequency, sleepSeconds, deviationPermille string) error {
+	fields := make(map[string]string)
+	fields["oracle"] = oracle
+	fields["chainID"] = chainID
+	fields["owner"] = owner
+
+	// -- oracle config
+	publickeyenv := corev1.EnvVar{Name: "ORACLE_PUBLICKEY", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: ".public", LocalObjectReference: corev1.LocalObjectReference{Name: feederID}}}}
+	deployedcontractenv := corev1.EnvVar{Name: "DEPLOYED_CONTRACT", Value: oracle}
+	chainidenv := corev1.EnvVar{Name: "ORACLE_CHAINID", Value: chainID}
+	signerservice := corev1.EnvVar{Name: "ORACLE_SIGNER", Value: "signer.dia-oracle-feeder:50052"}
+	sleepsecondenv := corev1.EnvVar{Name: "ORACLE_SLEEPSECONDS", Value: sleepSeconds}
+	deviationenv := corev1.EnvVar{Name: "DEVIATION_PERMILLE", Value: deviationPermille}
+	frequencyseconds := corev1.EnvVar{Name: "ORACLE_FREQUENCYSECONDS", Value: frequency}
+	oracletype := corev1.EnvVar{Name: "ORACLE_ORACLETYPE", Value: "3"}
+	oraclesymbols := corev1.EnvVar{Name: "ORACLE_SYMBOLS", Value: symbols}
+	oraclefeederid := corev1.EnvVar{Name: "ORACLE_FEEDERID", Value: feederID}
+	// -- oracle config ends here
+
+	// ---
+	postgreshost := corev1.EnvVar{Name: "POSTGRES_HOST", Value: "dia-postgresql.dia-db"}
+	postgresuser := corev1.EnvVar{Name: "POSTGRES_USER", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: "user", LocalObjectReference: corev1.LocalObjectReference{Name: "user.graphqlserver"}}}}
+	postgrespassword := corev1.EnvVar{Name: "POSTGRES_PASSWORD", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: "password", LocalObjectReference: corev1.LocalObjectReference{Name: "user.graphqlserver"}}}}
+	postgresdb := corev1.EnvVar{Name: "POSTGRES_DB", Value: "postgres"}
+	updateconfigseconds := corev1.EnvVar{Name: "ORACLE_UPDATECONFIGSECONDS", Value: "120"}
+	useenv := corev1.EnvVar{Name: "USE_ENV", Value: "true"}
+	//---
+
+	imagepullrequest := corev1.LocalObjectReference{Name: "all-icr-io"}
+
+	pod := &corev1.Pod{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:   feederID,
+			Labels: fields,
+		},
+		Spec: corev1.PodSpec{
+			Containers: []corev1.Container{
+				{
+					Name:  feederID,
+					Image: kh.Image,
+					Env: []corev1.EnvVar{publickeyenv, deployedcontractenv, chainidenv,
+						sleepsecondenv, deviationenv, frequencyseconds, oracletype,
+						oraclesymbols, oraclefeederid, postgreshost, postgresuser, signerservice,
+						postgrespassword, postgresdb, updateconfigseconds, useenv},
+				},
+			},
+			ImagePullSecrets: []corev1.LocalObjectReference{imagepullrequest},
+		},
+	}
+
+	result, err := kh.k8sclient.CoreV1().Pods(kh.NameSpace).Update(context.TODO(), pod, metav1.UpdateOptions{})
+	if err != nil {
+		return err
+	}
+	log.Infof("Pod %s started\n", result.GetObjectMeta().GetName())
+	return err
+
+}
 func (kh *PodHelper) DeleteOracleFeeder(feederID string) error {
 	err := kh.k8sclient.CoreV1().Pods(kh.NameSpace).Delete(context.TODO(), feederID, metav1.DeleteOptions{})
 	if err != nil {
 		return err
 	}
 	log.Infof("Pod %s deleted\n", feederID)
+	return err
+}
+
+func (kh *PodHelper) RestartOracleFeeder(feederID string, oracleconfig dia.OracleConfig) (err error) {
+	err = kh.k8sclient.CoreV1().Pods(kh.NameSpace).Delete(context.TODO(), feederID, metav1.DeleteOptions{})
+	//if err != nil {
+	//	return err
+	//}
+	log.Infof("Pod %s deleted\n", feederID)
+
+ time.Sleep(1000 * time.Millisecond)
+	err = kh.CreateOracleFeeder(feederID, oracleconfig.Owner, oracleconfig.Address, oracleconfig.ChainID, oracleconfig.SleepSeconds, "", oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille)
+	if err != nil {
+		log.Errorf("Pod %s start err\n", err)
+
+		return err
+	}
+	log.Infof("Pod %s started\n", feederID)
+
 	return err
 }

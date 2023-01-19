@@ -29,14 +29,14 @@ type Env struct {
 
 var log = logrus.New()
 
+// Create: Create new oracle feeder if creator has resources
 func (ob *Env) Create(context *gin.Context) {
 
 	var (
 		address string
 		err     error
+		keypair *k8sbridge.KeyPair
 	)
-
-	log.Infoln("oracleaddress")
 
 	oracleaddress := context.PostForm("oracleaddress")
 	chainID := context.PostForm("chainID")
@@ -52,35 +52,26 @@ func (ob *Env) Create(context *gin.Context) {
 
 	k := make(map[string]string)
 
-	log.Infoln("oracleaddress", oracleaddress)
-	log.Infoln("chainId", chainID)
-	log.Infoln("creator", creator)
-	log.Infoln("symbols", symbols)
-	log.Infoln("signeddata", signedData)
-	log.Infoln("feederId", feederID)
-	log.Infoln("frequency", frequency)
-	log.Infoln("sleepSeconds", sleepSeconds)
+	log.Infof("Creating oracle: oracleAddress: %s, ChainID: %s, Creator: %s, Symbols: %s, frequency: %s, sleepSeconds: %s,", oracleaddress, chainID, creator, symbols, frequency, sleepSeconds)
 
 	signer, _ := utils.GetSigner(chainID, creator, oracleaddress, "Verify its your address to call oracle builder", signedData)
 
-	log.Infoln("signer", signer)
+	log.Infoln("Creating oracle: signer", signer)
 
 	if signer.Hex() != creator {
 		context.JSON(http.StatusUnauthorized, errors.New("sign err"))
-		log.Errorln("invalid signer", signer)
-
+		log.Errorln("Creating oracle: invalid signer", signer)
 		return
 	}
 
 	log.Infoln("feederId from creator", feederID)
 
 	if feederID == "" {
+		// check if creator has resources to create new oracle feeder
 		limit := ob.RelDB.GetFeederLimit(creator)
 		total := ob.RelDB.GetTotalFeeder(creator)
 
-		log.Infoln("limit", limit)
-		log.Infoln("total", total)
-
+		log.Infof("Creating oracle: Feeders Limit %d, Total Feeders:%d, Creator: %s", limit, total, creator)
 		if total >= limit {
 			log.Errorln("not enought resource left ", creator)
 			context.JSON(http.StatusUnauthorized, errors.New("limit over"))
@@ -99,8 +90,6 @@ func (ob *Env) Create(context *gin.Context) {
 			return
 		}
 
-		var keypair *k8sbridge.KeyPair
-
 		item, err := ob.Keyring.Get(feederID)
 		if err != nil {
 			log.Infoln("error getting key", err)
@@ -118,16 +107,15 @@ func (ob *Env) Create(context *gin.Context) {
 			return
 		}
 
-		err = ob.RelDB.SetOracleConfig(oracleaddress, feederID, creator, symbols, chainID)
+		err = ob.RelDB.SetOracleConfig(oracleaddress, feederID, creator, symbols, chainID, frequency, sleepSeconds, deviationPermille)
 		if err != nil {
 			log.Errorln("error SetOracleConfig ", err)
 			context.JSON(http.StatusInternalServerError, err)
 			return
 		}
-
 	}
 
-	log.Infoln("owneraddress GetFeederAccessByID", address)
+	log.Infof("Created oracle: oracleAddress: %s, ChainID: %s, Creator: %s, Symbols: %s, frequency: %s, sleepSeconds: %s, Feeder ID :%s,", oracleaddress, chainID, creator, symbols, frequency, sleepSeconds, feederID)
 
 	k["oracleaddress"] = oracleaddress
 	k["chainId"] = chainID
@@ -138,33 +126,12 @@ func (ob *Env) Create(context *gin.Context) {
 	context.JSON(http.StatusCreated, k)
 }
 
-// list owner oracles
+// List: list owner oracles
 func (ob *Env) List(context *gin.Context) {
-
-	chainID := context.Query("chainID")
 	creator := context.Query("creator")
-
-	signedData, err := getAuthToken(context.Request)
-	log.Infoln("signedData", signedData)
-
-	if err != nil {
-		context.JSON(http.StatusUnauthorized, errors.New("sign err"))
-		log.Errorln("missing auth token", err)
-		return
-	}
-
-	signer, _ := utils.GetSigner(chainID, creator, creator, "Verify its your address to List your oracles", signedData)
-
-	log.Infoln("signer", signer)
-
-	if signer.Hex() != creator {
-		context.JSON(http.StatusUnauthorized, errors.New("sign err"))
-		log.Errorln("invalid signer", signer)
-		return
-	}
 	oracles, err := ob.RelDB.GetOraclesByOwner(creator)
 	if err != nil {
-		log.Errorln("error GetOraclesByOwner ", err)
+		log.Errorln("List Oracles: error on getOraclesByOwner ", err)
 		context.JSON(http.StatusInternalServerError, err)
 		return
 	}
@@ -216,33 +183,18 @@ func (ob *Env) Delete(context *gin.Context) {
 		// address string
 		err error
 	)
-	chainID := context.Query("chainID")
-	creator := context.Query("creator")
 	oracleaddress := context.Query("oracleaddress")
 
-	signedData, err := getAuthToken(context.Request)
-	log.Infoln("signedData", signedData)
-
-	if err != nil {
-		context.JSON(http.StatusUnauthorized, errors.New("sign err"))
-		log.Errorln("missing auth token", err)
-		return
-	}
-
-	signer, _ := utils.GetSigner(chainID, creator, oracleaddress, "Verify its your address to delete oracle", signedData)
-
-	log.Infoln("signer", signer)
-
-	if signer.Hex() != creator {
-		context.JSON(http.StatusUnauthorized, errors.New("sign err"))
-		log.Errorln("invalid signer", signer)
-		return
-	}
-	// creator := context.PostForm("creator")
+	creator := context.Query("creator")
 
 	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress)
 	if err != nil {
 		log.Errorln("error GetOracleConfig ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	if oracleconfig.Owner != creator {
+		log.Errorln("not authorised to delete  ", err)
 		context.JSON(http.StatusInternalServerError, err)
 		return
 	}
@@ -252,6 +204,41 @@ func (ob *Env) Delete(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, err)
 		return
 	}
+	err = ob.RelDB.ChangeOracleState(oracleconfig.FeederID, false)
+	if err != nil {
+		log.Errorln("error ChangeOracleState ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	context.JSON(http.StatusOK, oracleconfig)
+}
+
+func (ob *Env) Restart(context *gin.Context) {
+	var (
+		err error
+	)
+	oracleaddress := context.Query("oracleaddress")
+
+	creator := context.Query("creator")
+
+	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress)
+	if err != nil {
+		log.Errorln("error GetOracleConfig ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	if oracleconfig.Owner != creator {
+		log.Errorln("not authorised to delete  ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	err = ob.PodHelper.RestartOracleFeeder(oracleconfig.FeederID, oracleconfig)
+	if err != nil {
+		log.Errorln("error RestartOracleFeeder ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	// delete from db
 	context.JSON(http.StatusOK, oracleconfig)
 
 }
@@ -265,4 +252,40 @@ func getAuthToken(req *http.Request) (string, error) {
 	}
 	token := authFields[1]
 	return token, nil
+}
+
+func (ob *Env) Auth(context *gin.Context) {
+
+	chainID := context.Query("chainID")
+	creator := context.Query("creator")
+	oracleaddress := context.Query("oracleaddress")
+
+	if oracleaddress == "" {
+		oracleaddress = creator
+	}
+
+	signedData, err := getAuthToken(context.Request)
+	log.Infoln("signedData", signedData)
+
+	if err != nil {
+		context.JSON(http.StatusUnauthorized, errors.New("sign err"))
+		log.Errorln("missing auth token", err)
+		context.Abort()
+		return
+	}
+	actionmessage := context.GetString("message")
+	log.Infoln("actionmessage", actionmessage)
+
+	signer, _ := utils.GetSigner(chainID, creator, oracleaddress, actionmessage, signedData)
+
+	log.Infoln("signer", signer)
+
+	if signer.Hex() != creator {
+		context.JSON(http.StatusUnauthorized, errors.New("sign err"))
+		log.Errorln("invalid signer", signer)
+		context.Abort()
+		return
+
+	}
+
 }

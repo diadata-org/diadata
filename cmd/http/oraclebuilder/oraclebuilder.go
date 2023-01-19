@@ -59,9 +59,10 @@ func main() {
 	routerGroup := r.Group("/oraclebuilder")
 
 	routerGroup.POST("create", oracle.Create)
-	routerGroup.GET("/list", oracle.List)
-	routerGroup.GET("/view", oracle.View)
-	routerGroup.GET("/delete", oracle.Delete)
+	routerGroup.GET("/list", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to List your oracles") }, oracle.Auth, oracle.List)
+	routerGroup.GET("/view", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to List your oracles") }, oracle.Auth, oracle.View)
+	routerGroup.DELETE("/delete", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to delete oracle") }, oracle.Auth, oracle.Delete)
+	routerGroup.PATCH("/restart", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to restart oracle feeder") }, oracle.Auth, oracle.Restart)
 
 	port := utils.Getenv("LISTEN_PORT", ":8080")
 
