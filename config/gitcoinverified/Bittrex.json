@@ -1,6 +1,12 @@
 {
     "Tokens": [
         {
+            "Symbol": "XTP",
+            "Exchange": "Bittrex",
+            "Blockchain": "Ethereum",
+            "Address": "0x6368e1E18c4C419DDFC608A0BEd1ccb87b9250fc"
+        },
+        {
             "Symbol": "PAR",
             "Exchange": "Bittrex",
             "Blockchain": "Ethereum",
