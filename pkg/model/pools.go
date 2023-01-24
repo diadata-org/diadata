@@ -200,10 +200,25 @@ func (rdb *RelDB) GetPoolByAddress(blockchain string, address string) (pool dia.
 }
 
 // GetAllPoolAddrsExchange returns all pool addresses available for @exchange.
-func (rdb *RelDB) GetAllPoolAddrsExchange(exchange string) (addresses []string, err error) {
-	var rows pgx.Rows
-	query := fmt.Sprintf("SELECT address FROM %s WHERE exchange=$1", poolTable)
-	rows, err = rdb.postgresClient.Query(context.Background(), query, exchange)
+func (rdb *RelDB) GetAllPoolAddrsExchange(exchange string, liquiThreshold float64) (addresses []string, err error) {
+	var (
+		rows  pgx.Rows
+		query string
+	)
+	if liquiThreshold == float64(0) {
+		query = fmt.Sprintf("SELECT address FROM %s WHERE exchange='%s'", poolTable, exchange)
+	} else {
+		query = fmt.Sprintf(`
+		SELECT DISTINCT p.address 
+		FROM %s p 
+		INNER JOIN %s pa 
+		ON p.pool_id=pa.pool_id 
+		WHERE p.exchange='%s' 
+		AND pa.liquidity>=%v
+		`, poolTable, poolassetTable, exchange, liquiThreshold)
+	}
+
+	rows, err = rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return
 	}
@@ -216,6 +231,70 @@ func (rdb *RelDB) GetAllPoolAddrsExchange(exchange string) (addresses []string, 
 			log.Error(err)
 		}
 		addresses = append(addresses, poolAddr)
+	}
+	return
+}
+
+// GetAllPoolAddrsExchange returns all pool addresses available for @exchange.
+// Remark that it returns each pool n times where n is the number of assets in the pool.
+func (rdb *RelDB) GetAllPoolsExchange(exchange string, liquiThreshold float64) (pools []dia.Pool, err error) {
+	var (
+		rows  pgx.Rows
+		query string
+	)
+
+	query = fmt.Sprintf(`
+		SELECT p.address,a.address,a.blockchain,a.decimals,a.symbol,a.name
+		FROM %s p 
+		INNER JOIN %s pa 
+		ON p.pool_id=pa.pool_id 
+		INNER JOIN %s a 
+		ON pa.asset_id=a.asset_id
+		WHERE p.exchange='%s'
+		AND pa.liquidity>=%v
+		`, poolTable, poolassetTable, assetTable, exchange, liquiThreshold)
+
+	rows, err = rdb.postgresClient.Query(context.Background(), query)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	poolIndexMap := make(map[string]int)
+
+	for rows.Next() {
+		var (
+			poolAddress string
+			av          dia.AssetVolume
+			decimals    sql.NullInt64
+		)
+		err := rows.Scan(
+			&poolAddress,
+			&av.Asset.Address,
+			&av.Asset.Blockchain,
+			&decimals,
+			&av.Asset.Symbol,
+			&av.Asset.Name,
+		)
+		if err != nil {
+			log.Error(err)
+		}
+		if decimals.Valid {
+			av.Asset.Decimals = uint8(decimals.Int64)
+		}
+
+		// map poolasset to pool if pool address already exists.
+		if _, ok := poolIndexMap[poolAddress]; !ok {
+			// Pool does not exist yet, so initialize.
+			pool := dia.Pool{Exchange: dia.Exchange{Name: exchange}, Address: poolAddress, Blockchain: dia.BlockChain{Name: av.Asset.Blockchain}}
+			pool.Assetvolumes = append(pool.Assetvolumes, av)
+			pools = append(pools, pool)
+			poolIndexMap[poolAddress] = len(pools) - 1
+		} else {
+			// Pool already exists, just add pool asset.
+			pools[poolIndexMap[poolAddress]].Assetvolumes = append(pools[poolIndexMap[poolAddress]].Assetvolumes, av)
+		}
+
 	}
 	return
 }

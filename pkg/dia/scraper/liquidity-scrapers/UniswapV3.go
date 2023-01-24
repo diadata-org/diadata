@@ -38,7 +38,7 @@ func NewUniswapV3Scraper(exchange dia.Exchange) *UniswapV3Scraper {
 
 	switch exchange.Name {
 	case dia.UniswapExchangeV3:
-		uls = makeUniswapV3Scraper(exchange, "https://nd-475-370-970.p2pify.com/8658efa12b79ca9cd4b1c72b55a7f4fa", "wss://eth-mainnet.alchemyapi.io/v2/v1bo6tRKiraJ71BVGKmCtWVedAzzNTd6", "200", uint64(12369621))
+		uls = makeUniswapV3Scraper(exchange, "", "", "200", uint64(12369621))
 	case dia.UniswapExchangeV3Polygon:
 		uls = makeUniswapV3Scraper(exchange, "", "", "200", uint64(22757913))
 	case dia.UniswapExchangeV3Arbitrum:
