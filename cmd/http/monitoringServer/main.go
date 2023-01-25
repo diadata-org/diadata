@@ -3,6 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/diadata-org/diadata/http/monitoringServer/config"
 	"github.com/diadata-org/diadata/http/monitoringServer/databases"
 	"github.com/diadata-org/diadata/http/monitoringServer/enums"
@@ -11,19 +15,17 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia/helpers/db"
 	"github.com/diadata-org/diadata/pkg/http/restApi"
 	"github.com/diadata-org/diadata/pkg/utils"
-	"github.com/diadata-org/diadata/pkg/utils/probes"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4/pgxpool"
 	log "github.com/sirupsen/logrus"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"net/http"
-	"strings"
-	"time"
 )
 
-var StartupDone = false
-var CacheGlobalState []config.State
+var (
+	StartupDone      = false
+	CacheGlobalState []config.State
+)
 
 const CacheTTLSeconds = 5 * 60
 
@@ -52,7 +54,7 @@ func main() {
 	}()
 
 	log.Infoln("starting probes")
-	probes.Start(live, ready)
+	// probes.Start(live, ready)
 
 	err := engine.Run(utils.Getenv("LISTEN_PORT", ":8080"))
 	StartupDone = true
