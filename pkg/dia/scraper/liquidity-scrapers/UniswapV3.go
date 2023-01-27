@@ -133,8 +133,8 @@ func (uls *UniswapV3Scraper) fetchPools() {
 		pool.Exchange = dia.Exchange{Name: uls.exchangeName}
 		pool.Blockchain = dia.BlockChain{Name: uls.blockchain}
 		pool.Address = poolCreated.Event.Pool.Hex()
-		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset0})
-		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset1})
+		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset0, Index: uint8(0)})
+		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset1, Index: uint8(1)})
 		pool.Time = time.Now()
 
 		uls.poolChannel <- pool

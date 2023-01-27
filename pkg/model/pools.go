@@ -112,9 +112,10 @@ func (rdb *RelDB) SetPool(pool dia.Pool) error {
 	var query1 string
 	for i := 0; i < len(pool.Assetvolumes); i++ {
 		query1 = fmt.Sprintf(
-			`INSERT INTO %s (pool_id,asset_id,liquidity,time_stamp)
-				VALUES ((SELECT pool_id from %s where address=$1 and blockchain=$2),(SELECT asset_id from %s where address=$3 and blockchain=$4),$5,$6)
-				ON CONFLICT (pool_id,asset_id) DO UPDATE SET liquidity=EXCLUDED.liquidity, time_stamp=EXCLUDED.time_stamp`,
+			`INSERT INTO %s (pool_id,asset_id,liquidity,time_stamp,token_index)
+				VALUES ((SELECT pool_id from %s where address=$1 and blockchain=$2),(SELECT asset_id from %s where address=$3 and blockchain=$4),$5,$6,$7)
+				ON CONFLICT (pool_id,asset_id) 
+				DO UPDATE SET liquidity=EXCLUDED.liquidity, time_stamp=EXCLUDED.time_stamp, token_index=EXCLUDED.token_index`,
 			poolassetTable,
 			poolTable,
 			assetTable,
@@ -129,6 +130,7 @@ func (rdb *RelDB) SetPool(pool dia.Pool) error {
 			pool.Assetvolumes[i].Asset.Blockchain,
 			pool.Assetvolumes[i].Volume,
 			pool.Time,
+			pool.Assetvolumes[i].Index,
 		)
 		if err != nil {
 			return err
@@ -144,7 +146,7 @@ func (rdb *RelDB) GetPoolByAddress(blockchain string, address string) (pool dia.
 
 	var rows pgx.Rows
 	query := fmt.Sprintf(`
-		SELECT pa.liquidity,a.symbol,a.name,a.address,a.decimals,p.exchange,pa.time_stamp 
+		SELECT pa.liquidity,a.symbol,a.name,a.address,a.decimals,p.exchange,pa.time_stamp,pa.token_index 
 		FROM %s pa 
 		INNER JOIN %s p 
 		ON p.pool_id=pa.pool_id 
@@ -168,6 +170,7 @@ func (rdb *RelDB) GetPoolByAddress(blockchain string, address string) (pool dia.
 	for rows.Next() {
 		var (
 			decimals    sql.NullInt64
+			index       sql.NullInt64
 			assetvolume dia.AssetVolume
 			timestamp   sql.NullTime
 		)
@@ -179,12 +182,16 @@ func (rdb *RelDB) GetPoolByAddress(blockchain string, address string) (pool dia.
 			&decimals,
 			&pool.Exchange.Name,
 			&timestamp,
+			&index,
 		)
 		if err != nil {
 			return
 		}
 		if decimals.Valid {
 			assetvolume.Asset.Decimals = uint8(decimals.Int64)
+		}
+		if index.Valid {
+			assetvolume.Index = uint8(index.Int64)
 		}
 		if timestamp.Valid {
 			pool.Time = timestamp.Time
@@ -244,7 +251,7 @@ func (rdb *RelDB) GetAllPoolsExchange(exchange string, liquiThreshold float64) (
 	)
 
 	query = fmt.Sprintf(`
-		SELECT p.address,a.address,a.blockchain,a.decimals,a.symbol,a.name
+		SELECT p.address,a.address,a.blockchain,a.decimals,a.symbol,a.name,pa.token_index
 		FROM %s p 
 		INNER JOIN %s pa 
 		ON p.pool_id=pa.pool_id 
@@ -267,6 +274,7 @@ func (rdb *RelDB) GetAllPoolsExchange(exchange string, liquiThreshold float64) (
 			poolAddress string
 			av          dia.AssetVolume
 			decimals    sql.NullInt64
+			index       sql.NullInt64
 		)
 		err := rows.Scan(
 			&poolAddress,
@@ -275,12 +283,16 @@ func (rdb *RelDB) GetAllPoolsExchange(exchange string, liquiThreshold float64) (
 			&decimals,
 			&av.Asset.Symbol,
 			&av.Asset.Name,
+			&index,
 		)
 		if err != nil {
 			log.Error(err)
 		}
 		if decimals.Valid {
 			av.Asset.Decimals = uint8(decimals.Int64)
+		}
+		if index.Valid {
+			av.Index = uint8(index.Int64)
 		}
 
 		// map poolasset to pool if pool address already exists.

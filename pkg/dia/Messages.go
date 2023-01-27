@@ -232,11 +232,13 @@ type ExchangeVolumesList struct {
 type AssetVolume struct {
 	Asset  Asset   `json:"Asset"`
 	Volume float64 `json:"Volume"`
+	Index  uint8   `json:"Index"`
 }
 
 type AssetLiquidity struct {
 	Asset  Asset   `json:"Asset"`
 	Volume float64 `json:"Liquidity"`
+	Index  uint8   `json:"Index"`
 }
 
 type TopAsset struct {
@@ -366,10 +368,9 @@ func (p *Pair) ForeignName() string {
 
 // Pool is the container for liquidity pools on DEXes.
 type Pool struct {
-	Exchange   Exchange
-	Blockchain BlockChain
-	Address    string
-	// Assetvolumes map[Asset]float64
+	Exchange     Exchange
+	Blockchain   BlockChain
+	Address      string
 	Assetvolumes []AssetVolume
 	Time         time.Time
 }

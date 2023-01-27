@@ -171,7 +171,7 @@ func (scraper *BalancerV2Scraper) extractPoolInfo(poolTokens struct {
 
 		volume, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(poolTokens.Balances[i]), new(big.Float).SetFloat64(math.Pow10(int(asset.Decimals)))).Float64()
 
-		assetvolumes = append(assetvolumes, dia.AssetVolume{Asset: asset, Volume: volume})
+		assetvolumes = append(assetvolumes, dia.AssetVolume{Asset: asset, Volume: volume, Index: uint8(i)})
 	}
 	return
 }

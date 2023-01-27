@@ -31,7 +31,7 @@ var (
 	mainBaseAssets                 = []string{
 		"0xdAC17F958D2ee523a2206206994597C13D831ec7",
 	}
-	pairMap = make(map[string]UniswapPair)
+	poolMap = make(map[string]UniswapPair)
 )
 
 const (
@@ -264,16 +264,16 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 	}
 
 	// Only include pools with (minimum) liquidity bigger than given env var.
-	liquidityThreshold, err := strconv.ParseFloat(utils.Getenv(strings.ToUpper(exchange.Name)+"_LIQUIDITY_THRESHOLD", "0"), 64)
+	liquidityThreshold, err := strconv.ParseFloat(utils.Getenv("LIQUIDITY_THRESHOLD", "0"), 64)
 	if err != nil {
-		liquidityThreshold = float64(1)
+		liquidityThreshold = float64(0)
 		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThreshold)
 	}
 
 	// Fetch all pool with given liquidity threshold from database.
-	pairMap, err = makeUniPairMap(s.exchangeName, liquidityThreshold, s.relDB)
+	poolMap, err = makeUniPoolMap(s.exchangeName, liquidityThreshold, s.relDB)
 	if err != nil {
-		log.Fatal("build pairMap: ", err)
+		log.Fatal("build poolMap: ", err)
 	}
 
 	if scrape {
@@ -367,13 +367,15 @@ func (s *UniswapScraper) mainLoop() {
 	} else if s.fetchPoolsFromDB {
 
 		var wg sync.WaitGroup
-		for address := range pairMap {
+		count := 0
+		for address := range poolMap {
 			time.Sleep(time.Duration(s.waitTime) * time.Millisecond)
 			wg.Add(1)
 			go func(index int, address common.Address, w *sync.WaitGroup) {
 				defer w.Done()
 				s.ListenToPair(index, address)
-			}(0, common.HexToAddress(address), &wg)
+			}(count, common.HexToAddress(address), &wg)
+			count++
 		}
 		wg.Wait()
 
@@ -420,10 +422,10 @@ func (s *UniswapScraper) ListenToPair(i int, address common.Address) {
 				log.Error("error fetching pair: ", err)
 			}
 		} else {
-			pair = pairMap[address.Hex()]
+			pair = poolMap[address.Hex()]
 		}
 	} else {
-		pair = pairMap[address.Hex()]
+		pair = poolMap[address.Hex()]
 		if err != nil {
 			log.Error("error fetching pair: ", err)
 		}
@@ -983,7 +985,8 @@ func (ps *UniswapPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }
 
-func makeUniPairMap(exchangeName string, liquiThreshold float64, relDB *models.RelDB) (map[string]UniswapPair, error) {
+// makeUniPoolMap returns a map with pool addresses as keys and the underlying UniswapPair as values.
+func makeUniPoolMap(exchangeName string, liquiThreshold float64, relDB *models.RelDB) (map[string]UniswapPair, error) {
 	pm := make(map[string]UniswapPair)
 	pools, err := relDB.GetAllPoolsExchange(exchangeName, liquiThreshold)
 	if err != nil {
@@ -995,12 +998,18 @@ func makeUniPairMap(exchangeName string, liquiThreshold float64, relDB *models.R
 		if len(pool.Assetvolumes) != 2 {
 			continue
 		}
-		pm[pool.Address] = UniswapPair{
-			Token0:      asset2UniAsset(pool.Assetvolumes[0].Asset),
-			Token1:      asset2UniAsset(pool.Assetvolumes[1].Asset),
-			ForeignName: pool.Assetvolumes[0].Asset.Symbol + "-" + pool.Assetvolumes[1].Asset.Symbol,
-			Address:     common.HexToAddress(pool.Address),
+		up := UniswapPair{
+			Address: common.HexToAddress(pool.Address),
 		}
+		if pool.Assetvolumes[0].Index == 0 {
+			up.Token0 = asset2UniAsset(pool.Assetvolumes[0].Asset)
+			up.Token1 = asset2UniAsset(pool.Assetvolumes[1].Asset)
+		} else {
+			up.Token0 = asset2UniAsset(pool.Assetvolumes[1].Asset)
+			up.Token1 = asset2UniAsset(pool.Assetvolumes[0].Asset)
+		}
+		up.ForeignName = up.Token0.Symbol + "-" + up.Token1.Symbol
+		pm[pool.Address] = up
 	}
 	log.Infof("found %v subscribable pools.", len(pm))
 	return pm, err

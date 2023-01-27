@@ -327,10 +327,12 @@ func (us *UniswapScraper) GetPoolByAddress(pairAddress common.Address) (pool dia
 	pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{
 		Asset:  token0,
 		Volume: amount0,
+		Index:  uint8(0),
 	})
 	pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{
 		Asset:  token1,
 		Volume: amount1,
+		Index:  uint8(1),
 	})
 	pool.Address = pairAddress.Hex()
 	pool.Blockchain = dia.BlockChain{Name: us.blockchain}

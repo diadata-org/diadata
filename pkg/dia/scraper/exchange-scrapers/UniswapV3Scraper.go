@@ -81,9 +81,16 @@ func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool) *UniswapV3Scraper {
 		log.Fatal("new postgres datastore: ", err)
 	}
 
-	pairMap, err = makeUniPairMap(s.exchangeName, float64(0), s.relDB)
+	// Only include pools with (minimum) liquidity bigger than given env var.
+	liquidityThreshold, err := strconv.ParseFloat(utils.Getenv("LIQUIDITY_THRESHOLD", "0"), 64)
 	if err != nil {
-		log.Fatal("build pairMap: ", err)
+		liquidityThreshold = float64(0)
+		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThreshold)
+	}
+
+	poolMap, err = makeUniPoolMap(s.exchangeName, liquidityThreshold, s.relDB)
+	if err != nil {
+		log.Fatal("build poolMap: ", err)
 	}
 
 	if scrape {
@@ -153,11 +160,8 @@ func (s *UniswapV3Scraper) mainLoop() {
 	s.run = true
 
 	go func() {
-		pairs, err := s.getAllPoolsFromDB(float64(0))
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Info("Found ", len(pairs), " pairs")
+		pools := s.feedPoolsToSubscriptions()
+		log.Info("Found ", len(pools), " pairs")
 		log.Info("Found ", len(s.pairScrapers), " pairScrapers")
 	}()
 
@@ -167,24 +171,24 @@ func (s *UniswapV3Scraper) mainLoop() {
 	}
 	count := 0
 	for {
-		pair := <-s.pairRecieved
-		log.Infoln("Subscribing for pair", pair)
+		pool := <-s.pairRecieved
+		log.Infoln("Subscribing for pair", pool)
 
-		if len(pair.Token0.Symbol) < 2 || len(pair.Token1.Symbol) < 2 {
-			log.Info("skip pair: ", pair.ForeignName)
+		if len(pool.Token0.Symbol) < 2 || len(pool.Token1.Symbol) < 2 {
+			log.Info("skip pair: ", pool.ForeignName)
 			continue
 		}
-		if helpers.AddressIsBlacklisted(pair.Token0.Address) || helpers.AddressIsBlacklisted(pair.Token1.Address) {
-			log.Info("skip pair ", pair.ForeignName, ", address is blacklisted")
+		if helpers.AddressIsBlacklisted(pool.Token0.Address) || helpers.AddressIsBlacklisted(pool.Token1.Address) {
+			log.Info("skip pair ", pool.ForeignName, ", address is blacklisted")
 			continue
 		}
-		if helpers.PoolIsBlacklisted(pair.Address) {
-			log.Info("skip blacklisted pool ", pair.Address)
+		if helpers.PoolIsBlacklisted(pool.Address) {
+			log.Info("skip blacklisted pool ", pool.Address)
 			continue
 		}
-		log.Infof("%v found pair scraper for: %s with address %s", count, pair.ForeignName, pair.Address.Hex())
+		log.Infof("%v found pair scraper for: %s with address %s", count, pool.ForeignName, pool.Address.Hex())
 		count++
-		sink, err := s.GetSwapsChannel(pair.Address)
+		sink, err := s.GetSwapsChannel(pool.Address)
 		if err != nil {
 			log.Error("error fetching swaps channel: ", err)
 		}
@@ -197,23 +201,23 @@ func (s *UniswapV3Scraper) mainLoop() {
 
 					price, volume := s.getSwapData(swap)
 					token0 := dia.Asset{
-						Address:    pair.Token0.Address.Hex(),
-						Symbol:     pair.Token0.Symbol,
-						Name:       pair.Token0.Name,
-						Decimals:   pair.Token0.Decimals,
+						Address:    pool.Token0.Address.Hex(),
+						Symbol:     pool.Token0.Symbol,
+						Name:       pool.Token0.Name,
+						Decimals:   pool.Token0.Decimals,
 						Blockchain: Exchanges[s.exchangeName].BlockChain.Name,
 					}
 					token1 := dia.Asset{
-						Address:    pair.Token1.Address.Hex(),
-						Symbol:     pair.Token1.Symbol,
-						Name:       pair.Token1.Name,
-						Decimals:   pair.Token1.Decimals,
+						Address:    pool.Token1.Address.Hex(),
+						Symbol:     pool.Token1.Symbol,
+						Name:       pool.Token1.Name,
+						Decimals:   pool.Token1.Decimals,
 						Blockchain: Exchanges[s.exchangeName].BlockChain.Name,
 					}
 
 					t := &dia.Trade{
-						Symbol:         pair.Token0.Symbol,
-						Pair:           pair.ForeignName,
+						Symbol:         pool.Token0.Symbol,
+						Pair:           pool.ForeignName,
 						Price:          price,
 						Volume:         volume,
 						BaseToken:      token1,
@@ -225,13 +229,13 @@ func (s *UniswapV3Scraper) mainLoop() {
 					}
 
 					switch {
-					case utils.Contains(reverseBasetokens, pair.Token1.Address.Hex()):
+					case utils.Contains(reverseBasetokens, pool.Token1.Address.Hex()):
 						// If we need quotation of a base token, reverse pair
 						tSwapped, err := dia.SwapTrade(*t)
 						if err == nil {
 							t = &tSwapped
 						}
-					case utils.Contains(reverseQuotetokens, pair.Token0.Address.Hex()):
+					case utils.Contains(reverseQuotetokens, pool.Token0.Address.Hex()):
 						// If we need quotation of a base token, reverse pair
 						tSwapped, err := dia.SwapTrade(*t)
 						if err == nil {
@@ -239,7 +243,7 @@ func (s *UniswapV3Scraper) mainLoop() {
 						}
 					}
 					if price > 0 {
-						log.Info("Got trade: ", t)
+						log.Infof("Got trade on pool %s: %v", rawSwap.Raw.Address.Hex(), t)
 						s.chanTrades <- t
 					}
 				}
@@ -277,7 +281,7 @@ func (s *UniswapV3Scraper) getSwapData(swap UniswapV3Swap) (price float64, volum
 // normalizeUniswapSwap takes a swap as returned by the swap contract's channel and converts it to a UniswapSwap type
 func (s *UniswapV3Scraper) normalizeUniswapSwap(swap UniswapV3Pair.UniswapV3PairSwap) (normalizedSwap UniswapV3Swap) {
 
-	pair := pairMap[swap.Raw.Address.Hex()]
+	pair := poolMap[swap.Raw.Address.Hex()]
 
 	decimals0 := int(pair.Token0.Decimals)
 	decimals1 := int(pair.Token1.Decimals)
@@ -442,27 +446,41 @@ func (s *UniswapV3Scraper) GetDecimals(tokenAddress common.Address) (decimals ui
 	return
 }
 
-func (s *UniswapV3Scraper) getAllPoolsFromDB(liquiThreshold float64) (pairs []UniswapPair, err error) {
-	pools, err := s.relDB.GetAllPoolsExchange(s.exchangeName, liquiThreshold)
-	if err != nil {
-		log.Error("get all pools from DB: ", err)
-		return
-	}
-	for _, pool := range pools {
-		var up UniswapPair
-		up.Address = common.HexToAddress(pool.Address)
-		if len(pool.Assetvolumes) != 2 {
-			log.Warnf("pool %s does not have enough assets.", pool.Address)
-			continue
-		}
-		up.Token0 = asset2UniAsset(pool.Assetvolumes[0].Asset)
-		up.Token1 = asset2UniAsset(pool.Assetvolumes[1].Asset)
-		up.ForeignName = up.Token0.Symbol + "-" + up.Token1.Symbol
+func (s *UniswapV3Scraper) feedPoolsToSubscriptions() (pairs []UniswapPair) {
+	for i := range poolMap {
+		up := poolMap[i]
 		pairs = append(pairs, up)
 		s.pairRecieved <- &up
 	}
 	return
 }
+
+// func (s *UniswapV3Scraper) getAllPoolsFromDB(liquiThreshold float64) (pairs []UniswapPair, err error) {
+// 	pools, err := s.relDB.GetAllPoolsExchange(s.exchangeName, liquiThreshold)
+// 	if err != nil {
+// 		log.Error("get all pools from DB: ", err)
+// 		return
+// 	}
+// 	for _, pool := range pools {
+// 		var up UniswapPair
+// 		up.Address = common.HexToAddress(pool.Address)
+// 		if len(pool.Assetvolumes) != 2 {
+// 			log.Warnf("pool %s does not have enough assets.", pool.Address)
+// 			continue
+// 		}
+// 		if pool.Assetvolumes[0].Index == 0 {
+// 			up.Token0 = asset2UniAsset(pool.Assetvolumes[0].Asset)
+// 			up.Token1 = asset2UniAsset(pool.Assetvolumes[1].Asset)
+// 		} else {
+// 			up.Token0 = asset2UniAsset(pool.Assetvolumes[1].Asset)
+// 			up.Token1 = asset2UniAsset(pool.Assetvolumes[0].Asset)
+// 		}
+// 		up.ForeignName = up.Token0.Symbol + "-" + up.Token1.Symbol
+// 		pairs = append(pairs, up)
+// 		s.pairRecieved <- &up
+// 	}
+// 	return
+// }
 
 func asset2UniAsset(asset dia.Asset) UniswapToken {
 	return UniswapToken{
