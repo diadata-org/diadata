@@ -23,5 +23,5 @@ jobs:
 
       - name: Test
         run: |
-          ls -l
+          cd internal/pkg/filtersBlockService/
           go test -v
