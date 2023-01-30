@@ -152,7 +152,7 @@ type RelDatastore interface {
 	SetKeyPair(publickey string, privatekey string) error
 	GetKeyPairID(publickey string) string
 	GetFeederAccessByID(id string) (owner, publickey string)
-	SetOracleConfig(address, keypairID, creator, symbols, chainID, frequency, sleepseconds, deviationpermille string)
+	SetOracleConfig(address, keypairID, creator, symbols, chainID, frequency, sleepseconds, deviationpermille string) error
 	SetFeederConfig(feederid, oracleconfigid string) error
 	GetFeederID(address string) (feederId string)
 	GetFeederLimit(owner string) (limit int)
