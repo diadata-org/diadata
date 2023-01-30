@@ -7,7 +7,6 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
-	"github.com/diadata-org/diadata/pkg/utils"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
@@ -39,7 +38,7 @@ func init() {
 	if !isValidExchange(*exchange) {
 		log.Fatal("Invalid exchange string: ", *exchange)
 	}
-	replicaKafkaTopic = utils.Getenv("REPLICA_KAFKA_TOPIC", "false")
+	// replicaKafkaTopic = utils.Getenv("REPLICA_KAFKA_TOPIC", "false")
 }
 
 // main manages all PairScrapers and handles incoming trade information
@@ -79,7 +78,7 @@ func main() {
 	es := scrapers.NewAPIScraper(*exchange, true, configApi.ApiKey, configApi.SecretKey, relDB)
 
 	// Set up kafka writer.
-	w := kafkaHelper.NewWriter(kafkaHelper.TopicTrades)
+	w := kafkaHelper.NewWriter(kafkaHelper.TopicTradesTest)
 	log.Info("writer topic: ", w.Topic)
 
 	defer func() {

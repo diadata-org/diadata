@@ -30,10 +30,10 @@ func init() {
 		filtersBlockTopic = kafkaHelper.TopicFiltersBlockTest
 		tradesBlockTopic = kafkaHelper.TopicTradesBlockTest
 	}
-	if *replica {
-		filtersBlockTopic = kafkaHelper.TopicFiltersBlockReplica
-		tradesBlockTopic = kafkaHelper.TopicTradesBlockReplica
-	}
+	// if *replica {
+	// 	filtersBlockTopic = kafkaHelper.TopicFiltersBlockReplica
+	// 	tradesBlockTopic = kafkaHelper.TopicTradesBlockReplica
+	// }
 }
 
 func main() {
