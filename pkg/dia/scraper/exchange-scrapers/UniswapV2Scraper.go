@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
+	models "github.com/diadata-org/diadata/pkg/model"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
@@ -30,11 +31,12 @@ var (
 	mainBaseAssets                 = []string{
 		"0xdAC17F958D2ee523a2206206994597C13D831ec7",
 	}
+	poolMap = make(map[string]UniswapPair)
 )
 
 const (
-	restDialEth = "http://159.69.120.42:8545/"
-	wsDialEth   = "ws://159.69.120.42:8546/"
+	restDialEth = ""
+	wsDialEth   = ""
 
 	restDialBSC = ""
 	wsDialBSC   = ""
@@ -121,6 +123,7 @@ type UniswapSwap struct {
 type UniswapScraper struct {
 	WsClient   *ethclient.Client
 	RestClient *ethclient.Client
+	relDB      *models.RelDB
 	// signaling channels for session initialization and finishing
 	//initDone     chan nothing
 	run          bool
@@ -137,92 +140,140 @@ type UniswapScraper struct {
 	chanTrades   chan *dia.Trade
 	waitTime     int
 	// If true, only pairs given in config file are scraped. Default is false.
-	listenByAddress bool
+	listenByAddress  bool
+	fetchPoolsFromDB bool
 }
 
 // NewUniswapScraper returns a new UniswapScraper for the given pair
 func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 	log.Info("NewUniswapScraper: ", exchange.Name)
-	var s *UniswapScraper
-	var listenByAddress bool
+	var (
+		s                *UniswapScraper
+		listenByAddress  bool
+		fetchPoolsFromDB bool
+		err              error
+	)
 	exchangeFactoryContractAddress = exchange.Contract
 
 	switch exchange.Name {
 	case dia.UniswapExchange:
 		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialEth, wsDialEth, uniswapWaitMilliseconds)
+		fetchPoolsFromDB = true
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialEth, wsDialEth, uniswapWaitMilliseconds)
 	case dia.SushiSwapExchange:
 		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialEth, wsDialEth, sushiswapWaitMilliseconds)
+		fetchPoolsFromDB = true
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialEth, wsDialEth, sushiswapWaitMilliseconds)
 	case dia.PanCakeSwap:
-		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialBSC, wsDialBSC, pancakeswapWaitMilliseconds)
+		listenByAddress = true
+		fetchPoolsFromDB = false
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialBSC, wsDialBSC, pancakeswapWaitMilliseconds)
 	case dia.DfynNetwork:
-		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialPolygon, wsDialPolygon, dfynWaitMilliseconds)
+		listenByAddress = true
+		fetchPoolsFromDB = false
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialPolygon, wsDialPolygon, dfynWaitMilliseconds)
 	case dia.QuickswapExchange:
-		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialPolygon, wsDialPolygon, quickswapWaitMilliseconds)
+		listenByAddress = true
+		fetchPoolsFromDB = false
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialPolygon, wsDialPolygon, quickswapWaitMilliseconds)
 	case dia.UbeswapExchange:
 		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialCelo, wsDialCelo, ubeswapWaitMilliseconds)
+		fetchPoolsFromDB = true
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialCelo, wsDialCelo, ubeswapWaitMilliseconds)
 	case dia.SpookyswapExchange:
-		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialFantom, wsDialFantom, spookyswapWaitMilliseconds)
+		listenByAddress = true
+		fetchPoolsFromDB = false
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialFantom, wsDialFantom, spookyswapWaitMilliseconds)
 	case dia.SpiritswapExchange:
-		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialFantom, wsDialFantom, spookyswapWaitMilliseconds)
+		listenByAddress = true
+		fetchPoolsFromDB = false
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialFantom, wsDialFantom, spookyswapWaitMilliseconds)
 	case dia.SolarbeamExchange:
 		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialMoonriver, wsDialMoonriver, solarbeamWaitMilliseconds)
+		fetchPoolsFromDB = true
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialMoonriver, wsDialMoonriver, solarbeamWaitMilliseconds)
 	case dia.TrisolarisExchange:
 		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialAurora, wsDialAurora, trisolarisWaitMilliseconds)
+		fetchPoolsFromDB = true
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialAurora, wsDialAurora, trisolarisWaitMilliseconds)
 	case dia.NetswapExchange:
 		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialMetis, wsDialMetis, metisWaitMilliseconds)
+		fetchPoolsFromDB = true
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialMetis, wsDialMetis, metisWaitMilliseconds)
 	case dia.SushiSwapExchangePolygon:
-		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialPolygon, wsDialPolygon, metisWaitMilliseconds)
+		listenByAddress = true
+		fetchPoolsFromDB = false
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialPolygon, wsDialPolygon, metisWaitMilliseconds)
 	case dia.SushiSwapExchangeFantom:
 		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialFantom, wsDialFantom, metisWaitMilliseconds)
+		fetchPoolsFromDB = true
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialFantom, wsDialFantom, metisWaitMilliseconds)
 	case dia.HuckleberryExchange:
 		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialMoonriver, wsDialMoonriver, moonriverWaitMilliseconds)
+		fetchPoolsFromDB = true
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialMoonriver, wsDialMoonriver, moonriverWaitMilliseconds)
 	case dia.TraderJoeExchange:
-		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialAvalanche, wsDialAvalanche, avalancheWaitMilliseconds)
+		listenByAddress = true
+		fetchPoolsFromDB = false
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialAvalanche, wsDialAvalanche, avalancheWaitMilliseconds)
 	case dia.PangolinExchange:
-		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialAvalanche, wsDialAvalanche, avalancheWaitMilliseconds)
+		listenByAddress = true
+		fetchPoolsFromDB = false
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialAvalanche, wsDialAvalanche, avalancheWaitMilliseconds)
 	case dia.TethysExchange:
 		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialMetis, wsDialMetis, metisWaitMilliseconds)
+		fetchPoolsFromDB = true
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialMetis, wsDialMetis, metisWaitMilliseconds)
 	case dia.HermesExchange:
 		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialMetis, wsDialMetis, metisWaitMilliseconds)
+		fetchPoolsFromDB = true
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialMetis, wsDialMetis, metisWaitMilliseconds)
 	case dia.OmniDexExchange:
 		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialTelos, wsDialTelos, telosWaitMilliseconds)
+		fetchPoolsFromDB = true
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialTelos, wsDialTelos, telosWaitMilliseconds)
 	case dia.DiffusionExchange:
 		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialEvmos, wsDialEvmos, evmosWaitMilliseconds)
+		fetchPoolsFromDB = true
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialEvmos, wsDialEvmos, evmosWaitMilliseconds)
 	case dia.ApeswapExchange:
-		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialBSC, wsDialBSC, pancakeswapWaitMilliseconds)
+		listenByAddress = true
+		fetchPoolsFromDB = false
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialBSC, wsDialBSC, pancakeswapWaitMilliseconds)
 	case dia.BiswapExchange:
-		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialBSC, wsDialBSC, pancakeswapWaitMilliseconds)
+		listenByAddress = true
+		fetchPoolsFromDB = false
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialBSC, wsDialBSC, pancakeswapWaitMilliseconds)
 	case dia.ArthswapExchange:
-		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialAstar, wsDialAstar, astarWaitMilliseconds)
+		listenByAddress = true
+		fetchPoolsFromDB = false
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialAstar, wsDialAstar, astarWaitMilliseconds)
 	case dia.StellaswapExchange:
-		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialMoonbeam, wsDialMoonbeam, moonbeamWaitMilliseconds)
+		listenByAddress = true
+		fetchPoolsFromDB = false
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialMoonbeam, wsDialMoonbeam, moonbeamWaitMilliseconds)
 	case dia.WanswapExchange:
-		listenByAddress = false
-		s = makeUniswapScraper(exchange, listenByAddress, restDialWanchain, wsDialWanchain, wanchainWaitMilliseconds)
+		listenByAddress = true
+		fetchPoolsFromDB = false
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialWanchain, wsDialWanchain, wanchainWaitMilliseconds)
+	}
+
+	s.relDB, err = models.NewPostgresDataStore()
+	if err != nil {
+		log.Fatal("new postgres datastore: ", err)
+	}
+
+	// Only include pools with (minimum) liquidity bigger than given env var.
+	liquidityThreshold, err := strconv.ParseFloat(utils.Getenv("LIQUIDITY_THRESHOLD", "0"), 64)
+	if err != nil {
+		liquidityThreshold = float64(0)
+		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThreshold)
+	}
+
+	// Fetch all pool with given liquidity threshold from database.
+	poolMap, err = makeUniPoolMap(s.exchangeName, liquidityThreshold, s.relDB)
+	if err != nil {
+		log.Fatal("build poolMap: ", err)
 	}
 
 	if scrape {
@@ -232,10 +283,13 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 }
 
 // makeUniswapScraper returns a uniswap scraper as used in NewUniswapScraper.
-func makeUniswapScraper(exchange dia.Exchange, listenByAddress bool, restDial string, wsDial string, waitMilliseconds string) *UniswapScraper {
-	var restClient, wsClient *ethclient.Client
-	var err error
-	var s *UniswapScraper
+func makeUniswapScraper(exchange dia.Exchange, listenByAddress bool, fetchPoolsFromDB bool, restDial string, wsDial string, waitMilliseconds string) *UniswapScraper {
+	var (
+		restClient, wsClient *ethclient.Client
+		err                  error
+		s                    *UniswapScraper
+		waitTime             int
+	)
 
 	log.Infof("Init rest and ws client for %s.", exchange.BlockChain.Name)
 	restClient, err = ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_REST", restDial))
@@ -247,25 +301,24 @@ func makeUniswapScraper(exchange dia.Exchange, listenByAddress bool, restDial st
 		log.Fatal("init ws client: ", err)
 	}
 
-	var waitTime int
-	waitTimeString := utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_WAIT_TIME", waitMilliseconds)
-	waitTime, err = strconv.Atoi(waitTimeString)
+	waitTime, err = strconv.Atoi(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_WAIT_TIME", waitMilliseconds))
 	if err != nil {
 		log.Error("could not parse wait time: ", err)
 		waitTime = 500
 	}
 
 	s = &UniswapScraper{
-		WsClient:        wsClient,
-		RestClient:      restClient,
-		shutdown:        make(chan nothing),
-		shutdownDone:    make(chan nothing),
-		pairScrapers:    make(map[string]*UniswapPairScraper),
-		exchangeName:    exchange.Name,
-		error:           nil,
-		chanTrades:      make(chan *dia.Trade),
-		waitTime:        waitTime,
-		listenByAddress: listenByAddress,
+		WsClient:         wsClient,
+		RestClient:       restClient,
+		shutdown:         make(chan nothing),
+		shutdownDone:     make(chan nothing),
+		pairScrapers:     make(map[string]*UniswapPairScraper),
+		exchangeName:     exchange.Name,
+		error:            nil,
+		chanTrades:       make(chan *dia.Trade),
+		waitTime:         waitTime,
+		listenByAddress:  listenByAddress,
+		fetchPoolsFromDB: fetchPoolsFromDB,
 	}
 	return s
 }
@@ -306,8 +359,23 @@ func (s *UniswapScraper) mainLoop() {
 			wg.Add(1)
 			go func(index int, address common.Address, w *sync.WaitGroup) {
 				defer w.Done()
-				s.ListenToPair(index, address, s.listenByAddress)
+				s.ListenToPair(index, address)
 			}(i, pairAddresses[i], &wg)
+		}
+		wg.Wait()
+
+	} else if s.fetchPoolsFromDB {
+
+		var wg sync.WaitGroup
+		count := 0
+		for address := range poolMap {
+			time.Sleep(time.Duration(s.waitTime) * time.Millisecond)
+			wg.Add(1)
+			go func(index int, address common.Address, w *sync.WaitGroup) {
+				defer w.Done()
+				s.ListenToPair(index, address)
+			}(count, common.HexToAddress(address), &wg)
+			count++
 		}
 		wg.Wait()
 
@@ -331,7 +399,7 @@ func (s *UniswapScraper) mainLoop() {
 			wg.Add(1)
 			go func(index int, address common.Address, w *sync.WaitGroup) {
 				defer w.Done()
-				s.ListenToPair(index, address, s.listenByAddress)
+				s.ListenToPair(index, address)
 			}(i, common.Address{}, &wg)
 		}
 		wg.Wait()
@@ -341,17 +409,23 @@ func (s *UniswapScraper) mainLoop() {
 
 // ListenToPair subscribes to a uniswap pool.
 // If @byAddress is true, it listens by pool address, otherwise by index.
-func (s *UniswapScraper) ListenToPair(i int, address common.Address, byAddress bool) {
-	var pair UniswapPair
-	var err error
+func (s *UniswapScraper) ListenToPair(i int, address common.Address) {
+	var (
+		pair UniswapPair
+		err  error
+	)
 
-	if !byAddress {
-		pair, err = s.GetPairByID(int64(i))
-		if err != nil {
-			log.Error("error fetching pair: ", err)
+	if !s.listenByAddress {
+		if !s.fetchPoolsFromDB {
+			pair, err = s.GetPairByID(int64(i))
+			if err != nil {
+				log.Error("error fetching pair: ", err)
+			}
+		} else {
+			pair = poolMap[address.Hex()]
 		}
 	} else {
-		pair, err = s.GetPairByAddress(address)
+		pair = poolMap[address.Hex()]
 		if err != nil {
 			log.Error("error fetching pair: ", err)
 		}
@@ -371,8 +445,6 @@ func (s *UniswapScraper) ListenToPair(i int, address common.Address, byAddress b
 		return
 	}
 
-	// ps := s.pairScrapers[pair.ForeignName]
-	// if ok {
 	log.Info(i, ": add pair scraper for: ", pair.ForeignName, " with address ", pair.Address.Hex())
 	sink, err := s.GetSwapsChannel(pair.Address)
 	if err != nil {
@@ -911,4 +983,34 @@ func (ps *UniswapPairScraper) Error() error {
 // Pair returns the pair this scraper is subscribed to
 func (ps *UniswapPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
+}
+
+// makeUniPoolMap returns a map with pool addresses as keys and the underlying UniswapPair as values.
+func makeUniPoolMap(exchangeName string, liquiThreshold float64, relDB *models.RelDB) (map[string]UniswapPair, error) {
+	pm := make(map[string]UniswapPair)
+	pools, err := relDB.GetAllPoolsExchange(exchangeName, liquiThreshold)
+	if err != nil {
+		return pm, err
+	}
+	log.Info("Found ", len(pools), " pools.")
+	log.Info("make pool map...")
+	for _, pool := range pools {
+		if len(pool.Assetvolumes) != 2 {
+			continue
+		}
+		up := UniswapPair{
+			Address: common.HexToAddress(pool.Address),
+		}
+		if pool.Assetvolumes[0].Index == 0 {
+			up.Token0 = asset2UniAsset(pool.Assetvolumes[0].Asset)
+			up.Token1 = asset2UniAsset(pool.Assetvolumes[1].Asset)
+		} else {
+			up.Token0 = asset2UniAsset(pool.Assetvolumes[1].Asset)
+			up.Token1 = asset2UniAsset(pool.Assetvolumes[0].Asset)
+		}
+		up.ForeignName = up.Token0.Symbol + "-" + up.Token1.Symbol
+		pm[pool.Address] = up
+	}
+	log.Infof("found %v subscribable pools.", len(pm))
+	return pm, err
 }

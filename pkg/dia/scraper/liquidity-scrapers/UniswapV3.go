@@ -38,7 +38,7 @@ func NewUniswapV3Scraper(exchange dia.Exchange) *UniswapV3Scraper {
 
 	switch exchange.Name {
 	case dia.UniswapExchangeV3:
-		uls = makeUniswapV3Scraper(exchange, "https://nd-475-370-970.p2pify.com/8658efa12b79ca9cd4b1c72b55a7f4fa", "wss://eth-mainnet.alchemyapi.io/v2/v1bo6tRKiraJ71BVGKmCtWVedAzzNTd6", "200", uint64(12369621))
+		uls = makeUniswapV3Scraper(exchange, "", "", "200", uint64(12369621))
 	case dia.UniswapExchangeV3Polygon:
 		uls = makeUniswapV3Scraper(exchange, "", "", "200", uint64(22757913))
 	case dia.UniswapExchangeV3Arbitrum:
@@ -133,8 +133,8 @@ func (uls *UniswapV3Scraper) fetchPools() {
 		pool.Exchange = dia.Exchange{Name: uls.exchangeName}
 		pool.Blockchain = dia.BlockChain{Name: uls.blockchain}
 		pool.Address = poolCreated.Event.Pool.Hex()
-		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset0})
-		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset1})
+		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset0, Index: uint8(0)})
+		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset1, Index: uint8(1)})
 		pool.Time = time.Now()
 
 		uls.poolChannel <- pool

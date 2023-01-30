@@ -28,9 +28,23 @@ async function tokenIssuance(api, token) {
   
     return tokenIssuanceMap.get(token);
   }
+
+  async function vTokenIssuance(api, token) {
+    const totalIssuance = await api.query.tokens.totalIssuance({vToken:token});
+  
+    return totalIssuance;
+  }
   
 
 module.exports = {
   tokenPool: tokenPool,
-  bifrosttokenIssuance:tokenIssuance
+  bifrosttokenIssuance:tokenIssuance,
+  vTokenIssuance:vTokenIssuance,
 };
+
+// {
+//   "total_backable": "250465499708802373",
+//   "total_issued": "223466021908860328",
+//   "decimal": 12,
+//   "token": "KSM"
+//   }

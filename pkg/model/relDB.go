@@ -64,6 +64,7 @@ type RelDatastore interface {
 	SetPool(pool dia.Pool) error
 	GetPoolByAddress(blockchain string, address string) (pool dia.Pool, err error)
 	GetAllPoolAddrsExchange(exchange string, liquiThreshold float64) ([]string, error)
+	GetAllPoolsExchange(exchange string, liquiThreshold float64) ([]dia.Pool, error)
 
 	// ----------------- blockchain methods -------------------
 	SetBlockchain(blockchain dia.BlockChain) error
@@ -152,9 +153,13 @@ type RelDatastore interface {
 	SetKeyPair(publickey string, privatekey string) error
 	GetKeyPairID(publickey string) string
 	GetFeederAccessByID(id string) (owner, publickey string)
-	SetOracleConfig(address, keypairID, creator, symbols, chainID string) error
+	SetOracleConfig(address, keypairID, creator, symbols, chainID, frequency, sleepseconds, deviationpermille string)
 	SetFeederConfig(feederid, oracleconfigid string) error
 	GetFeederID(address string) (feederId string)
+	GetFeederLimit(owner string) (limit int)
+	GetTotalFeeder(owner string) (total int)
+	GetOracleConfig(address string) (oracleconfig dia.OracleConfig, err error)
+	ChangeOracleState(feederID string, active bool) (err error)
 }
 
 const (

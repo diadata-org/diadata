@@ -72,6 +72,7 @@ CREATE TABLE poolasset (
     asset_id UUID REFERENCES asset(asset_id) NOT NULL, 
     liquidity numeric,
     time_stamp timestamp,
+    token_index integer,
     UNIQUE (poolasset_id),
     UNIQUE(pool_id,asset_id)
 );
@@ -285,9 +286,16 @@ CREATE TABLE oracleconfig (
     owner text NOT NULL,
     symbols text NOT NULL,
     chainID text NOT NULL,
+    active  boolean default true,
+    frequency text ,
+    sleepseconds text,
+    deviationpermille text,
     UNIQUE (id),
     UNIQUE (feeder_id)
 );
+
+
+-- ALTER TABLE oracleconfig ADD COLUMN active  boolean default true;
 
 
 

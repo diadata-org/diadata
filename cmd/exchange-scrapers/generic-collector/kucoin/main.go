@@ -3,6 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"strconv"
+	"sync"
+	"time"
+
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
@@ -12,9 +16,6 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils/probes"
 	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
-	"strconv"
-	"sync"
-	"time"
 )
 
 var (
@@ -128,8 +129,6 @@ func main() {
 	case "current":
 		w = kafkaHelper.NewWriter(kafkaHelper.TopicTrades)
 		wTest = kafkaHelper.NewWriter(kafkaHelper.TopicTradesTest)
-	case "historical":
-		w = kafkaHelper.NewWriter(kafkaHelper.TopicTradesHistorical)
 	case "estimation":
 		w = kafkaHelper.NewWriter(kafkaHelper.TopicTradesEstimation)
 	case "assetmap":

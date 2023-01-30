@@ -161,18 +161,18 @@ func NewTofuNFTScraper(rdb *models.RelDB, exchange dia.NFTExchange) (scraper *To
 	switch exchange.BlockChain.Name {
 	case dia.ASTAR:
 		defTofuNFTConf.ContractAddr = "0x7Cae7FeB55349FeADB8f84468F692450D92597bc"
-		scraper = makeNewTofuNFTScraper(exchange.BlockChain.Name, rdb)
+		scraper = makeNewTofuNFTScraper(exchange, rdb)
 	case dia.BINANCESMARTCHAIN:
 		defTofuNFTConf.ContractAddr = "0x449D05C544601631785a7C062DCDFF530330317e"
-		scraper = makeNewTofuNFTScraper(exchange.BlockChain.Name, rdb)
+		scraper = makeNewTofuNFTScraper(exchange, rdb)
 	}
 	return
 }
 
-func makeNewTofuNFTScraper(blockchain string, rdb *models.RelDB) *TofuNFTScraper {
+func makeNewTofuNFTScraper(exchange dia.NFTExchange, rdb *models.RelDB) *TofuNFTScraper {
 	ctx := context.Background()
 
-	eth, err := ethclient.Dial(utils.Getenv(strings.ToUpper(blockchain)+"_URI_REST", ""))
+	eth, err := ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_REST", ""))
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}
@@ -188,7 +188,8 @@ func makeNewTofuNFTScraper(blockchain string, rdb *models.RelDB) *TofuNFTScraper
 			source:        TofuNFT,
 			ethConnection: eth,
 		},
-		blockchain: blockchain,
+		exchangeName: exchange.Name,
+		blockchain:   exchange.BlockChain.Name,
 	}
 
 	if err := s.initScraper(ctx); err != nil {

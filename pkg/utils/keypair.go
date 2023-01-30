@@ -40,7 +40,7 @@ func NewKeyPair() (publickey, privatekey string) {
 
 }
 
-func GetSigner(chainID, creator, oracleaddress, signed string) (common.Address, error) {
+func GetSigner(chainID, creator, oracleaddress, message, signed string) (common.Address, error) {
 	typedatastring := `{
 		"types": {
 			"EIP712Domain": [{
@@ -76,7 +76,7 @@ func GetSigner(chainID, creator, oracleaddress, signed string) (common.Address, 
 			"salt": ""
 		},
 		"message": {
-			"contents": "Verify its your address to call oracle builder",
+			"contents": "` + message + `",
 			"creator": "` + creator + `",
 			"oracleaddress": "` + oracleaddress + `"
 		}

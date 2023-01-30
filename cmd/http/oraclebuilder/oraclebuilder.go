@@ -49,16 +49,20 @@ func main() {
 		AllowedBackends: []keyring.BackendType{keyring.K8Secret},
 	})
 
-	ob := &oraclebuilder.Env{RelDB: relStore, PodHelper: ph, Keyring: ring}
+	oracle := &oraclebuilder.Env{RelDB: relStore, PodHelper: ph, Keyring: ring}
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{"POST", "PUT", "PATCH", "DELETE"},
-		AllowHeaders: []string{"Content-Type,access-control-allow-origin, access-control-allow-headers"},
+		AllowHeaders: []string{"Content-Type,access-control-allow-origin, access-control-allow-headers, Authorization"},
 	}))
 	routerGroup := r.Group("/oraclebuilder")
 
-	routerGroup.POST("/", ob.InitiateOracle)
+	routerGroup.POST("create", oracle.Create)
+	routerGroup.GET("/list", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to List your oracles") }, oracle.Auth, oracle.List)
+	routerGroup.GET("/view", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to List your oracles") }, oracle.Auth, oracle.View)
+	routerGroup.DELETE("/delete", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to delete oracle") }, oracle.Auth, oracle.Delete)
+	routerGroup.PATCH("/restart", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to restart oracle feeder") }, oracle.Auth, oracle.Restart)
 
 	port := utils.Getenv("LISTEN_PORT", ":8080")
 

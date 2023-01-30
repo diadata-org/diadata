@@ -4,6 +4,10 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
+
+	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/jackc/pgx/v4"
 )
 
 func (rdb *RelDB) SetKeyPair(publickey string, privatekey string) error {
@@ -31,12 +35,12 @@ func (rdb *RelDB) GetKeyPairID(publickey string) string {
 	return keypair_id
 }
 
-func (rdb *RelDB) SetOracleConfig(address, keypairID, creator, symbols, chainID string) error {
+func (rdb *RelDB) SetOracleConfig(address, keypairID, creator, symbols, chainID, frequency, sleepseconds, deviationpermille string) error {
 	query := fmt.Sprintf(`INSERT INTO %s 
-	(address,feeder_id,owner,symbols,chainID) VALUES ($1,$2,$3,$4,$5) on conflict(feeder_id)  
+	(address,feeder_id,owner,symbols,chainID,frequency,sleepseconds, deviationpermille) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) on conflict(feeder_id)  
 	do
 	update set feeder_id=EXCLUDED.feeder_id`, oracleconfigTable)
-	_, err := rdb.postgresClient.Exec(context.Background(), query, address, keypairID, creator, symbols, chainID)
+	_, err := rdb.postgresClient.Exec(context.Background(), query, address, keypairID, creator, symbols, chainID, frequency, sleepseconds, deviationpermille)
 	if err != nil {
 		return err
 	}
@@ -51,17 +55,6 @@ func (rdb *RelDB) GetFeederID(address string) (feederId string) {
 	var feederidint int
 	rdb.postgresClient.QueryRow(context.Background(), query, address).Scan(&feederidint)
 	feederId = strconv.Itoa(feederidint)
-
-	return
-}
-
-func (rdb *RelDB) GetOracleConfig(address string) (oracleconfigid string) {
-	query := fmt.Sprintf(`SELECT id FROM %s 
-	WHERE address=$1`, oracleconfigTable)
-	log.Infoln("GetOracleConfig query", query)
-	log.Infoln("GetOracleConfig address", address)
-
-	rdb.postgresClient.QueryRow(context.Background(), query, address).Scan(&oracleconfigid)
 
 	return
 }
@@ -94,7 +87,69 @@ func (rdb *RelDB) GetFeederLimit(owner string) (limit int) {
 
 func (rdb *RelDB) GetTotalFeeder(owner string) (total int) {
 	query := fmt.Sprintf(`SELECT count(*) from  %s 
-	WHERE owner=$1`, oracleconfigTable)
+	WHERE owner=$1 and active=true`, oracleconfigTable)
 	rdb.postgresClient.QueryRow(context.Background(), query, owner).Scan(&total)
+	return
+}
+
+func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleConfig, err error) {
+	var (
+		rows pgx.Rows
+	)
+
+	query := fmt.Sprintf(`
+	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille
+	FROM %s 
+	WHERE owner=$1 and active=true`, oracleconfigTable)
+	rows, err = rdb.postgresClient.Query(context.Background(), query, owner)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			oracleconfig dia.OracleConfig
+			symbols      string
+		)
+		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &oracleconfig.Frequency, &oracleconfig.SleepSeconds, &oracleconfig.DeviationPermille)
+		if err != nil {
+			log.Error(err)
+		}
+
+		oracleconfig.Symbols = strings.Split(symbols, " ")
+
+		oracleconfigs = append(oracleconfigs, oracleconfig)
+	}
+	return
+}
+
+func (rdb *RelDB) GetOracleConfig(address string) (oracleconfig dia.OracleConfig, err error) {
+	var (
+		symbols string
+	)
+	query := fmt.Sprintf(`
+	SELECT address, feeder_id, owner,symbols, chainid 
+	FROM %s 
+	WHERE address=$1`, oracleconfigTable)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, address).Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID)
+	if err != nil {
+		return
+	}
+	oracleconfig.Symbols = strings.Split(symbols, " ")
+
+	return
+}
+
+func (rdb *RelDB) ChangeOracleState(feederID string, active bool) (err error) {
+	query := fmt.Sprintf(`
+	UPDATE %s 
+	SET active=$1
+	WHERE feeder_id=$2`, oracleconfigTable)
+	_, err = rdb.postgresClient.Exec(context.Background(), query, active, feederID)
+	if err != nil {
+		return
+	}
+
 	return
 }

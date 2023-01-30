@@ -254,6 +254,7 @@ func (scraper *CurveFIScraper) loadPoolData(poolAddress common.Address, factoryC
 		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{
 			Asset:  poolAssets[i],
 			Volume: volume,
+			Index:  uint8(i),
 		})
 	}
 	pool.Exchange = dia.Exchange{Name: scraper.exchangeName}

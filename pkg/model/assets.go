@@ -378,7 +378,12 @@ func (rdb *RelDB) IdentifyAsset(asset dia.Asset) (assets []dia.Asset, err error)
 
 // SetExchangeSymbol writes unique data into exchangesymbol table if not yet in there.
 func (rdb *RelDB) SetExchangeSymbol(exchange string, symbol string) error {
-	query := fmt.Sprintf("INSERT INTO %s (symbol,exchange) SELECT $1,$2 WHERE NOT EXISTS (SELECT 1 FROM exchangesymbol WHERE symbol=$1 AND exchange=$2)", exchangesymbolTable)
+	query := fmt.Sprintf(`
+	INSERT INTO %s (symbol,exchange) 
+	SELECT $1,$2 
+	WHERE NOT EXISTS 
+	(SELECT 1 FROM exchangesymbol WHERE symbol=$1 AND exchange=$2)
+	`, exchangesymbolTable)
 	_, err := rdb.postgresClient.Exec(context.Background(), query, symbol, exchange)
 	if err != nil {
 		return err
@@ -417,7 +422,13 @@ func (rdb *RelDB) GetAssets(symbol string) (assets []dia.Asset, err error) {
 // GetAssetExchnage returns all assets which share the symbol ticker @symbol.
 func (rdb *RelDB) GetAssetExchange(symbol string) (exchanges []string, err error) {
 
-	query := fmt.Sprintf("SELECT exchange FROM %s  INNER JOIN %s ON asset.asset_id = exchangesymbol.asset_id WHERE exchangesymbol.symbol = $1 ", exchangesymbolTable, assetTable)
+	query := fmt.Sprintf(`
+	SELECT exchange 
+	FROM %s 
+	INNER JOIN %s 
+	ON asset.asset_id = exchangesymbol.asset_id 
+	WHERE exchangesymbol.symbol = $1
+	`, exchangesymbolTable, assetTable)
 	var rows pgx.Rows
 	rows, err = rdb.postgresClient.Query(context.Background(), query, symbol)
 	if err != nil {
@@ -540,8 +551,12 @@ func (rdb *RelDB) GetExchangeSymbolAssetID(exchange string, symbol string) (asse
 
 func (rdb *RelDB) SetBlockchain(blockchain dia.BlockChain) (err error) {
 	fields := fmt.Sprintf("INSERT INTO %s (name,genesisdate,nativetoken_id,verificationmechanism,chain_id) VALUES ", blockchainTable)
-	values := "($1,$2,(SELECT asset_id FROM asset WHERE address=$3 AND blockchain=$1),$4,NULLIF($5,''))"
-	conflict := " ON CONFLICT (name) DO UPDATE SET genesisdate=$2,verificationmechanism=$4,chain_id=NULLIF($5,''),nativetoken_id=(SELECT asset_id FROM asset WHERE address=$3 AND blockchain=$1) "
+	values := "($1,$2,(SELECT asset_id FROM asset WHERE address=$3 AND blockchain=$1),$4,NULLIF($5,'')) "
+	conflict := `
+	ON CONFLICT (name) 
+	DO UPDATE SET 
+	genesisdate=$2,verificationmechanism=$4,chain_id=NULLIF($5,''),nativetoken_id=(SELECT asset_id FROM asset WHERE address=$3 AND blockchain=$1)
+	`
 
 	query := fields + values + conflict
 	_, err = rdb.postgresClient.Exec(context.Background(), query,
@@ -558,7 +573,13 @@ func (rdb *RelDB) SetBlockchain(blockchain dia.BlockChain) (err error) {
 }
 
 func (rdb *RelDB) GetBlockchain(name string) (blockchain dia.BlockChain, err error) {
-	query := fmt.Sprintf("SELECT genesisdate,verificationmechanism,chain_id,address,symbol FROM %s INNER JOIN %s ON %s.nativetoken_id=%s.asset_id where %s.name=$1", blockchainTable, assetTable, blockchainTable, assetTable, blockchainTable)
+	query := fmt.Sprintf(`
+	SELECT genesisdate,verificationmechanism,chain_id,address,symbol 
+	FROM %s 
+	INNER JOIN %s 
+	ON %s.nativetoken_id=%s.asset_id 
+	WHERE %s.name=$1
+	`, blockchainTable, assetTable, blockchainTable, assetTable, blockchainTable)
 	err = rdb.postgresClient.QueryRow(context.Background(), query, name).Scan(
 		&blockchain.GenesisDate,
 		&blockchain.VerificationMechanism,
@@ -576,20 +597,33 @@ func (rdb *RelDB) GetBlockchain(name string) (blockchain dia.BlockChain, err err
 // GetAllBlockchains returns all blockchains from the blockchain table.
 // If fullAsset=true it returns the complete native token as asset, otherwise only its symbol string.
 func (rdb *RelDB) GetAllBlockchains(fullAsset bool) ([]dia.BlockChain, error) {
-	var blockchains []dia.BlockChain
-	var query string
+	var (
+		blockchains []dia.BlockChain
+		query       string
+	)
+
 	if fullAsset {
-		queryString := "SELECT b.name,b.genesisdate,a.Symbol,a.Name,a.Address,a.Decimals,b.verificationmechanism,b.chain_id FROM %s b LEFT JOIN %s a ON nativetoken_id = a.asset_id"
-		query = fmt.Sprintf(queryString, blockchainTable, assetTable)
+		query = fmt.Sprintf(`
+		SELECT b.name,b.genesisdate,a.Symbol,a.Name,a.Address,a.Decimals,b.verificationmechanism,b.chain_id 
+		FROM %s b 
+		LEFT JOIN %s a 
+		ON nativetoken_id = a.asset_id
+		`, blockchainTable, assetTable)
 	} else {
-		query = fmt.Sprintf("SELECT b.name,b.genesisdate,a.Symbol,b.verificationmechanism,b.chain_id FROM %s b LEFT JOIN %s a ON nativetoken_id = a.asset_id", blockchainTable, assetTable)
+		query = fmt.Sprintf(`
+		SELECT b.name,b.genesisdate,a.Symbol,b.verificationmechanism,b.chain_id 
+		FROM %s b 
+		LEFT JOIN %s a 
+		ON nativetoken_id = a.asset_id
+		`, blockchainTable, assetTable)
 	}
+
 	rows, err := rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return []dia.BlockChain{}, err
 	}
-	defer rows.Close()
 
+	defer rows.Close()
 	for rows.Next() {
 		var (
 			blockchain     dia.BlockChain
@@ -810,7 +844,15 @@ func (rdb *RelDB) GetLastAssetVolume24H(asset dia.Asset) (volume float64, err er
 }
 
 func (rdb *RelDB) GetTopAssetByVolume(symbol string) (assets []dia.Asset, err error) {
-	query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s INNER JOIN %s ON asset.asset_id = assetvolume.asset_id WHERE symbol=$1 ORDER BY volume DESC", assetTable, assetVolumeTable)
+	query := fmt.Sprintf(`
+	SELECT symbol,name,address,decimals,blockchain 
+	FROM %s 
+	INNER JOIN %s 
+	ON asset.asset_id = assetvolume.asset_id 
+	WHERE symbol=$1 
+	ORDER BY volume DESC
+	`, assetTable, assetVolumeTable)
+
 	var rows pgx.Rows
 	rows, err = rdb.postgresClient.Query(context.Background(), query, symbol)
 	if err != nil {
@@ -838,7 +880,12 @@ func (rdb *RelDB) GetTopAssetByVolume(symbol string) (assets []dia.Asset, err er
 
 func (rdb *RelDB) GetByLimit(limit, skip uint32) (assets []dia.Asset, assetIds []string, err error) {
 
-	rows, err := rdb.postgresClient.Query(context.Background(), "SELECT asset_id,symbol,name,address,decimals,blockchain FROM asset LIMIT $1 OFFSET $2 ", limit, skip)
+	rows, err := rdb.postgresClient.Query(
+		context.Background(),
+		"SELECT asset_id,symbol,name,address,decimals,blockchain FROM asset LIMIT $1 OFFSET $2",
+		limit,
+		skip,
+	)
 	if err != nil {
 		return
 	}
@@ -930,10 +977,29 @@ func (rdb *RelDB) GetSortedAssetSymbols(numAssets int64, skip int64, search stri
 	)
 
 	if numAssets == 0 {
-		queryString = "SELECT symbol,name,address,decimals,blockchain,volume FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) WHERE symbol ILIKE '%s%%' ORDER BY assetvolume.volume DESC LIMIT 100"
+		queryString = `
+		SELECT a.symbol,a.name,a.address,a.decimals,a.blockchain,av.volume 
+		FROM %s 
+		INNER JOIN %s 
+		ON (asset.asset_id = assetvolume.asset_id) 
+		WHERE symbol ILIKE '%s%%' 
+		ORDER BY assetvolume.volume 
+		DESC LIMIT 100`
 		query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, search)
 	} else {
-		queryString = "SELECT DISTINCT ON (av.volume,av.asset_id)  a.symbol,a.name,a.address,a.decimals,a.blockchain,av.volume FROM %s  av INNER JOIN %s a ON av.asset_id=a.asset_id INNER JOIN %s es ON av.asset_id=es.asset_id INNER JOIN %s e ON es.exchange=e.name WHERE e.centralized=true  and a.symbol ILIKE '%s%%' ORDER BY av.volume DESC LIMIT %d OFFSET %d"
+		queryString = `
+		SELECT DISTINCT ON (av.volume,av.asset_id)  a.symbol,a.name,a.address,a.decimals,a.blockchain,av.volume 
+		FROM %s av 
+		INNER JOIN %s a 
+		ON av.asset_id=a.asset_id 
+		INNER JOIN %s es 
+		ON av.asset_id=es.asset_id INNER JOIN %s e 
+		ON es.exchange=e.name 
+		WHERE e.centralized=true 
+		AND a.symbol ILIKE '%s%%' 
+		ORDER BY av.volume 
+		DESC LIMIT %d 
+		OFFSET %d`
 		query = fmt.Sprintf(queryString, assetVolumeTable, assetTable, exchangesymbolTable, exchangeTable, search, numAssets, skip)
 	}
 	log.Infoln("GetSortedAssetSymbols query", query)

@@ -21,6 +21,7 @@ import (
 var (
 	numMaxRetryCG    = 4
 	waitRetrySeconds = 60
+	apiKey           = utils.Getenv("COINGECKO_SUPPLY_API_KEY", "")
 )
 
 type CGCoin struct {
@@ -77,7 +78,7 @@ func GetETHSuppliesFromCG() (supplies []dia.Supply, err error) {
 
 func getCGCoinInfo(id string) (coin CGCoin, status int, err error) {
 	var resp []byte
-	resp, status, err = utils.GetRequest("https://api.coingecko.com/api/v3/coins/" + id)
+	resp, status, err = utils.GetRequest("https://pro-api.coingecko.com/api/v3/coins/" + id + "?x_cg_pro_api_key=" + apiKey)
 	if err != nil {
 		return
 	}
