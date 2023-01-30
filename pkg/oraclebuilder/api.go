@@ -22,7 +22,6 @@ Auth using EIP712 spec
 type Env struct {
 	DataStore models.Datastore
 	RelDB     *models.RelDB
-	PodHelper *builderutils.PodHelper
 	Keyring   kr.Keyring
 }
 
