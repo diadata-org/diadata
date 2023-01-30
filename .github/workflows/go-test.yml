@@ -24,4 +24,4 @@ jobs:
       - name: Test
         run: |
           cd internal/pkg/filtersBlockService/
-          go test -v
+          gotestsum --format pkgname

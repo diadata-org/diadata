@@ -7,6 +7,7 @@ require (
 	github.com/Kucoin/kucoin-go-sdk v1.2.7
 	github.com/adshao/go-binance v0.0.0-20200724005944-6a0c3995d85c
 	github.com/alexjorgef/go-bittrex v0.6.3
+	gotest.tools/gotestsum v1.9.0
 	github.com/anaskhan96/soup v1.1.1
 	github.com/beldur/kraken-go-api-client v0.0.0-20200330152217-ed78f31b987e
 	github.com/bitfinexcom/bitfinex-api-go v0.0.0-20200709134622-b8be40b33f25
