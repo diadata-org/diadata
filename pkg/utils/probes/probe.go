@@ -36,19 +36,19 @@ func Start(liveness probe, readiness probe) {
 }
 
 func execReadiness(context *gin.Context) {
-	executeProbe(context, readinessProbe)
+	executeProbe(context, readinessProbe, http.StatusTooEarly)
 }
 
 func execLiveness(context *gin.Context) {
-	executeProbe(context, livenessProbe)
+	executeProbe(context, livenessProbe, http.StatusInternalServerError)
 }
 
-func executeProbe(context *gin.Context, fn probe) bool {
+func executeProbe(context *gin.Context, fn probe, errorCode int) bool {
 	log.Infoln("probe has been started")
 	if fn() {
 		context.JSON(http.StatusOK, gin.H{"message": "success"})
 		return true
 	}
-	restApi.SendError(context, http.StatusInternalServerError, nil)
+	restApi.SendError(context, errorCode, nil)
 	return false
 }
