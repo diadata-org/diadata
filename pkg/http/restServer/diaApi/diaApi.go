@@ -844,6 +844,53 @@ func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, p)
 	}
+
+}
+
+func (env *Env) GetFilterPerSource(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	type priceOnExchange struct {
+		Price     float64   `json:"Price"`
+		Exchange  string    `json:"Exchange"`
+		Timestamp time.Time `json:"Time"`
+	}
+
+	type localReturn struct {
+		Asset  dia.Asset         `json:"Asset"`
+		Prices []priceOnExchange `json:"PricePerExchange"`
+	}
+
+	blockchain := c.Param("blockchain")
+	address := c.Param("address")
+	filter := c.Param("filter")
+
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(30)*time.Minute)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+		return
+	}
+
+	assetQuotations, err := env.DataStore.GetFilterAllExchanges(filter, address, blockchain, starttime, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+		return
+	}
+
+	var lr localReturn
+	lr.Asset = env.getAssetFromCache(ASSET_CACHE, blockchain, address)
+
+	for _, aq := range assetQuotations {
+		var pe priceOnExchange
+		pe.Exchange = aq.Source
+		pe.Price = aq.Price
+		pe.Timestamp = aq.Time
+		lr.Prices = append(lr.Prices, pe)
+	}
+	c.JSON(http.StatusOK, lr)
+
 }
 
 // GetAllSymbols returns all Symbols on @exchange.
@@ -855,10 +902,12 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 		return
 	}
 
-	var s []string
-	var numSymbols int64
-	var sortedAssets []dia.AssetVolume
-	var err error
+	var (
+		s            []string
+		numSymbols   int64
+		sortedAssets []dia.AssetVolume
+		err          error
+	)
 
 	substring := c.Param("substring")
 	exchange := c.DefaultQuery("exchange", "noRange")
@@ -3349,8 +3398,11 @@ func (env *Env) GetAssetInfo(c *gin.Context) {
 	blockchain := c.Param("blockchain")
 	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 
-	endtime := time.Now()
-	starttime := endtime.AddDate(0, 0, -1)
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*60)*time.Minute)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
 
 	var quotationExtended localAssetInfoReturn
 
@@ -3386,7 +3438,7 @@ func (env *Env) GetAssetInfo(c *gin.Context) {
 	quotationExtended.Source = quotation.Source
 
 	// Get Exchange stats
-	exchangemap, err := env.DataStore.GetActiveExchangesAndPairs(asset.Address, asset.Blockchain, starttime, endtime)
+	exchangemap, _, err := env.DataStore.GetActiveExchangesAndPairs(asset.Address, asset.Blockchain, int64(0), starttime, endtime)
 	if err != nil {
 		restApi.SendError(c, http.StatusNotFound, err)
 		return
@@ -3413,6 +3465,106 @@ func (env *Env) GetAssetInfo(c *gin.Context) {
 		return eix[i].Volume24h > eix[j].Volume24h
 	})
 	quotationExtended.ExchangeInfo = eix
+
+	c.JSON(http.StatusOK, quotationExtended)
+}
+
+// GetPairsInFeed returns quotation of asset with highest market cap among
+// all assets with symbol ticker @symbol. Additionally information on exchanges and volumes.
+func (env *Env) GetPairsInFeed(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	type localPairInfo struct {
+		ForeignName string
+		Exchange    string
+		NumTrades   int64
+		Quotetoken  dia.Asset
+		Basetoken   dia.Asset
+	}
+
+	type localAssetInfoReturn struct {
+		Symbol             string
+		Name               string
+		Address            string
+		Blockchain         string
+		Price              float64
+		PriceYesterday     float64
+		VolumeYesterdayUSD float64
+		Time               time.Time
+		Source             string
+		PairInfo           []localPairInfo
+	}
+	var quotationExtended localAssetInfoReturn
+
+	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	numTradesThreshold, err := strconv.ParseInt(c.Param("numTradesThreshold"), 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*60)*time.Minute)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	asset := env.getAssetFromCache(ASSET_CACHE, blockchain, address)
+
+	quotation, err := env.DataStore.GetAssetQuotation(asset, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, errors.New("no quotation available"))
+		return
+	}
+	quotationYesterday, err := env.DataStore.GetAssetQuotation(asset, starttime)
+	if err != nil {
+		log.Warn("get quotation yesterday: ", err)
+	} else {
+		quotationExtended.PriceYesterday = quotationYesterday.Price
+	}
+	volumeYesterday, err := env.DataStore.Get24HoursAssetVolume(asset)
+	if err != nil {
+		log.Warn("get volume yesterday: ", err)
+	} else {
+		quotationExtended.VolumeYesterdayUSD = *volumeYesterday
+	}
+	quotationExtended.Symbol = quotation.Asset.Symbol
+	quotationExtended.Name = quotation.Asset.Name
+	quotationExtended.Address = quotation.Asset.Address
+	quotationExtended.Blockchain = quotation.Asset.Blockchain
+	quotationExtended.Price = quotation.Price
+	quotationExtended.Time = quotation.Time
+	quotationExtended.Source = quotation.Source
+
+	// Get Exchange stats
+	exchangemap, pairCountMap, err := env.DataStore.GetActiveExchangesAndPairs(asset.Address, asset.Blockchain, numTradesThreshold, starttime, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, err)
+		return
+	}
+
+	var eix []localPairInfo
+	for exchange, pairs := range exchangemap {
+		var ei localPairInfo
+		ei.Exchange = exchange
+
+		for _, pair := range pairs {
+			ei.NumTrades = pairCountMap[pair.PairExchangeIdentifier(exchange)]
+			ei.Quotetoken = asset
+			ei.Basetoken = env.getAssetFromCache(ASSET_CACHE, pair.BaseToken.Blockchain, pair.BaseToken.Address)
+			ei.ForeignName = ei.Quotetoken.Symbol + "-" + ei.Basetoken.Symbol
+			eix = append(eix, ei)
+		}
+
+	}
+
+	sort.Slice(eix, func(i, j int) bool {
+		return eix[i].NumTrades > eix[j].NumTrades
+	})
+	quotationExtended.PairInfo = eix
 
 	c.JSON(http.StatusOK, quotationExtended)
 }

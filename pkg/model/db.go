@@ -41,6 +41,7 @@ type Datastore interface {
 	SaveTradeInfluxToTable(t *dia.Trade, table string) error
 	GetTradeInflux(dia.Asset, string, time.Time, time.Duration) (*dia.Trade, error)
 	SaveFilterInflux(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error
+	GetFilterAllExchanges(filter string, address string, blockchain string, starttime time.Time, endtime time.Time) ([]AssetQuotation, error)
 	GetLastTrades(asset dia.Asset, exchange string, timestamp time.Time, maxTrades int, fullAsset bool) ([]dia.Trade, error)
 	GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error)
 
@@ -50,7 +51,7 @@ type Datastore interface {
 	GetTradesByExchangesBatchedFull(asset dia.Asset, baseAssets []dia.Asset, exchanges []string, returnBasetoken bool, startTimes, endTimes []time.Time, maxTrades int) ([]dia.Trade, error)
 	GetTradesByExchangesBatched(asset dia.Asset, baseAssets []dia.Asset, exchanges []string, startTimes, endTimes []time.Time, maxTrades int) ([]dia.Trade, error)
 
-	GetActiveExchangesAndPairs(address string, blockchain string, starttime time.Time, endtime time.Time) (map[string][]dia.Pair, error)
+	GetActiveExchangesAndPairs(address string, blockchain string, numTradesThreshold int64, starttime time.Time, endtime time.Time) (map[string][]dia.Pair, map[string]int64, error)
 	GetOldTradesFromInflux(table string, exchange string, verified bool, timeInit, timeFinal time.Time) ([]dia.Trade, error)
 	CopyInfluxMeasurements(dbOrigin string, dbDestination string, tableOrigin string, tableDestination string, timeInit time.Time, timeFinal time.Time) (int64, error)
 
