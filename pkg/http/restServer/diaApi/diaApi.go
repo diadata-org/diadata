@@ -864,7 +864,7 @@ func (env *Env) GetFilterPerSource(c *gin.Context) {
 	}
 
 	blockchain := c.Param("blockchain")
-	address := c.Param("address")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 	filter := c.Param("filter")
 
 	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(30)*time.Minute)
@@ -1353,7 +1353,7 @@ func (env *Env) GetAssetPairs(c *gin.Context) {
 		return
 	}
 	blockchain := c.Param("blockchain")
-	address := c.Param("address")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 	var (
 		filterVerified bool
 		verified       bool
@@ -3423,7 +3423,7 @@ func (env *Env) GetAssetInfo(c *gin.Context) {
 	} else {
 		quotationExtended.PriceYesterday = quotationYesterday.Price
 	}
-	volumeYesterday, err := env.DataStore.Get24HoursAssetVolume(asset)
+	volumeYesterday, err := env.DataStore.GetVolumeInflux(asset, "", starttime, endtime)
 	if err != nil {
 		log.Warn("get volume yesterday: ", err)
 	} else {
