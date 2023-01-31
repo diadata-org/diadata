@@ -24,7 +24,6 @@ require (
 	github.com/bitfinexcom/bitfinex-api-go v0.0.0-20200709134622-b8be40b33f25 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/blendle/zapdriver v1.3.1 // indirect
-	github.com/btcsuite/btcd v0.21.0-beta // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/carterjones/go-cloudflare-scraper v0.1.2 // indirect
 	github.com/carterjones/signalr v0.3.5 // indirect
