@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/diadata-org/diadata/pkg/utils/probes"
 	"net/http"
 	"strings"
 	"time"
@@ -39,6 +40,15 @@ func main() {
 	nodes.AddRoutes(routerGroup)
 	platform.AddRoutes(routerGroup)
 	readAllStates()
+
+	log.Infoln("starting probes")
+	StartupDone = true
+	probes.Start(live, ready)
+
+	err := engine.Run(utils.Getenv("LISTEN_PORT", ":8080"))
+	if err != nil {
+		log.Error(err)
+	}
 	ticker := time.NewTicker(time.Second * CacheTTLSeconds)
 	quit := make(chan struct{})
 	go func() {
@@ -52,15 +62,6 @@ func main() {
 			}
 		}
 	}()
-
-	log.Infoln("starting probes")
-	// probes.Start(live, ready)
-
-	err := engine.Run(utils.Getenv("LISTEN_PORT", ":8080"))
-	StartupDone = true
-	if err != nil {
-		log.Error(err)
-	}
 }
 
 func ready() bool {
@@ -95,6 +96,7 @@ func getMonitoringGroupConfigStates(conn *pgxpool.Pool, groupParentId uuid.UUID)
 	if groupParentId != uuid.Nil {
 		parentWhere = fmt.Sprintf(" and group_parent_id = %s", groupParentId)
 	}
+	//goland:noinspection SqlResolve
 	query := fmt.Sprintf("select id, group_name from monitoring_groups where active = true %s", parentWhere)
 
 	log.Info("reading service monitoring endpoints")
@@ -115,6 +117,7 @@ func getMonitoringGroupConfigStates(conn *pgxpool.Pool, groupParentId uuid.UUID)
 		monitorState := config.GetOperationalHealthState(monitoringGroup.groupName)
 		itemQuery := fmt.Sprintf("select item_name, k8s_namespace, k8s_servicename from monitoring_items WHERE monitoring_group_id = '%s' AND active = true", monitoringGroup.id.String())
 		itemRows, err := conn.Query(context.Background(), itemQuery)
+		log.Info("Reading Group: ", monitoringGroup.groupName)
 		if err != nil {
 			log.Error("error reading endpoint from postgres ", err)
 			return nil
@@ -208,11 +211,11 @@ func readAllStates() {
 		states = []config.State{}
 	}
 	dbStates := databases.GetAllStates()
-	states = append(states, mergeStateSlicesAsSubsection("databases", dbStates))
+	states = append(states, mergeStateSlicesAsSubsection("Databases", dbStates))
 	nodeStates := nodes.GetAllStates()
-	states = append(states, mergeStateSlicesAsSubsection("nodes", nodeStates))
+	states = append(states, mergeStateSlicesAsSubsection("Nodes", nodeStates))
 	platformStates := platform.GetAllStates()
-	states = append(states, mergeStateSlicesAsSubsection("platform", platformStates))
+	states = append(states, mergeStateSlicesAsSubsection("Platform", platformStates))
 
 	CacheGlobalState = states
 }
