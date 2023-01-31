@@ -3,12 +3,10 @@ module github.com/diadata-org/diadata/exchange-scrapers/collector
 go 1.17
 
 require (
-	github.com/diadata-org/diadata v1.4.130
+	github.com/diadata-org/diadata v1.4.131-rc-1
 	github.com/segmentio/kafka-go v0.4.35
 	github.com/sirupsen/logrus v1.8.1
 )
-
-replace github.com/diadata-org/diadata => /home/philipp/go/src/github.com/diadata-org/diadata
 
 require (
 	contrib.go.opencensus.io/exporter/stackdriver v0.13.4 // indirect
