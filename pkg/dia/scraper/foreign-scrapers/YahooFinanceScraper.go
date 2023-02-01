@@ -62,7 +62,7 @@ func NewYahooFinScraper(datastore models.Datastore) (s *YahooFinScraper) {
 	updateFreq := yahooFinUpdateFreqDefault * time.Second
 	yahooFinUpdateFreqEnv, err := strconv.ParseInt(utils.Getenv(yahooFinUpdateFreqEnv, "0"), 10, 64)
 	if err != nil {
-		log.Errorf("parse fail to %s env variable: %s", yahooFinUpdateFreqEnv, err)
+		log.Errorf("parse fail to %v env variable: %v", yahooFinUpdateFreqEnv, err)
 		return
 	}
 	if yahooFinUpdateFreqEnv != 0 {
@@ -70,34 +70,18 @@ func NewYahooFinScraper(datastore models.Datastore) (s *YahooFinScraper) {
 	}
 
 	// Because Yahoo Finance don't have any public endpoint to discover available currency's symbols,
-	// we need to scrape webpage to extract metadata. This map is the fallback in case crawling procces fail.
+	// we need to scrape webpage to extract metadata. This map is the fallback in case the crawling process fails.
+	// Also, some of the pairs are not contained in the webpage. These need to be added to the env var manually.
 	// The data was extracted on Jan10 2023, maps the Yahoo Finance symbols to a pair of ISO 4217 friendly format.
-	currencyMapDefault := map[string]string{
-		"TRYUSD=X": "TRY-USD",
-		"NGNUSD=X": "NGN-USD",
-		"EURUSD=X": "EUR-USD",
-		"JPY=X":    "USD-JPY",
-		"GBPUSD=X": "GBP-USD",
-		"AUDUSD=X": "AUD-USD",
-		"NZDUSD=X": "NZD-USD",
-		"EURJPY=X": "EUR-JPY",
-		"GBPJPY=X": "GBP-JPY",
-		"EURGBP=X": "EUR-GBP",
-		"EURCAD=X": "EUR-CAD",
-		"EURSEK=X": "EUR-SEK",
-		"EURCHF=X": "EUR-CHF",
-		"EURHUF=X": "EUR-HUF",
-		"CNY=X":    "USD-CNY",
-		"HKD=X":    "USD-HKD",
-		"SGD=X":    "USD-SGD",
-		"INR=X":    "USD-INR",
-		"MXN=X":    "USD-MXN",
-		"PHP=X":    "USD-PHP",
-		"IDR=X":    "USD-IDR",
-		"THB=X":    "USD-THB",
-		"MYR=X":    "USD-MYR",
-		"ZAR=X":    "USD-ZAR",
-		"RUB=X":    "USD-RUB",
+	// Examples: EURGBP=X:EUR-GBP, CNY=X:USD-CNY
+	currencyMapDefault := make(map[string]string)
+	currenciesList := strings.Split(utils.Getenv("CURRENCIES_LIST_YAHOO", ""), ",")
+	for _, c := range currenciesList {
+		currency := strings.Split(c, ":")
+		if len(currency) != 2 {
+			log.Fatal("currency must have 2 identifier: ", currency)
+		}
+		currencyMapDefault[currency[0]] = currency[1]
 	}
 
 	log.Infoln("Trying to extract symbol/name metadata from Yahoo by crawling the webpage")
