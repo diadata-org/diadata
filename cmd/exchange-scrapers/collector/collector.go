@@ -211,8 +211,6 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wTest 
 				err := ds.SaveTradeInflux(t)
 				if err != nil {
 					log.Error(err)
-				} else {
-					log.Info("saved trade")
 				}
 			}
 
