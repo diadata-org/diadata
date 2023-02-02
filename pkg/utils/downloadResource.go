@@ -98,9 +98,9 @@ func GetRequestWithStatus(url string) ([]byte, int, error) {
 
 	// Close response body after function
 	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			log.Error("error closing body ", err)
+		errClose := Body.Close()
+		if errClose != nil {
+			log.Error("error closing body ", errClose)
 		}
 	}(response.Body)
 
@@ -226,9 +226,9 @@ func getOpenseaApiKey() string {
 		log.Fatal(err)
 	}
 	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
-			log.Error("failure closing opensea-api.key file ", err)
+		errClose := file.Close()
+		if errClose != nil {
+			log.Error("failure closing opensea-api.key file ", errClose)
 		}
 	}(file)
 
@@ -267,9 +267,9 @@ func OpenseaGetRequest(OpenseaURL string) ([]byte, int, error) {
 		os.Exit(1)
 	}
 	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			fmt.Println("Error closing body ", err)
+		errClose := Body.Close()
+		if errClose != nil {
+			fmt.Println("Error closing body ", errClose)
 		}
 	}(resp.Body)
 	respData, err := ioutil.ReadAll(resp.Body)

@@ -336,9 +336,9 @@ func (s *X2Y2Scraper) FetchTrades() error {
 				s.state.LastErr = fmt.Sprintf("unable to process trade transaction(%s): %s", tx.TXHash.Hex(), err.Error())
 				log.Error(s.state.LastErr)
 				// store state
-				if err := s.storeState(ctx); err != nil {
-					log.Warnf("unable to store scraper state: %s", err.Error())
-					return err
+				if errState := s.storeState(ctx); errState != nil {
+					log.Warnf("unable to store scraper state: %s", errState.Error())
+					return errState
 				}
 				return err
 			}
@@ -408,9 +408,9 @@ func (s *X2Y2Scraper) processTx(ctx context.Context, tx *utils.EthFilteredTx) (b
 
 	// if an ERC20 token used for the trade
 	if bytes.Compare(currAddr.Bytes(), ZeroAddress.Bytes()) != 0 {
-		tokenMetadata, err := s.fetchERC20Metadata(ctx, currAddr, tx.BlockNum)
-		if err != nil {
-			return false, err
+		tokenMetadata, errMetadata := s.fetchERC20Metadata(ctx, currAddr, tx.BlockNum)
+		if errMetadata != nil {
+			return false, errMetadata
 		}
 		currDecimals = tokenMetadata.Decimals
 		if v := tokenMetadata.TokenSymbol; v != nil {
@@ -838,10 +838,10 @@ func (s *X2Y2Scraper) readNFTAttr(ctx context.Context, uri string) (map[string]i
 			return nil, err
 		}
 	} else {
-		ctx, cancel := context.WithTimeout(ctx, s.conf.MetadataTimeout)
+		timeoutCtx, cancel := context.WithTimeout(ctx, s.conf.MetadataTimeout)
 		defer cancel()
 
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+		req, err := http.NewRequestWithContext(timeoutCtx, http.MethodGet, uri, nil)
 		if err != nil {
 			return nil, err
 		}

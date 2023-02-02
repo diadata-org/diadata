@@ -118,16 +118,16 @@ func (scraper *PlatypusAssetSource) fetchPools(registry platypusRegistry) error 
 	}
 
 	for i := 0; i < int(poolCount.Int64()); i++ {
-		asset, err := contractMaster.PoolInfo(&bind.CallOpts{}, big.NewInt(int64(i)))
-		if err != nil {
-			log.Error("PoolInfo: ", err)
+		asset, errPoolInfo := contractMaster.PoolInfo(&bind.CallOpts{}, big.NewInt(int64(i)))
+		if errPoolInfo != nil {
+			log.Error("PoolInfo: ", errPoolInfo)
 			return err
 		}
 
-		err = scraper.loadPoolData(asset.LpToken.Hex())
-		if err != nil {
-			log.Errorf("loadPoolData error at asset %s: %s", asset.LpToken.Hex(), err)
-			return err
+		errPoolData := scraper.loadPoolData(asset.LpToken.Hex())
+		if errPoolData != nil {
+			log.Errorf("loadPoolData error at asset %s: %s", asset.LpToken.Hex(), errPoolData)
+			return errPoolData
 		}
 
 	}

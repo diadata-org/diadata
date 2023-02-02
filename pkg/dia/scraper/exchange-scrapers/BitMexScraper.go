@@ -296,15 +296,15 @@ func (s *BitMexScraper) mainLoop() {
 			if subResult.Status == bitMexRateLimitError {
 
 				var failedRequest bitMexWSRequest
-				if err := json.Unmarshal(subResult.Request, &failedRequest); err == nil {
+				if errUnmarshal := json.Unmarshal(subResult.Request, &failedRequest); errUnmarshal == nil {
 
 					task := bitMexWSTask{
 						Op:   failedRequest.Op,
 						Args: failedRequest.Args,
 					}
-					if err := s.retryTask(s.getTaskID(task)); err != nil {
-						s.setError(err)
-						log.Errorf("BitMexScraper: Shutting down main loop due to failing to retry a task, err=%s", err.Error())
+					if errRetryTask := s.retryTask(s.getTaskID(task)); err != nil {
+						s.setError(errRetryTask)
+						log.Errorf("BitMexScraper: Shutting down main loop due to failing to retry a task, err=%s", errRetryTask.Error())
 
 					}
 

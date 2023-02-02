@@ -349,9 +349,9 @@ func (s *OpenSeaScraper) FetchTrades() error {
 				s.state.LastErr = fmt.Sprintf("unable to process trade transaction(%s): %s", tx.TXHash.Hex(), err.Error())
 				log.Error(s.state.LastErr)
 				// store state
-				if err := s.storeState(ctx); err != nil {
-					log.Warnf("unable to store scraper state: %s", err.Error())
-					return err
+				if errState := s.storeState(ctx); errState != nil {
+					log.Warnf("unable to store scraper state: %s", errState.Error())
+					return errState
 				}
 				return err
 			}

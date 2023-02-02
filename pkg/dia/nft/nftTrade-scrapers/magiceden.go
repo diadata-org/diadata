@@ -226,15 +226,15 @@ func (s *MagicEdenScraper) FetchTrades() error {
 	txToProcess := make([]rpc.SignatureWithStatus, 0)
 	lastFetchedTx := ""
 	for {
-		txList, err := s.solanaRpcClient.GetSignaturesForAddressWithConfig(ctx, MagicEdenV2ProgramAddress,
+		txList, errConfig := s.solanaRpcClient.GetSignaturesForAddressWithConfig(ctx, MagicEdenV2ProgramAddress,
 			rpc.GetSignaturesForAddressConfig{
 				Before: lastFetchedTx,
 				Until:  s.state.LastTx,
 				Limit:  s.conf.BatchSize,
 			})
-		if err != nil {
-			log.Warnf("unable to retrieve confirmed transaction signatures for account: %s", err.Error())
-			return err
+		if errConfig != nil {
+			log.Warnf("unable to retrieve confirmed transaction signatures for account: %s", errConfig.Error())
+			return errConfig
 		}
 
 		for _, tx := range txList {
@@ -291,9 +291,9 @@ func (s *MagicEdenScraper) processTxConcurrent(ctx context.Context, tx rpc.Signa
 			s.state.LastErr = fmt.Sprintf("unable to process trade transaction(%s): %s", tx.Signature, err.Error())
 			log.Error(s.state.LastErr)
 			// store state
-			if err := s.storeState(ctx); err != nil {
-				log.Warnf("unable to store scraper state: %s", err.Error())
-				return err
+			if errState := s.storeState(ctx); errState != nil {
+				log.Warnf("unable to store scraper state: %s", errState.Error())
+				return errState
 			}
 			return err
 		}
@@ -788,9 +788,9 @@ func (s *MagicEdenScraper) FetchHistoricalTrades() error {
 				s.state.LastErrHistorical = fmt.Sprintf("unable to process trade transaction(%s): %s", tx.Signature, err.Error())
 				log.Error(s.state.LastErrHistorical)
 				// store state
-				if err := s.storeState(ctx); err != nil {
-					log.Warnf("unable to store scraper state: %s", err.Error())
-					return err
+				if errState := s.storeState(ctx); errState != nil {
+					log.Warnf("unable to store scraper state: %s", errState.Error())
+					return errState
 				}
 				return err
 			}

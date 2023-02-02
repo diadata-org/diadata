@@ -346,8 +346,8 @@ func (s *BridgeSwapScraper) mapasset(t dia.Trade) {
 		log.Errorln("quotetoken not exists", quoteToken_id)
 	} else if quote_group_id != "" {
 		log.Errorln("InsertAssetMap1 ", quote_group_id, baseToken_id)
-		err := s.relDB.InsertAssetMap(quote_group_id, baseToken_id)
-		log.Errorln("err InsertAssetMap1", err)
+		errInsertAssetMap := s.relDB.InsertAssetMap(quote_group_id, baseToken_id)
+		log.Errorln("err InsertAssetMap1", errInsertAssetMap)
 		return
 	}
 
@@ -356,8 +356,8 @@ func (s *BridgeSwapScraper) mapasset(t dia.Trade) {
 		log.Errorln("base does not exists ")
 	} else if quote_group_id != "" {
 		log.Errorln("InsertAssetMap2 ", quote_group_id, baseToken_id)
-		err := s.relDB.InsertAssetMap(base_group_id, quoteToken_id)
-		log.Errorln("err InsertAssetMap2", err)
+		errInsertAssetMap := s.relDB.InsertAssetMap(base_group_id, quoteToken_id)
+		log.Errorln("err InsertAssetMap2", errInsertAssetMap)
 
 		return
 	}
@@ -448,9 +448,9 @@ func getDetailsFromTransactionHash(msg types.Log, fromChainIdValue *big.Int, con
 				fmt.Println("token swapped between chains ", common.HexToAddress(txlog.Topics[1].Hex()))
 				tokenmoved = getMultichainUnderlyingToken(common.HexToAddress(txlog.Topics[1].Hex()), fromChainIdValue.String())
 				// fmt.Println("underlyingtoken", underlyingtoken)
-				event, err := contractAbi.Unpack("LogAnySwapOut", txlog.Data)
-				if err != nil {
-					log.Fatal("unpack event LogAnySwapOut: ", err)
+				event, errUnpack := contractAbi.Unpack("LogAnySwapOut", txlog.Data)
+				if errUnpack != nil {
+					log.Fatal("unpack event LogAnySwapOut: ", errUnpack)
 				}
 				fmt.Println("------", event[0].(*big.Int))
 

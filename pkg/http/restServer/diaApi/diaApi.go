@@ -2501,9 +2501,9 @@ func (env *Env) GetNFTFloorMA(c *gin.Context) {
 	timestampUnixString := c.Query("timestamp")
 	var endtime time.Time
 	if timestampUnixString != "" {
-		timestampUnix, err := strconv.ParseInt(timestampUnixString, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusBadRequest, err)
+		timestampUnix, errTimeStamp := strconv.ParseInt(timestampUnixString, 10, 64)
+		if errTimeStamp != nil {
+			restApi.SendError(c, http.StatusBadRequest, errTimeStamp)
 		}
 		endtime = time.Unix(timestampUnix, 0)
 	} else {
@@ -2513,9 +2513,9 @@ func (env *Env) GetNFTFloorMA(c *gin.Context) {
 	starttime := endtime.Add(-time.Duration(lookbackInt) * time.Second)
 	stepBackLimit := 120
 
-	floorPrices, err := env.RelDB.GetNFTFloorRange(nftClass, starttime, endtime, floorWindow, stepBackLimit, !bundles, "")
-	if err != nil {
-		restApi.SendError(c, http.StatusBadRequest, err)
+	floorPrices, errFloorRange := env.RelDB.GetNFTFloorRange(nftClass, starttime, endtime, floorWindow, stepBackLimit, !bundles, "")
+	if errFloorRange != nil {
+		restApi.SendError(c, http.StatusBadRequest, errFloorRange)
 		return
 	}
 
@@ -2877,9 +2877,9 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 
 	endtimeString := c.Query("endtime")
 	if endtimeString != "" {
-		endtimeInt, err := strconv.ParseInt(endtimeString, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
+		endtimeInt, errEnd := strconv.ParseInt(endtimeString, 10, 64)
+		if errEnd != nil {
+			restApi.SendError(c, http.StatusInternalServerError, errEnd)
 			return
 		}
 		endtime = time.Unix(endtimeInt, 0)
@@ -2888,9 +2888,9 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 	}
 	starttimeString := c.Query("starttime")
 	if starttimeString != "" {
-		starttimeInt, err := strconv.ParseInt(starttimeString, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
+		starttimeInt, errStart := strconv.ParseInt(starttimeString, 10, 64)
+		if errStart != nil {
+			restApi.SendError(c, http.StatusInternalServerError, errStart)
 			return
 		}
 		starttime = time.Unix(starttimeInt, 0)
@@ -2906,34 +2906,34 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 
 	// Exclude bundle sales by default.
 	bundlesString := c.DefaultQuery("bundles", "false")
-	bundles, err := strconv.ParseBool(bundlesString)
-	if err != nil {
-		log.Error("parse bundles string: ", err)
+	bundles, errBundles := strconv.ParseBool(bundlesString)
+	if errBundles != nil {
+		log.Error("parse bundles string: ", errBundles)
 	}
 
-	var window24h = time.Duration(24 * 60 * time.Minute)
+	var window24h = 24 * 60 * time.Minute
 
-	nftVolumes, err := env.RelDB.GetTopNFTsEth(numCollections, offset, exchanges, starttime, endtime)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
+	nftVolumes, errTopNFTsEth := env.RelDB.GetTopNFTsEth(numCollections, offset, exchanges, starttime, endtime)
+	if errTopNFTsEth != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errTopNFTsEth)
 		return
 	}
 
-	for _, nftvolume := range nftVolumes {
+	for _, nftVolume := range nftVolumes {
 		floor, err := env.RelDB.GetNFTFloor(
-			dia.NFTClass{Address: nftvolume.Address, Blockchain: nftvolume.Blockchain},
+			dia.NFTClass{Address: nftVolume.Address, Blockchain: nftVolume.Blockchain},
 			endtime,
 			window24h,
 			!bundles,
 			"",
 		)
 		if err != nil {
-			log.Errorf("get number of nft trades for address %s: %v", nftvolume.Address, err)
+			log.Errorf("get number of nft trades for address %s: %v", nftVolume.Address, err)
 		}
 
 		// ------------- Floor MA -------------
 		floorPrices, err := env.RelDB.GetNFTFloorRange(
-			dia.NFTClass{Address: nftvolume.Address, Blockchain: nftvolume.Blockchain},
+			dia.NFTClass{Address: nftVolume.Address, Blockchain: nftVolume.Blockchain},
 			endtime.AddDate(0, 0, -30),
 			endtime,
 			window24h,
@@ -2942,7 +2942,7 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 			"",
 		)
 		if err != nil {
-			log.Errorf("get floor range for address %s: %v", nftvolume.Address, err)
+			log.Errorf("get floor range for address %s: %v", nftVolume.Address, err)
 		}
 
 		cleanFloorPrices, indices := filters.RemoveOutliers(floorPrices, 1.5)
@@ -2955,36 +2955,36 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 		// -------------------------------------
 
 		floorYesterday, err := env.RelDB.GetNFTFloor(
-			dia.NFTClass{Address: nftvolume.Address, Blockchain: nftvolume.Blockchain},
+			dia.NFTClass{Address: nftVolume.Address, Blockchain: nftVolume.Blockchain},
 			endtime.Add(-window24h),
 			window24h,
 			!bundles,
 			"",
 		)
 		if err != nil {
-			log.Errorf("get floor yesterday for address %s: %v", nftvolume.Address, err)
+			log.Errorf("get floor yesterday for address %s: %v", nftVolume.Address, err)
 		}
 
-		numTrades, err := env.RelDB.GetNumNFTTrades(nftvolume.Address, nftvolume.Blockchain, "", starttime, endtime)
+		numTrades, err := env.RelDB.GetNumNFTTrades(nftVolume.Address, nftVolume.Blockchain, "", starttime, endtime)
 		if err != nil {
-			log.Errorf("get number of nft trades for address %s: %v", nftvolume.Address, err)
+			log.Errorf("get number of nft trades for address %s: %v", nftVolume.Address, err)
 		}
-		numTradesYesterday, err := env.RelDB.GetNumNFTTrades(nftvolume.Address, nftvolume.Blockchain, "", starttime.Add(-window24h), endtime.Add(-window24h))
+		numTradesYesterday, err := env.RelDB.GetNumNFTTrades(nftVolume.Address, nftVolume.Blockchain, "", starttime.Add(-window24h), endtime.Add(-window24h))
 		if err != nil {
-			log.Errorf("get number of nft trades yesterday for address %s: %v", nftvolume.Address, err)
+			log.Errorf("get number of nft trades yesterday for address %s: %v", nftVolume.Address, err)
 		}
-		volumeYesterday, err := env.RelDB.GetNFTVolume(nftvolume.Address, nftvolume.Blockchain, "", starttime.Add(-window24h), endtime.Add(-window24h))
+		volumeYesterday, err := env.RelDB.GetNFTVolume(nftVolume.Address, nftVolume.Blockchain, "", starttime.Add(-window24h), endtime.Add(-window24h))
 		if err != nil {
-			log.Errorf("get volume yesterday for address %s: %v", nftvolume.Address, err)
+			log.Errorf("get volume yesterday for address %s: %v", nftVolume.Address, err)
 		}
 
 		var l localReturn
-		l.Collection = nftvolume.Name
+		l.Collection = nftVolume.Name
 		l.Floor = floor
 		l.FloorMA = floorMA
-		l.Volume = nftvolume.Volume
+		l.Volume = nftVolume.Volume
 		if volumeYesterday > 0 {
-			l.VolumeChange = (nftvolume.Volume - volumeYesterday) / volumeYesterday * 100
+			l.VolumeChange = (nftVolume.Volume - volumeYesterday) / volumeYesterday * 100
 		}
 		l.Trades = numTrades
 		if numTradesYesterday > 0 {
@@ -2993,8 +2993,8 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 		if floorYesterday > 0 {
 			l.FloorChange = (floor - floorYesterday) / floorYesterday * 100
 		}
-		l.Address = nftvolume.Address
-		l.Blockchain = nftvolume.Blockchain
+		l.Address = nftVolume.Address
+		l.Blockchain = nftVolume.Blockchain
 		l.Time = endtime
 		l.Source = dia.Diadata
 		returnValue = append(returnValue, l)
@@ -3111,15 +3111,15 @@ func (env *Env) GetNFTVolume(c *gin.Context) {
 	}
 
 	for _, exchange := range exchanges {
-		numTrades, err := env.RelDB.GetNumNFTTrades(address, blockchain, exchange, starttime, endtime)
-		if err != nil {
-			log.Error("get number of nft trades: ", err)
+		numNftTrades, errNumNFTTrades := env.RelDB.GetNumNFTTrades(address, blockchain, exchange, starttime, endtime)
+		if errNumNFTTrades != nil {
+			log.Error("get number of nft trades: ", errNumNFTTrades)
 		}
-		volume, err := env.RelDB.GetNFTVolume(address, blockchain, exchange, starttime, endtime)
-		if err != nil {
-			log.Error("get number of nft trades: ", err)
+		nftVolume, errNFTVolume := env.RelDB.GetNFTVolume(address, blockchain, exchange, starttime, endtime)
+		if errNFTVolume != nil {
+			log.Error("get number of nft trades: ", errNFTVolume)
 		}
-		l.Exchanges = append(l.Exchanges, dia.NFTExchangeStats{Exchange: exchange, NumTrades: uint64(numTrades), Volume: volume})
+		l.Exchanges = append(l.Exchanges, dia.NFTExchangeStats{Exchange: exchange, NumTrades: uint64(numNftTrades), Volume: nftVolume})
 	}
 
 	l.Collection = collection.Name
@@ -3317,20 +3317,20 @@ func (env *Env) GetAssetUpdates(c *gin.Context) {
 		restApi.SendError(c, http.StatusRequestedRangeNotSatisfiable, errors.New("Requested time-range too large."))
 		return
 	}
-	if ok, err := validTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
-		restApi.SendError(c, http.StatusInternalServerError, err)
+	if ok, errTimeRange := validTimeRange(starttime, endtime, 30*24*time.Hour); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, errTimeRange)
 		return
 	}
 
-	asset, err := env.RelDB.GetAsset(address, blockchain)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
+	asset, errGetAsset := env.RelDB.GetAsset(address, blockchain)
+	if errGetAsset != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errGetAsset)
 		return
 	}
 
-	quotations, err := env.DataStore.GetAssetQuotations(asset, starttime, endtime)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
+	quotations, errGetAssetQuotations := env.DataStore.GetAssetQuotations(asset, starttime, endtime)
+	if errGetAssetQuotations != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errGetAssetQuotations)
 		return
 	}
 
@@ -3600,37 +3600,37 @@ func (env *Env) GetSyntheticAsset(c *gin.Context) {
 	} else if starttimeStr == "" && endtimeStr != "" {
 		// zero time if not given
 		starttime = time.Time{}
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
+		endtimeInt, errEnd := strconv.ParseInt(endtimeStr, 10, 64)
+		if errEnd != nil {
+			restApi.SendError(c, http.StatusInternalServerError, errEnd)
 			return
 		}
 		endtime = time.Unix(endtimeInt, 0)
 	} else if starttimeStr != "" && endtimeStr == "" {
 		// endtime now if not given
 		endtime = time.Now()
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
+		starttimeInt, errStart := strconv.ParseInt(starttimeStr, 10, 64)
+		if errStart != nil {
+			restApi.SendError(c, http.StatusInternalServerError, errStart)
 			return
 		}
 		starttime = time.Unix(starttimeInt, 0)
 	} else {
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
+		starttimeInt, errParseInt := strconv.ParseInt(starttimeStr, 10, 64)
+		if errParseInt != nil {
+			restApi.SendError(c, http.StatusInternalServerError, errParseInt)
 			return
 		}
 		starttime = time.Unix(starttimeInt, 0)
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
+		endtimeInt, errParseIntEnd := strconv.ParseInt(endtimeStr, 10, 64)
+		if errParseIntEnd != nil {
+			restApi.SendError(c, http.StatusInternalServerError, errParseIntEnd)
 			return
 		}
 		endtime = time.Unix(endtimeInt, 0)
 	}
-	if ok, err := validTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
-		restApi.SendError(c, http.StatusInternalServerError, err)
+	if ok, errTimeRange := validTimeRange(starttime, endtime, 30*24*time.Hour); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, errTimeRange)
 		return
 	}
 
@@ -3639,8 +3639,8 @@ func (env *Env) GetSyntheticAsset(c *gin.Context) {
 		p, err = env.DataStore.GetSynthSupplyInflux(blockchain, protocol, address, limit, starttime, endtime)
 
 	} else {
-		synthassets, err := env.DataStore.GetSynthAssets(blockchain, protocol)
-		if err != nil {
+		synthassets, errAssets := env.DataStore.GetSynthAssets(blockchain, protocol)
+		if errAssets != nil {
 			restApi.SendError(c, http.StatusInternalServerError, errors.New("no response for quoted timestamp"))
 		}
 		for _, asset := range synthassets {

@@ -157,9 +157,9 @@ func (scraper *aTokenScraper) watchReservedataupdatedV2() chan *aavepool2.Aavepo
 	if scraper.start == 0 {
 		log.Error("WatchReserveDataUpdated: ", scraper.start)
 
-		_, err := filterer.WatchReserveDataUpdated(&bind.WatchOpts{}, sink, []common.Address{})
-		if err != nil {
-			log.Error("Error on filterer.WatchReserveDataUpdated: ", err)
+		_, updatedErr := filterer.WatchReserveDataUpdated(&bind.WatchOpts{}, sink, []common.Address{})
+		if updatedErr != nil {
+			log.Error("Error on filterer.WatchReserveDataUpdated: ", updatedErr)
 
 		}
 

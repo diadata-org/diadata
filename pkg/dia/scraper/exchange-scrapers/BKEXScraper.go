@@ -322,9 +322,9 @@ func (s *BKEXScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error
 	}
 
 	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			log.Error("body close got error ", err)
+		errClose := Body.Close()
+		if errClose != nil {
+			log.Error("body close got error ", errClose)
 		}
 	}(response.Body)
 

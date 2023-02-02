@@ -727,9 +727,9 @@ func (rdb *RelDB) GetNFTExchanges(address string, blockchain string) (exchanges 
 		var (
 			exchange sql.NullString
 		)
-		err := rows.Scan(&exchange)
-		if err != nil {
-			log.Error("Error getting results from db ", err)
+		errScan := rows.Scan(&exchange)
+		if errScan != nil {
+			log.Error("Error getting results from db ", errScan)
 		}
 		if exchange.Valid {
 			exchanges = append(exchanges, exchange.String)

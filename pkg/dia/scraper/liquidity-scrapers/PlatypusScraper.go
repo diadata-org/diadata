@@ -119,17 +119,13 @@ func (scraper *PlatypusScraper) fetchPools(registry platypusRegistry) (err error
 	}
 
 	for i := 0; i < int(poolCount.Int64()); i++ {
-		asset, err := contractMaster.PoolInfo(&bind.CallOpts{}, big.NewInt(int64(i)))
-		if err != nil {
-			log.Error("PoolInfo: ", err)
-			return err
+		asset, errPoolInfo := contractMaster.PoolInfo(&bind.CallOpts{}, big.NewInt(int64(i)))
+		if errPoolInfo != nil {
+			log.Error("PoolInfo: ", errPoolInfo)
+			return errPoolInfo
 		}
 
 		pool := scraper.loadPoolData(asset.LpToken.Hex())
-		if err != nil {
-			log.Errorf("loadPoolData error at asset %s: %s", asset.LpToken.Hex(), err)
-			return err
-		}
 		scraper.Pool() <- pool
 	}
 

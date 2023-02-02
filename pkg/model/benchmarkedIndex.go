@@ -23,9 +23,9 @@ func (datastore *DB) SaveIndexEngineTimeInflux(tags map[string]string, fields ma
 		log.Errorln("newPoint:", err)
 	} else {
 		datastore.addPoint(pt)
-		err := datastore.WriteBatchInflux()
-		if err != nil {
-			log.Errorln("newPoint:", err)
+		errWriteBatchInflux := datastore.WriteBatchInflux()
+		if errWriteBatchInflux != nil {
+			log.Errorln("newPoint:", errWriteBatchInflux)
 		}
 	}
 	return err

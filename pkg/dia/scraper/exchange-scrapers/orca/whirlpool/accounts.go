@@ -49,9 +49,9 @@ func (obj WhirlpoolsConfig) MarshalWithEncoder(encoder *ag_binary.Encoder) (err 
 func (obj *WhirlpoolsConfig) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err error) {
 	// Read and check account discriminator:
 	{
-		discriminator, err := decoder.ReadTypeID()
-		if err != nil {
-			return err
+		discriminator, errReadTypeID := decoder.ReadTypeID()
+		if errReadTypeID != nil {
+			return errReadTypeID
 		}
 		if !discriminator.Equal(WhirlpoolsConfigDiscriminator[:]) {
 			return fmt.Errorf(
@@ -118,9 +118,9 @@ func (obj FeeTier) MarshalWithEncoder(encoder *ag_binary.Encoder) (err error) {
 func (obj *FeeTier) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err error) {
 	// Read and check account discriminator:
 	{
-		discriminator, err := decoder.ReadTypeID()
-		if err != nil {
-			return err
+		discriminator, errReadTypeID := decoder.ReadTypeID()
+		if errReadTypeID != nil {
+			return errReadTypeID
 		}
 		if !discriminator.Equal(FeeTierDiscriminator[:]) {
 			return fmt.Errorf(
@@ -224,9 +224,9 @@ func (obj Position) MarshalWithEncoder(encoder *ag_binary.Encoder) (err error) {
 func (obj *Position) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err error) {
 	// Read and check account discriminator:
 	{
-		discriminator, err := decoder.ReadTypeID()
-		if err != nil {
-			return err
+		discriminator, errReadTypeID := decoder.ReadTypeID()
+		if errReadTypeID != nil {
+			return errReadTypeID
 		}
 		if !discriminator.Equal(PositionDiscriminator[:]) {
 			return fmt.Errorf(
@@ -323,9 +323,9 @@ func (obj TickArray) MarshalWithEncoder(encoder *ag_binary.Encoder) (err error) 
 func (obj *TickArray) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err error) {
 	// Read and check account discriminator:
 	{
-		discriminator, err := decoder.ReadTypeID()
-		if err != nil {
-			return err
+		discriminator, errReadTypeID := decoder.ReadTypeID()
+		if errReadTypeID != nil {
+			return errReadTypeID
 		}
 		if !discriminator.Equal(TickArrayDiscriminator[:]) {
 			return fmt.Errorf(
@@ -483,9 +483,9 @@ func (obj Whirlpool) MarshalWithEncoder(encoder *ag_binary.Encoder) (err error) 
 func (obj *Whirlpool) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err error) {
 	// Read and check account discriminator:
 	{
-		discriminator, err := decoder.ReadTypeID()
-		if err != nil {
-			return err
+		discriminator, errReadTypeID := decoder.ReadTypeID()
+		if errReadTypeID != nil {
+			return errReadTypeID
 		}
 		if !discriminator.Equal(WhirlpoolDiscriminator[:]) {
 			return fmt.Errorf(

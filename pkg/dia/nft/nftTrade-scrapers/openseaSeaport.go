@@ -332,9 +332,9 @@ func (s *OpenSeaSeaportScraper) FetchTrades() error {
 				s.state.LastErr = fmt.Sprintf("unable to process trade transaction(%s): %s", tx.TXHash.Hex(), err.Error())
 				log.Error(s.state.LastErr)
 				// store state
-				if err := s.storeState(ctx); err != nil {
-					log.Warnf("unable to store scraper state: %s", err.Error())
-					return err
+				if errState := s.storeState(ctx); errState != nil {
+					log.Warnf("unable to store scraper state: %s", errState.Error())
+					return errState
 				}
 				return err
 			}
@@ -870,9 +870,9 @@ func (s *OpenSeaSeaportScraper) findERC721Transfers(ctx context.Context, receipt
 			// so it is not compliant with the eip-721.
 
 			// best effort...
-			compat, err := erc721.NewERC721Compat(txLog.Address, s.tradeScraper.ethConnection)
-			if err != nil {
-				log.Warnf("unable to bind erc721compat contract at address %s: %s", txLog.Address.Hex(), err.Error())
+			compat, errCompat := erc721.NewERC721Compat(txLog.Address, s.tradeScraper.ethConnection)
+			if errCompat != nil {
+				log.Warnf("unable to bind erc721compat contract at address %s: %s", txLog.Address.Hex(), errCompat.Error())
 				continue
 			}
 

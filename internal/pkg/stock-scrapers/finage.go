@@ -62,15 +62,15 @@ func (scraper *FinageScraper) mainLoop() {
 		return
 	}
 	defer func(c *websocket.Conn) {
-		err := c.Close()
-		if err != nil {
-			log.Error("Error closing websocket connection ", err)
+		errClose := c.Close()
+		if errClose != nil {
+			log.Error("Error closing websocket connection ", errClose)
 		}
 	}(c)
 
 	if subscribeErr := c.WriteMessage(websocket.TextMessage, []byte(subscribeMessage)); subscribeErr != nil {
-		log.Error("creating subscription for the stock quotations: ", err)
-		scraper.cleanup(err)
+		log.Error("creating subscription for the stock quotations: ", subscribeErr)
+		scraper.cleanup(subscribeErr)
 		return
 	}
 
