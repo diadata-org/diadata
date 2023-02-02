@@ -505,8 +505,8 @@ type FilterPoint struct {
 }
 
 type IndexBlock struct {
-	BlockHash      string
-	IndexBlockData IndexBlockData
+	BlockHash      string         `json:"block_hash"`
+	IndexBlockData IndexBlockData `json:"index_block_data"`
 }
 
 type IndexBlockData struct {
@@ -541,8 +541,8 @@ type VolatilityRatio struct {
 }
 
 type SuppliesBlock struct {
-	BlockHash string
-	BlockData SuppliesBlockData
+	BlockHash string            `json:"block_hash"`
+	BlockData SuppliesBlockData `json:"block_data"`
 }
 
 type SuppliesBlockData struct {

@@ -44,8 +44,8 @@ type CREX4Asset []struct {
 }
 
 type CREX24ApiTradeUpdate struct {
-	I  string
-	NT []CREX24ApiTrade
+	I  string           `json:"i"`
+	NT []CREX24ApiTrade `json:"nt"`
 }
 
 // CREX24 Scraper is a scraper for collecting trades from the CREX24 signalR api
