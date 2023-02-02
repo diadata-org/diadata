@@ -10,6 +10,7 @@ import (
 	"time"
 
 	ws "github.com/gorilla/websocket"
+	"github.com/zekroTJA/timedmap"
 	"go.uber.org/ratelimit"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -18,19 +19,21 @@ import (
 )
 
 const (
-	bitMartAPIEndpoint          = "https://api-cloud.bitmart.com/spot/v1"
-	bitMartWSEndpoint           = "wss://ws-manager-compress.bitmart.com/api?protocol=1.1"
-	bitMartSpotTradingSell      = "sell"
-	bitMartSymbolsStatusActive  = "trading"
-	bitMartPingMessage          = "ping"
-	bitMartPongMessage          = "pong"
-	bitMartWSSpotTradingTopic   = "spot/trade"
-	bitMartWSOpSubscribe        = "subscribe"
-	bitMartWSOpUnsubscribe      = "unsubscribe"
-	bitMartRetryAttempts        = 15  // Max consecutive retry attempts until connection fail.
-	bitMartPingInterval         = 15  // Number of seconds between ping messages.
-	bitMartMaxConnections       = 10  // Numbers of connections per IP.
-	bitMartMaxSubsPerConnection = 100 // Subscription limit for each connection.
+	bitMartAPIEndpoint           = "https://api-cloud.bitmart.com/spot/v1"
+	bitMartWSEndpoint            = "wss://ws-manager-compress.bitmart.com/api?protocol=1.1"
+	bitMartSpotTradingSell       = "sell"
+	bitMartSymbolsStatusActive   = "trading"
+	bitMartPingMessage           = "ping"
+	bitMartPongMessage           = "pong"
+	bitMartWSSpotTradingTopic    = "spot/trade"
+	bitMartWSOpSubscribe         = "subscribe"
+	bitMartWSOpUnsubscribe       = "unsubscribe"
+	bitMartRetryAttempts         = 15  // Max consecutive retry attempts until connection fail.
+	bitMartPingInterval          = 15  // Number of seconds between ping messages.
+	bitMartMaxConnections        = 10  // Numbers of connections per IP.
+	bitMartMaxSubsPerConnection  = 100 // Subscription limit for each connection.
+	duplicateTradesMemory        = 2 * time.Second
+	duplicateTradesScanFrequency = 1 * time.Second
 )
 
 type BitmartWsRequest struct {
@@ -337,6 +340,9 @@ func (s *BitMartScraper) mainLoop() {
 	for {
 		select {
 		case response := <-s.listener:
+			tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+			tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+
 			for _, data := range response.Data {
 				var exchangepair dia.ExchangePair
 				volume, _ := strconv.ParseFloat(data.Size, 64)
@@ -344,7 +350,7 @@ func (s *BitMartScraper) mainLoop() {
 					volume = -volume
 				}
 				price, _ := strconv.ParseFloat(data.Price, 64)
-				time := time.Unix(int64(data.TimestampSec), 0)
+				timestamp := time.Unix(int64(data.TimestampSec), 0)
 				symbol := strings.Split(data.Symbol, `_`)
 				exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, data.Symbol)
 				if err != nil {
@@ -354,7 +360,7 @@ func (s *BitMartScraper) mainLoop() {
 					Symbol:         symbol[0],
 					Pair:           data.Symbol,
 					Price:          price,
-					Time:           time,
+					Time:           timestamp,
 					Volume:         volume,
 					Source:         s.exchangeName,
 					ForeignTradeID: fmt.Sprintf("%s_%d", data.Symbol, data.TimestampSec),
@@ -362,7 +368,21 @@ func (s *BitMartScraper) mainLoop() {
 					BaseToken:      exchangepair.UnderlyingPair.BaseToken,
 					QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
 				}
+
+				discardTrade := t.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+				if discardTrade {
+					log.Warn("Identical trade already scraped: ", t)
+					continue
+				}
+				t1 := t.Time
+				t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+				t2 := t.Time
+				if t1 != t2 {
+					log.Warn("got duplicate trade. Increased timestamp by a nanosecond. time, symbol, price, volume, tradeID: ")
+					log.Warnf(" %v -- %s -- %v -- %v -- %s", t.Time, t.Pair, t.Price, t.Volume, t.ForeignTradeID)
+				}
 				s.chanTrades <- t
+
 			}
 		case <-s.shutdown:
 			return

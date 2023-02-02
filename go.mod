@@ -140,6 +140,7 @@ require (
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/rjeczalik/notify v0.9.2 // indirect
 	github.com/robertkrimen/otto v0.0.0-20180617131154-15f95af6e78d // indirect
+	github.com/rs/zerolog v1.29.0
 	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d // indirect
 	github.com/segmentio/fasthash v1.0.2 // indirect
 	github.com/shirou/gopsutil v3.21.4-0.20210419000835-c7a38de76ee5+incompatible // indirect
@@ -158,6 +159,7 @@ require (
 	github.com/valyala/fasthttp v1.23.0 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	github.com/ybbus/jsonrpc v2.1.2+incompatible // indirect
+	github.com/zekroTJA/timedmap v1.4.0
 	go.opencensus.io v0.22.5 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.7.0 // indirect

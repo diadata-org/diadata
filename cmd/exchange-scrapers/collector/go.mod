@@ -3,7 +3,7 @@ module github.com/diadata-org/diadata/exchange-scrapers/collector
 go 1.17
 
 require (
-	github.com/diadata-org/diadata v1.4.134
+	github.com/diadata-org/diadata v1.4.136
 	github.com/segmentio/kafka-go v0.4.35
 	github.com/sirupsen/logrus v1.8.1
 )
@@ -98,6 +98,7 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.23.0 // indirect
 	github.com/ybbus/jsonrpc v2.1.2+incompatible // indirect
+	github.com/zekroTJA/timedmap v1.4.0 // indirect
 	go.opencensus.io v0.22.5 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.7.0 // indirect
