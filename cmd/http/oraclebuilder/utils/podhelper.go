@@ -3,8 +3,8 @@ package utils
 import (
 	"context"
 	"flag"
- 	"path/filepath"
- 	"time"
+	"path/filepath"
+	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/sirupsen/logrus"
@@ -79,7 +79,6 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 	//---
 
 	imagepullrequest := corev1.LocalObjectReference{Name: "all-icr-io"}
-
 
 	pod := &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
@@ -184,7 +183,7 @@ func (kh *PodHelper) RestartOracleFeeder(feederID string, oracleconfig dia.Oracl
 	//}
 	log.Infof("Pod %s deleted\n", feederID)
 
- time.Sleep(1000 * time.Millisecond)
+	time.Sleep(1000 * time.Millisecond)
 	err = kh.CreateOracleFeeder(feederID, oracleconfig.Owner, oracleconfig.Address, oracleconfig.ChainID, oracleconfig.SleepSeconds, "", oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille)
 	if err != nil {
 		log.Errorf("Pod %s start err\n", err)

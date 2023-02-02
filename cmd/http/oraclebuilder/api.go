@@ -1,4 +1,4 @@
-package oraclebuilder
+package main
 
 import (
 	"encoding/json"
@@ -19,6 +19,7 @@ import (
 Auth using EIP712 spec
 */
 
+//goland:noinspection ALL
 type Env struct {
 	DataStore models.Datastore
 	RelDB     *models.RelDB
@@ -28,7 +29,7 @@ type Env struct {
 
 var log = logrus.New()
 
-// Create: Create new oracle feeder if creator has resources
+// Create new oracle feeder if creator has resources
 func (ob *Env) Create(context *gin.Context) {
 
 	var (
@@ -95,7 +96,10 @@ func (ob *Env) Create(context *gin.Context) {
 			context.JSON(http.StatusInternalServerError, errors.New("error getting key"))
 			return
 		}
-		json.Unmarshal(item.Data, &keypair)
+		marshalErr := json.Unmarshal(item.Data, &keypair)
+		if marshalErr != nil {
+			return
+		}
 		log.Infoln("public key", keypair.GetPublickey())
 		address = keypair.GetPublickey()
 

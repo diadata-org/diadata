@@ -1,32 +1,14 @@
 package main
 
 import (
-	"time"
-
-	//jwt "github.com/blockstatecom/gin-jwt"
-
-	builderutils "oraclebuilder/utils"
-
 	"github.com/99designs/keyring"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/oraclebuilder"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
+	builderutils "oraclebuilder/utils"
 )
-
-var log = logrus.New()
-
-const (
-	cachingTime1Sec   = 1 * time.Second
-	cachingTime20Secs = 20 * time.Second
-	cachingTimeShort  = time.Minute * 2
-	// cachingTimeMedium = time.Minute * 10
-	cachingTimeLong = time.Minute * 100
-)
-
-var identityKey = "id"
 
 func main() {
 
