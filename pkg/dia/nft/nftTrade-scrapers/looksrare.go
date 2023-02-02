@@ -136,9 +136,9 @@ var (
 	// block num 13885625, so scraper starts from this block
 	defLooksRareState = &LooksRareScraperState{LastBlockNum: 13885625}
 
-	looksRareABI       abi.ABI
-	looksRareErc20ABI  abi.ABI
-	looksRareErc721ABI abi.ABI
+	looksRareABI abi.ABI
+	//looksRareErc20ABI  abi.ABI
+	//looksRareErc721ABI abi.ABI
 
 	assetCacheLooksrare = make(map[string]dia.Asset)
 )
@@ -151,12 +151,12 @@ func init() {
 		panic(err)
 	}
 
-	looksRareErc20ABI, err = abi.JSON(strings.NewReader(erc20.ERC20ABI))
+	_, err = abi.JSON(strings.NewReader(erc20.ERC20ABI))
 	if err != nil {
 		panic(err)
 	}
 
-	looksRareErc721ABI, err = abi.JSON(strings.NewReader(erc721.ERC721ABI))
+	_, err = abi.JSON(strings.NewReader(erc721.ERC721ABI))
 	if err != nil {
 		panic(err)
 	}

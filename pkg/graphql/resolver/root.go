@@ -244,9 +244,9 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 		if len(trades) > 0 && len(bins) > 0 {
 			// In case the first bin is empty, look for the last trade before @starttime.
 			if !utils.IsInBin(trades[0].Time, bins[0]) {
-				previousTrade, err := r.DS.GetTradesByExchangesAndBaseAssets(asset, baseAssets, exchangesString, endtime.AddDate(0, 0, -10), starttime, 1)
-				if err != nil || len(previousTrade) == 0 {
-					log.Error("get initial trade: ", err)
+				previousTrade, baseAsseteErr := r.DS.GetTradesByExchangesAndBaseAssets(asset, baseAssets, exchangesString, endtime.AddDate(0, 0, -10), starttime, 1)
+				if baseAsseteErr != nil || len(previousTrade) == 0 {
+					log.Error("get initial trade: ", err, baseAsseteErr)
 					// Fill with a zero trade so we can build blocks.
 					auxTrade := trades[0]
 					auxTrade.Volume = 0
@@ -487,62 +487,4 @@ func (r *DiaResolver) GetNFTBids(ctx context.Context, args struct {
 	}
 
 	return &br, nil
-}
-
-func (r *DiaResolver) fetchTradesBatched(
-	asset dia.Asset,
-	baseAssets []dia.Asset,
-	exchangesString []string,
-	blockSizeSeconds int64,
-	blockShiftSeconds int64,
-	timeInit time.Time,
-	timeFinal time.Time,
-) (trades []dia.Trade) {
-	// Make time windows for which trades from influx have to be fetched.
-	var startTimes, endTimes []time.Time
-	for timeFinal.After(timeInit) {
-		startTimes = append(startTimes, timeInit)
-		endTimes = append(endTimes, timeInit.Add(time.Duration(blockSizeSeconds*1e9)))
-		timeInit = timeInit.Add(time.Duration(blockShiftSeconds * 1e9))
-	}
-
-	// Determine number of batches.
-	var numBatches int
-	batchSize := int(r.InfluxBatchSize)
-	if len(startTimes) < int(r.InfluxBatchSize) {
-		numBatches = 1
-		batchSize = len(startTimes)
-	} else {
-		numBatches = len(startTimes) / int(r.InfluxBatchSize)
-	}
-
-	// Iterate over batches.
-	for i := 0; i < numBatches; i++ {
-		var (
-			tradesBatch []dia.Trade
-			err         error
-		)
-		lowerIndex := i * batchSize
-		upperIndex := (i + 1) * batchSize
-		tradesBatch, err = r.DS.GetTradesByExchangesBatched(asset, baseAssets, exchangesString, startTimes[lowerIndex:upperIndex], endTimes[lowerIndex:upperIndex], 0)
-		if err != nil {
-			log.Error("fetch trades batch from influx: ", err)
-		}
-		trades = append(trades, tradesBatch...)
-	}
-	// Add remaining trades if existent.
-	if len(startTimes)%int(r.InfluxBatchSize) > 0 {
-		var (
-			tradesBatch []dia.Trade
-			err         error
-		)
-		lowerIndex := numBatches * (batchSize)
-		upperIndex := len(startTimes)
-		tradesBatch, err = r.DS.GetTradesByExchangesBatched(asset, baseAssets, exchangesString, startTimes[lowerIndex:upperIndex], endTimes[lowerIndex:upperIndex], 0)
-		if err != nil {
-			log.Error("fetch trades batch from influx: ", err)
-		}
-		trades = append(trades, tradesBatch...)
-	}
-	return trades
 }

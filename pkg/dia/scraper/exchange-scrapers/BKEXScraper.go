@@ -3,6 +3,7 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -113,8 +114,14 @@ func (s *BKEXScraper) connect(i int) *ws.Conn {
 	// Connect Finished
 
 	// Send 40/quotation and receive it
-	SwConn.WriteMessage(ws.TextMessage, []byte("40/quotation"))
+	writeErr := SwConn.WriteMessage(ws.TextMessage, []byte("40/quotation"))
+	if writeErr != nil {
+		log.Error("Error writing message ", writeErr)
+	}
 	messageType, p, err = SwConn.ReadMessage()
+	if err != nil {
+		log.Error("Error writing message ", err)
+	}
 	log.Info("Connected ", messageType, "-", string(p))
 
 	return SwConn
@@ -158,7 +165,10 @@ func (s *BKEXScraper) subLoop(wsClient *ws.Conn, pairs string) {
 		var r BKEXTradeResponse
 		tmp := []interface{}{&r.quotationAllDeal, &r.records}
 
-		json.Unmarshal([]byte(d), &tmp)
+		jsonErr := json.Unmarshal([]byte(d), &tmp)
+		if jsonErr != nil {
+			log.Error("can't unmarshal json ", jsonErr)
+		}
 
 		if e := len(tmp); e != 2 {
 			log.Fatal("unknow length ", e)
@@ -226,7 +236,10 @@ func (s *BKEXScraper) mainLoop() {
 }
 
 func (s *BKEXScraper) ping(conn *ws.Conn) {
-	conn.WriteMessage(ws.TextMessage, []byte("2"))
+	writeErr := conn.WriteMessage(ws.TextMessage, []byte("2"))
+	if writeErr != nil {
+		log.Error("Error writing message ", writeErr)
+	}
 }
 
 // FillSymbolData from MEXCScraper
@@ -308,7 +321,12 @@ func (s *BKEXScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error
 		log.Error("get symbols: ", err)
 	}
 
-	defer response.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Error("body close got error ", err)
+		}
+	}(response.Body)
 
 	body, err := ioutil.ReadAll(response.Body)
 

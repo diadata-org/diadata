@@ -97,7 +97,12 @@ func GetRequestWithStatus(url string) ([]byte, int, error) {
 	}
 
 	// Close response body after function
-	defer response.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Error("error closing body ", err)
+		}
+	}(response.Body)
 
 	// Read the response body
 	XMLdata, err := ioutil.ReadAll(response.Body)
@@ -261,7 +266,12 @@ func OpenseaGetRequest(OpenseaURL string) ([]byte, int, error) {
 		fmt.Println("Error sending request to server")
 		os.Exit(1)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println("Error closing body ", err)
+		}
+	}(resp.Body)
 	respData, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Error("read response body: ", err)

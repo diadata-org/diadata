@@ -578,7 +578,7 @@ func (s *UniswapV3Scraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error
 type UniswapPairV3Scraper struct {
 	parent *UniswapV3Scraper
 	pair   dia.ExchangePair
-	closed bool
+	//closed bool
 }
 
 // Close stops listening for trades of the pair associated with s

@@ -1872,20 +1872,20 @@ func (env *Env) GetStockQuotation(c *gin.Context) {
 
 	if dateInit == "noRange" {
 		// Return most recent data point
-		endtime := time.Time{}
+		var endTime time.Time
 		var err error
 		if date == "" {
-			endtime = time.Now()
+			endTime = time.Now()
 		} else {
 			// Convert unix time int/string to time
-			endtime, err = utils.StrToUnixtime(date)
+			endTime, err = utils.StrToUnixtime(date)
 			if err != nil {
 				restApi.SendError(c, http.StatusNotFound, err)
 			}
 		}
-		starttime := endtime.AddDate(0, 0, -1)
+		startTime := endTime.AddDate(0, 0, -1)
 
-		q, err := env.DataStore.GetStockQuotation(source, symbol, starttime, endtime)
+		q, err := env.DataStore.GetStockQuotation(source, symbol, startTime, endTime)
 		if err != nil {
 			if err == redis.Nil {
 				restApi.SendError(c, http.StatusNotFound, err)

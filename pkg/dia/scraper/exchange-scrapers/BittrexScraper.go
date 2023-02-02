@@ -27,7 +27,7 @@ type BittrexScraper struct {
 	errCh                 chan error
 
 	// signaling channels for session initialization and finishing
-	run                bool
+	//run                bool
 	shutdown           chan nothing
 	shutdownDone       chan nothing
 	signalShutdown     sync.Once

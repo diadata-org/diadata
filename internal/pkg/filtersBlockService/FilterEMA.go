@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -62,6 +61,7 @@ func (s *FilterEMA) compute(trade dia.FilterPoint) {
 
 func (e *FilterEMA) fill(t time.Time, trade dia.FilterPoint) {
 	log.Println("FilterEMA fill ", trade)
+	log.Println("FilterEMA time ", t)
 	log.Println("FilterEMA e.multiplier ", e.multiplier)
 	log.Println("FilterEMA e.value ", e.value)
 	e.currentTime = trade.Time
@@ -81,6 +81,7 @@ func (s *FilterEMA) FinalCompute(t time.Time) float64 {
 }
 
 func (e *FilterEMA) finalCompute(t time.Time) float64 {
+	log.Infof("computed value %v at time %v ", e.value, t)
 	return e.value
 }
 
@@ -93,30 +94,4 @@ func (e *FilterEMA) FilterPointForBlock() *dia.FilterPoint {
 		Name:  "EMA" + strconv.Itoa(e.param),
 		Time:  e.currentTime,
 	}
-
-}
-
-func (s *FilterEMA) filterPointForBlock() *dia.FilterPoint {
-	if s.exchange != "" || s.filterName != dia.FilterKing {
-		return nil
-	}
-	return &dia.FilterPoint{
-		Asset: s.asset,
-		Value: s.value,
-		Name:  "EMA" + strconv.Itoa(s.param),
-		Time:  s.currentTime,
-	}
-}
-
-func (s *FilterEMA) save(ds models.Datastore) error {
-
-	if s.modified {
-		s.modified = false
-		err := ds.SetFilter(s.filterName, s.asset, s.exchange, s.value, s.currentTime)
-		if err != nil {
-			log.Errorln("FilterMA: Error:", err)
-		}
-		return err
-	}
-	return nil
 }

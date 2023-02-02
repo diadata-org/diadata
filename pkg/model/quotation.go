@@ -30,10 +30,6 @@ func getKeyQuotation(value string) string {
 	return "dia_quotation_USD_" + value
 }
 
-func getKeyQuotationEUR(value string) string {
-	return "dia_quotation_EUR_" + value
-}
-
 func getKeyAssetQuotation(blockchain, address string) string {
 	return "dia_assetquotation_USD_" + blockchain + "_" + address
 }

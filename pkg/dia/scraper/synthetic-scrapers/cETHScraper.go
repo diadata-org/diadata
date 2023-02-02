@@ -36,7 +36,11 @@ func NewcETHScraper() *cETHScraper {
 func (scraper *cETHScraper) mainLoop() {
 	// TO DO
 	// Periodically run
-	scraper.FetchSynthSupply()
+	err := scraper.FetchSynthSupply()
+	if err != nil {
+		log.Error("run scraper.FetchSynthSupply ", err)
+		return
+	}
 }
 
 func (scraper *cETHScraper) GetSynthSupplyChannel() chan dia.SynthAssetSupply {

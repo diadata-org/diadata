@@ -71,7 +71,7 @@ func (p *PlatypusPools) poolsAddressNoLock() []string {
 	return values
 }
 
-// The scraper object for Platypus Finance
+// PlatypusScraper The scraper object for Platypus Finance
 type PlatypusScraper struct {
 	exchangeName string
 
@@ -97,7 +97,7 @@ type PlatypusScraper struct {
 	basePoolRegistry platypusRegistry
 }
 
-// Returns a new exchange scraper
+// NewPlatypusScraper Returns a new exchange scraper
 func NewPlatypusScraper(exchange dia.Exchange, scrape bool) *PlatypusScraper {
 
 	registries := []platypusRegistry{
@@ -150,7 +150,7 @@ func NewPlatypusScraper(exchange dia.Exchange, scrape bool) *PlatypusScraper {
 	return scraper
 }
 
-// Closes any existing API connections, as well as channels of
+// Close Closes any existing API connections, as well as channels of
 // pairScrapers from calls to ScrapePair
 func (s *PlatypusScraper) Close() error {
 	s.run = false
@@ -239,7 +239,7 @@ func (s *PlatypusScraper) loadPoolsAndCoins(registry platypusRegistry) (err erro
 			return err
 		}
 
-		err = s.loadPoolData(asset.LpToken.Hex(), registry)
+		err = s.loadPoolData(asset.LpToken.Hex())
 		if err != nil {
 			log.Errorf("loadPoolData error at asset %s: %s", asset.LpToken.Hex(), err)
 			return err
@@ -469,7 +469,7 @@ func (s *PlatypusScraper) watchNewPools() error {
 			case vLog := <-sink:
 
 				if _, ok := s.pools.getPool(vLog.Asset.Hex()); !ok {
-					err = s.loadPoolData(vLog.Asset.Hex(), s.basePoolRegistry)
+					err = s.loadPoolData(vLog.Asset.Hex())
 					if err != nil {
 						log.Error("loadPoolData in new pools: ", err)
 					}
@@ -485,7 +485,7 @@ func (s *PlatypusScraper) watchNewPools() error {
 	return nil
 }
 
-func (s *PlatypusScraper) loadPoolData(asset string, registry platypusRegistry) error {
+func (s *PlatypusScraper) loadPoolData(asset string) error {
 	contractAsset, err := platypusAssetABI.NewAssetCaller(common.HexToAddress(asset), s.RestClient)
 	if err != nil {
 		log.Error("NewAssetCaller: ", err)

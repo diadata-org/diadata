@@ -72,6 +72,7 @@ func (s *FilterVWAP) FinalCompute(t time.Time) float64 {
 }
 
 func (s *FilterVWAP) finalCompute(t time.Time) float64 {
+	log.Infof("computed value %v at time %v ", s.value, t)
 	if s.lastTrade == (dia.Trade{}) {
 		return 0.0
 	}

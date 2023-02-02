@@ -7,6 +7,9 @@ require (
 	github.com/jackc/pgconn v1.10.0
 	github.com/segmentio/kafka-go v0.4.35
 	github.com/sirupsen/logrus v1.8.1
+)
+
+require (
 	filippo.io/edwards25519 v1.0.0-rc.1 // indirect
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect

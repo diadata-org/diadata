@@ -133,11 +133,11 @@ var (
 	// block num 14120913, so scraper starts from this block.
 	defX2Y2State = &X2Y2ScraperState{LastBlockNum: 14139341}
 
-	// This string is the identifier of the scraper in conf and state fields in postgres.
+	// X2Y2 This string is the identifier of the scraper in conf and state fields in postgres.
 	X2Y2 = "X2Y2"
 
-	x2y2ABI       abi.ABI
-	x2y2ERC20ABI  abi.ABI
+	x2y2ABI abi.ABI
+	//x2y2ERC20ABI  abi.ABI
 	x2y2ERC721ABI abi.ABI
 
 	assetCacheX2Y2 = make(map[string]dia.Asset)
@@ -146,12 +146,12 @@ var (
 func init() {
 	var err error
 
-	x2y2ABI, err = abi.JSON(strings.NewReader(x2y2.X2y2ABI))
+	x2y2ABI, err = abi.JSON(strings.NewReader(x2y2.X2y2MetaData.ABI))
 	if err != nil {
 		panic(err)
 	}
 
-	x2y2ERC20ABI, err = abi.JSON(strings.NewReader(erc20.ERC20ABI))
+	_, err = abi.JSON(strings.NewReader(erc20.ERC20ABI))
 	if err != nil {
 		panic(err)
 	}
@@ -438,13 +438,13 @@ func (s *X2Y2Scraper) processTx(ctx context.Context, tx *utils.EthFilteredTx) (b
 
 	normPrice := decimal.NewFromBigInt(ev.Amount, 0).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(int64(currDecimals))))
 
-	usdPrice, err := s.calcUSDPrice(tx.BlockNum, currAddr, currSymbol, normPrice)
+	usdPrice, err := s.calcUSDPrice(currSymbol, normPrice)
 	if err != nil {
 		log.Errorf("unable to calculate usd price of the event(block: %d, log: %d, tx: %s): %s", tx.BlockNum, tx.TXIndex, tx.TXHash.Hex(), err.Error())
 		return false, err
 	}
 
-	if err := s.notifyTrade(tx, transfers[0], ev.Amount, normPrice, usdPrice, currSymbol, currAddr); err != nil {
+	if err := s.notifyTrade(tx, transfers[0], ev.Amount, usdPrice, currAddr); err != nil {
 		if !errors.Is(err, errX2Y2ShutdownRequest) {
 			log.Warnf("event(block: %d, tx index: %d, tx: %s) couldn't processed: %s", tx.BlockNum, tx.TXIndex, tx.TXHash.Hex(), err.Error())
 		}
@@ -455,7 +455,7 @@ func (s *X2Y2Scraper) processTx(ctx context.Context, tx *utils.EthFilteredTx) (b
 	return false, nil
 }
 
-func (s *X2Y2Scraper) notifyTrade(tx *utils.EthFilteredTx, transfer *x2y2ERC721Transfer, price *big.Int, priceDec decimal.Decimal, usdPrice float64, currSymbol string, currAddr common.Address) error {
+func (s *X2Y2Scraper) notifyTrade(tx *utils.EthFilteredTx, transfer *x2y2ERC721Transfer, price *big.Int, usdPrice float64, currAddr common.Address) error {
 	nftClass, err := s.createOrReadNFTClass(transfer)
 	if err != nil {
 		return err
@@ -573,8 +573,8 @@ func (s *X2Y2Scraper) createOrReadNFT(nftClass *dia.NFTClass, transfer *x2y2ERC7
 	return &nft, nil
 }
 
-func (s *X2Y2Scraper) calcUSDPrice(blockNum uint64, tokenAddr common.Address, symbol string, price decimal.Decimal) (float64, error) {
-	tokenPrice, err := s.findPrice(blockNum, tokenAddr, symbol)
+func (s *X2Y2Scraper) calcUSDPrice(symbol string, price decimal.Decimal) (float64, error) {
+	tokenPrice, err := s.findPrice(symbol)
 	if err != nil {
 		return 0, err
 	}
@@ -588,7 +588,7 @@ func (s *X2Y2Scraper) calcUSDPrice(blockNum uint64, tokenAddr common.Address, sy
 	return f, nil
 }
 
-func (s *X2Y2Scraper) findPrice(blockNum uint64, tokenAddr common.Address, symbol string) (decimal.Decimal, error) {
+func (s *X2Y2Scraper) findPrice(symbol string) (decimal.Decimal, error) {
 	// TODO: find the token price in usd for the given block number
 	switch symbol {
 	case "ETH", "WETH":
@@ -602,7 +602,7 @@ func (s *X2Y2Scraper) findPrice(blockNum uint64, tokenAddr common.Address, symbo
 	}
 }
 
-// GetDataChannel returns the scrapers data channel.
+// GetTradeChannel returns the scrapers data channel.
 func (s *X2Y2Scraper) GetTradeChannel() chan dia.NFTTrade {
 	return s.tradeScraper.chanTrade
 }
@@ -834,7 +834,7 @@ func (s *X2Y2Scraper) readNFTAttr(ctx context.Context, uri string) (map[string]i
 		if err != nil {
 			return nil, err
 		}
-		if err := json.Unmarshal(data.Data, attrs); err != nil {
+		if err := json.Unmarshal(data.Data, &attrs); err != nil {
 			return nil, err
 		}
 	} else {
@@ -851,7 +851,12 @@ func (s *X2Y2Scraper) readNFTAttr(ctx context.Context, uri string) (map[string]i
 			return nil, err
 		}
 
-		defer resp.Body.Close()
+		defer func(Body io.ReadCloser) {
+			err := Body.Close()
+			if err != nil {
+				log.Error("unable to close body correctly ", err)
+			}
+		}(resp.Body)
 
 		if resp.StatusCode < 200 || resp.StatusCode > 299 {
 			return nil, errors.New("unable to read token attributes: " + resp.Status)

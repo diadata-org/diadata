@@ -29,7 +29,7 @@ type BitBaySubscribe struct {
 //"path": "ticker/{market_code}"
 //}
 
-//TradeInfo as received from API response
+// TradeInfo as received from API response
 type BitBayTrade struct {
 	Date            int64   `json:"date"`
 	Price           float64 `json:"price"`
@@ -61,7 +61,7 @@ type BitBayScraper struct {
 	db         *models.RelDB
 }
 
-//NewBitBayScraper get a scrapper for BitBay exchange
+// NewBitBayScraper get a scrapper for BitBay exchange
 func NewBitBayScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BitBayScraper {
 	s := &BitBayScraper{
 		shutdown:     make(chan nothing),
@@ -229,23 +229,23 @@ func (s *BitBayScraper) mainLoop() {
 			ps.parent.chanTrades <- t
 		}
 	}
-	if s.error == nil {
-		s.error = errors.New(s.exchangeName + "Scraper: terminated by Close()")
-	}
-	s.cleanup(s.error)
+	//	if s.error == nil {
+	//		s.error = errors.New(s.exchangeName + "Scraper: terminated by Close()")
+	//	}
+	//	s.cleanup(s.error)
 }
 
 // Close channels for shutdown
-func (s *BitBayScraper) cleanup(err error) {
-	s.errorLock.Lock()
-	defer s.errorLock.Unlock()
-	if err != nil {
-		s.error = err
-	}
-	s.closed = true
-	close(s.chanTrades)
-	close(s.shutdownDone)
-}
+//func (s *BitBayScraper) cleanup(err error) {
+//	s.errorLock.Lock()
+//	defer s.errorLock.Unlock()
+//	if err != nil {
+//		s.error = err
+//	}
+//	s.closed = true
+//	close(s.chanTrades)
+//	close(s.shutdownDone)
+//}
 
 // Close any existing API connections, as well as channels, and terminates main loop
 func (s *BitBayScraper) Close() error {
@@ -279,7 +279,7 @@ func (s *BitBayScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, 
 	return dia.ExchangePair{}, nil
 }
 
-//Channel returns the channel to get trades
+// Channel returns the channel to get trades
 func (s *BitBayScraper) Channel() chan *dia.Trade {
 	return s.chanTrades
 }
@@ -289,7 +289,7 @@ func (s *BitBayScraper) FillSymbolData(symbol string) (dia.Asset, error) {
 	return dia.Asset{Symbol: symbol}, nil
 }
 
-//FetchAvailablePairs returns a list with all available trade pairs
+// FetchAvailablePairs returns a list with all available trade pairs
 func (s *BitBayScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
 	type items struct {

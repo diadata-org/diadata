@@ -18,7 +18,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 
-	anyerc20 "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/anyerc20"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/anyerc20"
 	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
 
 	"math/big"
@@ -55,7 +55,7 @@ type BridgeSwapScraper struct {
 
 	// signaling channels for session initialization and finishing
 	//initDone     chan nothing
-	run          bool
+	//run          bool
 	shutdown     chan nothing
 	shutdownDone chan nothing
 	// error handling; to read error or closed, first acquire read lock
@@ -65,12 +65,12 @@ type BridgeSwapScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*BridgeSwapPairScraper
-	exchangeName string
-	chanTrades   chan *dia.Trade
-	waitTime     int
+	//exchangeName string
+	chanTrades chan *dia.Trade
+	// waitTime     int
 	// If true, only pairs given in config file are scraped. Default is false.
-	listenByAddress bool
-	relDB           *models.RelDB
+	//listenByAddress bool
+	relDB *models.RelDB
 }
 
 type MultiChainConfig struct {
@@ -87,11 +87,9 @@ var (
 )
 
 const (
-	bscMultiContract = "0xd1c5966f9f5ee6881ff6b261bbeda45972b1b5f3"
-	ftmHTTP          = "https://rpc.ftm.tools/"
-	ethHTTP          = "https://eth-mainnet.alchemyapi.io/v2/UpWALFqrTh5m8bojhDcgtBIif-Ug5UUE"
-	polygonHTTP      = "https://polygon-rpc.com"
-	abiString        = `[{
+	ftmHTTP   = "https://rpc.ftm.tools/"
+	ethHTTP   = "https://eth-mainnet.alchemyapi.io/v2/UpWALFqrTh5m8bojhDcgtBIif-Ug5UUE"
+	abiString = `[{
 		"anonymous": false,
 		"inputs": [{
 			"indexed": true,

@@ -58,7 +58,7 @@ func NewFinageForexScraper(exchange dia.Exchange, scrape bool, relDB *models.Rel
 		log.Fatal("dial:", err)
 	}
 
-	s := &FinageForexScraper{
+	scraper := &FinageForexScraper{
 		wsConn:       c,
 		shutdown:     make(chan nothing),
 		exchangeName: exchange.Name,
@@ -73,16 +73,16 @@ func NewFinageForexScraper(exchange dia.Exchange, scrape bool, relDB *models.Rel
 
 	log.Info("Scraper is built and initiated")
 	if scrape {
-		go s.mainLoop()
+		go scraper.mainLoop()
 	}
-	return s
+	return scraper
 }
 
-func (s *FinageForexScraper) subscribe() error {
+func (scraper *FinageForexScraper) subscribe() error {
 
 	pairTosubscribe := ""
 
-	pairs, err := s.datastore.GetExchangePairSymbols(s.exchangeName)
+	pairs, err := scraper.datastore.GetExchangePairSymbols(scraper.exchangeName)
 	if err != nil {
 		log.Errorln("Error getting pairs", err)
 		return err
@@ -94,34 +94,37 @@ func (s *FinageForexScraper) subscribe() error {
 		pairTosubscribe = pairTosubscribe + "," + ps.ForeignName
 	}
 	log.Infoln("pairTosubscribe", pairTosubscribe)
-	return s.wsConn.WriteJSON(FinageWSMessage{Action: "subscribe", Symbols: pairTosubscribe})
+	return scraper.wsConn.WriteJSON(FinageWSMessage{Action: "subscribe", Symbols: pairTosubscribe})
 
 }
 
 // mainLoop runs in a goroutine until channel s is closed.
-func (s *FinageForexScraper) mainLoop() {
-	s.subscribe()
+func (scraper *FinageForexScraper) mainLoop() {
+	subscribeErr := scraper.subscribe()
+	if subscribeErr != nil {
+		log.Error("got error subscribing to scraper ", subscribeErr)
+	}
 	log.Infoln("Sunbscribed to all asset pairs")
-	err := s.Update()
+	err := scraper.Update()
 	if err != nil {
 		log.Error(err)
 	}
 	for {
 		select {
-		case <-s.shutdown: // user requested shutdown
+		case <-scraper.shutdown: // user requested shutdown
 			log.Println("FinageScraper shutting down")
-			s.cleanup(nil)
+			scraper.cleanup(nil)
 			return
 		}
 	}
 }
 
 // Update performs a HTTP Get request for the rss feed and decodes the results.
-func (s *FinageForexScraper) Update() error {
+func (scraper *FinageForexScraper) Update() error {
 
 	go func() {
 		for {
-			_, message, err := s.wsConn.ReadMessage()
+			_, message, err := scraper.wsConn.ReadMessage()
 			if err != nil {
 				//s.subscribe()
 				log.Println("err", err)
@@ -140,23 +143,23 @@ func (s *FinageForexScraper) Update() error {
 				log.Errorln("Not a Trade", err)
 				break
 			} else {
-				tradePair, _ := s.datastore.GetExchangePairCache(s.exchangeName, strings.Replace(ftrade.Symbol, "/", "-", 1))
+				tradePair, _ := scraper.datastore.GetExchangePairCache(scraper.exchangeName, strings.Replace(ftrade.Symbol, "/", "-", 1))
 				if ftrade.Symbol != "" {
 					t := &dia.Trade{
 						Symbol:       strings.Split(ftrade.Symbol, "/")[0],
 						Pair:         strings.Replace(ftrade.Symbol, "/", "-", 1),
-						Price:        float64(ftrade.PriceAsk),
+						Price:        ftrade.PriceAsk,
 						Volume:       1,
 						BaseToken:    tradePair.UnderlyingPair.BaseToken,
 						QuoteToken:   tradePair.UnderlyingPair.QuoteToken,
 						VerifiedPair: tradePair.Verified,
 						Time:         time.Unix(ftrade.Timestamp/1e3, 0),
-						Source:       s.exchangeName,
+						Source:       scraper.exchangeName,
 					}
 					if t.VerifiedPair {
 						log.Info("got verified trade: ", t)
 					}
-					s.chanTrades <- t
+					scraper.chanTrades <- t
 				}
 
 			}
@@ -168,32 +171,32 @@ func (s *FinageForexScraper) Update() error {
 
 // closes all connected PairScrapers
 // must only be called from mainLoop
-func (s *FinageForexScraper) cleanup(err error) {
+func (scraper *FinageForexScraper) cleanup(err error) {
 
-	s.errorLock.Lock()
-	defer s.errorLock.Unlock()
+	scraper.errorLock.Lock()
+	defer scraper.errorLock.Unlock()
 
-	s.ticker.Stop()
+	scraper.ticker.Stop()
 
 	if err != nil {
-		s.error = err
+		scraper.error = err
 	}
-	s.closed = true
+	scraper.closed = true
 
-	close(s.shutdownDone) // signal that shutdown is complete
+	close(scraper.shutdownDone) // signal that shutdown is complete
 }
 
 // Close closes any existing API connections, as well as channels of
 // PairScrapers from calls to ScrapePair
-func (s *FinageForexScraper) Close() error {
-	if s.closed {
+func (scraper *FinageForexScraper) Close() error {
+	if scraper.closed {
 		return errors.New("FinageForexScraper: Already closed")
 	}
-	close(s.shutdown)
-	<-s.shutdownDone
-	s.errorLock.RLock()
-	defer s.errorLock.RUnlock()
-	return s.error
+	close(scraper.shutdown)
+	<-scraper.shutdownDone
+	scraper.errorLock.RLock()
+	defer scraper.errorLock.RUnlock()
+	return scraper.error
 }
 
 // ECBPairScraper implements PairScraper for ECB
@@ -205,48 +208,48 @@ type FinageForexPairScraper struct {
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
-func (s *FinageForexScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
+func (scraper *FinageForexScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 
-	s.errorLock.RLock()
-	defer s.errorLock.RUnlock()
-	if s.error != nil {
-		return nil, s.error
+	scraper.errorLock.RLock()
+	defer scraper.errorLock.RUnlock()
+	if scraper.error != nil {
+		return nil, scraper.error
 	}
-	if s.closed {
+	if scraper.closed {
 		return nil, errors.New("ECBScraper: Call ScrapePair on closed scraper")
 	}
 	ps := &FinageForexPairScraper{
-		parent: s,
+		parent: scraper,
 		pair:   pair,
 	}
 
-	s.pairScrapers[pair.Symbol] = ps
+	scraper.pairScrapers[pair.Symbol] = ps
 
 	return ps, nil
 }
 
 // Channel returns a channel that can be used to receive trades/pricing information
-func (ps *FinageForexScraper) Channel() chan *dia.Trade {
-	return ps.chanTrades
+func (scraper *FinageForexScraper) Channel() chan *dia.Trade {
+	return scraper.chanTrades
 }
 
-func (ps *FinageForexPairScraper) Close() error {
-	ps.closed = true
+func (pairScraper *FinageForexPairScraper) Close() error {
+	pairScraper.closed = true
 	return nil
 }
 
 // Error returns an error when the channel Channel() is closed
 // and nil otherwise
-func (ps *FinageForexPairScraper) Error() error {
-	s := ps.parent
-	s.errorLock.RLock()
-	defer s.errorLock.RUnlock()
-	return s.error
+func (pairScraper *FinageForexPairScraper) Error() error {
+	scraper := pairScraper.parent
+	scraper.errorLock.RLock()
+	defer scraper.errorLock.RUnlock()
+	return scraper.error
 }
 
 // Pair returns the pair this scraper is subscribed to
-func (ps *FinageForexPairScraper) Pair() dia.ExchangePair {
-	return ps.pair
+func (pairScraper *FinageForexPairScraper) Pair() dia.ExchangePair {
+	return pairScraper.pair
 }
 
 type FinageSymbolResponse struct {
@@ -258,9 +261,9 @@ type FinageSymbolResponse struct {
 	} `json:"symbols"`
 }
 
-func (s *FinageForexScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
+func (scraper *FinageForexScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	log.Infoln("Fetching Available Pairs")
-	var finageurl = "https://api.finage.co.uk/symbol-list/forex?apikey=" + s.apiKey + "&page="
+	var finageurl = "https://api.finage.co.uk/symbol-list/forex?apikey=" + scraper.apiKey + "&page="
 	var finageSymbolResponse FinageSymbolResponse
 	data, _, err := utils.GetRequest(finageurl + strconv.Itoa(1))
 	if err != nil {
@@ -289,9 +292,9 @@ func (s *FinageForexScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, er
 			pairToNormalize := dia.ExchangePair{
 				Symbol:      "",
 				ForeignName: symbol.Symbol,
-				Exchange:    s.exchangeName,
+				Exchange:    scraper.exchangeName,
 			}
-			pair, serr := s.NormalizePair(pairToNormalize)
+			pair, serr := scraper.NormalizePair(pairToNormalize)
 			if serr == nil {
 				pairs = append(pairs, pair)
 			} else {
@@ -305,13 +308,13 @@ func (s *FinageForexScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, er
 	return
 }
 
-func (s *FinageForexScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
+func (scraper *FinageForexScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
 	asset.Symbol = symbol
 	asset.Blockchain = dia.FIAT
 	return asset, nil
 }
 
-func (s *FinageForexScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+func (scraper *FinageForexScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	runes := []rune(pair.ForeignName)
 	asset0 := runes[0:3]
 	asset1 := runes[3:6]

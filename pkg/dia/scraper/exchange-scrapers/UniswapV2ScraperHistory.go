@@ -43,13 +43,13 @@ type UniswapHistoryScraper struct {
 	finalBlock    uint64
 	pairmap       map[common.Address]UniswapPair
 	pairAddresses []common.Address
-	db            *models.RelDB
+	//db            *models.RelDB
 	// If true, only pairs given in config file are scraped. Default is false.
 	listenByAddress bool
 }
 
 const (
-	genesisBlockUniswap = uint64(10019990)
+	// genesisBlockUniswap = uint64(10019990)
 	// genesisBlockUniswap            = uint64(10520000)
 	// genesisBlockUniswap            = uint64(12575772)
 	filterQueryBlockNums           = 50

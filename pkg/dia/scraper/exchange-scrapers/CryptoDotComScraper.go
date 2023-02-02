@@ -135,11 +135,11 @@ type CryptoDotComScraper struct {
 
 	// error handling; err should be read from error(), closed should be read from isClosed()
 	// those two methods implement RW lock
-	errMutex            sync.RWMutex
-	err                 error
-	closedMutex         sync.RWMutex
-	closed              bool
-	consecutiveErrCount int
+	errMutex    sync.RWMutex
+	err         error
+	closedMutex sync.RWMutex
+	closed      bool
+	//consecutiveErrCount int
 
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers sync.Map

@@ -552,41 +552,6 @@ func (s *MagicEdenScraper) fetchMetadataForToken(ctx context.Context, addr strin
 	return metadata, false, errors.New("no metadata account for : " + addr)
 }
 
-// TODO - move to this generic method to fetch metadata on availability of a strong RPC
-func (s *MagicEdenScraper) fetchMetadataAcct(ctx context.Context, nftAddr string) (string, error) {
-	res, err := s.solanaRpcClient.RpcClient.GetProgramAccountsWithConfig(ctx, MetadataProgramAddress,
-		rpc.GetProgramAccountsConfig{
-			Encoding:  rpc.AccountEncodingBase64,
-			DataSlice: &rpc.DataSlice{Offset: 33, Length: 32},
-			Filters: []rpc.GetProgramAccountsConfigFilter{
-				{
-					DataSize: 679,
-				},
-				{
-					MemCmp: &rpc.GetProgramAccountsConfigFilterMemCmp{
-						Bytes:  nftAddr,
-						Offset: 33,
-					},
-				},
-			},
-		})
-
-	if err != nil {
-		log.Warnf("unable to retrieve metadata account for : %s", err.Error())
-		return "", err
-	}
-
-	if res.Error != nil {
-		return "", err
-	}
-
-	if len(res.Result) > 0 {
-		return res.Result[0].Pubkey, nil
-	}
-
-	return "", errors.New("no metadata available")
-}
-
 func (s *MagicEdenScraper) fetchNFTMetadata(ctx context.Context, metadataAcctAddr string) (SolanaNFTMetadata, bool, error) {
 	metadata := SolanaNFTMetadata{}
 	if out, err := s.solanaRpcClient.GetAccountInfo(ctx, metadataAcctAddr); err != nil {

@@ -25,14 +25,18 @@ func (rdb *RelDB) SetKeyPair(publickey string, privatekey string) error {
 	return nil
 }
 
-func (rdb *RelDB) GetKeyPairID(publickey string) string {
+func (rdb *RelDB) GetKeyPairID(publicKey string) string {
 	query := fmt.Sprintf(`SELECT id from   %s 
 	WHERE publickey=$1`, keypairTable)
-	row := rdb.postgresClient.QueryRow(context.Background(), query, publickey)
-	var keypair_id string
-	row.Scan(&keypair_id)
+	rows := rdb.postgresClient.QueryRow(context.Background(), query, publicKey)
+	var keypairId string
 
-	return keypair_id
+	err := rows.Scan(&keypairId)
+	if err != nil {
+		log.Error("Error getting results from db ", err)
+	}
+
+	return keypairId
 }
 
 func (rdb *RelDB) SetOracleConfig(address, feederID, owner, symbols, chainID, frequency, sleepseconds, deviationpermille string) error {
@@ -53,7 +57,10 @@ func (rdb *RelDB) GetFeederID(address string) (feederId string) {
 	log.Infoln("GetFeederID query", query)
 	log.Infoln("address", address)
 	var feederidint int
-	rdb.postgresClient.QueryRow(context.Background(), query, address).Scan(&feederidint)
+	err := rdb.postgresClient.QueryRow(context.Background(), query, address).Scan(&feederidint)
+	if err != nil {
+		log.Error("Error getting results from db ", err)
+	}
 	feederId = strconv.Itoa(feederidint)
 
 	return
@@ -74,21 +81,30 @@ func (rdb *RelDB) SetFeederConfig(feederid, oracleconfigid string) error {
 func (rdb *RelDB) GetFeederAccessByID(id string) (owner, publickey string) {
 	query := fmt.Sprintf(`SELECT owner,publickey from   %s 
 	WHERE id=$1`, feederaccessTable)
-	rdb.postgresClient.QueryRow(context.Background(), query, id).Scan(&owner, &publickey)
+	err := rdb.postgresClient.QueryRow(context.Background(), query, id).Scan(&owner, &publickey)
+	if err != nil {
+		log.Error("Error getting results from db ", err)
+	}
 	return
 }
 
 func (rdb *RelDB) GetFeederLimit(owner string) (limit int) {
 	query := fmt.Sprintf(`SELECT total from  %s 
 	WHERE owner=$1`, feederResourceTable)
-	rdb.postgresClient.QueryRow(context.Background(), query, owner).Scan(&limit)
+	err := rdb.postgresClient.QueryRow(context.Background(), query, owner).Scan(&limit)
+	if err != nil {
+		log.Error("Error getting results from db ", err)
+	}
 	return
 }
 
 func (rdb *RelDB) GetTotalFeeder(owner string) (total int) {
 	query := fmt.Sprintf(`SELECT count(*) from  %s 
 	WHERE owner=$1 and active=true`, oracleconfigTable)
-	rdb.postgresClient.QueryRow(context.Background(), query, owner).Scan(&total)
+	err := rdb.postgresClient.QueryRow(context.Background(), query, owner).Scan(&total)
+	if err != nil {
+		log.Error("Error getting results from db ", err)
+	}
 	return
 }
 

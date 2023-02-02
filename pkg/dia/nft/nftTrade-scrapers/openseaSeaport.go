@@ -588,16 +588,6 @@ func (s *OpenSeaSeaportScraper) findERC20TransferNew(ctx context.Context, receip
 	return erc20tx, nil
 }
 
-func findMatchingTransfer(transfers []*erc721Transfer, offerer, recipient common.Address) *erc721Transfer {
-	for _, transfer := range transfers {
-		if transfer.From == offerer && transfer.To == recipient {
-			return transfer
-		}
-	}
-
-	return nil
-}
-
 func (s *OpenSeaSeaportScraper) createOrReadNFTClass(transfer *erc721Transfer) (*dia.NFTClass, error) {
 	nftClass, err := s.tradeScraper.datastore.GetNFTClass(transfer.NFTAddress.Hex(), dia.ETHEREUM)
 	if err != nil {

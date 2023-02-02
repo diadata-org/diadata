@@ -14,7 +14,6 @@ import (
 	solanav2 "github.com/gagliardetto/solana-go"
 	solanawsclient "github.com/gagliardetto/solana-go/rpc/ws"
 
-	"github.com/mr-tron/base58"
 	"github.com/streamingfast/solana-go"
 	"github.com/streamingfast/solana-go/programs/serum"
 	"github.com/streamingfast/solana-go/rpc"
@@ -48,10 +47,10 @@ type SerumScraper struct {
 	error     error
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
-	pairScrapers      map[string]*SerumPairScraper
-	exchangeName      string
-	chanTrades        chan *dia.Trade
-	waitTime          int
+	pairScrapers map[string]*SerumPairScraper
+	exchangeName string
+	chanTrades   chan *dia.Trade
+	//waitTime          int
 	db                *models.RelDB
 	markets           map[string]serumMarket
 	tokenNameRegistry map[string]tokenMeta
@@ -271,14 +270,6 @@ func (s *SerumScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err erro
 	return
 }
 
-func (s *SerumScraper) getEvents(eventQueueAddr solana.PublicKey) (eventQueue solana.Data, err error) {
-	acctInfo, err := s.solanaRpcClient.GetAccountInfo(eventQueueAddr)
-	if err != nil {
-		return nil, fmt.Errorf("unable to get events:%w", err)
-	}
-	return acctInfo.Value.Data, nil
-}
-
 func parseEvent(e *serum.Event, baseMultiplier, quoteMultiplier float64) (volume, price float64) {
 	var priceBeforeFees float64
 	if e.Flag.IsBid() {
@@ -391,33 +382,6 @@ type tokenMeta struct {
 	symbol   string
 	mint     string
 	decimals uint8
-}
-
-func extractTokenMetaFromData(data []byte) (tokenMeta, bool) {
-	var t tokenMeta
-	if len(data) > 0 {
-		nameSize := int(data[0])
-		nameStart := 4
-		nameEnd := nameStart + nameSize
-		if len(data) > nameEnd {
-			t.name = string(data[nameStart:nameEnd])
-			symbolSize := int(data[nameEnd])
-			symbolStart := 4 + nameEnd
-			symbolEnd := symbolStart + symbolSize
-			if len(data) > symbolEnd {
-				t.symbol = string(data[symbolStart:symbolEnd])
-				mintSize := 32
-				mintStart := symbolEnd
-				mintEnd := mintStart + mintSize
-				if len(data) > mintEnd {
-					t.mint = base58.Encode(data[mintStart:mintEnd])
-					t.decimals = data[mintEnd]
-					return t, true
-				}
-			}
-		}
-	}
-	return tokenMeta{}, false
 }
 
 func (s *SerumScraper) FillSymbolData(symbol string) (dia.Asset, error) {

@@ -474,13 +474,13 @@ func (s *OpenSeaScraper) processTx(ctx context.Context, tx *utils.EthFilteredTx)
 
 	normPrice := decimal.NewFromBigInt(ev.Price, 0).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(int64(currDecimals))))
 
-	usdPrice, err := s.calcUSDPrice(ev.Raw.BlockNumber, currAddr, currSymbol, normPrice)
+	usdPrice, err := s.calcUSDPrice(currSymbol, normPrice)
 	if err != nil {
 		log.Errorf("unable to calculate usd price of the event(block: %d, log: %d, tx: %s): %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
 		return false, err
 	}
 
-	if err := s.notifyTrade(ev, transfers[0], ev.Price, normPrice, usdPrice, currSymbol, currAddr); err != nil {
+	if err := s.notifyTrade(ev, transfers[0], ev.Price, usdPrice, currAddr); err != nil {
 		if !errors.Is(err, errOpenSeaShutdownRequest) {
 			log.Warnf("event(block: %d, tx index: %d, tx: %s) couldn't processed: %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
 		}
@@ -491,7 +491,7 @@ func (s *OpenSeaScraper) processTx(ctx context.Context, tx *utils.EthFilteredTx)
 	return false, nil
 }
 
-func (s *OpenSeaScraper) notifyTrade(ev *opensea.ContractOrdersMatched, transfer *erc721Transfer, price *big.Int, priceDec decimal.Decimal, usdPrice float64, currSymbol string, currAddr common.Address) error {
+func (s *OpenSeaScraper) notifyTrade(ev *opensea.ContractOrdersMatched, transfer *erc721Transfer, price *big.Int, usdPrice float64, currAddr common.Address) error {
 	nftClass, err := s.createOrReadNFTClass(transfer)
 	if err != nil {
 		return err
@@ -609,8 +609,8 @@ func (s *OpenSeaScraper) createOrReadNFT(nftClass *dia.NFTClass, transfer *erc72
 	return &nft, nil
 }
 
-func (s *OpenSeaScraper) calcUSDPrice(blockNum uint64, tokenAddr common.Address, symbol string, price decimal.Decimal) (float64, error) {
-	tokenPrice, err := s.findPrice(blockNum, tokenAddr, symbol)
+func (s *OpenSeaScraper) calcUSDPrice(symbol string, price decimal.Decimal) (float64, error) {
+	tokenPrice, err := s.findPrice(symbol)
 	if err != nil {
 		return 0, err
 	}
@@ -624,7 +624,7 @@ func (s *OpenSeaScraper) calcUSDPrice(blockNum uint64, tokenAddr common.Address,
 	return f, nil
 }
 
-func (s *OpenSeaScraper) findPrice(blockNum uint64, tokenAddr common.Address, symbol string) (decimal.Decimal, error) {
+func (s *OpenSeaScraper) findPrice(symbol string) (decimal.Decimal, error) {
 	// TODO: find the token price in usd for the given block number
 	switch symbol {
 	case "ETH", "WETH":

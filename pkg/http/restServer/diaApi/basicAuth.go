@@ -10,19 +10,6 @@ import (
 	"time"
 )
 
-// Hash password using the Bcrypt hashing algorithm
-// and then return the hashed password as a
-// base64 encoded string
-func hashPassword(password string) (string, error) {
-	// Convert password string to byte slice
-	var passwordBytes = []byte(password)
-
-	hashedPasswordBytes, err := bcrypt.
-		GenerateFromPassword(passwordBytes, bcrypt.DefaultCost)
-
-	return string(hashedPasswordBytes), err
-}
-
 // Check if two passwords match using Bcrypt's CompareHashAndPassword
 // which return nil on success and an error on failure.
 func doPasswordsMatch(hashedPassword, currPassword string) bool {
@@ -67,7 +54,7 @@ func BasicAuth(c *gin.Context) {
 		// Get the Basic Authentication credentials
 		if doPasswordsMatch(basicAuth.password, password) {
 			log.WithFields(log.Fields{
-				"user": username,
+				"user":     username,
 				"endpoint": c.Request.URL.Path,
 			}).Info("User authenticated")
 		} else {

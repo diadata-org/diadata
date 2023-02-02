@@ -146,23 +146,6 @@ func NewByBitScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *B
 	return s
 }
 
-func (s *ByBitScraper) getMarkets() (markets []string) {
-	var bbm ByBitMarketsResponse
-	b, _, err := utils.GetRequest("https://api.bybit.com/v2/public/symbols")
-	if err != nil {
-		log.Errorln("Error Getting markets", err)
-	}
-	err = json.Unmarshal(b, &bbm)
-	if err != nil {
-		log.Error("getting markets: ", err)
-	}
-
-	for _, m := range bbm.Result {
-		markets = append(markets, m.Name)
-	}
-	return
-}
-
 func (s *ByBitScraper) ping() {
 	a := &ByBitSubscribe{
 		OP: "ping",

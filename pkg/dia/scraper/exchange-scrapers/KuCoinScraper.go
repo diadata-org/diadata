@@ -12,10 +12,6 @@ import (
 	models "github.com/diadata-org/diadata/pkg/model"
 )
 
-var (
-	bufferSize = 20
-)
-
 type KuExchangePairs []KuExchangePair
 
 type KucoinMarketMatch struct {
@@ -270,7 +266,7 @@ func (s *KuCoinScraper) mainLoop() {
 						lastTradeMap[pair] = tradeTime
 						countMap[pair] = 0
 					} else {
-						tradeTime = tradeTime.Add(time.Duration((countMap[pair] + 1)) * time.Nanosecond)
+						tradeTime.Add(time.Duration(countMap[pair]+1) * time.Nanosecond)
 						countMap[pair] += 1
 					}
 				} else {
@@ -332,7 +328,7 @@ func (s *KuCoinScraper) mainLoop() {
 						lastTradeMap[pair] = tradeTime
 						countMap[pair] = 0
 					} else {
-						tradeTime = tradeTime.Add(time.Duration((countMap[pair] + 1)) * time.Nanosecond)
+						tradeTime.Add(time.Duration(countMap[pair]+1) * time.Nanosecond)
 						countMap[pair] += 1
 					}
 				} else {

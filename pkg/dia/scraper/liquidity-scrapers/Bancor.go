@@ -105,7 +105,7 @@ func NewBancorPoolScraper(exchange dia.Exchange) *BancorPoolScraper {
 	}
 
 	go func() {
-		scraper.fetchPools(common.HexToAddress(pool))
+		scraper.fetchPools()
 		scraper.doneChannel <- true
 	}()
 
@@ -373,7 +373,7 @@ func (scraper *BancorPoolScraper) ConverterTypeFour(address common.Address) (tok
 }
 
 // fetchPools collects all available pools and sends them into the pool channel.
-func (scraper *BancorPoolScraper) fetchPools(factoryAddress common.Address) {
+func (scraper *BancorPoolScraper) fetchPools() {
 
 	bpools, err := scraper.readPools()
 	if err != nil {

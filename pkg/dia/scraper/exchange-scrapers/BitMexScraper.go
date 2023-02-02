@@ -65,12 +65,6 @@ type bitMexSubscriptionResult struct {
 	Trades    []bitMexWSTrade `json:"data"`
 }
 
-// bitMexSubscriptionTrade is a trade result coming from websocket
-type bitMexSubscriptionTrade struct {
-	Table  string          `json:"table"`
-	Trades []bitMexWSTrade `json:"data"`
-}
-
 // bitMexWSTrade is a trade result coming from websocket
 type bitMexWSTrade struct {
 	Timestamp       time.Time `json:"timestamp"`
@@ -105,11 +99,11 @@ type BitMexScraper struct {
 
 	// error handling; err should be read from error(), closed should be read from isClosed()
 	// those two methods implement RW lock
-	errMutex            sync.RWMutex
-	err                 error
-	closedMutex         sync.RWMutex
-	closed              bool
-	consecutiveErrCount int
+	errMutex    sync.RWMutex
+	err         error
+	closedMutex sync.RWMutex
+	closed      bool
+	//consecutiveErrCount int
 
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers    sync.Map
@@ -245,9 +239,10 @@ func (s *BitMexScraper) startPing() {
 		case <-s.stopPingRoutine:
 			return
 		case <-s.pingTicker.C:
-			s.ping()
-
-		default:
+			err := s.ping()
+			if err != nil {
+				log.Error("ping brought error ", err)
+			}
 		}
 	}
 }
@@ -327,56 +322,49 @@ func (s *BitMexScraper) mainLoop() {
 }
 
 func (s *BitMexScraper) handleTrades(tradesWsResponse bitMexSubscriptionResult) {
-	tru := true
-	if tru {
-		if tru {
+	var pair dia.ExchangePair
+	for _, data := range tradesWsResponse.Trades {
 
-			var pair dia.ExchangePair
-			for _, data := range tradesWsResponse.Trades {
-
-				if pair == (dia.ExchangePair{}) {
-					val, ok := s.pairScrapers.Load(data.Symbol)
-					if !ok {
-						log.Error("Pair not found %s", data.Symbol)
-						continue
-					} else {
-						pair = val.(dia.ExchangePair)
-					}
-				}
-
-				volume := data.HomeNotional
-				if data.Side == "Sell" {
-					volume = -volume
-				}
-
-				exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, pair.ForeignName)
-				if err != nil {
-					log.Error("get exchangepair from cache: ", err)
-				}
-				trade := &dia.Trade{
-					Symbol:         pair.Symbol,
-					Pair:           pair.ForeignName,
-					Price:          data.Price,
-					Time:           data.Timestamp,
-					Volume:         volume,
-					Source:         s.exchangeName,
-					ForeignTradeID: data.TrdMatchID,
-					VerifiedPair:   exchangepair.Verified,
-					BaseToken:      exchangepair.UnderlyingPair.BaseToken,
-					QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
-				}
-				if exchangepair.Verified {
-					log.Infoln("Got verified trade", trade)
-				}
-
-				select {
-				case <-s.shutdown:
-				case s.chanTrades <- trade:
-				}
+		if pair == (dia.ExchangePair{}) {
+			val, ok := s.pairScrapers.Load(data.Symbol)
+			if !ok {
+				log.Error("Pair not found %s", data.Symbol)
+				continue
+			} else {
+				pair = val.(dia.ExchangePair)
 			}
 		}
-	}
 
+		volume := data.HomeNotional
+		if data.Side == "Sell" {
+			volume = -volume
+		}
+
+		exchangepair, err := s.db.GetExchangePairCache(s.exchangeName, pair.ForeignName)
+		if err != nil {
+			log.Error("get exchangepair from cache: ", err)
+		}
+		trade := &dia.Trade{
+			Symbol:         pair.Symbol,
+			Pair:           pair.ForeignName,
+			Price:          data.Price,
+			Time:           data.Timestamp,
+			Volume:         volume,
+			Source:         s.exchangeName,
+			ForeignTradeID: data.TrdMatchID,
+			VerifiedPair:   exchangepair.Verified,
+			BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+			QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+		}
+		if exchangepair.Verified {
+			log.Infoln("Got verified trade", trade)
+		}
+
+		select {
+		case <-s.shutdown:
+		case s.chanTrades <- trade:
+		}
+	}
 }
 
 func (s *BitMexScraper) newConn() error {
@@ -464,7 +452,7 @@ func (s *BitMexScraper) subscribe(pairs []dia.ExchangePair) error {
 	taskID := s.getTaskID(task)
 	s.tasks.Store(taskID, task)
 
-	return s.send(taskID, task)
+	return s.send(task)
 }
 
 func (s *BitMexScraper) getTaskID(task bitMexWSTask) string {
@@ -486,7 +474,7 @@ func (s *BitMexScraper) unsubscribe(pairs []dia.ExchangePair) error {
 	taskID := s.getTaskID(task)
 	s.tasks.Store(taskID, task)
 
-	return s.send(taskID, task)
+	return s.send(task)
 }
 
 func (s *BitMexScraper) retryConnection() error {
@@ -517,22 +505,22 @@ func (s *BitMexScraper) retryConnection() error {
 func (s *BitMexScraper) retryTask(taskID string) error {
 	val, ok := s.tasks.Load(taskID)
 	if !ok {
-		return fmt.Errorf("BitMexScraper: Facing unknown task id, taskId=%d", taskID)
+		return fmt.Errorf("BitMexScraper: Facing unknown task id, taskId=%v", taskID)
 	}
 
 	task := val.(bitMexWSTask)
 	task.RetryCount += 1
 	if task.RetryCount > bitMexTaskMaxRetry {
-		return fmt.Errorf("BitMexScraper: Exeeding max retry, taskId=%d, %s", taskID, task.toString())
+		return fmt.Errorf("BitMexScraper: Exeeding max retry, taskId=%v, %s", taskID, task.toString())
 	}
 
-	log.Warnf("BitMexScraper: Retrying a task, taskId=%d, %s", taskID, task.toString())
+	log.Warnf("BitMexScraper: Retrying a task, taskId=%v, %s", taskID, task.toString())
 	s.tasks.Store(taskID, task)
 
-	return s.send(taskID, task)
+	return s.send(task)
 }
 
-func (s *BitMexScraper) send(taskID string, task bitMexWSTask) error {
+func (s *BitMexScraper) send(task bitMexWSTask) error {
 	s.rl.Take()
 
 	return s.wsConn().WriteJSON(&bitMexWSRequest{
