@@ -230,10 +230,14 @@ CREATE TABLE aggregatedvolume (
     quotetoken_id UUID REFERENCES asset(asset_id),
     basetoken_id UUID REFERENCES asset(asset_id),
     volume numeric,
-    exchange text,
+    exchange character varying(100),
     time_range_seconds numeric NOT NULL,
     compute_time timestamp NOT NULL
 );
+
+CREATE INDEX GetAggregatedVolumes ON aggregatedvolume
+    USING btree (compute_time)
+    INCLUDE (volume, exchange, time_range_seconds);
 
 CREATE TABLE tradesdistribution (
     tradesdistribution_id UUID DEFAULT gen_random_uuid(),

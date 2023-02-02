@@ -35,12 +35,12 @@ func (rdb *RelDB) GetKeyPairID(publickey string) string {
 	return keypair_id
 }
 
-func (rdb *RelDB) SetOracleConfig(address, keypairID, creator, symbols, chainID, frequency, sleepseconds, deviationpermille string) error {
+func (rdb *RelDB) SetOracleConfig(address, feederID, owner, symbols, chainID, frequency, sleepseconds, deviationpermille string) error {
 	query := fmt.Sprintf(`INSERT INTO %s 
 	(address,feeder_id,owner,symbols,chainID,frequency,sleepseconds, deviationpermille) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) on conflict(feeder_id)  
 	do
 	update set feeder_id=EXCLUDED.feeder_id`, oracleconfigTable)
-	_, err := rdb.postgresClient.Exec(context.Background(), query, address, keypairID, creator, symbols, chainID, frequency, sleepseconds, deviationpermille)
+	_, err := rdb.postgresClient.Exec(context.Background(), query, address, feederID, owner, symbols, chainID, frequency, sleepseconds, deviationpermille)
 	if err != nil {
 		return err
 	}
