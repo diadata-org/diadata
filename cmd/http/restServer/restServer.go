@@ -246,6 +246,8 @@ func main() {
 		diaGroup.GET("/search/:query", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.SearchAsset))
 		diaGroup.GET("/searchnft/:query", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.SearchNFTs))
 		diaGroup.GET("/assetInfo/:blockchain/:address", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetAssetInfo))
+		diaGroup.GET("/pairsInFeed/:blockchain/:address/:numTradesThreshold", cache.CachePageAtomic(memoryStore, cachingTimeShort, diaApiEnv.GetPairsInFeed))
+		diaGroup.GET("/filterPerSource/:blockchain/:address/:filter", cache.CachePageAtomic(memoryStore, cachingTimeMedium, diaApiEnv.GetFilterPerSource))
 		diaGroup.GET("/token/:symbol", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetAsset))
 
 		diaGroup.GET("/missingToken/:exchange", cache.CachePageAtomic(memoryStore, cachingTimeLong, diaApiEnv.GetMissingExchangeSymbol))

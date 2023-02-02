@@ -229,8 +229,8 @@ func computePairStats(
 			BaseToken:  basetoken,
 		}
 
-		pairID := getPairIdentifier(pair)
-		pairExchangeID := getPairExchangeIdentifier(pair, trade.Source)
+		pairID := pair.Identifier()
+		pairExchangeID := pair.PairExchangeIdentifier(trade.Source)
 		if _, ok := pairMap[pairID]; !ok {
 			// Pair is not registered yet.
 			pairExchangeVolMap[pair] = make(map[string]float64)
@@ -263,14 +263,6 @@ func getBasetoken(basetokenMap map[string]dia.Asset, token dia.Asset, relDB *mod
 		basetoken = val
 	}
 	return
-}
-
-func getPairIdentifier(pair dia.Pair) string {
-	return pair.QuoteToken.Blockchain + "-" + pair.QuoteToken.Address + "-" + pair.BaseToken.Blockchain + "-" + pair.BaseToken.Address
-}
-
-func getPairExchangeIdentifier(pair dia.Pair, exchange string) string {
-	return getPairIdentifier(pair) + "-" + exchange
 }
 
 func average(series []int) (avg float64) {

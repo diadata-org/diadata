@@ -155,6 +155,56 @@ func (datastore *DB) GetFilter(filter string, topAsset dia.Asset, scale string, 
 	return allFilters, err
 }
 
+// GetFilterAllExchanges returns a slice of quotations for each exchange the asset given by
+// @address and @blockchain has a filter value in the given time-range.
+// It returns the most recent filter value in the given time-range for each exchange resp.
+func (datastore *DB) GetFilterAllExchanges(
+	filter string,
+	address string,
+	blockchain string,
+	starttime time.Time,
+	endtime time.Time,
+) (assetQuotations []AssetQuotation, err error) {
+	q := fmt.Sprintf(`
+	SELECT time,address,blockchain,symbol,value
+	FROM %s
+	WHERE filter='%s'
+	AND allExchanges=false
+	AND address='%s'
+	AND blockchain='%s' 
+	AND time>%d
+	AND time<=%d
+	GROUP BY "exchange"
+	ORDER BY DESC
+	LIMIT 1`,
+		influxDbFiltersTable, filter, address, blockchain, starttime.UnixNano(), endtime.UnixNano())
+
+	res, err := queryInfluxDB(datastore.influxClient, q)
+	if err != nil {
+		log.Errorln("GetFilterPoints", err)
+		return
+	}
+
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for _, row := range res[0].Series {
+			var aq AssetQuotation
+			aq.Source = row.Tags["exchange"]
+			aq.Price, err = row.Values[0][4].(json.Number).Float64()
+			if err != nil {
+				log.Warn("parse price: ", err)
+			}
+			aq.Asset = dia.Asset{Address: address, Blockchain: blockchain, Symbol: row.Values[0][3].(string)}
+			aq.Time, err = time.Parse(time.RFC3339, row.Values[0][0].(string))
+			if err != nil {
+				log.Warn("parse time: ", err)
+			}
+			assetQuotations = append(assetQuotations, aq)
+		}
+	}
+
+	return
+}
+
 func getKey(filter string, asset dia.Asset, exchange string) string {
 	key := filter + "_" + asset.Blockchain + "_" + asset.Address
 	if exchange != "" {

@@ -4,6 +4,7 @@ import (
 	// "encoding/json"
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"sort"
 	"time"
@@ -12,45 +13,59 @@ import (
 )
 
 // GetActiveExchangesAndPairs returns all exchanges the asset with @address and @blockchain was
-// traded on in the given time-range as keys of a map.
-// Additionaly, the map's values are the underlying pairs.
-func (datastore *DB) GetActiveExchangesAndPairs(address string, blockchain string, starttime time.Time, endtime time.Time) (map[string][]dia.Pair, error) {
+// traded on in the given time-range as keys of a map. The map's values are the underlying pairs.
+// Additionally, a map is returned where keys are exchange/pair identifier and values are the number
+// of trades in the respective time-range.
+// The pair has to have at least @numTrades trades in the given time-range in order to get returned.
+func (datastore *DB) GetActiveExchangesAndPairs(
+	address string,
+	blockchain string,
+	numTradesThreshold int64,
+	starttime time.Time,
+	endtime time.Time,
+) (map[string][]dia.Pair, map[string]int64, error) {
 	exchangepairmap := make(map[string][]dia.Pair)
+	pairCountTradesMap := make(map[string]int64)
 
 	query := `
-	SELECT exchange,pair,quotetokenaddress,quotetokenblockchain,basetokenaddress,basetokenblockchain,LAST(estimatedUSDPrice) 
+	SELECT count(*)
 	FROM %s 
 	WHERE time>%d AND time<=%d 
 	AND quotetokenaddress='%s' AND quotetokenblockchain='%s'
 	AND verified='true'
-	GROUP BY "exchange","pair"
+	GROUP BY "exchange","pair","basetokenaddress","basetokenblockchain"
 	`
 
 	q := fmt.Sprintf(query, influxDbTradesTable, starttime.UnixNano(), endtime.UnixNano(), address, blockchain)
 	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
-		return exchangepairmap, err
+		return exchangepairmap, pairCountTradesMap, err
 	}
 
 	if len(res) > 0 && len(res[0].Series) > 0 {
 		for _, row := range res[0].Series {
-			if len(row.Values[0]) > 1 {
-				quoteToken := dia.Asset{
-					Address:    row.Values[0][3].(string),
-					Blockchain: row.Values[0][4].(string),
-				}
-				baseToken := dia.Asset{
-					Address:    row.Values[0][5].(string),
-					Blockchain: row.Values[0][6].(string),
-				}
-				pair := dia.Pair{QuoteToken: quoteToken, BaseToken: baseToken}
 
-				exchangepairmap[row.Values[0][1].(string)] = append(exchangepairmap[row.Values[0][1].(string)], pair)
+			if len(row.Values[0]) > 1 {
+				numTrades, err := row.Values[0][1].(json.Number).Int64()
+				if err != nil {
+					log.Warn("parse number of trades: ", err)
+				}
+
+				exchange := row.Tags["exchange"]
+				// Only include pair if it has more than @numTradesThreshold trades.
+				if numTrades >= numTradesThreshold {
+					pair := dia.Pair{
+						QuoteToken: dia.Asset{Blockchain: blockchain, Address: address},
+						BaseToken:  dia.Asset{Blockchain: row.Tags["basetokenblockchain"], Address: row.Tags["basetokenaddress"]},
+					}
+					exchangepairmap[exchange] = append(exchangepairmap[exchange], pair)
+					pairCountTradesMap[pair.PairExchangeIdentifier(exchange)] = numTrades
+				}
 			}
 		}
 	}
 
-	return exchangepairmap, nil
+	return exchangepairmap, pairCountTradesMap, nil
 
 }
 

@@ -361,6 +361,14 @@ type Pair struct {
 	BaseToken  Asset
 }
 
+func (p *Pair) Identifier() string {
+	return p.QuoteToken.Blockchain + "-" + p.QuoteToken.Address + "-" + p.BaseToken.Blockchain + "-" + p.BaseToken.Address
+}
+
+func (p *Pair) PairExchangeIdentifier(exchange string) string {
+	return exchange + "-" + p.Identifier()
+}
+
 // ForeignName returns the foreign name of the pair @p, i.e. the string Quotetoken-Basetoken
 func (p *Pair) ForeignName() string {
 	return p.QuoteToken.Symbol + "-" + p.BaseToken.Symbol
