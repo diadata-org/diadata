@@ -4,26 +4,25 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	builderutils "oraclebuilder/utils"
-	"strings"
 
 	kr "github.com/99designs/keyring"
-	k8sbridge "github.com/99designs/keyring/cmd/k8sbridge"
+	"github.com/99designs/keyring/cmd/k8sbridge"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	builderUtils "oraclebuilder/utils"
+	"strings"
 )
 
 /*
-
 Auth using EIP712 spec
 */
 
 type Env struct {
 	DataStore models.Datastore
 	RelDB     *models.RelDB
-	PodHelper *builderutils.PodHelper
+	PodHelper *builderUtils.PodHelper
 	Keyring   kr.Keyring
 }
 
