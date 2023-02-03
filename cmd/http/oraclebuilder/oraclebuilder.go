@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/99designs/keyring"
 	models "github.com/diadata-org/diadata/pkg/model"
-	"github.com/diadata-org/diadata/pkg/oraclebuilder"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -31,7 +30,7 @@ func main() {
 		AllowedBackends: []keyring.BackendType{keyring.K8Secret},
 	})
 
-	oracle := &oraclebuilder.Env{RelDB: relStore, PodHelper: ph, Keyring: ring}
+	oracle := &Env{RelDB: relStore, PodHelper: ph, Keyring: ring}
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{"*"},
