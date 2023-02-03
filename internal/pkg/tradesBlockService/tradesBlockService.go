@@ -2,7 +2,6 @@ package tradesBlockService
 
 import (
 	"errors"
-	"fmt"
 	"math"
 	"sort"
 	"strconv"
@@ -236,9 +235,9 @@ func (s *TradesBlockService) process(t dia.Trade) {
 		// For centralized exchanges check if trade is not in the block yet
 		// (we have observed ws APIs sending identical trades).
 		if scrapers.Exchanges[t.Source].Centralized {
-			if _, ok := checkTradesDuplicate[tradeIdentifier(t)]; !ok {
+			if _, ok := checkTradesDuplicate[t.TradeIdentifierFull()]; !ok {
 				s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
-				checkTradesDuplicate[tradeIdentifier(t)] = struct{}{}
+				checkTradesDuplicate[t.TradeIdentifierFull()] = struct{}{}
 			} else {
 				if scrapers.Exchanges[t.Source].Name != dia.BitforexExchange {
 					log.Warn("duplicate trade within one tradesblock: ", t)
@@ -304,13 +303,6 @@ func (s *TradesBlockService) checkTrade(t dia.Trade) bool {
 		return false
 	}
 	return true
-}
-
-func tradeIdentifier(t dia.Trade) string {
-	timeString := strconv.Itoa(int(t.Time.UnixNano()))
-	priceString := fmt.Sprintf("%f", t.Price)
-	volumeString := fmt.Sprintf("%f", t.Volume)
-	return timeString + priceString + volumeString + t.ForeignTradeID + t.Source + t.QuoteToken.Address + t.QuoteToken.Blockchain + t.BaseToken.Address + t.BaseToken.Blockchain
 }
 
 func buildBridge(t dia.Trade) dia.Asset {

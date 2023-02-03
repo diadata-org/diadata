@@ -2,7 +2,12 @@ package dia
 
 import (
 	"errors"
+	"fmt"
+	"strconv"
 	"strings"
+	"time"
+
+	"github.com/zekroTJA/timedmap"
 )
 
 // GetBaseToken returns the base token of a trading pair
@@ -59,4 +64,57 @@ func SwapTrade(t Trade) (Trade, error) {
 	t.Price = 1 / t.Price
 
 	return t, nil
+}
+
+// IdentifyDuplicateFull returns true in case a trade is fully identical to one stored in the timed map @falseDuplicateTrades.
+func (t *Trade) IdentifyDuplicateFull(falseDuplicateTrades *timedmap.TimedMap, memory time.Duration) (discardTrade bool) {
+	if _, ok := falseDuplicateTrades.GetValue(t.TradeIdentifierFull()).(int); !ok {
+		falseDuplicateTrades.Set(t.TradeIdentifierFull(), 1, memory)
+	} else {
+		discardTrade = true
+	}
+	return
+}
+
+// IdentifyDuplicateTagset identifies trades with identical timestamps and tagsets and add a Nanosecond to
+// the timestamp in order for the trade not to be overwritten in Influx.
+func (t *Trade) IdentifyDuplicateTagset(duplicateTrades *timedmap.TimedMap, memory time.Duration) {
+	if val, ok := duplicateTrades.GetValue(t.TradeIdentifierTagset()).(int); !ok {
+		duplicateTrades.Set(t.TradeIdentifierTagset(), 1, memory)
+	} else {
+		// Set trade identifier as key with value incremented.
+		duplicateTrades.Set(t.TradeIdentifierTagset(), val+1, memory)
+		// Add old value as Nanosecond to trade time.
+		t.Time = t.Time.Add(time.Duration(val) * time.Nanosecond)
+	}
+}
+
+// TradeIdentifierFull returns an identifier with respect to all fields of a trade.
+func (t *Trade) TradeIdentifierFull() string {
+	timeString := strconv.Itoa(int(t.Time.UnixNano()))
+	priceString := fmt.Sprintf("%f", t.Price)
+	volumeString := fmt.Sprintf("%f", t.Volume)
+	return timeString +
+		priceString +
+		volumeString +
+		t.ForeignTradeID +
+		t.Source +
+		t.QuoteToken.Address +
+		t.QuoteToken.Blockchain +
+		t.BaseToken.Address +
+		t.BaseToken.Blockchain
+}
+
+// TradeIdentifierTagset returns an identifier with respect to the tagset of a trade in Influx.
+// In other words, a trade with this same tagset is overwritten in Influx trades table.
+func (t *Trade) TradeIdentifierTagset() string {
+	timeString := strconv.Itoa(int(t.Time.UnixNano()))
+	return timeString +
+		t.Symbol +
+		t.Pair +
+		t.Source +
+		t.QuoteToken.Address +
+		t.QuoteToken.Blockchain +
+		t.BaseToken.Address +
+		t.BaseToken.Blockchain
 }
