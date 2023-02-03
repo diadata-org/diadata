@@ -12,6 +12,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	ws "github.com/gorilla/websocket"
+	"github.com/zekroTJA/timedmap"
 )
 
 const (
@@ -129,6 +130,8 @@ func (s *MEXCScraper) mainLoop() {
 
 func (s *MEXCScraper) subLoop(client *ws.Conn) {
 	var err error
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
 	for {
 		message := &MEXCTradeResponse{}
 		if err = client.ReadJSON(&message); err != nil {
@@ -158,11 +161,16 @@ func (s *MEXCScraper) subLoop(client *ws.Conn) {
 				BaseToken:    exchangePair.UnderlyingPair.BaseToken,
 				QuoteToken:   exchangePair.UnderlyingPair.QuoteToken,
 			}
-
 			if exchangePair.Verified {
 				log.Infof("Got verified trade: %v", t)
 			}
-			s.chanTrades <- t
+
+			// Handle duplicate trades.
+			discardTrade := t.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+			if !discardTrade {
+				t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+				s.chanTrades <- t
+			}
 		}
 	}
 }

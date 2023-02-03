@@ -10,6 +10,7 @@ import (
 	"github.com/Kucoin/kucoin-go-sdk"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/zekroTJA/timedmap"
 )
 
 type KuExchangePairs []KuExchangePair
@@ -162,6 +163,8 @@ func (s *KuCoinScraper) mainLoop() {
 		log.Fatal("Error while subscribing client3 ", err)
 	}
 
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
 	go func() {
 		var msg *kucoin.WebSocketDownstreamMessage
 		for {
@@ -226,7 +229,13 @@ func (s *KuCoinScraper) mainLoop() {
 				if exchangepair.Verified {
 					log.Info("Got verified trade from stream 1: ", trade)
 				}
-				s.chanTrades <- trade
+
+				// Handle duplicate trades.
+				discardTrade := trade.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+				if !discardTrade {
+					trade.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+					s.chanTrades <- trade
+				}
 
 			case msg = <-client2DownStream:
 				if msg == nil {

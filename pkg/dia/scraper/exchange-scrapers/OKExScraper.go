@@ -16,6 +16,7 @@ import (
 	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
+	"github.com/zekroTJA/timedmap"
 )
 
 var _OKExSocketURL = "wss://ws.okex.com:8443/ws/v5/public"
@@ -178,6 +179,9 @@ type OKEXWSResponse struct {
 // runs in a goroutine until s is closed
 func (s *OKExScraper) mainLoop() {
 
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+
 	s.run = true
 	for s.run {
 		var message OKEXWSResponse
@@ -234,7 +238,13 @@ func (s *OKExScraper) mainLoop() {
 							if exchangepair.Verified {
 								log.Infoln("Got verified trade", t)
 							}
-							ps.parent.chanTrades <- t
+							// Handle duplicate trades.
+							discardTrade := t.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+							if !discardTrade {
+								t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+
+								ps.parent.chanTrades <- t
+							}
 						} else {
 							log.Errorf("parsing volume %v", f64VolumeString)
 						}

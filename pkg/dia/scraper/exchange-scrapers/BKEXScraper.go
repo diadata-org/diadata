@@ -14,6 +14,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	ws "github.com/gorilla/websocket"
+	"github.com/zekroTJA/timedmap"
 )
 
 type BKEXScraper struct {
@@ -135,6 +136,9 @@ func (s *BKEXScraper) subLoop(wsClient *ws.Conn, pairs string) {
 		}
 	}()
 
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+
 	message := `42/quotation,["quotationDealConnect",{"symbol": "` + pairs + `","number": 50}]`
 
 	if err := wsClient.WriteMessage(ws.TextMessage, []byte(message)); err != nil {
@@ -204,7 +208,13 @@ func (s *BKEXScraper) subLoop(wsClient *ws.Conn, pairs string) {
 			if exchangePair.Verified {
 				log.Infoln("Got verified trade", t)
 			}
-			s.chanTrades <- t
+			// Handle duplicate trades.
+			discardTrade := t.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+			if !discardTrade {
+				t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+				s.chanTrades <- t
+			}
+
 		}
 	}
 }

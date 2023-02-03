@@ -14,6 +14,7 @@ import (
 	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
+	"github.com/zekroTJA/timedmap"
 )
 
 var _socketurl string = "wss://api.hitbtc.com/api/2/ws"
@@ -87,6 +88,9 @@ func NewHitBTCScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *
 // runs in a goroutine until s is closed
 func (s *HitBTCScraper) mainLoop() {
 	var err error
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+
 	for {
 		message := &Event{}
 		if err = s.wsClient.ReadJSON(&message); err != nil {
@@ -134,8 +138,13 @@ func (s *HitBTCScraper) mainLoop() {
 								if exchangepair.Verified {
 									log.Infoln("Got verified trade: ", t)
 								}
-								log.Info("got trade: ", t)
-								ps.parent.chanTrades <- t
+								// Handle duplicate trades.
+								discardTrade := t.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+								if !discardTrade {
+									t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+									ps.parent.chanTrades <- t
+								}
+
 							}
 						} else {
 							log.Error("error parsing volume " + mdElement["quantity"].(string))
