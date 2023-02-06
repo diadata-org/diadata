@@ -157,7 +157,7 @@ func (e *Change) UnmarshalBinary(data []byte) error {
 }
 
 type Points struct {
-	DataPoints []clientInfluxdb.Result `json:"data_points"`
+	DataPoints []clientInfluxdb.Result `json:"DataPoints"`
 }
 
 func (e *Points) UnmarshalBinary(data []byte) error {
