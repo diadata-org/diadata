@@ -508,16 +508,16 @@ type IndexBlock struct {
 }
 
 type IndexBlockData struct {
-	FiltersBlockHash    string         `json:"filters_block_hash"`
-	SuppliesBlockHash   string         `json:"supplies_block_hash"`
-	VolatilityBlockHash string         `json:"volatility_block_hash"`
-	IndexElements       []IndexElement `json:"index_elements"`
-	IndexElementsNumber int            `json:"index_elements_number"`
-	Time                time.Time      `json:"time"`
-	IndexValue          float64        `json:"index_value"`
-	ValueTokenette      float64        `json:"value_tokenette"`
-	ValueToken          float64        `json:"value_token"`
-	USDPerPointsOfIndex float64        `json:"usd_per_points_of_index"`
+	FiltersBlockHash    string         `json:"FiltersBlockHash"`
+	SuppliesBlockHash   string         `json:"SuppliesBlockHash"`
+	VolatilityBlockHash string         `json:"VolatilityBlockHash"`
+	IndexElements       []IndexElement `json:"IndexElements"`
+	IndexElementsNumber int            `json:"IndexElementsNumber"`
+	Time                time.Time      `json:"Time"`
+	IndexValue          float64        `json:"IndexValue"`
+	ValueTokenette      float64        `json:"ValueTokenette"`
+	ValueToken          float64        `json:"ValueToken"`
+	USDPerPointsOfIndex float64        `json:"USDPerPointsOfIndex"`
 }
 
 type IndexElement struct {
@@ -539,13 +539,13 @@ type VolatilityRatio struct {
 }
 
 type SuppliesBlock struct {
-	BlockHash string            `json:"block_hash"`
-	BlockData SuppliesBlockData `json:"block_data"`
+	BlockHash string            `json:"BlockHash"`
+	BlockData SuppliesBlockData `json:"BlockData"`
 }
 
 type SuppliesBlockData struct {
-	Time     time.Time `json:"time"`
-	Supplies []Supply  `json:"supplies"`
+	Time     time.Time `json:"Time"`
+	Supplies []Supply  `json:"Supplies"`
 }
 
 type FilterPointMetadata struct {

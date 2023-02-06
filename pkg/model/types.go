@@ -60,11 +60,11 @@ func (e *Quotation) UnmarshalBinary(data []byte) error {
 }
 
 type FiatQuotation struct {
-	QuoteCurrency string    `json:"quote_currency"`
-	BaseCurrency  string    `json:"base_currency"`
-	Price         float64   `json:"price"`
-	Source        string    `json:"source"`
-	Time          time.Time `json:"time"`
+	QuoteCurrency string    `json:"QuoteCurrency"`
+	BaseCurrency  string    `json:"BaseCurrency"`
+	Price         float64   `json:"Price"`
+	Source        string    `json:"Source"`
+	Time          time.Time `json:"Time"`
 }
 
 // MarshalBinary for fiat quotations
@@ -82,10 +82,10 @@ func (fq *FiatQuotation) UnmarshalBinary(data []byte) error {
 
 // AssetQuotation is the most recent price point information on an asset.
 type AssetQuotation struct {
-	Asset  dia.Asset `json:"asset"`
-	Price  float64   `json:"price"`
-	Source string    `json:"source"`
-	Time   time.Time `json:"time"`
+	Asset  dia.Asset `json:"Asset"`
+	Price  float64   `json:"Price"`
+	Source string    `json:"Source"`
+	Time   time.Time `json:"Time"`
 }
 
 // MarshalBinary for quotations
@@ -102,15 +102,15 @@ func (aq *AssetQuotation) UnmarshalBinary(data []byte) error {
 }
 
 type AssetQuotationFull struct {
-	Symbol             string    `json:"symbol"`
-	Name               string    `json:"name"`
-	Address            string    `json:"address"`
-	Blockchain         string    `json:"blockchain"`
-	Price              float64   `json:"price"`
-	PriceYesterday     float64   `json:"price_yesterday"`
-	VolumeYesterdayUSD float64   `json:"volume_yesterday_usd"`
-	Time               time.Time `json:"time"`
-	Source             string    `json:"source"`
+	Symbol             string    `json:"Symbol"`
+	Name               string    `json:"Name"`
+	Address            string    `json:"Address"`
+	Blockchain         string    `json:"Blockchain"`
+	Price              float64   `json:"Price"`
+	PriceYesterday     float64   `json:"PriceYesterday"`
+	VolumeYesterdayUSD float64   `json:"VolumeYesterdayUSD"`
+	Time               time.Time `json:"Time"`
+	Source             string    `json:"Source"`
 }
 
 // MarshalBinary for quotations
@@ -140,7 +140,7 @@ type CurrencyChange struct {
 }
 
 type Change struct {
-	USD []CurrencyChange `json:"usd"`
+	USD []CurrencyChange `json:"USD"`
 }
 
 // MarshalBinary -
