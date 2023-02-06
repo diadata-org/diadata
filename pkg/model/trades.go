@@ -576,54 +576,38 @@ func (datastore *DB) GetNumTrades(exchange string, address string, blockchain st
 // If pair is the empty string, trades are identified by address/blockchain.
 // @grouping defines the time-ranges in the notation of influx such as 30s, 40m, 2h,...
 func (datastore *DB) GetNumTradesSeries(
+	asset dia.Asset,
 	exchange string,
-	pair string,
 	starttime time.Time,
 	endtime time.Time,
 	grouping string,
-	quotetoken dia.Asset,
-	basetoken dia.Asset,
-) (numTrades []int, err error) {
+) (numTrades []int64, err error) {
 	var query string
-	if pair != "" {
-		queryString := `SELECT COUNT(price) 
-		FROM %s WHERE exchange='%s' 
-		AND pair='%s' 
-		AND time<=%d 
-		AND time>%d 
-		GROUP BY time('%s') 
-		ORDER BY ASC`
-		query = fmt.Sprintf(
-			queryString,
+	selectQuery := "SELECT COUNT(price) FROM %s "
+	midQuery := "WHERE quotetokenaddress='%s' AND quotetokenblockchain='%s' AND time<=%d AND time>%d "
+	endQuery := "GROUP BY time(%s) ORDER BY ASC"
+	exchangeQuery := "AND exchange='%s' "
+	if exchange != "" {
+		query = fmt.Sprintf(selectQuery+midQuery+exchangeQuery+endQuery,
 			influxDbTradesTable,
 			exchange,
-			pair,
+			asset.Address,
+			asset.Blockchain,
 			endtime.UnixNano(),
 			starttime.UnixNano(),
 			grouping,
 		)
 	} else {
-		queryString := `SELECT COUNT(price) FROM %s 
-		WHERE exchange='%s' 
-		AND quotetokenaddress='%s' AND quotetokenblockchain='%s' 
-		AND basetokenaddress='%s' AND basetokenblockchain='%s' 
-		AND time<=%d 
-		AND time>%d 
-		GROUP BY time('%s') 
-		ORDER BY ASC`
-		query = fmt.Sprintf(
-			queryString,
+		query = fmt.Sprintf(selectQuery+midQuery+endQuery,
 			influxDbTradesTable,
-			exchange,
-			quotetoken.Address,
-			quotetoken.Blockchain,
-			basetoken.Address,
-			basetoken.Blockchain,
+			asset.Address,
+			asset.Blockchain,
 			endtime.UnixNano(),
 			starttime.UnixNano(),
 			grouping,
 		)
 	}
+
 	res, err := queryInfluxDB(datastore.influxClient, query)
 	if err != nil {
 		return
@@ -636,7 +620,7 @@ func (datastore *DB) GetNumTradesSeries(
 				if err != nil {
 					return numTrades, err
 				}
-				numTrades = append(numTrades, int(aux))
+				numTrades = append(numTrades, aux)
 			}
 		}
 	}

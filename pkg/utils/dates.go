@@ -178,3 +178,11 @@ func MakeTimerange(starttimeString string, endtimeString string, timeRange time.
 	}
 	return starttime, endtime, nil
 }
+
+// ValidTimeRange returns true if the interval [@starttime, @endtime] is at most @maxDuration.
+func ValidTimeRange(starttime time.Time, endtime time.Time, maxDuration time.Duration) (ok bool) {
+	if endtime.Sub(starttime) <= maxDuration {
+		ok = true
+	}
+	return
+}

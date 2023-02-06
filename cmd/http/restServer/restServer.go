@@ -229,9 +229,10 @@ func main() {
 		diaGroup.GET("/pairsAssetCex/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetAssetPairs))
 
 		// Volume endpoints.
-		diaGroup.GET("/volume/:symbol", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetVolume))
 		diaGroup.GET("/volume24/:exchange", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.Get24hVolume))
 		diaGroup.GET("/feedStats/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetFeedStats))
+
+		diaGroup.GET("/feedStats2/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetFeedStats2))
 
 		// Other endpoints.
 		diaGroup.GET("/search/:query", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.SearchAsset))
@@ -275,9 +276,6 @@ func main() {
 
 		// Endpoints for customized products
 		diaGroup.GET("/custom/vwapFirefly/:ticker", cache.CachePageAtomic(memoryStore, cacheTime.CachingTime20Secs, diaApiEnv.GetVwapFirefly))
-
-		// Index
-		diaGroup.GET("/benchmarkedIndexValue/:symbol", diaApiEnv.GetBenchmarkedIndexValue)
 
 		// External supply reports
 		diaGroup.GET("/diaTotalSupply", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetDiaTotalSupply))

@@ -40,6 +40,8 @@ func NewFloat64Slice(sf sort.Float64Slice) *ArgsortableSlice {
 	return s
 }
 
+// TO DO: Switch to generics for these simple algebraic functions.
+
 // Average returns the average of @samples.
 func Average(series []float64) (average float64) {
 	length := float64(len(series))
@@ -52,7 +54,6 @@ func Average(series []float64) (average float64) {
 	}
 	average /= length
 	return
-
 }
 
 func Variance(series []float64) (variance float64) {
