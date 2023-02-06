@@ -12,6 +12,7 @@ import (
 	"time"
 
 	ws "github.com/gorilla/websocket"
+	"github.com/zekroTJA/timedmap"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -131,6 +132,9 @@ type BitMaxTradeResponse struct {
 // runs in a goroutine until s is closed
 func (s *BitMaxScraper) mainLoop(client *ws.Conn) {
 	var err error
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+
 	for {
 		message := &BitMaxTradeResponse{}
 		if err = client.ReadJSON(&message); err != nil {
@@ -163,7 +167,14 @@ func (s *BitMaxScraper) mainLoop(client *ws.Conn) {
 					if exchangepair.Verified {
 						log.Infoln("Got verified trade", t)
 					}
-					s.chanTrades <- t
+
+					// Handle duplicate trades.
+					discardTrade := t.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+					if !discardTrade {
+						t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+						s.chanTrades <- t
+					}
+
 				}
 
 			}

@@ -203,8 +203,6 @@ func (env *Env) GetQuotation(c *gin.Context) {
 		restApi.SendError(c, http.StatusNotFound, err)
 		return
 	}
-	log.Info("num assets: ", len(assets))
-	log.Info("error: ", err)
 	if len(assets) == 0 {
 		restApi.SendError(c, http.StatusNotFound, errors.New("no quotation available"))
 		return
@@ -256,7 +254,6 @@ func (env *Env) GetAssetMap(c *gin.Context) {
 	}
 
 	// get assetid
-
 	assetid, err := env.RelDB.GetAssetID(asset)
 	if err != nil {
 		restApi.SendError(c, http.StatusNotFound, err)
@@ -264,7 +261,6 @@ func (env *Env) GetAssetMap(c *gin.Context) {
 	}
 
 	// get groupId
-
 	group_id, err := env.RelDB.GetAssetMap(assetid)
 	if err != nil {
 		restApi.SendError(c, http.StatusNotFound, err)
@@ -272,13 +268,10 @@ func (env *Env) GetAssetMap(c *gin.Context) {
 	}
 
 	assets, err := env.RelDB.GetAssetByGroupID(group_id)
-
-	log.Info("num assets: ", len(assets))
-	if len(assets) == 0 {
+	if err != nil || len(assets) == 0 {
 		restApi.SendError(c, http.StatusNotFound, errors.New("no quotation available"))
 		return
 	}
-	log.Info("num assets: ", len(assets))
 
 	for _, topAsset := range assets {
 		var quotationExtended models.AssetQuotationFull
@@ -341,27 +334,14 @@ func (env *Env) GetAssetSupply(c *gin.Context) {
 	blockchain := c.Param("blockchain")
 	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 
-	starttimeStr := c.Query("starttime")
-	endtimeStr := c.Query("endtime")
-
-	var starttime, endtime time.Time
-	if starttimeStr != "" && endtimeStr != "" {
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			log.Error("parse starttime: ", err)
-		} else {
-			starttime = time.Unix(starttimeInt, 0)
-		}
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			log.Error("parse starttime: ", err)
-		} else {
-			endtime = time.Unix(endtimeInt, 0)
-		}
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*time.Hour))
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("parse time range"))
+		return
 	}
 
-	if ok, err := validTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
-		restApi.SendError(c, http.StatusInternalServerError, err)
+	if ok := utils.ValidTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 30*24*time.Hour))
 		return
 	}
 
@@ -418,8 +398,8 @@ func (env *Env) GetSupplies(c *gin.Context) {
 		}
 		endtime = time.Unix(endtimeInt, 0)
 	}
-	if ok, err := validTimeRange(starttime, endtime, time.Duration(31*24*time.Hour)); !ok {
-		restApi.SendError(c, http.StatusInternalServerError, err)
+	if ok := utils.ValidTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 30*24*time.Hour))
 		return
 	}
 
@@ -438,7 +418,7 @@ func (env *Env) GetSupplies(c *gin.Context) {
 func (env *Env) GetDiaTotalSupply(c *gin.Context) {
 	q, err := env.DataStore.GetDiaTotalSupply()
 	if err != nil {
-		if err == redis.Nil {
+		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)
 		} else {
 			restApi.SendError(c, http.StatusInternalServerError, err)
@@ -451,7 +431,7 @@ func (env *Env) GetDiaTotalSupply(c *gin.Context) {
 func (env *Env) GetDiaCirculatingSupply(c *gin.Context) {
 	q, err := env.DataStore.GetDiaCirculatingSupply()
 	if err != nil {
-		if err == redis.Nil {
+		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)
 		} else {
 			restApi.SendError(c, http.StatusInternalServerError, err)
@@ -461,86 +441,13 @@ func (env *Env) GetDiaCirculatingSupply(c *gin.Context) {
 	}
 }
 
-// GetVolume if no times are set use the last 24h
-func (env *Env) GetVolume(c *gin.Context) {
-	if !validateInputParams(c) {
-		return
-	}
-
-	symbol := c.Param("symbol")
-	starttimeStr := c.DefaultQuery("starttime", "noRange")
-	endtimeStr := c.Query("endtime")
-
-	var starttime, endtime time.Time
-
-	if starttimeStr == "noRange" {
-		starttime = time.Unix(1, 0)
-	} else {
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		starttime = time.Unix(starttimeInt, 0)
-	}
-	if endtimeStr == "" {
-		endtime = time.Now()
-	} else {
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		endtime = time.Unix(endtimeInt, 0)
-	}
-
-	// TO DO: Adapt to new asset struct
-	preliminaryAsset := dia.Asset{
-		Symbol: symbol,
-	}
-	v, err := env.DataStore.GetVolumeInflux(preliminaryAsset, "", starttime, endtime)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-		return
-	}
-	c.JSON(http.StatusOK, *v)
-}
-
 // Get24hVolume if no times are set use the last 24h
 func (env *Env) Get24hVolume(c *gin.Context) {
 	if !validateInputParams(c) {
 		return
 	}
 
-	exchange := c.Param("exchange")
-
-	// starttimeStr := c.DefaultQuery("starttime", "noRange")
-	// endtimeStr := c.Query("endtime")
-
-	// var starttime, endtime time.Time
-
-	// if starttimeStr == "noRange" {
-	// 	starttime := time.Now().AddDate(0, 0, -1)
-	// } else {
-	// 	starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-	// 	if err != nil {
-	// 		restApi.SendError(c, http.StatusInternalServerError, err)
-	// 		return
-	// 	}
-	// 	starttime = time.Unix(starttimeInt, 0)
-	// }
-	// if endtimeStr == "" {
-	// 	endtime = time.Now()
-	// } else {
-	// 	endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-	// 	if err != nil {
-	// 		restApi.SendError(c, http.StatusInternalServerError, err)
-	// 		return
-	// 	}
-	// 	endtime = time.Unix(endtimeInt, 0)
-	// }
-
-	v, err := env.DataStore.Get24HoursExchangeVolume(exchange)
+	v, err := env.DataStore.Get24HoursExchangeVolume(c.Param("exchange"))
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 		return
@@ -609,7 +516,6 @@ func (env *Env) GetNFTExchanges(c *gin.Context) {
 		Volume24h  float64
 		Trades24h  int64
 		Blockchain string
-		// NumCollections int64
 	}
 	var exchangereturns []exchangeReturn
 	exchanges, err := env.RelDB.GetAllNFTExchanges()
@@ -629,17 +535,12 @@ func (env *Env) GetNFTExchanges(c *gin.Context) {
 			log.Errorln("err on Get24HoursNFTExchangeTrades", err)
 
 		}
-		// numCollections, err := env.RelDB.GetCollectionCountByExchange(exchange.Name)
-		// if err != nil {
-		// 	log.Errorln("err on GetCollectionCountByExchange", err)
-		// }
 
 		exchangereturn := exchangeReturn{
 			Name:       exchange.Name,
 			Volume24h:  vol,
 			Trades24h:  numTrades,
 			Blockchain: exchange.BlockChain.Name,
-			// NumCollections: numCollections,
 		}
 		exchangereturns = append(exchangereturns, exchangereturn)
 
@@ -663,49 +564,15 @@ func (env *Env) GetAssetChartPoints(c *gin.Context) {
 	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 
 	exchange := c.Query("exchange")
-	starttimeStr := c.Query("starttime")
-	endtimeStr := c.Query("endtime")
 
-	// Set times depending on what is given by the query parameters
-	var starttime, endtime time.Time
-	if starttimeStr == "" && endtimeStr == "" {
-		// Last seven days per default
-		starttime = time.Now().AddDate(0, 0, -7)
-		endtime = time.Now()
-	} else if starttimeStr == "" && endtimeStr != "" {
-		// zero time if not given
-		starttime = time.Time{}
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		endtime = time.Unix(endtimeInt, 0)
-	} else if starttimeStr != "" && endtimeStr == "" {
-		// endtime now if not given
-		endtime = time.Now()
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		starttime = time.Unix(starttimeInt, 0)
-	} else {
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		starttime = time.Unix(starttimeInt, 0)
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		endtime = time.Unix(endtimeInt, 0)
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(7*24*time.Hour))
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("parse time range"))
+		return
 	}
-	if ok, err := validTimeRange(starttime, endtime, time.Duration(14*24*time.Hour)); !ok {
-		restApi.SendError(c, http.StatusInternalServerError, err)
+
+	if ok := utils.ValidTimeRange(starttime, endtime, time.Duration(14*24*time.Hour)); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 14*24*time.Hour))
 		return
 	}
 
@@ -717,8 +584,7 @@ func (env *Env) GetAssetChartPoints(c *gin.Context) {
 	}
 }
 
-// GetChartPoints godoc
-// @Param   scale      query   string     false       "scale 5m 30m 1h 4h 1d 1w"
+// GetChartPoints returns Filter points for given symbol -> Deprecated?
 func (env *Env) GetChartPoints(c *gin.Context) {
 	if !validateInputParams(c) {
 		return
@@ -728,49 +594,15 @@ func (env *Env) GetChartPoints(c *gin.Context) {
 	exchange := c.Param("exchange")
 	symbol := c.Param("symbol")
 	scale := c.Query("scale")
-	starttimeStr := c.Query("starttime")
-	endtimeStr := c.Query("endtime")
 
-	// Set times depending on what is given by the query parameters
-	var starttime, endtime time.Time
-	if starttimeStr == "" && endtimeStr == "" {
-		// Last seven days per default
-		starttime = time.Now().AddDate(0, 0, -7)
-		endtime = time.Now()
-	} else if starttimeStr == "" && endtimeStr != "" {
-		// zero time if not given
-		starttime = time.Time{}
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		endtime = time.Unix(endtimeInt, 0)
-	} else if starttimeStr != "" && endtimeStr == "" {
-		// endtime now if not given
-		endtime = time.Now()
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		starttime = time.Unix(starttimeInt, 0)
-	} else {
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		starttime = time.Unix(starttimeInt, 0)
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		endtime = time.Unix(endtimeInt, 0)
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(7*24*time.Hour))
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("parse time range"))
+		return
 	}
-	if ok, err := validTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
-		restApi.SendError(c, http.StatusInternalServerError, err)
+
+	if ok := utils.ValidTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 30*24*time.Hour))
 		return
 	}
 
@@ -782,8 +614,7 @@ func (env *Env) GetChartPoints(c *gin.Context) {
 	}
 }
 
-// GetChartPointsAllExchanges godoc
-// @Param   scale      query   string     false       "scale 5m 30m 1h 4h 1d 1w"
+// GetChartPointsAllExchanges returns filter points across all exchanges.
 func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 	if !validateInputParams(c) {
 		return
@@ -792,49 +623,15 @@ func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 	filter := c.Param("filter")
 	symbol := c.Param("symbol")
 	scale := c.Query("scale")
-	starttimeStr := c.Query("starttime")
-	endtimeStr := c.Query("endtime")
 
-	// Set times depending on what is given by the query parameters
-	var starttime, endtime time.Time
-	if starttimeStr == "" && endtimeStr == "" {
-		// Last seven days per default
-		starttime = time.Now().AddDate(0, 0, -7)
-		endtime = time.Now()
-	} else if starttimeStr == "" && endtimeStr != "" {
-		// zero time if not given
-		starttime = time.Time{}
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		endtime = time.Unix(endtimeInt, 0)
-	} else if starttimeStr != "" && endtimeStr == "" {
-		// endtime now if not given
-		endtime = time.Now()
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		starttime = time.Unix(starttimeInt, 0)
-	} else {
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		starttime = time.Unix(starttimeInt, 0)
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		endtime = time.Unix(endtimeInt, 0)
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(7*24*time.Hour))
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("parse time range"))
+		return
 	}
-	if ok, err := validTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
-		restApi.SendError(c, http.StatusInternalServerError, err)
+
+	if ok := utils.ValidTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 30*24*time.Hour))
 		return
 	}
 
@@ -1386,11 +1183,9 @@ func (env *Env) SearchAsset(c *gin.Context) {
 	}
 
 	querystring := c.Param("query")
-
 	var (
 		assets = []dia.Asset{}
-
-		err error
+		err    error
 	)
 
 	switch {
@@ -1426,7 +1221,6 @@ func (env *Env) SearchNFTs(c *gin.Context) {
 	}
 
 	querystring := c.Param("query")
-
 	var (
 		collections = []dia.NFTClass{}
 		err         error
@@ -1546,7 +1340,6 @@ func (env *Env) GetQuotedAssets(c *gin.Context) {
 	assetvolumes, err := env.RelDB.GetAssetsWithVolByBlockchain(starttime, endtime, c.Query("blockchain"))
 	if err != nil {
 		log.Error("get assets with volume: ", err)
-
 	}
 
 	c.JSON(http.StatusOK, assetvolumes)
@@ -1843,7 +1636,7 @@ func (env *Env) GetStockSymbols(c *gin.Context) {
 	log.Info("stocks: ", stocks)
 
 	if err != nil {
-		if err == redis.Nil {
+		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)
 		} else {
 			restApi.SendError(c, http.StatusInternalServerError, err)
@@ -1887,7 +1680,7 @@ func (env *Env) GetStockQuotation(c *gin.Context) {
 
 		q, err := env.DataStore.GetStockQuotation(source, symbol, startTime, endTime)
 		if err != nil {
-			if err == redis.Nil {
+			if errors.Is(err, redis.Nil) {
 				restApi.SendError(c, http.StatusNotFound, err)
 			} else {
 				restApi.SendError(c, http.StatusInternalServerError, err)
@@ -1907,7 +1700,7 @@ func (env *Env) GetStockQuotation(c *gin.Context) {
 
 		q, err := env.DataStore.GetStockQuotation(source, symbol, starttime, endtime)
 		if err != nil {
-			if err == redis.Nil {
+			if errors.Is(err, redis.Nil) {
 				restApi.SendError(c, http.StatusNotFound, err)
 			} else {
 				restApi.SendError(c, http.StatusInternalServerError, err)
@@ -2005,8 +1798,8 @@ func (env *Env) GetVwapFirefly(c *gin.Context) {
 			return
 		}
 		endtime = time.Unix(endtimeInt, 0)
-		if ok, err := validTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
-			restApi.SendError(c, http.StatusInternalServerError, err)
+		if ok := utils.ValidTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
+			restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 30*24*time.Hour))
 			return
 		}
 	}
@@ -2040,63 +1833,6 @@ func (env *Env) GetVwapFirefly(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, response)
 	}
-}
-
-// GetBenchmarkedIndexValue Get benchmarked Index values
-func (env *Env) GetBenchmarkedIndexValue(c *gin.Context) {
-	if !validateInputParams(c) {
-		return
-	}
-
-	symbol := c.Param("symbol")
-	starttimeStr := c.Query("starttime")
-	endtimeStr := c.Query("endtime")
-
-	// Set times depending on what is given by the query parameters
-	var starttime, endtime time.Time
-	if starttimeStr == "" && endtimeStr == "" {
-		// Last seven days per default
-		starttime = time.Now().AddDate(0, 0, -7)
-		endtime = time.Now()
-	} else if starttimeStr == "" && endtimeStr != "" {
-		// zero time if not given
-		starttime = time.Time{}
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		endtime = time.Unix(endtimeInt, 0)
-	} else if starttimeStr != "" && endtimeStr == "" {
-		// endtime now if not given
-		endtime = time.Now()
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		starttime = time.Unix(starttimeInt, 0)
-	} else {
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		starttime = time.Unix(starttimeInt, 0)
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		endtime = time.Unix(endtimeInt, 0)
-	}
-
-	q, err := env.DataStore.GetBenchmarkedIndexValuesInflux(symbol, starttime, endtime)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-		return
-	}
-	c.JSON(http.StatusOK, q)
 }
 
 func (env *Env) GetLastTradeTime(c *gin.Context) {
@@ -3179,8 +2915,8 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 		}
 		starttime = time.Unix(starttimeInt, 0)
 	}
-	if ok, err := validTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
-		restApi.SendError(c, http.StatusInternalServerError, err)
+	if ok := utils.ValidTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 30*24*time.Hour))
 		return
 	}
 
@@ -3275,6 +3011,131 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 
 }
 
+func (env *Env) GetFeedStats2(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	var sizeBinSeconds = 120
+
+	// Return type for the trades distribution statistics.
+	type localDistType struct {
+		NumTradesTotal   int64   `json:"NumTradesTotal"`
+		NumBins          int     `json:"NumBins"`
+		NumLowBins       int     `json:"NumberLowBins"`
+		Threshold        int     `json:"Threshold"`
+		SizeBinSeconds   int64   `json:"SizeBinSeconds"`
+		AvgNumPerBin     float64 `json:"AverageNumberPerBin"`
+		StdDeviation     float64 `json:"StandardDeviation"`
+		TimeRangeSeconds int64   `json:"TimeRangeSeconds"`
+	}
+
+	// Return type for pair volumes per exchange.
+	type exchangeVolumes struct {
+		Exchange    string
+		PairVolumes []dia.PairVolume
+	}
+
+	// Overall return type.
+	type localReturn struct {
+		Timestamp          time.Time
+		TotalVolume        float64
+		Price              float64
+		TradesDistribution localDistType
+		ExchangeVolumes    []exchangeVolumes
+	}
+
+	// ---- Parse / check input ----
+
+	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
+	// Make starttime and endtime from Unix time input strings.
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*time.Hour))
+	if err != nil {
+		log.Error("make timerange: ", err)
+	}
+
+	// Check whether time range is feasible.
+	if ok := utils.ValidTimeRange(starttime, endtime, time.Duration(24*time.Hour)); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 24*time.Hour))
+		return
+	}
+
+	tradesBinThreshold, err := strconv.Atoi(c.DefaultQuery("tradesThreshold", "2"))
+	if err != nil {
+		log.Warn("parse trades bin threshold: ", err)
+		tradesBinThreshold = 2
+	}
+
+	// ---- Get data for input ----
+
+	asset := env.getAssetFromCache(ASSET_CACHE, blockchain, address)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+
+	volumeMap, err := env.DataStore.GetExchangePairVolumes(asset, starttime, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+		return
+	}
+
+	numTradesSeries, err := env.DataStore.GetNumTradesSeries(asset, "", starttime, endtime, strconv.Itoa(sizeBinSeconds)+"s")
+	if err != nil {
+		log.Error("get number of trades' series: ", err)
+	}
+
+	// ---- Fill return types with fetched data -----
+
+	var (
+		result localReturn
+		// tradesDistribution localDistType
+		ev []exchangeVolumes
+	)
+
+	for key, value := range volumeMap {
+		var e exchangeVolumes
+		e.Exchange = key
+		e.PairVolumes = value
+		// Collect total volume and full asset information.
+		for i, v := range value {
+			result.TotalVolume += v.Volume
+			e.PairVolumes[i].Pair.QuoteToken = env.getAssetFromCache(ASSET_CACHE, blockchain, address)
+			e.PairVolumes[i].Pair.BaseToken = env.getAssetFromCache(ASSET_CACHE, v.Pair.BaseToken.Blockchain, v.Pair.BaseToken.Address)
+		}
+		ev = append(ev, e)
+	}
+	result.ExchangeVolumes = ev
+
+	result.Timestamp = endtime
+	result.Price, err = env.DataStore.GetAssetPriceUSD(asset, endtime)
+	if err != nil {
+		log.Warn("get price for asset: ", err)
+	}
+
+	// TO DO: Make average and standard deviation/variance function such as in slices.go for all numeric types.
+
+	// Trades Distribution values.
+	result.TradesDistribution.Threshold = tradesBinThreshold
+	result.TradesDistribution.NumBins = len(numTradesSeries)
+	result.TradesDistribution.SizeBinSeconds = int64(sizeBinSeconds)
+	var numTradesSeriesFloat []float64
+	for _, num := range numTradesSeries {
+		numTradesSeriesFloat = append(numTradesSeriesFloat, float64(num))
+		result.TradesDistribution.NumTradesTotal += num
+		if num < int64(tradesBinThreshold) {
+			result.TradesDistribution.NumLowBins++
+		}
+	}
+	result.TradesDistribution.AvgNumPerBin = float64(result.TradesDistribution.NumTradesTotal) / float64(len(numTradesSeries))
+	result.TradesDistribution.StdDeviation = utils.StandardDeviation(numTradesSeriesFloat)
+	result.TradesDistribution.TimeRangeSeconds = int64(endtime.Sub(starttime).Seconds())
+
+	c.JSON(http.StatusOK, result)
+
+}
+
 // GetAssetUpdates returns the number of updates an oracle with the given parameters
 // would have done in the given time-range.
 func (env *Env) GetAssetUpdates(c *gin.Context) {
@@ -3317,8 +3178,8 @@ func (env *Env) GetAssetUpdates(c *gin.Context) {
 		restApi.SendError(c, http.StatusRequestedRangeNotSatisfiable, errors.New("Requested time-range too large."))
 		return
 	}
-	if ok, errTimeRange := validTimeRange(starttime, endtime, 30*24*time.Hour); !ok {
-		restApi.SendError(c, http.StatusInternalServerError, errTimeRange)
+	if ok := utils.ValidTimeRange(starttime, endtime, 30*24*time.Hour); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 30*24*time.Hour))
 		return
 	}
 
@@ -3629,8 +3490,9 @@ func (env *Env) GetSyntheticAsset(c *gin.Context) {
 		}
 		endtime = time.Unix(endtimeInt, 0)
 	}
-	if ok, errTimeRange := validTimeRange(starttime, endtime, 30*24*time.Hour); !ok {
-		restApi.SendError(c, http.StatusInternalServerError, errTimeRange)
+	if ok := utils.ValidTimeRange(starttime, endtime, 30*24*time.Hour); !ok {
+		err = fmt.Errorf("time-range too big. max duration is %v", 30*24*time.Hour)
+		restApi.SendError(c, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -3681,14 +3543,6 @@ func (env *Env) GetSyntheticAsset(c *gin.Context) {
 
 		c.JSON(http.StatusOK, response)
 	}
-}
-
-func validTimeRange(starttime time.Time, endtime time.Time, maxDuration time.Duration) (ok bool, err error) {
-	if endtime.Sub(starttime) < maxDuration {
-		ok = true
-	}
-	err = fmt.Errorf("time-range too big. max duration is %v", maxDuration)
-	return
 }
 
 func validateInputParams(c *gin.Context) bool {

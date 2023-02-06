@@ -13,6 +13,7 @@ import (
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	"github.com/google/uuid"
 	ws "github.com/gorilla/websocket"
+	"github.com/zekroTJA/timedmap"
 )
 
 var _LBankSocketurl string = "wss://www.lbkex.net/ws/V2/"
@@ -98,6 +99,9 @@ func (s *LBankScraper) mainLoop() {
 	if err != nil {
 		log.Fatal("subscribe ping: ", err)
 	}
+
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
 	for {
 		var message map[string]interface{}
 		if err = s.wsClient.ReadJSON(&message); err != nil {
@@ -140,7 +144,12 @@ func (s *LBankScraper) mainLoop() {
 					if exchangepair.Verified {
 						log.Infoln("Got verified trade", t)
 					}
-					ps.parent.chanTrades <- t
+					// Handle duplicate trades.
+					discardTrade := t.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+					if !discardTrade {
+						t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+						ps.parent.chanTrades <- t
+					}
 				}
 			}
 		} else {

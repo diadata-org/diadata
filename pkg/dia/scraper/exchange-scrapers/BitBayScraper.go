@@ -9,6 +9,7 @@ import (
 	"time"
 
 	ws "github.com/gorilla/websocket"
+	"github.com/zekroTJA/timedmap"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -153,6 +154,9 @@ func (s *BitBayScraper) mainLoop() {
 		}
 	}()
 
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+
 	for {
 
 		var response BitBayWSResponse
@@ -226,7 +230,13 @@ func (s *BitBayScraper) mainLoop() {
 			if exchangepair.Verified {
 				log.Infoln("Got verified trade", t)
 			}
-			ps.parent.chanTrades <- t
+			// Handle duplicate trades.
+			discardTrade := t.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+			if !discardTrade {
+				t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+				ps.parent.chanTrades <- t
+			}
+
 		}
 	}
 	//	if s.error == nil {

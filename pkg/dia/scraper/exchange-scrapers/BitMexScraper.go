@@ -10,6 +10,7 @@ import (
 	"time"
 
 	ws "github.com/gorilla/websocket"
+	"github.com/zekroTJA/timedmap"
 	"go.uber.org/ratelimit"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -323,6 +324,9 @@ func (s *BitMexScraper) mainLoop() {
 
 func (s *BitMexScraper) handleTrades(tradesWsResponse bitMexSubscriptionResult) {
 	var pair dia.ExchangePair
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+
 	for _, data := range tradesWsResponse.Trades {
 
 		if pair == (dia.ExchangePair{}) {
@@ -359,11 +363,16 @@ func (s *BitMexScraper) handleTrades(tradesWsResponse bitMexSubscriptionResult) 
 		if exchangepair.Verified {
 			log.Infoln("Got verified trade", trade)
 		}
-
-		select {
-		case <-s.shutdown:
-		case s.chanTrades <- trade:
+		// Handle duplicate trades.
+		discardTrade := trade.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+		if !discardTrade {
+			trade.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+			select {
+			case <-s.shutdown:
+			case s.chanTrades <- trade:
+			}
 		}
+
 	}
 }
 

@@ -11,6 +11,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
+	"github.com/zekroTJA/timedmap"
 )
 
 type binancePairScraperSet map[*BinancePairScraper]nothing
@@ -129,6 +130,9 @@ func (s *BinanceScraper) Close() error {
 func (s *BinanceScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	<-s.initDone // wait until client is connected
 
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+
 	if s.closed {
 		return nil, errors.New("BinanceScraper: Call ScrapePair on closed scraper")
 	}
@@ -168,7 +172,12 @@ func (s *BinanceScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) 
 			if exchangepair.Verified {
 				log.Infoln("Got verified trade", t)
 			}
-			ps.parent.chanTrades <- t
+			// Handle duplicate trades.
+			discardTrade := t.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+			if !discardTrade {
+				t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+				ps.parent.chanTrades <- t
+			}
 		} else {
 			log.Println("ignoring event ", event, err, err2)
 		}

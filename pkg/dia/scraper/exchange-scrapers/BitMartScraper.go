@@ -19,21 +19,19 @@ import (
 )
 
 const (
-	bitMartAPIEndpoint           = "https://api-cloud.bitmart.com/spot/v1"
-	bitMartWSEndpoint            = "wss://ws-manager-compress.bitmart.com/api?protocol=1.1"
-	bitMartSpotTradingSell       = "sell"
-	bitMartSymbolsStatusActive   = "trading"
-	bitMartPingMessage           = "ping"
-	bitMartPongMessage           = "pong"
-	bitMartWSSpotTradingTopic    = "spot/trade"
-	bitMartWSOpSubscribe         = "subscribe"
-	bitMartWSOpUnsubscribe       = "unsubscribe"
-	bitMartRetryAttempts         = 15  // Max consecutive retry attempts until connection fail.
-	bitMartPingInterval          = 15  // Number of seconds between ping messages.
-	bitMartMaxConnections        = 10  // Numbers of connections per IP.
-	bitMartMaxSubsPerConnection  = 100 // Subscription limit for each connection.
-	duplicateTradesMemory        = 2 * time.Second
-	duplicateTradesScanFrequency = 1 * time.Second
+	bitMartAPIEndpoint          = "https://api-cloud.bitmart.com/spot/v1"
+	bitMartWSEndpoint           = "wss://ws-manager-compress.bitmart.com/api?protocol=1.1"
+	bitMartSpotTradingSell      = "sell"
+	bitMartSymbolsStatusActive  = "trading"
+	bitMartPingMessage          = "ping"
+	bitMartPongMessage          = "pong"
+	bitMartWSSpotTradingTopic   = "spot/trade"
+	bitMartWSOpSubscribe        = "subscribe"
+	bitMartWSOpUnsubscribe      = "unsubscribe"
+	bitMartRetryAttempts        = 15  // Max consecutive retry attempts until connection fail.
+	bitMartPingInterval         = 15  // Number of seconds between ping messages.
+	bitMartMaxConnections       = 10  // Numbers of connections per IP.
+	bitMartMaxSubsPerConnection = 100 // Subscription limit for each connection.
 )
 
 type BitmartWsRequest struct {

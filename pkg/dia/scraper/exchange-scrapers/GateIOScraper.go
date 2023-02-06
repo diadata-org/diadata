@@ -13,6 +13,7 @@ import (
 	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
+	"github.com/zekroTJA/timedmap"
 )
 
 var _GateIOsocketurl string = "wss://api.gateio.ws/ws/v4/"
@@ -134,9 +135,9 @@ type GateIOResponseTrade struct {
 
 // runs in a goroutine until s is closed
 func (s *GateIOScraper) mainLoop() {
-	var (
-		gresponse GateIPPairResponse
-	)
+	var gresponse GateIPPairResponse
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
 
 	b, _, err := utils.GetRequest("https://api.gateio.ws/api/v4/spot/currency_pairs")
 	if err != nil {
@@ -210,8 +211,12 @@ func (s *GateIOScraper) mainLoop() {
 			if exchangepair.Verified {
 				log.Infoln("Got verified trade", t)
 			}
-			ps.parent.chanTrades <- t
-			log.Infoln("got trade", t)
+			// Handle duplicate trades.
+			discardTrade := t.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+			if !discardTrade {
+				t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+				ps.parent.chanTrades <- t
+			}
 
 		}
 

@@ -158,6 +158,59 @@ func (datastore *DB) GetVolumesAllExchanges(asset dia.Asset, starttime time.Time
 	return
 }
 
+func (datastore *DB) GetExchangePairVolumes(asset dia.Asset, starttime time.Time, endtime time.Time) (map[string][]dia.PairVolume, error) {
+	volumeMap := make(map[string][]dia.PairVolume)
+
+	query := fmt.Sprintf(
+		`
+		SELECT SUM(multiplication)
+		FROM (
+			SELECT ABS(estimatedUSDPrice*volume)
+			AS multiplication
+			FROM %s
+			WHERE quotetokenaddress='%s'
+			AND quotetokenblockchain='%s'
+			AND time>%d
+			AND time<=%d
+			)
+		GROUP BY "exchange","basetokenaddress","basetokenblockchain"
+		`,
+		influxDbTradesTable,
+		asset.Address,
+		asset.Blockchain,
+		starttime.UnixNano(),
+		endtime.UnixNano(),
+	)
+
+	res, err := queryInfluxDB(datastore.influxClient, query)
+	if err != nil {
+		return volumeMap, err
+	}
+
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for _, row := range res[0].Series {
+			if len(row.Values[0]) > 1 {
+				var (
+					pairvolume dia.PairVolume
+					err        error
+				)
+
+				exchange := row.Tags["exchange"]
+				pairvolume.Volume, err = row.Values[0][1].(json.Number).Float64()
+				if err != nil {
+					log.Warn("parse volume: ", err)
+				}
+				pairvolume.Pair = dia.Pair{
+					QuoteToken: dia.Asset{Blockchain: asset.Blockchain, Address: asset.Address},
+					BaseToken:  dia.Asset{Blockchain: row.Tags["basetokenblockchain"], Address: row.Tags["basetokenaddress"]},
+				}
+				volumeMap[exchange] = append(volumeMap[exchange], pairvolume)
+			}
+		}
+	}
+	return volumeMap, nil
+}
+
 // SetAggregatedVolume sets the aggregated volume @aggVol in postgres.
 func (rdb *RelDB) SetAggregatedVolume(aggVol dia.AggregatedVolume) error {
 	quotetokenQuery := fmt.Sprintf("(SELECT asset_id FROM %s WHERE blockchain=$1 and address=$2)", assetTable)

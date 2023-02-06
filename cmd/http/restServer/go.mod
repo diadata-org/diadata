@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/appleboy/gin-jwt/v2 v2.6.4
-	github.com/diadata-org/diadata v1.4.135
+	github.com/diadata-org/diadata v1.4.138
 	github.com/gin-contrib/cache v1.1.0
 	github.com/gin-gonic/contrib v0.0.0-20201101042839-6a891bf89f19
 	github.com/gin-gonic/gin v1.8.1
@@ -57,6 +57,7 @@ require (
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
 	github.com/tklauser/numcpus v0.2.2 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
+	github.com/zekroTJA/timedmap v1.4.0 // indirect
 	golang.org/x/crypto v0.1.0 // indirect
 	golang.org/x/net v0.3.1-0.20221206200815-1e63c2f08a10 // indirect
 	golang.org/x/sys v0.3.0 // indirect

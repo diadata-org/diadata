@@ -9,6 +9,7 @@ import (
 	"github.com/alexjorgef/go-bittrex/bittrex"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/zekroTJA/timedmap"
 )
 
 const (
@@ -150,6 +151,9 @@ func (s *BittrexScraper) mainLoop() {
 
 	go s.ping()
 
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+
 	for {
 		select {
 		case <-s.shutdown:
@@ -204,11 +208,16 @@ func (s *BittrexScraper) mainLoop() {
 			if pair.Verified {
 				log.Infoln("Got verified trade", trade)
 			}
-
-			select {
-			case <-s.shutdown:
-			case s.chanTrades <- trade:
+			// Handle duplicate trades.
+			discardTrade := trade.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+			if !discardTrade {
+				trade.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+				select {
+				case <-s.shutdown:
+				case s.chanTrades <- trade:
+				}
 			}
+
 		}
 	}
 }

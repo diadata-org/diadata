@@ -11,6 +11,7 @@ import (
 	"time"
 
 	ws "github.com/gorilla/websocket"
+	"github.com/zekroTJA/timedmap"
 	"go.uber.org/ratelimit"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -259,6 +260,9 @@ func (s *CryptoDotComScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, er
 func (s *CryptoDotComScraper) mainLoop() {
 	defer s.cleanup()
 
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+
 	for {
 		select {
 		case <-s.shutdown:
@@ -351,11 +355,16 @@ func (s *CryptoDotComScraper) mainLoop() {
 				if pair.Verified {
 					log.Infoln("Got verified trade", trade)
 				}
-
-				select {
-				case <-s.shutdown:
-				case s.chanTrades <- trade:
+				// Handle duplicate trades.
+				discardTrade := trade.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+				if !discardTrade {
+					trade.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+					select {
+					case <-s.shutdown:
+					case s.chanTrades <- trade:
+					}
 				}
+
 			}
 		}
 	}
