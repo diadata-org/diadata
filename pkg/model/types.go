@@ -19,13 +19,13 @@ type SymbolExchangeDetails struct {
 
 // Quotation is deprecating. Going to be substituted by AssetQuotation
 type Quotation struct {
-	Symbol             string    `json:"symbol"`
-	Name               string    `json:"name"`
-	Price              float64   `json:"price"`
-	PriceYesterday     *float64  `json:"price_yesterday"`
-	VolumeYesterdayUSD *float64  `json:"volume_yesterday_usd"`
-	Source             string    `json:"source"`
-	Time               time.Time `json:"time"`
+	Symbol             string    `json:"Symbol"`
+	Name               string    `json:"Name"`
+	Price              float64   `json:"Price"`
+	PriceYesterday     *float64  `json:"PriceYesterday"`
+	VolumeYesterdayUSD *float64  `json:"VolumeYesterdayUSD"`
+	Source             string    `json:"Source"`
+	Time               time.Time `json:"Time"`
 }
 
 type StockQuotation struct {

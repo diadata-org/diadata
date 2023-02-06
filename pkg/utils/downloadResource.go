@@ -293,14 +293,14 @@ func GetCoinPrice(coin string) (float64, error) {
 	}
 
 	type Quotation struct {
-		Symbol             string    `json:"symbol"`
-		Name               string    `json:"name"`
-		Price              float64   `json:"price"`
-		PriceYesterday     *float64  `json:"price_yesterday"`
-		VolumeYesterdayUSD *float64  `json:"volume_yesterday_usd"`
-		Source             string    `json:"source"`
-		Time               time.Time `json:"time"`
-		ITIN               string    `json:"itin"`
+		Symbol             string    `json:"Symbol"`
+		Name               string    `json:"Name"`
+		Price              float64   `json:"Price"`
+		PriceYesterday     *float64  `json:"PriceYesterday"`
+		VolumeYesterdayUSD *float64  `json:"VolumeYesterdayUSD"`
+		Source             string    `json:"Source"`
+		Time               time.Time `json:"Time"`
+		ITIN               string    `json:"ITIN"`
 	}
 	/*
 		type QuotationGecko struct {

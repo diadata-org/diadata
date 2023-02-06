@@ -20,11 +20,11 @@ const (
 )
 
 type InterestRate struct {
-	Symbol          string    `json:"symbol"`
-	Value           float64   `json:"value"`
-	PublicationTime time.Time `json:"publication_time"`
-	EffectiveDate   time.Time `json:"effective_date"`
-	Source          string    `json:"source"`
+	Symbol          string    `json:"Symbol"`
+	Value           float64   `json:"Value"`
+	PublicationTime time.Time `json:"PublicationTime"`
+	EffectiveDate   time.Time `json:"EffectiveDate"`
+	Source          string    `json:"Source"`
 }
 
 // MarshalBinary for interest rates
