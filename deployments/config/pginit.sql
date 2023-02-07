@@ -225,36 +225,6 @@ CREATE TABLE assetpriceident (
     UNIQUE(group_id, rank_in_group)
 );
 
-CREATE TABLE aggregatedvolume (
-    aggregatedvolume_id UUID DEFAULT gen_random_uuid(),
-    quotetoken_id UUID REFERENCES asset(asset_id),
-    basetoken_id UUID REFERENCES asset(asset_id),
-    volume numeric,
-    exchange character varying(100),
-    time_range_seconds numeric NOT NULL,
-    compute_time timestamp NOT NULL
-);
-
-CREATE INDEX GetAggregatedVolumes ON aggregatedvolume
-    USING btree (compute_time)
-    INCLUDE (volume, exchange, time_range_seconds);
-
-CREATE TABLE tradesdistribution (
-    tradesdistribution_id UUID DEFAULT gen_random_uuid(),
-    asset_id UUID REFERENCES asset(asset_id),
-    -- total number of trades in [compute_time-time_range_seconds, compute_time]
-	num_trades_total numeric,
-    -- number of bins with less than @threshold trades
-	num_low_bins numeric,
-	threshold numeric,
-	size_bin_seconds numeric,
-    avg_num_per_bin numeric,
-	std_deviation numeric,
-    -- total time range under consideration (for instance 24h = 86400s)
-    time_range_seconds numeric NOT NULL,
-    compute_time timestamp
-);
-
 CREATE TABLE synthassetdata (
     synthassetdata_id UUID DEFAULT gen_random_uuid(),
     synthasset_id UUID REFERENCES asset(asset_id),
