@@ -231,7 +231,7 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 	}
 
 	// Fetch all pool with given liquidity threshold from database.
-	poolMap, err = makeUniPoolMap(s.exchangeName, liquidityThreshold, s.relDB)
+	poolMap, err = s.makeUniPoolMap(liquidityThreshold)
 	if err != nil {
 		log.Fatal("build poolMap: ", err)
 	}
@@ -303,28 +303,7 @@ func (s *UniswapScraper) mainLoop() {
 	time.Sleep(4 * time.Second)
 	s.run = true
 
-	if s.listenByAddress {
-
-		// Collect all pair addresses from json file.
-		pairAddresses, err := getAddressesFromConfig("uniswap/subscribe_pools/" + s.exchangeName)
-		if err != nil {
-			log.Error("fetch pool addresses from config file: ", err)
-		}
-		numPairs := len(pairAddresses)
-		log.Infof("listening to %d pools: %v", numPairs, pairAddresses)
-
-		var wg sync.WaitGroup
-		for i := 0; i < numPairs; i++ {
-			time.Sleep(time.Duration(s.waitTime) * time.Millisecond)
-			wg.Add(1)
-			go func(index int, address common.Address, w *sync.WaitGroup) {
-				defer w.Done()
-				s.ListenToPair(index, address)
-			}(i, pairAddresses[i], &wg)
-		}
-		wg.Wait()
-
-	} else if s.fetchPoolsFromDB {
+	if s.listenByAddress || s.fetchPoolsFromDB {
 
 		var wg sync.WaitGroup
 		count := 0
@@ -375,20 +354,15 @@ func (s *UniswapScraper) ListenToPair(i int, address common.Address) {
 		err  error
 	)
 
-	if !s.listenByAddress {
-		if !s.fetchPoolsFromDB {
-			pair, err = s.GetPairByID(int64(i))
-			if err != nil {
-				log.Error("error fetching pair: ", err)
-			}
-		} else {
-			pair = poolMap[address.Hex()]
-		}
-	} else {
-		pair = poolMap[address.Hex()]
+	if !s.listenByAddress && !s.fetchPoolsFromDB {
+		// Get pool info from on-chain. @poolMap is empty.
+		pair, err = s.GetPairByID(int64(i))
 		if err != nil {
 			log.Error("error fetching pair: ", err)
 		}
+	} else {
+		// Relevant pool info is retrieved from @poolMap.
+		pair = poolMap[address.Hex()]
 	}
 
 	if len(pair.Token0.Symbol) < 2 || len(pair.Token1.Symbol) < 2 {
@@ -946,16 +920,44 @@ func (ps *UniswapPairScraper) Pair() dia.ExchangePair {
 }
 
 // makeUniPoolMap returns a map with pool addresses as keys and the underlying UniswapPair as values.
-func makeUniPoolMap(exchangeName string, liquiThreshold float64, relDB *models.RelDB) (map[string]UniswapPair, error) {
+// If s.listenByAddress is true, it only loads the corresponding assets from the list.
+func (s *UniswapScraper) makeUniPoolMap(liquiThreshold float64) (map[string]UniswapPair, error) {
 	pm := make(map[string]UniswapPair)
-	pools, err := relDB.GetAllPoolsExchange(exchangeName, liquiThreshold)
-	if err != nil {
-		return pm, err
+	var (
+		pools []dia.Pool
+		err   error
+	)
+
+	if s.listenByAddress {
+		// Only load pool info for addresses from json file.
+		poolAddresses, errAddr := getAddressesFromConfig("uniswap/subscribe_pools/" + s.exchangeName)
+		if err != nil {
+			log.Error("fetch pool addresses from config file: ", errAddr)
+		}
+		for _, address := range poolAddresses {
+			pool, errPool := s.relDB.GetPoolByAddress(Exchanges[s.exchangeName].BlockChain.Name, address.Hex())
+			if errPool != nil {
+				log.Fatalf("Get pool with address %s: %v", address.Hex(), errPool)
+			}
+			pools = append(pools, pool)
+		}
+	} else if s.fetchPoolsFromDB {
+		// Load all pools above liqui threshold.
+		pools, err = s.relDB.GetAllPoolsExchange(s.exchangeName, liquiThreshold)
+		if err != nil {
+			return pm, err
+		}
+
+	} else {
+		// Pool info will be fetched from on-chain and poolMap is not needed.
+		return pm, nil
 	}
+
 	log.Info("Found ", len(pools), " pools.")
 	log.Info("make pool map...")
 	for _, pool := range pools {
 		if len(pool.Assetvolumes) != 2 {
+			log.Warn("not enough assets in pool with address: ", pool.Address)
 			continue
 		}
 		up := UniswapPair{
@@ -971,6 +973,7 @@ func makeUniPoolMap(exchangeName string, liquiThreshold float64, relDB *models.R
 		up.ForeignName = up.Token0.Symbol + "-" + up.Token1.Symbol
 		pm[pool.Address] = up
 	}
+
 	log.Infof("found %v subscribable pools.", len(pm))
 	return pm, err
 }
