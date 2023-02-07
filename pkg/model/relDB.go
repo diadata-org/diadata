@@ -33,12 +33,6 @@ type RelDatastore interface {
 	GetAssetsWithVOL(numAssets int64, skip int64, onlycex bool, substring string) ([]dia.AssetVolume, error)
 	GetAssetSource(asset dia.Asset, onlycex bool) ([]string, error)
 	GetAssetsWithVolByBlockchain(starttime time.Time, endtime time.Time, blockchain string) ([]dia.AssetVolume, error)
-	SetAggregatedVolume(aggVol dia.AggregatedVolume) error
-	GetAggregatedVolumes(asset dia.Asset, starttime time.Time, endtime time.Time) ([]dia.AggregatedVolume, error)
-	GetAggVolumesByExchange(asset dia.Asset, starttime time.Time, endtime time.Time) ([]dia.ExchangeVolumesList, error)
-	GetAggVolumesByPair(asset dia.Asset, starttime time.Time, endtime time.Time) ([]dia.PairVolumesList, error)
-	SetTradesDistribution(tradesDist dia.TradesDistribution) error
-	GetTradesDistribution(asset dia.Asset, starttime time.Time, endtime time.Time) ([]dia.TradesDistribution, error)
 
 	// --------------- asset methods for exchanges ---------------
 	SetExchangePair(exchange string, pair dia.ExchangePair, cache bool) error

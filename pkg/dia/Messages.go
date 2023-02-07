@@ -257,26 +257,6 @@ type PairVolumesList struct {
 	Timestamp time.Time    `json:"Timestamp"`
 }
 
-type AggregatedVolume struct {
-	Pair             Pair      `json:"Pair"`
-	Volume           float64   `json:"Volume"`
-	Exchange         string    `json:"ExchangeVolumes"`
-	TimeRangeSeconds int64     `json:"TimeRangeSeconds"`
-	Timestamp        time.Time `json:"Timestamp"`
-}
-
-type TradesDistribution struct {
-	Asset            Asset     `json:"Asset"`
-	NumTradesTotal   int       `json:"NumTradesTotal"`
-	NumLowBins       int       `json:"NumberLowBins"`
-	Threshold        int       `json:"Threshold"`
-	SizeBinSeconds   int64     `json:"SizeBin"`
-	AvgNumPerBin     float64   `json:"AverageNumberPerBin"`
-	StdDeviation     float64   `json:"StandardDeviation"`
-	TimeRangeSeconds int64     `json:"TimeRangeSeconds"`
-	Timestamp        time.Time `json:"Timestamp"`
-}
-
 type EthereumBlockData struct {
 	GasLimit    uint64             `json:"GasLimit"`
 	GasUsed     uint64             `json:"GasUsed"`
