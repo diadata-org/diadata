@@ -30,10 +30,6 @@ func handleBlocks(blockMaker *tradesBlockService.TradesBlockService, wg *sync.Wa
 
 func init() {
 	flag.Parse()
-	if !*historical {
-		tradesBlockTopic = kafkaHelper.TopicTradesBlock
-		tradesTopic = kafkaHelper.TopicTrades
-	}
 	if *testing {
 		tradesBlockTopic = kafkaHelper.TopicTradesBlockTest
 		tradesTopic = kafkaHelper.TopicTradesTest
@@ -45,7 +41,6 @@ func init() {
 }
 
 var (
-	historical       = flag.Bool("historical", false, "digest current or historical trades.")
 	testing          = flag.Bool("testing", false, "set true for testing environment.")
 	replica          = flag.Bool("replica", false, "set true if trades should be fetched from and forwarded to replica topics.")
 	tradesBlockTopic int
@@ -53,9 +48,6 @@ var (
 )
 
 func main() {
-	if *historical {
-		log.Info("run tradesblock service in historical mode")
-	}
 
 	kafkaWriter := kafkaHelper.NewSyncWriterWithCompression(tradesBlockTopic)
 	defer func() {
@@ -73,12 +65,17 @@ func main() {
 		}
 	}()
 
-	s, err := models.NewDataStore()
+	datastore, err := models.NewDataStore()
 	if err != nil {
 		log.Errorln("NewDataStore", err)
 	}
 
-	service := tradesBlockService.NewTradesBlockService(s, dia.BlockSizeSeconds, *historical)
+	relDB, err := models.NewRelDataStore()
+	if err != nil {
+		log.Error("New relational datastore: ", err)
+	}
+
+	service := tradesBlockService.NewTradesBlockService(datastore, relDB, dia.BlockSizeSeconds)
 
 	wg := sync.WaitGroup{}
 	go handleBlocks(service, &wg, kafkaWriter)

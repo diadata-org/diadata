@@ -18,23 +18,7 @@ import (
 )
 
 var (
-	log                  *logrus.Logger
-	swapTradesOnExchange = []string{
-		dia.CurveFIExchange,
-		dia.CurveFIExchangeFantom,
-		dia.CurveFIExchangeMoonbeam,
-		dia.CurveFIExchangePolygon,
-		dia.PlatypusExchange,
-		dia.WanswapExchange,
-		dia.OmniDexExchange,
-		dia.DiffusionExchange,
-		dia.SolarbeamExchange,
-		dia.AnyswapExchange,
-		dia.HermesExchange,
-		dia.HuckleberryExchange,
-		dia.NetswapExchange,
-		dia.OrcaExchange,
-	}
+	log *logrus.Logger
 
 	exchange = flag.String("exchange", "", "which exchange")
 	// mode==current:		default mode. Trades are forwarded to TBS and FBS.
@@ -230,18 +214,6 @@ func writeTradeToKafka(w *kafka.Writer, t *dia.Trade) error {
 		return err
 	}
 
-	// Write reversed trade to Kafka as well for some exchanges.
-	if utils.Contains(&swapTradesOnExchange, t.Source) {
-		tSwapped, err := dia.SwapTrade(*t)
-		if err != nil {
-			log.Error("swap trade: ", err)
-		} else {
-			err = kafkaHelper.WriteMessage(w, &tSwapped)
-			if err != nil {
-				return err
-			}
-		}
-	}
 	return nil
 }
 
