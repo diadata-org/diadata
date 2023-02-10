@@ -1,20 +1,6 @@
 {
     "Exchanges": [
         {
-            "Name": "0x",
-            "Centralized": false,
-            "Bridge": false,
-            "Contract": "",
-            "Blockchain": {
-                "Name": "Ethereum"
-            },
-            "RestAPI": "",
-            "WsAPI": "",
-            "pairsAPI": "",
-            "WatchdogDelay": 7200,
-            "ScraperActive": false
-        },
-        {
             "Name": "Anyswap",
             "Centralized": false,
             "Bridge": true,
@@ -69,20 +55,6 @@
             "pairsAPI": "",
             "WatchdogDelay": 7200,
             "ScraperActive": true
-        },
-        {
-            "Name": "Balancer",
-            "Centralized": false,
-            "Bridge": false,
-            "Contract": "0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd",
-            "Blockchain": {
-                "Name": "Ethereum"
-            },
-            "RestAPI": "",
-            "WsAPI": "",
-            "pairsAPI": "",
-            "WatchdogDelay": 1200,
-            "ScraperActive": false
         },
         {
             "Name": "BalancerV2",
@@ -337,20 +309,6 @@
             "ScraperActive": true
         },
         {
-            "Name": "CREX24",
-            "Centralized": true,
-            "Bridge": false,
-            "Contract": "",
-            "Blockchain": {
-                "Name": ""
-            },
-            "RestAPI": "",
-            "WsAPI": "api.crex24.com",
-            "pairsAPI": "https://api.crex24.com/v2/public/instruments",
-            "WatchdogDelay": 1200,
-            "ScraperActive": false
-        },
-        {
             "Name": "Crypto.com",
             "Centralized": true,
             "Bridge": false,
@@ -421,20 +379,6 @@
             "ScraperActive": true
         },
         {
-            "Name": "Dforce",
-            "Centralized": false,
-            "Bridge": false,
-            "Contract": "0x03eF3f37856bD08eb47E2dE7ABc4Ddd2c19B60F2",
-            "Blockchain": {
-                "Name": "Ethereum"
-            },
-            "RestAPI": "",
-            "WsAPI": "",
-            "pairsAPI": "",
-            "WatchdogDelay": 7200,
-            "ScraperActive": false
-        },
-        {
             "Name": "Diffusion",
             "Centralized": false,
             "Bridge": false,
@@ -461,20 +405,6 @@
             "pairsAPI": "",
             "WatchdogDelay": 7200,
             "ScraperActive": true
-        },
-        {
-            "Name": "FTX",
-            "Centralized": true,
-            "Bridge": false,
-            "Contract": "",
-            "Blockchain": {
-                "Name": ""
-            },
-            "RestAPI": "https://ftx.com/api",
-            "WsAPI": "wss://ftx.com/ws",
-            "pairsAPI": "https://otc.ftx.com/api/otc/pairs",
-            "WatchdogDelay": 180,
-            "ScraperActive": false
         },
         {
             "Name": "GateIO",
@@ -575,20 +505,6 @@
             "ScraperActive": true
         },
         {
-            "Name": "Kyber",
-            "Centralized": false,
-            "Bridge": false,
-            "Contract": "0x9AAb3f75489902f3a48495025729a0AF77d4b11e",
-            "Blockchain": {
-                "Name": ""
-            },
-            "RestAPI": "",
-            "WsAPI": "",
-            "pairsAPI": "",
-            "WatchdogDelay": 1200,
-            "ScraperActive": false
-        },
-        {
             "Name": "LBank",
             "Centralized": true,
             "Bridge": false,
@@ -600,34 +516,6 @@
             "WsAPI": "wss://api.lbkex.com/ws/V2/",
             "pairsAPI": "https://api.lbkex.com/v1/currencyPairs.do",
             "WatchdogDelay": 300,
-            "ScraperActive": false
-        },
-        {
-            "Name": "Loopring",
-            "Centralized": true,
-            "Bridge": false,
-            "Contract": "",
-            "Blockchain": {
-                "Name": ""
-            },
-            "RestAPI": "https://api3.loopring.io/api/v3",
-            "WsAPI": "wss://ws.api3.loopring.io/v3/ws",
-            "pairsAPI": "https://api3.loopring.io/api/v3/exchange/markets",
-            "WatchdogDelay": 1200,
-            "ScraperActive": false
-        },
-        {
-            "Name": "Maker",
-            "Centralized": false,
-            "Bridge": false,
-            "Contract": "",
-            "Blockchain": {
-                "Name": "Ethereum"
-            },
-            "RestAPI": "https://api.oasisdex.com/v2",
-            "WsAPI": "",
-            "pairsAPI": "https://api.oasisdex.com/v2/pairs",
-            "WatchdogDelay": 1200,
             "ScraperActive": false
         },
         {
@@ -743,20 +631,6 @@
             "ScraperActive": false
         },
         {
-            "Name": "Serum",
-            "Centralized": false,
-            "Bridge": false,
-            "Contract": "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin",
-            "Blockchain": {
-                "Name": "Solana"
-            },
-            "RestAPI": "",
-            "WsAPI": "",
-            "pairsAPI": "",
-            "WatchdogDelay": 7200,
-            "ScraperActive": false
-        },
-        {
             "Name": "Orca",
             "Centralized": false,
             "Bridge": false,
@@ -768,20 +642,6 @@
             "WsAPI": "wss://api.mainnet-beta.solana.com",
             "pairsAPI": "",
             "WatchdogDelay": 7200,
-            "ScraperActive": false
-        },
-        {
-            "Name": "Simex",
-            "Centralized": true,
-            "Bridge": false,
-            "Contract": "",
-            "Blockchain": {
-                "Name": ""
-            },
-            "RestAPI": "https://simex.global/api",
-            "WsAPI": "",
-            "pairsAPI": "https://simex.global/api/pairs",
-            "WatchdogDelay": 1200,
             "ScraperActive": false
         },
         {
@@ -839,20 +699,6 @@
             "pairsAPI": "",
             "WatchdogDelay": 1800,
             "ScraperActive": true
-        },
-        {
-            "Name": "STEX",
-            "Centralized": true,
-            "Bridge": false,
-            "Contract": "",
-            "Blockchain": {
-                "Name": ""
-            },
-            "RestAPI": "https://api3.stex.com/public",
-            "WsAPI": "socket.stex.com",
-            "pairsAPI": "https://api3.stex.com/public/currency_pairs/list/ALL",
-            "WatchdogDelay": 1200,
-            "ScraperActive": false
         },
         {
             "Name": "SushiSwap",
@@ -1049,20 +895,6 @@
             "pairsAPI": "",
             "WatchdogDelay": 7200,
             "ScraperActive": true
-        },
-        {
-            "Name": "ZB",
-            "Centralized": true,
-            "Bridge": false,
-            "Contract": "",
-            "Blockchain": {
-                "Name": ""
-            },
-            "RestAPI": "",
-            "WsAPI": "wss://api.zb.live/websocket",
-            "pairsAPI": "",
-            "WatchdogDelay": 1200,
-            "ScraperActive": false
         }
     ]
 }
