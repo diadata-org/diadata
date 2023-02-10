@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"sync"
 	"time"
 
@@ -21,13 +20,13 @@ var (
 	log *logrus.Logger
 
 	exchange = flag.String("exchange", "", "which exchange")
-	// mode==current:		default mode. Trades are forwarded to TBS and FBS.
-	// mode==storeTrades:	trades are not forwarded to TBS and FBS and stored as raw trades in influx.
-	// mode==estimation:	trades are forwarded to tradesEstimationService, i.e. same as storeTrades mode
-	//						but estimatedUSDPrice is filled by tradesEstimationService.
-	// mode==historical:	trades are sent through kafka to TBS in tradesHistorical topic.
-	// mode==assetmap:   	Bridged Trades, asstes are mapped and trades are not saved.
-	mode              = flag.String("mode", "current", "either storeTrades, current, historical or estimation.")
+	// // mode==current:		default mode. Trades are forwarded to TBS and FBS.
+	// // mode==storeTrades:	trades are not forwarded to TBS and FBS and stored as raw trades in influx.
+	// // mode==estimation:	trades are forwarded to tradesEstimationService, i.e. same as storeTrades mode
+	// //						but estimatedUSDPrice is filled by tradesEstimationService.
+	// // mode==historical:	trades are sent through kafka to TBS in tradesHistorical topic.
+	// // mode==assetmap:   	Bridged Trades, asstes are mapped and trades are not saved.
+	// mode              = flag.String("mode", "current", "either storeTrades, current, historical or estimation.")
 	pairsfile         = flag.Bool("pairsfile", false, "read pairs from json file in config folder.")
 	replicaKafkaTopic string
 )
@@ -53,7 +52,7 @@ func init() {
 // main manages all PairScrapers and handles incoming trade information
 func main() {
 
-	log.Infof("start collector for %s in %s mode...", *exchange, *mode)
+	log.Infof("start collector for %s in test-space...", *exchange)
 
 	relDB, err := models.NewRelDataStore()
 	if err != nil {
@@ -86,24 +85,28 @@ func main() {
 	}
 	es := scrapers.NewAPIScraper(*exchange, true, configApi.ApiKey, configApi.SecretKey, relDB)
 
-	// Set up kafka writers for various modes.
-	var (
-		w *kafka.Writer
-		// This topic can be used to forward trades to services other than the prod. tradesblockservice.
-		wReplica *kafka.Writer
-		wTest    *kafka.Writer
-	)
+	// Set up kafka writer.
+	w := kafkaHelper.NewWriter(kafkaHelper.TopicTradesTest)
+	log.Info("writer topic: ", w.Topic)
 
-	switch *mode {
-	case "current":
-		w = kafkaHelper.NewWriter(kafkaHelper.TopicTrades)
-		wReplica = kafkaHelper.NewWriter(kafkaHelper.TopicTradesReplica)
-		wTest = kafkaHelper.NewWriter(kafkaHelper.TopicTradesTest)
-	case "estimation":
-		w = kafkaHelper.NewWriter(kafkaHelper.TopicTradesEstimation)
-	case "assetmap":
-		w = kafkaHelper.NewWriter(kafkaHelper.TopicTradesEstimation)
-	}
+	// Set up kafka writers for various modes.
+	// var (
+	// 	w *kafka.Writer
+	// 	// This topic can be used to forward trades to services other than the prod. tradesblockservice.
+	// 	wReplica *kafka.Writer
+	// 	wTest    *kafka.Writer
+	// )
+
+	// switch *mode {
+	// case "current":
+	// 	w = kafkaHelper.NewWriter(kafkaHelper.TopicTrades)
+	// 	wReplica = kafkaHelper.NewWriter(kafkaHelper.TopicTradesReplica)
+	// 	wTest = kafkaHelper.NewWriter(kafkaHelper.TopicTradesTest)
+	// case "estimation":
+	// 	w = kafkaHelper.NewWriter(kafkaHelper.TopicTradesEstimation)
+	// case "assetmap":
+	// 	w = kafkaHelper.NewWriter(kafkaHelper.TopicTradesEstimation)
+	// }
 
 	defer func() {
 		err := w.Close()
@@ -137,10 +140,11 @@ func main() {
 		defer wg.Wait()
 
 	}
-	go handleTrades(es.Channel(), &wg, w, wTest, wReplica, ds, *exchange, *mode)
+	// go handleTrades(es.Channel(), &wg, w, wTest, wReplica, ds, *exchange, *mode)
+	go handleTrades(es.Channel(), &wg, w, ds, *exchange)
 }
 
-func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wTest *kafka.Writer, wReplica *kafka.Writer, ds *models.DB, exchange string, mode string) {
+func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, ds *models.DB, exchange string) {
 	lastTradeTime := time.Now()
 	watchdogDelay := scrapers.Exchanges[exchange].WatchdogDelay
 	if watchdogDelay == 0 {
@@ -162,59 +166,20 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wTest 
 				return
 			}
 			lastTradeTime = time.Now()
-			// Trades are sent to the tradesblockservice through a kafka channel - either
-			// through trades topic or historical trades topic.
-			if mode == "current" || mode == "historical" || mode == "estimation" {
 
-				// Write trade to productive Kafka.
-				err := writeTradeToKafka(w, t)
-				if err != nil {
-					log.Error(err)
-				}
-
-				if scrapers.Exchanges[t.Source].Centralized {
-					// Write CEX trades to test Kafka.
-					if mode == "current" {
-						err = writeTradeToKafka(wTest, t)
-						if err != nil {
-							log.Error(err)
-						}
-					}
-				}
-
-				if replicaKafkaTopic == "true" {
-					err := writeTradeToKafka(wReplica, t)
-					if err != nil {
-						log.Error(err)
-					}
-				}
-
-			}
-			// Trades are just saved in influx - not sent to the tradesblockservice through a kafka channel.
-			if mode == "storeTrades" {
-				err := ds.SaveTradeInflux(t)
-				if err != nil {
-					log.Error(err)
-				}
+			// Write trade to test Kafka.
+			err := writeTradeToKafka(w, t)
+			if err != nil {
+				log.Error("write to kafka: ", err)
 			}
 
-			if mode == "assetmap" {
-
-				fmt.Println("recieved trade", t)
-
-			}
 		}
 	}
 }
 
 func writeTradeToKafka(w *kafka.Writer, t *dia.Trade) error {
-	// Write trade to Kafka.
 	err := kafkaHelper.WriteMessage(w, t)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 func isValidExchange(estring string) bool {
