@@ -155,20 +155,6 @@
             "ScraperActive": true
         },
         {
-            "Name": "BitBay",
-            "Centralized": true,
-            "Bridge": false,
-            "Contract": "",
-            "Blockchain": {
-                "Name": ""
-            },
-            "RestAPI": "",
-            "WsAPI": "wss://api.zonda.exchange/websocket/",
-            "pairsAPI": "https://api.zonda.exchange/rest/trading/ticker",
-            "WatchdogDelay": 1200,
-            "ScraperActive": true
-        },
-        {
             "Name": "Bitfinex",
             "Centralized": true,
             "Bridge": false,
@@ -264,20 +250,6 @@
             "WsAPI": "",
             "pairsAPI": "",
             "WatchdogDelay": 1200,
-            "ScraperActive": true
-        },
-        {
-            "Name": "Bitforex",
-            "Centralized": true,
-            "Bridge": false,
-            "Contract": "",
-            "Blockchain": {
-                "Name": ""
-            },
-            "RestAPI": "https://api.bitforex.com/api/v1",
-            "WsAPI": "wss://www.bitforex.com/mkapi/coinGroup1/ws",
-            "pairsAPI": "https://api.bitforex.com/api/v1/market/symbols",
-            "WatchdogDelay": 300,
             "ScraperActive": true
         },
         {
@@ -435,20 +407,6 @@
             "ScraperActive": true
         },
         {
-            "Name": "HitBTC",
-            "Centralized": true,
-            "Bridge": false,
-            "Contract": "",
-            "Blockchain": {
-                "Name": ""
-            },
-            "RestAPI": "",
-            "WsAPI": "wss://api.hitbtc.com/api/2/ws",
-            "pairsAPI": "https://api.hitbtc.com/api/2/public/symbol",
-            "WatchdogDelay": 300,
-            "ScraperActive": true
-        },
-        {
             "Name": "Huckleberry",
             "Centralized": false,
             "Bridge": false,
@@ -503,20 +461,6 @@
             "pairsAPI": "https://api.kucoin.com/api/v1/market/allTickers",
             "WatchdogDelay": 300,
             "ScraperActive": true
-        },
-        {
-            "Name": "LBank",
-            "Centralized": true,
-            "Bridge": false,
-            "Contract": "",
-            "Blockchain": {
-                "Name": ""
-            },
-            "RestAPI": "",
-            "WsAPI": "wss://api.lbkex.com/ws/V2/",
-            "pairsAPI": "https://api.lbkex.com/v1/currencyPairs.do",
-            "WatchdogDelay": 300,
-            "ScraperActive": false
         },
         {
             "Name": "Netswap",

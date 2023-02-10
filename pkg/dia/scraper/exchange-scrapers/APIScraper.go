@@ -120,28 +120,20 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewBinanceScraper(key, secret, Exchanges[dia.BinanceExchange], dia.Binance2Exchange, scrape, relDB)
 	case dia.BinanceExchangeUS:
 		return NewBinanceScraperUS(key, secret, Exchanges[dia.BinanceExchangeUS], scrape, relDB)
-	case dia.BitBayExchange:
-		return NewBitBayScraper(Exchanges[dia.BitBayExchange], scrape, relDB)
 	case dia.BitfinexExchange:
 		return NewBitfinexScraper(key, secret, Exchanges[dia.BitfinexExchange], scrape, relDB)
-	case dia.BitforexExchange:
-		return NewBitforexScraper(Exchanges[dia.BitforexExchange], scrape, relDB)
 	case dia.BittrexExchange:
 		return NewBittrexScraper(Exchanges[dia.BittrexExchange], scrape, relDB)
 	case dia.CoinBaseExchange:
 		return NewCoinBaseScraper(Exchanges[dia.CoinBaseExchange], scrape, relDB)
 	case dia.KrakenExchange:
 		return NewKrakenScraper(key, secret, Exchanges[dia.KrakenExchange], scrape, relDB)
-	case dia.HitBTCExchange:
-		return NewHitBTCScraper(Exchanges[dia.HitBTCExchange], scrape, relDB)
 	case dia.OKExExchange:
 		return NewOKExScraper(Exchanges[dia.OKExExchange], scrape, relDB)
 	case dia.CryptoDotComExchange:
 		return NewCryptoDotComScraper(Exchanges[dia.CryptoDotComExchange], scrape, relDB)
 	case dia.HuobiExchange:
 		return NewHuobiScraper(Exchanges[dia.HuobiExchange], scrape, relDB)
-	case dia.LBankExchange:
-		return NewLBankScraper(Exchanges[dia.LBankExchange], scrape, relDB)
 	case dia.GateIOExchange:
 		return NewGateIOScraper(Exchanges[dia.GateIOExchange], scrape, relDB)
 	case dia.BancorExchange:
