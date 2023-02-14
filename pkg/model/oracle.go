@@ -42,8 +42,9 @@ func (rdb *RelDB) GetKeyPairID(publicKey string) string {
 func (rdb *RelDB) SetOracleConfig(address, feederID, owner, symbols, chainID, frequency, sleepseconds, deviationpermille string) error {
 	query := fmt.Sprintf(`INSERT INTO %s 
 	(address,feeder_id,owner,symbols,chainID,frequency,sleepseconds, deviationpermille) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) on conflict(feeder_id)  
-	do
-	update set feeder_id=EXCLUDED.feeder_id`, oracleconfigTable)
+	DO UPDATE SET symbols=$4,frequency=$6,sleepseconds=$7, deviationpermille=$8`, oracleconfigTable)
+
+	fmt.Println("--query-", query)
 	_, err := rdb.postgresClient.Exec(context.Background(), query, address, feederID, owner, symbols, chainID, frequency, sleepseconds, deviationpermille)
 	if err != nil {
 		return err
@@ -78,16 +79,25 @@ func (rdb *RelDB) SetFeederConfig(feederid, oracleconfigid string) error {
 	return nil
 }
 
-func (rdb *RelDB) GetFeederAccessByID(id string) (owner, publickey string) {
-	query := fmt.Sprintf(`SELECT owner,publickey from   %s 
-	WHERE id=$1`, feederaccessTable)
-	err := rdb.postgresClient.QueryRow(context.Background(), query, id).Scan(&owner, &publickey)
+func (rdb *RelDB) GetFeederAccessByID(id string) (owner string) {
+	query := fmt.Sprintf(`SELECT owner from   %s 
+	WHERE feeder_id=$1`, oracleconfigTable)
+	err := rdb.postgresClient.QueryRow(context.Background(), query, id).Scan(&owner)
 	if err != nil {
 		log.Error("Error getting results from db ", err)
 	}
 	return
 }
 
+func (rdb *RelDB) GetFeederByID(id string) (owner string) {
+	query := fmt.Sprintf(`SELECT owner from   %s 
+	WHERE feeder_id=$1`, oracleconfigTable)
+	err := rdb.postgresClient.QueryRow(context.Background(), query, id).Scan(&owner)
+	if err != nil {
+		log.Error("Error getting results from db ", err)
+	}
+	return
+}
 func (rdb *RelDB) GetFeederLimit(owner string) (limit int) {
 	query := fmt.Sprintf(`SELECT total from  %s 
 	WHERE owner=$1`, feederResourceTable)
@@ -145,10 +155,10 @@ func (rdb *RelDB) GetOracleConfig(address string) (oracleconfig dia.OracleConfig
 		symbols string
 	)
 	query := fmt.Sprintf(`
-	SELECT address, feeder_id, owner,symbols, chainid 
+	SELECT address, feeder_id, owner,symbols, chainid, deviationpermille, sleepseconds,frequency
 	FROM %s 
 	WHERE address=$1`, oracleconfigTable)
-	err = rdb.postgresClient.QueryRow(context.Background(), query, address).Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, address).Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &oracleconfig.DeviationPermille, &oracleconfig.SleepSeconds, &oracleconfig.Frequency)
 	if err != nil {
 		return
 	}

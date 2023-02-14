@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"net/http"
 
-	builderUtils "oraclebuilder/utils"
 	"strings"
+
+	builderUtils "github.com/diadata-org/diadata/http/oraclebuilder/utils"
 
 	kr "github.com/99designs/keyring"
 	"github.com/99designs/keyring/cmd/k8sbridge"
@@ -98,7 +99,7 @@ func (ob *Env) Create(context *gin.Context) {
 		}
 	} else {
 
-		owner := ob.RelDB.GetFeederAccessByID(feederID)
+		owner := ob.RelDB.GetFeederByID(feederID)
 
 		if owner != creator {
 			log.Infoln("no access to feederID, owner is ", owner)
