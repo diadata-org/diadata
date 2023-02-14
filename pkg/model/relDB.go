@@ -145,7 +145,7 @@ type RelDatastore interface {
 	//Oracle builder
 	SetKeyPair(publickey string, privatekey string) error
 	GetKeyPairID(publickey string) string
-	GetFeederAccessByID(id string) (owner, publickey string)
+	GetFeederAccessByID(id string) (owner string)
 	SetOracleConfig(address, keypairID, creator, symbols, chainID, frequency, sleepseconds, deviationpermille string) error
 	SetFeederConfig(feederid, oracleconfigid string) error
 	GetFeederID(address string) (feederId string)
