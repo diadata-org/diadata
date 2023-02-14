@@ -6,7 +6,7 @@ replace github.com/99designs/keyring => github.com/nnn-gif/keyring v1.0.0
 
 require (
 	github.com/99designs/keyring v1.2.2
-	github.com/diadata-org/diadata v1.4.135
+	github.com/diadata-org/diadata v1.4.145
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/sirupsen/logrus v1.9.0
@@ -77,6 +77,7 @@ require (
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
 	github.com/tklauser/numcpus v0.2.2 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
+	github.com/zekroTJA/timedmap v1.4.0 // indirect
 	golang.org/x/crypto v0.1.0 // indirect
 	golang.org/x/net v0.3.1-0.20221206200815-1e63c2f08a10 // indirect
 	golang.org/x/oauth2 v0.0.0-20220223155221-ee480838109b // indirect
