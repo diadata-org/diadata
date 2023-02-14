@@ -3,16 +3,17 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
+
+	builderUtils "oraclebuilder/utils"
+	"strings"
 
 	kr "github.com/99designs/keyring"
 	"github.com/99designs/keyring/cmd/k8sbridge"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
-	builderUtils "oraclebuilder/utils"
-	"strings"
 )
 
 /*
@@ -27,16 +28,17 @@ type Env struct {
 	Keyring   kr.Keyring
 }
 
-var log = logrus.New()
-
 // Create new oracle feeder if creator has resources
 func (ob *Env) Create(context *gin.Context) {
 
 	var (
-		address string
-		err     error
-		keypair *k8sbridge.KeyPair
+		address  string
+		err      error
+		keypair  *k8sbridge.KeyPair
+		isUpdate bool
 	)
+
+	isUpdate = false
 
 	oracleaddress := context.PostForm("oracleaddress")
 	chainID := context.PostForm("chainID")
@@ -53,6 +55,11 @@ func (ob *Env) Create(context *gin.Context) {
 	k := make(map[string]string)
 
 	log.Infof("Creating oracle: oracleAddress: %s, ChainID: %s, Creator: %s, Symbols: %s, frequency: %s, sleepSeconds: %s,", oracleaddress, chainID, creator, symbols, frequency, sleepSeconds)
+
+	log.Infoln("Creating oracle: chainID", chainID)
+	log.Infoln("Creating oracle: creator", creator)
+	log.Infoln("Creating oracle: oracleaddress", oracleaddress)
+	log.Infoln("Creating oracle: feederID", feederID)
 
 	signer, _ := utils.GetSigner(chainID, creator, oracleaddress, "Verify its your address to call oracle builder", signedData)
 
@@ -89,20 +96,38 @@ func (ob *Env) Create(context *gin.Context) {
 			context.JSON(http.StatusUnauthorized, errors.New("need access to this feeder"))
 			return
 		}
+	} else {
 
-		item, err := ob.Keyring.Get(feederID)
-		if err != nil {
-			log.Infoln("error getting key", err)
-			context.JSON(http.StatusInternalServerError, errors.New("error getting key"))
+		owner := ob.RelDB.GetFeederAccessByID(feederID)
+
+		if owner != creator {
+			log.Infoln("no access to feederID, owner is ", owner)
+			context.JSON(http.StatusInternalServerError, errors.New("no access to feederID"))
 			return
 		}
-		marshalErr := json.Unmarshal(item.Data, &keypair)
-		if marshalErr != nil {
-			return
-		}
-		log.Infoln("public key", keypair.GetPublickey())
-		address = keypair.GetPublickey()
+		isUpdate = true
 
+		// if feederID {
+		// 	// TODO check if owner of feederid is correct
+
+		// }
+
+	}
+
+	item, err := ob.Keyring.Get(feederID)
+	if err != nil {
+		log.Infoln("error getting key", err)
+		context.JSON(http.StatusInternalServerError, errors.New("error getting key"))
+		return
+	}
+	marshalErr := json.Unmarshal(item.Data, &keypair)
+	if marshalErr != nil {
+		return
+	}
+	log.Infoln("public key", keypair.GetPublickey())
+	address = keypair.GetPublickey()
+
+	if !isUpdate {
 		err = ob.PodHelper.CreateOracleFeeder(feederID, address, oracleaddress, chainID, symbols, blockchainnode, frequency, sleepSeconds, deviationPermille)
 		if err != nil {
 			log.Errorln("error CreateOracleFeeder ", err)
@@ -110,9 +135,27 @@ func (ob *Env) Create(context *gin.Context) {
 			return
 		}
 
-		err = ob.RelDB.SetOracleConfig(oracleaddress, feederID, creator, symbols, chainID, frequency, sleepSeconds, deviationPermille)
+	}
+
+	err = ob.RelDB.SetOracleConfig(oracleaddress, feederID, creator, symbols, chainID, frequency, sleepSeconds, deviationPermille)
+	if err != nil {
+		log.Errorln("error SetOracleConfig ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	if isUpdate {
+		oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress)
 		if err != nil {
-			log.Errorln("error SetOracleConfig ", err)
+			log.Errorln("error GetOracleConfig ", err)
+			context.JSON(http.StatusInternalServerError, err)
+			return
+		}
+
+		fmt.Println("oracleconfig", oracleconfig.Symbols)
+		err = ob.PodHelper.RestartOracleFeeder(feederID, oracleconfig)
+		if err != nil {
+			log.Errorln("error RestartOracleFeeder ", err)
 			context.JSON(http.StatusInternalServerError, err)
 			return
 		}
@@ -131,6 +174,18 @@ func (ob *Env) Create(context *gin.Context) {
 
 // List: list owner oracles
 func (ob *Env) List(context *gin.Context) {
+	creator := context.Query("creator")
+	oracles, err := ob.RelDB.GetOraclesByOwner(creator)
+	if err != nil {
+		log.Errorln("List Oracles: error on getOraclesByOwner ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	context.JSON(http.StatusOK, oracles)
+}
+
+// List: list owner oracles
+func (ob *Env) ListAll(context *gin.Context) {
 	creator := context.Query("creator")
 	oracles, err := ob.RelDB.GetOraclesByOwner(creator)
 	if err != nil {
@@ -235,6 +290,8 @@ func (ob *Env) Restart(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, err)
 		return
 	}
+	fmt.Println("oracleconfig", oracleconfig.Symbols)
+
 	err = ob.PodHelper.RestartOracleFeeder(oracleconfig.FeederID, oracleconfig)
 	if err != nil {
 		log.Errorln("error RestartOracleFeeder ", err)

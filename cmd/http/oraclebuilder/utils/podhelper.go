@@ -3,7 +3,9 @@ package utils
 import (
 	"context"
 	"flag"
+	"fmt"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -15,6 +17,7 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/watch"
 )
 
 var log = logrus.New()
@@ -56,6 +59,11 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 	fields["chainID"] = chainID
 	fields["owner"] = owner
 
+	log.Infoln("-sleepSeconds-", sleepSeconds)
+	log.Infoln("-symbols-", symbols)
+	log.Infoln("-oraclesymbols-", owner)
+	log.Infoln("-feederID-", feederID)
+
 	// -- oracle config
 	publickeyenv := corev1.EnvVar{Name: "ORACLE_PUBLICKEY", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: ".public", LocalObjectReference: corev1.LocalObjectReference{Name: feederID}}}}
 	deployedcontractenv := corev1.EnvVar{Name: "DEPLOYED_CONTRACT", Value: oracle}
@@ -70,6 +78,15 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 	// -- oracle config ends here
 
 	// ---
+
+	log.Infoln("-publickeyenv-", publickeyenv)
+	log.Infoln("-deployedcontractenv-", deployedcontractenv)
+	log.Infoln("-chainidenv-", chainidenv)
+	log.Infoln("-deviationenv-", deviationenv)
+	log.Infoln("-frequencyseconds-", frequencyseconds)
+	log.Infoln("-oraclesymbols-", oraclesymbols)
+	log.Infoln("-oraclefeederid-", oraclefeederid)
+
 	postgreshost := corev1.EnvVar{Name: "POSTGRES_HOST", Value: "dia-postgresql.dia-db"}
 	postgresuser := corev1.EnvVar{Name: "POSTGRES_USER", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: "user", LocalObjectReference: corev1.LocalObjectReference{Name: "user.graphqlserver"}}}}
 	postgrespassword := corev1.EnvVar{Name: "POSTGRES_PASSWORD", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: "password", LocalObjectReference: corev1.LocalObjectReference{Name: "user.graphqlserver"}}}}
@@ -181,16 +198,56 @@ func (kh *PodHelper) RestartOracleFeeder(feederID string, oracleconfig dia.Oracl
 	//if err != nil {
 	//	return err
 	//}
+	kh.waitPodDeleted(context.TODO(), oracleconfig.Address, func() {
+		log.Info("strings.Join(oracleconfig.Symbols[:], ", ")", strings.Join(oracleconfig.Symbols[:], ","))
+		time.Sleep(1000 * time.Millisecond)
+		err = kh.CreateOracleFeeder(feederID, oracleconfig.Owner, oracleconfig.Address, oracleconfig.ChainID, strings.Join(oracleconfig.Symbols[:], ","), "", oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille)
+		if err != nil {
+			log.Errorf("Pod %s start err\n", err)
+			return
+		}
+		log.Infof("Pod %s started\n", feederID)
+	})
 	log.Infof("Pod %s deleted\n", feederID)
 
-	time.Sleep(1000 * time.Millisecond)
-	err = kh.CreateOracleFeeder(feederID, oracleconfig.Owner, oracleconfig.Address, oracleconfig.ChainID, oracleconfig.SleepSeconds, "", oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille)
-	if err != nil {
-		log.Errorf("Pod %s start err\n", err)
+	return err
+}
 
+func (kh *PodHelper) podWatcher(ctx context.Context, oracleaddress string) (watch.Interface, error) {
+	labelSelector := fmt.Sprintf("oracle=%s", oracleaddress)
+	log.Infof("Creating watcher for POD with label: %s", labelSelector)
+
+	opts := metav1.ListOptions{
+		TypeMeta:      metav1.TypeMeta{},
+		LabelSelector: labelSelector,
+		FieldSelector: "",
+	}
+
+	return kh.k8sclient.CoreV1().Pods(kh.NameSpace).Watch(ctx, opts)
+}
+
+func (kh *PodHelper) waitPodDeleted(ctx context.Context, resName string, run func()) error {
+	watcher, err := kh.podWatcher(ctx, resName)
+	if err != nil {
 		return err
 	}
-	log.Infof("Pod %s started\n", feederID)
 
-	return err
+	defer watcher.Stop()
+
+	for {
+		select {
+		case event := <-watcher.ResultChan():
+
+			if event.Type == watch.Deleted {
+				log.Infof("The POD \"%s\" is deleted", resName)
+				run()
+
+				return nil
+			}
+
+		case <-ctx.Done():
+			log.Infof("Exit from waitPodDeleted for POD \"%s\" because the context is done", resName)
+			return nil
+		}
+	}
 }
