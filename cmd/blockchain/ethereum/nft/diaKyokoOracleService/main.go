@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -19,6 +20,12 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/tidwall/gjson"
 )
+
+type Floor struct {
+	Value     float64   `json:"Floor_Price"`
+	Timestamp time.Time `json:"Time"`
+	Source    string    `json:"Source"`
+}
 
 func main() {
 	key := utils.Getenv("PRIVATE_KEY", "")
@@ -106,7 +113,7 @@ func periodicOracleUpdateHelper(oldValue float64, deviationPermille int, auth *b
 	// Empty quotation for our request
 	var err error
 
-	// Get quotation for token and update Oracle
+	// Get quotation for NFT and update Oracle
 	rawAvg, err := getNFTDistributionFromDia(blockchain, address)
 	if err != nil {
 		log.Fatalf("Failed to retrieve %s NFT Average data from DIA: %v", address, err)
@@ -118,7 +125,16 @@ func periodicOracleUpdateHelper(oldValue float64, deviationPermille int, auth *b
 
 	if (newValue > (oldValue * (1 + float64(deviationPermille)/1000))) || (newValue < (oldValue * (1 - float64(deviationPermille)/1000))) {
 		log.Println("Entering deviation based update zone")
-		err = updateNFTAverage(rawAvg, blockchain, address, auth, contract, conn)
+		// Get correspondin floor price
+		floor, err := getFloor(blockchain, address)
+		if err != nil {
+			log.Fatalf("Failed to get floor price: %v", err)
+			return oldValue, err
+		}
+
+		rawFloor := floor.Value
+
+		err = updateNFTAverageAndFloor(rawAvg, rawFloor, blockchain, address, auth, contract, conn)
 		if err != nil {
 			log.Fatalf("Failed to update DIA Oracle: %v", err)
 			return oldValue, err
@@ -152,11 +168,16 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 	return nil
 }
 
-func updateNFTAverage(average float64, blockchain string, address string, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client) error {
+func updateNFTAverageAndFloor(average float64, floor float64, blockchain string, address string, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client) error {
 	symbol := blockchain + "-" + address 
 	price := average
 	timestamp := time.Now().Unix()
 	err := updateOracle(conn, contract, auth, symbol, int64(price*100000000), timestamp)
+	if err != nil {
+		log.Fatalf("Failed to update Oracle: %v", err)
+		return err
+	}
+	err = updateOracle(conn, contract, auth, symbol + "-Floor", int64(floor*100000000), timestamp)
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err
@@ -219,4 +240,28 @@ func getNFTDistributionFromDia(blockchain, address string) (float64, error) {
 	
 	average := gjson.Get(string(contents), "Average").Float()
 	return average, nil
+}
+
+func getFloor(blockchain, address string) (Floor, error) {
+	response, err := http.Get("https://api.diadata.org/v1/NFTFloor/" + blockchain + "/" + address)
+	if err != nil {
+		return Floor{}, err
+	}
+	defer response.Body.Close()
+	if 200 != response.StatusCode {
+		return Floor{}, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	}
+
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return Floor{}, err
+	}
+
+	var resp Floor
+	err = json.Unmarshal(contents, &resp)
+	if err != nil {
+		return Floor{}, err
+	}
+
+	return resp, err
 }

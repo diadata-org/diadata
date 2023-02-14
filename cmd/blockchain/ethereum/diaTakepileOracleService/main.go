@@ -175,16 +175,17 @@ func updateOracle(
 	value int64,
 	timestamp int64) error {
 
-	/*gasPrice, err := client.SuggestGasPrice(context.Background())
+	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
-  */
+  
 
-	gasPrice, err := getGasSuggestion()
-	if err != nil {
-		log.Fatal(err)
-	}
+		/*fmt.Printf("new gas run\n")
+		gasPrice, err := getGasSuggestion()
+		if err != nil {
+			log.Fatal(err)
+		}*/
 
 	// Get 120% of the gas price
 	fGas := new(big.Float).SetInt(gasPrice)
