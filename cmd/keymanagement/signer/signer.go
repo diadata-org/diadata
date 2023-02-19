@@ -58,7 +58,12 @@ func (s *server) Sign(_ context.Context, request *pb.DataToSign) (*pb.SignedData
 	if err != nil {
 		return nil, err
 	}
-	json.Unmarshal(item.Data, &keypair)
+
+	err = json.Unmarshal(item.Data, &keypair)
+	if err != nil {
+		return nil, err
+	}
+
 	logger.Infoln("public key", keypair.GetPublickey())
 	pk, err := crypto.ToECDSA(common.FromHex(keypair.GetPrivatekey()))
 	if err != nil {
@@ -67,3 +72,4 @@ func (s *server) Sign(_ context.Context, request *pb.DataToSign) (*pb.SignedData
 	sig, err := crypto.Sign(request.Data, pk)
 	return &pb.SignedData{Signed: sig}, err
 }
+

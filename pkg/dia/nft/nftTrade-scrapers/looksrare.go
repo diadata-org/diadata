@@ -795,7 +795,12 @@ func (s *LooksRareScraper) readNFTAttr(ctx context.Context, uri string) (map[str
 		return nil, err
 	}
 
-	defer resp.Body.Close()
+	defer func() {
+		if cerr := resp.Body.Close(); cerr != nil {
+			// change msg error
+			return nil, cerr
+		}
+	}()
 
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		return nil, errors.New("unable to read token attributes: " + resp.Status)
@@ -807,3 +812,4 @@ func (s *LooksRareScraper) readNFTAttr(ctx context.Context, uri string) (map[str
 
 	return attrs, nil
 }
+

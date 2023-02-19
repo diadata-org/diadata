@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-	"math/rand"
+	"crypto/rand"
 	"time"
 )
 
@@ -177,6 +177,13 @@ var (
 
 // Generate returns a random name from the list of adjectives, colors and surnames.
 func GenerateAutoname(delimiter string) string {
-	rand.Seed(time.Now().UnixNano())
-	return fmt.Sprintf("%s%s%s%s%s", adjectives[rand.Intn(len(adjectives))], delimiter, colors[rand.Intn(len(colors))], delimiter, people[rand.Intn(len(people))])
+    const maxIndex = 9999
+    var b [4]byte
+    if _, err := rand.Read(b[:]); err != nil {
+        log.Fatal(err)
+    }
+    idx := binary.LittleEndian.Uint32(b[:]) % maxIndex
+
+    return fmt.Sprintf("%s%s%s%s%s", adjectives[idx%len(adjectives)], delimiter, colors[idx%len(colors)], delimiter, people[idx%len(people)])
 }
+

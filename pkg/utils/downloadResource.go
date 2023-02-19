@@ -18,13 +18,12 @@ var openseaKey string
 // DownloadResource is a simple utility that downloads a resource
 // from @url and stores it into @filepath.
 func DownloadResource(filepath, url string) (err error) {
-
 	fmt.Println("url: ", url)
+
 	resp, err := http.Get(url) //nolint:noctx,gosec
 	if err != nil {
 		return
 	}
-
 	defer func() {
 		cerr := resp.Body.Close()
 		if err == nil {
@@ -32,8 +31,22 @@ func DownloadResource(filepath, url string) (err error) {
 		}
 	}()
 
+	// Resolve absolute file path
+	absPath, err := filepath.Abs(filepath)
+	if err != nil {
+		return
+	}
+
+	// Get the file's parent directory
+	dir := filepath.Dir(absPath)
+
+	// Checks if the parent directory is safe
+	if !isSafeDirectory(dir) {
+		return errors.New("o diretório do arquivo não é seguro")
+	}
+
 	// Create the file
-	out, err := os.Create(filepath)
+	out, err := os.Create(absPath)
 	if err != nil {
 		return
 	}
@@ -44,10 +57,49 @@ func DownloadResource(filepath, url string) (err error) {
 		}
 	}()
 
-	// Write the body to file
+	// Write the contents of the file
 	_, err = io.Copy(out, resp.Body)
 	return
 }
+
+func isSafeDirectory(dir string) bool {
+	// Verifica se o diretório está vazio
+	isEmpty, err := isDirectoryEmpty(dir)
+	if err != nil {
+		return false
+	}
+	if !isEmpty {
+		return false
+	}
+
+	// Verifica se o diretório é gravável pelo usuário atual
+	tempFile := filepath.Join(dir, "tmpfile")
+	err = ioutil.WriteFile(tempFile, []byte("test"), 0644)
+	if err != nil {
+		return false
+	}
+	err = os.Remove(tempFile)
+	if err != nil {
+		return false
+	}
+
+	return true
+}
+
+func isDirectoryEmpty(dir string) (bool, error) {
+	f, err := os.Open(dir)
+	if err != nil {
+		return false, err
+	}
+	defer f.Close()
+
+	_, err = f.Readdir(1)
+	if err == io.EOF {
+		return true, nil
+	}
+	return false, err
+}
+
 
 // GetRequest performs a get request on @url and returns the response body
 // as a slice of byte data.
@@ -88,7 +140,30 @@ func GetRequest(url string) ([]byte, int, error) {
 func GetRequestWithStatus(url string) ([]byte, int, error) {
 
 	// Get url
-	response, err := http.Get(url)
+	parsedURL, err := url.ParseRequestURI(url)
+	if err != nil {
+		log.Error(err)
+		return []byte{}, http.StatusBadRequest, err
+	}
+
+	if parsedURL.Scheme == "" || parsedURL.Host == "" {
+		err := fmt.Errorf("invalid url: %s", url)
+		log.Error(err)
+		return []byte{}, http.StatusBadRequest, err
+	}
+
+	// Create request with timeout
+	client := &http.Client{
+		Timeout: time.Second * 10,
+	}
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		log.Error(err)
+		return []byte{}, http.StatusInternalServerError, err
+	}
+
+	// Make the request
+	response, err := client.Do(req)
 
 	// Check, whether the request was successful
 	if err != nil {
@@ -114,6 +189,7 @@ func GetRequestWithStatus(url string) ([]byte, int, error) {
 
 	return XMLdata, response.StatusCode, err
 }
+
 
 // PostRequest performs a POST request on @url and returns the response body
 // as a slice of byte data.
