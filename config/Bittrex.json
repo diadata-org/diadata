@@ -2,6 +2,24 @@
   "Coins": [
     {
       "Exchange": "Bittrex",
+      "ForeignName": "XTP-BTC",
+      "Ignore": false,
+      "Symbol": "XTP"
+    },
+    {
+      "Exchange": "Bittrex",
+      "ForeignName": "MIMO-BTC",
+      "Ignore": false,
+      "Symbol": "MIMO"
+    },
+    {
+      "Exchange": "Bittrex",
+      "ForeignName": "PAR-USDT",
+      "Ignore": false,
+      "Symbol": "PAR"
+    },
+    {
+      "Exchange": "Bittrex",
       "ForeignName": "1INCH-BTC",
       "Ignore": false,
       "Symbol": "1INCH"

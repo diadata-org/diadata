@@ -107,6 +107,21 @@ services:
       options:
         max-size: "50m"
 
+  blockchainservice:
+    build:
+      context: ../../../..
+      dockerfile: github.com/diadata-org/diadata/build/Dockerfile-blockchainservice
+    image: ${DOCKER_HUB_LOGIN}/${STACKNAME}_blockchainservice:latest
+    networks:
+      - postgres-network
+    environment:
+      - EXEC_MODE=production
+    secrets:
+      - postgres_credentials
+    logging:
+      options:
+        max-size: "50m"
+
   pairdiscoveryservice:
     build:
       context: ../../../..

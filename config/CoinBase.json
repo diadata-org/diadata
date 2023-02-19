@@ -2,6 +2,42 @@
   "Coins": [
     {
       "Exchange": "CoinBase",
+      "ForeignName": "ANKR-USD",
+      "Ignore": false,
+      "Symbol": "ANKR"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "AVAX-USD",
+      "Ignore": false,
+      "Symbol": "AVAX"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "BNT-USD",
+      "Ignore": false,
+      "Symbol": "BNT"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "YFI-USD",
+      "Ignore": false,
+      "Symbol": "YFI"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "SHIB-USD",
+      "Ignore": false,
+      "Symbol": "SHIB"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "QUICK-USD",
+      "Ignore": false,
+      "Symbol": "QUICK"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "WBTC-BTC",
       "Ignore": false,
       "Symbol": "WBTC"
@@ -17,6 +53,24 @@
       "ForeignName": "BUSD-USD",
       "Ignore": false,
       "Symbol": "BUSD"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "DOGE-USD",
+      "Ignore": false,
+      "Symbol": "DOGE"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "DOT-USD",
+      "Ignore": false,
+      "Symbol": "DOT"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "ETC-USD",
+      "Ignore": false,
+      "Symbol": "ETC"
     },
     {
       "Exchange": "CoinBase",

@@ -34,19 +34,20 @@ func init() {
 		tradesBlockTopic = kafkaHelper.TopicTradesBlock
 		tradesTopic = kafkaHelper.TopicTrades
 	}
-	if *historical {
-		tradesBlockTopic = kafkaHelper.TopicTradesBlockHistorical
-		tradesTopic = kafkaHelper.TopicTradesHistorical
-	}
 	if *testing {
 		tradesBlockTopic = kafkaHelper.TopicTradesBlockTest
 		tradesTopic = kafkaHelper.TopicTradesTest
 	}
+	if *replica {
+		tradesBlockTopic = kafkaHelper.TopicTradesBlockReplica
+		tradesTopic = kafkaHelper.TopicTradesReplica
+	}
 }
 
 var (
-	historical       = flag.Bool("historical", false, "digest current or historical trades")
-	testing          = flag.Bool("testing", false, "set true for testing environment")
+	historical       = flag.Bool("historical", false, "digest current or historical trades.")
+	testing          = flag.Bool("testing", false, "set true for testing environment.")
+	replica          = flag.Bool("replica", false, "set true if trades should be fetched from and forwarded to replica topics.")
 	tradesBlockTopic int
 	tradesTopic      int
 )
@@ -56,7 +57,7 @@ func main() {
 		log.Info("run tradesblock service in historical mode")
 	}
 
-	kafkaWriter := kafkaHelper.NewSyncWriter(tradesBlockTopic)
+	kafkaWriter := kafkaHelper.NewSyncWriterWithCompression(tradesBlockTopic)
 	defer func() {
 		err := kafkaWriter.Close()
 		if err != nil {

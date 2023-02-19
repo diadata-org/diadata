@@ -19,14 +19,13 @@ type SymbolExchangeDetails struct {
 
 // Quotation is deprecating. Going to be substituted by AssetQuotation
 type Quotation struct {
-	Symbol             string
-	Name               string
-	Price              float64
-	PriceYesterday     *float64
-	VolumeYesterdayUSD *float64
-	Source             string
-	Time               time.Time
-	ITIN               string
+	Symbol             string    `json:"Symbol"`
+	Name               string    `json:"Name"`
+	Price              float64   `json:"Price"`
+	PriceYesterday     *float64  `json:"PriceYesterday"`
+	VolumeYesterdayUSD *float64  `json:"VolumeYesterdayUSD"`
+	Source             string    `json:"Source"`
+	Time               time.Time `json:"Time"`
 }
 
 type StockQuotation struct {
@@ -61,11 +60,11 @@ func (e *Quotation) UnmarshalBinary(data []byte) error {
 }
 
 type FiatQuotation struct {
-	QuoteCurrency string
-	BaseCurrency  string
-	Price         float64
-	Source        string
-	Time          time.Time
+	QuoteCurrency string    `json:"QuoteCurrency"`
+	BaseCurrency  string    `json:"BaseCurrency"`
+	Price         float64   `json:"Price"`
+	Source        string    `json:"Source"`
+	Time          time.Time `json:"Time"`
 }
 
 // MarshalBinary for fiat quotations
@@ -83,10 +82,10 @@ func (fq *FiatQuotation) UnmarshalBinary(data []byte) error {
 
 // AssetQuotation is the most recent price point information on an asset.
 type AssetQuotation struct {
-	Asset  dia.Asset
-	Price  float64
-	Source string
-	Time   time.Time
+	Asset  dia.Asset `json:"Asset"`
+	Price  float64   `json:"Price"`
+	Source string    `json:"Source"`
+	Time   time.Time `json:"Time"`
 }
 
 // MarshalBinary for quotations
@@ -103,15 +102,15 @@ func (aq *AssetQuotation) UnmarshalBinary(data []byte) error {
 }
 
 type AssetQuotationFull struct {
-	Symbol             string
-	Name               string
-	Address            string
-	Blockchain         string
-	Price              float64
-	PriceYesterday     float64
-	VolumeYesterdayUSD float64
-	Time               time.Time
-	Source             string
+	Symbol             string    `json:"Symbol"`
+	Name               string    `json:"Name"`
+	Address            string    `json:"Address"`
+	Blockchain         string    `json:"Blockchain"`
+	Price              float64   `json:"Price"`
+	PriceYesterday     float64   `json:"PriceYesterday"`
+	VolumeYesterdayUSD float64   `json:"VolumeYesterdayUSD"`
+	Time               time.Time `json:"Time"`
+	Source             string    `json:"Source"`
 }
 
 // MarshalBinary for quotations
@@ -134,70 +133,6 @@ type Price struct {
 	Time   time.Time
 }
 
-type Coin struct {
-	Symbol             string
-	Name               string
-	Price              float64
-	PriceYesterday     *float64
-	VolumeYesterdayUSD *float64
-	Time               time.Time
-	CirculatingSupply  *float64
-	ITIN               string
-}
-
-func (e *Coin) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &e); err != nil {
-		return err
-	}
-	return nil
-}
-
-// MarshalBinary -
-func (e *Coin) MarshalBinary() ([]byte, error) {
-	return json.Marshal(e)
-}
-
-type Coins struct {
-	CompleteCoinList []CoinSymbolAndName
-	Change           *Change
-	Coins            []Coin
-}
-
-// MarshalBinary -
-func (e *Coins) MarshalBinary() ([]byte, error) {
-	return json.Marshal(e)
-}
-
-// UnmarshalBinary -
-func (e *Coins) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &e); err != nil {
-		return err
-	}
-	return nil
-}
-
-// SymbolDetails is used for API return values
-type SymbolDetails struct {
-	Change    *Change
-	Coin      Coin
-	Rank      int
-	Exchanges []SymbolExchangeDetails
-	Gfx1      *Points
-}
-
-// MarshalBinary -
-func (e *SymbolDetails) MarshalBinary() ([]byte, error) {
-	return json.Marshal(e)
-}
-
-// UnmarshalBinary -
-func (e *SymbolDetails) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &e); err != nil {
-		return err
-	}
-	return nil
-}
-
 type CurrencyChange struct {
 	Symbol        string
 	Rate          float64
@@ -205,7 +140,7 @@ type CurrencyChange struct {
 }
 
 type Change struct {
-	USD []CurrencyChange
+	USD []CurrencyChange `json:"USD"`
 }
 
 // MarshalBinary -
@@ -221,14 +156,8 @@ func (e *Change) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
-// Point is used exclusively for chart points in the API
-type Point struct {
-	UnixTime int64
-	Value    float64
-}
-
 type Points struct {
-	DataPoints []clientInfluxdb.Result
+	DataPoints []clientInfluxdb.Result `json:"DataPoints"`
 }
 
 func (e *Points) UnmarshalBinary(data []byte) error {
@@ -241,13 +170,6 @@ func (e *Points) UnmarshalBinary(data []byte) error {
 // MarshalBinary -
 func (e *Points) MarshalBinary() ([]byte, error) {
 	return json.Marshal(e)
-}
-
-// SymbolShort is used in ForeignQuotation.
-// TO DO: Switch from ITIN to Address/Identifier
-type SymbolShort struct {
-	Symbol string
-	ITIN   string
 }
 
 type CoinSymbolAndName struct {

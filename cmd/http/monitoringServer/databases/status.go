@@ -2,11 +2,12 @@ package databases
 
 import (
 	"context"
+	"strings"
+
 	"github.com/diadata-org/diadata/http/monitoringServer/config"
 	"github.com/diadata-org/diadata/http/monitoringServer/enums"
 	log "github.com/sirupsen/logrus"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"strings"
 )
 
 var states []config.State
@@ -27,11 +28,11 @@ func InfluxState() (state config.State) {
 }
 
 func RedisState() (state config.State) {
-	return getServiceState("Redis", "redis-master")
+	return getServiceState("Redis", "redis-dia-master")
 }
 
 func PostgresState() (state config.State) {
-	return getServiceState("Postgres", "postgres-postgresql")
+	return getServiceState("Postgres", "dia-postgresql")
 }
 
 func KafkaState() (state config.State) {

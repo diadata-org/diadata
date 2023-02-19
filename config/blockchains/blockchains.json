@@ -18,6 +18,15 @@
             "ChainID": "Ethereum1"
         },
         {
+            "Name": "Cronos",
+            "GenesisDate": 1573732800,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pos",
+            "ChainID": "Ethereum25"
+        },
+        {
             "Name": "Telos",
             "GenesisDate": 1636713366,
             "NativeToken": {
@@ -155,7 +164,17 @@
             "NativeToken": {
                 "Address": "0x0000000000000000000000000000000000000000"
             },
-            "VerificationMechanism": "pos"
+            "VerificationMechanism": "pos",
+            "ChainID": "Ethereum592"
+        },
+          {
+            "Name": "Velas",
+            "GenesisDate": 1618834090,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pos",
+            "ChainID": "Ethereum106"
         },
         {
             "Name": "Shiden",
@@ -174,6 +193,15 @@
             },
             "VerificationMechanism": "pos",
             "ChainID": "Ethereum1088"
+        },
+        {
+            "Name": "Wanchain",
+            "GenesisDate": 1587945600,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "pos",
+            "ChainID": "Ethereum888"
         },
         {
             "Name": "Fetch",
@@ -214,7 +242,26 @@
             "NativeToken": {
                 "Address": "Token:ACA"
             },
-            "VerificationMechanism": "poa"
+            "VerificationMechanism": "poa",
+            "ChainID": "Polkadot2000"
+        },
+        {
+            "Name": "Centrifuge",
+            "GenesisDate": 1647086400,
+            "NativeToken": {
+                "Address": ""
+            },
+            "VerificationMechanism": "poa",
+            "ChainID": "Polkadot2031"
+        },
+        {
+            "Name": "Interlay",
+            "GenesisDate": 1647086400,
+            "NativeToken": {
+                "Address": ""
+            },
+            "VerificationMechanism": "poa",
+            "ChainID": "Polkadot2032"
         },
         {
             "Name": "Fiat",

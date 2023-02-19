@@ -27,26 +27,30 @@ func main() {
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
 	sleepSeconds, err := strconv.Atoi(utils.Getenv("SLEEP_SECONDS", "120"))
 	if err != nil {
-		log.Fatalf("Failed to parse sleepSeconds: %v")
+		log.Fatalf("Failed to parse sleepSeconds: %v", err)
 	}
 	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "120"))
 	if err != nil {
-		log.Fatalf("Failed to parse frequencySeconds: %v")
+		log.Fatalf("Failed to parse frequencySeconds: %v", err)
 	}
 	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "1"), 10, 64)
 	if err != nil {
-		log.Fatalf("Failed to parse chainId: %v")
+		log.Fatalf("Failed to parse chainId: %v", err)
 	}
 	deviationPermille, err := strconv.Atoi(utils.Getenv("DEVIATION_PERMILLE", "10"))
 	if err != nil {
-		log.Fatalf("Failed to parse deviationPermille: %v")
+		log.Fatalf("Failed to parse deviationPermille: %v", err)
 	}
 
 	addresses := []string{
-		"0x0000000000000000000000000000000000000000",//GLMR
+		"0x0000000000000000000000000000000000000000", //GLMR
+		"0x6B175474E89094C44Da98b954EedeAC495271d0F", //DAI
+		"0xdAC17F958D2ee523a2206206994597C13D831ec7", //USDT
 	}
 	blockchains := []string{
 		"Moonbeam",
+		"Ethereum",
+		"Ethereum",
 	}
 	oldPrices := make(map[int]float64)
 

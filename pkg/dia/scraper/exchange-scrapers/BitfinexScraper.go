@@ -14,6 +14,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
+	"github.com/zekroTJA/timedmap"
 )
 
 type pairScraperSet map[*BitfinexPairScraper]nothing
@@ -81,6 +82,10 @@ func (s *BitfinexScraper) mainLoop() {
 		s.cleanup(err)
 		return
 	}
+
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+
 	for {
 		select {
 		case msg, ok := <-listener:
@@ -115,8 +120,14 @@ func (s *BitfinexScraper) mainLoop() {
 					if exchangepair.Verified {
 						log.Infoln("Got verified trade", t)
 					}
-					log.Info("got trade: ", t)
-					s.chanTrades <- t
+
+					// Handle duplicate trades.
+					discardTrade := t.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+					if !discardTrade {
+						t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+						s.chanTrades <- t
+					}
+
 				case error:
 					s.cleanup(m)
 					return

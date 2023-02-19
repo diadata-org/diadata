@@ -11,8 +11,6 @@ import (
 	"net/url"
 	"os"
 	"time"
-
-	log "github.com/sirupsen/logrus"
 )
 
 var openseaKey string
@@ -99,7 +97,12 @@ func GetRequestWithStatus(url string) ([]byte, int, error) {
 	}
 
 	// Close response body after function
-	defer response.Body.Close()
+	defer func(Body io.ReadCloser) {
+		errClose := Body.Close()
+		if errClose != nil {
+			log.Error("error closing body ", errClose)
+		}
+	}(response.Body)
 
 	// Read the response body
 	XMLdata, err := ioutil.ReadAll(response.Body)
@@ -223,9 +226,9 @@ func getOpenseaApiKey() string {
 		log.Fatal(err)
 	}
 	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
-			log.Error("failure closing opensea-api.key file ", err)
+		errClose := file.Close()
+		if errClose != nil {
+			log.Error("failure closing opensea-api.key file ", errClose)
 		}
 	}(file)
 
@@ -263,7 +266,12 @@ func OpenseaGetRequest(OpenseaURL string) ([]byte, int, error) {
 		fmt.Println("Error sending request to server")
 		os.Exit(1)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		errClose := Body.Close()
+		if errClose != nil {
+			fmt.Println("Error closing body ", errClose)
+		}
+	}(resp.Body)
 	respData, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Error("read response body: ", err)
@@ -285,14 +293,14 @@ func GetCoinPrice(coin string) (float64, error) {
 	}
 
 	type Quotation struct {
-		Symbol             string
-		Name               string
-		Price              float64
-		PriceYesterday     *float64
-		VolumeYesterdayUSD *float64
-		Source             string
-		Time               time.Time
-		ITIN               string
+		Symbol             string    `json:"Symbol"`
+		Name               string    `json:"Name"`
+		Price              float64   `json:"Price"`
+		PriceYesterday     *float64  `json:"PriceYesterday"`
+		VolumeYesterdayUSD *float64  `json:"VolumeYesterdayUSD"`
+		Source             string    `json:"Source"`
+		Time               time.Time `json:"Time"`
+		ITIN               string    `json:"ITIN"`
 	}
 	/*
 		type QuotationGecko struct {

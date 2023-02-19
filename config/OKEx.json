@@ -2,6 +2,30 @@
   "Coins": [
     {
       "Exchange": "OKEx",
+      "ForeignName": "RAY-USDT",
+      "Ignore": false,
+      "Symbol": "RAY"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "SAMO-USDT",
+      "Ignore": false,
+      "Symbol": "SAMO"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "YFI-USDT",
+      "Ignore": false,
+      "Symbol": "YFI"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "YFI-USDC",
+      "Ignore": false,
+      "Symbol": "YFI"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "ACA-USDT",
       "Ignore": false,
       "Symbol": "ACA"
@@ -11,6 +35,18 @@
       "ForeignName": "ANT-USDT",
       "Ignore": false,
       "Symbol": "ANT"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "PHA-USDT",
+      "Ignore": false,
+      "Symbol": "PHA"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "SHIB-USDT",
+      "Ignore": false,
+      "Symbol": "SHIB"
     },
     {
       "Exchange": "OKEx",
@@ -704,6 +740,24 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "DOGE-USDT",
+      "Ignore": false,
+      "Symbol": "DOGE"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "DOT-USDT",
+      "Ignore": false,
+      "Symbol": "DOT"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "DOT-USDC",
+      "Ignore": false,
+      "Symbol": "DOT"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "DPY-BTC",
       "Ignore": false,
       "Symbol": "DPY"
@@ -929,6 +983,12 @@
       "ForeignName": "GAS-USDT",
       "Ignore": false,
       "Symbol": "GAS"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "GMT-USDT",
+      "Ignore": false,
+      "Symbol": "GMT"
     },
     {
       "Exchange": "OKEx",
@@ -1295,6 +1355,12 @@
       "ForeignName": "LBA-USDT",
       "Ignore": false,
       "Symbol": "LBA"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "LDO-USDT",
+      "Ignore": false,
+      "Symbol": "LDO"
     },
     {
       "Exchange": "OKEx",

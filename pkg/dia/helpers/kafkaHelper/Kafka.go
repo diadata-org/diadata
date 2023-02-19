@@ -9,7 +9,9 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/segmentio/kafka-go"
+	"github.com/segmentio/kafka-go/compress"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -32,9 +34,10 @@ const (
 	TopicTrades       = 2
 	TopicTradesBlock  = 3
 
-	TopicFiltersBlockHistorical = 4
-	TopicTradesHistorical       = 5
-	TopicTradesBlockHistorical  = 6
+	// The replica topics can be used to forward trades and blocks to other services in parallel.
+	TopicFiltersBlockReplica = 4
+	TopicTradesReplica       = 5
+	TopicTradesBlockReplica  = 6
 
 	TopicTradesEstimation = 7
 
@@ -43,6 +46,8 @@ const (
 	TopicFiltersBlockTest = 21
 	TopicTradesTest       = 22
 	TopicTradesBlockTest  = 23
+	TopicNFTTrades        = 24
+	TopicNFTTradesTest    = 25
 
 	retryDelay = 2 * time.Second
 )
@@ -51,7 +56,10 @@ type Config struct {
 	KafkaUrl []string
 }
 
-var KafkaConfig Config
+var (
+	KafkaConfig Config
+	topicSuffix string
+)
 
 func GetTopic(topic int) string {
 	return getTopic(topic)
@@ -62,14 +70,16 @@ func getTopic(topic int) string {
 		1:  "filtersBlock",
 		2:  "trades",
 		3:  "tradesBlock",
-		4:  "filtersBlockHistorical",
-		5:  "tradesHistorical",
-		6:  "tradesBlockHistorical",
+		4:  "filtersBlockReplica" + topicSuffix,
+		5:  "tradesReplica" + topicSuffix,
+		6:  "tradesBlockReplica" + topicSuffix,
 		7:  "tradesEstimation",
 		14: "filtersblockHistoricalDone",
 		21: "filtersblocktest",
 		22: "tradestest",
 		23: "tradesblocktest",
+		24: "nfttrades",
+		25: "nfttradestest",
 	}
 	result, ok := topicMap[topic]
 	if !ok {
@@ -80,6 +90,7 @@ func getTopic(topic int) string {
 
 func init() {
 	KafkaConfig.KafkaUrl = []string{os.Getenv("KAFKAURL")}
+	topicSuffix = utils.Getenv("KAFKA_TOPIC_SUFFIX", "")
 }
 
 // WithRetryOnError
@@ -153,6 +164,17 @@ func NewSyncWriter(topic int) *kafka.Writer {
 		Balancer:   &kafka.LeastBytes{},
 		Async:      false,
 		BatchBytes: 1e9, // 1GB
+	})
+}
+
+func NewSyncWriterWithCompression(topic int) *kafka.Writer {
+	return kafka.NewWriter(kafka.WriterConfig{
+		Brokers:          KafkaConfig.KafkaUrl,
+		Topic:            getTopic(topic),
+		Balancer:         &kafka.LeastBytes{},
+		Async:            false,
+		BatchBytes:       1e9, // 1GB
+		CompressionCodec: &compress.GzipCodec,
 	})
 }
 

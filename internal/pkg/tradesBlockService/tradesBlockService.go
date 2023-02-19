@@ -10,6 +10,7 @@ import (
 
 	"github.com/cnf/structhash"
 	"github.com/diadata-org/diadata/pkg/dia"
+	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/common"
@@ -20,13 +21,17 @@ type nothing struct{}
 
 func init() {
 	log = logrus.New()
-	batchTimeString = utils.Getenv("BATCH_TIME_SECONDS", "30")
-	var err error
-	batchTimeSeconds, err = strconv.Atoi(batchTimeString)
-	if err != nil {
-		log.Error("parse batchTimeString: ", err)
-	}
 
+	var err error
+	batchTimeSeconds, err = strconv.Atoi(utils.Getenv("BATCH_TIME_SECONDS", "30"))
+	if err != nil {
+		log.Error("parse BATCH_TIME_SECONDS: ", err)
+	}
+	tradeVolumeThresholdExponent, err := strconv.ParseFloat(utils.Getenv("TRADE_VOLUME_THRESHOLD_EXPONENT", ""), 64)
+	if err != nil {
+		log.Error("Parse TRADE_VOLUME_THRESHOLD_EXPONENT: ", err)
+	}
+	tradeVolumeThreshold = math.Pow(10, -tradeVolumeThresholdExponent)
 }
 
 var (
@@ -38,10 +43,11 @@ var (
 		"PAX":  "",
 		"BUSD": "",
 	}
-	tol              = float64(0.04)
-	log              *logrus.Logger
-	batchTimeString  string
-	batchTimeSeconds int
+	tol                  = float64(0.04)
+	log                  *logrus.Logger
+	batchTimeSeconds     int
+	tradeVolumeThreshold float64
+	checkTradesDuplicate = make(map[string]struct{})
 )
 
 type TradesBlockService struct {
@@ -112,90 +118,23 @@ func (s *TradesBlockService) process(t dia.Trade) {
 
 	// Price estimation can only be done for verified pairs.
 	// Trades with unverified pairs are still saved, but not sent to the filtersBlockService.
-	if t.VerifiedPair {
+	if t.VerifiedPair && s.checkTrade(t) {
 		if t.BaseToken.Address == "840" && t.BaseToken.Blockchain == dia.FIAT {
 			// All prices are measured in US-Dollar, so just price for base token == USD
 			t.EstimatedUSDPrice = t.Price
 			verifiedTrade = true
 		} else {
 			// Get price of base token.
-			// This can be switched to GetAssetPriceUSD(asset, timestamp) when switching to historical scrapers.
-			// val, err := s.datastore.GetAssetPriceUSDCache(t.BaseToken)
 			var quotation *models.AssetQuotation
 			var price float64
 			var ok bool
 			var err error
 			if !s.historical {
+
+				// Bridge basetoken if necessary.
+				basetoken := buildBridge(t)
+
 				// Get latest price from cache.
-				// price, err = s.datastore.GetAssetPriceUSDLatest(t.BaseToken)
-
-				basetoken := t.BaseToken
-				// Tmp solution for prices on Solana, Metis, Fantom and Telos:------
-				if basetoken.Blockchain == dia.SOLANA && t.Source == dia.SerumExchange && basetoken.Address == "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" {
-					basetoken = dia.Asset{
-						Symbol:     "USDC",
-						Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-						Blockchain: dia.ETHEREUM,
-					}
-				}
-				if basetoken.Blockchain == dia.METIS && (t.Source == dia.NetswapExchange || t.Source == dia.TethysExchange || t.Source == dia.HermesExchange) && basetoken.Address == "0xEA32A96608495e54156Ae48931A7c20f0dcc1a21" {
-					basetoken = dia.Asset{
-						Symbol:     "USDC",
-						Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-						Blockchain: dia.ETHEREUM,
-					}
-				}
-				if basetoken.Blockchain == dia.FANTOM && (t.Source == dia.SpookyswapExchange || t.Source == dia.SpiritswapExchange || t.Source == dia.BeetsExchange) && basetoken.Address == "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83" {
-					basetoken = dia.Asset{
-						Symbol:     "FTM",
-						Address:    "0x0000000000000000000000000000000000000000",
-						Blockchain: dia.FANTOM,
-					}
-				}
-				if basetoken.Blockchain == dia.TELOS && (t.Source == dia.OmniDexExchange) && basetoken.Address == common.HexToAddress("0xd102ce6a4db07d247fcc28f366a623df0938ca9e").Hex() {
-					basetoken = dia.Asset{
-						Symbol:     "TLOS",
-						Address:    "0x0000000000000000000000000000000000000000",
-						Blockchain: dia.TELOS,
-					}
-				}
-				if basetoken.Blockchain == dia.EVMOS && t.Source == dia.DiffusionExchange && basetoken.Address == common.HexToAddress("0x51e44FfaD5C2B122C8b635671FCC8139dc636E82").Hex() {
-					basetoken = dia.Asset{
-						Symbol:     "USDC",
-						Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-						Blockchain: dia.ETHEREUM,
-					}
-				}
-				if t.Source == dia.StellaswapExchange && basetoken.Blockchain == dia.MOONBEAM && basetoken.Address == common.HexToAddress("0xAcc15dC74880C9944775448304B263D191c6077F").Hex() {
-					basetoken = dia.Asset{
-						Symbol:     "GLMR",
-						Address:    "0x0000000000000000000000000000000000000000",
-						Blockchain: dia.MOONBEAM,
-					}
-				}
-				if (t.Source == dia.UniswapExchangeV3Polygon || t.Source == dia.QuickswapExchange || t.Source == dia.SushiSwapExchangePolygon || t.Source == dia.DfynNetwork) && basetoken.Blockchain == dia.POLYGON && basetoken.Address == common.HexToAddress("0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174").Hex() {
-					basetoken = dia.Asset{
-						Symbol:     "USDC",
-						Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-						Blockchain: dia.ETHEREUM,
-					}
-				}
-
-				// if basetoken.Blockchain == dia.ASTAR && t.Source == dia.ArthswapExchange && basetoken.Address == common.HexToAddress("0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98").Hex() {
-				// 	basetoken = dia.Asset{
-				// 		Symbol:     "USDC",
-				// 		Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-				// 		Blockchain: dia.ETHEREUM,
-				// 	}
-				// }
-				// if basetoken.Blockchain == dia.ASTAR && t.Source == dia.ArthswapExchange && basetoken.Address == common.HexToAddress("0x3795C36e7D12A8c252A20C5a7B455f7c57b60283").Hex() {
-				// 	basetoken = dia.Asset{
-				// 		Symbol:     "USDT",
-				// 		Address:    "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-				// 		Blockchain: dia.ETHEREUM,
-				// 	}
-				// }
-
 				if _, ok = s.priceCache[basetoken]; ok {
 					price = s.priceCache[basetoken]
 				} else {
@@ -293,7 +232,20 @@ func (s *TradesBlockService) process(t dia.Trade) {
 				log.Error(err)
 			}
 		}
-		s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
+		// For centralized exchanges check if trade is not in the block yet
+		// (we have observed ws APIs sending identical trades).
+		if scrapers.Exchanges[t.Source].Centralized {
+			if _, ok := checkTradesDuplicate[t.TradeIdentifierFull()]; !ok {
+				s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
+				checkTradesDuplicate[t.TradeIdentifierFull()] = struct{}{}
+			} else {
+				if scrapers.Exchanges[t.Source].Name != dia.BitforexExchange {
+					log.Warn("duplicate trade within one tradesblock: ", t)
+				}
+			}
+		} else {
+			s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
+		}
 	} else {
 		log.Debugf("ignore trade  %v", t)
 	}
@@ -312,6 +264,8 @@ func (s *TradesBlockService) finaliseCurrentBlock() {
 	}
 	s.currentBlock.BlockHash = hash
 	s.currentBlock.TradesBlockData.TradesNumber = len(s.currentBlock.TradesBlockData.Trades)
+	// Reset duplicate trades identifier.
+	checkTradesDuplicate = make(map[string]struct{})
 	s.chanTradesBlock <- s.currentBlock
 }
 
@@ -341,4 +295,147 @@ func (s *TradesBlockService) cleanup(err error) {
 
 func (s *TradesBlockService) Channel() chan *dia.TradesBlock {
 	return s.chanTradesBlock
+}
+
+func (s *TradesBlockService) checkTrade(t dia.Trade) bool {
+	if math.Abs(t.Volume) < tradeVolumeThreshold {
+		log.Info("low volume trade: ", t)
+		return false
+	}
+	return true
+}
+
+func buildBridge(t dia.Trade) dia.Asset {
+
+	basetoken := t.BaseToken
+
+	if basetoken.Blockchain == dia.ETHEREUM && basetoken.Address == "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" {
+		basetoken = dia.Asset{
+			Symbol:     "ETH",
+			Address:    "0x0000000000000000000000000000000000000000",
+			Blockchain: dia.ETHEREUM,
+		}
+	}
+	if basetoken.Blockchain == dia.SOLANA && t.Source == dia.OrcaExchange {
+		if basetoken.Address == "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" {
+			basetoken = dia.Asset{
+				Symbol:     "USDC",
+				Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+				Blockchain: dia.ETHEREUM,
+			}
+		}
+		if basetoken.Address == "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB" {
+			basetoken = dia.Asset{
+				Symbol:     "USDT",
+				Address:    "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+				Blockchain: dia.ETHEREUM,
+			}
+		}
+	}
+	if basetoken.Blockchain == dia.METIS && (t.Source == dia.NetswapExchange || t.Source == dia.TethysExchange || t.Source == dia.HermesExchange) && basetoken.Address == "0xEA32A96608495e54156Ae48931A7c20f0dcc1a21" {
+		basetoken = dia.Asset{
+			Symbol:     "USDC",
+			Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+			Blockchain: dia.ETHEREUM,
+		}
+	}
+	if basetoken.Blockchain == dia.FANTOM && (t.Source == dia.SpookyswapExchange || t.Source == dia.SpiritswapExchange || t.Source == dia.BeetsExchange) {
+		if basetoken.Address == "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83" {
+			basetoken = dia.Asset{
+				Symbol:     "FTM",
+				Address:    "0x0000000000000000000000000000000000000000",
+				Blockchain: dia.FANTOM,
+			}
+		}
+		if basetoken.Address == "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75" {
+			basetoken = dia.Asset{
+				Symbol:     "USDC",
+				Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+				Blockchain: dia.ETHEREUM,
+			}
+		}
+	}
+	if basetoken.Blockchain == dia.TELOS && (t.Source == dia.OmniDexExchange) && basetoken.Address == common.HexToAddress("0xd102ce6a4db07d247fcc28f366a623df0938ca9e").Hex() {
+		basetoken = dia.Asset{
+			Symbol:     "TLOS",
+			Address:    "0x0000000000000000000000000000000000000000",
+			Blockchain: dia.TELOS,
+		}
+	}
+	if basetoken.Blockchain == dia.EVMOS && t.Source == dia.DiffusionExchange {
+		if basetoken.Address == common.HexToAddress("0xD4949664cD82660AaE99bEdc034a0deA8A0bd517").Hex() {
+			basetoken = dia.Asset{
+				Symbol:     "EVMOS",
+				Address:    "0x0000000000000000000000000000000000000000",
+				Blockchain: dia.EVMOS,
+			}
+		}
+	}
+	if t.Source == dia.StellaswapExchange && basetoken.Blockchain == dia.MOONBEAM && basetoken.Address == common.HexToAddress("0xAcc15dC74880C9944775448304B263D191c6077F").Hex() {
+		basetoken = dia.Asset{
+			Symbol:     "GLMR",
+			Address:    "0x0000000000000000000000000000000000000000",
+			Blockchain: dia.MOONBEAM,
+		}
+	}
+	if (t.Source == dia.UniswapExchangeV3Polygon || t.Source == dia.QuickswapExchange || t.Source == dia.SushiSwapExchangePolygon || t.Source == dia.DfynNetwork) && basetoken.Blockchain == dia.POLYGON {
+		if basetoken.Address == common.HexToAddress("0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174").Hex() {
+			basetoken = dia.Asset{
+				Symbol:     "USDC",
+				Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+				Blockchain: dia.ETHEREUM,
+			}
+		}
+		if basetoken.Address == common.HexToAddress("0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270").Hex() {
+			basetoken = dia.Asset{
+				Symbol:     "MATIC",
+				Address:    "0x0000000000000000000000000000000000001010",
+				Blockchain: dia.POLYGON,
+			}
+		}
+	}
+	if t.Source == dia.ArthswapExchange && basetoken.Blockchain == dia.ASTAR {
+		if basetoken.Address == common.HexToAddress("0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98").Hex() {
+			basetoken = dia.Asset{
+				Symbol:     "USDC",
+				Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+				Blockchain: dia.ETHEREUM,
+			}
+		}
+		if basetoken.Address == common.HexToAddress("0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720").Hex() {
+			basetoken = dia.Asset{
+				Symbol:     "ASTR",
+				Address:    "0x0000000000000000000000000000000000000000",
+				Blockchain: dia.ASTAR,
+			}
+		}
+	}
+	if basetoken.Blockchain == dia.AVALANCHE && (t.Source == dia.TraderJoeExchange || t.Source == dia.PangolinExchange) {
+		if basetoken.Address == common.HexToAddress("0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7").Hex() {
+			basetoken = dia.Asset{
+				Symbol:     "AVAX",
+				Address:    "0x0000000000000000000000000000000000000000",
+				Blockchain: dia.AVALANCHE,
+			}
+		}
+	}
+	if basetoken.Blockchain == dia.WANCHAIN && t.Source == dia.WanswapExchange {
+		if basetoken.Address == common.HexToAddress("0xdabD997aE5E4799BE47d6E69D9431615CBa28f48").Hex() {
+			basetoken = dia.Asset{
+				Symbol:     "WAN",
+				Address:    "0x0000000000000000000000000000000000000000",
+				Blockchain: dia.WANCHAIN,
+			}
+		}
+	}
+	if basetoken.Blockchain == dia.ARBITRUM && t.Source == dia.UniswapExchangeV3Arbitrum {
+		if basetoken.Address == common.HexToAddress("0x82aF49447D8a07e3bd95BD0d56f35241523fBab1").Hex() {
+			basetoken = dia.Asset{
+				Symbol:     "ETH",
+				Address:    "0x0000000000000000000000000000000000000000",
+				Blockchain: dia.ETHEREUM,
+			}
+		}
+	}
+	return basetoken
 }

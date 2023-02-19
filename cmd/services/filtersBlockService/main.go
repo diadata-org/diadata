@@ -18,6 +18,7 @@ var (
 	replayInflux          = flag.Bool("replayInflux", false, "replayInflux ?")
 	historical            = flag.Bool("historical", false, "digest historical or current trades")
 	testing               = flag.Bool("testing", false, "set true for testing environment")
+	replica               = flag.Bool("replica", false, "set true if tradesblocks should be fetched from and forwarded to replica topics.")
 	filtersBlockTopic     int
 	tradesBlockTopic      int
 	filtersblockDoneTopic int
@@ -32,13 +33,15 @@ func init() {
 		tradesBlockTopic = kafkaHelper.TopicTradesBlock
 	}
 	if *historical {
-		filtersBlockTopic = kafkaHelper.TopicFiltersBlockHistorical
-		tradesBlockTopic = kafkaHelper.TopicTradesBlockHistorical
 		filtersblockDoneTopic = kafkaHelper.TopicFiltersBlockDone
 	}
 	if *testing {
 		filtersBlockTopic = kafkaHelper.TopicFiltersBlockTest
 		tradesBlockTopic = kafkaHelper.TopicTradesBlockTest
+	}
+	if *replica {
+		filtersBlockTopic = kafkaHelper.TopicFiltersBlockReplica
+		tradesBlockTopic = kafkaHelper.TopicTradesBlockReplica
 	}
 }
 
@@ -60,7 +63,7 @@ func main() {
 
 		f := filters.NewFiltersBlockService(loadFilterPointsFromPreviousBlock(), s, channel)
 
-		w := kafkaHelper.NewSyncWriter(filtersBlockTopic)
+		w := kafkaHelper.NewSyncWriterWithCompression(filtersBlockTopic)
 
 		defer func() {
 			err := w.Close()

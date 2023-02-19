@@ -94,8 +94,24 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 		return source.NewUniswapV3AssetSource(exchanges[dia.UniswapExchangeV3])
 	case dia.UniswapExchangeV3Polygon:
 		return source.NewUniswapV3AssetSource(exchanges[dia.UniswapExchangeV3Polygon])
+	case dia.UniswapExchangeV3Arbitrum:
+		return source.NewUniswapV3AssetSource(exchanges[dia.UniswapExchangeV3Arbitrum])
 	case dia.StellaswapExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.StellaswapExchange])
+	case dia.WanswapExchange:
+		return source.NewUniswapAssetSource(exchanges[dia.WanswapExchange])
+	case dia.CurveFIExchange:
+		return source.NewCurvefiAssetSource(exchanges[dia.CurveFIExchange])
+	case dia.CurveFIExchangeFantom:
+		return source.NewCurvefiAssetSource(exchanges[dia.CurveFIExchangeFantom])
+	case dia.CurveFIExchangeMoonbeam:
+		return source.NewCurvefiAssetSource(exchanges[dia.CurveFIExchangeMoonbeam])
+	case dia.CurveFIExchangePolygon:
+		return source.NewCurvefiAssetSource(exchanges[dia.CurveFIExchangePolygon])
+	case dia.PlatypusExchange:
+		return source.NewPlatypusScraper(exchanges[dia.PlatypusExchange])
+	case dia.OrcaExchange:
+		return source.NewOrcaScraper(exchanges[dia.OrcaExchange])
 	case "assetlists":
 		return source.NewJSONReader(exchange, secret)
 	default:
@@ -115,7 +131,6 @@ func main() {
 }
 
 func runAssetSource(relDB *models.RelDB, source string, caching bool, secret string) {
-	// TO DO: check for duplicate key error and return if error is different
 	log.Println("Fetching asset from ", source)
 	asset := NewAssetScraper(source, secret)
 

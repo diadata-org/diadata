@@ -15,16 +15,16 @@ import (
 )
 
 const (
-	keyAllRates     = "all_rates"
-	TimeLayoutRedis = "2006-01-02 15:04:05 +0000 UTC"
+	keyAllRates = "all_rates"
+	// TimeLayoutRedis = "2006-01-02 15:04:05 +0000 UTC"
 )
 
 type InterestRate struct {
-	Symbol          string
-	Value           float64
-	PublicationTime time.Time
-	EffectiveDate   time.Time
-	Source          string
+	Symbol          string    `json:"Symbol"`
+	Value           float64   `json:"Value"`
+	PublicationTime time.Time `json:"PublicationTime"`
+	EffectiveDate   time.Time `json:"EffectiveDate"`
+	Source          string    `json:"Source"`
 }
 
 // MarshalBinary for interest rates

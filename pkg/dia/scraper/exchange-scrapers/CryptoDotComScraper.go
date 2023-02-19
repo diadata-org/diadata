@@ -11,6 +11,7 @@ import (
 	"time"
 
 	ws "github.com/gorilla/websocket"
+	"github.com/zekroTJA/timedmap"
 	"go.uber.org/ratelimit"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -93,11 +94,11 @@ type cryptoDotComWSSubscriptionResult struct {
 
 // cryptoDotComWSInstrument represents a trade
 type cryptoDotComWSInstrument struct {
-	Price     float64 `json:"p"`
-	Quantity  float64 `json:"q"`
-	Side      string  `json:"s"`
-	TradeID   int     `json:"d"`
-	TradeTime int64   `json:"t"`
+	Price     string `json:"p"`
+	Quantity  string `json:"q"`
+	Side      string `json:"s"`
+	TradeID   string `json:"d"`
+	TradeTime int64  `json:"t"`
 }
 
 // cryptoDotComInstrument represents a trading pair
@@ -135,11 +136,11 @@ type CryptoDotComScraper struct {
 
 	// error handling; err should be read from error(), closed should be read from isClosed()
 	// those two methods implement RW lock
-	errMutex            sync.RWMutex
-	err                 error
-	closedMutex         sync.RWMutex
-	closed              bool
-	consecutiveErrCount int
+	errMutex    sync.RWMutex
+	err         error
+	closedMutex sync.RWMutex
+	closed      bool
+	//consecutiveErrCount int
 
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers sync.Map
@@ -259,6 +260,9 @@ func (s *CryptoDotComScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, er
 func (s *CryptoDotComScraper) mainLoop() {
 	defer s.cleanup()
 
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+
 	for {
 		select {
 		case <-s.shutdown:
@@ -321,19 +325,29 @@ func (s *CryptoDotComScraper) mainLoop() {
 					log.Errorf("CryptoDotComScraper: Shutting down main loop due to instrument unmarshaling failure, err=%s", err.Error())
 				}
 
-				volume := i.Quantity
+				volume, err := strconv.ParseFloat(i.Quantity, 64)
+				if err != nil {
+					log.Error("parse volume: ", err)
+					continue
+				}
 				if i.Side != cryptoDotComSpotTradingBuy {
 					volume = -volume
+				}
+
+				price, err := strconv.ParseFloat(i.Price, 64)
+				if err != nil {
+					log.Error("parse price: ", err)
+					continue
 				}
 
 				trade := &dia.Trade{
 					Symbol:         baseCurrency,
 					Pair:           subscription.InstrumentName,
-					Price:          i.Price,
+					Price:          price,
 					Time:           time.Unix(0, i.TradeTime*int64(time.Millisecond)),
 					Volume:         volume,
 					Source:         s.exchangeName,
-					ForeignTradeID: strconv.Itoa(i.TradeID),
+					ForeignTradeID: i.TradeID,
 					VerifiedPair:   pair.Verified,
 					BaseToken:      pair.UnderlyingPair.BaseToken,
 					QuoteToken:     pair.UnderlyingPair.QuoteToken,
@@ -341,11 +355,16 @@ func (s *CryptoDotComScraper) mainLoop() {
 				if pair.Verified {
 					log.Infoln("Got verified trade", trade)
 				}
-
-				select {
-				case <-s.shutdown:
-				case s.chanTrades <- trade:
+				// Handle duplicate trades.
+				discardTrade := trade.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+				if !discardTrade {
+					trade.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+					select {
+					case <-s.shutdown:
+					case s.chanTrades <- trade:
+					}
 				}
+
 			}
 		}
 	}

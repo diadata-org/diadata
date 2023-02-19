@@ -68,10 +68,11 @@ func (filter *FilterVWAPIR) processDataPoint(trade dia.Trade) {
 
 // FinalCompute ...
 func (s *FilterVWAPIR) FinalCompute(t time.Time) float64 {
-	return s.finalCompute(t)
+	log.Info("final compute of time ", t)
+	return s.finalCompute()
 }
 
-func (s *FilterVWAPIR) finalCompute(t time.Time) float64 {
+func (s *FilterVWAPIR) finalCompute() float64 {
 	if s.lastTrade == (dia.Trade{}) {
 		return 0.0
 	}

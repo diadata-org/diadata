@@ -48,14 +48,14 @@ func main() {
 	}
 
 	// Save old "circulating" supply as total supply (i.e. #DIA without the burnt tokens)
-	err = ds.SetDiaTotalSupply(float64(173296236.5011769))
+	err = ds.SetDiaTotalSupply(float64(168817248))
 	if err != nil {
 		log.Errorf("error setting total supply for %s: %v\n", "DIA", err)
 	} else {
 		log.Info("set total supply: DIA")
 	}
 	// Set circulating supply
-	err = ds.SetDiaCirculatingSupply(float64(80575573))
+	err = ds.SetDiaCirculatingSupply(float64(93062396))
 	if err != nil {
 		log.Errorf("error setting circulating supply for %s: %v\n", "DIA", err)
 	} else {

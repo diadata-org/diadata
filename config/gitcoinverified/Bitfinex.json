@@ -7,6 +7,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "AVAX",
+            "Exchange": "Bitfinex",
+            "Blockchain": "Avalanche",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "BCH",
             "Exchange": "Bitfinex",
             "Blockchain": "BitcoinCash",
@@ -28,6 +34,12 @@
             "Symbol": "FIL",
             "Exchange": "Bitfinex",
             "Blockchain": "Filecoin",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "FTM",
+            "Exchange": "Bitfinex",
+            "Blockchain": "Fantom",
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
@@ -71,6 +83,12 @@
             "Exchange": "Bitfinex",
             "Blockchain": "Ethereum",
             "Address": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD"
+        },
+        {
+            "Symbol": "YFI",
+            "Exchange": "Bitfinex",
+            "Blockchain": "Ethereum",
+            "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
         }
     ]
 }

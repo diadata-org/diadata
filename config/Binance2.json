@@ -1,0 +1,76 @@
+{
+    "Coins": [
+        {
+            "Exchange": "Binance",
+            "ForeignName": "AAVEUSDT",
+            "Ignore": false,
+            "Symbol": "AAVE"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "APEUSDT",
+            "Ignore": false,
+            "Symbol": "APE"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "APEBUSD",
+            "Ignore": false,
+            "Symbol": "APE"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "ARUSDT",
+            "Ignore": false,
+            "Symbol": "AR"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "AVAXBUSD",
+            "Ignore": false,
+            "Symbol": "AVAX"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "BANDUSDT",
+            "Ignore": false,
+            "Symbol": "BAND"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "DASHUSDT",
+            "Ignore": false,
+            "Symbol": "DASH"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "DYDXUSDT",
+            "Ignore": false,
+            "Symbol": "DYDX"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "ENSUSDT",
+            "Ignore": false,
+            "Symbol": "ENS"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "MATICUSDT",
+            "Ignore": false,
+            "Symbol": "MATIC"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "SUSHIUSDT",
+            "Ignore": false,
+            "Symbol": "SUSHI"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "UNIUSDT",
+            "Ignore": false,
+            "Symbol": "UNI"
+        }
+    ]
+}

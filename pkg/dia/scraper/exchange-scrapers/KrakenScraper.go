@@ -10,6 +10,7 @@ import (
 	krakenapi "github.com/beldur/kraken-go-api-client"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/zekroTJA/timedmap"
 )
 
 const (
@@ -227,10 +228,12 @@ func NewTrade(pair dia.ExchangePair, info krakenapi.TradeInfo, foreignTradeID st
 	if exchangepair.Verified {
 		log.Infoln("Got verified trade", t)
 	}
+
 	return t
 }
 
 func (s *KrakenScraper) Update() {
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
 
 	for _, ps := range s.pairScrapers {
 
@@ -245,6 +248,8 @@ func (s *KrakenScraper) Update() {
 				for _, ti := range r.Trades {
 					// p, _ := s.NormalizePair(ps.pair)
 					t := NewTrade(ps.pair, ti, strconv.FormatInt(r.Last, 16), s.db)
+					// Handle duplicate trades.
+					t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
 					ps.parent.chanTrades <- t
 				}
 			} else {

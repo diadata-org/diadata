@@ -22,15 +22,6 @@ type DiaResolver struct {
 	InfluxBatchSize int64
 }
 
-// GetQuotation Get quotation
-func (r *DiaResolver) GetQuotation(ctx context.Context, args struct{ Symbol graphql.NullString }) (*QuotationResolver, error) {
-	q, err := r.DS.GetQuotation(*args.Symbol.Value)
-	if err != nil {
-		return nil, err
-	}
-	return &QuotationResolver{q: *q}, nil
-}
-
 func (r *DiaResolver) GetSupply(ctx context.Context, args struct{ Symbol graphql.NullString }) (*SupplyResolver, error) {
 	q, err := r.DS.GetLatestSupply(*args.Symbol.Value, &r.RelDB)
 	if err != nil {
@@ -110,6 +101,7 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	return fpr.fpr, nil
 }
 
+// TO DO: Use context?
 func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 	Filter               graphql.NullString
 	BlockDurationSeconds graphql.NullInt
@@ -128,7 +120,12 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 		blockchain        string
 		address           string
 		sr                *FilterPointMetaResolver
+		asset             dia.Asset
+		err               error
+		baseAssets        []dia.Asset
 	)
+
+	// Parsing input parameters.
 	filter := args.Filter.Value
 	blockSizeSeconds := int64(*args.BlockDurationSeconds.Value)
 	if args.BlockShiftSeconds.Value != nil {
@@ -152,40 +149,31 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 			exchangesString = append(exchangesString, *v.Value)
 		}
 	}
-	var (
-		asset      dia.Asset
-		err        error
-		baseAssets []dia.Asset
-	)
 
+	// Fetch base assets.
 	argsbaseasset := args.BaseAsset
-
 	if argsbaseasset != nil {
 		for _, baseasset := range *argsbaseasset {
-
 			asset, err = r.RelDB.GetAsset(*baseasset.Address.Value, *baseasset.BlockChain.Value)
 			if err != nil {
-				log.Errorln("Asset not found with address %s and blockchain %s ", address, blockchain)
+				log.Errorf("Asset not found with address %s and blockchain %s ", address, blockchain)
 				continue
 			}
-
 			baseAssets = append(baseAssets, asset)
 		}
 	}
 
-	log.Errorln("baseAssets", baseAssets)
-
+	// Get quote asset either by blockchain&address or by topAsset method.
 	if address != "" && blockchain != "" {
 		asset, err = r.RelDB.GetAsset(address, blockchain)
 		if err != nil {
-			log.Errorln("Asset not found with address %s and blockchain %s ", address, blockchain)
+			log.Errorf("Asset not found with address %s and blockchain %s ", address, blockchain)
 			return sr, err
 		}
-
 	} else {
 		assets, err := r.RelDB.GetTopAssetByVolume(symbol)
 		if err != nil {
-			log.Errorln("Asset not found with symbol %s ", symbol)
+			log.Errorf("Asset not found with symbol %s ", symbol)
 			return sr, err
 		}
 
@@ -202,93 +190,77 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 
 	if *filter != "ema" {
 
+		if endtime.After(time.Now()) {
+			endtime = time.Now()
+		}
+
+		// Limit the (time-)range of the query to 24 hours.
+		maxStartTime := endtime.Add(-time.Duration(60*24) * time.Minute)
+		if starttime.Before(maxStartTime) {
+			starttime = maxStartTime
+		}
+
+		// Set blockShiftSeconds = blockSizeSeconds per default if not given.
 		if blockShiftSeconds == 0 {
-			if endtime.After(time.Now()) {
-				endtime = time.Now()
-			}
-			maxStartTime := endtime.Add(time.Duration(-(blockSizeSeconds * 1000)) * time.Second)
+			blockShiftSeconds = blockSizeSeconds
+		}
 
-			if starttime.Before(maxStartTime) {
-				starttime = maxStartTime
-			}
+		// (Potentially) decrease starttime such that an integer number of bins fits into the whole range.
+		if endtime.Unix()-starttime.Unix() < blockSizeSeconds {
+			// Just one block.
+			starttime = time.Unix(endtime.Unix()-blockSizeSeconds, 0)
+		} else {
+			starttime = time.Unix(starttime.Unix()-(blockShiftSeconds-((endtime.Unix()-starttime.Unix()-blockSizeSeconds)%blockShiftSeconds)), 0)
+		}
 
-			trades, err := r.DS.GetTradesByExchangesAndBaseAssets(asset, baseAssets, exchangesString, starttime, endtime)
+		// Make time bins according to block size and block shift parameters.
+		bins := utils.MakeBins(starttime, endtime, blockSizeSeconds, blockShiftSeconds)
+
+		// Fetch trades.
+		var trades []dia.Trade
+		if blockShiftSeconds <= blockSizeSeconds {
+			// Fetch all trades in time range.
+			trades, err = r.DS.GetTradesByExchangesAndBaseAssets(asset, baseAssets, exchangesString, starttime, endtime, 0)
 			if err != nil {
+				log.Error("GetTradesByExchangesAndBaseAssets: ", err)
 				return sr, err
 			}
-			tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateSize(blockSizeSeconds)
 		} else {
-			if endtime.After(time.Now()) {
-				endtime = time.Now()
+			// Fetch trades batched for disjoint bins.
+			var starttimes, endtimes []time.Time
+			for _, bin := range bins {
+				starttimes = append(starttimes, bin.Starttime)
+				endtimes = append(endtimes, bin.Endtime)
 			}
-			totalTimeDiff := (blockSizeSeconds + (blockShiftSeconds * 999)) * int64(time.Second)
-			maxStartTime := endtime.Add(-time.Duration(totalTimeDiff))
-
-			if starttime.Before(maxStartTime) {
-				starttime = maxStartTime
+			trades, err = r.DS.GetTradesByExchangesBatched(asset, baseAssets, exchangesString, starttimes, endtimes, 0)
+			if err != nil {
+				log.Error("GetTradesByExchangesAndBaseAssets: ", err)
+				return sr, err
 			}
-
-			var trades []dia.Trade
-			if blockShiftSeconds <= blockSizeSeconds {
-				trades, err = r.DS.GetTradesByExchangesAndBaseAssets(asset, baseAssets, exchangesString, starttime, endtime)
-				if err != nil {
-					return sr, err
-				}
-			} else {
-				// In this case, fetch trades by time window and batch the Influx API requests.
-
-				timeInit := starttime
-				timeFinal := endtime
-
-				// Make time windows for which trades from influx have to be fetched.
-				var startTimes, endTimes []time.Time
-				for timeFinal.After(timeInit) {
-					startTimes = append(startTimes, timeInit)
-					endTimes = append(endTimes, timeInit.Add(time.Duration(blockSizeSeconds*1e9)))
-					timeInit = timeInit.Add(time.Duration(blockShiftSeconds * 1e9))
-				}
-
-				// Determine number of batches.
-				var numBatches int
-				batchSize := int(r.InfluxBatchSize)
-				if len(startTimes) < int(r.InfluxBatchSize) {
-					numBatches = 1
-					batchSize = len(startTimes)
-				} else {
-					numBatches = len(startTimes) / int(r.InfluxBatchSize)
-				}
-
-				// Iterate over batches.
-				for i := 0; i < numBatches; i++ {
-					var tradesBatch []dia.Trade
-					var err error
-					lowerIndex := i * batchSize
-					upperIndex := (i + 1) * batchSize
-					tradesBatch, err = r.DS.GetTradesByExchangesBatched(asset, baseAssets, exchangesString, startTimes[lowerIndex:upperIndex], endTimes[lowerIndex:upperIndex])
-					if err != nil {
-						log.Error("fetch trades batch from influx: ", err)
-					}
-					trades = append(trades, tradesBatch...)
-				}
-				// Add remaining trades if existent.
-				if len(startTimes)%int(r.InfluxBatchSize) > 0 {
-					var tradesBatch []dia.Trade
-					var err error
-					lowerIndex := numBatches * (batchSize)
-					upperIndex := len(startTimes)
-					tradesBatch, err = r.DS.GetTradesByExchangesBatched(asset, baseAssets, exchangesString, startTimes[lowerIndex:upperIndex], endTimes[lowerIndex:upperIndex])
-					if err != nil {
-						log.Error("fetch trades batch from influx: ", err)
-					}
-					trades = append(trades, tradesBatch...)
-				}
-
-			}
-			log.Println("Generating blocks, Total Trades", len(trades))
-			tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateShift(trades[0].Time.UnixNano(), blockSizeSeconds, blockShiftSeconds)
-			log.Println("Total TradeBlocks", len(tradeBlocks))
-
 		}
+		log.Println("Generating blocks, Total Trades", len(trades))
+		log.Info("generating bins. Total bins: ", len(bins))
+
+		if len(trades) > 0 && len(bins) > 0 {
+			// In case the first bin is empty, look for the last trade before @starttime.
+			if !utils.IsInBin(trades[0].Time, bins[0]) {
+				previousTrade, baseAsseteErr := r.DS.GetTradesByExchangesAndBaseAssets(asset, baseAssets, exchangesString, endtime.AddDate(0, 0, -10), starttime, 1)
+				if baseAsseteErr != nil || len(previousTrade) == 0 {
+					log.Error("get initial trade: ", err, baseAsseteErr)
+					// Fill with a zero trade so we can build blocks.
+					auxTrade := trades[0]
+					auxTrade.Volume = 0
+					auxTrade.Price = 0
+					auxTrade.EstimatedUSDPrice = 0
+					trades = append([]dia.Trade{auxTrade}, trades...)
+				} else {
+					trades = append([]dia.Trade{previousTrade[0]}, trades...)
+				}
+			}
+			tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateBlocks(blockSizeSeconds, blockShiftSeconds, bins)
+			log.Println("Total TradeBlocks", len(tradeBlocks))
+		}
+
 	} else if *filter == "ema" {
 		emaFilterPoints, err = r.DS.GetFilter("MA120", asset, "", starttimeimmutable, endtimeimmutable)
 		if err != nil {
@@ -331,7 +303,6 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 	var fpr []*FilterPointResolver
 
 	for _, fp := range filterPoints {
-		log.Println("Filter point", fp)
 		fpr = append(fpr, &FilterPointResolver{q: fp})
 
 	}
@@ -380,12 +351,13 @@ func (r *DiaResolver) GetVWALP(ctx context.Context, args struct {
 	//  -----------------------
 
 	// Fetch trades from Influx.
-	trades, err := r.DS.GetTradesByExchanges(
+	trades, err := r.DS.GetTradesByExchangesAndBaseAssets(
 		quoteAsset,
 		baseAssets,
 		exchanges,
 		endtime.Add(-time.Duration(BlockDurationSeconds)*time.Second),
 		endtime,
+		0,
 	)
 	if err != nil {
 		return vr, err

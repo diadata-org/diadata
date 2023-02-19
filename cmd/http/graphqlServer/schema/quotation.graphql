@@ -1,5 +1,4 @@
 type Query {
-  GetQuotation(symbol: String!): Quotation
 
   GetSupply(symbol: String!): Supply
 
@@ -61,8 +60,6 @@ type Query {
     TokenID: String!
   ): [NFTBid]
 
-
-
 }
 
 scalar Time
@@ -76,15 +73,6 @@ type FilterPointMeta {
 input BaseAsset {
   Address: String
   BlockChain: String
-}
-
-type Quotation {
-  Symbol: String
-  Name: String
-  Price: Float
-  Source: String
-  ITIN: String
-  Time: Time
 }
 
 type Supply {
@@ -108,9 +96,6 @@ type VWALP {
   Time: Time
 }
 
-
-
-
 type FilterPoint {
   Symbol: String
   Value: Float
@@ -120,7 +105,6 @@ type FilterPoint {
   Blockchain :String
   FirstTrade: Trade
   LastTrade: Trade
-
 }
 
 type Trade {
@@ -129,7 +113,6 @@ type Trade {
   Volume: Float
   Symbol: String
   EstimatedUSDPrice: Float
-
 }
 
 type NFT {

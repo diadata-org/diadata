@@ -3,6 +3,7 @@ package utils
 import (
 	"math"
 	"sort"
+	"time"
 )
 
 // ArgsortableSlice is a wrapper struct around the sort interface. It allows
@@ -10,6 +11,11 @@ import (
 type ArgsortableSlice struct {
 	sort.Interface
 	idx []int
+}
+
+type TimeBin struct {
+	Starttime time.Time
+	Endtime   time.Time
 }
 
 func (as ArgsortableSlice) Ind() []int {
@@ -34,6 +40,8 @@ func NewFloat64Slice(sf sort.Float64Slice) *ArgsortableSlice {
 	return s
 }
 
+// TO DO: Switch to generics for these simple algebraic functions.
+
 // Average returns the average of @samples.
 func Average(series []float64) (average float64) {
 	length := float64(len(series))
@@ -46,7 +54,6 @@ func Average(series []float64) (average float64) {
 	}
 	average /= length
 	return
-
 }
 
 func Variance(series []float64) (variance float64) {
@@ -54,14 +61,43 @@ func Variance(series []float64) (variance float64) {
 	if length == 0 {
 		return
 	}
-
-	for _, item := range series {
-		variance += math.Pow(float64(int64(item))-Average(series), float64(2))
+	if length == 1 {
+		return 0
 	}
-	variance /= length
+
+	avg := Average(series)
+	for _, item := range series {
+		variance += math.Pow(item-avg, float64(2))
+	}
+	variance /= (length - 1)
 	return
 }
 
 func StandardDeviation(series []float64) float64 {
 	return math.Sqrt(Variance(series))
+}
+
+// MakeBins returns a slice of @TimeBin according to block sizes and time shifts.
+func MakeBins(starttime time.Time, endtime time.Time, blockSizeSeconds int64, blockShiftSeconds int64) (bins []TimeBin) {
+	timeInit := starttime
+	blockDuration := time.Duration(blockSizeSeconds) * time.Second
+
+	for timeInit.Add(blockDuration).Before(endtime) || timeInit.Add(blockDuration) == endtime {
+		b := TimeBin{Starttime: timeInit, Endtime: timeInit.Add(time.Duration(blockSizeSeconds) * time.Second)}
+		bins = append(bins, b)
+		timeInit = timeInit.Add(time.Duration(blockShiftSeconds) * time.Second)
+	}
+
+	return
+}
+
+// IsInBin returns true in case @timestamp is in half-open interval @bin.
+func IsInBin(timestamp time.Time, bin TimeBin) bool {
+	if timestamp.After(bin.Starttime) && timestamp.Before(bin.Endtime) {
+		return true
+	}
+	if timestamp == bin.Endtime {
+		return true
+	}
+	return false
 }

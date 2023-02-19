@@ -1,170 +1,20 @@
 {
     "Coins": [
         {
-            "Symbol": "XRP",
-            "ForeignName": "XRP_USD",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BCH",
-            "ForeignName": "BCH_USD",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "DOGE",
-            "ForeignName": "DOGE_USD",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BNB",
-            "ForeignName": "BNB_USD",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LINK",
-            "ForeignName": "LINK_USD",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SOL",
-            "ForeignName": "SOL_USD",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "DOGE",
-            "ForeignName": "DOGE_USDT",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "DOT",
-            "ForeignName": "DOT_USDT",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ADA",
-            "ForeignName": "ADA_USDT",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BNB",
-            "ForeignName": "BNB_USDT",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SOL",
-            "ForeignName": "SOL_USDT",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ADA",
-            "ForeignName": "ADA_USD",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "EOS",
-            "ForeignName": "EOS_USD",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XRP",
-            "ForeignName": "XRP_USDT",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "BCH",
-            "ForeignName": "BCH_USDT",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "DOT",
-            "ForeignName": "DOT_USD",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "MATIC",
-            "ForeignName": "MATIC_USDT",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LUNA",
-            "ForeignName": "LUNA_USD",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "AVAX",
-            "ForeignName": "AVAX_USD",
+            "Symbol": "APE",
+            "ForeignName": "APE_USDT",
             "Exchange": "BitMex",
             "Ignore": false
         },
         {
             "Symbol": "AXS",
-            "ForeignName": "AXS_USD",
+            "ForeignName": "AXS_USDT",
             "Exchange": "BitMex",
             "Ignore": false
         },
         {
-            "Symbol": "SHIB",
-            "ForeignName": "SHIB_USDT",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "FTM",
-            "ForeignName": "FTM_USDT",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SAND",
-            "ForeignName": "SAND_USDT",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "MANA",
-            "ForeignName": "MANA_USDT",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_USD",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_USDT",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "XBT",
-            "ForeignName": "XBT_EUR",
-            "Exchange": "BitMex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "ETH",
-            "ForeignName": "ETH_USD",
+            "Symbol": "BMEX",
+            "ForeignName": "BMEX_USDT",
             "Exchange": "BitMex",
             "Ignore": false
         },
@@ -175,14 +25,44 @@
             "Ignore": false
         },
         {
-            "Symbol": "LTC",
-            "ForeignName": "LTC_USD",
+            "Symbol": "ETH",
+            "ForeignName": "ETH_XBT",
+            "Exchange": "BitMex",
+            "Ignore": false
+        },      
+        {
+            "Symbol": "LINK",
+            "ForeignName": "LINK_USDT",
             "Exchange": "BitMex",
             "Ignore": false
         },
         {
-            "Symbol": "LTC",
-            "ForeignName": "LTC_USDT",
+            "Symbol": "MATIC",
+            "ForeignName": "MATIC_USDT",
+            "Exchange": "BitMex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SOL",
+            "ForeignName": "SOL_USDT",
+            "Exchange": "BitMex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TRX",
+            "ForeignName": "TRX_USDT",
+            "Exchange": "BitMex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNI",
+            "ForeignName": "UNI_USDT",
+            "Exchange": "BitMex",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XBT",
+            "ForeignName": "XBT_USDT",
             "Exchange": "BitMex",
             "Ignore": false
         }

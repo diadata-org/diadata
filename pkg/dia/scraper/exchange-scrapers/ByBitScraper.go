@@ -3,11 +3,13 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	ws "github.com/gorilla/websocket"
+	"github.com/zekroTJA/timedmap"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
@@ -15,7 +17,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 )
 
-var ByBitSocketURL string = "wss://stream.bybit.com/realtime"
+var ByBitSocketURL string = "wss://stream.bybit.com/spot/public/v3"
 
 type ByBitMarket struct {
 	Name           string `json:"name"`
@@ -53,18 +55,17 @@ type ByBitMarketsResponse struct {
 }
 
 type ByBitTradeResponse struct {
-	Topic string `json:"topic"`
-	Data  []struct {
-		Timestamp     string  `json:"timestamp"`
-		TradeTimeMs   int64   `json:"trade_time_ms"`
-		Symbol        string  `json:"symbol"`
-		Side          string  `json:"side"`
-		Size          float64 `json:"size"`
-		Price         float64 `json:"price"`
-		TickDirection string  `json:"tick_direction"`
-		TradeID       string  `json:"trade_id"`
-		CrossSeq      int     `json:"cross_seq"`
+	Data struct {
+		TradeID   string `json:"v"`
+		Timestamp int64  `json:"t"`
+		Price     string `json:"p"`
+		Size      string `json:"q"`
+		Side      bool   `json:"m"`
+		Type      string `json:"type"`
 	} `json:"data"`
+	Type      string `json:"type"`
+	Topic     string `json:"topic"`
+	Timestamp int64  `json:"ts"`
 }
 
 type ByBitSubscribe struct {
@@ -95,7 +96,7 @@ type ByBitScraper struct {
 	db         *models.RelDB
 }
 
-//NewByBitScraper get a scrapper for ByBit exchange
+// NewByBitScraper get a scrapper for ByBit exchange
 func NewByBitScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *ByBitScraper {
 	s := &ByBitScraper{
 		shutdown:     make(chan nothing),
@@ -146,23 +147,6 @@ func NewByBitScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *B
 	return s
 }
 
-func (s *ByBitScraper) getMarkets() (markets []string) {
-	var bbm ByBitMarketsResponse
-	b, _, err := utils.GetRequest("https://api.bybit.com/v2/public/symbols")
-	if err != nil {
-		log.Errorln("Error Getting markets", err)
-	}
-	err = json.Unmarshal(b, &bbm)
-	if err != nil {
-		log.Error("getting markets: ", err)
-	}
-
-	for _, m := range bbm.Result {
-		markets = append(markets, m.Name)
-	}
-	return
-}
-
 func (s *ByBitScraper) ping() {
 	a := &ByBitSubscribe{
 		OP: "ping",
@@ -173,11 +157,11 @@ func (s *ByBitScraper) ping() {
 	}
 }
 
-func (s *ByBitScraper) subscribe() {
+func (s *ByBitScraper) subscribe(foreignName string) {
 	// Subscribing to the all markets at once.
 	a := &ByBitSubscribe{
 		OP:   "subscribe",
-		Args: []string{"trade.*"},
+		Args: []string{"trade." + foreignName},
 	}
 	log.Println("subscribing", a)
 	if err := s.wsClient.WriteJSON(a); err != nil {
@@ -195,81 +179,90 @@ func (s *ByBitScraper) mainLoop() {
 			go s.ping()
 		}
 	}()
-	s.subscribe()
+
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+
 	for {
 		message := &ByBitTradeResponse{}
 		if err = s.wsClient.ReadJSON(&message); err != nil {
 			log.Error("ws connection error: ", err.Error())
-			s.subscribe()
 		}
+
 		// the topic format is something like trade.BTCUSD
-		log.Info("got topic: ", message.Topic)
 		topic := strings.Split(message.Topic, ".")
 
-		if len(topic) == 2 && topic[0] == "trade" {
+		if message.Data.Type == "" {
+			continue
+		}
+
+		var tradeType int
+		tradeType, err = strconv.Atoi(message.Data.Type)
+		if err != nil {
+			log.Error("parse type: ", err)
+			continue
+		}
+
+		if len(topic) == 2 && topic[0] == "trade" && tradeType == 0 {
 			ps, ok := s.pairScrapers[topic[1]]
 			if ok {
+				var (
+					f64Price     float64
+					f64Volume    float64
+					exchangepair dia.ExchangePair
+				)
 				mdData := message.Data
-				for _, v := range mdData {
-					var f64Price float64
-					var f64Volume float64
-					var exchangepair dia.ExchangePair
-					f64Price = v.Price
-					f64Volume = v.Size
 
-					timeStamp, _ := time.Parse(time.RFC3339, v.Timestamp)
-					if v.TradeID != "" {
-						if v.Side == "Sell" {
-							f64Volume = -f64Volume
-						}
-						// Volume is given in USD on API.
-						if f64Price != 0 {
-							f64Volume = f64Volume / f64Price
-						} else {
-							continue
-						}
+				f64Price, err = strconv.ParseFloat(mdData.Price, 64)
+				if err != nil {
+					log.Error("parse price: ", err)
+				}
 
-						exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, v.Symbol)
-						if err != nil {
-							log.Error(err)
-						}
-						t := &dia.Trade{
-							Symbol:         ps.pair.Symbol,
-							Pair:           v.Symbol,
-							Price:          f64Price,
-							Volume:         f64Volume,
-							Time:           timeStamp,
-							ForeignTradeID: v.TradeID,
-							Source:         s.exchangeName,
-							VerifiedPair:   exchangepair.Verified,
-							BaseToken:      exchangepair.UnderlyingPair.BaseToken,
-							QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
-						}
-						if exchangepair.Verified {
-							log.Infoln("Got verified trade: ", t)
-						}
+				f64Volume, err = strconv.ParseFloat(mdData.Size, 64)
+				if err != nil {
+					log.Error("parse volume: ", err)
+				}
+
+				timeStamp := time.Unix(0, mdData.Timestamp*1e6)
+				if mdData.TradeID != "" {
+					if !mdData.Side {
+						f64Volume = -f64Volume
+					}
+
+					exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, topic[1])
+					if err != nil {
+						log.Error(err)
+					}
+					t := &dia.Trade{
+						Symbol:         ps.pair.Symbol,
+						Pair:           topic[1],
+						Price:          f64Price,
+						Volume:         f64Volume,
+						Time:           timeStamp,
+						ForeignTradeID: mdData.TradeID,
+						Source:         s.exchangeName,
+						VerifiedPair:   exchangepair.Verified,
+						BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+						QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+					}
+					if exchangepair.Verified {
+						log.Infoln("Got verified trade: ", t)
+					}
+					// Handle duplicate trades.
+					discardTrade := t.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+					if !discardTrade {
+						t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
 						ps.parent.chanTrades <- t
 					}
 
 				}
+
 			} else {
 				log.Error("Unknown Pair " + topic[1])
 			}
 		}
 	}
-	s.cleanup(err)
-}
 
-// Close channels for shutdown
-func (s *ByBitScraper) cleanup(err error) {
-	s.errorLock.Lock()
-	defer s.errorLock.Unlock()
-	if err != nil {
-		s.error = err
-	}
-	s.closed = true
-	close(s.chanTrades)
-	close(s.shutdownDone)
 }
 
 // Close any existing API connections, as well as channels, and terminates main loop
@@ -297,6 +290,7 @@ func (s *ByBitScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 		latestTrade: 0,
 	}
 	s.pairScrapers[pair.ForeignName] = ps
+	s.subscribe(pair.ForeignName)
 	return ps, nil
 }
 
@@ -315,7 +309,7 @@ func (s *ByBitScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, e
 	return pair, nil
 }
 
-//Channel returns the channel to get trades
+// Channel returns the channel to get trades
 func (s *ByBitScraper) Channel() chan *dia.Trade {
 	return s.chanTrades
 }
@@ -325,7 +319,7 @@ func (s *ByBitScraper) FillSymbolData(symbol string) (dia.Asset, error) {
 	return dia.Asset{Symbol: symbol}, nil
 }
 
-//FetchAvailablePairs returns a list with all available trade pairs
+// FetchAvailablePairs returns a list with all available trade pairs
 func (s *ByBitScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
 	data, _, err := utils.GetRequest("https://api.bybit.com/v2/public/symbols")

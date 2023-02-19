@@ -11,6 +11,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
 	gdax "github.com/preichenberger/go-coinbasepro/v2"
+	"github.com/zekroTJA/timedmap"
 )
 
 type CoinBaseScraper struct {
@@ -65,6 +66,9 @@ func NewCoinBaseScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB)
 // mainLoop runs in a goroutine until channel s is closed.
 func (s *CoinBaseScraper) mainLoop() {
 	var err error
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+
 	for {
 		message := gdax.Message{}
 		if err = s.wsConn.ReadJSON(&message); err != nil {
@@ -105,8 +109,13 @@ func (s *CoinBaseScraper) mainLoop() {
 							if t.VerifiedPair {
 								log.Info("got verified trade: ", t)
 							}
-							log.Info("go trade: ", t)
-							ps.parent.chanTrades <- t
+							// Handle duplicate trades.
+							discardTrade := t.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+							if !discardTrade {
+								t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+								ps.parent.chanTrades <- t
+							}
+
 						}
 					} else {
 						log.Error("error parsing LastSize " + message.LastSize)

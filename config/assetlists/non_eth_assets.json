@@ -148,6 +148,27 @@
       "Address": "TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR"
     },
     {
+      "Symbol": "USDD",
+      "Name": "Decentralized USD",
+      "Decimals": 18,
+      "Blockchain": "Tron",
+      "Address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn"
+    },
+    {
+      "Symbol": "USDJ",
+      "Name": "Just Stablecoin",
+      "Decimals": 18,
+      "Blockchain": "Tron",
+      "Address": "TMwFHYXLJaRUPeW6421aqXL4ZEzPRFGkGT"
+    },
+    {
+      "Symbol": "ATID",
+      "Name": "ATID",
+      "Decimals": 18,
+      "Blockchain": "Astar",
+      "Address": "0x5271D85CE4241b310C0B34b7C2f1f036686A6d7C"
+    },
+    {
       "Symbol": "XMR",
       "Name": "Monero",
       "Decimals": 12,
@@ -292,6 +313,13 @@
       "Name": "THORChain",
       "Decimals": 0,
       "Blockchain": "Thorchain",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "VLX",
+      "Name": "VLX",
+      "Decimals": 18,
+      "Blockchain": "Velas",
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
@@ -488,6 +516,41 @@
       "Name": "Telos",
       "Decimals": 18,
       "Blockchain": "Telos",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "CKB",
+      "Name": "Nervos Network",
+      "Decimals": 8,
+      "Blockchain": "Nervos",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "INTR",
+      "Name": "Interlay",
+      "Decimals": 12,
+      "Blockchain": "Interlay",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "CFG",
+      "Name": "Centrifuge",
+      "Decimals": 12,
+      "Blockchain": "Centrifuge",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "EVMOS",
+      "Name": "Evmos",
+      "Decimals": 18,
+      "Blockchain": "Evmos",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "WAN",
+      "Name": "Wanchain",
+      "Decimals": 18,
+      "Blockchain": "Wanchain",
       "Address": "0x0000000000000000000000000000000000000000"
     }
   ]

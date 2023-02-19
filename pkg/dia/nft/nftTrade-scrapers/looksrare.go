@@ -86,9 +86,10 @@ type LooksRareScraperState struct {
 type LooksRareScraper struct {
 	tradeScraper TradeScraper
 
-	mu    sync.Mutex
-	conf  *LooksRareScraperConfig
-	state *LooksRareScraperState
+	mu       sync.Mutex
+	conf     *LooksRareScraperConfig
+	state    *LooksRareScraperState
+	exchange dia.NFTExchange
 }
 
 type erc721Metadata struct {
@@ -135,9 +136,9 @@ var (
 	// block num 13885625, so scraper starts from this block
 	defLooksRareState = &LooksRareScraperState{LastBlockNum: 13885625}
 
-	looksRareABI       abi.ABI
-	looksRareErc20ABI  abi.ABI
-	looksRareErc721ABI abi.ABI
+	looksRareABI abi.ABI
+	//looksRareErc20ABI  abi.ABI
+	//looksRareErc721ABI abi.ABI
 
 	assetCacheLooksrare = make(map[string]dia.Asset)
 )
@@ -150,18 +151,18 @@ func init() {
 		panic(err)
 	}
 
-	looksRareErc20ABI, err = abi.JSON(strings.NewReader(erc20.ERC20ABI))
+	_, err = abi.JSON(strings.NewReader(erc20.ERC20ABI))
 	if err != nil {
 		panic(err)
 	}
 
-	looksRareErc721ABI, err = abi.JSON(strings.NewReader(erc721.ERC721ABI))
+	_, err = abi.JSON(strings.NewReader(erc721.ERC721ABI))
 	if err != nil {
 		panic(err)
 	}
 }
 
-func NewLooksRareScraper(rdb *models.RelDB) *LooksRareScraper {
+func NewLooksRareScraper(rdb *models.RelDB, exchange dia.NFTExchange) *LooksRareScraper {
 	ctx := context.Background()
 
 	eth, err := ethclient.Dial(utils.Getenv("ETH_URI_REST", ""))
@@ -170,14 +171,15 @@ func NewLooksRareScraper(rdb *models.RelDB) *LooksRareScraper {
 	}
 
 	s := &LooksRareScraper{
-		conf:  &LooksRareScraperConfig{},
-		state: &LooksRareScraperState{},
+		conf:     &LooksRareScraperConfig{},
+		state:    &LooksRareScraperState{},
+		exchange: exchange,
 		tradeScraper: TradeScraper{
 			shutdown:      make(chan nothing),
 			shutdownDone:  make(chan nothing),
 			datastore:     rdb,
 			chanTrade:     make(chan dia.NFTTrade),
-			source:        "LooksRare",
+			source:        exchange.Name,
 			ethConnection: eth,
 		},
 	}
@@ -322,7 +324,7 @@ func (s *LooksRareScraper) FetchTrades() error {
 				s.state.LastErr = fmt.Sprintf("unable to process trade transaction(%s): %s", tx.TXHash.Hex(), err.Error())
 				log.Error(s.state.LastErr)
 				// store state
-				if err := s.storeState(ctx); err != nil {
+				if err = s.storeState(ctx); err != nil {
 					log.Warnf("unable to store scraper state: %s", err.Error())
 					return err
 				}
@@ -379,9 +381,9 @@ func (s *LooksRareScraper) processTx(ctx context.Context, tx *utils.EthFilteredT
 	ev := &looksRareTakerBidAskEvent{}
 	if looksRareABI.Events["TakerAsk"].ID == tx.Logs[0].Topics[0] {
 
-		evTakerAsk, err := marketContract.ParseTakerAsk(tx.Logs[0])
-		if err != nil {
-			log.Errorf("unable to decode looksrare TakerAsk event(tx: %s, logIndex: %d) (SKIPPED!): %s", tx.TXHash, tx.Logs[0].Index, err.Error())
+		evTakerAsk, errParseTakerAsk := marketContract.ParseTakerAsk(tx.Logs[0])
+		if errParseTakerAsk != nil {
+			log.Errorf("unable to decode looksrare TakerAsk event(tx: %s, logIndex: %d) (SKIPPED!): %s", tx.TXHash, tx.Logs[0].Index, errParseTakerAsk.Error())
 			return true, nil // skip
 		}
 		ev.OrderHash = evTakerAsk.OrderHash
@@ -399,9 +401,9 @@ func (s *LooksRareScraper) processTx(ctx context.Context, tx *utils.EthFilteredT
 	}
 	if looksRareABI.Events["TakerBid"].ID == tx.Logs[0].Topics[0] {
 
-		evTakerBid, err := marketContract.ParseTakerBid(tx.Logs[0])
-		if err != nil {
-			log.Errorf("unable to decode looksrare TakerBid event(tx: %s, logIndex: %d) (SKIPPED!): %s", tx.TXHash, tx.Logs[0].Index, err.Error())
+		evTakerBid, errParseTakerBid := marketContract.ParseTakerBid(tx.Logs[0])
+		if errParseTakerBid != nil {
+			log.Errorf("unable to decode looksrare TakerBid event(tx: %s, logIndex: %d) (SKIPPED!): %s", tx.TXHash, tx.Logs[0].Index, errParseTakerBid.Error())
 			return true, nil // skip
 		}
 		ev.OrderHash = evTakerBid.OrderHash
@@ -423,9 +425,9 @@ func (s *LooksRareScraper) processTx(ctx context.Context, tx *utils.EthFilteredT
 	currDecimals := 18
 
 	if ev.Currency.Hex() != "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" { // WETH
-		symbol, decimals, err := s.getERC20Metadata(ctx, ev.Currency, ev.Raw.BlockNumber)
-		if err != nil {
-			log.Errorf("unable to find erc20 metadata for address (%s) in transaction(%s): %s", ev.Currency, tx.TXHash, err.Error())
+		symbol, decimals, errERC20Metadata := s.getERC20Metadata(ctx, ev.Currency, ev.Raw.BlockNumber)
+		if errERC20Metadata != nil {
+			log.Errorf("unable to find erc20 metadata for address (%s) in transaction(%s): %s", ev.Currency, tx.TXHash, errERC20Metadata.Error())
 		} else {
 			currAddr = ev.Currency
 			currSymbol = *symbol
@@ -433,26 +435,26 @@ func (s *LooksRareScraper) processTx(ctx context.Context, tx *utils.EthFilteredT
 		}
 	}
 
-	erc721, err := s.getERC721Metadata(ctx, ev.Collection, ev.TokenId, ev.Raw.BlockNumber)
-	if err != nil {
-		log.Errorf("unable to find transfers of the event(block: %d, tx index: %d, tx: %s): %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
-		return false, err
+	erc721Meta, errMetadata := s.getERC721Metadata(ctx, ev.Collection, ev.TokenId, ev.Raw.BlockNumber)
+	if errMetadata != nil {
+		log.Errorf("unable to find transfers of the event(block: %d, tx index: %d, tx: %s): %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), errMetadata.Error())
+		return false, errMetadata
 	}
 
 	normPrice := decimal.NewFromBigInt(ev.Price, 0).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(int64(currDecimals))))
 
-	usdPrice, err := s.calcUSDPrice(ev.Raw.BlockNumber, currAddr, currSymbol, normPrice)
-	if err != nil {
-		log.Errorf("unable to calculate usd price of the event(block: %d, log: %d, tx: %s): %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
-		return false, err
+	usdPrice, errUSDPrice := s.calcUSDPrice(ev.Raw.BlockNumber, currAddr, currSymbol, normPrice)
+	if errUSDPrice != nil {
+		log.Errorf("unable to calculate usd price of the event(block: %d, log: %d, tx: %s): %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), errUSDPrice.Error())
+		return false, errUSDPrice
 	}
 
-	if err := s.notifyTrade(ev, erc721, ev.Price, normPrice, usdPrice, currSymbol, currAddr); err != nil {
-		if !errors.Is(err, errLooksRareShutdownRequest) {
-			log.Warnf("event(block: %d, tx index: %d, tx: %s) couldn't processed: %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
+	if errTrade := s.notifyTrade(ev, erc721Meta, ev.Price, normPrice, usdPrice, currSymbol, currAddr); errTrade != nil {
+		if !errors.Is(errTrade, errLooksRareShutdownRequest) {
+			log.Warnf("event(block: %d, tx index: %d, tx: %s) couldn't processed: %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), errTrade.Error())
 		}
 
-		return false, err
+		return false, errTrade
 	}
 
 	return false, nil
@@ -512,7 +514,7 @@ func (s *LooksRareScraper) notifyTrade(ev *looksRareTakerBidAskEvent, erc721 *er
 		BlockNumber: ev.Raw.BlockNumber,
 		Timestamp:   timestamp,
 		TxHash:      ev.Raw.TxHash.Hex(),
-		Exchange:    "LooksRare",
+		Exchange:    s.exchange.Name,
 	}
 
 	if asset, ok := assetCacheLooksrare[dia.ETHEREUM+"-"+currAddr.Hex()]; ok {

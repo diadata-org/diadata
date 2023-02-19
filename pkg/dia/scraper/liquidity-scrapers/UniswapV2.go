@@ -1,12 +1,16 @@
 package liquidityscrapers
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"math"
 	"math/big"
+	"os"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -37,6 +41,7 @@ const (
 	restDialEvmos     = ""
 	restDialAstar     = ""
 	restDialMoonbeam  = ""
+	restDialWanchain  = ""
 
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
@@ -54,6 +59,7 @@ const (
 	evmosWaitMilliseconds       = "400"
 	astarWaitMilliseconds       = "1000"
 	moonbeamWaitMilliseconds    = "1000"
+	wanchainWaitMilliseconds    = "1000"
 )
 
 type UniswapScraper struct {
@@ -63,61 +69,66 @@ type UniswapScraper struct {
 	blockchain   string
 	waitTime     int
 	exchangeName string
+	pathToPools  string
 }
 
 var exchangeFactoryContractAddress string
 
 func NewUniswapScraper(exchange dia.Exchange) (us *UniswapScraper) {
 
+	pathToPools := utils.Getenv("PATH_TO_POOLS", "")
+
 	switch exchange.Name {
 	case dia.UniswapExchange:
-		us = makeUniswapPoolScraper(exchange, restDialEthereum, uniswapWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialEthereum, uniswapWaitMilliseconds)
 	case dia.SushiSwapExchange:
-		us = makeUniswapPoolScraper(exchange, restDialEthereum, sushiswapWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialEthereum, sushiswapWaitMilliseconds)
 	case dia.SushiSwapExchangePolygon:
-		us = makeUniswapPoolScraper(exchange, restDialPolygon, sushiswapWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialPolygon, sushiswapWaitMilliseconds)
 	case dia.SushiSwapExchangeFantom:
-		us = makeUniswapPoolScraper(exchange, restDialFantom, sushiswapWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialFantom, sushiswapWaitMilliseconds)
 	case dia.PanCakeSwap:
-		us = makeUniswapPoolScraper(exchange, restDialBSC, pancakeswapWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialBSC, pancakeswapWaitMilliseconds)
 	case dia.DfynNetwork:
-		us = makeUniswapPoolScraper(exchange, restDialPolygon, dfynWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialPolygon, dfynWaitMilliseconds)
 	case dia.QuickswapExchange:
-		us = makeUniswapPoolScraper(exchange, restDialPolygon, dfynWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialPolygon, dfynWaitMilliseconds)
 	case dia.UbeswapExchange:
-		us = makeUniswapPoolScraper(exchange, restDialCelo, ubeswapWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialCelo, ubeswapWaitMilliseconds)
 	case dia.SpookyswapExchange:
-		us = makeUniswapPoolScraper(exchange, restDialFantom, spookyswapWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialFantom, spookyswapWaitMilliseconds)
 	case dia.SpiritswapExchange:
-		us = makeUniswapPoolScraper(exchange, restDialFantom, spiritswapWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialFantom, spiritswapWaitMilliseconds)
 	case dia.SolarbeamExchange:
-		us = makeUniswapPoolScraper(exchange, restDialMoonriver, solarbeamWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialMoonriver, solarbeamWaitMilliseconds)
 	case dia.TrisolarisExchange:
-		us = makeUniswapPoolScraper(exchange, restDialAurora, trisolarisWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialAurora, trisolarisWaitMilliseconds)
 	case dia.NetswapExchange:
-		us = makeUniswapPoolScraper(exchange, restDialMetis, metisWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialMetis, metisWaitMilliseconds)
 	case dia.HuckleberryExchange:
-		us = makeUniswapPoolScraper(exchange, restDialMoonriver, moonriverWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialMoonriver, moonriverWaitMilliseconds)
 	case dia.TraderJoeExchange:
-		us = makeUniswapPoolScraper(exchange, restDialAvalanche, avalancheWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialAvalanche, avalancheWaitMilliseconds)
 	case dia.PangolinExchange:
-		us = makeUniswapPoolScraper(exchange, restDialAvalanche, avalancheWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialAvalanche, avalancheWaitMilliseconds)
 	case dia.TethysExchange:
-		us = makeUniswapPoolScraper(exchange, restDialMetis, metisWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialMetis, metisWaitMilliseconds)
 	case dia.HermesExchange:
-		us = makeUniswapPoolScraper(exchange, restDialMetis, metisWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialMetis, metisWaitMilliseconds)
 	case dia.OmniDexExchange:
-		us = makeUniswapPoolScraper(exchange, restDialTelos, telosWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialTelos, telosWaitMilliseconds)
 	case dia.DiffusionExchange:
-		us = makeUniswapPoolScraper(exchange, restDialEvmos, evmosWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialEvmos, evmosWaitMilliseconds)
 	case dia.ArthswapExchange:
-		us = makeUniswapPoolScraper(exchange, restDialAstar, astarWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialAstar, astarWaitMilliseconds)
 	case dia.ApeswapExchange:
-		us = makeUniswapPoolScraper(exchange, restDialAstar, astarWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialAstar, astarWaitMilliseconds)
 	case dia.BiswapExchange:
-		us = makeUniswapPoolScraper(exchange, restDialAstar, astarWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialAstar, astarWaitMilliseconds)
 	case dia.StellaswapExchange:
-		us = makeUniswapPoolScraper(exchange, restDialMoonbeam, moonbeamWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialMoonbeam, moonbeamWaitMilliseconds)
+	case dia.WanswapExchange:
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialWanchain, wanchainWaitMilliseconds)
 	}
 
 	exchangeFactoryContractAddress = exchange.Contract
@@ -130,18 +141,22 @@ func NewUniswapScraper(exchange dia.Exchange) (us *UniswapScraper) {
 }
 
 // makeUniswapPoolScraper returns an asset source as used in NewUniswapAssetSource.
-func makeUniswapPoolScraper(exchange dia.Exchange, restDial string, waitMilliseconds string) *UniswapScraper {
-	var restClient *ethclient.Client
-	var err error
-	var poolChannel = make(chan dia.Pool)
-	var doneChannel = make(chan bool)
-	var us *UniswapScraper
+func makeUniswapPoolScraper(exchange dia.Exchange, pathToPools string, restDial string, waitMilliseconds string) *UniswapScraper {
+	var (
+		restClient  *ethclient.Client
+		err         error
+		poolChannel = make(chan dia.Pool)
+		doneChannel = make(chan bool)
+		us          *UniswapScraper
+		waitTime    int
+	)
+
 	log.Infof("Init rest client for %s.", exchange.BlockChain.Name)
 	restClient, err = ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_REST", restDial))
 	if err != nil {
 		log.Fatal("init rest client: ", err)
 	}
-	var waitTime int
+
 	waitTimeString := utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_WAIT_TIME", waitMilliseconds)
 	waitTime, err = strconv.Atoi(waitTimeString)
 	if err != nil {
@@ -155,27 +170,52 @@ func makeUniswapPoolScraper(exchange dia.Exchange, restDial string, waitMillisec
 		blockchain:   exchange.BlockChain.Name,
 		waitTime:     waitTime,
 		exchangeName: exchange.Name,
+		pathToPools:  pathToPools,
 	}
 	return us
 }
 
 // fetchPools iterates through all (Uniswap) pools and sends them into the pool channel.
+// In case the path us.pathToPools is not empty, it only takes into account pools found in this path.
 func (us *UniswapScraper) fetchPools() {
 
-	numPairs, err := us.getNumPairs()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Info("Found ", numPairs, " pools")
+	if us.pathToPools != "" {
 
-	for i := 0; i < numPairs; i++ {
-		time.Sleep(time.Duration(us.waitTime) * time.Millisecond)
-		pool, err := us.GetPoolByID(int64(numPairs - 1 - i))
+		// Collect all pool addresses from json file.
+		poolAddresses, err := getAddressesFromConfig("liquidity-scrapers/uniswapv2/" + us.pathToPools)
 		if err != nil {
-			log.Errorln("Error getting pair with ID ", numPairs-1-i)
+			log.Error("fetch pool addresses from config file: ", err)
 		}
-		log.Info("found pool: ", pool)
-		us.poolChannel <- pool
+		numPairs := len(poolAddresses)
+		log.Infof("listening to %d pools: %v", numPairs, poolAddresses)
+
+		for _, pool := range poolAddresses {
+			time.Sleep(time.Duration(us.waitTime) * time.Millisecond)
+			pool, err := us.GetPoolByAddress(pool)
+			if err != nil {
+				log.Errorln("Error getting pool ", pool)
+			}
+			log.Info("found pool: ", pool)
+			us.poolChannel <- pool
+		}
+
+	} else {
+
+		numPairs, err := us.getNumPairs()
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Info("Found ", numPairs, " pools")
+
+		for i := 0; i < numPairs; i++ {
+			time.Sleep(time.Duration(us.waitTime) * time.Millisecond)
+			pool, err := us.GetPoolByID(int64(numPairs - 1 - i))
+			if err != nil {
+				log.Errorln("Error getting pair with ID ", numPairs-1-i)
+			}
+			log.Info("found pool: ", pool)
+			us.poolChannel <- pool
+		}
 	}
 	us.doneChannel <- true
 }
@@ -183,13 +223,14 @@ func (us *UniswapScraper) fetchPools() {
 // GetPoolByID returns the Uniswap Pool with the integer id @num.
 func (us *UniswapScraper) GetPoolByID(num int64) (dia.Pool, error) {
 	var contract *uniswap.IUniswapV2FactoryCaller
+
 	contract, err := uniswap.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), us.RestClient)
 	if err != nil {
 		log.Error(err)
 		return dia.Pool{}, err
 	}
-	numToken := big.NewInt(num)
-	pairAddress, err := contract.AllPairs(&bind.CallOpts{}, numToken)
+
+	pairAddress, err := contract.AllPairs(&bind.CallOpts{}, big.NewInt(num))
 	if err != nil {
 		log.Error(err)
 		return dia.Pool{}, err
@@ -204,9 +245,15 @@ func (us *UniswapScraper) GetPoolByID(num int64) (dia.Pool, error) {
 	return pool, err
 }
 
+// Get a pool by its LP token address.
 func (us *UniswapScraper) GetPoolByAddress(pairAddress common.Address) (pool dia.Pool, err error) {
+	var (
+		pairContract   *uniswap.IUniswapV2PairCaller
+		token0Contract *uniswap.IERC20Caller
+		token1Contract *uniswap.IERC20Caller
+	)
+
 	connection := us.RestClient
-	var pairContract *uniswap.IUniswapV2PairCaller
 	pairContract, err = uniswap.NewIUniswapV2PairCaller(pairAddress, connection)
 	if err != nil {
 		log.Error(err)
@@ -216,8 +263,7 @@ func (us *UniswapScraper) GetPoolByAddress(pairAddress common.Address) (pool dia
 	// Getting tokens from pair
 	address0, _ := pairContract.Token0(&bind.CallOpts{})
 	address1, _ := pairContract.Token1(&bind.CallOpts{})
-	var token0Contract *uniswap.IERC20Caller
-	var token1Contract *uniswap.IERC20Caller
+
 	token0Contract, err = uniswap.NewIERC20Caller(address0, connection)
 	if err != nil {
 		log.Error(err)
@@ -278,16 +324,15 @@ func (us *UniswapScraper) GetPoolByAddress(pairAddress common.Address) (pool dia
 	pool.Time = time.Now()
 
 	// Fill Pool type with the above data
-
-	// assetvolumeMap[token0] = amount0
-	// assetvolumeMap[token1] = amount1
 	pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{
 		Asset:  token0,
 		Volume: amount0,
+		Index:  uint8(0),
 	})
 	pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{
 		Asset:  token1,
 		Volume: amount1,
+		Index:  uint8(1),
 	})
 	pool.Address = pairAddress.Hex()
 	pool.Blockchain = dia.BlockChain{Name: us.blockchain}
@@ -340,4 +385,47 @@ func (us *UniswapScraper) getNumPairs() (int, error) {
 
 	numPairs, err := contract.AllPairsLength(&bind.CallOpts{})
 	return int(numPairs.Int64()), err
+}
+
+// getAddressesFromConfig returns a list of Uniswap pool addresses taken from a config file.
+func getAddressesFromConfig(filename string) (pairAddresses []common.Address, err error) {
+
+	// Load file and read data
+	filehandle := configCollectors.ConfigFileConnectors(filename, ".json")
+	jsonFile, err := os.Open(filehandle)
+	if err != nil {
+		return
+	}
+	defer func() {
+		err = jsonFile.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
+
+	byteData, err := ioutil.ReadAll(jsonFile)
+	if err != nil {
+		return
+	}
+
+	// Unmarshal read data
+	type scrapedPair struct {
+		Address     string `json:"Address"`
+		ForeignName string `json:"ForeignName"`
+	}
+	type scrapedPairList struct {
+		AllPairs []scrapedPair `json:"Pools"`
+	}
+	var allPairs scrapedPairList
+	err = json.Unmarshal(byteData, &allPairs)
+	if err != nil {
+		return
+	}
+
+	// Extract addresses
+	for _, token := range allPairs.AllPairs {
+		pairAddresses = append(pairAddresses, common.HexToAddress(token.Address))
+	}
+
+	return
 }

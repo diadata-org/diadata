@@ -7,6 +7,30 @@
     {
       "Address": "0x6c021Ae822BEa943b2E66552bDe1D2696a53fbB7",
       "Symbol": "TOMB"
-    }
+    },
+    {
+      "Address": "0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590",
+      "Symbol" : "STG"
+    },
+    {
+      "Address": "0xb37528DA6b4D378305d000a66Ad91bd88E626761",
+      "Symbol" : "MIDAS"
+    },
+    {
+      "Address": "0x841FAD6EAe12c286d1Fd18d1d525DFfA75C7EFFE",
+      "Symbol" : "BOO"
+    },
+    {
+      "Address": "0xfB98B335551a418cD0737375a2ea0ded62Ea213b",
+      "Symbol" : "miMATIC"
+    },
+    {
+      "Address": "0x6Fc9383486c163fA48becdEC79d6058f984f62cA",
+      "Symbol": "USDB"
+    },
+    {
+      "Address": "0x13082681E8CE9bd0aF505912d306403592490Fc7",
+      "Symbol" : "PAR"
+    }    
   ]
 }

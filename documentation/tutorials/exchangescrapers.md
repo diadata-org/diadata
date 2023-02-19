@@ -36,6 +36,7 @@ func NewAPIScraper(exchange string, key string, secret string) APIScraper {
 ```
 
 ## Steps to run a scraper locally
+
 1. Navigate to the `deployments/local/exchange-scraper` directory of the project.
 2. Run the required services using `docker-compose up -d`, this will run and prepare Redis, PostgreSQL, and InfluxDB databases.
 3. Set the required environment variables using the following commands:
@@ -54,7 +55,13 @@ export REDISURL=localhost:6379
 
 Or simple by sourcing the `local.env` inside the `deployments/local/exchange-scraper` directory.
 
-4. Execute `main.go` from `cmd/services/pairDiscoveryServices` for fetching the available pairs and setting them in the Redis database.
+4. Execute `main.go` from `cmd/services/pairDiscoveryService` for fetching the available pairs and setting them in the Redis database.
+
+```text
+cd cmd/services/pairDiscoveryService
+go run main.go -exchange MySource -mode remoteFetch
+```
+
 5. Finally, run the scraping executable flagged as follows:
 
 ```text
@@ -63,4 +70,3 @@ go run collector.go -exchange MySource
 ```
 
 For an illustration you can have a look at the `KrakenScraper.go`.
-

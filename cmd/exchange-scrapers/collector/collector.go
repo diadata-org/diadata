@@ -21,17 +21,19 @@ var (
 	log                  *logrus.Logger
 	swapTradesOnExchange = []string{
 		dia.CurveFIExchange,
+		dia.CurveFIExchangeFantom,
+		dia.CurveFIExchangeMoonbeam,
+		dia.CurveFIExchangePolygon,
+		dia.PlatypusExchange,
+		dia.WanswapExchange,
 		dia.OmniDexExchange,
 		dia.DiffusionExchange,
-		dia.BalancerV2Exchange,
-		dia.BeetsExchange,
 		dia.SolarbeamExchange,
 		dia.AnyswapExchange,
 		dia.HermesExchange,
 		dia.HuckleberryExchange,
 		dia.NetswapExchange,
-		dia.PangolinExchange,
-		dia.ArthswapExchange,
+		dia.OrcaExchange,
 	}
 
 	exchange = flag.String("exchange", "", "which exchange")
@@ -41,9 +43,9 @@ var (
 	//						but estimatedUSDPrice is filled by tradesEstimationService.
 	// mode==historical:	trades are sent through kafka to TBS in tradesHistorical topic.
 	// mode==assetmap:   	Bridged Trades, asstes are mapped and trades are not saved.
-	mode = flag.String("mode", "current", "either storeTrades, current, historical or estimation.")
-
-	pairsfile = flag.Bool("pairsfile", false, "read pairs from json file in config folder.")
+	mode              = flag.String("mode", "current", "either storeTrades, current, historical or estimation.")
+	pairsfile         = flag.Bool("pairsfile", false, "read pairs from json file in config folder.")
+	replicaKafkaTopic string
 )
 
 func init() {
@@ -61,6 +63,7 @@ func init() {
 	if !isValidExchange(*exchange) {
 		log.Fatal("Invalid exchange string: ", *exchange)
 	}
+	replicaKafkaTopic = utils.Getenv("REPLICA_KAFKA_TOPIC", "false")
 }
 
 // main manages all PairScrapers and handles incoming trade information
@@ -101,16 +104,17 @@ func main() {
 
 	// Set up kafka writers for various modes.
 	var (
-		w     *kafka.Writer
-		wTest *kafka.Writer
+		w *kafka.Writer
+		// This topic can be used to forward trades to services other than the prod. tradesblockservice.
+		wReplica *kafka.Writer
+		wTest    *kafka.Writer
 	)
 
 	switch *mode {
 	case "current":
 		w = kafkaHelper.NewWriter(kafkaHelper.TopicTrades)
+		wReplica = kafkaHelper.NewWriter(kafkaHelper.TopicTradesReplica)
 		wTest = kafkaHelper.NewWriter(kafkaHelper.TopicTradesTest)
-	case "historical":
-		w = kafkaHelper.NewWriter(kafkaHelper.TopicTradesHistorical)
 	case "estimation":
 		w = kafkaHelper.NewWriter(kafkaHelper.TopicTradesEstimation)
 	case "assetmap":
@@ -126,7 +130,7 @@ func main() {
 
 	wg := sync.WaitGroup{}
 
-	if scrapers.Exchanges[*exchange].Centralized {
+	if scrapers.Exchanges[*exchange].Centralized || scrapers.ExchangeDuplicates[*exchange].Centralized {
 
 		// Scrape pairs for CEX scrapers.
 		for _, configPair := range pairsExchange {
@@ -149,12 +153,15 @@ func main() {
 		defer wg.Wait()
 
 	}
-	go handleTrades(es.Channel(), &wg, w, wTest, ds, *exchange, *mode)
+	go handleTrades(es.Channel(), &wg, w, wTest, wReplica, ds, *exchange, *mode)
 }
 
-func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wTest *kafka.Writer, ds *models.DB, exchange string, mode string) {
+func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wTest *kafka.Writer, wReplica *kafka.Writer, ds *models.DB, exchange string, mode string) {
 	lastTradeTime := time.Now()
 	watchdogDelay := scrapers.Exchanges[exchange].WatchdogDelay
+	if watchdogDelay == 0 {
+		watchdogDelay = scrapers.ExchangeDuplicates[exchange].WatchdogDelay
+	}
 	t := time.NewTicker(time.Duration(watchdogDelay) * time.Second)
 	for {
 		select {
@@ -181,9 +188,18 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wTest 
 					log.Error(err)
 				}
 
-				// Write trade to test Kafka.
-				if mode == "current" {
-					err = writeTradeToKafka(wTest, t)
+				if scrapers.Exchanges[t.Source].Centralized {
+					// Write CEX trades to test Kafka.
+					if mode == "current" {
+						err = writeTradeToKafka(wTest, t)
+						if err != nil {
+							log.Error(err)
+						}
+					}
+				}
+
+				if replicaKafkaTopic == "true" {
+					err := writeTradeToKafka(wReplica, t)
 					if err != nil {
 						log.Error(err)
 					}
@@ -195,8 +211,6 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wTest 
 				err := ds.SaveTradeInflux(t)
 				if err != nil {
 					log.Error(err)
-				} else {
-					log.Info("saved trade")
 				}
 			}
 
@@ -233,6 +247,11 @@ func writeTradeToKafka(w *kafka.Writer, t *dia.Trade) error {
 
 func isValidExchange(estring string) bool {
 	for e := range scrapers.Exchanges {
+		if e == estring {
+			return true
+		}
+	}
+	for e := range scrapers.ExchangeDuplicates {
 		if e == estring {
 			return true
 		}

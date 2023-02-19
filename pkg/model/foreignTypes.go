@@ -6,14 +6,13 @@ import (
 )
 
 type ForeignQuotation struct {
-	Symbol             string
-	Name               string
-	Price              float64
-	PriceYesterday     float64
-	VolumeYesterdayUSD float64
-	Source             string
-	Time               time.Time
-	ITIN               string
+	Symbol             string    `json:"Symbol"`
+	Name               string    `json:"Name"`
+	Price              float64   `json:"Price"`
+	PriceYesterday     float64   `json:"PriceYesterday"`
+	VolumeYesterdayUSD float64   `json:"VolumeYesterdayUSD"`
+	Source             string    `json:"Source"`
+	Time               time.Time `json:"Time"`
 }
 
 type DefiScore struct {

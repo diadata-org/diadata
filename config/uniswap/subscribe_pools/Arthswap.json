@@ -1,0 +1,76 @@
+{
+    "Pools": [
+        {
+            "Address": "0xBB1290c1829007F440C771b37718FAbf309cd527",
+            "ForeignName": "USDC-WASTR"
+        },
+        {
+            "Address": "0x40E938688a121370092A06745704c112C5ee5791",
+            "ForeignName": "WASTR-DOT"
+        },
+        {
+            "Address": "0x87988EbDE7E661F44eB3a586C5E0cEAB533a2d9C",
+            "ForeignName": "WETH-WASTR"
+        },
+        {
+            "Address": "0x806f746a7c4293092ac7aa604347BE123322dF1e",
+            "ForeignName": "WASTR-USDT"
+        },
+        {
+            "Address": "0x73EEa1180c2D1772eA2118FdA888A81943bAc3C8",
+            "ForeignName": "WASTR-aUSD"
+        },
+        {
+            "Address": "0x50497E7181eB9e8CcD70a9c44FB997742149482a",
+            "ForeignName": "WASTR-ARSW"
+        },
+        {
+            "Address": "0xF4119c3d9e65602bb34f2455644e45c98d29bB4b",
+            "ForeignName": "USDC-DOT"
+        },
+        {
+            "Address": "0x7644Bf8086d40eD430D5096305830aA97Be77268",
+            "ForeignName": "USDC-BAI"
+        },
+        {
+            "Address": "0xCf83a3d83c1265780d9374e8a7c838fE22BD3DC6",
+            "ForeignName": "oUSD-USDC"
+        },
+        {
+            "Address": "0x92127ec0EbEF8B30378D757bbE8dCE18210B848B",
+            "ForeignName": "BNB-WASTR"
+        },
+        {
+            "Address": "0x3d78a6CCA5c717C0e8702896892f3522D0b07010",
+            "ForeignName": "BAI-WASTR"
+        },
+        {
+            "Address": "0xeee106Aa8a0DE519E8Eb21C66A5c2275b46b3F4d",
+            "ForeignName": "BUSD-USDC"
+        },
+        {
+            "Address": "0x49d1DB92A8a1511A6eeb867221d801bC974A3073",
+            "ForeignName": "WASTR-ACA"
+        },
+        {
+            "Address": "0x61a49Ba86E168cD25cA795b07B0A93236BB25127",
+            "ForeignName": "WBTC-WASTR"
+        },
+        {
+            "Address": "0xD72A602C714ae36D990dc835eA5F96Ef87657D5e",
+            "ForeignName": "USDT-USDC"
+        },
+        {
+            "Address": "0xCcEFDDfF4808F3e1e0340e19e43f1E9Fd088b3F2",
+            "ForeignName": "SDN-WASTR"
+        },
+        {
+            "Address": "0x996D73aC8F97cf15BD476b77CB92ce47cA0E71Fe",
+            "ForeignName": "USDC-DAI"
+        },
+        {
+            "Address": "0xb4461721d3AD256CD59D207fEfBfE05791Ef8568",
+            "ForeignName": "nASTR-WASTR"
+        }
+    ]
+}

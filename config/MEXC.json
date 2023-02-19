@@ -1,0 +1,466 @@
+{
+  "Coins": [
+    {
+      "Symbol": "ADA",
+      "ForeignName": "ADAUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ANY",
+      "ForeignName": "ANYUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "APE",
+      "ForeignName": "APEUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ASTR",
+      "ForeignName": "ASTRUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ATID",
+      "ForeignName": "ATIDUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ATOM",
+      "ForeignName": "ATOMUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "AVAX",
+      "ForeignName": "AVAXUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "AXS",
+      "ForeignName": "AXSUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BADGER",
+      "ForeignName": "BADGERUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BAL",
+      "ForeignName": "BALUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BCH",
+      "ForeignName": "BCHUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BFC",
+      "ForeignName": "BFCUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BNB",
+      "ForeignName": "BNBUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BOO",
+      "ForeignName": "BOOUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BSV",
+      "ForeignName": "BSVUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTCUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTCUSDC",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BUSD",
+      "ForeignName": "BUSDUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CELO",
+      "ForeignName": "CELOUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CKB",
+      "ForeignName": "CKBUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CRO",
+      "ForeignName": "CROUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DAI",
+      "ForeignName": "DAIUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DFYN",
+      "ForeignName": "DFYNUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DOGE",
+      "ForeignName": "DOGEUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DOT",
+      "ForeignName": "DOTUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "DUST",
+      "ForeignName": "DUSTUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EGLD",
+      "ForeignName": "EGLDUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EOS",
+      "ForeignName": "EOSUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETC",
+      "ForeignName": "ETCUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETC",
+      "ForeignName": "ETCBTC",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETHUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETHUSDC",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EVMOS",
+      "ForeignName": "EVMOSUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FEI",
+      "ForeignName": "FEIUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FIL",
+      "ForeignName": "FILUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FLOW",
+      "ForeignName": "FLOWUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FTM",
+      "ForeignName": "FTMUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FTT",
+      "ForeignName": "FTTUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FUSE",
+      "ForeignName": "FUSEUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "GLMR",
+      "ForeignName": "GLMRUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "INTR",
+      "ForeignName": "INTRUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "KSM",
+      "ForeignName": "KSMBTC",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "KSM",
+      "ForeignName": "KSMUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTCUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MANA",
+      "ForeignName": "MANAUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MATIC",
+      "ForeignName": "MATICUSDC",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MATIC",
+      "ForeignName": "MATICUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "METIS",
+      "ForeignName": "METISUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MOVR",
+      "ForeignName": "MOVRUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NEAR",
+      "ForeignName": "NEARUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NETT",
+      "ForeignName": "NETTUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NFTY",
+      "ForeignName": "NFTYUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PAXG",
+      "ForeignName": "PAXGUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PHA",
+      "ForeignName": "PHAUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PHX",
+      "ForeignName": "PHXUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "RAY",
+      "ForeignName": "RAYUSDC",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "RAY",
+      "ForeignName": "RAYUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SAMO",
+      "ForeignName": "SAMOUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SAND",
+      "ForeignName": "SANDUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SDN",
+      "ForeignName": "SDNUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SHIB",
+      "ForeignName": "SHIBUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SOL",
+      "ForeignName": "SOLUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SPA",
+      "ForeignName": "SPAUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "STETH",
+      "ForeignName": "STETHUSDC",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "STETH",
+      "ForeignName": "STETHUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TKB",
+      "ForeignName": "TKBUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TLOS",
+      "ForeignName": "TLOSUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TRX",
+      "ForeignName": "TRXUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TUSD",
+      "ForeignName": "TUSDUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "UNI",
+      "ForeignName": "UNIUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "USDD",
+      "ForeignName": "USDDUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "USDJ",
+      "ForeignName": "USDJUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "USDP",
+      "ForeignName": "USDPUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "WBTC",
+      "ForeignName": "WBTCUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "WBTC",
+      "ForeignName": "WBTCUSDC",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "YFI",
+      "ForeignName": "YFIUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XRP",
+      "ForeignName": "XRPUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    }
+  ]
+}

@@ -18,7 +18,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 
-	anyerc20 "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/anyerc20"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/anyerc20"
 	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
 
 	"math/big"
@@ -55,7 +55,7 @@ type BridgeSwapScraper struct {
 
 	// signaling channels for session initialization and finishing
 	//initDone     chan nothing
-	run          bool
+	//run          bool
 	shutdown     chan nothing
 	shutdownDone chan nothing
 	// error handling; to read error or closed, first acquire read lock
@@ -65,12 +65,12 @@ type BridgeSwapScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*BridgeSwapPairScraper
-	exchangeName string
-	chanTrades   chan *dia.Trade
-	waitTime     int
+	//exchangeName string
+	chanTrades chan *dia.Trade
+	// waitTime     int
 	// If true, only pairs given in config file are scraped. Default is false.
-	listenByAddress bool
-	relDB           *models.RelDB
+	//listenByAddress bool
+	relDB *models.RelDB
 }
 
 type MultiChainConfig struct {
@@ -87,11 +87,9 @@ var (
 )
 
 const (
-	bscMultiContract = "0xd1c5966f9f5ee6881ff6b261bbeda45972b1b5f3"
-	ftmHTTP          = "https://rpc.ftm.tools/"
-	ethHTTP          = "https://eth-mainnet.alchemyapi.io/v2/UpWALFqrTh5m8bojhDcgtBIif-Ug5UUE"
-	polygonHTTP      = "https://polygon-rpc.com"
-	abiString        = `[{
+	ftmHTTP   = "https://rpc.ftm.tools/"
+	ethHTTP   = "https://eth-mainnet.alchemyapi.io/v2/UpWALFqrTh5m8bojhDcgtBIif-Ug5UUE"
+	abiString = `[{
 		"anonymous": false,
 		"inputs": [{
 			"indexed": true,
@@ -170,10 +168,12 @@ func NewBridgeSwapScraper(exchange dia.Exchange, scrape bool, relDB *models.RelD
 	// var waitgroup sync.WaitGroup
 	multichainconfigs = make(map[string]MultiChainConfig)
 
-	log.Println("chainConfigs", chainConfigs)
-
+	multichainconfigs["1"] = MultiChainConfig{restURL: chainConfigs["1"].RestURL, wsURL: chainConfigs["1"].WSURL, contratDeployedAtBlock: 12242619, contractAddress: "0x765277eebeca2e31912c9946eae1021199b39c61"}
 	multichainconfigs["56"] = MultiChainConfig{restURL: chainConfigs["56"].RestURL, wsURL: chainConfigs["56"].WSURL, contratDeployedAtBlock: 7910338, contractAddress: "0xd1c5966f9f5ee6881ff6b261bbeda45972b1b5f3"}
+	multichainconfigs["137"] = MultiChainConfig{restURL: chainConfigs["137"].RestURL, wsURL: chainConfigs["137"].WSURL, contratDeployedAtBlock: 17355461, contractAddress: "0x6ff0609046a38d76bd40c5863b4d1a2dce687f73"}
 	multichainconfigs["250"] = MultiChainConfig{restURL: chainConfigs["250"].RestURL, wsURL: chainConfigs["250"].WSURL, contratDeployedAtBlock: 8475644, contractAddress: "0x1ccca1ce62c62f7be95d4a67722a8fdbed6eecb4"}
+	multichainconfigs["42161"] = MultiChainConfig{restURL: chainConfigs["42161"].RestURL, wsURL: chainConfigs["42161"].WSURL, contratDeployedAtBlock: 15315466, contractAddress: "0x650af55d5877f289837c30b94af91538a7504b76"}
+	multichainconfigs["43114"] = MultiChainConfig{restURL: chainConfigs["43114"].RestURL, wsURL: chainConfigs["43114"].WSURL, contratDeployedAtBlock: 3397229, contractAddress: "0xB0731d50C681C45856BFc3f7539D5f61d4bE81D8"}
 
 	log.Info("NewBridgeSwapScraper: ", exchange.Name)
 	log.Infof("Init rest and ws client for %s.", exchange.BlockChain.Name)
@@ -252,18 +252,19 @@ func (s *BridgeSwapScraper) checkTransactionOnChain(events chan types.Log) {
 			quoteTokenDecimal, err := GetDecimals(tokenAddress, toChainIdValue.String())
 			if err != nil {
 				log.Warnf("Error getting GetDecimals token %s of chain id %s", tokenAddress, toChainIdValue.String())
+				continue
 			}
 
 			baseBlockchain, isAvailable := evmID[fromChainIdValue.String()]
 			if !isAvailable {
-				log.Warn("Blockchain configs not available", fromChainIdValue)
+				log.Warn("Blockchain configs not available for chain with ID ", fromChainIdValue)
 				continue
 
 			}
 
 			quoteBlockchain, isAvailable := evmID[toChainIdValue.String()]
 			if !isAvailable {
-				log.Warn("Blockchain configs not available", toChainIdValue)
+				log.Warn("Blockchain configs not available for chain with ID ", toChainIdValue)
 				continue
 
 			}
@@ -287,6 +288,7 @@ func (s *BridgeSwapScraper) checkTransactionOnChain(events chan types.Log) {
 			baseTokenDecimal, err := GetDecimals(tokenbridged, fromChainIdValue.String())
 			if err != nil {
 				log.Warnf("Error getting GetDecimals token %s of chain id %s", tokenbridged, fromChainIdValue.String())
+				continue
 			}
 
 			baseToken := dia.Asset{
@@ -343,7 +345,9 @@ func (s *BridgeSwapScraper) mapasset(t dia.Trade) {
 	if err != nil {
 		log.Errorln("quotetoken not exists", quoteToken_id)
 	} else if quote_group_id != "" {
-		s.relDB.InsertAssetMap(quote_group_id, baseToken_id)
+		log.Errorln("InsertAssetMap1 ", quote_group_id, baseToken_id)
+		errInsertAssetMap := s.relDB.InsertAssetMap(quote_group_id, baseToken_id)
+		log.Errorln("err InsertAssetMap1", errInsertAssetMap)
 		return
 	}
 
@@ -351,18 +355,23 @@ func (s *BridgeSwapScraper) mapasset(t dia.Trade) {
 	if err != nil {
 		log.Errorln("base does not exists ")
 	} else if quote_group_id != "" {
-		s.relDB.InsertAssetMap(base_group_id, quoteToken_id)
+		log.Errorln("InsertAssetMap2 ", quote_group_id, baseToken_id)
+		errInsertAssetMap := s.relDB.InsertAssetMap(base_group_id, quoteToken_id)
+		log.Errorln("err InsertAssetMap2", errInsertAssetMap)
+
 		return
 	}
+	log.Errorln("InsertAssetMap3 ", quoteToken_id)
 
-	s.relDB.InsertNewAssetMap(quoteToken_id)
+	err = s.relDB.InsertNewAssetMap(quoteToken_id)
+	log.Errorln("err InsertAssetMap3", err)
 
 	gpid, err := s.relDB.GetAssetMap(quoteToken_id)
 	if err != nil {
 		log.Errorln("gpid generated err ", err)
 	}
-	s.relDB.InsertAssetMap(baseToken_id, gpid)
-	log.Infoln("quote_group_id, base_group_id", quote_group_id, base_group_id)
+	s.relDB.InsertAssetMap(gpid, baseToken_id)
+	log.Infoln("quote_group_id, base_group_id", baseToken_id, gpid)
 }
 
 func GetDecimals(tokenAddress common.Address, chainid string) (decimals uint8, err error) {
@@ -409,11 +418,11 @@ func getEventDetailsAbi(funcName string, msg types.Log) ([]interface{}, abi.ABI)
 
 	contractAbi, err := abi.JSON(strings.NewReader(abiString))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("read contract abi: ", err)
 	}
 	event, err = contractAbi.Unpack(funcName, msg.Data)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("unpack event: ", err)
 	}
 	return event, contractAbi
 }
@@ -425,9 +434,11 @@ func getDetailsFromTransactionHash(msg types.Log, fromChainIdValue *big.Int, con
 	LogAnySwapOutbyteHex := crypto.Keccak256Hash([]byte("LogAnySwapOut(address,address,address,uint256,uint256,uint256)"))
 	if ok {
 		//get transaction receipt from transaction hash
-		receipt, err := restClient.TransactionReceipt(context.Background(), common.HexToHash(msg.Topics[1].Hex()))
+		var receipt *types.Receipt
+		receipt, err = restClient.TransactionReceipt(context.Background(), common.HexToHash(msg.Topics[1].Hex()))
 		if err != nil {
-			log.Fatal(err)
+			log.Errorf("fetch transaction receipt of tx %s on chain with ID %v: %v", msg.Topics[1].Hex(), fromChainIdValue.Int64(), err)
+			return
 		}
 
 		for _, txlog := range receipt.Logs {
@@ -437,9 +448,9 @@ func getDetailsFromTransactionHash(msg types.Log, fromChainIdValue *big.Int, con
 				fmt.Println("token swapped between chains ", common.HexToAddress(txlog.Topics[1].Hex()))
 				tokenmoved = getMultichainUnderlyingToken(common.HexToAddress(txlog.Topics[1].Hex()), fromChainIdValue.String())
 				// fmt.Println("underlyingtoken", underlyingtoken)
-				event, err := contractAbi.Unpack("LogAnySwapOut", txlog.Data)
-				if err != nil {
-					log.Fatal(err)
+				event, errUnpack := contractAbi.Unpack("LogAnySwapOut", txlog.Data)
+				if errUnpack != nil {
+					log.Fatal("unpack event LogAnySwapOut: ", errUnpack)
 				}
 				fmt.Println("------", event[0].(*big.Int))
 
@@ -476,26 +487,51 @@ func InitialiseRestClientsMap() {
 
 	restClients["250"], err = ethclient.Dial(ftmHTTP)
 	if err != nil {
-		log.Fatal("init rest client: ", err)
+		log.Fatal("init Fantom rest client: ", err)
 	}
 
 	restClients["1"], err = ethclient.Dial(ethHTTP)
 	if err != nil {
-		log.Fatal("init rest client: ", err)
+		log.Fatal("init Ethereum rest client: ", err)
 	}
 
-	restClients["137"], err = ethclient.Dial(polygonHTTP)
+	restClients["137"], err = ethclient.Dial(multichainconfigs["137"].restURL)
 	if err != nil {
-		log.Fatal("init rest client: ", err)
+		log.Fatal("init Polygon rest client: ", err)
 	}
 	restClients["56"], err = ethclient.Dial(multichainconfigs["56"].restURL)
 	if err != nil {
-		log.Fatal("init rest client: ", err)
+		log.Fatal("init Binance Smart Chain rest client: ", err)
 	}
 
 	restClients["25"], err = ethclient.Dial("https://cronosrpc-1.xstaking.sg")
 	if err != nil {
-		log.Fatal("init rest client: ", err)
+		log.Fatal("init Cronos rest client: ", err)
+	}
+
+	restClients["43114"], err = ethclient.Dial("https://rpc.ankr.com/avalanche")
+	if err != nil {
+		log.Fatal("init Avalanche rest client: ", err)
+	}
+
+	restClients["10"], err = ethclient.Dial("https://mainnet.optimism.io")
+	if err != nil {
+		log.Fatal("init Optimism rest client: ", err)
+	}
+
+	restClients["1285"], err = ethclient.Dial("https://rpc.api.moonriver.moonbeam.network")
+	if err != nil {
+		log.Fatal("init Moonbeam rest client: ", err)
+	}
+
+	restClients["66"], err = ethclient.Dial("https://exchainrpc.okex.org")
+	if err != nil {
+		log.Fatal("init OKXChain rest client: ", err)
+	}
+
+	restClients["42161"], err = ethclient.Dial("https://arb1.arbitrum.io/rpc")
+	if err != nil {
+		log.Fatal("init Arbitrum rest client: ", err)
 	}
 
 }
@@ -508,7 +544,7 @@ func InitialiseWsClientsMap() {
 	for chainID, chainconfig := range multichainconfigs {
 		wsClients[chainID], err = ethclient.Dial(chainconfig.wsURL)
 		if err != nil {
-			log.Fatal("init ws client: ", err)
+			log.Errorf("init ws client on chain with id %s: %v", chainID, err)
 		}
 
 	}

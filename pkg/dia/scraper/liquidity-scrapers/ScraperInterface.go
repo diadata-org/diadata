@@ -73,8 +73,18 @@ func NewLiquidityScraper(source string) LiquidityScraper {
 		return NewUniswapScraper(exchanges[dia.ArthswapExchange])
 	case dia.CurveFIExchange:
 		return NewCurveFIScraper(exchanges[dia.CurveFIExchange])
+	case dia.CurveFIExchangePolygon:
+		return NewCurveFIScraper(exchanges[dia.CurveFIExchangePolygon])
+	case dia.CurveFIExchangeFantom:
+		return NewCurveFIScraper(exchanges[dia.CurveFIExchangeFantom])
+	case dia.CurveFIExchangeMoonbeam:
+		return NewCurveFIScraper(exchanges[dia.CurveFIExchangeMoonbeam])
 	case dia.BalancerV2Exchange:
 		return NewBalancerV2Scraper(exchanges[dia.BalancerV2Exchange])
+	case dia.PlatypusExchange:
+		return NewPlatypusScraper(exchanges[dia.PlatypusExchange])
+	case dia.BalancerV2ExchangePolygon:
+		return NewBalancerV2Scraper(exchanges[dia.BalancerV2ExchangePolygon])
 	case dia.BeetsExchange:
 		return NewBalancerV2Scraper(exchanges[dia.BeetsExchange])
 	case dia.UniswapExchangeV3:
@@ -83,6 +93,14 @@ func NewLiquidityScraper(source string) LiquidityScraper {
 		return NewUniswapV3Scraper(exchanges[dia.UniswapExchangeV3Polygon])
 	case dia.StellaswapExchange:
 		return NewUniswapScraper(exchanges[dia.StellaswapExchange])
+	case dia.WanswapExchange:
+		return NewUniswapScraper(exchanges[dia.WanswapExchange])
+	case dia.UniswapExchangeV3Arbitrum:
+		return NewUniswapV3Scraper(exchanges[dia.UniswapExchangeV3Arbitrum])
+	case dia.BancorExchange:
+		return NewBancorPoolScraper(exchanges[dia.BancorExchange])
+	case dia.OrcaExchange:
+		return NewOrcaScraper(exchanges[dia.OrcaExchange])
 
 	default:
 		return nil

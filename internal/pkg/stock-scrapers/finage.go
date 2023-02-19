@@ -61,11 +61,16 @@ func (scraper *FinageScraper) mainLoop() {
 		scraper.cleanup(err)
 		return
 	}
-	defer c.Close()
+	defer func(c *websocket.Conn) {
+		errClose := c.Close()
+		if errClose != nil {
+			log.Error("Error closing websocket connection ", errClose)
+		}
+	}(c)
 
 	if subscribeErr := c.WriteMessage(websocket.TextMessage, []byte(subscribeMessage)); subscribeErr != nil {
-		log.Error("creating subscription for the stock quotations: ", err)
-		scraper.cleanup(err)
+		log.Error("creating subscription for the stock quotations: ", subscribeErr)
+		scraper.cleanup(subscribeErr)
 		return
 	}
 
@@ -200,7 +205,12 @@ func getAPIKeyFromSecrets() string {
 			log.Fatal(err)
 		}
 	}
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			log.Error("error closing file ", err)
+		}
+	}(file)
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())

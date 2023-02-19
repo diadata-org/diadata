@@ -1,10 +1,76 @@
 {
     "Tokens": [
         {
+            "Symbol": "ACA",
+            "Exchange": "GateIO",
+            "Blockchain": "Acala",
+            "Address": "Token:ACA"
+        },
+        {
+            "Symbol": "ANGLE",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x31429d1856aD1377A8A0079410B297e1a9e214c2"
+        },
+        {
+            "Symbol": "AVAX",
+            "Exchange": "GateIO",
+            "Blockchain": "Avalanche",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "BFC",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x0c7D5ae016f806603CB1782bEa29AC69471CAb9c"
+        },
+        {
+            "Symbol": "CFG",
+            "Exchange": "GateIO",
+            "Blockchain": "Centrifuge",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "INTR",
+            "Exchange": "GateIO",
+            "Blockchain": "Interlay",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "CKB",
+            "Exchange": "GateIO",
+            "Blockchain": "Nervos",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "MSOL",
+            "Exchange": "GateIO",
+            "Blockchain": "Solana",
+            "Address": "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"
+        },
+        {
+            "Symbol": "DUST",
+            "Exchange": "GateIO",
+            "Blockchain": "Solana",
+            "Address": "DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ"
+        },
+        {
+            "Symbol": "SAMO",
+            "Exchange": "GateIO",
+            "Blockchain": "Solana",
+            "Address": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
+        },
+        {
             "Symbol": "NFTY",
             "Exchange": "GateIO",
             "Blockchain": "BinanceSmartChain",
             "Address": "0x5774B2fc3e91aF89f89141EacF76545e74265982"
+        },
+        {
+            "Symbol": "SHIB",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
         },
         {
             "Symbol": "TLOS",
@@ -163,6 +229,12 @@
             "Address": "0x0AbdAce70D3790235af448C88547603b945604ea"
         },
         {
+            "Symbol": "DOT",
+            "Exchange": "GateIO",
+            "Blockchain": "Polkadot",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "DOWS",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -289,6 +361,12 @@
             "Address": "0xEda8B016efA8b1161208Cf041cD86972eeE0F31E"
         },
         {
+            "Symbol": "INJ",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0xe28b3B32B6c345A34Ff64674606124Dd5Aceca30"
+        },
+        {
             "Symbol": "JNT",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -365,6 +443,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942"
+        },
+        {
+            "Symbol": "MATIC",
+            "Exchange": "GateIO",
+            "Blockchain": "Polygon",
+            "Address": "0x0000000000000000000000000000000000001010"
         },
         {
             "Symbol": "METIS",
@@ -649,16 +733,34 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "UNI",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
+        },
+        {
             "Symbol": "USD",
             "Exchange": "GateIO",
             "Blockchain": "Fiat",
             "Address": "840"
         },
         {
+            "Symbol": "USDD",
+            "Exchange": "GateIO",
+            "Blockchain": "Tron",
+            "Address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn"
+        },
+        {
             "Symbol": "USDT",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+        },
+        {
+            "Symbol": "VLX",
+            "Exchange": "GateIO",
+            "Blockchain": "Velas",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "WINGS",

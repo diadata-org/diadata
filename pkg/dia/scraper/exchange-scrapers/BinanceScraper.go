@@ -11,6 +11,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
+	"github.com/zekroTJA/timedmap"
 )
 
 type binancePairScraperSet map[*BinancePairScraper]nothing
@@ -33,12 +34,13 @@ type BinanceScraper struct {
 	// pairSubscriptions sync.Map // dia.ExchangePair -> string (subscription ID)
 	// pairLocks         sync.Map // dia.ExchangePair -> sync.Mutex
 	exchangeName string
+	scraperName  string
 	chanTrades   chan *dia.Trade
 	db           *models.RelDB
 }
 
 // NewBinanceScraper returns a new BinanceScraper for the given pair
-func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BinanceScraper {
+func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange, scraperName string, scrape bool, relDB *models.RelDB) *BinanceScraper {
 
 	s := &BinanceScraper{
 		client:       binance.NewClient(apiKey, secretKey),
@@ -46,6 +48,7 @@ func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange, s
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		exchangeName: exchange.Name,
+		scraperName:  scraperName,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 		db:           relDB,
@@ -127,6 +130,9 @@ func (s *BinanceScraper) Close() error {
 func (s *BinanceScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	<-s.initDone // wait until client is connected
 
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+
 	if s.closed {
 		return nil, errors.New("BinanceScraper: Call ScrapePair on closed scraper")
 	}
@@ -147,7 +153,7 @@ func (s *BinanceScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) 
 				volume = -volume
 			}
 			pairNormalized, _ := s.NormalizePair(pair)
-			exchangepair, err = s.db.GetExchangePairCache(s.exchangeName, pair.ForeignName)
+			exchangepair, err = s.db.GetExchangePairCache(s.scraperName, pair.ForeignName)
 			if err != nil {
 				log.Error(err)
 			}
@@ -166,7 +172,12 @@ func (s *BinanceScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) 
 			if exchangepair.Verified {
 				log.Infoln("Got verified trade", t)
 			}
-			ps.parent.chanTrades <- t
+			// Handle duplicate trades.
+			discardTrade := t.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+			if !discardTrade {
+				t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+				ps.parent.chanTrades <- t
+			}
 		} else {
 			log.Println("ignoring event ", event, err, err2)
 		}

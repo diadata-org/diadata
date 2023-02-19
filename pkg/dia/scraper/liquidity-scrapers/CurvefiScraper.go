@@ -17,7 +17,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
-const (
+var (
 	curveFiMetaPoolsFactory = "0xB9fC157394Af804a3578134A6585C0dc9cc990d4"
 	curveFiCryptoswapPools  = "0x8F942C20D02bEfc377D41445793068908E2250D0"
 	curveRestDial           = ""
@@ -45,6 +45,21 @@ func NewCurveFIScraper(exchange dia.Exchange) *CurveFIScraper {
 	restClient, err = ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_REST", curveRestDial))
 	if err != nil {
 		log.Fatal("init rest client: ", err)
+	}
+
+	switch exchange.Name {
+	case dia.CurveFIExchange:
+		curveFiMetaPoolsFactory = "0xB9fC157394Af804a3578134A6585C0dc9cc990d4"
+
+	case dia.CurveFIExchangeFantom:
+		curveFiMetaPoolsFactory = "0x686d67265703D1f124c45E33d47d794c566889Ba"
+
+	case dia.CurveFIExchangeMoonbeam:
+		curveFiMetaPoolsFactory = "0x4244eB811D6e0Ef302326675207A95113dB4E1F8"
+
+	case dia.CurveFIExchangePolygon:
+		curveFiMetaPoolsFactory = "0x722272d36ef0da72ff51c5a65db7b870e2e8d4ee"
+
 	}
 
 	scraper = &CurveFIScraper{
@@ -114,6 +129,7 @@ func (scraper *CurveFIScraper) fetchPools(factoryAddress common.Address) {
 		poolCount, err = contract.PoolCount(&bind.CallOpts{})
 		if err != nil {
 			log.Error("PoolCount: ", err)
+			return
 		}
 
 		for i := 0; i < int(poolCount.Int64()); i++ {
@@ -238,6 +254,7 @@ func (scraper *CurveFIScraper) loadPoolData(poolAddress common.Address, factoryC
 		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{
 			Asset:  poolAssets[i],
 			Volume: volume,
+			Index:  uint8(i),
 		})
 	}
 	pool.Exchange = dia.Exchange{Name: scraper.exchangeName}

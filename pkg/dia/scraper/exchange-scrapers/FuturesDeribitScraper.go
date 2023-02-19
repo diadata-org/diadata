@@ -4,33 +4,39 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"sync"
 	"time"
 
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gorilla/websocket"
-	zap "go.uber.org/zap"
 )
 
 // const scrapeDataSaveLocationDeribit = ""
-
-type deribitRefreshMessage struct {
-	Result struct {
-		RefreshToken string `json:"refresh_token"`
-	} `json:"result"`
+type deribitInstrument struct {
+	InstrumentName      string  `json:"instrument_name"`
+	Kind                string  `json:"kind"`
+	TickSize            float64 `json:"tick_size"`
+	TakerCommission     float64 `json:"taker_commission"`
+	Strike              float64 `json:"strike"`
+	SettlementPeriod    string  `json:"settlement_period"`
+	QuoteCurrency       string  `json:"quote_currency"`
+	OptionType          string  `json:"option_type"`
+	MinTradeAmount      float64 `json:"min_trade_amount"`
+	MakerCommission     float64 `json:"maker_commission"`
+	IsActive            bool    `json:"is_active"`
+	ExpirationTimestamp int64   `json:"expiration_timestamp"`
+	CreationTimestamp   int64   `json:"creation_timestamp"`
+	ContractSize        float64 `json:"contract_size"`
+	BaseCurrency        string  `json:"base_currency"`
 }
 
-type deribitErrorMessage struct {
-	Error struct {
-		Message string `json:"message"`
-		Code    int64  `json:"code"`
-	} `json:"error"`
+type deribitInstruments struct {
+	Result []deribitInstrument `json:"result"`
 }
 
 type ParsedDeribitResponse struct {
 	Jsonrpc string                      `json:"jsonrpc"`
-	Method string                      `json:"method"`
-	Params ParsedDeribitResponseParams `json:"params"`
+	Method  string                      `json:"method"`
+	Params  ParsedDeribitResponseParams `json:"params"`
 }
 
 type ParsedDeribitResponseParams struct {
@@ -44,33 +50,6 @@ type ParsedDeribitOptionOrderbookEntry struct {
 	ChangeId       int64       `json:"change_id"`
 	Bids           [][]float64 `json:"bids"`
 	Asks           [][]float64 `json:"asks"`
-}
-
-// NewDeribitFuturesScraper - creates a deribit futures scraper for you for the markets that you supply. Some of the markets available are: "BTC-PERPETUAL" and "ETH-PERPETUAL".
-func NewDeribitFuturesScraper(markets []string, accessKey string, accessSecret string) FuturesScraper {
-	wg := sync.WaitGroup{}
-	logger := zap.NewExample().Sugar() // or NewProduction, or NewDevelopment
-	defer func() {
-		err := logger.Sync()
-		if err != nil {
-			log.Error(err)
-		}
-	}()
-
-	var scraper DeribitScraper = DeribitScraper{
-		WaitGroup: &wg,
-		Markets:   markets, // e.g. []string{"BTC-PERPETUAL", "ETH-PERPETUAL"}
-		Logger:    logger,
-
-		AccessKey:    accessKey,
-		AccessSecret: accessSecret,
-
-		// expiry is 900 seconds
-		RefreshTokenEvery: 800,
-		MarketKind:        DeribitFuture, // DO NOT change this.
-	}
-
-	return &scraper
 }
 
 func (s *DeribitScraper) send(message *map[string]interface{}, websocketConn *websocket.Conn) error {

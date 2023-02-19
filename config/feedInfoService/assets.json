@@ -1,6 +1,31 @@
 {
   "Tokens": [
     {
+      "Symbol": "ACA",
+      "Address": "Token:ACA",
+      "Blockchain": "Acala"
+    },
+    {
+      "Symbol": "ANGLE",
+      "Address": "0x31429d1856aD1377A8A0079410B297e1a9e214c2",
+      "Blockchain": "Ethereum"
+    },
+    {
+      "Symbol": "ANKR",
+      "Address": "0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4",
+      "Blockchain": "Ethereum"
+    },
+    {
+      "Symbol": "ANKR",
+      "Address": "0xf307910A4c7bbc79691fD374889b36d8531B08e3",
+      "Blockchain": "BinanceSmartChain"
+    },
+    {
+      "Symbol": "ANKR",
+      "Address": "0x101A023270368c0D50BFfb62780F4aFd4ea79C35",
+      "Blockchain": "Polygon"
+    },
+    {
       "Symbol": "ARGO",
       "Address": "0x28Cca76f6e8eC81e4550ecd761f899110b060E97",
       "Blockchain": "Ethereum"
@@ -16,9 +41,19 @@
       "Blockchain": "Acala"
     },
     {
+      "Symbol": "AVAX",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "Avalanche"
+    },
+    {
       "Symbol": "BCT",
       "Address": "0x2F800Db0fdb5223b3C3f354886d907A671414A7F",
       "Blockchain": "Polygon"
+    },
+    {
+      "Symbol": "BFC",
+      "Address": "0x0c7D5ae016f806603CB1782bEa29AC69471CAb9c",
+      "Blockchain": "Ethereum"
     },
     {
       "Symbol": "BNB",
@@ -26,9 +61,9 @@
       "Blockchain": "BinanceSmartChain"
     },
     {
-      "Symbol": "BUSD",
-      "Address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
-      "Blockchain": "BinanceSmartChain"
+      "Symbol": "BOO",
+      "Address": "0x841FAD6EAe12c286d1Fd18d1d525DFfA75C7EFFE",
+      "Blockchain": "Fantom"
     },
     {
       "Symbol": "BTC",
@@ -36,9 +71,24 @@
       "Blockchain": "Bitcoin"
     },
     {
+      "Symbol": "BUSD",
+      "Address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+      "Blockchain": "BinanceSmartChain"
+    },
+    {
       "Symbol": "CELO",
       "Address": "0x471EcE3750Da237f93B8E339c536989b8978a438",
       "Blockchain": "Celo"
+    },
+    {
+      "Symbol": "CFG",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "Centrifuge"
+    },
+    {
+      "Symbol": "CKB",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "Nervos"
     },
     {
       "Symbol": "DAFI",
@@ -56,6 +106,11 @@
       "Blockchain": "Polygon"
     },
     {
+      "Symbol": "DOGE",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "Dogechain"
+    },
+    {
       "Symbol": "DOT",
       "Address": "0x0000000000000000000000000000000000000000",
       "Blockchain": "Polkadot"
@@ -64,6 +119,16 @@
       "Symbol": "DOWS",
       "Address": "0x661Ab0Ed68000491d98C796146bcF28c20d7c559",
       "Blockchain": "Ethereum"
+    },
+    {
+      "Symbol": "DUST",
+      "Address": "DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ",
+      "Blockchain": "Solana"
+    },
+    {
+      "Symbol": "ETC",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "EthereumClassic"
     },
     {
       "Symbol": "ETH",
@@ -81,6 +146,11 @@
       "Blockchain": "Moonriver"
     },
     {
+      "Symbol": "FTM",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "Fantom"
+    },
+    {
       "Symbol": "FUSE",
       "Address": "0x0000000000000000000000000000000000000000",
       "Blockchain": "Fuse"
@@ -91,14 +161,29 @@
       "Blockchain": "Moonbeam"
     },
     {
+      "Symbol": "INTR",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "Interlay"
+    },
+    {
       "Symbol": "KSM",
       "Address": "0x0000000000000000000000000000000000000000",
       "Blockchain": "Kusama"
     },
     {
+      "Symbol": "LTC",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "Litecoin"
+    },
+    {
       "Symbol": "LUNA",
       "Address": "0x0000000000000000000000000000000000000000",
       "Blockchain": "Terra"
+    },
+    {
+      "Symbol": "MATIC",
+      "Address": "0x0000000000000000000000000000000000001010",
+      "Blockchain": "Polygon"
     },
     {
       "Symbol": "METIS",
@@ -111,9 +196,29 @@
       "Blockchain": "Metis"
     },
     {
+      "Symbol": "miMATIC",
+      "Address": "0xfB98B335551a418cD0737375a2ea0ded62Ea213b",
+      "Blockchain": "Fantom"
+    },
+    {
+      "Symbol": "miMATIC",
+      "Address": "0xdFA46478F9e5EA86d57387849598dbFB2e964b02",
+      "Blockchain": "Metis"
+    },
+    {
+      "Symbol": "miMATIC",
+      "Address": "0xa3Fa99A148fA48D14Ed51d610c367C61876997F1",
+      "Blockchain": "Polygon"
+    },
+    {
       "Symbol": "MOBI",
       "Address": "0x73a210637f6F6B7005512677Ba6B3C96bb4AA44B",
       "Blockchain": "Celo"
+    },
+    {
+      "Symbol": "mSOL",
+      "Address": "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So",
+      "Blockchain": "Solana"
     },
     {
       "Symbol": "NEAR",
@@ -129,6 +234,21 @@
       "Symbol": "NFTY",
       "Address": "0x5774B2fc3e91aF89f89141EacF76545e74265982",
       "Blockchain": "BinanceSmartChain"
+    },
+    {
+      "Symbol": "PHA",
+      "Address": "0x6c5bA91642F10282b576d91922Ae6448C9d52f4E",
+      "Blockchain": "Ethereum"
+    },
+    {
+      "Symbol": "RAY",
+      "Address": "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R",
+      "Blockchain": "Solana"
+    },
+    {
+      "Symbol": "SAMO",
+      "Address": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+      "Blockchain": "Solana"
     },
     {
       "Symbol": "SDN",
@@ -171,6 +291,11 @@
       "Blockchain": "Ethereum"
     },
     {
+      "Symbol": "WAN",
+      "Address": "0x0000000000000000000000000000000000000000",
+      "Blockchain": "Wanchain"
+    },
+    {
       "Symbol": "WBTC",
       "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
       "Blockchain": "Ethereum"
@@ -193,6 +318,11 @@
     {
       "Symbol": "WUST",
       "Address": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD",
+      "Blockchain": "Ethereum"
+    },
+    {
+      "Symbol": "YFI",
+      "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
       "Blockchain": "Ethereum"
     }
   ]

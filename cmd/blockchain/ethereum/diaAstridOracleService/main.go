@@ -54,6 +54,7 @@ func main() {
 		"0x0000000000000000000000000000000000000000",//ETH
 		"0x6B175474E89094C44Da98b954EedeAC495271d0F",//DAI
 		"0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",//BUSD
+		"0xdAC17F958D2ee523a2206206994597C13D831ec7",//USDT
 	}
 	blockchains := []string{
 		"Astar",             //ASTR
@@ -64,6 +65,7 @@ func main() {
 		"Ethereum",          //ETH
 		"Ethereum",					 //DAI
 		"BinanceSmartChain", //BUSD
+		"Ethereum",          //USDT
 	}
 	oldPrices := make(map[int]float64)
 
@@ -216,7 +218,6 @@ func updateOracle(
 	tx, err := contract.SetValue(&bind.TransactOpts{
 		From:     auth.From,
 		Signer:   auth.Signer,
-		GasLimit: 1000725,
 		GasPrice: gasPrice,
 	}, key, big.NewInt(value), big.NewInt(timestamp))
 	if err != nil {
@@ -226,6 +227,7 @@ func updateOracle(
 	log.Printf("price: %d\n", value)
 	log.Printf("key: %s\n", key)
 	log.Printf("nonce: %d\n", tx.Nonce())
+	log.Printf("gas price: %d\n", tx.GasPrice())
 	log.Printf("Tx To: %s\n", tx.To().String())
 	log.Printf("Tx Hash: 0x%x\n", tx.Hash())
 	return nil
@@ -295,7 +297,7 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, blockDuration i
 }
 
 func getGasSuggestion() (*big.Int, error) {
-	response, err := http.Get("http://astargasstation.dia-services:3000/api/astar/gasnow")
+	response, err := http.Get("https://gas.astar.network/api/gasnow?network=astar")
 	if err != nil {
 		return nil, err
 	}

@@ -1,0 +1,92 @@
+{
+    "Pools": [
+        {
+            "Address": "0xa927E1e1E044CA1D9fe1854585003477331fE2Af",
+            "ForeignName": "WGLMR-xcDOT"
+        },
+        {
+            "Address": "0xdA782836B65edC4E6811c7702C5E21786203Ba9d",
+            "ForeignName": "Base4Pool"
+        },
+        {
+            "Address": "0x9bFcf685e641206115dadc0C9ab17181e1d4975c",
+            "ForeignName": "USDC.mad-WGLMR"
+        },
+        {
+            "Address": "0x9d19EDBFd29D2e01537624B25806493dA0d73bBE",
+            "ForeignName": "ETH.mad-WGLMR"
+        },
+        {
+            "Address": "0x367c36dAE9ba198A4FEe295c22bC98cB72f77Fe1",
+            "ForeignName": "BUSD.multi-WGLMR"
+        },
+        {
+            "Address": "0x555B74dAFC4Ef3A5A1640041e3244460Dc7610d1",
+            "ForeignName": "USDC.multi-WGLMR"
+        },
+        {
+            "Address": "0xE28459075c806b1bFa72A38E669CCd6Fb4125f6a",
+            "ForeignName": "WBTC.mad-WGLMR"
+        },
+        {
+            "Address": "0x7F5Ac0FC127bcf1eAf54E3cd01b00300a0861a62",
+            "ForeignName": "STELLA-WGLMR"
+        },
+        {
+            "Address": "0xb536c1F9A157B263B70A9a35705168ACC0271742",
+            "ForeignName": "WELL-WGLMR"
+        },
+        {
+            "Address": "0x49a1cC58dCf28D0139dAEa9c18A3ca23108E78B3",
+            "ForeignName": "WGLMR-ETH.multi"
+        },
+        {
+            "Address": "0x2Afab635EA2DC4B498EF1C00E63b7a7dBa9c93C6",
+            "ForeignName": "WGLMR-FTM.multi"
+        },
+        {
+            "Address": "0x015c6B2d98969e3bF066110769E53D734e48Ebf6",
+            "ForeignName": "FRAX-WGLMR"
+        },
+        {
+            "Address": "0x2F412C140080039eaF9dE01c95e84cFb1c8D98aD",
+            "ForeignName": "AVAX.multi-WGLMR"
+        },
+        {
+            "Address": "0xa3eE3a0a36Dc915fDc93062e4B386DF37d00217E",
+            "ForeignName": "ETH.mad-ETH.multi"
+        },
+        {
+            "Address": "0xAc2657ba28768FE5F09052f07A9B7ea867A4608f",
+            "ForeignName": "USDC.multi-BNB.multi"
+        },
+        {
+            "Address": "0x91b11E7649614EaBe97D96d75bE11d1068059FF1",
+            "ForeignName": "WGLMR-miMATIC"
+        },
+        {
+            "Address": "0xf2D92daA3b4577A9059DcD4b9834495c5e4A91BD",
+            "ForeignName": "WBTC-miMATIC"
+        },
+        {
+            "Address": "0xD43eB53e3337D1119AC2D3EF0f23A5955E46439d",
+            "ForeignName": "USDC.mad-miMATIC"
+        },
+        {
+            "Address": "0x81e11a9374033d11Cc7e7485A7192AE37D0795D6",
+            "ForeignName": "STELLA-USDC.multi"
+        },
+        {
+            "Address": "0x6775ff3828a19EB5926C0C4D572183cA15Aa4C08",
+            "ForeignName": "MATIC.multi-WGLMR"
+        },
+        {
+            "Address": "0x5Ced2f8DD70dc25cbA10ad18c7543Ad9ad5AEeDD",
+            "ForeignName": "DAI.multi-USDC.multi"
+        },
+        {
+            "Address": "0x0Aa48bF937ee8F41f1a52D225EF5A6F6961e39FA",
+            "ForeignName": "USDC.multi-ETH.multi"
+        }
+    ]
+}

@@ -52,6 +52,7 @@ CREATE TABLE exchange (
     ws_api text,
     pairs_api text,
     watchdog_delay numeric NOT NULL,
+    scraper_active boolean,
     UNIQUE(exchange_id),
     UNIQUE (name)
 );
@@ -70,6 +71,8 @@ CREATE TABLE poolasset (
     pool_id UUID REFERENCES pool(pool_id) NOT NULL,
     asset_id UUID REFERENCES asset(asset_id) NOT NULL, 
     liquidity numeric,
+    time_stamp timestamp,
+    token_index integer,
     UNIQUE (poolasset_id),
     UNIQUE(pool_id,asset_id)
 );
@@ -222,30 +225,63 @@ CREATE TABLE assetpriceident (
     UNIQUE(group_id, rank_in_group)
 );
 
-CREATE TABLE aggregatedvolume (
-    aggregatedvolume_id UUID DEFAULT gen_random_uuid(),
-    quotetoken_id UUID REFERENCES asset(asset_id),
-    basetoken_id UUID REFERENCES asset(asset_id),
-    volume numeric,
-    exchange text,
-    time_range_seconds numeric NOT NULL,
-    compute_time timestamp NOT NULL
+CREATE TABLE synthassetdata (
+    synthassetdata_id UUID DEFAULT gen_random_uuid(),
+    synthasset_id UUID REFERENCES asset(asset_id),
+    underlying_id UUID REFERENCES asset(asset_id),
+    supply numeric,
+    locked_underlying numeric,
+    num_mints numeric,
+    num_redeems numeric,
+    block_number numeric,
+    time_stamp timestamp,
+    UNIQUE(synthassetdata_id),
+    UNIQUE(synthasset_id,time_stamp)
 );
 
-CREATE TABLE tradesdistribution (
-    tradesdistribution_id UUID DEFAULT gen_random_uuid(),
-    asset_id UUID REFERENCES asset(asset_id),
-    -- total number of trades in [compute_time-time_range_seconds, compute_time]
-	num_trades_total numeric,
-    -- number of bins with less than @threshold trades
-	num_low_bins numeric,
-	threshold numeric,
-	size_bin_seconds numeric,
-    avg_num_per_bin numeric,
-	std_deviation numeric,
-    -- total time range under consideration (for instance 24h = 86400s)
-    time_range_seconds numeric NOT NULL,
-    compute_time timestamp
+CREATE TABLE nftexchange (
+    exchange_id UUID DEFAULT gen_random_uuid(),
+    name text NOT NULL,
+    centralized boolean default false,
+    contract text,
+    blockchain text,
+    rest_api text,
+    ws_api text,
+    watchdog_delay numeric NOT NULL,
+    UNIQUE(exchange_id),
+    UNIQUE (name)
 );
+
+
+CREATE TABLE oracleconfig (
+    id UUID DEFAULT gen_random_uuid(),
+    address text NOT NULL,
+    feeder_id text NOT NULL,
+    owner text NOT NULL,
+    symbols text NOT NULL,
+    chainID text NOT NULL,
+    active  boolean default true,
+    frequency text ,
+    sleepseconds text,
+    deviationpermille text,
+    UNIQUE (id),
+    UNIQUE (feeder_id)
+);
+
+
+-- ALTER TABLE oracleconfig ADD COLUMN active  boolean default true;
+
+
+
+
+
+CREATE TABLE feederresource (
+    id  SERIAL PRIMARY KEY,
+    owner text NOT NULL,
+    total numeric NOT NULL,
+    UNIQUE (id),
+    UNIQUE (owner)
+);
+
 
 

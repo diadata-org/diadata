@@ -14,6 +14,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/diadata-org/diadata/config/nftContracts/erc1155"
 	"github.com/diadata-org/diadata/config/nftContracts/erc20"
 	"github.com/diadata-org/diadata/config/nftContracts/erc721"
 	"github.com/diadata-org/diadata/config/nftContracts/opensea"
@@ -85,9 +86,10 @@ type OpenSeaScraperState struct {
 type OpenSeaScraper struct {
 	tradeScraper TradeScraper
 
-	mu    sync.Mutex
-	conf  *OpenSeaScraperConfig
-	state *OpenSeaScraperState
+	mu       sync.Mutex
+	conf     *OpenSeaScraperConfig
+	state    *OpenSeaScraperState
+	exchange dia.NFTExchange
 }
 
 type erc20Transfer struct {
@@ -143,6 +145,7 @@ var (
 	openSeaABI abi.ABI
 	erc20ABI   abi.ABI
 	erc721ABI  abi.ABI
+	erc1155ABI abi.ABI
 
 	assetCacheOpensea = make(map[string]dia.Asset)
 )
@@ -165,6 +168,11 @@ func init() {
 		panic(err)
 	}
 
+	erc1155ABI, err = abi.JSON(strings.NewReader(erc1155.Erc1155ABI))
+	if err != nil {
+		panic(err)
+	}
+
 	OpenSea = utils.Getenv("SCRAPER_NAME_STATE", "")
 
 	// If scraper state is not set yet, start from this block
@@ -177,7 +185,7 @@ func init() {
 
 }
 
-func NewOpenSeaScraper(rdb *models.RelDB) *OpenSeaScraper {
+func NewOpenSeaScraper(rdb *models.RelDB, exchange dia.NFTExchange) *OpenSeaScraper {
 	ctx := context.Background()
 
 	eth, err := ethclient.Dial(utils.Getenv("ETH_URI_REST", ""))
@@ -186,14 +194,15 @@ func NewOpenSeaScraper(rdb *models.RelDB) *OpenSeaScraper {
 	}
 
 	s := &OpenSeaScraper{
-		conf:  &OpenSeaScraperConfig{},
-		state: &OpenSeaScraperState{},
+		conf:     &OpenSeaScraperConfig{},
+		state:    &OpenSeaScraperState{},
+		exchange: exchange,
 		tradeScraper: TradeScraper{
 			shutdown:      make(chan nothing),
 			shutdownDone:  make(chan nothing),
 			datastore:     rdb,
 			chanTrade:     make(chan dia.NFTTrade),
-			source:        "OpenSea",
+			source:        exchange.Name,
 			ethConnection: eth,
 		},
 	}
@@ -340,9 +349,9 @@ func (s *OpenSeaScraper) FetchTrades() error {
 				s.state.LastErr = fmt.Sprintf("unable to process trade transaction(%s): %s", tx.TXHash.Hex(), err.Error())
 				log.Error(s.state.LastErr)
 				// store state
-				if err := s.storeState(ctx); err != nil {
-					log.Warnf("unable to store scraper state: %s", err.Error())
-					return err
+				if errState := s.storeState(ctx); errState != nil {
+					log.Warnf("unable to store scraper state: %s", errState.Error())
+					return errState
 				}
 				return err
 			}
@@ -465,13 +474,13 @@ func (s *OpenSeaScraper) processTx(ctx context.Context, tx *utils.EthFilteredTx)
 
 	normPrice := decimal.NewFromBigInt(ev.Price, 0).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(int64(currDecimals))))
 
-	usdPrice, err := s.calcUSDPrice(ev.Raw.BlockNumber, currAddr, currSymbol, normPrice)
+	usdPrice, err := s.calcUSDPrice(currSymbol, normPrice)
 	if err != nil {
 		log.Errorf("unable to calculate usd price of the event(block: %d, log: %d, tx: %s): %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
 		return false, err
 	}
 
-	if err := s.notifyTrade(ev, transfers[0], ev.Price, normPrice, usdPrice, currSymbol, currAddr); err != nil {
+	if err := s.notifyTrade(ev, transfers[0], ev.Price, usdPrice, currAddr); err != nil {
 		if !errors.Is(err, errOpenSeaShutdownRequest) {
 			log.Warnf("event(block: %d, tx index: %d, tx: %s) couldn't processed: %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
 		}
@@ -482,7 +491,7 @@ func (s *OpenSeaScraper) processTx(ctx context.Context, tx *utils.EthFilteredTx)
 	return false, nil
 }
 
-func (s *OpenSeaScraper) notifyTrade(ev *opensea.ContractOrdersMatched, transfer *erc721Transfer, price *big.Int, priceDec decimal.Decimal, usdPrice float64, currSymbol string, currAddr common.Address) error {
+func (s *OpenSeaScraper) notifyTrade(ev *opensea.ContractOrdersMatched, transfer *erc721Transfer, price *big.Int, usdPrice float64, currAddr common.Address) error {
 	nftClass, err := s.createOrReadNFTClass(transfer)
 	if err != nil {
 		return err
@@ -508,7 +517,7 @@ func (s *OpenSeaScraper) notifyTrade(ev *opensea.ContractOrdersMatched, transfer
 		BlockNumber: ev.Raw.BlockNumber,
 		Timestamp:   timestamp,
 		TxHash:      ev.Raw.TxHash.Hex(),
-		Exchange:    "OpenSea",
+		Exchange:    s.exchange.Name,
 	}
 
 	if asset, ok := assetCacheOpensea[dia.ETHEREUM+"-"+currAddr.Hex()]; ok {
@@ -600,8 +609,8 @@ func (s *OpenSeaScraper) createOrReadNFT(nftClass *dia.NFTClass, transfer *erc72
 	return &nft, nil
 }
 
-func (s *OpenSeaScraper) calcUSDPrice(blockNum uint64, tokenAddr common.Address, symbol string, price decimal.Decimal) (float64, error) {
-	tokenPrice, err := s.findPrice(blockNum, tokenAddr, symbol)
+func (s *OpenSeaScraper) calcUSDPrice(symbol string, price decimal.Decimal) (float64, error) {
+	tokenPrice, err := s.findPrice(symbol)
 	if err != nil {
 		return 0, err
 	}
@@ -615,7 +624,7 @@ func (s *OpenSeaScraper) calcUSDPrice(blockNum uint64, tokenAddr common.Address,
 	return f, nil
 }
 
-func (s *OpenSeaScraper) findPrice(blockNum uint64, tokenAddr common.Address, symbol string) (decimal.Decimal, error) {
+func (s *OpenSeaScraper) findPrice(symbol string) (decimal.Decimal, error) {
 	// TODO: find the token price in usd for the given block number
 	switch symbol {
 	case "ETH", "WETH":

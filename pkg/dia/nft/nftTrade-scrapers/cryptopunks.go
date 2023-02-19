@@ -23,8 +23,9 @@ import (
 )
 
 const (
-	CryptoPunkRefreshDelay = time.Second * 60 * 10
-	cryptoPunksFirstBlock  = 3918000
+	CryptoPunkRefreshDelay     = time.Second * 60 * 2
+	blockDelayCryptopunkTrades = 16
+	cryptoPunksFirstBlock      = 3918000
 )
 
 var (
@@ -36,9 +37,10 @@ type CryptoPunkScraper struct {
 	contractAddress common.Address
 	ticker          *time.Ticker
 	lastBlockNumber uint64
+	exchange        dia.NFTExchange
 }
 
-func NewCryptoPunkScraper(rdb *models.RelDB) *CryptoPunkScraper {
+func NewCryptoPunkScraper(rdb *models.RelDB, exchange dia.NFTExchange) *CryptoPunkScraper {
 	connection, err := ethclient.Dial(utils.Getenv("ETH_URI_REST", ""))
 	if err != nil {
 		log.Error("Error connecting Eth Client")
@@ -53,7 +55,8 @@ func NewCryptoPunkScraper(rdb *models.RelDB) *CryptoPunkScraper {
 		chanTrade:     make(chan dia.NFTTrade),
 	}
 	s := &CryptoPunkScraper{
-		contractAddress: common.HexToAddress("0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB"),
+		exchange:        exchange,
+		contractAddress: common.HexToAddress(exchange.Contract),
 		tradescraper:    tradeScraper,
 		ticker:          time.NewTicker(CryptoPunkRefreshDelay),
 	}
@@ -111,7 +114,7 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 	}
 
 	// It's a good practise to stay a little behind the head.
-	endBlockNumber := header.Number.Uint64() - blockDelayEthereum
+	endBlockNumber := header.Number.Uint64() - blockDelayCryptopunkTrades
 
 	// We need the cryptopunk abi to unpack the transfer event.
 	abi, err := abi.JSON(strings.NewReader(string(cryptopunk.CryptoPunksMarketABI)))
@@ -215,7 +218,7 @@ func (scraper *CryptoPunkScraper) FetchTrades() error {
 				BlockNumber: iter.Event.Raw.BlockNumber,
 				FromAddress: iter.Event.FromAddress.Hex(),
 				ToAddress:   transferEvent.To.Hex(),
-				Exchange:    "CryptopunkMarket",
+				Exchange:    scraper.exchange.Name,
 				TxHash:      iter.Event.Raw.TxHash.Hex(),
 				Price:       price,
 				Timestamp:   time.Unix(int64(currHeader.Time), 0),

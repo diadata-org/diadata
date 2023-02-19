@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "Huobi",
+      "ForeignName": "ANKRUSDT",
+      "Ignore": false,
+      "Symbol": "ANKR"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "ANTUSDT",
       "Ignore": false,
       "Symbol": "ANT"
@@ -17,6 +23,12 @@
       "ForeignName": "AXSUSDT",
       "Ignore": false,
       "Symbol": "AXS"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "AVAXUSDT",
+      "Ignore": false,
+      "Symbol": "AVAX"
     },
     {
       "Exchange": "Huobi",
@@ -44,9 +56,27 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "CKBUSDT",
+      "Ignore": false,
+      "Symbol": "CKB"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "CRVUSDT",
       "Ignore": false,
       "Symbol": "CRV"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "EVMOSUSDT",
+      "Ignore": false,
+      "Symbol": "EVMOS"
+    },
+     {
+      "Exchange": "Huobi",
+      "ForeignName": "VLXUSDT",
+      "Ignore": false,
+      "Symbol": "VLX"
     },
     {
       "Exchange": "Huobi",
@@ -134,6 +164,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "BTCUSDC",
+      "Ignore": false,
+      "Symbol": "BTC"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "BTGBTC",
       "Ignore": false,
       "Symbol": "BTG"
@@ -167,6 +203,18 @@
       "ForeignName": "DGBBTC",
       "Ignore": false,
       "Symbol": "DGB"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "DOGEUSDT",
+      "Ignore": false,
+      "Symbol": "DOGE"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "DOTUSDT",
+      "Ignore": false,
+      "Symbol": "DOT"
     },
     {
       "Exchange": "Huobi",
@@ -215,6 +263,12 @@
       "ForeignName": "FLOWUSDT",
       "Ignore": false,
       "Symbol": "FLOW"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "FTMUSDT",
+      "Ignore": false,
+      "Symbol": "FTM"
     },
     {
       "Exchange": "Huobi",
@@ -332,6 +386,24 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "TLOSUSDT",
+      "Ignore": false,
+      "Symbol": "TLOS"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "TUSDUSDT",
+      "Ignore": false,
+      "Symbol": "TUSD"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "WANBTC",
+      "Ignore": false,
+      "Symbol": "WAN"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "XMRBTC",
       "Ignore": false,
       "Symbol": "XMR"
@@ -353,6 +425,12 @@
       "ForeignName": "XRPUSDT",
       "Ignore": false,
       "Symbol": "XRP"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "YFIUSDT",
+      "Ignore": false,
+      "Symbol": "YFI"
     },
     {
       "Exchange": "Huobi",

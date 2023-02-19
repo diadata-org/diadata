@@ -40,6 +40,8 @@ func NewUniswapV3AssetSource(exchange dia.Exchange) *UniswapV3AssetSource {
 		uas = makeUniswapV3AssetSource(exchange, "", "", "200", uint64(12369621))
 	case dia.UniswapExchangeV3Polygon:
 		uas = makeUniswapV3AssetSource(exchange, "", "", "200", uint64(22757913))
+	case dia.UniswapExchangeV3Arbitrum:
+		uas = makeUniswapV3AssetSource(exchange, "", "", "200", uint64(165))
 	}
 
 	go func() {

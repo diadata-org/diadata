@@ -25,11 +25,30 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var DECIMALS_CACHE = make(map[dia.Asset]uint8)
+var (
+	DECIMALS_CACHE = make(map[dia.Asset]uint8)
+	ASSET_CACHE    = make(map[string]dia.Asset)
+	BLOCKCHAINS    = make(map[string]dia.BlockChain)
+)
 
 type Env struct {
 	DataStore models.Datastore
 	RelDB     models.RelDB
+}
+
+func init() {
+	relDB, err := models.NewRelDataStore()
+	if err != nil {
+		log.Errorln("Error connecting to asset DB: ", err)
+		return
+	}
+	chains, err := relDB.GetAllBlockchains(false)
+	if err != nil {
+		log.Fatal("get all chains: ", err)
+	}
+	for _, chain := range chains {
+		BLOCKCHAINS[chain.Name] = chain
+	}
 }
 
 // PostSupply deprecated? TO DO
@@ -113,11 +132,18 @@ func (env *Env) SetQuotation(c *gin.Context) {
 // GetAssetQuotation returns quotation of asset with highest market cap among
 // all assets with symbol ticker @symbol.
 func (env *Env) GetAssetQuotation(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	blockchain := c.Param("blockchain")
-	address := c.Param("address")
-	var err error
-	var asset dia.Asset
-	var quotationExtended models.AssetQuotationFull
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
+	var (
+		err               error
+		asset             dia.Asset
+		quotationExtended models.AssetQuotationFull
+	)
 	timestamp := time.Now()
 
 	// An asset is uniquely defined by blockchain and address.
@@ -140,11 +166,11 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 	} else {
 		quotationExtended.PriceYesterday = quotationYesterday.Price
 	}
-	volumeYesterday, err := env.RelDB.GetAssetVolume24H(asset)
+	volumeYesterday, err := env.DataStore.Get24HoursAssetVolume(asset)
 	if err != nil {
 		log.Warn("get volume yesterday: ", err)
 	} else {
-		quotationExtended.VolumeYesterdayUSD = volumeYesterday
+		quotationExtended.VolumeYesterdayUSD = *volumeYesterday
 	}
 
 	// Appropriate formatting.
@@ -163,7 +189,12 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 // GetQuotation returns quotation of asset with highest market cap among
 // all assets with symbol ticker @symbol.
 func (env *Env) GetQuotation(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	symbol := c.Param("symbol")
+
 	timestamp := time.Now()
 	var quotationExtended models.AssetQuotationFull
 	// Fetch underlying assets for symbol
@@ -172,8 +203,6 @@ func (env *Env) GetQuotation(c *gin.Context) {
 		restApi.SendError(c, http.StatusNotFound, err)
 		return
 	}
-	log.Info("num assets: ", len(assets))
-	log.Info("error: ", err)
 	if len(assets) == 0 {
 		restApi.SendError(c, http.StatusNotFound, errors.New("no quotation available"))
 		return
@@ -190,11 +219,11 @@ func (env *Env) GetQuotation(c *gin.Context) {
 	} else {
 		quotationExtended.PriceYesterday = quotationYesterday.Price
 	}
-	volumeYesterday, err := env.RelDB.GetAssetVolume24H(topAsset)
+	volumeYesterday, err := env.DataStore.Get24HoursAssetVolume(topAsset)
 	if err != nil {
 		log.Warn("get volume yesterday: ", err)
 	} else {
-		quotationExtended.VolumeYesterdayUSD = volumeYesterday
+		quotationExtended.VolumeYesterdayUSD = *volumeYesterday
 	}
 	quotationExtended.Symbol = quotation.Asset.Symbol
 	quotationExtended.Name = quotation.Asset.Name
@@ -206,9 +235,14 @@ func (env *Env) GetQuotation(c *gin.Context) {
 
 	c.JSON(http.StatusOK, quotationExtended)
 }
+
 func (env *Env) GetAssetMap(c *gin.Context) {
-	address := c.Param("address")
+	if !validateInputParams(c) {
+		return
+	}
+
 	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 
 	timestamp := time.Now()
 	var quotations []models.AssetQuotationFull
@@ -220,7 +254,6 @@ func (env *Env) GetAssetMap(c *gin.Context) {
 	}
 
 	// get assetid
-
 	assetid, err := env.RelDB.GetAssetID(asset)
 	if err != nil {
 		restApi.SendError(c, http.StatusNotFound, err)
@@ -228,7 +261,6 @@ func (env *Env) GetAssetMap(c *gin.Context) {
 	}
 
 	// get groupId
-
 	group_id, err := env.RelDB.GetAssetMap(assetid)
 	if err != nil {
 		restApi.SendError(c, http.StatusNotFound, err)
@@ -236,13 +268,10 @@ func (env *Env) GetAssetMap(c *gin.Context) {
 	}
 
 	assets, err := env.RelDB.GetAssetByGroupID(group_id)
-
-	log.Info("num assets: ", len(assets))
-	if len(assets) == 0 {
+	if err != nil || len(assets) == 0 {
 		restApi.SendError(c, http.StatusNotFound, errors.New("no quotation available"))
 		return
 	}
-	log.Info("num assets: ", len(assets))
 
 	for _, topAsset := range assets {
 		var quotationExtended models.AssetQuotationFull
@@ -257,7 +286,7 @@ func (env *Env) GetAssetMap(c *gin.Context) {
 		} else {
 			quotationExtended.PriceYesterday = quotationYesterday.Price
 		}
-		volumeYesterday, err := env.RelDB.GetAssetVolume24H(topAsset)
+		volumeYesterday, err := env.RelDB.GetLastAssetVolume24H(topAsset)
 		if err != nil {
 			log.Warn("get volume yesterday: ", err)
 		} else {
@@ -276,35 +305,14 @@ func (env *Env) GetAssetMap(c *gin.Context) {
 	c.JSON(http.StatusOK, quotations)
 }
 
-func (env *Env) GetPaxgQuotationOunces(c *gin.Context) {
-	q, err := env.DataStore.GetPaxgQuotationOunces()
-	if err != nil {
-		if errors.Is(err, redis.Nil) {
-			restApi.SendError(c, http.StatusNotFound, err)
-		} else {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		}
-	} else {
-		c.JSON(http.StatusOK, q)
-	}
-}
-
-func (env *Env) GetPaxgQuotationGrams(c *gin.Context) {
-	q, err := env.DataStore.GetPaxgQuotationGrams()
-	if err != nil {
-		if errors.Is(err, redis.Nil) {
-			restApi.SendError(c, http.StatusNotFound, err)
-		} else {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		}
-	} else {
-		c.JSON(http.StatusOK, q)
-	}
-}
-
 // GetSupply returns latest supply of token with @symbol
 func (env *Env) GetSupply(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	symbol := c.Param("symbol")
+
 	s, err := env.DataStore.GetLatestSupply(symbol, &env.RelDB)
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
@@ -319,25 +327,22 @@ func (env *Env) GetSupply(c *gin.Context) {
 
 // GetSupply returns latest supply of token with @symbol
 func (env *Env) GetAssetSupply(c *gin.Context) {
-	address := c.Param("address")
-	blockchain := c.Param("blockchain")
-	starttimeStr := c.Query("starttime")
-	endtimeStr := c.Query("endtime")
+	if !validateInputParams(c) {
+		return
+	}
 
-	var starttime, endtime time.Time
-	if starttimeStr != "" && endtimeStr != "" {
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			log.Error("parse starttime: ", err)
-		} else {
-			starttime = time.Unix(starttimeInt, 0)
-		}
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			log.Error("parse starttime: ", err)
-		} else {
-			endtime = time.Unix(endtimeInt, 0)
-		}
+	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*time.Hour))
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("parse time range"))
+		return
+	}
+
+	if ok := utils.ValidTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 30*24*time.Hour))
+		return
 	}
 
 	values, err := env.DataStore.GetSupplyInflux(dia.Asset{Address: address, Blockchain: blockchain}, starttime, endtime)
@@ -366,6 +371,10 @@ func (env *Env) GetAssetSupply(c *gin.Context) {
 
 // GetSupplies returns a time range of supplies of token with @symbol
 func (env *Env) GetSupplies(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	symbol := c.Param("symbol")
 	starttimeStr := c.DefaultQuery("starttime", "noRange")
 	endtimeStr := c.Query("endtime")
@@ -373,8 +382,8 @@ func (env *Env) GetSupplies(c *gin.Context) {
 	var starttime, endtime time.Time
 
 	if starttimeStr == "noRange" || endtimeStr == "" {
-		starttime = time.Unix(1, 0)
 		endtime = time.Now()
+		starttime = endtime.AddDate(0, 0, -30)
 	} else {
 		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
 		if err != nil {
@@ -388,6 +397,10 @@ func (env *Env) GetSupplies(c *gin.Context) {
 			return
 		}
 		endtime = time.Unix(endtimeInt, 0)
+	}
+	if ok := utils.ValidTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 30*24*time.Hour))
+		return
 	}
 
 	s, err := env.DataStore.GetSupply(symbol, starttime, endtime, &env.RelDB)
@@ -405,7 +418,7 @@ func (env *Env) GetSupplies(c *gin.Context) {
 func (env *Env) GetDiaTotalSupply(c *gin.Context) {
 	q, err := env.DataStore.GetDiaTotalSupply()
 	if err != nil {
-		if err == redis.Nil {
+		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)
 		} else {
 			restApi.SendError(c, http.StatusInternalServerError, err)
@@ -418,7 +431,7 @@ func (env *Env) GetDiaTotalSupply(c *gin.Context) {
 func (env *Env) GetDiaCirculatingSupply(c *gin.Context) {
 	q, err := env.DataStore.GetDiaCirculatingSupply()
 	if err != nil {
-		if err == redis.Nil {
+		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)
 		} else {
 			restApi.SendError(c, http.StatusInternalServerError, err)
@@ -428,93 +441,30 @@ func (env *Env) GetDiaCirculatingSupply(c *gin.Context) {
 	}
 }
 
-// GetVolume if no times are set use the last 24h
-func (env *Env) GetVolume(c *gin.Context) {
-	symbol := c.Param("symbol")
-	starttimeStr := c.DefaultQuery("starttime", "noRange")
-	endtimeStr := c.Query("endtime")
-
-	var starttime, endtime time.Time
-
-	if starttimeStr == "noRange" {
-		starttime = time.Unix(1, 0)
-	} else {
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		starttime = time.Unix(starttimeInt, 0)
-	}
-	if endtimeStr == "" {
-		endtime = time.Now()
-	} else {
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		endtime = time.Unix(endtimeInt, 0)
-	}
-
-	// TO DO: Adapt to new asset struct
-	preliminaryAsset := dia.Asset{
-		Symbol: symbol,
-	}
-	v, err := env.DataStore.GetVolumeInflux(preliminaryAsset, starttime, endtime)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-		return
-	}
-	c.JSON(http.StatusOK, v)
-}
-
 // Get24hVolume if no times are set use the last 24h
 func (env *Env) Get24hVolume(c *gin.Context) {
-	exchange := c.Param("exchange")
-	// starttimeStr := c.DefaultQuery("starttime", "noRange")
-	// endtimeStr := c.Query("endtime")
+	if !validateInputParams(c) {
+		return
+	}
 
-	// var starttime, endtime time.Time
-
-	// if starttimeStr == "noRange" {
-	// 	starttime := time.Now().AddDate(0, 0, -1)
-	// } else {
-	// 	starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-	// 	if err != nil {
-	// 		restApi.SendError(c, http.StatusInternalServerError, err)
-	// 		return
-	// 	}
-	// 	starttime = time.Unix(starttimeInt, 0)
-	// }
-	// if endtimeStr == "" {
-	// 	endtime = time.Now()
-	// } else {
-	// 	endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-	// 	if err != nil {
-	// 		restApi.SendError(c, http.StatusInternalServerError, err)
-	// 		return
-	// 	}
-	// 	endtime = time.Unix(endtimeInt, 0)
-	// }
-
-	v, err := env.DataStore.Sum24HoursExchange(exchange)
+	v, err := env.DataStore.Get24HoursExchangeVolume(c.Param("exchange"))
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, v)
+	c.JSON(http.StatusOK, *v)
 }
 
 // GetExchanges is the delegate method for fetching all exchanges available in Postgres.
 func (env *Env) GetExchanges(c *gin.Context) {
 	type exchangeReturn struct {
-		Name       string
-		Volume24h  float64
-		Trades     int64
-		Pairs      int
-		Type       string
-		Blockchain string
+		Name          string
+		Volume24h     float64
+		Trades        int64
+		Pairs         int
+		Type          string
+		Blockchain    string
+		ScraperActive bool
 	}
 	var exchangereturns []exchangeReturn
 	exchanges, err := env.RelDB.GetAllExchanges()
@@ -523,12 +473,12 @@ func (env *Env) GetExchanges(c *gin.Context) {
 	}
 	for _, exchange := range exchanges {
 
-		vol, err := env.DataStore.Sum24HoursExchange(exchange.Name)
+		vol, err := env.DataStore.Get24HoursExchangeVolume(exchange.Name)
 		if err != nil {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 			return
 		}
-		numTrades, err := env.DataStore.GetNumTrades(exchange.Name)
+		numTrades, err := env.DataStore.GetNumTradesExchange24H(exchange.Name)
 		if err != nil {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 			return
@@ -540,11 +490,12 @@ func (env *Env) GetExchanges(c *gin.Context) {
 		}
 
 		exchangereturn := exchangeReturn{
-			Name:       exchange.Name,
-			Volume24h:  vol,
-			Trades:     numTrades,
-			Pairs:      numPairs,
-			Blockchain: exchange.BlockChain.Name,
+			Name:          exchange.Name,
+			Volume24h:     *vol,
+			Trades:        numTrades,
+			Pairs:         numPairs,
+			Blockchain:    exchange.BlockChain.Name,
+			ScraperActive: exchange.ScraperActive,
 		}
 		exchangereturn.Type = models.GetExchangeType(exchange)
 		exchangereturns = append(exchangereturns, exchangereturn)
@@ -558,52 +509,71 @@ func (env *Env) GetExchanges(c *gin.Context) {
 	c.JSON(http.StatusOK, exchangereturns)
 }
 
+// GetNFTExchanges is the delegate method for fetching all exchanges available in Postgres.
+func (env *Env) GetNFTExchanges(c *gin.Context) {
+	type exchangeReturn struct {
+		Name       string
+		Volume24h  float64
+		Trades24h  int64
+		Blockchain string
+	}
+	var exchangereturns []exchangeReturn
+	exchanges, err := env.RelDB.GetAllNFTExchanges()
+
+	log.Infoln("exchanges", exchanges)
+	if len(exchanges) == 0 || err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+	for _, exchange := range exchanges {
+
+		vol, err := env.RelDB.Get24HoursNFTExchangeVolume(exchange)
+		if err != nil {
+			log.Errorln("err on Get24HoursNFTExchangeVolume", err)
+		}
+		numTrades, err := env.RelDB.Get24HoursNFTExchangeTrades(exchange)
+		if err != nil {
+			log.Errorln("err on Get24HoursNFTExchangeTrades", err)
+
+		}
+
+		exchangereturn := exchangeReturn{
+			Name:       exchange.Name,
+			Volume24h:  vol,
+			Trades24h:  numTrades,
+			Blockchain: exchange.BlockChain.Name,
+		}
+		exchangereturns = append(exchangereturns, exchangereturn)
+
+	}
+
+	sort.Slice(exchangereturns, func(i, j int) bool {
+		return exchangereturns[i].Volume24h > exchangereturns[j].Volume24h
+	})
+
+	c.JSON(http.StatusOK, exchangereturns)
+}
+
 // GetAssetChartPoints queries for filter points of asset given by address and blockchain.
 func (env *Env) GetAssetChartPoints(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	filter := c.Param("filter")
 	blockchain := c.Param("blockchain")
-	address := c.Param("address")
-	exchange := c.Query("exchange")
-	starttimeStr := c.Query("starttime")
-	endtimeStr := c.Query("endtime")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 
-	// Set times depending on what is given by the query parameters
-	var starttime, endtime time.Time
-	if starttimeStr == "" && endtimeStr == "" {
-		// Last seven days per default
-		starttime = time.Now().AddDate(0, 0, -7)
-		endtime = time.Now()
-	} else if starttimeStr == "" && endtimeStr != "" {
-		// zero time if not given
-		starttime = time.Time{}
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		endtime = time.Unix(endtimeInt, 0)
-	} else if starttimeStr != "" && endtimeStr == "" {
-		// endtime now if not given
-		endtime = time.Now()
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		starttime = time.Unix(starttimeInt, 0)
-	} else {
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		starttime = time.Unix(starttimeInt, 0)
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		endtime = time.Unix(endtimeInt, 0)
+	exchange := c.Query("exchange")
+
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(7*24*time.Hour))
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("parse time range"))
+		return
+	}
+
+	if ok := utils.ValidTimeRange(starttime, endtime, time.Duration(14*24*time.Hour)); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 14*24*time.Hour))
+		return
 	}
 
 	p, err := env.DataStore.GetFilterPointsAsset(filter, exchange, address, blockchain, starttime, endtime)
@@ -614,53 +584,26 @@ func (env *Env) GetAssetChartPoints(c *gin.Context) {
 	}
 }
 
-// GetChartPoints godoc
-// @Param   scale      query   string     false       "scale 5m 30m 1h 4h 1d 1w"
+// GetChartPoints returns Filter points for given symbol -> Deprecated?
 func (env *Env) GetChartPoints(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	filter := c.Param("filter")
 	exchange := c.Param("exchange")
 	symbol := c.Param("symbol")
 	scale := c.Query("scale")
-	starttimeStr := c.Query("starttime")
-	endtimeStr := c.Query("endtime")
 
-	// Set times depending on what is given by the query parameters
-	var starttime, endtime time.Time
-	if starttimeStr == "" && endtimeStr == "" {
-		// Last seven days per default
-		starttime = time.Now().AddDate(0, 0, -7)
-		endtime = time.Now()
-	} else if starttimeStr == "" && endtimeStr != "" {
-		// zero time if not given
-		starttime = time.Time{}
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		endtime = time.Unix(endtimeInt, 0)
-	} else if starttimeStr != "" && endtimeStr == "" {
-		// endtime now if not given
-		endtime = time.Now()
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		starttime = time.Unix(starttimeInt, 0)
-	} else {
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		starttime = time.Unix(starttimeInt, 0)
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		endtime = time.Unix(endtimeInt, 0)
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(7*24*time.Hour))
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("parse time range"))
+		return
+	}
+
+	if ok := utils.ValidTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 30*24*time.Hour))
+		return
 	}
 
 	p, err := env.DataStore.GetFilterPoints(filter, exchange, symbol, scale, starttime, endtime)
@@ -671,52 +614,25 @@ func (env *Env) GetChartPoints(c *gin.Context) {
 	}
 }
 
-// GetChartPointsAllExchanges godoc
-// @Param   scale      query   string     false       "scale 5m 30m 1h 4h 1d 1w"
+// GetChartPointsAllExchanges returns filter points across all exchanges.
 func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	filter := c.Param("filter")
 	symbol := c.Param("symbol")
 	scale := c.Query("scale")
-	starttimeStr := c.Query("starttime")
-	endtimeStr := c.Query("endtime")
 
-	// Set times depending on what is given by the query parameters
-	var starttime, endtime time.Time
-	if starttimeStr == "" && endtimeStr == "" {
-		// Last seven days per default
-		starttime = time.Now().AddDate(0, 0, -7)
-		endtime = time.Now()
-	} else if starttimeStr == "" && endtimeStr != "" {
-		// zero time if not given
-		starttime = time.Time{}
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		endtime = time.Unix(endtimeInt, 0)
-	} else if starttimeStr != "" && endtimeStr == "" {
-		// endtime now if not given
-		endtime = time.Now()
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		starttime = time.Unix(starttimeInt, 0)
-	} else {
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		starttime = time.Unix(starttimeInt, 0)
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		endtime = time.Unix(endtimeInt, 0)
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(7*24*time.Hour))
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("parse time range"))
+		return
+	}
+
+	if ok := utils.ValidTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 30*24*time.Hour))
+		return
 	}
 
 	p, err := env.DataStore.GetFilterPoints(filter, "", symbol, scale, starttime, endtime)
@@ -725,6 +641,53 @@ func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, p)
 	}
+
+}
+
+func (env *Env) GetFilterPerSource(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	type priceOnExchange struct {
+		Price     float64   `json:"Price"`
+		Exchange  string    `json:"Exchange"`
+		Timestamp time.Time `json:"Time"`
+	}
+
+	type localReturn struct {
+		Asset  dia.Asset         `json:"Asset"`
+		Prices []priceOnExchange `json:"PricePerExchange"`
+	}
+
+	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	filter := c.Param("filter")
+
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(30)*time.Minute)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+		return
+	}
+
+	assetQuotations, err := env.DataStore.GetFilterAllExchanges(filter, address, blockchain, starttime, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+		return
+	}
+
+	var lr localReturn
+	lr.Asset = env.getAssetFromCache(ASSET_CACHE, blockchain, address)
+
+	for _, aq := range assetQuotations {
+		var pe priceOnExchange
+		pe.Exchange = aq.Source
+		pe.Price = aq.Price
+		pe.Timestamp = aq.Time
+		lr.Prices = append(lr.Prices, pe)
+	}
+	c.JSON(http.StatusOK, lr)
+
 }
 
 // GetAllSymbols returns all Symbols on @exchange.
@@ -732,10 +695,16 @@ func (env *Env) GetChartPointsAllExchanges(c *gin.Context) {
 // If @top is set to an integer, only the top @top symbols w.r.t. trading volume are returned. This is
 // only active if @exchange is not set.
 func (env *Env) GetAllSymbols(c *gin.Context) {
-	var s []string
-	var numSymbols int64
-	var sortedAssets []dia.AssetVolume
-	var err error
+	if !validateInputParams(c) {
+		return
+	}
+
+	var (
+		s            []string
+		numSymbols   int64
+		sortedAssets []dia.AssetVolume
+		err          error
+	)
 
 	substring := c.Param("substring")
 	exchange := c.DefaultQuery("exchange", "noRange")
@@ -758,7 +727,7 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 
 		sort.Strings(s)
 		// Sort all symbols by volume, append if they have no volume.
-		sortedAssets, err = env.RelDB.GetAssetsWithVOL(int64(0), substring)
+		sortedAssets, err = env.RelDB.GetSortedAssetSymbols(int64(0), int64(0), substring)
 		if err != nil {
 			log.Error("get assets with volume: ", err)
 		}
@@ -776,7 +745,7 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 	if exchange == "noRange" {
 		if numSymbolsString != "" {
 			// -- Get top @numSymbols symbols across all exchanges. --
-			sortedAssets, err = env.RelDB.GetAssetsWithVOL(numSymbols, "")
+			sortedAssets, err = env.RelDB.GetAssetsWithVOL(numSymbols, int64(0), false, "")
 			if err != nil {
 				log.Error("get assets with volume: ", err)
 			}
@@ -794,7 +763,7 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 
 			sort.Strings(s)
 			// Sort all symbols by volume, append if they have no volume.
-			sortedAssets, err = env.RelDB.GetAssetsWithVOL(numSymbols, "")
+			sortedAssets, err = env.RelDB.GetAssetsWithVOL(numSymbols, int64(0), false, "")
 			if err != nil {
 				log.Error("get assets with volume: ", err)
 			}
@@ -818,225 +787,562 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 
 }
 
+// -----------------------------------------------------------------------------
+// POOLS AND LIQUIDITY
+// -----------------------------------------------------------------------------
+
+func (env *Env) GetPoolLiquidityByAddress(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
+	pool, err := env.RelDB.GetPoolByAddress(blockchain, address)
+	if err != nil {
+		log.Info("err: ", err)
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find pool"))
+		return
+	}
+
+	// Get total liquidity.
+	var (
+		totalLiquidity float64
+		noPrice        bool
+	)
+	for _, assetvol := range pool.Assetvolumes {
+		price, err := env.DataStore.GetAssetPriceUSDCache(assetvol.Asset)
+		if err != nil {
+			log.Warnf("no quotation for %v: %v", assetvol.Asset, err)
+			totalLiquidity = 0
+			noPrice = true
+			break
+		}
+		totalLiquidity += price * assetvol.Volume
+	}
+	if noPrice {
+		type localReturn struct {
+			Exchange          string
+			Blockchain        string
+			Address           string
+			Time              time.Time
+			TotalLiquidityUSD string
+			Liquidity         []dia.AssetLiquidity
+		}
+
+		var l localReturn
+		l.TotalLiquidityUSD = "Not enough US-Dollar price information on one or more pool assets available."
+		l.Exchange = pool.Exchange.Name
+		l.Blockchain = pool.Blockchain.Name
+		l.Address = pool.Address
+		l.Time = pool.Time
+		for i := range pool.Assetvolumes {
+			var al dia.AssetLiquidity = dia.AssetLiquidity(pool.Assetvolumes[i])
+			l.Liquidity = append(l.Liquidity, al)
+		}
+
+		c.JSON(http.StatusOK, l)
+
+	} else {
+		type localReturn struct {
+			Exchange          string
+			Blockchain        string
+			Address           string
+			Time              time.Time
+			TotalLiquidityUSD float64
+			Liquidity         []dia.AssetLiquidity
+		}
+
+		var l localReturn
+		l.TotalLiquidityUSD = totalLiquidity
+		l.Exchange = pool.Exchange.Name
+		l.Blockchain = pool.Blockchain.Name
+		l.Address = pool.Address
+		l.Time = pool.Time
+		for i := range pool.Assetvolumes {
+			var al dia.AssetLiquidity = dia.AssetLiquidity(pool.Assetvolumes[i])
+			l.Liquidity = append(l.Liquidity, al)
+		}
+
+		c.JSON(http.StatusOK, l)
+	}
+
+}
+
+func (env *Env) GetPoolSlippage(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+	blockchain := c.Param("blockchain")
+	addressPool := makeAddressEIP55Compliant(c.Param("addressPool"), blockchain)
+	addressAsset := makeAddressEIP55Compliant(c.Param("addressAsset"), blockchain)
+	poolType := c.Param("poolType")
+	priceDeviationInt, err := strconv.ParseInt(c.Param("priceDeviation"), 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("error parsing priceDeviation."))
+		return
+	}
+	if priceDeviationInt < 0 || priceDeviationInt >= 1000 {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("priceDeviation measured in per mille is out of range."))
+		return
+	}
+	priceDeviation := float64(priceDeviationInt) / 1000
+
+	type localReturn struct {
+		VolumeRequired float64
+		AssetIn        string
+		Exchange       string
+		Blockchain     string
+		Address        string
+		Time           time.Time
+		Liquidity      []dia.AssetLiquidity
+	}
+
+	pool, err := env.RelDB.GetPoolByAddress(blockchain, addressPool)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find pool"))
+		return
+	}
+	var l localReturn
+	l.Exchange = pool.Exchange.Name
+	l.Blockchain = pool.Blockchain.Name
+	l.Address = pool.Address
+	l.Time = pool.Time
+	for i := range pool.Assetvolumes {
+		var al dia.AssetLiquidity = dia.AssetLiquidity(pool.Assetvolumes[i])
+		l.Liquidity = append(l.Liquidity, al)
+	}
+
+	var (
+		assetInIndex int
+		foundAsset   bool
+	)
+	for i := range pool.Assetvolumes {
+		if pool.Assetvolumes[i].Asset.Address == addressAsset {
+			assetInIndex = i
+			foundAsset = true
+		}
+	}
+	if !foundAsset {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("asset %s not in pool", addressAsset))
+		return
+	}
+	l.AssetIn = pool.Assetvolumes[assetInIndex].Asset.Symbol
+
+	switch poolType {
+	case "UniswapV2":
+		l.VolumeRequired = pool.Assetvolumes[assetInIndex].Volume * (1/(1-priceDeviation) - 1)
+	}
+
+	c.JSON(http.StatusOK, l)
+}
+
+func (env *Env) GetPoolPriceImpact(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+	blockchain := c.Param("blockchain")
+	addressPool := makeAddressEIP55Compliant(c.Param("addressPool"), blockchain)
+	addressAsset := makeAddressEIP55Compliant(c.Param("addressAsset"), blockchain)
+	poolType := c.Param("poolType")
+	priceDeviationInt, err := strconv.ParseInt(c.Param("priceDeviation"), 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("error parsing priceDeviation."))
+		return
+	}
+	if priceDeviationInt < 0 || priceDeviationInt >= 1000 {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("priceDeviation measured in per mille is out of range."))
+		return
+	}
+	priceDeviation := float64(priceDeviationInt) / 1000
+
+	type localReturn struct {
+		VolumeRequired float64
+		AssetIn        string
+		Exchange       string
+		Blockchain     string
+		Address        string
+		Time           time.Time
+		Liquidity      []dia.AssetLiquidity
+	}
+
+	pool, err := env.RelDB.GetPoolByAddress(blockchain, addressPool)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find pool"))
+		return
+	}
+	var l localReturn
+	l.Exchange = pool.Exchange.Name
+	l.Blockchain = pool.Blockchain.Name
+	l.Address = pool.Address
+	l.Time = pool.Time
+	for i := range pool.Assetvolumes {
+		var al dia.AssetLiquidity = dia.AssetLiquidity(pool.Assetvolumes[i])
+		l.Liquidity = append(l.Liquidity, al)
+	}
+
+	var (
+		assetInIndex int
+		foundAsset   bool
+	)
+	for i := range pool.Assetvolumes {
+		if pool.Assetvolumes[i].Asset.Address == addressAsset {
+			assetInIndex = i
+			foundAsset = true
+		}
+	}
+	if !foundAsset {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("asset %s not in pool", addressAsset))
+		return
+	}
+	l.AssetIn = pool.Assetvolumes[assetInIndex].Asset.Symbol
+
+	switch poolType {
+	case "UniswapV2":
+		l.VolumeRequired = pool.Assetvolumes[assetInIndex].Volume * (1/math.Sqrt(1-priceDeviation) - 1)
+	}
+
+	c.JSON(http.StatusOK, l)
+}
+
+func (env *Env) GetPriceImpactSimulation(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	poolType := c.Param("poolType")
+	priceDeviationInt, err := strconv.ParseInt(c.Param("priceDeviation"), 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("error parsing priceDeviation."))
+		return
+	}
+	if priceDeviationInt < 0 || priceDeviationInt >= 1000 {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("priceDeviation measured in per mille is out of range."))
+		return
+	}
+	priceDeviation := float64(priceDeviationInt) / 1000
+	liquidityA, err := strconv.ParseFloat(c.Param("liquidityA"), 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("error parsing liquidityA."))
+		return
+	}
+	if liquidityA <= 0 {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("Liquidity must be a non-negative number."))
+		return
+	}
+	liquidityB, err := strconv.ParseFloat(c.Param("liquidityB"), 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("error parsing liquidityB."))
+		return
+	}
+	if liquidityB <= 0 {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("Liquidity must be a non-negative number."))
+		return
+	}
+
+	type dummyLiquidity struct {
+		Asset     string
+		Liquidity float64
+	}
+
+	type localReturn struct {
+		PriceDeviation  float64
+		PriceAssetA     float64
+		PriceAssetB     float64
+		VolumesRequired []struct {
+			AssetIn                string
+			VolumeRequired         float64
+			InitialPriceAssetIn    float64
+			ResultingPriceAssetIn  float64
+			ResultingPriceAssetOut float64
+		}
+		Liquidity []dummyLiquidity
+	}
+
+	l := []dummyLiquidity{
+		{Asset: "A", Liquidity: liquidityA},
+		{Asset: "B", Liquidity: liquidityB},
+	}
+	var lr localReturn
+	lr.PriceDeviation = priceDeviation
+	lr.PriceAssetA = liquidityB / liquidityA
+	lr.PriceAssetB = liquidityA / liquidityB
+
+	switch poolType {
+	case "UniswapV2":
+		volRequiredA := liquidityA * (1/math.Sqrt(1-priceDeviation) - 1)
+		volRequiredB := liquidityB * (1/math.Sqrt(1-priceDeviation) - 1)
+		lr.VolumesRequired = append(lr.VolumesRequired, struct {
+			AssetIn                string
+			VolumeRequired         float64
+			InitialPriceAssetIn    float64
+			ResultingPriceAssetIn  float64
+			ResultingPriceAssetOut float64
+		}{
+			"A",
+			volRequiredA,
+			liquidityB / liquidityA,
+			liquidityA * liquidityB / math.Pow(volRequiredA+liquidityA, 2),
+			math.Pow(volRequiredA+liquidityA, 2) / liquidityA / liquidityB,
+		})
+		lr.Liquidity = l
+		lr.VolumesRequired = append(lr.VolumesRequired, struct {
+			AssetIn                string
+			VolumeRequired         float64
+			InitialPriceAssetIn    float64
+			ResultingPriceAssetIn  float64
+			ResultingPriceAssetOut float64
+		}{
+			"B",
+			volRequiredB,
+			liquidityA / liquidityB,
+			liquidityB * liquidityA / math.Pow(volRequiredB+liquidityB, 2),
+			math.Pow(volRequiredB+liquidityB, 2) / liquidityA / liquidityB,
+		})
+
+	}
+
+	c.JSON(http.StatusOK, lr)
+}
+
+// -----------------------------------------------------------------------------
+// EXCHANGE PAIRS
+// -----------------------------------------------------------------------------
+
+func (env *Env) GetExchangePairs(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+	exchange, err := env.RelDB.GetExchange(c.Param("exchange"))
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+	var (
+		filterVerified bool
+		verified       bool
+	)
+	verifiedString := c.Query("verified")
+	if verifiedString != "" {
+		verified, err = strconv.ParseBool(verifiedString)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		filterVerified = true
+	}
+
+	pairs, err := env.RelDB.GetPairsForExchange(exchange, filterVerified, verified)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	sort.Slice(pairs, func(m, n int) bool {
+		return pairs[m].Symbol < pairs[n].Symbol
+	})
+	c.JSON(http.StatusOK, pairs)
+
+}
+
+func (env *Env) GetAssetPairs(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	var (
+		filterVerified bool
+		verified       bool
+		err            error
+	)
+	verifiedString := c.Query("verified")
+	if verifiedString != "" {
+		verified, err = strconv.ParseBool(verifiedString)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		filterVerified = true
+	}
+
+	pairs, err := env.RelDB.GetPairsForAsset(dia.Asset{Address: address, Blockchain: blockchain}, filterVerified, verified)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	sort.Slice(pairs, func(m, n int) bool { return pairs[m].Exchange < pairs[n].Exchange })
+	c.JSON(http.StatusOK, pairs)
+
+}
+
+func (env *Env) SearchAsset(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	querystring := c.Param("query")
+	var (
+		assets = []dia.Asset{}
+		err    error
+	)
+
+	switch {
+	case len(querystring) > 4 && strings.Contains(querystring[0:2], "0x"):
+		assets, err = env.RelDB.GetAssetsByAddress(querystring)
+		if err != nil {
+			// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
+			log.Errorln("error getting GetAssetsByAddress", err)
+		}
+
+	case len(querystring) > 4 && !strings.Contains(querystring[0:2], "0x"):
+		assets, err = env.RelDB.GetAssetsBySymbolName(querystring, querystring)
+		if err != nil {
+			// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
+			log.Errorln("error getting GetAssetsBySymbolName", err)
+
+		}
+
+	case len(querystring) <= 4:
+		assets, err = env.RelDB.GetAssetsBySymbolName(querystring, querystring)
+		if err != nil {
+			// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
+			log.Errorln("error getting GetAssetsBySymbolName", err)
+
+		}
+	}
+	c.JSON(http.StatusOK, assets)
+}
+
+func (env *Env) SearchNFTs(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	querystring := c.Param("query")
+	var (
+		collections = []dia.NFTClass{}
+		err         error
+	)
+
+	switch {
+	case len(querystring) > 4 && strings.Contains(querystring[0:2], "0x"):
+		var collection dia.NFTClass
+		address := common.HexToAddress(querystring).Hex()
+		collection, err = env.RelDB.GetNFTClass(address, dia.ETHEREUM)
+		if err != nil {
+			log.Errorln("error getting GetNFTByNameSymbol", err)
+			restApi.SendError(c, http.StatusInternalServerError, errors.New("Address not valid."))
+		}
+		collections = append(collections, collection)
+
+	case !strings.Contains(querystring[0:2], "0x"):
+		collections, err = env.RelDB.GetNFTClassesByNameSymbol(querystring)
+		if err != nil {
+			log.Errorln("error getting GetNFTByNameSymbol", err)
+			restApi.SendError(c, http.StatusInternalServerError, errors.New("Couldn't find any collections."))
+		}
+
+	}
+
+	c.JSON(http.StatusOK, collections)
+}
+
 func (env *Env) GetTopAssets(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	numAssetsString := c.Param("numAssets")
+	pageString := c.DefaultQuery("Page", "1")
+	onlycexString := c.DefaultQuery("Cex", "false")
+	blokchain := c.DefaultQuery("Network", "")
+
 	var (
 		numAssets    int64
 		sortedAssets []dia.AssetVolume
 		err          error
+		pageNumber   int64
+		offset       int64
 	)
+
+	pageNumber, err = strconv.ParseInt(pageString, 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("Page of assets must be an integer"))
+	}
+
+	onlycex, err := strconv.ParseBool(onlycexString)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	numAssets, err = strconv.ParseInt(numAssetsString, 10, 64)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, errors.New("number of assets must be an integer"))
 	}
-	sortedAssets, err = env.RelDB.GetAssetsWithVOL(numAssets, "")
+
+	offset = (pageNumber - 1) * numAssets
+
+	sortedAssets, err = env.RelDB.GetAssetsWithVOL(numAssets, offset, onlycex, blokchain)
+	if err != nil {
+		log.Error("get assets with volume: ", err)
+
+	}
+	var assets = []dia.TopAsset{}
+
+	for _, v := range sortedAssets {
+		var sources = make(map[string][]string)
+
+		aqf := dia.TopAsset{}
+		aqf.Asset = v.Asset
+		quotation, err := env.DataStore.GetAssetQuotationLatest(aqf.Asset)
+		if err != nil {
+			log.Warn("quotation: ", err)
+		} else {
+			aqf.Price = quotation.Price
+
+		}
+		aqf.Volume = v.Volume
+
+		sources["CEX"], err = env.RelDB.GetAssetSource(v.Asset, true)
+		if err != nil {
+			log.Warn("get GetAssetSource: ", err)
+		}
+		sources["DEX"], err = env.RelDB.GetAssetSource(v.Asset, false)
+		if err != nil {
+			log.Warn("get GetAssetSource: ", err)
+		}
+		aqf.Source = sources
+
+		quotationYesterday, err := env.DataStore.GetAssetQuotation(aqf.Asset, time.Now().AddDate(0, 0, -1))
+		if err != nil {
+			log.Warn("get quotation yesterday: ", err)
+		} else {
+			aqf.PriceYesterday = quotationYesterday.Price
+		}
+
+		assets = append(assets, aqf)
+
+	}
+	c.JSON(http.StatusOK, assets)
+}
+
+// GetQuotedAssets is the delegate method to fetch all assets that have an asset quotation
+// dating back at most 7 days.
+func (env *Env) GetQuotedAssets(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	endtime := time.Now()
+	starttime := endtime.AddDate(0, 0, -7)
+	assetvolumes, err := env.RelDB.GetAssetsWithVolByBlockchain(starttime, endtime, c.Query("blockchain"))
 	if err != nil {
 		log.Error("get assets with volume: ", err)
 	}
-	c.JSON(http.StatusOK, sortedAssets)
-}
 
-// -----------------------------------------------------------------------------
-// INDICES
-// -----------------------------------------------------------------------------
-
-func (env *Env) GetCviIndex(c *gin.Context) {
-	starttimeStr := c.DefaultQuery("starttime", "noRange")
-	endtimeStr := c.Query("endtime")
-	symbol := c.Query("symbol")
-
-	var starttime, endtime time.Time
-	var q []dia.CviDataPoint
-	var err error
-
-	if starttimeStr == "noRange" || endtimeStr == "" {
-		starttime = time.Unix(0, 0)
-		endtime = time.Now()
-	} else {
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		starttime = time.Unix(starttimeInt, 0)
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		endtime = time.Unix(endtimeInt, 0)
-	}
-
-	q, err = env.DataStore.GetCVIInflux(starttime, endtime, symbol)
-
-	//for i := range q {
-	//	q[i].Value /= 2430.5812295231785
-	//}
-	if len(q) == 0 {
-		c.JSON(http.StatusOK, make([]string, 0))
-	}
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-		return
-	}
-	c.JSON(http.StatusOK, q)
-}
-
-// GetCryptoDerivative returns all information on a given derivative of class
-// @derivativeType and name @name
-func (env *Env) GetCryptoDerivative(c *gin.Context) {
-	derivativeType := c.Param("type")
-	fmt.Println(derivativeType)
-	derivativeName := c.Param("name")
-	fmt.Println(derivativeName)
-	// TO DO
-	// 2-step:
-	// 1. specify class of derivative
-	// 2. get derivative information from derivative given by @derivativeName in class given by item 1.
-
-	// q, err := env.DataStore.GetCryptoIndex(indexType)
-	// if err != nil {
-	// 	if errors.Is(err, redis.Nil) {
-	// 		restApi.SendError(c, http.StatusNotFound, err)
-	// 	} else {
-	// 		restApi.SendError(c, http.StatusInternalServerError, err)
-	// 	}
-	// }
-
-	// Depending on return format of GetCryptoIndex, either get additional information
-	// on the constituents or directly fill the new type "CryptoIndex"
-
-}
-
-// -----------------------------------------------------------------------------
-// DeFi LENDING RATES
-// -----------------------------------------------------------------------------
-
-// GetLendingProtocols returns all symbols available in our (redis) database.
-// Optional query parameter exchange returns only symbols available on this exchange.
-func (env *Env) GetLendingProtocols(c *gin.Context) {
-	q, err := env.DataStore.GetDefiProtocols()
-	fmt.Println("protocols: ", q)
-	if len(q) == 0 || err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, nil)
-	}
-	c.JSON(http.StatusOK, q)
-}
-
-// GetDefiRate is the delegate method to fetch the value(s) of
-// the defi lending rate of @asset at the exchange with @protocol.
-// Last value is retrieved. Otional query parameters allow to obtain data in a time range.
-func (env *Env) GetDefiRate(c *gin.Context) {
-	protocol := c.Param("protocol")
-	asset := c.Param("asset")
-	date := c.Param("time")
-	// Add optional query parameters for requesting a range of values
-	dateInit := c.DefaultQuery("dateInit", "noRange")
-	dateFinal := c.Query("dateFinal")
-
-	if dateInit == "noRange" {
-		// Return most recent data point
-		endtime := time.Time{}
-		var err error
-		if date == "" {
-			endtime = time.Now()
-		} else {
-			// Convert unix time int/string to time
-			endtime, err = utils.StrToUnixtime(date)
-			if err != nil {
-				restApi.SendError(c, http.StatusNotFound, err)
-			}
-		}
-		starttime := endtime.AddDate(0, 0, -1)
-
-		q, err := env.DataStore.GetDefiRateInflux(starttime, endtime, asset, protocol)
-		if err != nil {
-			if errors.Is(err, redis.Nil) {
-				restApi.SendError(c, http.StatusNotFound, err)
-			} else {
-				restApi.SendError(c, http.StatusInternalServerError, err)
-			}
-		} else {
-			c.JSON(http.StatusOK, q[len(q)-1])
-		}
-	} else {
-		starttime, err := utils.StrToUnixtime(dateInit)
-		if err != nil {
-			restApi.SendError(c, http.StatusNotFound, err)
-		}
-		endtime, err := utils.StrToUnixtime(dateFinal)
-		if err != nil {
-			restApi.SendError(c, http.StatusNotFound, err)
-		}
-		q, err := env.DataStore.GetDefiRateInflux(starttime, endtime, asset, protocol)
-		if err != nil {
-			if errors.Is(err, redis.Nil) {
-				restApi.SendError(c, http.StatusNotFound, err)
-			} else {
-				restApi.SendError(c, http.StatusInternalServerError, err)
-			}
-		} else {
-			c.JSON(http.StatusOK, q)
-		}
-	}
-}
-
-// GetDefiState is the delegate method to fetch the value(s) of
-// the defi lending rate of @asset at the exchange with @protocol.
-// Last value is retrieved. Otional query parameters allow to obtain data in a time range.
-func (env *Env) GetDefiState(c *gin.Context) {
-	protocol := c.Param("protocol")
-	date := c.Param("time")
-	// Add optional query parameters for requesting a range of values
-	dateInit := c.DefaultQuery("dateInit", "noRange")
-	dateFinal := c.Query("dateFinal")
-
-	if dateInit == "noRange" {
-		// Return most recent data point
-		endtime := time.Time{}
-		var err error
-		if date == "" {
-			endtime = time.Now()
-		} else {
-			// Convert unix time int/string to time
-			endtime, err = utils.StrToUnixtime(date)
-			if err != nil {
-				restApi.SendError(c, http.StatusNotFound, err)
-			}
-		}
-		starttime := endtime.AddDate(0, 0, -1)
-
-		q, err := env.DataStore.GetDefiStateInflux(starttime, endtime, protocol)
-		if err != nil {
-			if errors.Is(err, redis.Nil) {
-				restApi.SendError(c, http.StatusNotFound, err)
-			} else {
-				restApi.SendError(c, http.StatusInternalServerError, err)
-			}
-		} else {
-			c.JSON(http.StatusOK, q[len(q)-1])
-		}
-	} else {
-		starttime, err := utils.StrToUnixtime(dateInit)
-		if err != nil {
-			restApi.SendError(c, http.StatusNotFound, err)
-		}
-		endtime, err := utils.StrToUnixtime(dateFinal)
-		if err != nil {
-			restApi.SendError(c, http.StatusNotFound, err)
-		}
-		q, err := env.DataStore.GetDefiStateInflux(starttime, endtime, protocol)
-		if err != nil {
-			if errors.Is(err, redis.Nil) {
-				restApi.SendError(c, http.StatusNotFound, err)
-			} else {
-				restApi.SendError(c, http.StatusInternalServerError, err)
-			}
-		} else {
-			c.JSON(http.StatusOK, q)
-		}
-	}
+	c.JSON(http.StatusOK, assetvolumes)
 }
 
 // -----------------------------------------------------------------------------
@@ -1330,7 +1636,7 @@ func (env *Env) GetStockSymbols(c *gin.Context) {
 	log.Info("stocks: ", stocks)
 
 	if err != nil {
-		if err == redis.Nil {
+		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)
 		} else {
 			restApi.SendError(c, http.StatusInternalServerError, err)
@@ -1359,22 +1665,22 @@ func (env *Env) GetStockQuotation(c *gin.Context) {
 
 	if dateInit == "noRange" {
 		// Return most recent data point
-		endtime := time.Time{}
+		var endTime time.Time
 		var err error
 		if date == "" {
-			endtime = time.Now()
+			endTime = time.Now()
 		} else {
 			// Convert unix time int/string to time
-			endtime, err = utils.StrToUnixtime(date)
+			endTime, err = utils.StrToUnixtime(date)
 			if err != nil {
 				restApi.SendError(c, http.StatusNotFound, err)
 			}
 		}
-		starttime := endtime.AddDate(0, 0, -1)
+		startTime := endTime.AddDate(0, 0, -1)
 
-		q, err := env.DataStore.GetStockQuotation(source, symbol, starttime, endtime)
+		q, err := env.DataStore.GetStockQuotation(source, symbol, startTime, endTime)
 		if err != nil {
-			if err == redis.Nil {
+			if errors.Is(err, redis.Nil) {
 				restApi.SendError(c, http.StatusNotFound, err)
 			} else {
 				restApi.SendError(c, http.StatusInternalServerError, err)
@@ -1394,7 +1700,7 @@ func (env *Env) GetStockQuotation(c *gin.Context) {
 
 		q, err := env.DataStore.GetStockQuotation(source, symbol, starttime, endtime)
 		if err != nil {
-			if err == redis.Nil {
+			if errors.Is(err, redis.Nil) {
 				restApi.SendError(c, http.StatusNotFound, err)
 			} else {
 				restApi.SendError(c, http.StatusInternalServerError, err)
@@ -1411,6 +1717,10 @@ func (env *Env) GetStockQuotation(c *gin.Context) {
 
 // GetForeignQuotation returns several quotations vs USD as published by the ECB
 func (env *Env) GetForeignQuotation(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	source := c.Param("source")
 	symbol := c.Param("symbol")
 	date := c.DefaultQuery("time", "noRange")
@@ -1437,8 +1747,12 @@ func (env *Env) GetForeignQuotation(c *gin.Context) {
 	}
 }
 
-// GetForeignSymbols returns all symbols available for quotation from @source, along with their ITIN
+// GetForeignSymbols returns all symbols available for quotation from @source.
 func (env *Env) GetForeignSymbols(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	source := c.Param("source")
 
 	q, err := env.DataStore.GetForeignSymbolsInflux(source)
@@ -1459,6 +1773,10 @@ func (env *Env) GetForeignSymbols(c *gin.Context) {
 // -----------------------------------------------------------------------------
 
 func (env *Env) GetVwapFirefly(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	foreignname := c.Param("ticker")
 	starttimeStr := c.Query("starttime")
 	endtimeStr := c.Query("endtime")
@@ -1480,6 +1798,10 @@ func (env *Env) GetVwapFirefly(c *gin.Context) {
 			return
 		}
 		endtime = time.Unix(endtimeInt, 0)
+		if ok := utils.ValidTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
+			restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 30*24*time.Hour))
+			return
+		}
 	}
 
 	type vwapObj struct {
@@ -1513,85 +1835,16 @@ func (env *Env) GetVwapFirefly(c *gin.Context) {
 	}
 }
 
-// getDecimalsFromCache returns the decimals of @asset, either from the map @localCache or from
-// Postgres, in which latter case it also adds the decimals to the local cache.
-// Remember that maps are always passed by reference.
-func (env *Env) getDecimalsFromCache(localCache map[dia.Asset]uint8, asset dia.Asset) uint8 {
-	if decimals, ok := localCache[asset]; ok {
-		return decimals
-	}
-	fullAsset, err := env.RelDB.GetAsset(asset.Address, asset.Blockchain)
-	if err != nil {
-		log.Warnf("could not find asset with address %s on blockchain %s in postgres: ", asset.Address, asset.Blockchain)
-	}
-	localCache[asset] = fullAsset.Decimals
-	return fullAsset.Decimals
-}
-
-// GetBenchmarkedIndexValue Get benchmarked Index values
-func (env *Env) GetBenchmarkedIndexValue(c *gin.Context) {
-	symbol := c.Param("symbol")
-	starttimeStr := c.Query("starttime")
-	endtimeStr := c.Query("endtime")
-
-	// Set times depending on what is given by the query parameters
-	var starttime, endtime time.Time
-	if starttimeStr == "" && endtimeStr == "" {
-		// Last seven days per default
-		starttime = time.Now().AddDate(0, 0, -7)
-		endtime = time.Now()
-	} else if starttimeStr == "" && endtimeStr != "" {
-		// zero time if not given
-		starttime = time.Time{}
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		endtime = time.Unix(endtimeInt, 0)
-	} else if starttimeStr != "" && endtimeStr == "" {
-		// endtime now if not given
-		endtime = time.Now()
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		starttime = time.Unix(starttimeInt, 0)
-	} else {
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		starttime = time.Unix(starttimeInt, 0)
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		endtime = time.Unix(endtimeInt, 0)
-	}
-
-	q, err := env.DataStore.GetBenchmarkedIndexValuesInflux(symbol, starttime, endtime)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
+func (env *Env) GetLastTradeTime(c *gin.Context) {
+	if !validateInputParams(c) {
 		return
 	}
-	c.JSON(http.StatusOK, q)
-}
 
-// GetLastTrades Get last 1000 trades of an asset
-func (env *Env) GetLastTrades(c *gin.Context) {
-	symbol := c.Param("symbol")
+	exchange := c.Param("exchange")
+	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 
-	// First get asset with @symbol with largest market cap.
-	topAsset, err := env.DataStore.GetTopAssetByVolume(symbol, &env.RelDB)
-	if err != nil {
-		restApi.SendError(c, http.StatusNotFound, err)
-	}
-
-	q, err := env.DataStore.GetLastTrades(topAsset, "", 1000, true)
+	t, err := env.DataStore.GetLastTradeTimeForExchange(dia.Asset{Address: address, Blockchain: blockchain}, exchange)
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)
@@ -1599,16 +1852,22 @@ func (env *Env) GetLastTrades(c *gin.Context) {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 		}
 	} else {
-		c.JSON(http.StatusOK, q)
+		c.JSON(http.StatusOK, *t)
 	}
 }
 
 // GetLastTrades returns last N trades of an asset. Defaults to N=1000.
 func (env *Env) GetLastTradesAsset(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	blockchain := c.Param("blockchain")
-	address := c.Param("address")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
 	numTradesString := c.DefaultQuery("numTrades", "1000")
 	exchange := c.Query("exchange")
+
 	var numTrades int64
 	var err error
 	numTrades, err = strconv.ParseInt(numTradesString, 10, 64)
@@ -1625,7 +1884,7 @@ func (env *Env) GetLastTradesAsset(c *gin.Context) {
 		return
 	}
 
-	q, err := env.DataStore.GetLastTrades(asset, exchange, int(numTrades), true)
+	q, err := env.DataStore.GetLastTrades(asset, exchange, time.Now(), int(numTrades), true)
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
 			restApi.SendError(c, http.StatusNotFound, err)
@@ -1639,6 +1898,10 @@ func (env *Env) GetLastTradesAsset(c *gin.Context) {
 
 // GetMissingExchangeSymbol returns all unverified symbol
 func (env *Env) GetMissingExchangeSymbol(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	exchange := c.Param("exchange")
 
 	//symbols, err := api.GetUnverifiedExchangeSymbols(exchange)
@@ -1651,6 +1914,10 @@ func (env *Env) GetMissingExchangeSymbol(c *gin.Context) {
 }
 
 func (env *Env) GetAsset(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	symbol := c.Param("symbol")
 
 	symbols, err := env.RelDB.GetAssets(symbol)
@@ -1662,6 +1929,10 @@ func (env *Env) GetAsset(c *gin.Context) {
 }
 
 func (env *Env) GetAssetExchanges(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	symbol := c.Param("symbol")
 
 	symbols, err := env.RelDB.GetAssetExchange(symbol)
@@ -1696,7 +1967,12 @@ func (env *Env) GetNFTCategories(c *gin.Context) {
 
 // GetAllNFTClasses returns all NFT classes.
 func (env *Env) GetAllNFTClasses(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	blockchain := c.Param("blockchain")
+
 	q, err := env.RelDB.GetAllNFTClasses(blockchain)
 	if len(q) == 0 || err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
@@ -1706,8 +1982,13 @@ func (env *Env) GetAllNFTClasses(c *gin.Context) {
 
 // GetNFTClasses returns all NFT classes.
 func (env *Env) GetNFTClasses(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	limitString := c.Param("limit")
 	offsetString := c.Param("offset")
+
 	limit, err := strconv.ParseUint(limitString, 10, 32)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
@@ -1726,9 +2007,15 @@ func (env *Env) GetNFTClasses(c *gin.Context) {
 
 // GetNFT returns an NFT.
 func (env *Env) GetNFT(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	blockchain := c.Param("blockchain")
-	address := c.Param("address")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
 	id := c.Param("id")
+
 	q, err := env.RelDB.GetNFT(address, blockchain, id)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
@@ -1738,9 +2025,13 @@ func (env *Env) GetNFT(c *gin.Context) {
 
 // GetNFTTrades returns all trades of the unique NFT with given parameters.
 func (env *Env) GetNFTTrades(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	blockchain := c.Param("blockchain")
-	// Sanitize address
-	address := common.HexToAddress(c.Param("address")).Hex()
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
 	id := c.Param("id")
 	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*30)*time.Hour)
 	if err != nil {
@@ -1757,8 +2048,13 @@ func (env *Env) GetNFTTrades(c *gin.Context) {
 
 // GetNFTTradesCollection returns all trades of the collection with given parameters.
 func (env *Env) GetNFTTradesCollection(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
 	blockchain := c.Param("blockchain")
-	address := common.HexToAddress(c.Param("address")).Hex()
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
 	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*30)*time.Hour)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
@@ -1795,6 +2091,9 @@ func (env *Env) GetNFTTradesCollection(c *gin.Context) {
 		var t nftTradesCollReturn
 		t.Name = nftClass.Name
 		price, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(trade.Price), new(big.Float).SetFloat64(math.Pow10(int(trade.Currency.Decimals)))).Float64()
+		if price == 0 {
+			continue
+		}
 		t.Price = price
 		t.Currency = trade.Currency
 		t.NFTid = trade.NFT.TokenID
@@ -1813,8 +2112,13 @@ func (env *Env) GetNFTTradesCollection(c *gin.Context) {
 
 // GetNFTFloor returns the last floor price of a collection before @timestamp.
 func (env *Env) GetNFTFloor(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	// ------ Parse parameters -----
 	blockchain := c.Param("blockchain")
-	address := common.HexToAddress(c.Param("address")).Hex()
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 
 	timestampUnixString := c.Query("timestamp")
 	var timestamp time.Time
@@ -1829,17 +2133,6 @@ func (env *Env) GetNFTFloor(c *gin.Context) {
 	}
 
 	floorWindowSeconds := c.Query("floorWindow")
-	var floorWindow int64
-	var err error
-	if floorWindowSeconds != "" {
-		floorWindow, err = strconv.ParseInt(floorWindowSeconds, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusBadRequest, err)
-		}
-	} else {
-		// Set floor window to default 24h.
-		floorWindow = 24 * 60 * 60
-	}
 
 	// Exclude bundle sales by default.
 	bundlesString := c.DefaultQuery("bundles", "false")
@@ -1848,23 +2141,52 @@ func (env *Env) GetNFTFloor(c *gin.Context) {
 		log.Error("parse bundles string: ", err)
 	}
 
+	// Optional parameter @exchange.
+	exchange := c.Query("exchange")
+
+	// ------ Set vars -----
 	nftClass := dia.NFTClass{Address: address, Blockchain: blockchain}
 
-	// Look for floor price. Iterate backwards in time if no sales are found.
-	var floor float64
-	windowDuration := time.Duration(floorWindow) * time.Second
-	stepBackLimit := 40
-	floor, err = env.RelDB.GetNFTFloorRecursive(nftClass, timestamp, windowDuration, stepBackLimit, !bundles)
-	if err != nil {
-		restApi.SendError(c, http.StatusBadRequest, err)
-		return
-	}
 	type returnStruct struct {
 		Floor  float64   `json:"Floor_Price"`
 		Time   time.Time `json:"Time"`
 		Source string    `json:"Source"`
 	}
-	var resp returnStruct
+
+	var (
+		floorWindow    int64
+		floorWindowSet bool
+		stepBackLimit  int
+		floor          float64
+		resp           returnStruct
+	)
+
+	if floorWindowSeconds != "" {
+		floorWindow, err = strconv.ParseInt(floorWindowSeconds, 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusBadRequest, err)
+		}
+		floorWindowSet = true
+	} else {
+		// Set floor window to default 24h.
+		floorWindow = 24 * 60 * 60
+	}
+
+	// In default case, i.e. floorWindow is not set by user, go back up to 30
+	// days in order to find a floor price. Otherwise, don't go back at all.
+	if floorWindowSet {
+		stepBackLimit = 1
+	} else {
+		stepBackLimit = 30
+	}
+
+	// ------ Get Floor Price -----
+	floor, err = env.RelDB.GetNFTFloorRecursive(nftClass, timestamp, time.Duration(floorWindow)*time.Second, stepBackLimit, !bundles, exchange)
+	if err != nil {
+		restApi.SendError(c, http.StatusBadRequest, err)
+		return
+	}
+
 	resp.Floor = floor
 	resp.Time = timestamp
 	resp.Source = dia.Diadata
@@ -1876,7 +2198,8 @@ func (env *Env) GetNFTFloorMA(c *gin.Context) {
 
 	// NFT collection.
 	blockchain := c.Param("blockchain")
-	address := common.HexToAddress(c.Param("address")).Hex()
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
 	nftClass := dia.NFTClass{Address: address, Blockchain: blockchain}
 
 	// lookback for MA is 30 days per default.
@@ -1884,6 +2207,11 @@ func (env *Env) GetNFTFloorMA(c *gin.Context) {
 	lookbackInt, err := strconv.ParseInt(lookbackString, 10, 64)
 	if err != nil {
 		restApi.SendError(c, http.StatusBadRequest, nil)
+		return
+	}
+	if lookbackInt > 7776000 {
+		restApi.SendError(c, http.StatusBadRequest, errors.New("time-range must not be larger than 90 days."))
+		return
 	}
 
 	// floor price window is 24h per default.
@@ -1891,8 +2219,13 @@ func (env *Env) GetNFTFloorMA(c *gin.Context) {
 	floorWindowInt, err := strconv.ParseInt(floorWindowString, 10, 64)
 	if err != nil {
 		restApi.SendError(c, http.StatusBadRequest, nil)
+		return
 	}
 	floorWindow := time.Duration(floorWindowInt) * time.Second
+	if floorWindow > time.Duration(lookbackInt)*time.Second {
+		restApi.SendError(c, http.StatusBadRequest, errors.New("floor window must be smaller than entire time-range"))
+		return
+	}
 
 	// Exclude bundle sales by default.
 	bundlesString := c.DefaultQuery("bundles", "false")
@@ -1901,13 +2234,26 @@ func (env *Env) GetNFTFloorMA(c *gin.Context) {
 		log.Error("parse bundles string: ", err)
 	}
 
-	endtime := time.Now()
+	timestampUnixString := c.Query("timestamp")
+	var endtime time.Time
+	if timestampUnixString != "" {
+		timestampUnix, errTimeStamp := strconv.ParseInt(timestampUnixString, 10, 64)
+		if errTimeStamp != nil {
+			restApi.SendError(c, http.StatusBadRequest, errTimeStamp)
+		}
+		endtime = time.Unix(timestampUnix, 0)
+	} else {
+		endtime = time.Now()
+	}
+
 	starttime := endtime.Add(-time.Duration(lookbackInt) * time.Second)
 	stepBackLimit := 120
 
-	t := time.Now()
-	floorPrices, err := env.RelDB.GetNFTFloorRange(nftClass, starttime, endtime, floorWindow, stepBackLimit, !bundles)
-	log.Infof("took %v time to compute floorPrices: %v", time.Since(t), floorPrices)
+	floorPrices, errFloorRange := env.RelDB.GetNFTFloorRange(nftClass, starttime, endtime, floorWindow, stepBackLimit, !bundles, "")
+	if errFloorRange != nil {
+		restApi.SendError(c, http.StatusBadRequest, errFloorRange)
+		return
+	}
 
 	cleanFloorPrices, indices := filters.RemoveOutliers(floorPrices, 1.5)
 	var floorMA float64
@@ -1938,10 +2284,14 @@ func (env *Env) GetNFTFloorMA(c *gin.Context) {
 
 // GetNFTDownday returns the moving average floor price of the nft class over the last 30 days.
 func (env *Env) GetNFTDownday(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
 
 	// NFT collection.
 	blockchain := c.Param("blockchain")
-	address := common.HexToAddress(c.Param("address")).Hex()
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
 	nftClass := dia.NFTClass{Address: address, Blockchain: blockchain}
 
 	// lookback for MA is 90 days per default.
@@ -1969,7 +2319,7 @@ func (env *Env) GetNFTDownday(c *gin.Context) {
 	endtime := time.Now()
 	starttime := endtime.Add(-time.Duration(lookbackInt) * time.Second)
 	stepBackLimit := 120
-	floorPrices, err := env.RelDB.GetNFTFloorRange(nftClass, starttime, endtime, floorWindow, stepBackLimit, !bundles)
+	floorPrices, err := env.RelDB.GetNFTFloorRange(nftClass, starttime, endtime, floorWindow, stepBackLimit, !bundles, "")
 
 	log.Info("floorPrices: ", floorPrices)
 
@@ -2036,10 +2386,14 @@ func (env *Env) GetNFTDownday(c *gin.Context) {
 
 // GetNFTFloorVola returns the volatility of the moving average floor price of the nft class over the last 90 days.
 func (env *Env) GetNFTFloorVola(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
 
 	// NFT collection.
 	blockchain := c.Param("blockchain")
-	address := common.HexToAddress(c.Param("address")).Hex()
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
 	nftClass := dia.NFTClass{Address: address, Blockchain: blockchain}
 
 	// Parse query parameter time.
@@ -2080,7 +2434,7 @@ func (env *Env) GetNFTFloorVola(c *gin.Context) {
 
 	starttime := endtime.Add(-time.Duration(lookbackInt) * time.Second)
 	stepBackLimit := 120
-	floorPrices, err := env.RelDB.GetNFTFloorRange(nftClass, starttime, endtime, floorWindow, stepBackLimit, !bundles)
+	floorPrices, err := env.RelDB.GetNFTFloorRange(nftClass, starttime, endtime, floorWindow, stepBackLimit, !bundles, "")
 	if err != nil {
 		log.Error("get nft floor range: ", err)
 	}
@@ -2109,11 +2463,123 @@ func (env *Env) GetNFTFloorVola(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+func (env *Env) GetNFTDistribution(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	// NFT collection.
+	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
+	nftClass, err := env.RelDB.GetNFTClass(address, blockchain)
+	if err != nil {
+		log.Error("get nft class: ", err)
+	}
+
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(30*24*60)*time.Minute)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	// lower bound is 0 by default. upper bound is large by default.
+	// User input for both is int with 6 digits.
+	digits := 6
+	var lowerBoundLong, upperBoundLong int64
+	if c.Query("lowerBound") == "" {
+		lowerBoundLong = 0
+	} else {
+		lowerBoundLong, err = strconv.ParseInt(c.Query("lowerBound"), 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusBadRequest, nil)
+		}
+	}
+	if c.Query("upperBound") == "" {
+		upperBoundLong = int64(1000000000000000000)
+	} else {
+		upperBoundLong, err = strconv.ParseInt(c.Query("upperBound"), 10, 64)
+		if err != nil {
+			restApi.SendError(c, http.StatusBadRequest, nil)
+		}
+	}
+	lowerBound := float64(lowerBoundLong) * math.Pow10(-digits)
+	upperBound := float64(upperBoundLong) * math.Pow10(-digits)
+
+	// // Exclude bundle sales by default.
+	// bundlesString := c.DefaultQuery("bundles", "false")
+	// bundles, err := strconv.ParseBool(bundlesString)
+	// if err != nil {
+	// 	log.Error("parse bundles string: ", err)
+	// }
+
+	trades, err := env.RelDB.GetNFTTradesCollection(address, blockchain, starttime, endtime)
+	if err != nil {
+		log.Error("get nft floor range: ", err)
+	}
+
+	var (
+		prices           []float64
+		totalVolume      float64
+		paymentAddresses []string
+	)
+
+	switch nftClass.Blockchain {
+	case dia.ETHEREUM:
+		paymentAddresses = append(paymentAddresses, "0x0000000000000000000000000000000000000000")
+		paymentAddresses = append(paymentAddresses, "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")
+	case dia.ASTAR:
+		paymentAddresses = append(paymentAddresses, "0x0000000000000000000000000000000000000000")
+		paymentAddresses = append(paymentAddresses, "0x9dA4A3a345bf6371f8e47c63Cad2293e532022dE")
+	case dia.BINANCESMARTCHAIN:
+		paymentAddresses = append(paymentAddresses, "0x0000000000000000000000000000000000000000")
+		paymentAddresses = append(paymentAddresses, "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c")
+	}
+
+	// Select trades from price channel.
+	for _, trade := range trades {
+		if utils.Contains(&paymentAddresses, trade.Currency.Address) {
+			price, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(trade.Price), new(big.Float).SetFloat64(math.Pow10(int(trade.Currency.Decimals)))).Float64()
+			if lowerBound < price && price < upperBound {
+				prices = append(prices, price)
+				totalVolume += price
+			}
+		}
+	}
+
+	type PriceStats struct {
+		Average           float64   `json:"Average"`
+		StandardDeviation float64   `json:"Standard_Deviation"`
+		NumTrades         int       `json:"Number_Of_Trades"`
+		Volume            float64   `json:"Volume"`
+		Collection        string    `json:"Collection"`
+		Starttime         time.Time `json:"Starttime"`
+		Endtime           time.Time `json:"Endtime"`
+		Source            string    `json:"Source"`
+	}
+
+	var response PriceStats
+	response.Average = utils.Average(prices)
+	response.StandardDeviation = utils.StandardDeviation(prices)
+	response.NumTrades = len(prices)
+	response.Volume = totalVolume
+	response.Collection = nftClass.Name
+	response.Starttime = starttime
+	response.Endtime = endtime
+	response.Source = dia.Diadata
+
+	c.JSON(http.StatusOK, response)
+}
+
 func (env *Env) GetTopNFTClasses(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
 
 	type localReturn struct {
 		Collection   string
 		Floor        float64
+		FloorMA      float64
 		Volume       float64
 		Trades       int
 		FloorChange  float64
@@ -2128,6 +2594,8 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 		starttime   time.Time
 		endtime     time.Time
 		returnValue []localReturn
+		pageNumber  int64
+		offset      int64
 	)
 
 	numCollections, err := strconv.Atoi(c.Param("numCollections"))
@@ -2136,11 +2604,18 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 		return
 	}
 
+	pageString := c.DefaultQuery("page", "1")
+	pageNumber, err = strconv.ParseInt(pageString, 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("Page of assets must be an integer"))
+	}
+	offset = (pageNumber - 1) * int64(numCollections)
+
 	endtimeString := c.Query("endtime")
 	if endtimeString != "" {
-		endtimeInt, err := strconv.ParseInt(endtimeString, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
+		endtimeInt, errEnd := strconv.ParseInt(endtimeString, 10, 64)
+		if errEnd != nil {
+			restApi.SendError(c, http.StatusInternalServerError, errEnd)
 			return
 		}
 		endtime = time.Unix(endtimeInt, 0)
@@ -2149,16 +2624,15 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 	}
 	starttimeString := c.Query("starttime")
 	if starttimeString != "" {
-		starttimeInt, err := strconv.ParseInt(starttimeString, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
+		starttimeInt, errStart := strconv.ParseInt(starttimeString, 10, 64)
+		if errStart != nil {
+			restApi.SendError(c, http.StatusInternalServerError, errStart)
 			return
 		}
 		starttime = time.Unix(starttimeInt, 0)
 	} else {
 		starttime = endtime.AddDate(0, 0, -1)
 	}
-	timeWindow := endtime.Sub(starttime)
 
 	exchangesString := c.Query("exchanges")
 	var exchanges []string
@@ -2168,56 +2642,85 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 
 	// Exclude bundle sales by default.
 	bundlesString := c.DefaultQuery("bundles", "false")
-	bundles, err := strconv.ParseBool(bundlesString)
-	if err != nil {
-		log.Error("parse bundles string: ", err)
+	bundles, errBundles := strconv.ParseBool(bundlesString)
+	if errBundles != nil {
+		log.Error("parse bundles string: ", errBundles)
 	}
 
-	nftVolumes, err := env.RelDB.GetTopNFTsEth(numCollections, exchanges, starttime, endtime)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
+	var window24h = 24 * 60 * time.Minute
+
+	nftVolumes, errTopNFTsEth := env.RelDB.GetTopNFTsEth(numCollections, offset, exchanges, starttime, endtime)
+	if errTopNFTsEth != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errTopNFTsEth)
 		return
 	}
 
-	for _, nftvolume := range nftVolumes {
+	for _, nftVolume := range nftVolumes {
 		floor, err := env.RelDB.GetNFTFloor(
-			dia.NFTClass{Address: nftvolume.Address, Blockchain: nftvolume.Blockchain},
+			dia.NFTClass{Address: nftVolume.Address, Blockchain: nftVolume.Blockchain},
 			endtime,
-			timeWindow,
+			window24h,
 			!bundles,
+			"",
 		)
 		if err != nil {
-			log.Errorf("get number of nft trades for address %s: %v", nftvolume.Address, err)
-		}
-		floorYesterday, err := env.RelDB.GetNFTFloor(
-			dia.NFTClass{Address: nftvolume.Address, Blockchain: nftvolume.Blockchain},
-			endtime.Add(-timeWindow),
-			timeWindow,
-			!bundles,
-		)
-		if err != nil {
-			log.Errorf("get floor yesterday for address %s: %v", nftvolume.Address, err)
+			log.Errorf("get number of nft trades for address %s: %v", nftVolume.Address, err)
 		}
 
-		numTrades, err := env.RelDB.GetNumNFTTrades(nftvolume.Address, nftvolume.Blockchain, starttime, endtime)
+		// ------------- Floor MA -------------
+		floorPrices, err := env.RelDB.GetNFTFloorRange(
+			dia.NFTClass{Address: nftVolume.Address, Blockchain: nftVolume.Blockchain},
+			endtime.AddDate(0, 0, -30),
+			endtime,
+			window24h,
+			20,
+			!bundles,
+			"",
+		)
 		if err != nil {
-			log.Errorf("get number of nft trades for address %s: %v", nftvolume.Address, err)
+			log.Errorf("get floor range for address %s: %v", nftVolume.Address, err)
 		}
-		numTradesYesterday, err := env.RelDB.GetNumNFTTrades(nftvolume.Address, nftvolume.Blockchain, starttime.Add(-timeWindow), endtime.Add(-timeWindow))
-		if err != nil {
-			log.Errorf("get number of nft trades yesterday for address %s: %v", nftvolume.Address, err)
+
+		cleanFloorPrices, indices := filters.RemoveOutliers(floorPrices, 1.5)
+		var floorMA float64
+		if len(indices) == 2 {
+			floorMA = utils.Average(cleanFloorPrices)
+		} else {
+			floorMA = utils.Average(floorPrices)
 		}
-		volumeYesterday, err := env.RelDB.GetNFTVolume(nftvolume.Address, nftvolume.Blockchain, starttime.Add(-timeWindow), endtime.Add(-timeWindow))
+		// -------------------------------------
+
+		floorYesterday, err := env.RelDB.GetNFTFloor(
+			dia.NFTClass{Address: nftVolume.Address, Blockchain: nftVolume.Blockchain},
+			endtime.Add(-window24h),
+			window24h,
+			!bundles,
+			"",
+		)
 		if err != nil {
-			log.Errorf("get volume yesterday for address %s: %v", nftvolume.Address, err)
+			log.Errorf("get floor yesterday for address %s: %v", nftVolume.Address, err)
+		}
+
+		numTrades, err := env.RelDB.GetNumNFTTrades(nftVolume.Address, nftVolume.Blockchain, "", starttime, endtime)
+		if err != nil {
+			log.Errorf("get number of nft trades for address %s: %v", nftVolume.Address, err)
+		}
+		numTradesYesterday, err := env.RelDB.GetNumNFTTrades(nftVolume.Address, nftVolume.Blockchain, "", starttime.Add(-window24h), endtime.Add(-window24h))
+		if err != nil {
+			log.Errorf("get number of nft trades yesterday for address %s: %v", nftVolume.Address, err)
+		}
+		volumeYesterday, err := env.RelDB.GetNFTVolume(nftVolume.Address, nftVolume.Blockchain, "", starttime.Add(-window24h), endtime.Add(-window24h))
+		if err != nil {
+			log.Errorf("get volume yesterday for address %s: %v", nftVolume.Address, err)
 		}
 
 		var l localReturn
-		l.Collection = nftvolume.Name
+		l.Collection = nftVolume.Name
 		l.Floor = floor
-		l.Volume = nftvolume.Volume
+		l.FloorMA = floorMA
+		l.Volume = nftVolume.Volume
 		if volumeYesterday > 0 {
-			l.VolumeChange = (nftvolume.Volume - volumeYesterday) / volumeYesterday * 100
+			l.VolumeChange = (nftVolume.Volume - volumeYesterday) / volumeYesterday * 100
 		}
 		l.Trades = numTrades
 		if numTradesYesterday > 0 {
@@ -2226,8 +2729,8 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 		if floorYesterday > 0 {
 			l.FloorChange = (floor - floorYesterday) / floorYesterday * 100
 		}
-		l.Address = nftvolume.Address
-		l.Blockchain = nftvolume.Blockchain
+		l.Address = nftVolume.Address
+		l.Blockchain = nftVolume.Blockchain
 		l.Time = endtime
 		l.Source = dia.Diadata
 		returnValue = append(returnValue, l)
@@ -2251,6 +2754,7 @@ func (env *Env) GetNFTVolume(c *gin.Context) {
 		Blockchain   string
 		Time         time.Time
 		Source       string
+		Exchanges    []dia.NFTExchangeStats
 	}
 	var (
 		starttime time.Time
@@ -2258,8 +2762,8 @@ func (env *Env) GetNFTVolume(c *gin.Context) {
 		l         localReturn
 	)
 
-	address := common.HexToAddress(c.Param("address")).Hex()
 	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
 
 	endtimeString := c.Query("endtime")
 	if endtimeString != "" {
@@ -2304,6 +2808,7 @@ func (env *Env) GetNFTVolume(c *gin.Context) {
 		timeWindow,
 		10,
 		!bundles,
+		"",
 	)
 	if err != nil {
 		log.Error("get floor: ", err)
@@ -2314,25 +2819,43 @@ func (env *Env) GetNFTVolume(c *gin.Context) {
 		timeWindow,
 		10,
 		!bundles,
+		"",
 	)
 	if err != nil {
 		log.Error("get floor yesterday: ", err)
 	}
-	volume, err := env.RelDB.GetNFTVolume(address, blockchain, starttime, endtime)
+	volume, err := env.RelDB.GetNFTVolume(address, blockchain, "", starttime, endtime)
 	if err != nil {
 		log.Error("get volume: ", err)
 	}
-	volumeYesterday, err := env.RelDB.GetNFTVolume(address, blockchain, starttime.Add(-timeWindow), endtime.Add(-timeWindow))
+	volumeYesterday, err := env.RelDB.GetNFTVolume(address, blockchain, "", starttime.Add(-timeWindow), endtime.Add(-timeWindow))
 	if err != nil {
 		log.Error("get volume yesterday: ", err)
 	}
-	numTrades, err := env.RelDB.GetNumNFTTrades(address, blockchain, starttime, endtime)
+	numTrades, err := env.RelDB.GetNumNFTTrades(address, blockchain, "", starttime, endtime)
 	if err != nil {
 		log.Error("get number of nft trades: ", err)
 	}
-	numTradesYesterday, err := env.RelDB.GetNumNFTTrades(address, blockchain, starttime.Add(-timeWindow), endtime.Add(-timeWindow))
+	numTradesYesterday, err := env.RelDB.GetNumNFTTrades(address, blockchain, "", starttime.Add(-timeWindow), endtime.Add(-timeWindow))
 	if err != nil {
 		log.Error("get number of nft trades yesterday: ", err)
+	}
+
+	exchanges, err := env.RelDB.GetNFTExchanges(address, blockchain)
+	if err != nil {
+		log.Error("get number of nft trades yesterday: ", err)
+	}
+
+	for _, exchange := range exchanges {
+		numNftTrades, errNumNFTTrades := env.RelDB.GetNumNFTTrades(address, blockchain, exchange, starttime, endtime)
+		if errNumNFTTrades != nil {
+			log.Error("get number of nft trades: ", errNumNFTTrades)
+		}
+		nftVolume, errNFTVolume := env.RelDB.GetNFTVolume(address, blockchain, exchange, starttime, endtime)
+		if errNFTVolume != nil {
+			log.Error("get number of nft trades: ", errNFTVolume)
+		}
+		l.Exchanges = append(l.Exchanges, dia.NFTExchangeStats{Exchange: exchange, NumTrades: uint64(numNftTrades), Volume: nftVolume})
 	}
 
 	l.Collection = collection.Name
@@ -2360,122 +2883,603 @@ func (env *Env) GetNFTVolume(c *gin.Context) {
 }
 
 func (env *Env) GetFeedStats(c *gin.Context) {
-
-	blockchain := c.Param("blockchain")
-	address := c.Param("address")
-	starttimeStr := c.Query("starttime")
-	endtimeStr := c.Query("endtime")
-	var starttime time.Time
-	var endtime time.Time
-
-	if endtimeStr == "" {
-		endtime = time.Now()
-	} else {
-		endtimeInt, err := strconv.ParseInt(endtimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		endtime = time.Unix(endtimeInt, 0)
-	}
-	if starttimeStr == "" {
-		starttime = endtime.AddDate(0, 0, -1)
-	} else {
-		starttimeInt, err := strconv.ParseInt(starttimeStr, 10, 64)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
-		}
-		starttime = time.Unix(starttimeInt, 0)
+	if !validateInputParams(c) {
+		return
 	}
 
-	asset, err := env.RelDB.GetAsset(address, blockchain)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, nil)
-	}
+	var sizeBinSeconds = 120
 
-	exchVolumes, err := env.RelDB.GetAggVolumesByExchange(asset, starttime, endtime)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, nil)
-	}
-
-	pairVolumes, err := env.RelDB.GetAggVolumesByPair(asset, starttime, endtime)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, nil)
-	}
-
-	tradesDist, err := env.RelDB.GetTradesDistribution(asset, starttime, endtime)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, nil)
-	}
-
+	// Return type for the trades distribution statistics.
 	type localDistType struct {
-		NumTradesTotal   int     `json:"NumTradesTotal"`
+		NumTradesTotal   int64   `json:"NumTradesTotal"`
 		NumBins          int     `json:"NumBins"`
 		NumLowBins       int     `json:"NumberLowBins"`
 		Threshold        int     `json:"Threshold"`
-		SizeBinSeconds   int64   `json:"SizeBin"`
+		SizeBinSeconds   int64   `json:"SizeBinSeconds"`
 		AvgNumPerBin     float64 `json:"AverageNumberPerBin"`
 		StdDeviation     float64 `json:"StandardDeviation"`
 		TimeRangeSeconds int64   `json:"TimeRangeSeconds"`
 	}
-	var tradesDistReduced []localDistType
-	for _, val := range tradesDist {
-		tradesDistReduced = append(tradesDistReduced, localDistType{
-			NumTradesTotal:   val.NumTradesTotal,
-			NumBins:          int(val.TimeRangeSeconds) / int(val.SizeBinSeconds),
-			NumLowBins:       val.NumLowBins,
-			Threshold:        val.Threshold,
-			SizeBinSeconds:   val.SizeBinSeconds,
-			AvgNumPerBin:     val.AvgNumPerBin,
-			StdDeviation:     val.StdDeviation,
-			TimeRangeSeconds: val.TimeRangeSeconds,
-		})
+
+	// Return type for pair volumes per exchange.
+	type exchangeVolumes struct {
+		Exchange    string
+		PairVolumes []dia.PairVolume
 	}
 
+	// Overall return type.
 	type localReturn struct {
 		Timestamp          time.Time
 		TotalVolume        float64
 		Price              float64
 		TradesDistribution localDistType
-		ExchangeVolumes    []dia.ExchangeVolume
-		PairVolumes        []dia.PairVolume
+		ExchangeVolumes    []exchangeVolumes
 	}
 
-	var retVal []localReturn
+	// ---- Parse / check input ----
 
-	// Fill local return type.
-	for i := range exchVolumes {
-		var l localReturn
-		var price float64
-		sort.Slice(exchVolumes[i].Volumes, func(m, n int) bool { return exchVolumes[i].Volumes[m].Volume > exchVolumes[i].Volumes[n].Volume })
-		l.ExchangeVolumes = exchVolumes[i].Volumes
-		// Compute total volume.
-		for _, vol := range l.ExchangeVolumes {
-			l.TotalVolume += vol.Volume
-		}
-		sort.Slice(pairVolumes[i].Volumes, func(m, n int) bool { return pairVolumes[i].Volumes[m].Volume > pairVolumes[i].Volumes[n].Volume })
-		l.PairVolumes = pairVolumes[i].Volumes
-		l.Timestamp = exchVolumes[i].Timestamp
-		// Get Price.
-		price, err = env.DataStore.GetAssetPriceUSD(asset, l.Timestamp)
-		if err != nil {
-			log.New().Errorf("get price usd for asset %v: %v", asset, err)
-		}
-		l.Price = price
-		if len(tradesDistReduced) > i {
-			l.TradesDistribution = tradesDistReduced[i]
-		}
-		retVal = append(retVal, l)
+	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
+	// Make starttime and endtime from Unix time input strings.
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*time.Hour))
+	if err != nil {
+		log.Error("make timerange: ", err)
 	}
 
-	// If no time-range is given, don't return a slice of length 1.
-	if endtimeStr == "" && starttimeStr == "" {
-		if len(retVal) > 0 {
-			c.JSON(http.StatusOK, retVal[0])
+	// Check whether time range is feasible.
+	if ok := utils.ValidTimeRange(starttime, endtime, time.Duration(24*time.Hour)); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 24*time.Hour))
+		return
+	}
+
+	tradesBinThreshold, err := strconv.Atoi(c.DefaultQuery("tradesThreshold", "2"))
+	if err != nil {
+		log.Warn("parse trades bin threshold: ", err)
+		tradesBinThreshold = 2
+	}
+
+	// ---- Get data for input ----
+
+	asset := env.getAssetFromCache(ASSET_CACHE, blockchain, address)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+
+	volumeMap, err := env.DataStore.GetExchangePairVolumes(asset, starttime, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+		return
+	}
+
+	numTradesSeries, err := env.DataStore.GetNumTradesSeries(asset, "", starttime, endtime, strconv.Itoa(sizeBinSeconds)+"s")
+	if err != nil {
+		log.Error("get number of trades' series: ", err)
+	}
+
+	// ---- Fill return types with fetched data -----
+
+	var (
+		result localReturn
+		// tradesDistribution localDistType
+		ev []exchangeVolumes
+	)
+
+	for key, value := range volumeMap {
+		var e exchangeVolumes
+		e.Exchange = key
+		e.PairVolumes = value
+		// Collect total volume and full asset information.
+		for i, v := range value {
+			result.TotalVolume += v.Volume
+			e.PairVolumes[i].Pair.QuoteToken = env.getAssetFromCache(ASSET_CACHE, blockchain, address)
+			e.PairVolumes[i].Pair.BaseToken = env.getAssetFromCache(ASSET_CACHE, v.Pair.BaseToken.Blockchain, v.Pair.BaseToken.Address)
 		}
+		ev = append(ev, e)
+	}
+	result.ExchangeVolumes = ev
+
+	result.Timestamp = endtime
+	result.Price, err = env.DataStore.GetAssetPriceUSD(asset, endtime)
+	if err != nil {
+		log.Warn("get price for asset: ", err)
+	}
+
+	// Trades Distribution values.
+	result.TradesDistribution.Threshold = tradesBinThreshold
+	result.TradesDistribution.NumBins = len(numTradesSeries)
+	result.TradesDistribution.SizeBinSeconds = int64(sizeBinSeconds)
+	var numTradesSeriesFloat []float64
+	for _, num := range numTradesSeries {
+		numTradesSeriesFloat = append(numTradesSeriesFloat, float64(num))
+		result.TradesDistribution.NumTradesTotal += num
+		if num < int64(tradesBinThreshold) {
+			result.TradesDistribution.NumLowBins++
+		}
+	}
+	result.TradesDistribution.AvgNumPerBin = float64(result.TradesDistribution.NumTradesTotal) / float64(len(numTradesSeries))
+	result.TradesDistribution.StdDeviation = utils.StandardDeviation(numTradesSeriesFloat)
+	result.TradesDistribution.TimeRangeSeconds = int64(endtime.Sub(starttime).Seconds())
+
+	c.JSON(http.StatusOK, result)
+
+}
+
+// GetAssetUpdates returns the number of updates an oracle with the given parameters
+// would have done in the given time-range.
+func (env *Env) GetAssetUpdates(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	type localDeviationType struct {
+		Time      time.Time `json:"Time"`
+		Deviation float64   `json:"Deviation"`
+	}
+	type localResultType struct {
+		UpdateCount   int                  `json:"UpdateCount"`
+		UpdatesPer24h float64              `json:"UpdatesPer24h"`
+		Asset         dia.Asset            `json:"Asset"`
+		Deviations    []localDeviationType `json:"Deviations"`
+	}
+
+	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
+	// Deviation in per mille.
+	deviation, err := strconv.Atoi(c.Param("deviation"))
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+	FrequencySeconds, err := strconv.Atoi(c.Param("frequencySeconds"))
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*60)*time.Minute)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+	if endtime.Sub(starttime) > time.Duration(7*24*60)*time.Minute {
+		restApi.SendError(c, http.StatusRequestedRangeNotSatisfiable, errors.New("Requested time-range too large."))
+		return
+	}
+	if ok := utils.ValidTimeRange(starttime, endtime, 30*24*time.Hour); !ok {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 30*24*time.Hour))
+		return
+	}
+
+	asset, errGetAsset := env.RelDB.GetAsset(address, blockchain)
+	if errGetAsset != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errGetAsset)
+		return
+	}
+
+	quotations, errGetAssetQuotations := env.DataStore.GetAssetQuotations(asset, starttime, endtime)
+	if errGetAssetQuotations != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errGetAssetQuotations)
+		return
+	}
+
+	var lrt localResultType
+
+	lastQuotation := quotations[len(quotations)-1]
+	lastValue := lastQuotation.Price
+	for i := len(quotations) - 2; i >= 0; i-- {
+		var diff float64
+		// Oracle did not check for new quotation yet.
+		if quotations[i].Time.Sub(lastQuotation.Time) < time.Duration(FrequencySeconds)*time.Second {
+			continue
+		}
+		if lastValue != 0 {
+			diff = math.Abs((quotations[i].Price - lastValue) / lastValue)
+		} else {
+			// Artificially make diff large enough for update (instead of infty).
+			diff = float64(deviation)/1000 + 1
+		}
+		// If deviation is large enough, update values.
+		if diff > float64(deviation)/1000 {
+			lastQuotation = quotations[i]
+			lastValue = lastQuotation.Price
+
+			var ldt localDeviationType
+			ldt.Deviation = diff
+			ldt.Time = lastQuotation.Time
+			lrt.Deviations = append(lrt.Deviations, ldt)
+			lrt.UpdateCount++
+
+		}
+	}
+
+	lrt.Asset = asset
+	lrt.UpdatesPer24h = float64(lrt.UpdateCount) * float64(time.Duration(24*time.Hour).Hours()/endtime.Sub(starttime).Hours())
+	c.JSON(http.StatusOK, lrt)
+}
+
+// GetAssetInfo returns quotation of asset with highest market cap among
+// all assets with symbol ticker @symbol. Additionally information on exchanges and volumes.
+func (env *Env) GetAssetInfo(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+	type localExchangeInfo struct {
+		Name      string
+		Volume24h float64
+		NumPairs  int
+		NumTrades int64
+	}
+
+	type localAssetInfoReturn struct {
+		Symbol             string
+		Name               string
+		Address            string
+		Blockchain         string
+		Price              float64
+		PriceYesterday     float64
+		VolumeYesterdayUSD float64
+		Time               time.Time
+		Source             string
+		ExchangeInfo       []localExchangeInfo
+	}
+
+	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*60)*time.Minute)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	var quotationExtended localAssetInfoReturn
+
+	asset, err := env.RelDB.GetAsset(address, blockchain)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, err)
+		return
+	}
+
+	quotation, err := env.DataStore.GetAssetQuotation(asset, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, errors.New("no quotation available"))
+		return
+	}
+	quotationYesterday, err := env.DataStore.GetAssetQuotation(asset, starttime)
+	if err != nil {
+		log.Warn("get quotation yesterday: ", err)
 	} else {
-		c.JSON(http.StatusOK, retVal)
+		quotationExtended.PriceYesterday = quotationYesterday.Price
+	}
+	volumeYesterday, err := env.DataStore.GetVolumeInflux(asset, "", starttime, endtime)
+	if err != nil {
+		log.Warn("get volume yesterday: ", err)
+	} else {
+		quotationExtended.VolumeYesterdayUSD = *volumeYesterday
+	}
+	quotationExtended.Symbol = quotation.Asset.Symbol
+	quotationExtended.Name = quotation.Asset.Name
+	quotationExtended.Address = quotation.Asset.Address
+	quotationExtended.Blockchain = quotation.Asset.Blockchain
+	quotationExtended.Price = quotation.Price
+	quotationExtended.Time = quotation.Time
+	quotationExtended.Source = quotation.Source
+
+	// Get Exchange stats
+	exchangemap, _, err := env.DataStore.GetActiveExchangesAndPairs(asset.Address, asset.Blockchain, int64(0), starttime, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, err)
+		return
+	}
+	var eix []localExchangeInfo
+	for exchange, pairs := range exchangemap {
+		var ei localExchangeInfo
+		ei.Name = exchange
+		ei.NumPairs = len(pairs)
+		ei.NumTrades, err = env.DataStore.GetNumTrades(exchange, asset.Address, asset.Blockchain, starttime, endtime)
+		if err != nil {
+			log.Errorf("get number of trades for %s: %v", exchange, err)
+		}
+		vol, err := env.DataStore.GetVolumeInflux(asset, exchange, starttime, endtime)
+		if err != nil {
+			log.Errorf("get 24h volume for %s: %v", exchange, err)
+		} else {
+			ei.Volume24h = *vol
+		}
+		eix = append(eix, ei)
 	}
 
+	sort.Slice(eix, func(i, j int) bool {
+		return eix[i].Volume24h > eix[j].Volume24h
+	})
+	quotationExtended.ExchangeInfo = eix
+
+	c.JSON(http.StatusOK, quotationExtended)
+}
+
+// GetPairsInFeed returns quotation of asset with highest market cap among
+// all assets with symbol ticker @symbol. Additionally information on exchanges and volumes.
+func (env *Env) GetPairsInFeed(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	type localPairInfo struct {
+		ForeignName string
+		Exchange    string
+		NumTrades   int64
+		Quotetoken  dia.Asset
+		Basetoken   dia.Asset
+	}
+
+	type localAssetInfoReturn struct {
+		Symbol             string
+		Name               string
+		Address            string
+		Blockchain         string
+		Price              float64
+		PriceYesterday     float64
+		VolumeYesterdayUSD float64
+		Time               time.Time
+		Source             string
+		PairInfo           []localPairInfo
+	}
+	var quotationExtended localAssetInfoReturn
+
+	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	numTradesThreshold, err := strconv.ParseInt(c.Param("numTradesThreshold"), 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*60)*time.Minute)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	asset := env.getAssetFromCache(ASSET_CACHE, blockchain, address)
+
+	quotation, err := env.DataStore.GetAssetQuotation(asset, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, errors.New("no quotation available"))
+		return
+	}
+	quotationYesterday, err := env.DataStore.GetAssetQuotation(asset, starttime)
+	if err != nil {
+		log.Warn("get quotation yesterday: ", err)
+	} else {
+		quotationExtended.PriceYesterday = quotationYesterday.Price
+	}
+	volumeYesterday, err := env.DataStore.Get24HoursAssetVolume(asset)
+	if err != nil {
+		log.Warn("get volume yesterday: ", err)
+	} else {
+		quotationExtended.VolumeYesterdayUSD = *volumeYesterday
+	}
+	quotationExtended.Symbol = quotation.Asset.Symbol
+	quotationExtended.Name = quotation.Asset.Name
+	quotationExtended.Address = quotation.Asset.Address
+	quotationExtended.Blockchain = quotation.Asset.Blockchain
+	quotationExtended.Price = quotation.Price
+	quotationExtended.Time = quotation.Time
+	quotationExtended.Source = quotation.Source
+
+	// Get Exchange stats
+	exchangemap, pairCountMap, err := env.DataStore.GetActiveExchangesAndPairs(asset.Address, asset.Blockchain, numTradesThreshold, starttime, endtime)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, err)
+		return
+	}
+
+	var eix []localPairInfo
+	for exchange, pairs := range exchangemap {
+		var ei localPairInfo
+		ei.Exchange = exchange
+
+		for _, pair := range pairs {
+			ei.NumTrades = pairCountMap[pair.PairExchangeIdentifier(exchange)]
+			ei.Quotetoken = asset
+			ei.Basetoken = env.getAssetFromCache(ASSET_CACHE, pair.BaseToken.Blockchain, pair.BaseToken.Address)
+			ei.ForeignName = ei.Quotetoken.Symbol + "-" + ei.Basetoken.Symbol
+			eix = append(eix, ei)
+		}
+
+	}
+
+	sort.Slice(eix, func(i, j int) bool {
+		return eix[i].NumTrades > eix[j].NumTrades
+	})
+	quotationExtended.PairInfo = eix
+
+	c.JSON(http.StatusOK, quotationExtended)
+}
+
+// GetSyntheticAsset
+func (env *Env) GetSyntheticAsset(c *gin.Context) {
+	var (
+		err error
+		p   []dia.SynthAssetSupply
+	)
+
+	if !validateInputParams(c) {
+		return
+	}
+
+	blockchain := c.Param("blockchain")
+	protocol := c.Param("protocol")
+
+	address := makeAddressEIP55Compliant(c.Query("address"), blockchain)
+
+	starttimeStr := c.Query("starttime")
+	endtimeStr := c.Query("endtime")
+
+	limit := 0
+
+	// Set times depending on what is given by the query parameters
+	var starttime, endtime time.Time
+	if starttimeStr == "" && endtimeStr == "" {
+		// Last seven days per default
+		starttime = time.Now().AddDate(0, 0, -7)
+		endtime = time.Now()
+		limit = 1
+	} else if starttimeStr == "" && endtimeStr != "" {
+		// zero time if not given
+		starttime = time.Time{}
+		endtimeInt, errEnd := strconv.ParseInt(endtimeStr, 10, 64)
+		if errEnd != nil {
+			restApi.SendError(c, http.StatusInternalServerError, errEnd)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	} else if starttimeStr != "" && endtimeStr == "" {
+		// endtime now if not given
+		endtime = time.Now()
+		starttimeInt, errStart := strconv.ParseInt(starttimeStr, 10, 64)
+		if errStart != nil {
+			restApi.SendError(c, http.StatusInternalServerError, errStart)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+	} else {
+		starttimeInt, errParseInt := strconv.ParseInt(starttimeStr, 10, 64)
+		if errParseInt != nil {
+			restApi.SendError(c, http.StatusInternalServerError, errParseInt)
+			return
+		}
+		starttime = time.Unix(starttimeInt, 0)
+		endtimeInt, errParseIntEnd := strconv.ParseInt(endtimeStr, 10, 64)
+		if errParseIntEnd != nil {
+			restApi.SendError(c, http.StatusInternalServerError, errParseIntEnd)
+			return
+		}
+		endtime = time.Unix(endtimeInt, 0)
+	}
+	if ok := utils.ValidTimeRange(starttime, endtime, 30*24*time.Hour); !ok {
+		err = fmt.Errorf("time-range too big. max duration is %v", 30*24*time.Hour)
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	if address != "" && address != "0x0000000000000000000000000000000000000000" {
+
+		p, err = env.DataStore.GetSynthSupplyInflux(blockchain, protocol, address, limit, starttime, endtime)
+
+	} else {
+		synthassets, errAssets := env.DataStore.GetSynthAssets(blockchain, protocol)
+		if errAssets != nil {
+			restApi.SendError(c, http.StatusInternalServerError, errors.New("no response for quoted timestamp"))
+		}
+		for _, asset := range synthassets {
+			points, _ := env.DataStore.GetSynthSupplyInflux(blockchain, protocol, asset, limit, starttime, endtime)
+			if err != nil {
+				log.Errorln("GetSynthSupplyInflux", err)
+			} else {
+				if len(points) > 0 {
+					p = append(p, points[0])
+				}
+
+			}
+		}
+	}
+
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+	} else {
+		var response []map[string]interface{}
+
+		for _, v := range p {
+			row := make(map[string]interface{})
+			row["Blockchain"] = v.Asset.Blockchain
+			row["UnderlyingTokenAddress"] = v.AssetUnderlying.Address
+			row["UnderlyingTokenSymbol"] = v.AssetUnderlying.Symbol
+			row["SyntheticTokenAddress"] = v.Asset.Address
+			row["SyntheticTokenSymbol"] = v.Asset.Symbol
+			row["TotalDebt"] = v.TotalDebt
+			row["BlockNumber"] = v.BlockNumber
+			row["CollateralRatio"] = v.ColleteralRatio
+			row["LockedUnderlying"] = v.LockedUnderlying
+			row["Supply"] = v.Supply
+			row["Protocol"] = v.Protocol
+			row["Time"] = v.Time
+			response = append(response, row)
+
+		}
+
+		c.JSON(http.StatusOK, response)
+	}
+}
+
+func validateInputParams(c *gin.Context) bool {
+
+	// Validate input parameters.
+	for _, input := range c.Params {
+		if containsSpecialChars(input.Value) {
+			restApi.SendError(c, http.StatusInternalServerError, errors.New("invalid input params"))
+			return false
+		}
+	}
+
+	// Validate query parameters.
+	for _, value := range c.Request.URL.Query() {
+		for _, input := range value {
+			if containsSpecialChars(input) {
+				restApi.SendError(c, http.StatusInternalServerError, errors.New("invalid input params"))
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
+func containsSpecialChars(s string) bool {
+	return strings.ContainsAny(s, "!@#$%^&*()'\"|{}[];><?/`~,")
+}
+
+// Returns the EIP55 compliant address in case @blockchain has an Ethereum ChainID.
+func makeAddressEIP55Compliant(address string, blockchain string) string {
+	if strings.Contains(BLOCKCHAINS[blockchain].ChainID, "Ethereum") {
+		return common.HexToAddress(address).Hex()
+	}
+	return address
+}
+
+// getDecimalsFromCache returns the decimals of @asset, either from the map @localCache or from
+// Postgres, in which latter case it also adds the decimals to the local cache.
+// Remember that maps are always passed by reference.
+func (env *Env) getDecimalsFromCache(localCache map[dia.Asset]uint8, asset dia.Asset) uint8 {
+	if decimals, ok := localCache[asset]; ok {
+		return decimals
+	}
+	fullAsset, err := env.RelDB.GetAsset(asset.Address, asset.Blockchain)
+	if err != nil {
+		log.Warnf("could not find asset with address %s on blockchain %s in postgres: ", asset.Address, asset.Blockchain)
+	}
+	localCache[asset] = fullAsset.Decimals
+	return fullAsset.Decimals
+}
+
+// getAssetFromCache returns the full asset given by blockchain and address, either from the map @localCache
+// or from Postgres, in which latter case it also adds the asset to the local cache.
+// Remember that maps are always passed by reference.
+func (env *Env) getAssetFromCache(localCache map[string]dia.Asset, blockchain string, address string) dia.Asset {
+	if asset, ok := localCache[assetIdentifier(blockchain, address)]; ok {
+		return asset
+	}
+	fullAsset, err := env.RelDB.GetAsset(address, blockchain)
+	if err != nil {
+		log.Warnf("could not find asset with address %s on blockchain %s in postgres: ", address, blockchain)
+	}
+	localCache[assetIdentifier(blockchain, address)] = fullAsset
+	return fullAsset
+
+}
+
+func assetIdentifier(blockchain string, address string) string {
+	return blockchain + "-" + address
 }

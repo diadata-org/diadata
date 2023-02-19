@@ -1,0 +1,81 @@
+{
+    "Exchanges": [
+        {
+            "Name": "OpenSea",
+            "Centralized": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": "Ethereum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "CryptopunkMarket",
+            "Centralized": false,
+            "Contract": "0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB",
+            "Blockchain": {
+                "Name": "Ethereum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "X2Y2",
+            "Centralized": false,
+            "Contract": "0x74312363e45DCaBA76c59ec49a7Aa8A65a67EeD3",
+            "Blockchain": {
+                "Name": "Ethereum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "LooksRare",
+            "Centralized": false,
+            "Contract": "0x59728544B08AB483533076417FbBB2fD0B17CE3a",
+            "Blockchain": {
+                "Name": "Ethereum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "TofuNFT-Astar",
+            "Centralized": false,
+            "Contract": "0x7Cae7FeB55349FeADB8f84468F692450D92597bc",
+            "Blockchain": {
+                "Name": "Astar"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "TofuNFT-BinanceSmartChain",
+            "Centralized": false,
+            "Contract": "0x449D05C544601631785a7C062DCDFF530330317e",
+            "Blockchain": {
+                "Name": "BinanceSmartChain"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "WatchdogDelay": 7200
+        },
+        {
+            "Name": "MagicEden",
+            "Centralized": false,
+            "Contract": "M2mx93ekt1fmXSVkTrUL9xVFHkmME8HTUi5Cyc5aF7K",
+            "Blockchain": {
+                "Name": "Solana"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "WatchdogDelay": 7200
+        }
+    ]
+}

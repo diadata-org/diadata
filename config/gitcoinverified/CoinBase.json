@@ -1,6 +1,60 @@
 {
     "Tokens": [
         {
+            "Symbol": "ANKR",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4"
+        },
+        {
+            "Symbol": "AVAX",
+            "Exchange": "CoinBase",
+            "Blockchain": "Avalanche",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "BNT",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C"
+        },
+        {
+            "Symbol": "DOT",
+            "Exchange": "CoinBase",
+            "Blockchain": "Polkadot",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "ETC",
+            "Exchange": "CoinBase",
+            "Blockchain": "EthereumClassic",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "DOGE",
+            "Exchange": "CoinBase",
+            "Blockchain": "Dogechain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "YFI",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
+        },
+        {
+            "Symbol": "SHIB",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
+        },
+        {
+            "Symbol": "QUICK",
+            "Exchange": "CoinBase",
+            "Blockchain": "Polygon",
+            "Address": "0x831753DD7087CaC61aB5644b308642cc1c33Dc13"
+        },
+        {
             "Symbol": "WBTC",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",

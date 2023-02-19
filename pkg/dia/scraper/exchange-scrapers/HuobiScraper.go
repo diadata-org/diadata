@@ -15,6 +15,7 @@ import (
 	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
+	"github.com/zekroTJA/timedmap"
 )
 
 var _HuobiSocketurl string = "wss://api.huobi.pro/ws"
@@ -112,6 +113,9 @@ func NewHuobiScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *H
 
 // runs in a goroutine until s is closed
 func (s *HuobiScraper) mainLoop() {
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+
 	for {
 		message := &ResponseType{}
 		_, testRead, err := s.wsClient.NextReader()
@@ -187,9 +191,15 @@ func (s *HuobiScraper) mainLoop() {
 								BaseToken:      exchangepair.UnderlyingPair.BaseToken,
 								QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
 							}
-							ps.parent.chanTrades <- t
+
 							if exchangepair.Verified {
 								log.Infoln("Got verified trade", t)
+							}
+							// Handle duplicate trades.
+							discardTrade := t.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+							if !discardTrade {
+								t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+								ps.parent.chanTrades <- t
 							}
 						}
 					} else {

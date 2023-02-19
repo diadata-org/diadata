@@ -23,8 +23,8 @@ type FilterMA struct {
 	value       float64
 	modified    bool
 	filterName  string
-	max         float64
-	min         float64
+	//max         float64
+	min float64
 }
 
 // NewFilterMA returns a moving average filter.

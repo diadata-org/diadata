@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/utils"
 )
 
 var trades []dia.Trade
@@ -14,8 +15,7 @@ func setupGenerator() []Block {
 	json.Unmarshal([]byte(jsonTrades), &trades)
 
 	// trades = trades[9:]
-	bg := NewBlockGenerator(trades)
-	blocks := bg.GenerateSize(8)
+	blocks := []Block{}
 
 	return blocks
 }
@@ -28,8 +28,9 @@ func setupGeneratorSizeShift() []Block {
 	// trades = trades[9:]
 	bg := NewBlockGenerator(trades)
 	fmt.Printf("t: %v\n", trades)
+	bins := []utils.TimeBin{}
 
-	blocks := bg.GenerateShift(trades[0].Time.UnixNano(), 120, 240)
+	blocks := bg.GenerateBlocks(120, 240, bins)
 
 	return blocks
 }

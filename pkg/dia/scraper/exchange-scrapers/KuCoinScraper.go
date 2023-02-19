@@ -10,6 +10,7 @@ import (
 	"github.com/Kucoin/kucoin-go-sdk"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/zekroTJA/timedmap"
 )
 
 type KuExchangePairs []KuExchangePair
@@ -101,6 +102,9 @@ func (s *KuCoinScraper) mainLoop() {
 
 	close(s.initDone)
 
+	lastTradeMap := make(map[dia.Pair]time.Time)
+	countMap := make(map[dia.Pair]int)
+
 	rsp, err := s.apiService.WebSocketPublicToken()
 	if err != nil {
 		// Handle error
@@ -159,6 +163,8 @@ func (s *KuCoinScraper) mainLoop() {
 		log.Fatal("Error while subscribing client3 ", err)
 	}
 
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
 	go func() {
 		var msg *kucoin.WebSocketDownstreamMessage
 		for {
@@ -193,21 +199,43 @@ func (s *KuCoinScraper) mainLoop() {
 					log.Error(err)
 				}
 
+				// Make trade times unique
+				tradeTime := time.Unix(0, timeOrder)
+				pair := dia.Pair{QuoteToken: exchangepair.UnderlyingPair.QuoteToken, BaseToken: exchangepair.UnderlyingPair.BaseToken}
+				if _, ok := lastTradeMap[pair]; ok {
+					if lastTradeMap[pair] != tradeTime {
+						lastTradeMap[pair] = tradeTime
+						countMap[pair] = 0
+					} else {
+						tradeTime = tradeTime.Add(time.Duration((countMap[pair] + 1)) * time.Nanosecond)
+						countMap[pair] += 1
+					}
+				} else {
+					lastTradeMap[pair] = tradeTime
+				}
+
 				trade := &dia.Trade{
-					Symbol:       asset[0],
-					Pair:         t.Symbol,
-					Price:        f64Price,
-					Time:         time.Unix(0, timeOrder),
-					Volume:       f64Volume,
-					Source:       s.exchangeName,
-					VerifiedPair: exchangepair.Verified,
-					BaseToken:    exchangepair.UnderlyingPair.BaseToken,
-					QuoteToken:   exchangepair.UnderlyingPair.QuoteToken,
+					Symbol:         asset[0],
+					Pair:           t.Symbol,
+					Price:          f64Price,
+					Time:           tradeTime,
+					Volume:         f64Volume,
+					Source:         s.exchangeName,
+					VerifiedPair:   exchangepair.Verified,
+					BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+					QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+					ForeignTradeID: t.TradeID,
 				}
 				if exchangepair.Verified {
 					log.Info("Got verified trade from stream 1: ", trade)
 				}
-				s.chanTrades <- trade
+
+				// Handle duplicate trades.
+				discardTrade := trade.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+				if !discardTrade {
+					trade.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+					s.chanTrades <- trade
+				}
 
 			case msg = <-client2DownStream:
 				if msg == nil {
@@ -238,16 +266,33 @@ func (s *KuCoinScraper) mainLoop() {
 				if err != nil {
 					log.Error(err)
 				}
+
+				// Make trade times unique
+				tradeTime := time.Unix(0, timeOrder)
+				pair := dia.Pair{QuoteToken: exchangepair.UnderlyingPair.QuoteToken, BaseToken: exchangepair.UnderlyingPair.BaseToken}
+				if _, ok := lastTradeMap[pair]; ok {
+					if lastTradeMap[pair] != tradeTime {
+						lastTradeMap[pair] = tradeTime
+						countMap[pair] = 0
+					} else {
+						tradeTime.Add(time.Duration(countMap[pair]+1) * time.Nanosecond)
+						countMap[pair] += 1
+					}
+				} else {
+					lastTradeMap[pair] = tradeTime
+				}
+
 				trade := &dia.Trade{
-					Symbol:       asset[0],
-					Pair:         t.Symbol,
-					Price:        f64Price,
-					Time:         time.Unix(0, timeOrder),
-					Volume:       f64Volume,
-					Source:       s.exchangeName,
-					VerifiedPair: exchangepair.Verified,
-					BaseToken:    exchangepair.UnderlyingPair.BaseToken,
-					QuoteToken:   exchangepair.UnderlyingPair.QuoteToken,
+					Symbol:         asset[0],
+					Pair:           t.Symbol,
+					Price:          f64Price,
+					Time:           time.Unix(0, timeOrder),
+					Volume:         f64Volume,
+					Source:         s.exchangeName,
+					VerifiedPair:   exchangepair.Verified,
+					BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+					QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+					ForeignTradeID: t.TradeID,
 				}
 				if exchangepair.Verified {
 					log.Info("Got verified trade from stream 2: ", trade)
@@ -283,16 +328,33 @@ func (s *KuCoinScraper) mainLoop() {
 				if err != nil {
 					log.Error(err)
 				}
+
+				// Make trade times unique
+				tradeTime := time.Unix(0, timeOrder)
+				pair := dia.Pair{QuoteToken: exchangepair.UnderlyingPair.QuoteToken, BaseToken: exchangepair.UnderlyingPair.BaseToken}
+				if _, ok := lastTradeMap[pair]; ok {
+					if lastTradeMap[pair] != tradeTime {
+						lastTradeMap[pair] = tradeTime
+						countMap[pair] = 0
+					} else {
+						tradeTime.Add(time.Duration(countMap[pair]+1) * time.Nanosecond)
+						countMap[pair] += 1
+					}
+				} else {
+					lastTradeMap[pair] = tradeTime
+				}
+
 				trade := &dia.Trade{
-					Symbol:       asset[0],
-					Pair:         t.Symbol,
-					Price:        f64Price,
-					Time:         time.Unix(0, timeOrder),
-					Volume:       f64Volume,
-					Source:       s.exchangeName,
-					VerifiedPair: exchangepair.Verified,
-					BaseToken:    exchangepair.UnderlyingPair.BaseToken,
-					QuoteToken:   exchangepair.UnderlyingPair.QuoteToken,
+					Symbol:         asset[0],
+					Pair:           t.Symbol,
+					Price:          f64Price,
+					Time:           time.Unix(0, timeOrder),
+					Volume:         f64Volume,
+					Source:         s.exchangeName,
+					VerifiedPair:   exchangepair.Verified,
+					BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+					QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+					ForeignTradeID: t.TradeID,
 				}
 				if exchangepair.Verified {
 					log.Info("Got verified trade from stream 3: ", trade)

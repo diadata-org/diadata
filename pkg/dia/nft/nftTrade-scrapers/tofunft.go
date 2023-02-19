@@ -84,9 +84,10 @@ type TofuNFTScraper struct {
 	tradeScraper TradeScraper
 	blockchain   string
 
-	mu    sync.Mutex
-	conf  *TofuNFTScraperConfig
-	state *TofuNFTScraperState
+	mu           sync.Mutex
+	conf         *TofuNFTScraperConfig
+	state        *TofuNFTScraperState
+	exchangeName string
 }
 
 type astarERC721Transfer struct {
@@ -156,22 +157,22 @@ func init() {
 
 }
 
-func NewTofuNFTScraper(blockchain string, rdb *models.RelDB) (scraper *TofuNFTScraper) {
-	switch blockchain {
+func NewTofuNFTScraper(rdb *models.RelDB, exchange dia.NFTExchange) (scraper *TofuNFTScraper) {
+	switch exchange.BlockChain.Name {
 	case dia.ASTAR:
 		defTofuNFTConf.ContractAddr = "0x7Cae7FeB55349FeADB8f84468F692450D92597bc"
-		scraper = makeNewTofuNFTScraper(blockchain, rdb)
+		scraper = makeNewTofuNFTScraper(exchange, rdb)
 	case dia.BINANCESMARTCHAIN:
 		defTofuNFTConf.ContractAddr = "0x449D05C544601631785a7C062DCDFF530330317e"
-		scraper = makeNewTofuNFTScraper(blockchain, rdb)
+		scraper = makeNewTofuNFTScraper(exchange, rdb)
 	}
 	return
 }
 
-func makeNewTofuNFTScraper(blockchain string, rdb *models.RelDB) *TofuNFTScraper {
+func makeNewTofuNFTScraper(exchange dia.NFTExchange, rdb *models.RelDB) *TofuNFTScraper {
 	ctx := context.Background()
 
-	eth, err := ethclient.Dial(utils.Getenv(strings.ToUpper(blockchain)+"_URI_REST", ""))
+	eth, err := ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_REST", ""))
 	if err != nil {
 		log.Error("Error connecting Eth Client")
 	}
@@ -187,7 +188,8 @@ func makeNewTofuNFTScraper(blockchain string, rdb *models.RelDB) *TofuNFTScraper
 			source:        TofuNFT,
 			ethConnection: eth,
 		},
-		blockchain: blockchain,
+		exchangeName: exchange.Name,
+		blockchain:   exchange.BlockChain.Name,
 	}
 
 	if err := s.initScraper(ctx); err != nil {
@@ -331,9 +333,9 @@ func (s *TofuNFTScraper) FetchTrades() error {
 				s.state.LastErr = fmt.Sprintf("unable to process trade transaction(%s): %s", tx.TXHash.Hex(), err.Error())
 				log.Error(s.state.LastErr)
 				// store state
-				if err := s.storeState(ctx); err != nil {
-					log.Warnf("unable to store scraper state: %s", err.Error())
-					return err
+				if errState := s.storeState(ctx); errState != nil {
+					log.Warnf("unable to store scraper state: %s", errState.Error())
+					return errState
 				}
 				return err
 			}
@@ -454,7 +456,7 @@ func (s *TofuNFTScraper) notifyTrade(tx *utils.EthFilteredTx, ev *tofunft.Tofunf
 		BlockNumber: tx.BlockNum,
 		Timestamp:   time.Unix(int64(block.Time()), 0),
 		TxHash:      tx.TXHash.Hex(),
-		Exchange:    TofuNFT,
+		Exchange:    s.exchangeName,
 	}
 
 	if asset, ok := assetCacheTofuAstar[s.blockchain+"-"+currAddr.Hex()]; ok {
