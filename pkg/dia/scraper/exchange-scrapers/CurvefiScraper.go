@@ -32,6 +32,8 @@ const (
 	curveWsDialMoonbeam   = ""
 	curveRestDialPolygon  = ""
 	curveWsDialPolygon    = ""
+	curveRestDialArbitrum = ""
+	curveWsDialArbitrum   = ""
 )
 
 type CurveCoin struct {
@@ -191,6 +193,12 @@ func NewCurveFIScraper(exchange dia.Exchange, scrape bool) *CurveFIScraper {
 		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x722272D36ef0Da72FF51c5A65Db7b870E2e8D4ee")}
 		registries := []curveRegistry{stableSwapFactory}
 		scraper = makeCurvefiScraper(exchange, registries, curveRestDialPolygon, curveWsDialPolygon)
+
+	case dia.CurveFIExchangeArbitrum:
+		exchange.Contract = ""
+		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0xb17b674D9c5CB2e441F8e196a2f048A81355d031")}
+		registries := []curveRegistry{stableSwapFactory}
+		scraper = makeCurvefiScraper(exchange, registries, curveRestDialArbitrum, curveWsDialArbitrum)
 	}
 
 	if scrape {
@@ -284,7 +292,6 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 				if scraper.run {
 					log.Warn("resubscribe pool: ", pool)
 					scraper.resubscribe <- pool
-					log.Info("scraper: ", scraper)
 				}
 				log.Warn("subscription error: ", err)
 			case swp := <-sink:

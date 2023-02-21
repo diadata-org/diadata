@@ -22,9 +22,11 @@ const (
 	curveRestDialFantom   = ""
 	curveRestDialMoonbeam = ""
 	curveRestDialPolygon  = ""
+	curveRestDialArbitrum = ""
 
-	polygonWaitMilliseconds = "500"
-	fantomWaitMilliseconds  = "250"
+	polygonWaitMilliseconds  = "500"
+	fantomWaitMilliseconds   = "250"
+	arbitrumWaitMilliseconds = "300"
 )
 
 type curveRegistry struct {
@@ -76,6 +78,11 @@ func NewCurvefiAssetSource(exchange dia.Exchange) *CurvefiAssetSource {
 		registries := []curveRegistry{stableSwapFactory}
 		cas = makeCurvefiAssetSource(exchange, registries, curveRestDialPolygon, polygonWaitMilliseconds)
 
+	case dia.CurveFIExchangeArbitrum:
+		exchange.Contract = ""
+		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0xb17b674D9c5CB2e441F8e196a2f048A81355d031")}
+		registries := []curveRegistry{stableSwapFactory}
+		cas = makeCurvefiAssetSource(exchange, registries, curveRestDialArbitrum, arbitrumWaitMilliseconds)
 	}
 
 	go func() {
