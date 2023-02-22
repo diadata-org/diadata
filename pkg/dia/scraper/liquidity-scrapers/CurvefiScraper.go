@@ -50,15 +50,14 @@ func NewCurveFIScraper(exchange dia.Exchange) *CurveFIScraper {
 	switch exchange.Name {
 	case dia.CurveFIExchange:
 		curveFiMetaPoolsFactory = "0xB9fC157394Af804a3578134A6585C0dc9cc990d4"
-
 	case dia.CurveFIExchangeFantom:
 		curveFiMetaPoolsFactory = "0x686d67265703D1f124c45E33d47d794c566889Ba"
-
 	case dia.CurveFIExchangeMoonbeam:
 		curveFiMetaPoolsFactory = "0x4244eB811D6e0Ef302326675207A95113dB4E1F8"
-
 	case dia.CurveFIExchangePolygon:
 		curveFiMetaPoolsFactory = "0x722272d36ef0da72ff51c5a65db7b870e2e8d4ee"
+	case dia.CurveFIExchangeArbitrum:
+		curveFiMetaPoolsFactory = "0xb17b674D9c5CB2e441F8e196a2f048A81355d031"
 
 	}
 

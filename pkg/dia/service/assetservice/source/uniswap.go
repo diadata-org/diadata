@@ -30,6 +30,7 @@ const (
 	restDialFantom    = ""
 	restDialMoonriver = ""
 	restDialAurora    = ""
+	restDialArbitrum  = ""
 	restDialMetis     = ""
 	restDialAvalanche = ""
 	restDialTelos     = ""
@@ -74,6 +75,8 @@ func NewUniswapAssetSource(exchange dia.Exchange) (uas *UniswapAssetSource) {
 		uas = makeUniswapAssetSource(exchange, restDial, uniswapWaitMilliseconds)
 	case dia.SushiSwapExchange:
 		uas = makeUniswapAssetSource(exchange, restDial, sushiswapWaitMilliseconds)
+	case dia.SushiSwapExchangeArbitrum:
+		uas = makeUniswapAssetSource(exchange, restDialArbitrum, sushiswapWaitMilliseconds)
 	case dia.PanCakeSwap:
 		uas = makeUniswapAssetSource(exchange, restDialBSC, pancakeswapWaitMilliseconds)
 	case dia.DfynNetwork:

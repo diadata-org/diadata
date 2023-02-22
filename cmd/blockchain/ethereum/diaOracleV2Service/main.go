@@ -51,6 +51,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse gqlWindowSize: %v")
 	}
+	gqlMethodology := utils.Getenv("GQL_METHODOLOGY", "vwap")
 	assetsStr := utils.Getenv("ASSETS", "")
 	gqlAssetsStr := utils.Getenv("GQL_ASSETS", "")
 
@@ -111,7 +112,7 @@ func main() {
 					blockchain := blockchains[i]
 					oldPrice := oldPrices[i]
 					log.Println("old price", oldPrice)
-					oldPrice, err = periodicOracleUpdateHelper(oldPrice, deviationPermille, auth, contract, conn, blockchain, address, useGql, gqlWindowSize)
+					oldPrice, err = periodicOracleUpdateHelper(oldPrice, deviationPermille, auth, contract, conn, blockchain, address, useGql, gqlWindowSize, gqlMethodology)
 					oldPrices[i] = oldPrice
 					if err != nil {
 						log.Println(err)
@@ -132,7 +133,7 @@ func main() {
 						blockchain := blockchains[i]
 						oldPrice := oldPrices[i]
 						log.Println("old price", oldPrice)
-						oldPrice, err = oracleUpdateHelper(oldPrice, auth, contract, conn, blockchain, address, useGql, gqlWindowSize)
+						oldPrice, err = oracleUpdateHelper(oldPrice, auth, contract, conn, blockchain, address, useGql, gqlWindowSize, gqlMethodology)
 						oldPrices[i] = oldPrice
 						if err != nil {
 							log.Println(err)
@@ -147,7 +148,7 @@ func main() {
 	select {}
 }
 
-func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string, useGql bool, gqlWindowSize int) (float64, error) {
+func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string, useGql bool, gqlWindowSize int, gqlMethodology string) (float64, error) {
 	// Empty quotation for our request
 	var rawQ *models.Quotation
 	rawQ = new(models.Quotation)
@@ -155,7 +156,7 @@ func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *dia
 
 	// Get quotation for token and update Oracle
 	if useGql {
-		price, symbol, err := getGraphqlAssetQuotationFromDia(blockchain, address, gqlWindowSize)
+		price, symbol, err := getGraphqlAssetQuotationFromDia(blockchain, address, gqlWindowSize, gqlMethodology)
 		if err != nil {
 			log.Printf("Failed to retrieve %s quotation data from Graphql on DIA: %v", address, err)
 			return oldPrice, err
@@ -182,7 +183,7 @@ func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *dia
 
 }
 
-func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string, useGql bool, gqlWindowSize int) (float64, error) {
+func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string, useGql bool, gqlWindowSize int, gqlMethodology string) (float64, error) {
 
 	// Empty quotation for our request
 	var rawQ *models.Quotation
@@ -191,7 +192,7 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 
 	// Get quotation for token and update Oracle
 	if useGql {
-		price, symbol, err := getGraphqlAssetQuotationFromDia(blockchain, address, gqlWindowSize)
+		price, symbol, err := getGraphqlAssetQuotationFromDia(blockchain, address, gqlWindowSize, gqlMethodology)
 		if err != nil {
 			log.Printf("Failed to retrieve %s quotation data from Graphql on DIA: %v", address, err)
 			return oldPrice, err
@@ -318,7 +319,7 @@ func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, er
 	return &quotation, nil
 }
 
-func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int) (float64, string, error) {
+func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int, gqlMethodology string) (float64, string, error) {
 	currentTime := time.Now()
 	starttime := currentTime.Add(time.Duration(-windowSize*2) * time.Second)
 	type Response struct {
@@ -333,7 +334,7 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int)
 	req := gql.NewRequest(`
     query  {
 		 GetChart(
-		 	filter: "vwap", 
+		 	filter: "` + gqlMethodology + `", 
 			Symbol:"Asset",
 			BlockDurationSeconds: ` + strconv.Itoa(windowSize) + `, 
 			BlockShiftSeconds: ` + strconv.Itoa(windowSize) + `,

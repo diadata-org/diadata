@@ -170,6 +170,14 @@ func main() {
 			// Update all collections depending on @oldFloor and @timeBasedUpdate.
 			for i, address := range addresses {
 				for _, exchange := range exchanges {
+					// Cryptopunk special case: Only traded on Cryptopunkmarket
+					if address == "0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB" {
+						if exchange == "OpenSea" {
+							exchange = "CryptopunkMarket"
+						} else {
+							continue
+						}
+					}
 					blockchain := blockchains[i]
 					oldFloor := oldFloors[address + "-" + exchange]
 					log.Println("old price", oldFloor)

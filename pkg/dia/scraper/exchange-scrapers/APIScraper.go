@@ -144,6 +144,10 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapScraper(Exchanges[dia.PanCakeSwap], scrape)
 	case dia.SushiSwapExchange:
 		return NewUniswapScraper(Exchanges[dia.SushiSwapExchange], scrape)
+	case dia.SushiSwapExchangePolygon:
+		return NewUniswapScraper(Exchanges[dia.SushiSwapExchangePolygon], scrape)
+	case dia.SushiSwapExchangeArbitrum:
+		return NewUniswapScraper(Exchanges[dia.SushiSwapExchangeArbitrum], scrape)
 	case dia.CurveFIExchange:
 		return NewCurveFIScraper(Exchanges[dia.CurveFIExchange], scrape)
 	case dia.CurveFIExchangeFantom:
@@ -152,6 +156,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewCurveFIScraper(Exchanges[dia.CurveFIExchangeMoonbeam], scrape)
 	case dia.CurveFIExchangePolygon:
 		return NewCurveFIScraper(Exchanges[dia.CurveFIExchangePolygon], scrape)
+	case dia.CurveFIExchangeArbitrum:
+		return NewCurveFIScraper(Exchanges[dia.CurveFIExchangeArbitrum], scrape)
 	case dia.BalancerV2Exchange:
 		return NewBalancerV2Scraper(Exchanges[dia.BalancerV2Exchange], scrape)
 	case dia.BalancerV2ExchangePolygon:
@@ -174,8 +180,6 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapScraper(Exchanges[dia.DfynNetwork], scrape)
 	case dia.UbeswapExchange:
 		return NewUniswapScraper(Exchanges[dia.UbeswapExchange], scrape)
-	case dia.SushiSwapExchangePolygon:
-		return NewUniswapScraper(Exchanges[dia.SushiSwapExchangePolygon], scrape)
 	case dia.UniswapExchangeV3Polygon:
 		return NewUniswapV3Scraper(Exchanges[dia.UniswapExchangeV3Polygon], scrape)
 	case dia.UniswapExchangeV3Arbitrum:

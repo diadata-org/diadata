@@ -4,13 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"math/big"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleServiceV2"
+	diaOracleServiceV2 "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleServiceV2"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -18,6 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	gql "github.com/machinebox/graphql"
+	"github.com/tidwall/gjson"
 )
 
 func main() {
@@ -41,29 +44,37 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse deviationPermille: %v")
 	}
+	gqlWindowSize, err := strconv.Atoi(utils.Getenv("GQL_WINDOW_SIZE", "120"))
+	if err != nil {
+		log.Fatalf("Failed to parse gqlWindowSize: %v")
+	}
+	gqlMethodology := utils.Getenv("GQL_METHODOLOGY", "vwap")
+	assetsStr := utils.Getenv("ASSETS", "")
+	gqlAssetsStr := utils.Getenv("GQL_ASSETS", "")
 
-	addresses := []string{
-		"0x0000000000000000000000000000000000000000",//BNB
-		"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",//USDC
-		"0x0000000000000000000000000000000000000000",//ETH
-		"0xdAC17F958D2ee523a2206206994597C13D831ec7",//USDT
-		"0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",//WBTC
-		"0x0000000000000000000000000000000000000000",//AVAX
-		"0x0000000000000000000000000000000000000000",//TLOS
-		"0x0000000000000000000000000000000000001010",//MATIC
-		"0x0000000000000000000000000000000000000000",//FTM
+	addresses := []string{}
+	blockchains := []string{}
+	useGql := false
+	var assetsToParse string
+
+	// Either Assets or GQL Assets must be non-empty
+	if gqlAssetsStr != "" && assetsStr == "" {
+		useGql = true
+		assetsToParse = gqlAssetsStr
+	} else if gqlAssetsStr == "" && assetsStr != "" {
+		useGql = false
+		assetsToParse = assetsStr
+	} else {
+		log.Fatalf("Use either ASSETS or GQL_ASSETS env variable")
 	}
-	blockchains := []string{
-		"BinanceSmartChain",//BNB
-		"Ethereum",//USDC
-		"Ethereum",//ETH
-		"Ethereum",//USDT
-		"Ethereum",//WBTC
-		"Avalanche",//AVAX
-		"Telos",//TLOS
-		"Polygon",//MATIC
-		"Fantom",//FTM
+	assetsParsed := strings.Split(assetsToParse, ",")
+
+	for _, asset := range assetsParsed {
+		entries := strings.Split(asset, "-")
+		blockchains = append(blockchains, strings.TrimSpace(entries[0]))
+		addresses = append(addresses, strings.TrimSpace(entries[1]))
 	}
+
 	oldPrices := make(map[int]float64)
 
 	/*
@@ -98,7 +109,7 @@ func main() {
 					blockchain := blockchains[i]
 					oldPrice := oldPrices[i]
 					log.Println("old price", oldPrice)
-					oldPrice, err = periodicOracleUpdateHelper(oldPrice, deviationPermille, auth, contract, conn, blockchain, address)
+					oldPrice, err = periodicOracleUpdateHelper(oldPrice, deviationPermille, auth, contract, conn, blockchain, address, useGql, gqlWindowSize, gqlMethodology)
 					oldPrices[i] = oldPrice
 					if err != nil {
 						log.Println(err)
@@ -111,32 +122,53 @@ func main() {
 	select {}
 }
 
-func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string) (float64, error) {
+func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string, useGql bool, gqlWindowSize int, gqlMethodology string) (float64, error) {
+
 	// Empty quotation for our request
 	var rawQ *models.Quotation
 	rawQ = new(models.Quotation)
 	var err error
 
-	// Get quotation for token and update Oracle
-	price, symbol, err := getGraphqlAssetQuotationFromDia(blockchain, address, 120)
-	if err != nil {
-		log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
-		return oldPrice, err
+	// Special case: kBTC with collateral ratio from customer API
+	if address == "kBTC" && blockchain == "Kintsugi" {
+		rawQ, err = getAssetQuotationFromDia("Bitcoin", "0x0000000000000000000000000000000000000000")
+		if err != nil {
+			log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
+			return oldPrice, err
+		}
+
+		collateralRatio, err := getCollateralRatioFromDia("KBTC")
+		if err != nil {
+			log.Fatalf("Failed to retrieve %s collateral ratio data from DIA: %v", address, err)
+			return oldPrice, err
+		}
+		rawQ.Price = rawQ.Price * collateralRatio
+		rawQ.Symbol = "kBTC"
+	} else {
+		// Do the "normal thing"
+		// Get quotation for token and update Oracle
+		if useGql {
+			price, symbol, err := getGraphqlAssetQuotationFromDia(blockchain, address, gqlWindowSize, gqlMethodology)
+			if err != nil {
+				log.Printf("Failed to retrieve %s quotation data from Graphql on DIA: %v", address, err)
+				return oldPrice, err
+			}
+			rawQ.Symbol = symbol
+			rawQ.Price = price
+		} else {
+			rawQ, err = getAssetQuotationFromDia(blockchain, address)
+			if err != nil {
+				log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
+				return oldPrice, err
+			}
+		}
 	}
-	rawQ.Symbol = symbol
-	rawQ.Name = symbol
-	rawQ.Price = price
+	rawQ.Name = rawQ.Symbol
 
 	// Check for deviation
 	newPrice := rawQ.Price
 
-	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) ||  
-     (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
-     	 // Check for "too steep" update
-     	 if oldPrice != 0 && (newPrice > (oldPrice * 2)) || (newPrice < (oldPrice * 0.5)) {
-					log.Println("New price %d out of bounds comparted to old price %d!", newPrice, oldPrice)
-					return oldPrice, nil
-			 }
+	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
 		log.Println("Entering deviation based update zone")
 		err = updateQuotation(rawQ, auth, contract, conn)
 		if err != nil {
@@ -199,29 +231,52 @@ func updateOracle(
 	}
 
 	// Get 110% of the gas price
-	fmt.Println(gasPrice)
 	fGas := new(big.Float).SetInt(gasPrice)
 	fGas.Mul(fGas, big.NewFloat(1.1))
 	gasPrice, _ = fGas.Int(nil)
-	fmt.Println(gasPrice)
+
 	// Write values to smart contract
 	tx, err := contract.SetValue(&bind.TransactOpts{
 		From:     auth.From,
 		Signer:   auth.Signer,
-		GasLimit: 1000725,
+		//GasLimit: 1000725,
 		GasPrice: gasPrice,
 	}, key, big.NewInt(value), big.NewInt(timestamp))
 	if err != nil {
 		return err
 	}
-	fmt.Println(tx.GasPrice())
+	log.Printf("Gas price: %d\n", tx.GasPrice())
 	log.Printf("key: %s\n", key)
+	log.Printf("Data: %x\n", tx.Data())
+	log.Printf("Nonce: %d\n", tx.Nonce())
 	log.Printf("Tx To: %s\n", tx.To().String())
 	log.Printf("Tx Hash: 0x%x\n", tx.Hash())
 	return nil
 }
 
-func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int) (float64, string, error) {
+func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, error) {
+	response, err := http.Get("https://api.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
+	if err != nil {
+		return nil, err
+	}
+
+	defer response.Body.Close()
+	if 200 != response.StatusCode {
+		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	}
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	var quotation models.Quotation
+	err = quotation.UnmarshalBinary(contents)
+	if err != nil {
+		return nil, err
+	}
+	return &quotation, nil
+}
+
+func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int, gqlMethodology string) (float64, string, error) {
 	currentTime := time.Now()
 	starttime := currentTime.Add(time.Duration(-windowSize * 2) * time.Second)
 	type Response struct {
@@ -236,7 +291,7 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int)
 	req := gql.NewRequest(`
     query  {
 		 GetChart(
-		 	filter: "vwapir", 
+		 	filter: "` + gqlMethodology + `", 
 			Symbol:"Asset",
 			BlockDurationSeconds: ` + strconv.Itoa(windowSize) + `, 
 			BlockShiftSeconds: ` + strconv.Itoa(windowSize) + `,
@@ -260,4 +315,35 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int)
 		return 0.0, "", errors.New("no results")
 	}
 	return r.GetChart[len(r.GetChart)-1].Value, r.GetChart[len(r.GetChart)-1].Symbol, nil
+}
+
+func getCollateralRatioFromDia(symbol string) (float64, error) {
+	response, err := http.Get("https://api.diadata.org/customer/interlay/state/" + symbol)
+	if err != nil {
+		return 0.0, err
+	}
+
+	defer response.Body.Close()
+	if 200 != response.StatusCode {
+		return 0.0, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	}
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return 0.0, err
+	}
+	sTotalBackable := gjson.Get(string(contents), "total_backable").String()
+	sTotalIssued := gjson.Get(string(contents), "total_issued").String()
+
+	totalBackable, err := strconv.ParseUint(sTotalBackable, 10, 64)
+	if err != nil {
+		return 0.0, err
+	}
+	totalIssued, err := strconv.ParseUint(sTotalIssued, 10, 64)
+	if err != nil {
+		return 0.0, err
+	}
+	if totalBackable >= totalIssued {
+		return 1.0, nil
+	}
+	return float64(totalBackable / totalIssued), nil
 }

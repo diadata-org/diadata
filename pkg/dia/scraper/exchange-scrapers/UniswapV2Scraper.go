@@ -56,6 +56,9 @@ const (
 	restDialAurora = ""
 	wsDialAurora   = ""
 
+	restDialArbitrum = ""
+	wsDialArbitrum   = ""
+
 	restDialMetis = ""
 	wsDialMetis   = ""
 
@@ -170,6 +173,12 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialEth, wsDialEth, uniswapWaitMilliseconds)
 	case dia.SushiSwapExchange:
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialEth, wsDialEth, sushiswapWaitMilliseconds)
+	case dia.SushiSwapExchangePolygon:
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialPolygon, wsDialPolygon, metisWaitMilliseconds)
+	case dia.SushiSwapExchangeFantom:
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialFantom, wsDialFantom, metisWaitMilliseconds)
+	case dia.SushiSwapExchangeArbitrum:
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialArbitrum, wsDialArbitrum, metisWaitMilliseconds)
 	case dia.PanCakeSwap:
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialBSC, wsDialBSC, pancakeswapWaitMilliseconds)
 	case dia.DfynNetwork:
@@ -188,10 +197,6 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialAurora, wsDialAurora, trisolarisWaitMilliseconds)
 	case dia.NetswapExchange:
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialMetis, wsDialMetis, metisWaitMilliseconds)
-	case dia.SushiSwapExchangePolygon:
-		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialPolygon, wsDialPolygon, metisWaitMilliseconds)
-	case dia.SushiSwapExchangeFantom:
-		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialFantom, wsDialFantom, metisWaitMilliseconds)
 	case dia.HuckleberryExchange:
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialMoonriver, wsDialMoonriver, moonriverWaitMilliseconds)
 	case dia.TraderJoeExchange:

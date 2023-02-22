@@ -351,6 +351,20 @@
             "ScraperActive": true
         },
         {
+            "Name": "Curvefi-Arbitrum",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": "Arbitrum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
+        },
+        {
             "Name": "Diffusion",
             "Centralized": false,
             "Bridge": false,

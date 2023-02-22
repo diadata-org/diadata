@@ -59,6 +59,7 @@ const (
 	CurveFIExchangeFantom     = "Curvefi-Fantom"
 	CurveFIExchangeMoonbeam   = "Curvefi-Moonbeam"
 	CurveFIExchangePolygon    = "Curvefi-Polygon"
+	CurveFIExchangeArbitrum   = "Curvefi-Arbitrum"
 	MakerExchange             = "Maker"
 	KuCoinExchange            = "KuCoin"
 	SushiSwapExchange         = "SushiSwap"

@@ -157,6 +157,11 @@ func periodicXChainOracleUpdateHelper(
 	aggregatedQuotation.Price = newPrice
 
 	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
+	 // Check for "too steep" update
+	 if oldPrice != 0 && (newPrice > (oldPrice * 2)) || (newPrice < (oldPrice * 0.5)) {
+			log.Println("New price %d out of bounds comparted to old price %d!", newPrice, oldPrice)
+			return oldPrice, nil
+	 }
 		log.Println("Entering deviation based update zone")
 		err = updateQuotation(&aggregatedQuotation, auth, contract, conn)
 		if err != nil {
