@@ -165,17 +165,13 @@ func (scraper *CurveFIScraper) loadPoolData(poolAddress common.Address, factoryC
 			log.Error("loadPoolData - GetCoins: ", err)
 		}
 		// GetCoins on meta pools returns [4]common.Address instead of [8]common.Address for standard pools.
-		for i, item := range aux {
-			poolCoinAddresses[i] = item
-		}
+		copy(poolCoinAddresses[:], aux[:])
 
 		bal, err := contract.GetBalances(&bind.CallOpts{}, poolAddress)
 		if err != nil {
 			log.Error("loadPoolData - GetCoins: ", err)
 		}
-		for i, item := range bal {
-			poolBalances[i] = item
-		}
+		copy(poolBalances[:], bal[:])
 
 	} else {
 		contract, err := curvefi.NewCurvefiCaller(factoryContract, scraper.RestClient)
@@ -192,9 +188,9 @@ func (scraper *CurveFIScraper) loadPoolData(poolAddress common.Address, factoryC
 		if err != nil {
 			log.Error("loadPoolData - GetCoins: ", err)
 		}
-		for i, item := range bal {
-			poolBalances[i] = item
-		}
+
+		copy(poolBalances[:], bal[:])
+
 	}
 
 	var err error
@@ -249,7 +245,10 @@ func (scraper *CurveFIScraper) loadPoolData(poolAddress common.Address, factoryC
 	}
 
 	for i := range poolAssets {
-		volume, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(poolBalances[i]), new(big.Float).SetFloat64(math.Pow10(int(poolAssets[i].Decimals)))).Float64()
+		var volume float64
+		if poolBalances[i] != nil {
+			volume, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(poolBalances[i]), new(big.Float).SetFloat64(math.Pow10(int(poolAssets[i].Decimals)))).Float64()
+		}
 		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{
 			Asset:  poolAssets[i],
 			Volume: volume,
