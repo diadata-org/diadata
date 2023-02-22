@@ -33,6 +33,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse frequencySeconds: %v")
 	}
+	mandatoryFrequencySeconds, err := strconv.Atoi(utils.Getenv("MANDATORY_FREQUENCY_SECONDS", "0"))
+	if err != nil {
+		log.Fatalf("Failed to parse mandatoryFrequencySeconds: %v")
+	}
 	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "1"), 10, 64)
 	if err != nil {
 		log.Fatalf("Failed to parse chainId: %v")
@@ -94,7 +98,55 @@ func main() {
 			}
 		}
 	}()
+
+	if mandatoryFrequencySeconds > 0 {
+		mandatorytickerticker := time.NewTicker(time.Duration(mandatoryFrequencySeconds) * time.Second)
+		go func() {
+			for {
+				select {
+				case <-mandatorytickerticker.C:
+					for i, pair := range pairs {
+						oldPrice := oldPrices[i]
+						log.Println("old price", oldPrice)
+						oldPrice, err = oracleUpdateHelper(oldPrice, auth, contract, conn, pair)
+						oldPrices[i] = oldPrice
+						if err != nil {
+							log.Println(err)
+						}
+						time.Sleep(time.Duration(sleepSeconds) * time.Second)
+					}
+				}
+			}
+		}()
+	}
 	select {}
+}
+
+func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, pair string) (float64, error) {
+
+	// Empty quotation for our request
+	var rawQ *models.Quotation
+	rawQ = new(models.Quotation)
+	var err error
+
+	// Get quotation for token and update Oracle
+	rawQ, err = getForeignQuotationFromDia(pair)
+	if err != nil {
+		log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", pair, err)
+		return oldPrice, err
+	}
+	rawQ.Name = rawQ.Symbol
+
+	// Check for deviation
+	newPrice := rawQ.Price
+
+	err = updateForeignQuotation(rawQ, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update DIA Oracle: %v", err)
+		return oldPrice, err
+	}
+
+	return newPrice, nil
 }
 
 func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, pair string) (float64, error) {
@@ -184,8 +236,8 @@ func updateOracle(
 
 	// Write values to smart contract
 	tx, err := contract.SetValue(&bind.TransactOpts{
-		From:     auth.From,
-		Signer:   auth.Signer,
+		From:   auth.From,
+		Signer: auth.Signer,
 		//GasLimit: 1000725,
 		GasPrice: gasPrice,
 	}, key, big.NewInt(value), big.NewInt(timestamp))
