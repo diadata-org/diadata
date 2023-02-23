@@ -179,6 +179,8 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialFantom, wsDialFantom, metisWaitMilliseconds)
 	case dia.SushiSwapExchangeArbitrum:
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialArbitrum, wsDialArbitrum, metisWaitMilliseconds)
+	case dia.CamelotExchange:
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialArbitrum, wsDialArbitrum, metisWaitMilliseconds)
 	case dia.PanCakeSwap:
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialBSC, wsDialBSC, pancakeswapWaitMilliseconds)
 	case dia.DfynNetwork:

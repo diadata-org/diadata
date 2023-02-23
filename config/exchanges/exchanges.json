@@ -295,6 +295,20 @@
             "ScraperActive": true
         },
         {
+            "Name": "Camelot",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x6EcCab422D763aC031210895C81787E87B43A652",
+            "Blockchain": {
+                "Name": "Arbitrum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200,
+            "ScraperActive": false
+        },
+        {
             "Name": "Curvefi",
             "Centralized": false,
             "Bridge": false,

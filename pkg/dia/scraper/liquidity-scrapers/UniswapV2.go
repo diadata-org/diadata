@@ -90,6 +90,8 @@ func NewUniswapScraper(exchange dia.Exchange) (us *UniswapScraper) {
 		us = makeUniswapPoolScraper(exchange, pathToPools, restDialFantom, sushiswapWaitMilliseconds)
 	case dia.SushiSwapExchangeArbitrum:
 		us = makeUniswapPoolScraper(exchange, pathToPools, restDialArbitrum, sushiswapWaitMilliseconds)
+	case dia.CamelotExchange:
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialArbitrum, sushiswapWaitMilliseconds)
 	case dia.PanCakeSwap:
 		us = makeUniswapPoolScraper(exchange, pathToPools, restDialBSC, pancakeswapWaitMilliseconds)
 	case dia.DfynNetwork:

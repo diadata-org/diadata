@@ -35,6 +35,8 @@ func NewLiquidityScraper(source string) LiquidityScraper {
 		return NewUniswapScraper(exchanges[dia.SushiSwapExchangeFantom])
 	case dia.SushiSwapExchangeArbitrum:
 		return NewUniswapScraper(exchanges[dia.SushiSwapExchangeArbitrum])
+	case dia.CamelotExchange:
+		return NewUniswapScraper(exchanges[dia.CamelotExchange])
 	case dia.PanCakeSwap:
 		return NewUniswapScraper(exchanges[dia.PanCakeSwap])
 	case dia.DfynNetwork:
