@@ -206,6 +206,42 @@
     },
     {
       "Exchange": "BitMart",
+      "ForeignName": "CVX_USDT",
+      "Ignore": false,
+      "Symbol": "CVX"
+    },
+    {
+      "Exchange": "BitMart",
+      "ForeignName": "GNS_USDT",
+      "Ignore": false,
+      "Symbol": "GNS"
+    },
+    {
+      "Exchange": "BitMart",
+      "ForeignName": "GRAIL_USDT",
+      "Ignore": false,
+      "Symbol": "GRAIL"
+    },
+    {
+      "Exchange": "BitMart",
+      "ForeignName": "SPELL_USDT",
+      "Ignore": false,
+      "Symbol": "SPELL"
+    },
+    {
+      "Exchange": "BitMart",
+      "ForeignName": "SYN_USDT",
+      "Ignore": false,
+      "Symbol": "SYN"
+    },
+    {
+      "Exchange": "BitMart",
+      "ForeignName": "RDNT_USDT",
+      "Ignore": false,
+      "Symbol": "RDNT"
+    },
+    {
+      "Exchange": "BitMart",
       "ForeignName": "UNI_USDT",
       "Ignore": false,
       "Symbol": "UNI"

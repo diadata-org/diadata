@@ -62,6 +62,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "RDNT_USDT",
+      "Ignore": false,
+      "Symbol": "RDNT"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "SAMO_USDT",
       "Ignore": false,
       "Symbol": "SAMO"
@@ -71,6 +77,18 @@
       "ForeignName": "SAMO_ETH",
       "Ignore": false,
       "Symbol": "SAMO"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "STG_USDT",
+      "Ignore": false,
+      "Symbol": "STG"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "SYN_USDT",
+      "Ignore": false,
+      "Symbol": "SYN"
     },
     {
       "Exchange": "GateIO",

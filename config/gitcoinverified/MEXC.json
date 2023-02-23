@@ -121,6 +121,12 @@
       "Address": "0xA0b73E1Ff0B80914AB6fe0444E65848C4C34450b"
     },
     {
+      "Symbol": "CVX",
+      "Exchange": "MEXC",
+      "Blockchain": "Ethereum",
+      "Address": "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B"
+    },
+    {
       "Symbol": "DAI",
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",
@@ -223,10 +229,46 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "GRAIL",
+      "Exchange": "MEXC",
+      "Blockchain": "Arbitrum",
+      "Address": "0x3d9907F9a368ad0a51Be60f7Da3b97cf940982D8"
+    },
+    {
+      "Symbol": "GNS",
+      "Exchange": "MEXC",
+      "Blockchain": "Arbitrum",
+      "Address": "0x18c11FD286C5EC11c3b683Caa813B77f5163A122"
+    },
+    {
+      "Symbol": "HOP",
+      "Exchange": "MEXC",
+      "Blockchain": "Ethereum",
+      "Address": "0xc5102fE9359FD9a28f877a67E36B0F050d81a3CC"
+    },
+    {
       "Symbol": "INTR",
       "Exchange": "MEXC",
       "Blockchain": "Interlay",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "JOE",
+      "Exchange": "MEXC",
+      "Blockchain": "Avalanche",
+      "Address": "0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd"
+    },
+    {
+      "Symbol": "JONES",
+      "Exchange": "MEXC",
+      "Blockchain": "Arbitrum",
+      "Address": "0x10393c20975cF177a3513071bC110f7962CD67da"
+    },
+    {
+      "Symbol": "KNC",
+      "Exchange": "MEXC",
+      "Blockchain": "Ethereum",
+      "Address": "0xdeFA4e8a7bcBA345F687a2f1456F5Edd9CE97202"
     },
     {
       "Symbol": "KSM",
@@ -307,6 +349,12 @@
       "Address": "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R"
     },
     {
+      "Symbol": "RDNT",
+      "Exchange": "MEXC",
+      "Blockchain": "Arbitrum",
+      "Address": "0x0C4681e6C0235179ec3D4F4fc4DF3d14FDD96017"
+    },
+    {
       "Symbol": "SAMO",
       "Exchange": "MEXC",
       "Blockchain": "Solana",
@@ -341,6 +389,12 @@
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",
       "Address": "0xB4A3B0Faf0Ab53df58001804DdA5Bfc6a3D59008"
+    },
+    {
+      "Symbol": "SPELL",
+      "Exchange": "MEXC",
+      "Blockchain": "Ethereum",
+      "Address": "0x090185f2135308BaD17527004364eBcC2D37e5F6"
     },
     {
       "Symbol": "STETH",
@@ -413,6 +467,18 @@
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",
       "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
+    },
+    {
+      "Symbol": "SYN",
+      "Exchange": "MEXC",
+      "Blockchain": "Ethereum",
+      "Address": "0x0f2D719407FdBeFF09D87557AbB7232601FD9F29"
+    },
+    {
+      "Symbol": "VELA",
+      "Exchange": "MEXC",
+      "Blockchain": "Arbitrum",
+      "Address": "0x088cd8f5eF3652623c22D48b1605DCfE860Cd704"
     },
     {
       "Symbol": "XRP",

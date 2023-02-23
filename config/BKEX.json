@@ -133,6 +133,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "CVX",
+      "ForeignName": "CVX_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
       "Symbol": "DIA",
       "ForeignName": "DIA_USDT",
       "Exchange": "BKEX",
@@ -229,6 +235,36 @@
       "Ignore": false
     },
     {
+      "Symbol": "GMD",
+      "ForeignName": "GMD_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "GNS",
+      "ForeignName": "GNS_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "GRAIL",
+      "ForeignName": "GRAIL_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "JOE",
+      "ForeignName": "JOE_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "JONES",
+      "ForeignName": "JONES_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
       "Symbol": "KSM",
       "ForeignName": "KSM_USDT",
       "Exchange": "BKEX",
@@ -277,6 +313,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "PREMIA",
+      "ForeignName": "PREMIA_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
       "Symbol": "QNT",
       "ForeignName": "QNT_USDT",
       "Exchange": "BKEX",
@@ -285,6 +327,18 @@
     {
       "Symbol": "RAY",
       "ForeignName": "RAY_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "RDNT",
+      "ForeignName": "RDNT_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "RDPX",
+      "ForeignName": "RDPX_USDT",
       "Exchange": "BKEX",
       "Ignore": false
     },
@@ -337,8 +391,20 @@
       "Ignore": false
     },
     {
+      "Symbol": "STG",
+      "ForeignName": "STG_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
       "Symbol": "SUSHI",
       "ForeignName": "SUSHI_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SYN",
+      "ForeignName": "SYN_USDT",
       "Exchange": "BKEX",
       "Ignore": false
     },
@@ -363,6 +429,12 @@
     {
       "Symbol": "UNI",
       "ForeignName": "UNI_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "VELA",
+      "ForeignName": "VELA_USDT",
       "Exchange": "BKEX",
       "Ignore": false
     },

@@ -109,6 +109,12 @@
       "Address": "0xD533a949740bb3306d119CC777fa900bA034cd52"
     },
     {
+      "Symbol": "CVX",
+      "Exchange": "BitMart",
+      "Blockchain": "Ethereum",
+      "Address": "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B"
+    },
+    {
       "Symbol": "DAI",
       "Exchange": "BitMart",
       "Blockchain": "Ethereum",
@@ -179,6 +185,18 @@
       "Exchange": "BitMart",
       "Blockchain": "Ethereum",
       "Address": "0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9"
+    },
+    {
+      "Symbol": "GNS",
+      "Exchange": "BitMart",
+      "Blockchain": "Arbitrum",
+      "Address": "0x18c11FD286C5EC11c3b683Caa813B77f5163A122"
+    },
+    {
+      "Symbol": "GRAIL",
+      "Exchange": "BitMart",
+      "Blockchain": "Arbitrum",
+      "Address": "0x3d9907F9a368ad0a51Be60f7Da3b97cf940982D8"
     },
     {
       "Symbol": "GRT",
@@ -277,6 +295,12 @@
       "Address": "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R"
     },
     {
+      "Symbol": "RDNT",
+      "Exchange": "BitMart",
+      "Blockchain": "Arbitrum",
+      "Address": "0x0C4681e6C0235179ec3D4F4fc4DF3d14FDD96017"
+    },
+    {
       "Symbol": "SAND",
       "Exchange": "BitMart",
       "Blockchain": "Ethereum",
@@ -305,6 +329,18 @@
       "Exchange": "BitMart",
       "Blockchain": "Solana",
       "Address": "2wmKXX1xsxLfrvjEPrt2UHiqj8Gbzwxvffr9qmNjsw8g"
+    },
+    {
+      "Symbol": "SPELL",
+      "Exchange": "BitMart",
+      "Blockchain": "Ethereum",
+      "Address": "0x090185f2135308BaD17527004364eBcC2D37e5F6"
+    },
+    {
+      "Symbol": "SYN",
+      "Exchange": "BitMart",
+      "Blockchain": "Ethereum",
+      "Address": "0x0f2D719407FdBeFF09D87557AbB7232601FD9F29"
     },
     {
       "Symbol": "TRX",

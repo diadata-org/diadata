@@ -1,6 +1,18 @@
 {
     "Coins": [
         {
+            "Symbol": "CVX",
+            "ForeignName": "CVX/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RDNT",
+            "ForeignName": "RDNT/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
             "Symbol": "FUSE",
             "ForeignName": "FUSE/USDT",
             "Exchange": "Bitmax",

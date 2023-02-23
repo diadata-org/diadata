@@ -866,13 +866,7 @@
         },
         {
             "Symbol": "KNC",
-            "ForeignName": "KNC-ETH",
-            "Exchange": "KuCoin",
-            "Ignore": false
-        },
-        {
-            "Symbol": "KNC",
-            "ForeignName": "KNC-BTC",
+            "ForeignName": "KNC-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
         },
@@ -1341,6 +1335,12 @@
         {
             "Symbol": "SPA",
             "ForeignName": "SPA-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "STG",
+            "ForeignName": "STG-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
         },

@@ -104,6 +104,12 @@
     },
     {
       "Exchange": "Kraken",
+      "ForeignName": "SYNUSD",
+      "Ignore": false,
+      "Symbol": "SYN"
+    },
+    {
+      "Exchange": "Kraken",
       "ForeignName": "USDTZUSD",
       "Ignore": false,
       "Symbol": "USDT"

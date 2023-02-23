@@ -451,6 +451,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "RDNT",
+            "ForeignName": "RDNTUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "REN",
             "ForeignName": "RENUSDT",
             "Exchange": "ByBit",
@@ -519,6 +525,12 @@
         {
             "Symbol": "SRM",
             "ForeignName": "SRMUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "STG",
+            "ForeignName": "STGUSDT",
             "Exchange": "ByBit",
             "Ignore": false
         },

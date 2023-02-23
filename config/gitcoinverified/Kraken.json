@@ -53,6 +53,12 @@
       "Exchange": "Kraken",
       "Blockchain": "Fiat",
       "Address": "826"
+    },
+    {
+      "Symbol": "SYN",
+      "Exchange": "Kraken",
+      "Blockchain": "Ethereum",
+      "Address": "0x0f2D719407FdBeFF09D87557AbB7232601FD9F29"
     }
   ]
 }

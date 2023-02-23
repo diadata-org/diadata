@@ -127,6 +127,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "CVX",
+      "ForeignName": "CVXUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "DAI",
       "ForeignName": "DAIUSDT",
       "Exchange": "MEXC",
@@ -241,8 +247,50 @@
       "Ignore": false
     },
     {
+      "Symbol": "GNS",
+      "ForeignName": "GNSUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "GRAIL",
+      "ForeignName": "GRAILUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "HOP",
+      "ForeignName": "HOPUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "HOP",
+      "ForeignName": "HOPUSDC",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "INTR",
       "ForeignName": "INTRUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "JOE",
+      "ForeignName": "JOEUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "JONES",
+      "ForeignName": "JONESUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "KNC",
+      "ForeignName": "KNCUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     },
@@ -343,6 +391,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "RDNT",
+      "ForeignName": "RDNTUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "SAMO",
       "ForeignName": "SAMOUSDT",
       "Exchange": "MEXC",
@@ -379,6 +433,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "SPELL",
+      "ForeignName": "SPELLUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "STETH",
       "ForeignName": "STETHUSDC",
       "Exchange": "MEXC",
@@ -387,6 +447,12 @@
     {
       "Symbol": "STETH",
       "ForeignName": "STETHUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SYN",
+      "ForeignName": "SYNUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     },
@@ -435,6 +501,12 @@
     {
       "Symbol": "USDP",
       "ForeignName": "USDPUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "VELA",
+      "ForeignName": "VELAUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     },

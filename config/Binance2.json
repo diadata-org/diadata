@@ -38,6 +38,18 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "CVXUSDT",
+            "Ignore": false,
+            "Symbol": "CVX"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "CVXBUSD",
+            "Ignore": false,
+            "Symbol": "CVX"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "DASHUSDT",
             "Ignore": false,
             "Symbol": "DASH"
@@ -56,15 +68,75 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "GNSUSDT",
+            "Ignore": false,
+            "Symbol": "GNS"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "JOEUSDT",
+            "Ignore": false,
+            "Symbol": "JOE"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "JOEBUSD",
+            "Ignore": false,
+            "Symbol": "JOE"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "KNCUSDT",
+            "Ignore": false,
+            "Symbol": "KNC"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "KNCBUSD",
+            "Ignore": false,
+            "Symbol": "KNC"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "MATICUSDT",
             "Ignore": false,
             "Symbol": "MATIC"
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "SPELLUSDT",
+            "Ignore": false,
+            "Symbol": "SPELL"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "STGUSDT",
+            "Ignore": false,
+            "Symbol": "STG"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "STGBUSD",
+            "Ignore": false,
+            "Symbol": "STG"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "SUSHIUSDT",
             "Ignore": false,
             "Symbol": "SUSHI"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "SYNUSDT",
+            "Ignore": false,
+            "Symbol": "SYN"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "SYNBTC",
+            "Ignore": false,
+            "Symbol": "SYN"
         },
         {
             "Exchange": "Binance",

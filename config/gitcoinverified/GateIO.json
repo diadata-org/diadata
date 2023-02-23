@@ -61,6 +61,24 @@
             "Address": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
         },
         {
+            "Symbol": "SYN",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x0f2D719407FdBeFF09D87557AbB7232601FD9F29"
+        },
+        {
+            "Symbol": "RDNT",
+            "Exchange": "GateIO",
+            "Blockchain": "Arbitrum",
+            "Address": "0x0C4681e6C0235179ec3D4F4fc4DF3d14FDD96017"
+          },
+        {
+            "Symbol": "STG",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6"
+        },
+        {
             "Symbol": "NFTY",
             "Exchange": "GateIO",
             "Blockchain": "BinanceSmartChain",

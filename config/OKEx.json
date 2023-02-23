@@ -2,6 +2,42 @@
   "Coins": [
     {
       "Exchange": "OKEx",
+      "ForeignName": "AAVE-USDT",
+      "Ignore": false,
+      "Symbol": "AAVE"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "BAL-USDT",
+      "Ignore": false,
+      "Symbol": "BAL"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "SPELL-USDT",
+      "Ignore": false,
+      "Symbol": "SPELL"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "JOE-USDT",
+      "Ignore": false,
+      "Symbol": "JOE"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "KNC-USDT",
+      "Ignore": false,
+      "Symbol": "KNC"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "KNC-USDC",
+      "Ignore": false,
+      "Symbol": "KNC"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "RAY-USDT",
       "Ignore": false,
       "Symbol": "RAY"
