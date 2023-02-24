@@ -2887,8 +2887,6 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 		return
 	}
 
-	var sizeBinSeconds = 120
-
 	// Return type for the trades distribution statistics.
 	type localDistType struct {
 		NumTradesTotal   int64   `json:"NumTradesTotal"`
@@ -2937,6 +2935,17 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 	if err != nil {
 		log.Warn("parse trades bin threshold: ", err)
 		tradesBinThreshold = 2
+	}
+
+	sizeBinSeconds, err := strconv.Atoi(c.DefaultQuery("sizeBinSeconds", "120"))
+	if err != nil {
+		log.Warn("parse sizeBinSeconds: ", err)
+		sizeBinSeconds = 120
+	}
+
+	if sizeBinSeconds < 20 || sizeBinSeconds > 21600 {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("sizeBinSeconds out of range. Must be between %v and %v.", 20*time.Second, 6*time.Hour))
+		return
 	}
 
 	// ---- Get data for input ----
