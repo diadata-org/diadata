@@ -2975,19 +2975,41 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 	)
 
 	for key, value := range volumeMap {
+
 		var e exchangeVolumes
 		e.Exchange = key
 		e.PairVolumes = value
+
 		// Collect total volume and full asset information.
 		for i, v := range value {
 			result.TotalVolume += v.Volume
 			e.PairVolumes[i].Pair.QuoteToken = env.getAssetFromCache(ASSET_CACHE, blockchain, address)
 			e.PairVolumes[i].Pair.BaseToken = env.getAssetFromCache(ASSET_CACHE, v.Pair.BaseToken.Blockchain, v.Pair.BaseToken.Address)
 		}
-		ev = append(ev, e)
-	}
-	result.ExchangeVolumes = ev
 
+		// Sort pairs per exchange by volume.
+		aux := value
+		sort.Slice(aux, func(k, l int) bool {
+			return aux[k].Volume > aux[l].Volume
+		})
+		ev = append(ev, e)
+
+		// Sort exchanges by volume.
+		sort.Slice(ev, func(k, l int) bool {
+			var ExchangeSums []float64
+			for _, exchange := range ev {
+				var S float64
+				for _, vol := range exchange.PairVolumes {
+					S += vol.Volume
+				}
+				ExchangeSums = append(ExchangeSums, S)
+			}
+			return ExchangeSums[k] > ExchangeSums[l]
+		})
+
+	}
+
+	result.ExchangeVolumes = ev
 	result.Timestamp = endtime
 	result.Price, err = env.DataStore.GetAssetPriceUSD(asset, endtime)
 	if err != nil {
