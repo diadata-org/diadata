@@ -3,6 +3,7 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -13,6 +14,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	ws "github.com/gorilla/websocket"
+	"github.com/zekroTJA/timedmap"
 )
 
 const ()
@@ -31,8 +33,6 @@ type BitstampScraper struct {
 	exchangeName string
 	chanTrades   chan *dia.Trade
 	db           *models.RelDB
-
-	urlSymbols map[string]string
 }
 
 type BitstampPairScraper struct {
@@ -54,9 +54,9 @@ type BitstampPairsInfo []struct {
 }
 
 type BitstampWsResponse struct {
-	Event   string `json:"event"`
-	Channel string `json:"channel"`
-	Data    []byte `json:"data"`
+	Event   string      `json:"event"`
+	Channel string      `json:"channel"`
+	Data    interface{} `json:"data"`
 }
 
 type BitstampPingData struct {
@@ -85,7 +85,6 @@ func NewBitstampScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB)
 		exchangeName: exchange.Name,
 		chanTrades:   make(chan *dia.Trade),
 		db:           relDB,
-		urlSymbols:   make(map[string]string),
 	}
 	var wsDialer ws.Dialer
 	wsConn, _, err := wsDialer.Dial("wss://ws.bitstamp.net", nil)
@@ -99,15 +98,13 @@ func NewBitstampScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB)
 	return s
 }
 
-func extractUrlSymbolFromChannel(channel string) string {
+func extractUrlSymbolFromChannel(channel string) (after string) {
 	// Channel is live_trades_{pair}
 	// Remove the prefix live_trades_
-	after, _ := strings.CutPrefix(channel, "live_trades_")
+	if strings.HasPrefix(channel, "live_trades_") {
+		after = strings.Split(channel, "live_trades_")[1]
+	}
 	return after
-}
-
-func (s *BitstampScraper) urlSymbolToForeignName(urlSymbol string) string {
-	return s.urlSymbols[urlSymbol]
 }
 
 func (s *BitstampScraper) foreignNameToUrlSymbol(foreignName string) string {
@@ -115,16 +112,19 @@ func (s *BitstampScraper) foreignNameToUrlSymbol(foreignName string) string {
 }
 
 func (s *BitstampScraper) receive() {
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+
 	var resp BitstampWsResponse
 	if err := s.wsClient.ReadJSON(&resp); err != nil {
 		log.Error("Receive message error:", err)
 		return
 	}
-	urlSymbol := extractUrlSymbolFromChannel(resp.Channel)
-	foreignName := s.urlSymbolToForeignName(urlSymbol)
+	foreignName := extractUrlSymbolFromChannel(resp.Channel)
+
 	switch event := resp.Event; event {
 	case "bts:subscription_succeeded":
-		log.Info("Subsription succeeded:", urlSymbol)
+		log.Info("Subsription succeeded:", foreignName)
 	// TODO: add subscription failed...
 	// Probably "bts:subscription_failed"
 	// Just a guess
@@ -133,7 +133,7 @@ func (s *BitstampScraper) receive() {
 		log.Warn("Server request for a reconnect")
 	case "bts:heartbeat":
 		var data BitstampPingData
-		if err := json.Unmarshal(resp.Data, &data); err != nil {
+		if err := json.Unmarshal([]byte(resp.Data.(string)), &data); err != nil {
 			log.Warn("Unmarshal ping error:", err, resp.Data)
 		} else if data.Status == "success" {
 			log.Info("Heart is beating")
@@ -141,35 +141,48 @@ func (s *BitstampScraper) receive() {
 			log.Warning("Check Heart", data)
 		}
 	default:
-		if strings.HasPrefix(event, "live_trades_") {
-			var data BitstampTradeData
-			if err := json.Unmarshal(resp.Data, &data); err != nil {
-				log.Warn("Unmarshal live trades error:", err, resp.Data)
-				return
-			}
+
+		if strings.HasPrefix(event, "trade") {
+
+			data := resp.Data.(map[string]interface{})
 			ps, ok := s.pairScrapers[foreignName]
-			print(ps, ok)
+
 			if ok {
-				timestamp, _ := strconv.ParseInt(data.Timestamp, 10, 64)
-				// TODO: add nanosecond to time.Unix
-				// microtimestamp, _ := strconv.ParseInt(data.Microtimestamp, 10, 64)
+				timestamp, _ := strconv.ParseInt(data["microtimestamp"].(string), 10, 64)
+				volume := data["amount"].(float64)
+				side := data["type"].(float64)
+				if side == 1 {
+					volume *= -1
+				}
+
+				pair, err := s.db.GetExchangePairCache(s.exchangeName, foreignName)
+				if err != nil {
+					log.Error("get exchange pair from cache: ", err)
+				}
+
 				t := &dia.Trade{
-					Symbol:     ps.pair.Symbol,
-					Pair:       foreignName,
-					QuoteToken: ps.pair.UnderlyingPair.QuoteToken,
-					BaseToken:  ps.pair.UnderlyingPair.BaseToken,
-					Price:      data.Price,
-					Volume:     data.Amount,
-					Time:       time.Unix(timestamp, 0),
-					// ForeignTradeID: ,
-					// EstimatedUSDPrice: ,
-					Source:       s.exchangeName,
-					VerifiedPair: ps.pair.Verified,
+					Symbol:         ps.pair.Symbol,
+					Pair:           foreignName,
+					Price:          data["price"].(float64),
+					Volume:         volume,
+					Time:           time.Unix(0, 1000*timestamp),
+					Source:         s.exchangeName,
+					ForeignTradeID: fmt.Sprintf("%d", int(data["id"].(float64))),
+					VerifiedPair:   pair.Verified,
+					QuoteToken:     pair.UnderlyingPair.QuoteToken,
+					BaseToken:      pair.UnderlyingPair.BaseToken,
+				}
+
+				// Handle duplicate trades.
+				discardTrade := t.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+				if !discardTrade {
+					t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+					s.chanTrades <- t
 				}
 				log.Info("Found trade:", t)
 			}
 		} else {
-			log.Warn("Unidentified response event", event, resp)
+			log.Warnf("Unidentified response event %s: -- %v", event, resp)
 		}
 	}
 }
@@ -183,7 +196,7 @@ func (s *BitstampScraper) mainLoop() {
 			return
 		default:
 		}
-		go s.receive()
+		s.receive()
 	}
 }
 
@@ -238,20 +251,16 @@ func (s *BitstampScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err e
 	}
 
 	for _, p := range bitstampPairsInfo {
-		foreignName := strings.ReplaceAll(p.Name, "/", "-")
-		s.urlSymbols[p.UrlSymbol] = foreignName
 		pairToNormalized := dia.ExchangePair{
 			Symbol:      strings.Split(p.Name, "/")[0],
-			ForeignName: foreignName,
+			ForeignName: p.UrlSymbol,
 			Exchange:    s.exchangeName,
 			UnderlyingPair: dia.Pair{
 				QuoteToken: dia.Asset{
 					Symbol: strings.Split(p.Name, "/")[0],
-					Name:   strings.Split(p.Description, " / ")[0],
 				},
 				BaseToken: dia.Asset{
 					Symbol: strings.Split(p.Name, "/")[1],
-					Name:   strings.Split(p.Description, " / ")[1],
 				},
 			},
 		}
@@ -260,17 +269,18 @@ func (s *BitstampScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err e
 	return
 }
 
-// TODO: don't why it's necessary
+func (s *BitstampScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{Symbol: symbol}, nil
+}
+
 func (s *BitstampScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	return dia.ExchangePair{}, nil
 }
 
-// TODO: don't why it's necessary
 func (s *BitstampScraper) Channel() chan *dia.Trade {
 	return s.chanTrades
 }
 
-// TODO: don't why it's necessary
 func (s *BitstampScraper) cleanup(err error) {
 	s.errorLock.Lock()
 	defer s.errorLock.Unlock()
@@ -294,14 +304,11 @@ func (s *BitstampScraper) Close() error {
 	return s.error
 }
 
-// TODO: don't why it's necessary
 func (ps *BitstampPairScraper) Close() error {
-	// TODO: probably have to unsubscribe in ws
 	ps.closed = true
 	return nil
 }
 
-// TODO: don't why it's necessary
 func (ps *BitstampPairScraper) Error() error {
 	s := ps.parent
 	s.errorLock.RLock()
@@ -309,7 +316,6 @@ func (ps *BitstampPairScraper) Error() error {
 	return s.error
 }
 
-// TODO: don't why it's necessary
 func (ps *BitstampPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }

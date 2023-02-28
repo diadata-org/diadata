@@ -239,6 +239,20 @@
             "ScraperActive": true
         },
         {
+            "Name": "Bitstamp",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": ""
+            },
+            "RestAPI": "https://www.bitstamp.net/api/v2",
+            "WsAPI": "wss://ws.bitstamp.net",
+            "pairsAPI": "https://www.bitstamp.net/api/v2/trading-pairs-info",
+            "WatchdogDelay": 300,
+            "ScraperActive": true
+        },
+        {
             "Name": "Bittrex",
             "Centralized": true,
             "Bridge": false,
