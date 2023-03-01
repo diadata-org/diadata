@@ -92,6 +92,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "LKR_USDT",
+      "Ignore": false,
+      "Symbol": "LKR"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "NFTY_USDT",
       "Ignore": false,
       "Symbol": "NFTY"

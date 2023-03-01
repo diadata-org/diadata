@@ -150,6 +150,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapScraper(Exchanges[dia.SushiSwapExchangePolygon], scrape)
 	case dia.SushiSwapExchangeArbitrum:
 		return NewUniswapScraper(Exchanges[dia.SushiSwapExchangeArbitrum], scrape)
+	case dia.SushiSwapExchangeFantom:
+		return NewUniswapScraper(Exchanges[dia.SushiSwapExchangeFantom], scrape)
 	case dia.CamelotExchange:
 		return NewUniswapScraper(Exchanges[dia.CamelotExchange], scrape)
 	case dia.CurveFIExchange:

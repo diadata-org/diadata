@@ -339,7 +339,7 @@ func buildBridge(t dia.Trade) dia.Asset {
 			Blockchain: dia.ETHEREUM,
 		}
 	}
-	if basetoken.Blockchain == dia.FANTOM && (t.Source == dia.SpookyswapExchange || t.Source == dia.SpiritswapExchange || t.Source == dia.BeetsExchange) {
+	if basetoken.Blockchain == dia.FANTOM && (t.Source == dia.SpookyswapExchange || t.Source == dia.SpiritswapExchange || t.Source == dia.BeetsExchange || t.Source == dia.SushiSwapExchangeFantom) {
 		if basetoken.Address == "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83" {
 			basetoken = dia.Asset{
 				Symbol:     "FTM",

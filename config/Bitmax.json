@@ -1,6 +1,12 @@
 {
     "Coins": [
         {
+            "Symbol": "LKR",
+            "ForeignName": "LKR/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
             "Symbol": "CVX",
             "ForeignName": "CVX/USDT",
             "Exchange": "Bitmax",
