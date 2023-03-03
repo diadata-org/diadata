@@ -55,7 +55,7 @@ func main() {
 		"0xc5102fE9359FD9a28f877a67E36B0F050d81a3CC", //HOP
 		"0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd", //JOE
 		"0x4945970EfeEc98D393b4b979b9bE265A3aE28A8B", //GMD
-
+		"0x088cd8f5eF3652623c22D48b1605DCfE860Cd704", //VELA
 	}
 	blockchains := []string{
 		"Arbitrum",  //GRAIL
@@ -70,7 +70,7 @@ func main() {
 		"Ethereum",  //HOP
 		"Avalanche", //JOE
 		"Arbitrum",  //GMD
-
+		"Arbitrum",  //VELA
 	}
 
 	oldPrices := make(map[int]float64)
