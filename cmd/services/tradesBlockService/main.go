@@ -78,7 +78,12 @@ func main() {
 		log.Errorln("NewDataStore", err)
 	}
 
-	service := tradesBlockService.NewTradesBlockService(s, dia.BlockSizeSeconds, *historical)
+	relDB, err := models.NewRelDataStore()
+	if err != nil {
+		log.Error("New relational datastore: ", err)
+	}
+
+	service := tradesBlockService.NewTradesBlockService(s, relDB, dia.BlockSizeSeconds, *historical)
 
 	wg := sync.WaitGroup{}
 	go handleBlocks(service, &wg, kafkaWriter)
