@@ -14,12 +14,6 @@
     },
     {
       "Exchange": "Kraken",
-      "ForeignName": "ADAEUR",
-      "Ignore": false,
-      "Symbol": "ADA"
-    },
-    {
-      "Exchange": "Kraken",
       "ForeignName": "ADAUSD",
       "Ignore": false,
       "Symbol": "ADA"
@@ -29,12 +23,6 @@
       "ForeignName": "ADAXBT",
       "Ignore": false,
       "Symbol": "ADA"
-    },
-    {
-      "Exchange": "Kraken",
-      "ForeignName": "BCHEUR",
-      "Ignore": false,
-      "Symbol": "BCH"
     },
     {
       "Exchange": "Kraken",
@@ -74,12 +62,6 @@
     },
     {
       "Exchange": "Kraken",
-      "ForeignName": "EOSEUR",
-      "Ignore": false,
-      "Symbol": "EOS"
-    },
-    {
-      "Exchange": "Kraken",
       "ForeignName": "EOSXBT",
       "Ignore": false,
       "Symbol": "EOS"
@@ -89,12 +71,6 @@
       "ForeignName": "KILTUSD",
       "Ignore": false,
       "Symbol": "KILT"
-    },
-    {
-      "Exchange": "Kraken",
-      "ForeignName": "QTUMEUR",
-      "Ignore": false,
-      "Symbol": "QTUM"
     },
     {
       "Exchange": "Kraken",
@@ -146,12 +122,6 @@
     },
     {
       "Exchange": "Kraken",
-      "ForeignName": "XETHZEUR",
-      "Ignore": false,
-      "Symbol": "ETH"
-    },
-    {
-      "Exchange": "Kraken",
       "ForeignName": "XLTCXXBT",
       "Ignore": false,
       "Symbol": "LTC"
@@ -167,12 +137,6 @@
       "ForeignName": "XREPXXBT",
       "Ignore": false,
       "Symbol": "REP"
-    },
-    {
-      "Exchange": "Kraken",
-      "ForeignName": "XXBTZEUR",
-      "Ignore": false,
-      "Symbol": "BTC"
     },
     {
       "Exchange": "Kraken",

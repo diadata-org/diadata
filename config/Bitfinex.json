@@ -98,12 +98,6 @@
     },
     {
       "Symbol": "BTC",
-      "ForeignName": "BTCEUR",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
-      "Symbol": "BTC",
       "ForeignName": "BTCJPY",
       "Exchange": "Bitfinex",
       "Ignore": false
@@ -343,32 +337,8 @@
       "Ignore": false
     },
     {
-      "Symbol": "BTC",
-      "ForeignName": "BTCGBP",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETHEUR",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
       "Symbol": "ETH",
       "ForeignName": "ETHJPY",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETHGBP",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
-      "Symbol": "NEO",
-      "ForeignName": "NEOEUR",
       "Exchange": "Bitfinex",
       "Ignore": false
     },
@@ -379,26 +349,8 @@
       "Ignore": false
     },
     {
-      "Symbol": "NEO",
-      "ForeignName": "NEOGBP",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
-      "Symbol": "EOS",
-      "ForeignName": "EOSEUR",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
       "Symbol": "EOS",
       "ForeignName": "EOSJPY",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
-      "Symbol": "EOS",
-      "ForeignName": "EOSGBP",
       "Exchange": "Bitfinex",
       "Ignore": false
     },
@@ -561,12 +513,6 @@
     {
       "Symbol": "XTZ",
       "ForeignName": "XTZBTC",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
-      "Symbol": "TRX",
-      "ForeignName": "TRXEUR",
       "Exchange": "Bitfinex",
       "Ignore": false
     },
