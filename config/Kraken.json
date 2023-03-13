@@ -2,12 +2,6 @@
   "Coins": [
     {
       "Exchange": "Kraken",
-      "ForeignName": "MOVRUSD",
-      "Ignore": false,
-      "Symbol": "MOVR"
-    },
-    {
-      "Exchange": "Kraken",
       "ForeignName": "ADAETH",
       "Ignore": false,
       "Symbol": "ADA"
@@ -26,6 +20,18 @@
     },
     {
       "Exchange": "Kraken",
+      "ForeignName": "ASTRUSD",
+      "Ignore": false,
+      "Symbol": "ASTR"
+    },
+    {
+      "Exchange": "Kraken",
+      "ForeignName": "AVAXUSD",
+      "Ignore": false,
+      "Symbol": "AVAX"
+    },
+    {
+      "Exchange": "Kraken",
       "ForeignName": "BCHUSD",
       "Ignore": false,
       "Symbol": "BCH"
@@ -35,6 +41,12 @@
       "ForeignName": "BCHXBT",
       "Ignore": false,
       "Symbol": "BCH"
+    },
+    {
+      "Exchange": "Kraken",
+      "ForeignName": "CFGUSD",
+      "Ignore": false,
+      "Symbol": "CFG"
     },
     {
       "Exchange": "Kraken",
@@ -68,6 +80,36 @@
     },
     {
       "Exchange": "Kraken",
+      "ForeignName": "GLMRUSD",
+      "Ignore": false,
+      "Symbol": "GLMR"
+    },
+    {
+      "Exchange": "Kraken",
+      "ForeignName": "LDOUSD",
+      "Ignore": false,
+      "Symbol": "LDO"
+    },
+    {
+      "Exchange": "Kraken",
+      "ForeignName": "MOVRUSD",
+      "Ignore": false,
+      "Symbol": "MOVR"
+    },
+    {
+      "Exchange": "Kraken",
+      "ForeignName": "XETCXETH",
+      "Ignore": false,
+      "Symbol": "ETC"
+    },
+    {
+      "Exchange": "Kraken",
+      "ForeignName": "XETCXXBT",
+      "Ignore": false,
+      "Symbol": "ETC"
+    },
+    {
+      "Exchange": "Kraken",
       "ForeignName": "KILTUSD",
       "Ignore": false,
       "Symbol": "KILT"
@@ -77,6 +119,12 @@
       "ForeignName": "QTUMUSD",
       "Ignore": false,
       "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "Kraken",
+      "ForeignName": "SDNUSD",
+      "Ignore": false,
+      "Symbol": "SDN"
     },
     {
       "Exchange": "Kraken",
@@ -98,15 +146,15 @@
     },
     {
       "Exchange": "Kraken",
-      "ForeignName": "XETCXETH",
+      "ForeignName": "WBTCUSD",
       "Ignore": false,
-      "Symbol": "ETC"
+      "Symbol": "WBTC"
     },
     {
       "Exchange": "Kraken",
-      "ForeignName": "XETCXXBT",
+      "ForeignName": "WBTCXBT",
       "Ignore": false,
-      "Symbol": "ETC"
+      "Symbol": "WBTC"
     },
     {
       "Exchange": "Kraken",
@@ -143,6 +191,12 @@
       "ForeignName": "XXLMXXBT",
       "Ignore": false,
       "Symbol": "XLM"
+    },
+    {
+      "Exchange": "Kraken",
+      "ForeignName": "XXBTZUSD",
+      "Ignore": false,
+      "Symbol": "BTC"
     },
     {
       "Exchange": "Kraken",
