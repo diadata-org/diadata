@@ -315,6 +315,10 @@ type Asset struct {
 	Blockchain string `json:"Blockchain"`
 }
 
+func (asset *Asset) Identifier() string {
+	return asset.Blockchain + "-" + asset.Address
+}
+
 // BlockChain is the type for blockchains. Uniquely defined by its @Name.
 type BlockChain struct {
 	Name string `json:"Name"`
