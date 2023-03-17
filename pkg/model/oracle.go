@@ -118,19 +118,35 @@ func (rdb *RelDB) GetTotalFeeder(owner string) (total int) {
 	return
 }
 
-func (rdb *RelDB) GetAllFeeders() (oracleconfig dia.OracleConfig, err error) {
+func (rdb *RelDB) GetAllFeeders(owner string) (oracleconfigs []dia.OracleConfig, err error) {
 	var (
-		symbols string
+		rows pgx.Rows
 	)
+
 	query := fmt.Sprintf(`
-	SELECT address, feeder_id, owner,symbols, chainid, deviationpermille, sleepseconds,frequency
-	FROM %s`, oracleconfigTable)
-	err = rdb.postgresClient.QueryRow(context.Background(), query).Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &oracleconfig.DeviationPermille, &oracleconfig.SleepSeconds, &oracleconfig.Frequency)
+	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille
+	FROM %s 
+	`, oracleconfigTable)
+	rows, err = rdb.postgresClient.Query(context.Background(), query, owner)
 	if err != nil {
 		return
 	}
-	oracleconfig.Symbols = strings.Split(symbols, " ")
+	defer rows.Close()
 
+	for rows.Next() {
+		var (
+			oracleconfig dia.OracleConfig
+			symbols      string
+		)
+		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &oracleconfig.Frequency, &oracleconfig.SleepSeconds, &oracleconfig.DeviationPermille)
+		if err != nil {
+			log.Error(err)
+		}
+
+		oracleconfig.Symbols = strings.Split(symbols, " ")
+
+		oracleconfigs = append(oracleconfigs, oracleconfig)
+	}
 	return
 }
 
