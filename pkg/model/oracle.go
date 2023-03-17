@@ -118,6 +118,22 @@ func (rdb *RelDB) GetTotalFeeder(owner string) (total int) {
 	return
 }
 
+func (rdb *RelDB) GetAllFeeders() (oracleconfig dia.OracleConfig, err error) {
+	var (
+		symbols string
+	)
+	query := fmt.Sprintf(`
+	SELECT address, feeder_id, owner,symbols, chainid, deviationpermille, sleepseconds,frequency
+	FROM %s`, oracleconfigTable)
+	err = rdb.postgresClient.QueryRow(context.Background(), query).Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &oracleconfig.DeviationPermille, &oracleconfig.SleepSeconds, &oracleconfig.Frequency)
+	if err != nil {
+		return
+	}
+	oracleconfig.Symbols = strings.Split(symbols, " ")
+
+	return
+}
+
 func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleConfig, err error) {
 	var (
 		rows pgx.Rows
