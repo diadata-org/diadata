@@ -118,7 +118,7 @@ func (rdb *RelDB) GetTotalFeeder(owner string) (total int) {
 	return
 }
 
-func (rdb *RelDB) GetAllFeeders(owner string) (oracleconfigs []dia.OracleConfig, err error) {
+func (rdb *RelDB) GetAllFeeders() (oracleconfigs []dia.OracleConfig, err error) {
 	var (
 		rows pgx.Rows
 	)
@@ -127,7 +127,7 @@ func (rdb *RelDB) GetAllFeeders(owner string) (oracleconfigs []dia.OracleConfig,
 	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille
 	FROM %s 
 	`, oracleconfigTable)
-	rows, err = rdb.postgresClient.Query(context.Background(), query, owner)
+	rows, err = rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return
 	}
