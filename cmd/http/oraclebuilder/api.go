@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"strings"
@@ -153,7 +152,6 @@ func (ob *Env) Create(context *gin.Context) {
 			return
 		}
 
-		fmt.Println("oracleconfig", oracleconfig.Symbols)
 		err = ob.PodHelper.RestartOracleFeeder(feederID, oracleconfig)
 		if err != nil {
 			log.Errorln("error RestartOracleFeeder ", err)
@@ -185,12 +183,11 @@ func (ob *Env) List(context *gin.Context) {
 	context.JSON(http.StatusOK, oracles)
 }
 
-// List: list owner oracles
+// List: list All feeders
 func (ob *Env) ListAll(context *gin.Context) {
-	creator := context.Query("creator")
-	oracles, err := ob.RelDB.GetOraclesByOwner(creator)
+	oracles, err := ob.RelDB.GetAllFeeders()
 	if err != nil {
-		log.Errorln("List Oracles: error on getOraclesByOwner ", err)
+		log.Errorln("List All Oracles: error on GetAllFeeders ", err)
 		context.JSON(http.StatusInternalServerError, err)
 		return
 	}
@@ -291,7 +288,6 @@ func (ob *Env) Restart(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, err)
 		return
 	}
-	fmt.Println("oracleconfig", oracleconfig.Symbols)
 
 	err = ob.PodHelper.RestartOracleFeeder(oracleconfig.FeederID, oracleconfig)
 	if err != nil {

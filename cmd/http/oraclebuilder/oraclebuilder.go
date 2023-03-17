@@ -1,18 +1,17 @@
 package main
 
 import (
+	"time"
+
 	"github.com/99designs/keyring"
 	builderUtils "github.com/diadata-org/diadata/http/oraclebuilder/utils"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"time"
-	"github.com/diadata-org/diadata/pkg/utils"
 
-
-
- 	"github.com/gin-contrib/cors"
- )
+	"github.com/gin-contrib/cors"
+)
 
 var log = logrus.New()
 
@@ -39,7 +38,7 @@ func main() {
 	oraclebaseimage := utils.Getenv("ORACLE_BASE_IMAGE", "us.icr.io/dia-registry/oracles/oracle-baseimage:latest")
 	oraclenamespace := utils.Getenv("ORACLE_NAMESPACE", "dia-oracle-feeder")
 
-	ph := 	builderUtils.NewPodHelper(oraclebaseimage, oraclenamespace)
+	ph := builderUtils.NewPodHelper(oraclebaseimage, oraclenamespace)
 
 	ring, _ := keyring.Open(keyring.Config{
 		ServiceName:     "oraclebuilder",
@@ -61,6 +60,7 @@ func main() {
 	routerGroup.GET("/view", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to List your oracles") }, oracle.Auth, oracle.View)
 	routerGroup.DELETE("/delete", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to delete oracle") }, oracle.Auth, oracle.Delete)
 	routerGroup.PATCH("/restart", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to restart oracle feeder") }, oracle.Auth, oracle.Restart)
+	routerGroup.GET("/listAll", oracle.ListAll)
 
 	port := utils.Getenv("LISTEN_PORT", ":8080")
 
