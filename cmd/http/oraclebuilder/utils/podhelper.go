@@ -59,11 +59,6 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 	fields["chainID"] = chainID
 	fields["owner"] = owner
 
-	log.Infoln("-sleepSeconds-", sleepSeconds)
-	log.Infoln("-symbols-", symbols)
-	log.Infoln("-oraclesymbols-", owner)
-	log.Infoln("-feederID-", feederID)
-
 	// -- oracle config
 	publickeyenv := corev1.EnvVar{Name: "ORACLE_PUBLICKEY", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: ".public", LocalObjectReference: corev1.LocalObjectReference{Name: feederID}}}}
 	deployedcontractenv := corev1.EnvVar{Name: "DEPLOYED_CONTRACT", Value: oracle}
@@ -75,17 +70,11 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 	oracletype := corev1.EnvVar{Name: "ORACLE_ORACLETYPE", Value: "3"}
 	oraclesymbols := corev1.EnvVar{Name: "ORACLE_SYMBOLS", Value: symbols}
 	oraclefeederid := corev1.EnvVar{Name: "ORACLE_FEEDERID", Value: feederID}
+	blockchainnodeenv := corev1.EnvVar{Name: "ORACLE_BLOCKCHAINNODE", Value: blockchainnode}
+
 	// -- oracle config ends here
 
 	// ---
-
-	log.Infoln("-publickeyenv-", publickeyenv)
-	log.Infoln("-deployedcontractenv-", deployedcontractenv)
-	log.Infoln("-chainidenv-", chainidenv)
-	log.Infoln("-deviationenv-", deviationenv)
-	log.Infoln("-frequencyseconds-", frequencyseconds)
-	log.Infoln("-oraclesymbols-", oraclesymbols)
-	log.Infoln("-oraclefeederid-", oraclefeederid)
 
 	postgreshost := corev1.EnvVar{Name: "POSTGRES_HOST", Value: "dia-postgresql.dia-db"}
 	postgresuser := corev1.EnvVar{Name: "POSTGRES_USER", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: "user", LocalObjectReference: corev1.LocalObjectReference{Name: "user.graphqlserver"}}}}
@@ -110,7 +99,7 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 					Env: []corev1.EnvVar{publickeyenv, deployedcontractenv, chainidenv,
 						sleepsecondenv, deviationenv, frequencyseconds, oracletype,
 						oraclesymbols, oraclefeederid, postgreshost, postgresuser, signerservice,
-						postgrespassword, postgresdb, updateconfigseconds, useenv},
+						postgrespassword, postgresdb, updateconfigseconds, useenv, blockchainnodeenv},
 				},
 			},
 			ImagePullSecrets: []corev1.LocalObjectReference{imagepullrequest},
@@ -143,6 +132,8 @@ func (kh *PodHelper) UpdateOracleFeeder(feederID string, owner string, oracle st
 	oracletype := corev1.EnvVar{Name: "ORACLE_ORACLETYPE", Value: "3"}
 	oraclesymbols := corev1.EnvVar{Name: "ORACLE_SYMBOLS", Value: symbols}
 	oraclefeederid := corev1.EnvVar{Name: "ORACLE_FEEDERID", Value: feederID}
+	blockchainnodeenv := corev1.EnvVar{Name: "ORACLE_BLOCKCHAINNODE", Value: blockchainnode}
+
 	// -- oracle config ends here
 
 	// ---
@@ -169,7 +160,7 @@ func (kh *PodHelper) UpdateOracleFeeder(feederID string, owner string, oracle st
 					Env: []corev1.EnvVar{publickeyenv, deployedcontractenv, chainidenv,
 						sleepsecondenv, deviationenv, frequencyseconds, oracletype,
 						oraclesymbols, oraclefeederid, postgreshost, postgresuser, signerservice,
-						postgrespassword, postgresdb, updateconfigseconds, useenv},
+						postgrespassword, postgresdb, updateconfigseconds, useenv, blockchainnodeenv},
 				},
 			},
 			ImagePullSecrets: []corev1.LocalObjectReference{imagepullrequest},
@@ -199,7 +190,6 @@ func (kh *PodHelper) RestartOracleFeeder(feederID string, oracleconfig dia.Oracl
 	//	return err
 	//}
 	kh.waitPodDeleted(context.TODO(), oracleconfig.Address, func() {
-		log.Info("strings.Join(oracleconfig.Symbols[:], ", ")", strings.Join(oracleconfig.Symbols[:], ","))
 		time.Sleep(1000 * time.Millisecond)
 		err = kh.CreateOracleFeeder(feederID, oracleconfig.Owner, oracleconfig.Address, oracleconfig.ChainID, strings.Join(oracleconfig.Symbols[:], ","), "", oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille)
 		if err != nil {
