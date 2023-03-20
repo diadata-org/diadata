@@ -54,7 +54,7 @@ func (ob *Env) Create(context *gin.Context) {
 
 	k := make(map[string]string)
 
-	log.Infof("Creating oracle: oracleAddress: %s, ChainID: %s, Creator: %s, Symbols: %s, frequency: %s, sleepSeconds: %s,", oracleaddress, chainID, creator, symbols, frequency, sleepSeconds)
+	log.Infof("Creating oracle: oracleAddress: %s, ChainID: %s, Creator: %s, Symbols: %s, frequency: %s, sleepSeconds: %s blockchainnode: %s,", oracleaddress, chainID, creator, symbols, frequency, sleepSeconds, blockchainnode)
 
 	log.Infoln("Creating oracle: chainID", chainID)
 	log.Infoln("Creating oracle: creator", creator)
