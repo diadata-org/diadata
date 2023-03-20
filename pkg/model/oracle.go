@@ -124,7 +124,7 @@ func (rdb *RelDB) GetAllFeeders() (oracleconfigs []dia.OracleConfig, err error) 
 	)
 
 	query := fmt.Sprintf(`
-	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille
+	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, active
 	FROM %s 
 	`, oracleconfigTable)
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
@@ -138,7 +138,7 @@ func (rdb *RelDB) GetAllFeeders() (oracleconfigs []dia.OracleConfig, err error) 
 			oracleconfig dia.OracleConfig
 			symbols      string
 		)
-		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &oracleconfig.Frequency, &oracleconfig.SleepSeconds, &oracleconfig.DeviationPermille)
+		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &oracleconfig.Frequency, &oracleconfig.SleepSeconds, &oracleconfig.DeviationPermille, &oracleconfig.Active)
 		if err != nil {
 			log.Error(err)
 		}
