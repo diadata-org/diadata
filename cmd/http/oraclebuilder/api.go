@@ -137,7 +137,7 @@ func (ob *Env) Create(context *gin.Context) {
 
 	}
 
-	err = ob.RelDB.SetOracleConfig(oracleaddress, feederID, creator, symbols, chainID, frequency, sleepSeconds, deviationPermille)
+	err = ob.RelDB.SetOracleConfig(oracleaddress, feederID, creator, symbols, chainID, frequency, sleepSeconds, deviationPermille, blockchainnode)
 	if err != nil {
 		log.Errorln("error SetOracleConfig ", err)
 		context.JSON(http.StatusInternalServerError, err)

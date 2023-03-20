@@ -39,13 +39,13 @@ func (rdb *RelDB) GetKeyPairID(publicKey string) string {
 	return keypairId
 }
 
-func (rdb *RelDB) SetOracleConfig(address, feederID, owner, symbols, chainID, frequency, sleepseconds, deviationpermille string) error {
+func (rdb *RelDB) SetOracleConfig(address, feederID, owner, symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode string) error {
 	query := fmt.Sprintf(`INSERT INTO %s 
-	(address,feeder_id,owner,symbols,chainID,frequency,sleepseconds, deviationpermille) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) on conflict(feeder_id)  
-	DO UPDATE SET symbols=$4,frequency=$6,sleepseconds=$7, deviationpermille=$8`, oracleconfigTable)
+	(address,feeder_id,owner,symbols,chainID,frequency,sleepseconds, deviationpermille) VALUES ($1,$2,$3,$4,$5,$6,$7,$8, $9) on conflict(feeder_id)  
+	DO UPDATE SET symbols=$4,frequency=$6,sleepseconds=$7, deviationpermille=$8, blockchainnode=$9`, oracleconfigTable)
 
-	fmt.Println("--query-", query)
-	_, err := rdb.postgresClient.Exec(context.Background(), query, address, feederID, owner, symbols, chainID, frequency, sleepseconds, deviationpermille)
+	log.Infoln("SetOracleConfig Query", query)
+	_, err := rdb.postgresClient.Exec(context.Background(), query, address, feederID, owner, symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode)
 	if err != nil {
 		return err
 	}
@@ -156,7 +156,7 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
 	)
 
 	query := fmt.Sprintf(`
-	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille
+	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode
 	FROM %s 
 	WHERE owner=$1 and active=true`, oracleconfigTable)
 	rows, err = rdb.postgresClient.Query(context.Background(), query, owner)
@@ -170,7 +170,7 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
 			oracleconfig dia.OracleConfig
 			symbols      string
 		)
-		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &oracleconfig.Frequency, &oracleconfig.SleepSeconds, &oracleconfig.DeviationPermille)
+		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &oracleconfig.Frequency, &oracleconfig.SleepSeconds, &oracleconfig.DeviationPermille, &oracleconfig.BlockchainNode)
 		if err != nil {
 			log.Error(err)
 		}
@@ -187,10 +187,10 @@ func (rdb *RelDB) GetOracleConfig(address string) (oracleconfig dia.OracleConfig
 		symbols string
 	)
 	query := fmt.Sprintf(`
-	SELECT address, feeder_id, owner,symbols, chainid, deviationpermille, sleepseconds,frequency
+	SELECT address, feeder_id, owner,symbols, chainid, deviationpermille, sleepseconds,frequency, blockchainnode
 	FROM %s 
 	WHERE address=$1`, oracleconfigTable)
-	err = rdb.postgresClient.QueryRow(context.Background(), query, address).Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &oracleconfig.DeviationPermille, &oracleconfig.SleepSeconds, &oracleconfig.Frequency)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, address).Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &oracleconfig.DeviationPermille, &oracleconfig.SleepSeconds, &oracleconfig.Frequency, &oracleconfig.BlockchainNode)
 	if err != nil {
 		return
 	}

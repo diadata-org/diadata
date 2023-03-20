@@ -655,4 +655,5 @@ type OracleConfig struct {
 	Frequency         string
 	SleepSeconds      string
 	DeviationPermille string
+	BlockchainNode    string
 }
