@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
@@ -182,10 +183,15 @@ func main() {
 	if err != nil {
 		log.Errorln("NewRelDataStore", err)
 	}
-	diaApiEnv := &diaApi.Env{
-		DataStore: store,
-		RelDB:     *relStore,
-	}
+
+	signerKey := os.Getenv("SIGNER_KEY")
+	aqs := utils.NewAssetQuotationSigner(signerKey)
+	diaApiEnv := diaApi.NewEnv(store, *relStore, aqs)
+	// diaApiEnv := &diaApi.Env{
+	// 	DataStore: store,
+	// 	RelDB:     *relStore,
+	// 	signer:    aqs,
+	// }
 
 	diaAuth := r.Group("/v1")
 	diaAuth.Use(authMiddleware.MiddlewareFunc())

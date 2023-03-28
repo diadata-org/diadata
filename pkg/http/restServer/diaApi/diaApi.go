@@ -34,6 +34,7 @@ var (
 type Env struct {
 	DataStore models.Datastore
 	RelDB     models.RelDB
+	signer    *utils.AssetQuotationSigner
 }
 
 func init() {
@@ -49,6 +50,10 @@ func init() {
 	for _, chain := range chains {
 		BLOCKCHAINS[chain.Name] = chain
 	}
+}
+
+func NewEnv(ds models.Datastore, rdb models.RelDB, signer *utils.AssetQuotationSigner) *Env {
+	return &Env{DataStore: ds, RelDB: rdb, signer: signer}
 }
 
 // PostSupply deprecated? TO DO
@@ -172,7 +177,10 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 	} else {
 		quotationExtended.VolumeYesterdayUSD = *volumeYesterday
 	}
-
+	signedData, err := env.signer.Sign(quotation.Asset.Symbol, quotation.Asset.Address, quotation.Asset.Blockchain, quotation.Price, quotation.Time)
+	if err != nil {
+		log.Warn("error signing data: ", err)
+	}
 	// Appropriate formatting.
 	quotationExtended.Symbol = quotation.Asset.Symbol
 	quotationExtended.Name = quotation.Asset.Name
@@ -181,6 +189,8 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 	quotationExtended.Price = quotation.Price
 	quotationExtended.Time = quotation.Time
 	quotationExtended.Source = quotation.Source
+	quotationExtended.Signature = signedData
+	quotationExtended.TimeStamp = quotation.Time.Unix()
 
 	c.JSON(http.StatusOK, quotationExtended)
 
