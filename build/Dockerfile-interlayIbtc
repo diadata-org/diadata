@@ -14,10 +14,9 @@ RUN yarn install
 
 # Bundle app source
 COPY cmd/interlay/index.js /usr/src/app/index.js
-COPY cmd/interlay/helper.js /usr/src/app/helper.js
-COPY cmd/interlay/bifrosthelper.js /usr/src/app/bifrosthelper.js
+COPY cmd/interlay/*.* /usr/src/app/
 
-
+ENV NODE_OPTIONS=--max_old_space_size=3072
 
 
 
