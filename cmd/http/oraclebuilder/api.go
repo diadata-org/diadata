@@ -51,6 +51,7 @@ func (ob *Env) Create(context *gin.Context) {
 	deviationPermille := context.PostForm("deviationpermille")
 
 	blockchainnode := context.PostForm("blockchainnode")
+	mandatoryFrequency := context.PostForm("mandatoryfrequency")
 
 	k := make(map[string]string)
 
@@ -137,7 +138,7 @@ func (ob *Env) Create(context *gin.Context) {
 
 	}
 
-	err = ob.RelDB.SetOracleConfig(oracleaddress, feederID, creator, symbols, chainID, frequency, sleepSeconds, deviationPermille, blockchainnode)
+	err = ob.RelDB.SetOracleConfig(oracleaddress, feederID, creator, symbols, chainID, frequency, sleepSeconds, deviationPermille, blockchainnode, mandatoryFrequency)
 	if err != nil {
 		log.Errorln("error SetOracleConfig ", err)
 		context.JSON(http.StatusInternalServerError, err)

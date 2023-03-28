@@ -646,14 +646,15 @@ func (e *SuppliesBlock) UnmarshalBinary(data []byte) error {
 }
 
 type OracleConfig struct {
-	Symbols           []string
-	FeederID          string
-	Address           string
-	Owner             string
-	ChainID           string
-	Active            bool
-	Frequency         string
-	SleepSeconds      string
-	DeviationPermille string
-	BlockchainNode    string
+	Symbols            []string
+	FeederID           string
+	Address            string
+	Owner              string
+	ChainID            string
+	Active             bool
+	Frequency          string
+	SleepSeconds       string
+	DeviationPermille  string
+	BlockchainNode     string
+	MandatoryFrequency string
 }

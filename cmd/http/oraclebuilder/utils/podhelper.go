@@ -53,7 +53,7 @@ func NewPodHelper(image, namespace string) *PodHelper {
 	return &PodHelper{k8sclient: client, Image: image, NameSpace: namespace}
 }
 
-func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle string, chainID string, symbols, blockchainnode string, frequency, sleepSeconds, deviationPermille string) error {
+func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle string, chainID string, symbols, blockchainnode string, frequency, sleepSeconds, deviationPermille, mandatoryFrequency string) error {
 	fields := make(map[string]string)
 	fields["oracle"] = oracle
 	fields["chainID"] = chainID
@@ -71,6 +71,7 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 	oraclesymbols := corev1.EnvVar{Name: "ORACLE_SYMBOLS", Value: symbols}
 	oraclefeederid := corev1.EnvVar{Name: "ORACLE_FEEDERID", Value: feederID}
 	blockchainnodeenv := corev1.EnvVar{Name: "ORACLE_BLOCKCHAINNODE", Value: blockchainnode}
+	mandatoryfrequencyenv := corev1.EnvVar{Name: "ORACLE_MANDATORYFREQUENCY", Value: mandatoryFrequency}
 
 	// -- oracle config ends here
 
@@ -99,7 +100,7 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 					Env: []corev1.EnvVar{publickeyenv, deployedcontractenv, chainidenv,
 						sleepsecondenv, deviationenv, frequencyseconds, oracletype,
 						oraclesymbols, oraclefeederid, postgreshost, postgresuser, signerservice,
-						postgrespassword, postgresdb, updateconfigseconds, useenv, blockchainnodeenv},
+						postgrespassword, postgresdb, updateconfigseconds, useenv, blockchainnodeenv, mandatoryfrequencyenv},
 				},
 			},
 			ImagePullSecrets: []corev1.LocalObjectReference{imagepullrequest},
@@ -115,7 +116,7 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 
 }
 
-func (kh *PodHelper) UpdateOracleFeeder(feederID string, owner string, oracle string, chainID string, symbols, blockchainnode string, frequency, sleepSeconds, deviationPermille string) error {
+func (kh *PodHelper) UpdateOracleFeeder(feederID string, owner string, oracle string, chainID string, symbols, blockchainnode string, frequency, sleepSeconds, deviationPermille, mandatoryFrequency string) error {
 	fields := make(map[string]string)
 	fields["oracle"] = oracle
 	fields["chainID"] = chainID
@@ -133,6 +134,7 @@ func (kh *PodHelper) UpdateOracleFeeder(feederID string, owner string, oracle st
 	oraclesymbols := corev1.EnvVar{Name: "ORACLE_SYMBOLS", Value: symbols}
 	oraclefeederid := corev1.EnvVar{Name: "ORACLE_FEEDERID", Value: feederID}
 	blockchainnodeenv := corev1.EnvVar{Name: "ORACLE_BLOCKCHAINNODE", Value: blockchainnode}
+	mandatoryfrequencyenv := corev1.EnvVar{Name: "ORACLE_MANDATORYFREQUENCY", Value: mandatoryFrequency}
 
 	// -- oracle config ends here
 
@@ -160,7 +162,7 @@ func (kh *PodHelper) UpdateOracleFeeder(feederID string, owner string, oracle st
 					Env: []corev1.EnvVar{publickeyenv, deployedcontractenv, chainidenv,
 						sleepsecondenv, deviationenv, frequencyseconds, oracletype,
 						oraclesymbols, oraclefeederid, postgreshost, postgresuser, signerservice,
-						postgrespassword, postgresdb, updateconfigseconds, useenv, blockchainnodeenv},
+						postgrespassword, postgresdb, updateconfigseconds, useenv, blockchainnodeenv, mandatoryfrequencyenv},
 				},
 			},
 			ImagePullSecrets: []corev1.LocalObjectReference{imagepullrequest},

@@ -265,6 +265,7 @@ CREATE TABLE oracleconfig (
     sleepseconds text,
     deviationpermille text,
     blochchainnode text,
+    mandatory_frequency text,
     UNIQUE (id),
     UNIQUE (feeder_id)
 );
