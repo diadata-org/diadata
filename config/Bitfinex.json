@@ -523,6 +523,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "TLOS",
+      "ForeignName": "TLOSUSD",
+      "Exchange": "Bitfinex",
+      "Ignore": false
+    },
+    {
       "Symbol": "DGB",
       "ForeignName": "DGBUSD",
       "Exchange": "Bitfinex",

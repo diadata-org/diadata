@@ -1,6 +1,12 @@
 {
     "Coins": [
         {
+            "Symbol": "ATOM",
+            "ForeignName": "ATOMUSD",
+            "Exchange": "BinanceUS",
+            "Ignore": false
+        },
+        {
             "Symbol": "BTC",
             "ForeignName": "BTCUSD",
             "Exchange": "BinanceUS",
