@@ -23,7 +23,7 @@ type AssetQuotationSigner struct {
 
 func NewAssetQuotationSigner(privateKey string) *AssetQuotationSigner {
 	domain := TypedDataDomain{
-		Name:              "My DApp",
+		Name:              "DiaData",
 		Version:           "1.0.0",
 		ChainId:           math.NewHexOrDecimal256(1),
 		VerifyingContract: common.HexToAddress("0x0000000000000000000000000000000000000000").Hex(),
@@ -53,7 +53,7 @@ func (aqs *AssetQuotationSigner) Sign(symbol, address, blockchain string, price 
 		"Symbol":     symbol,
 		"Address":    common.HexToAddress(address).Hex(),
 		"Blockchain": blockchain,
-		"Price":      big.NewInt(123).String(),
+		"Price":      big.NewInt(int64(price * 100000000)),
 		"Time":       big.NewInt(time.Unix()).String(),
 	}
 
