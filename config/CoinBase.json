@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "CoinBase",
+      "ForeignName": "ATOM-USD",
+      "Ignore": false,
+      "Symbol": "ATOM"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "AAVE-USD",
       "Ignore": false,
       "Symbol": "AAVE"

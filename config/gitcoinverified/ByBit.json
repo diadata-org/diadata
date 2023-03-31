@@ -469,6 +469,12 @@
             "Address": "7i5KKsX2weiTkry7jA4ZwSuXGhs5eJBEjY8vVxR4pfRx"
         },
         {
+            "Symbol": "GMX",
+            "Exchange": "ByBit",
+            "Blockchain": "Arbitrum",
+            "Address": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"
+        },
+        {
             "Symbol": "GTC",
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",

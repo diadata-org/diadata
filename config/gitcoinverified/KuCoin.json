@@ -313,6 +313,12 @@
             "Address": "0xA0008F510fE9eE696E7E320C9e5cbf61E27791Ee"
         },
         {
+            "Symbol": "GMX",
+            "Exchange": "KuCoin",
+            "Blockchain": "Arbitrum",
+            "Address": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"
+        },
+        {
             "Symbol": "KAT",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

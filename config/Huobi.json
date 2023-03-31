@@ -50,6 +50,18 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "ATOMUSDT",
+      "Ignore": false,
+      "Symbol": "ATOM"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "GMXUSDT",
+      "Ignore": false,
+      "Symbol": "GMX"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "RDNTUSDT",
       "Ignore": false,
       "Symbol": "RDNT"

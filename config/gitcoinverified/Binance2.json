@@ -19,6 +19,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "ATOM",
+            "Exchange": "Binance2",
+            "Blockchain": "Cosmos",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "AVAX",
             "Exchange": "Binance2",
             "Blockchain": "Avalanche",
@@ -67,6 +73,12 @@
             "Address": "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72"
         },
         {
+            "Symbol": "GMX",
+            "Exchange": "Binance2",
+            "Blockchain": "Arbitrum",
+            "Address": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"
+        },
+        {
             "Symbol": "GNS",
             "Exchange": "Binance2",
             "Blockchain": "Arbitrum",
@@ -89,6 +101,12 @@
             "Exchange": "Binance2",
             "Blockchain": "Polygon",
             "Address": "0x0000000000000000000000000000000000001010"
+        },
+        {
+            "Symbol": "RDNT",
+            "Exchange": "Binance2",
+            "Blockchain": "Arbitrum",
+            "Address": "0x0C4681e6C0235179ec3D4F4fc4DF3d14FDD96017"
         },
         {
             "Symbol": "SPELL",
