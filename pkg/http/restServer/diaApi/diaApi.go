@@ -190,7 +190,6 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 	quotationExtended.Time = quotation.Time
 	quotationExtended.Source = quotation.Source
 	quotationExtended.Signature = signedData
-	quotationExtended.TimeStamp = quotation.Time.Unix()
 
 	c.JSON(http.StatusOK, quotationExtended)
 
