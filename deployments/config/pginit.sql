@@ -121,12 +121,23 @@ CREATE TABLE nftclass (
     address text NOT NULL,
     symbol text,
     name text,
-    blockchain text REFERENCES blockchain(name),
     contract_type text,
     category text REFERENCES nftcategory(category),
     UNIQUE(blockchain,address),
     UNIQUE(nftclass_id)
 );
+
+-- historicalquotes collects USD quotes with lower frequency
+-- for a selection of assets.
+CREATE TABLE historicalquotes (
+    historicalquotes_id UUID DEFAULT gen_random_uuid(),
+    asset_id UUID REFERENCES asset(asset_id) NOT NULL, 
+    price numeric,
+    quote_time timestamp,
+    source text,
+    UNIQUE(asset_id,quote_time),
+    UNIQUE(historicalquotes_id)
+)
 
 -- an element from nft is a specific non-fungible nft, unqiuely
 -- identified by the pair (address(on blockchain), token_id)
@@ -264,6 +275,8 @@ CREATE TABLE oracleconfig (
     frequency text ,
     sleepseconds text,
     deviationpermille text,
+    blochchainnode text,
+    mandatory_frequency text,
     UNIQUE (id),
     UNIQUE (feeder_id)
 );

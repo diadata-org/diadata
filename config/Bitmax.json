@@ -1,6 +1,18 @@
 {
     "Coins": [
         {
+            "Symbol": "ATOM",
+            "ForeignName": "ATOM/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GMX",
+            "ForeignName": "GMX/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
             "Symbol": "LKR",
             "ForeignName": "LKR/USDT",
             "Exchange": "Bitmax",

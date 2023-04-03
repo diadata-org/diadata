@@ -805,6 +805,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "GMX",
+            "ForeignName": "GMX-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "GRT",
             "ForeignName": "GRT-USDT",
             "Exchange": "KuCoin",

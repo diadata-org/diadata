@@ -1,22 +1,58 @@
 {
   "Tokens": [
     {
+      "Symbol": "ASTR",
+      "Exchange": "Kraken",
+      "Blockchain": "Astar",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "AVAX",
+      "Exchange": "Kraken",
+      "Blockchain": "Avalanche",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "CFG",
+      "Exchange": "Kraken",
+      "Blockchain": "Centrifuge",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "DAI",
+      "Exchange": "Kraken",
+      "Blockchain": "Ethereum",
+      "Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+    },
+    {
       "Symbol": "DOT",
       "Exchange": "Kraken",
       "Blockchain": "Polkadot",
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
-      "Symbol": "YFI",
+      "Symbol": "GLMR",
       "Exchange": "Kraken",
-      "Blockchain": "Ethereum",
-      "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
+      "Blockchain": "Moonbeam",
+      "Address": "0x0000000000000000000000000000000000000000"
     },
     {
       "Symbol": "KILT",
       "Exchange": "Kraken",
       "Blockchain": "Kilt",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "KSM",
+      "Exchange": "Kraken",
+      "Blockchain": "Kusama",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "LDO",
+      "Exchange": "Kraken",
+      "Blockchain": "Ethereum",
+      "Address": "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32"
     },
     {
       "Symbol": "MOVR",
@@ -31,34 +67,40 @@
       "Address": "0x221657776846890989a759BA2973e427DfF5C9bB"
     },
     {
-      "Symbol": "USDC",
+      "Symbol": "SDN",
       "Exchange": "Kraken",
-      "Blockchain": "Ethereum",
-      "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
-    },
-    {
-      "Symbol": "DAI",
-      "Exchange": "Kraken",
-      "Blockchain": "Ethereum",
-      "Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-    },
-    {
-      "Symbol": "EUR",
-      "Exchange": "Kraken",
-      "Blockchain": "Fiat",
-      "Address": "978"
-    },
-    {
-      "Symbol": "GBP",
-      "Exchange": "Kraken",
-      "Blockchain": "Fiat",
-      "Address": "826"
+      "Blockchain": "Shiden",
+      "Address": "0x0000000000000000000000000000000000000000"
     },
     {
       "Symbol": "SYN",
       "Exchange": "Kraken",
       "Blockchain": "Ethereum",
       "Address": "0x0f2D719407FdBeFF09D87557AbB7232601FD9F29"
+    },
+    {
+      "Symbol": "USD",
+      "Exchange": "Kraken",
+      "Blockchain": "Fiat",
+      "Address": "840"
+    },
+    {
+      "Symbol": "USDC",
+      "Exchange": "Kraken",
+      "Blockchain": "Ethereum",
+      "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+    },
+    {
+      "Symbol": "WBTC",
+      "Exchange": "Kraken",
+      "Blockchain": "Ethereum",
+      "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
+    },
+    {
+      "Symbol": "YFI",
+      "Exchange": "Kraken",
+      "Blockchain": "Ethereum",
+      "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
     }
   ]
 }

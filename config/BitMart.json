@@ -80,6 +80,12 @@
     },
     {
       "Exchange": "BitMart",
+      "ForeignName": "GMX_USDT",
+      "Ignore": false,
+      "Symbol": "GMX"
+    },
+    {
+      "Exchange": "BitMart",
       "ForeignName": "TUSD_USDT",
       "Ignore": false,
       "Symbol": "TUSD"

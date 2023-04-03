@@ -51,10 +51,10 @@ func init() {
 
 var (
 	stablecoins = map[string]interface{}{
-		"USDC": "",
 		"USDT": "",
 		"TUSD": "",
-		"DAI":  "",
+		// "DAI":  "",
+		// "USDC": "",
 		"PAX":  "",
 		"BUSD": "",
 	}

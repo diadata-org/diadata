@@ -307,6 +307,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "GMX",
+            "ForeignName": "GMXUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "GRT",
             "ForeignName": "GRTUSDT",
             "Exchange": "ByBit",

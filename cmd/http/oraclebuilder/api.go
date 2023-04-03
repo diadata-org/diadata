@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"strings"
@@ -52,10 +51,11 @@ func (ob *Env) Create(context *gin.Context) {
 	deviationPermille := context.PostForm("deviationpermille")
 
 	blockchainnode := context.PostForm("blockchainnode")
+	mandatoryFrequency := context.PostForm("mandatoryfrequency")
 
 	k := make(map[string]string)
 
-	log.Infof("Creating oracle: oracleAddress: %s, ChainID: %s, Creator: %s, Symbols: %s, frequency: %s, sleepSeconds: %s,", oracleaddress, chainID, creator, symbols, frequency, sleepSeconds)
+	log.Infof("Creating oracle: oracleAddress: %s, ChainID: %s, Creator: %s, Symbols: %s, frequency: %s, sleepSeconds: %s blockchainnode: %s,", oracleaddress, chainID, creator, symbols, frequency, sleepSeconds, blockchainnode)
 
 	log.Infoln("Creating oracle: chainID", chainID)
 	log.Infoln("Creating oracle: creator", creator)
@@ -129,7 +129,7 @@ func (ob *Env) Create(context *gin.Context) {
 	address = keypair.GetPublickey()
 
 	if !isUpdate {
-		err = ob.PodHelper.CreateOracleFeeder(feederID, address, oracleaddress, chainID, symbols, blockchainnode, frequency, sleepSeconds, deviationPermille)
+		err = ob.PodHelper.CreateOracleFeeder(feederID, address, oracleaddress, chainID, symbols, blockchainnode, frequency, sleepSeconds, deviationPermille, mandatoryFrequency)
 		if err != nil {
 			log.Errorln("error CreateOracleFeeder ", err)
 			context.JSON(http.StatusInternalServerError, errors.New("error creating oraclefeeder"))
@@ -138,7 +138,7 @@ func (ob *Env) Create(context *gin.Context) {
 
 	}
 
-	err = ob.RelDB.SetOracleConfig(oracleaddress, feederID, creator, symbols, chainID, frequency, sleepSeconds, deviationPermille)
+	err = ob.RelDB.SetOracleConfig(oracleaddress, feederID, creator, symbols, chainID, frequency, sleepSeconds, deviationPermille, blockchainnode, mandatoryFrequency)
 	if err != nil {
 		log.Errorln("error SetOracleConfig ", err)
 		context.JSON(http.StatusInternalServerError, err)
@@ -153,7 +153,6 @@ func (ob *Env) Create(context *gin.Context) {
 			return
 		}
 
-		fmt.Println("oracleconfig", oracleconfig.Symbols)
 		err = ob.PodHelper.RestartOracleFeeder(feederID, oracleconfig)
 		if err != nil {
 			log.Errorln("error RestartOracleFeeder ", err)
@@ -185,12 +184,11 @@ func (ob *Env) List(context *gin.Context) {
 	context.JSON(http.StatusOK, oracles)
 }
 
-// List: list owner oracles
+// List: list All feeders
 func (ob *Env) ListAll(context *gin.Context) {
-	creator := context.Query("creator")
-	oracles, err := ob.RelDB.GetOraclesByOwner(creator)
+	oracles, err := ob.RelDB.GetAllFeeders()
 	if err != nil {
-		log.Errorln("List Oracles: error on getOraclesByOwner ", err)
+		log.Errorln("List All Oracles: error on GetAllFeeders ", err)
 		context.JSON(http.StatusInternalServerError, err)
 		return
 	}
@@ -291,7 +289,6 @@ func (ob *Env) Restart(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, err)
 		return
 	}
-	fmt.Println("oracleconfig", oracleconfig.Symbols)
 
 	err = ob.PodHelper.RestartOracleFeeder(oracleconfig.FeederID, oracleconfig)
 	if err != nil {

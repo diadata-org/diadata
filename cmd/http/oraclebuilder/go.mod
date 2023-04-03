@@ -6,7 +6,7 @@ replace github.com/99designs/keyring => github.com/nnn-gif/keyring v1.0.0
 
 require (
 	github.com/99designs/keyring v1.2.2
-	github.com/diadata-org/diadata v1.4.146
+	github.com/diadata-org/diadata v1.4.172
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/sirupsen/logrus v1.9.0
@@ -14,6 +14,7 @@ require (
 	k8s.io/apimachinery v0.26.0
 	k8s.io/client-go v0.26.0
 )
+
 
 require (
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect

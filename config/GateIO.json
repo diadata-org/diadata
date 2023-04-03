@@ -2,9 +2,21 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "ATOM_USDT",
+      "Ignore": false,
+      "Symbol": "ATOM"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "BFC_USDT",
       "Ignore": false,
       "Symbol": "BFC"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "GMX_USDT",
+      "Ignore": false,
+      "Symbol": "GMX"
     },
     {
       "Exchange": "GateIO",

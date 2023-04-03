@@ -187,6 +187,12 @@
       "Address": "0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9"
     },
     {
+      "Symbol": "GMX",
+      "Exchange": "BitMart",
+      "Blockchain": "Arbitrum",
+      "Address": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"
+    },
+    {
       "Symbol": "GNS",
       "Exchange": "BitMart",
       "Blockchain": "Arbitrum",

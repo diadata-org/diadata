@@ -1,18 +1,18 @@
 package main
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/99designs/keyring"
 	builderUtils "github.com/diadata-org/diadata/http/oraclebuilder/utils"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"time"
-	"github.com/diadata-org/diadata/pkg/utils"
 
-
-
- 	"github.com/gin-contrib/cors"
- )
+	"github.com/gin-contrib/cors"
+)
 
 var log = logrus.New()
 
@@ -38,8 +38,10 @@ func main() {
 	k8bridgeurl := utils.Getenv("K8SBRIDGE_URL", "127.0.0.1:50051")
 	oraclebaseimage := utils.Getenv("ORACLE_BASE_IMAGE", "us.icr.io/dia-registry/oracles/oracle-baseimage:latest")
 	oraclenamespace := utils.Getenv("ORACLE_NAMESPACE", "dia-oracle-feeder")
+	oracleMonitoringUser := utils.Getenv("ORACLE_MONITORING_USER", "user")
+	oracleMonitoringPassword := utils.Getenv("ORACLE_MONITORING_PASSWORD", "password")
 
-	ph := 	builderUtils.NewPodHelper(oraclebaseimage, oraclenamespace)
+	ph := builderUtils.NewPodHelper(oraclebaseimage, oraclenamespace)
 
 	ring, _ := keyring.Open(keyring.Config{
 		ServiceName:     "oraclebuilder",
@@ -61,6 +63,9 @@ func main() {
 	routerGroup.GET("/view", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to List your oracles") }, oracle.Auth, oracle.View)
 	routerGroup.DELETE("/delete", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to delete oracle") }, oracle.Auth, oracle.Delete)
 	routerGroup.PATCH("/restart", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to restart oracle feeder") }, oracle.Auth, oracle.Restart)
+	authMiddleware := basicAuth(oracleMonitoringUser, oracleMonitoringPassword)
+
+	routerGroup.GET("/listAll", authMiddleware, oracle.ListAll)
 
 	port := utils.Getenv("LISTEN_PORT", ":8080")
 
@@ -77,4 +82,17 @@ func main() {
 		}
 	}
 
+}
+func basicAuth(username, password string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		user, pass, hasAuth := c.Request.BasicAuth()
+
+		if !hasAuth || user != username || pass != password {
+			c.Header("WWW-Authenticate", "Basic realm=Restricted")
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
+
+		c.Next()
+	}
 }

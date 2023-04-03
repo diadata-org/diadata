@@ -73,6 +73,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "BFR",
+      "ForeignName": "BFRUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "BNB",
       "ForeignName": "BNBUSDT",
       "Exchange": "MEXC",
@@ -243,6 +249,12 @@
     {
       "Symbol": "GLMR",
       "ForeignName": "GLMRUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "GMX",
+      "ForeignName": "GMXUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     },
