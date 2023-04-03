@@ -53,7 +53,7 @@ func (aqs *AssetQuotationSigner) Sign(symbol, address, blockchain string, price 
 		"Symbol":     symbol,
 		"Address":    common.HexToAddress(address).Hex(),
 		"Blockchain": blockchain,
-		"Price":      big.NewInt(int64(price * 100000000)),
+		"Price":      big.NewInt(int64(price * 100000000)).String(),
 		"Time":       big.NewInt(time.Unix()).String(),
 	}
 
