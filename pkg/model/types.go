@@ -112,7 +112,6 @@ type AssetQuotationFull struct {
 	Time               time.Time `json:"Time"`
 	Source             string    `json:"Source"`
 	Signature          string    `json:"Signature"`
-	TimeStamp          int64     `json:"TimeStamp"`
 }
 
 // MarshalBinary for quotations
