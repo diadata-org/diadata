@@ -1065,7 +1065,7 @@ func (rdb *RelDB) GetAssetsWithVOL(starttime time.Time, numAssets int64, skip in
 			AND av.time_stamp>to_timestamp(%v)
 			ORDER BY av.volume 
 			DESC LIMIT %d OFFSET %d`
-			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, blockchain, starttime, numAssets, skip)
+			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, blockchain, starttime.Unix(), numAssets, skip)
 		}
 
 	} else {
