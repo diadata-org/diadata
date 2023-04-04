@@ -118,12 +118,13 @@ CREATE TABLE nftcategory (
 -- referring to the blockchain on which the nft was minted.
 CREATE TABLE nftclass (
     nftclass_id UUID DEFAULT gen_random_uuid(),
+    blockchain text NOT NULL,
     address text NOT NULL,
     symbol text,
     name text,
     contract_type text,
     category text REFERENCES nftcategory(category),
-    UNIQUE(blockchain,address),
+    UNIQUE(blockchain, address),
     UNIQUE(nftclass_id)
 );
 
@@ -137,7 +138,7 @@ CREATE TABLE historicalquotes (
     source text,
     UNIQUE(asset_id,quote_time),
     UNIQUE(historicalquotes_id)
-)
+);
 
 -- an element from nft is a specific non-fungible nft, unqiuely
 -- identified by the pair (address(on blockchain), token_id)
