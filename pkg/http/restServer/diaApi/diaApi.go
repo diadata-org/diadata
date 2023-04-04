@@ -754,7 +754,7 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 	if exchange == "noRange" {
 		if numSymbolsString != "" {
 			// -- Get top @numSymbols symbols across all exchanges. --
-			sortedAssets, err = env.RelDB.GetAssetsWithVOL(numSymbols, int64(0), false, "")
+			sortedAssets, err = env.RelDB.GetAssetsWithVOL(time.Now().AddDate(0, -1, 0), numSymbols, int64(0), false, "")
 			if err != nil {
 				log.Error("get assets with volume: ", err)
 			}
@@ -772,7 +772,7 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 
 			sort.Strings(s)
 			// Sort all symbols by volume, append if they have no volume.
-			sortedAssets, err = env.RelDB.GetAssetsWithVOL(numSymbols, int64(0), false, "")
+			sortedAssets, err = env.RelDB.GetAssetsWithVOL(time.Now().AddDate(0, -1, 0), numSymbols, int64(0), false, "")
 			if err != nil {
 				log.Error("get assets with volume: ", err)
 			}
@@ -1266,7 +1266,7 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 	numAssetsString := c.Param("numAssets")
 	pageString := c.DefaultQuery("Page", "1")
 	onlycexString := c.DefaultQuery("Cex", "false")
-	blokchain := c.DefaultQuery("Network", "")
+	blockchain := c.DefaultQuery("Network", "")
 
 	var (
 		numAssets    int64
@@ -1293,7 +1293,7 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 
 	offset = (pageNumber - 1) * numAssets
 
-	sortedAssets, err = env.RelDB.GetAssetsWithVOL(numAssets, offset, onlycex, blokchain)
+	sortedAssets, err = env.RelDB.GetAssetsWithVOL(time.Now().AddDate(0, 0, -7), numAssets, offset, onlycex, blockchain)
 	if err != nil {
 		log.Error("get assets with volume: ", err)
 
