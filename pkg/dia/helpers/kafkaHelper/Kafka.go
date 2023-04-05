@@ -149,33 +149,36 @@ func ReadOffsetWithRetryOnError(topic int) (offset int64) {
 }
 
 func NewWriter(topic int) *kafka.Writer {
-	return kafka.NewWriter(kafka.WriterConfig{
-		Brokers:  KafkaConfig.KafkaUrl,
-		Topic:    getTopic(topic),
-		Balancer: &kafka.LeastBytes{},
-		Async:    true,
-	})
+	return &kafka.Writer{
+		Addr:                   kafka.TCP(KafkaConfig.KafkaUrl[0]),
+		Topic:                  getTopic(topic),
+		Balancer:               &kafka.LeastBytes{},
+		Async:                  true,
+		AllowAutoTopicCreation: true,
+	}
 }
 
 func NewSyncWriter(topic int) *kafka.Writer {
-	return kafka.NewWriter(kafka.WriterConfig{
-		Brokers:    KafkaConfig.KafkaUrl,
-		Topic:      getTopic(topic),
-		Balancer:   &kafka.LeastBytes{},
-		Async:      false,
-		BatchBytes: 1e9, // 1GB
-	})
+	return &kafka.Writer{
+		Addr:                   kafka.TCP(KafkaConfig.KafkaUrl[0]),
+		Topic:                  getTopic(topic),
+		Balancer:               &kafka.LeastBytes{},
+		Async:                  false,
+		BatchBytes:             1e9, // 1GB
+		AllowAutoTopicCreation: true,
+	}
 }
 
 func NewSyncWriterWithCompression(topic int) *kafka.Writer {
-	return kafka.NewWriter(kafka.WriterConfig{
-		Brokers:          KafkaConfig.KafkaUrl,
-		Topic:            getTopic(topic),
-		Balancer:         &kafka.LeastBytes{},
-		Async:            false,
-		BatchBytes:       1e9, // 1GB
-		CompressionCodec: &compress.GzipCodec,
-	})
+	return &kafka.Writer{
+		Addr:                   kafka.TCP(KafkaConfig.KafkaUrl[0]),
+		Topic:                  getTopic(topic),
+		Balancer:               &kafka.LeastBytes{},
+		Async:                  false,
+		BatchBytes:             1e9, // 1GB
+		Compression:            compress.Gzip,
+		AllowAutoTopicCreation: true,
+	}
 }
 
 func NewReader(topic int) *kafka.Reader {
