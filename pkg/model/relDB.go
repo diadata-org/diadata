@@ -30,7 +30,7 @@ type RelDatastore interface {
 	Count() (uint32, error)
 	SetAssetVolume24H(asset dia.Asset, volume float64, timestamp time.Time) error
 	GetLastAssetVolume24H(asset dia.Asset) (float64, error)
-	GetAssetsWithVOL(numAssets int64, skip int64, onlycex bool, substring string) ([]dia.AssetVolume, error)
+	GetAssetsWithVOL(starttime time.Time, numAssets int64, skip int64, onlycex bool, substring string) ([]dia.AssetVolume, error)
 	GetAssetSource(asset dia.Asset, onlycex bool) ([]string, error)
 	GetAssetsWithVolByBlockchain(starttime time.Time, endtime time.Time, blockchain string) ([]dia.AssetVolume, error)
 
