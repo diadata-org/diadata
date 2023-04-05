@@ -127,6 +127,7 @@ type UniswapScraper struct {
 	WsClient   *ethclient.Client
 	RestClient *ethclient.Client
 	relDB      *models.RelDB
+	datastore  *models.DB
 	// signaling channels for session initialization and finishing
 	//initDone     chan nothing
 	run          bool
@@ -230,6 +231,11 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		log.Fatal("new postgres datastore: ", err)
 	}
 
+	s.datastore, err = models.NewDataStore()
+	if err != nil {
+		log.Fatal("new datastore: ", err)
+	}
+
 	// Only include pools with (minimum) liquidity bigger than given env var.
 	liquidityThreshold, err := strconv.ParseFloat(utils.Getenv("LIQUIDITY_THRESHOLD", "0"), 64)
 	if err != nil {
@@ -237,8 +243,15 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThreshold)
 	}
 
+	// Only include pools with (minimum) liquidity USD value bigger than given env var.
+	liquidityThresholdUSD, err := strconv.ParseFloat(utils.Getenv("LIQUIDITY_THRESHOLD_USD", "0"), 64)
+	if err != nil {
+		liquidityThreshold = float64(0)
+		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThreshold)
+	}
+
 	// Fetch all pool with given liquidity threshold from database.
-	poolMap, err = s.makeUniPoolMap(liquidityThreshold)
+	poolMap, err = s.makeUniPoolMap(liquidityThreshold, liquidityThresholdUSD)
 	if err != nil {
 		log.Fatal("build poolMap: ", err)
 	}
@@ -928,7 +941,7 @@ func (ps *UniswapPairScraper) Pair() dia.ExchangePair {
 
 // makeUniPoolMap returns a map with pool addresses as keys and the underlying UniswapPair as values.
 // If s.listenByAddress is true, it only loads the corresponding assets from the list.
-func (s *UniswapScraper) makeUniPoolMap(liquiThreshold float64) (map[string]UniswapPair, error) {
+func (s *UniswapScraper) makeUniPoolMap(liquiThreshold float64, liquiThresholdUSD float64) (map[string]UniswapPair, error) {
 	pm := make(map[string]UniswapPair)
 	var (
 		pools []dia.Pool
@@ -950,11 +963,20 @@ func (s *UniswapScraper) makeUniPoolMap(liquiThreshold float64) (map[string]Unis
 		}
 	} else if s.fetchPoolsFromDB {
 		// Load all pools above liqui threshold.
-		pools, err = s.relDB.GetAllPoolsExchange(s.exchangeName, liquiThreshold)
-		if err != nil {
-			return pm, err
+		poolsPreselection, errPreselect := s.relDB.GetAllPoolsExchange(s.exchangeName, liquiThreshold)
+		if errPreselect != nil {
+			return pm, errPreselect
 		}
 
+		for _, pool := range poolsPreselection {
+			liquidity, lowerBound, errLiqui := s.datastore.GetPoolLiquidityUSD(pool)
+			// Discard pool if complete USD liquidity is below threshold.
+			if errLiqui == nil && !lowerBound && liquidity < liquiThresholdUSD {
+				continue
+			} else {
+				pools = append(pools, pool)
+			}
+		}
 	} else {
 		// Pool info will be fetched from on-chain and poolMap is not needed.
 		return pm, nil

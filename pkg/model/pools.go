@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
 	"github.com/jackc/pgx/v4"
 )
@@ -307,6 +308,26 @@ func (rdb *RelDB) GetAllPoolsExchange(exchange string, liquiThreshold float64) (
 			pools[poolIndexMap[poolAddress]].Assetvolumes = append(pools[poolIndexMap[poolAddress]].Assetvolumes, av)
 		}
 
+	}
+	return
+}
+
+// GetPoolLiquidityUSD returns the liquidity of pool @p measured in USD in case quotations for all pool
+// assets are available. Otherwise it returns a lower bound for the liquidity signalled by lowerBound==true.
+// In other words, full liquidity is only obtained for err==nil and lowerBound==false.
+func (datastore *DB) GetPoolLiquidityUSD(p dia.Pool) (liquidity float64, lowerBound bool, err error) {
+	for _, av := range p.Assetvolumes {
+		var price float64
+		price, err = datastore.GetAssetPriceUSDCache(av.Asset)
+		if err != nil {
+			if errors.Is(err, redis.Nil) {
+				lowerBound = true
+				continue
+			} else {
+				return
+			}
+		}
+		liquidity += price * av.Volume
 	}
 	return
 }
