@@ -967,6 +967,7 @@ func (s *UniswapScraper) makeUniPoolMap(liquiThreshold float64, liquiThresholdUS
 		if errPreselect != nil {
 			return pm, errPreselect
 		}
+		log.Infof("Found %v pools after preselection.", len(poolsPreselection))
 
 		for _, pool := range poolsPreselection {
 			liquidity, lowerBound, errLiqui := s.datastore.GetPoolLiquidityUSD(pool)
@@ -977,6 +978,8 @@ func (s *UniswapScraper) makeUniPoolMap(liquiThreshold float64, liquiThresholdUS
 				pools = append(pools, pool)
 			}
 		}
+		log.Infof("Found %v pools after USD liquidity filtering.", len(pools))
+
 	} else {
 		// Pool info will be fetched from on-chain and poolMap is not needed.
 		return pm, nil
