@@ -247,7 +247,7 @@ func (datastore *DB) GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, e
 func (datastore *DB) GetAssetPriceUSDCache(asset dia.Asset) (price float64, err error) {
 	quotation, err := datastore.GetAssetQuotationCache(asset)
 	if err != nil {
-		log.Errorf("get asset quotation for %s from cache: %v", asset.Symbol, err)
+		log.Errorf("get asset quotation for %s with address %s from cache: %v", asset.Symbol, asset.Address, err)
 		return
 	}
 	price = quotation.Price

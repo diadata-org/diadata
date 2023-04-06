@@ -252,7 +252,7 @@ func (rdb *RelDB) GetAllPoolsExchange(exchange string, liquiThreshold float64) (
 	)
 
 	query = fmt.Sprintf(`
-		SELECT p.address,a.address,a.blockchain,a.decimals,a.symbol,a.name,pa.token_index
+		SELECT p.address,a.address,a.blockchain,a.decimals,a.symbol,a.name,pa.liquidity,pa.token_index
 		FROM %s p 
 		INNER JOIN %s pa 
 		ON p.pool_id=pa.pool_id 
@@ -261,7 +261,6 @@ func (rdb *RelDB) GetAllPoolsExchange(exchange string, liquiThreshold float64) (
 		WHERE p.exchange='%s'
 		AND pa.liquidity>=%v
 		`, poolTable, poolassetTable, assetTable, exchange, liquiThreshold)
-
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return
@@ -284,6 +283,7 @@ func (rdb *RelDB) GetAllPoolsExchange(exchange string, liquiThreshold float64) (
 			&decimals,
 			&av.Asset.Symbol,
 			&av.Asset.Name,
+			&av.Volume,
 			&index,
 		)
 		if err != nil {
