@@ -457,6 +457,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "USDC",
+      "ForeignName": "USDC_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
       "Symbol": "VELA",
       "ForeignName": "VELA_USDT",
       "Exchange": "BKEX",

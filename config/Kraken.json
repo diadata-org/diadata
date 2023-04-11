@@ -146,6 +146,12 @@
     },
     {
       "Exchange": "Kraken",
+      "ForeignName": "USDCUSDT",
+      "Ignore": false,
+      "Symbol": "USDC"
+    },
+    {
+      "Exchange": "Kraken",
       "ForeignName": "WBTCUSD",
       "Ignore": false,
       "Symbol": "WBTC"
