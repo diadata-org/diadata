@@ -156,7 +156,7 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
 	)
 
 	query := fmt.Sprintf(`
-	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatory_frequency, feeder_address
+	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address
 	FROM %s 
 	WHERE owner=$1 and active=true`, oracleconfigTable)
 	rows, err = rdb.postgresClient.Query(context.Background(), query, owner)
@@ -170,7 +170,7 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
 			oracleconfig dia.OracleConfig
 			symbols      string
 		)
-		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &oracleconfig.Frequency, &oracleconfig.SleepSeconds, &oracleconfig.DeviationPermille, &oracleconfig.BlockchainNode, &oracleconfig.MandatoryFrequency, &oracleconfig.FeederAddress)
+		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &oracleconfig.Frequency, &oracleconfig.SleepSeconds, &oracleconfig.DeviationPermille, &oracleconfig.BlockchainNode, &oracleconfig.Active, &oracleconfig.MandatoryFrequency, &oracleconfig.FeederAddress)
 		if err != nil {
 			log.Error(err)
 		}
