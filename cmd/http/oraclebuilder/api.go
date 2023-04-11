@@ -323,7 +323,6 @@ func (ob *Env) Auth(context *gin.Context) {
 	}
 
 	signedData, err := getAuthToken(context.Request)
-	log.Infoln("signedData", signedData)
 
 	if err != nil {
 		context.JSON(http.StatusUnauthorized, errors.New("sign err"))
@@ -333,8 +332,16 @@ func (ob *Env) Auth(context *gin.Context) {
 	}
 	actionmessage := context.GetString("message")
 	log.Infoln("actionmessage", actionmessage)
+	log.Infoln("chainID", chainID)
+	log.Infoln("creator", creator)
+	log.Infoln("signedData", signedData)
+	log.Infoln("oracleaddress", oracleaddress)
 
-	signer, _ := utils.GetSigner(chainID, creator, oracleaddress, actionmessage, signedData)
+	signer, err := utils.GetSigner(chainID, creator, oracleaddress, actionmessage, signedData)
+
+	if err != nil {
+		log.Error("error while signign %v", err)
+	}
 
 	log.Infoln("signer", signer)
 
