@@ -42,7 +42,7 @@ func (rdb *RelDB) GetKeyPairID(publicKey string) string {
 func (rdb *RelDB) SetOracleConfig(address, feederID, owner, feederAddress, symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency string) error {
 	query := fmt.Sprintf(`INSERT INTO %s 
 	(address,feeder_id,owner,symbols,chainID,frequency,sleepseconds, deviationpermille,blockchainnode, mandatory_frequency,feeder_address) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10, $11) on conflict(feeder_id)  
-	DO UPDATE SET symbols=$4,frequency=$6,sleepseconds=$7, deviationpermille=$8, blockchainnode=$9 mandatory_frequency=$10`, oracleconfigTable)
+	DO UPDATE SET symbols=$4,frequency=$6,sleepseconds=$7, deviationpermille=$8, blockchainnode=$9, mandatory_frequency=$10, feeder_address=$11`, oracleconfigTable)
 
 	log.Infoln("SetOracleConfig Query", query)
 	_, err := rdb.postgresClient.Exec(context.Background(), query, address, feederID, owner, symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency, feederAddress)
