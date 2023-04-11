@@ -271,6 +271,7 @@ CREATE TABLE oracleconfig (
     feeder_id text NOT NULL,
     owner text NOT NULL,
     symbols text NOT NULL,
+    feeder_address text NOT NULL,
     chainID text NOT NULL,
     active  boolean default true,
     frequency text ,

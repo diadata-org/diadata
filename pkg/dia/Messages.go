@@ -649,6 +649,7 @@ type OracleConfig struct {
 	Symbols            []string
 	FeederID           string
 	Address            string
+	FeederAddress      string
 	Owner              string
 	ChainID            string
 	Active             bool

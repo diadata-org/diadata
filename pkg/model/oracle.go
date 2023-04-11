@@ -39,13 +39,13 @@ func (rdb *RelDB) GetKeyPairID(publicKey string) string {
 	return keypairId
 }
 
-func (rdb *RelDB) SetOracleConfig(address, feederID, owner, symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency string) error {
+func (rdb *RelDB) SetOracleConfig(address, feederID, owner, feederAddress, symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency string) error {
 	query := fmt.Sprintf(`INSERT INTO %s 
-	(address,feeder_id,owner,symbols,chainID,frequency,sleepseconds, deviationpermille,blockchainnode, mandatory_frequency) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) on conflict(feeder_id)  
+	(address,feeder_id,owner,symbols,chainID,frequency,sleepseconds, deviationpermille,blockchainnode, mandatory_frequency,feeder_address) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10, $11) on conflict(feeder_id)  
 	DO UPDATE SET symbols=$4,frequency=$6,sleepseconds=$7, deviationpermille=$8, blockchainnode=$9 mandatory_frequency=$10`, oracleconfigTable)
 
 	log.Infoln("SetOracleConfig Query", query)
-	_, err := rdb.postgresClient.Exec(context.Background(), query, address, feederID, owner, symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency)
+	_, err := rdb.postgresClient.Exec(context.Background(), query, address, feederID, owner, symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency, feederAddress)
 	if err != nil {
 		return err
 	}
@@ -156,7 +156,7 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
 	)
 
 	query := fmt.Sprintf(`
-	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatory_frequency
+	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatory_frequency, feeder_address
 	FROM %s 
 	WHERE owner=$1 and active=true`, oracleconfigTable)
 	rows, err = rdb.postgresClient.Query(context.Background(), query, owner)
@@ -170,7 +170,7 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
 			oracleconfig dia.OracleConfig
 			symbols      string
 		)
-		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &oracleconfig.Frequency, &oracleconfig.SleepSeconds, &oracleconfig.DeviationPermille, &oracleconfig.BlockchainNode, &oracleconfig.MandatoryFrequency)
+		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &oracleconfig.Frequency, &oracleconfig.SleepSeconds, &oracleconfig.DeviationPermille, &oracleconfig.BlockchainNode, &oracleconfig.MandatoryFrequency, &oracleconfig.FeederAddress)
 		if err != nil {
 			log.Error(err)
 		}
