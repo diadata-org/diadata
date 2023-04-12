@@ -78,6 +78,7 @@ const (
 	BitMaxExchange            = "Bitmax"
 	MEXCExchange              = "MEXC"
 	BKEXExchange              = "BKEX"
+	BKEX2Exchange             = "BKEX2"
 	CREX24Exchange            = "CREX24"
 	STEXExchange              = "STEX"
 	Deribit                   = "Deribit"
