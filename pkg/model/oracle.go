@@ -143,7 +143,7 @@ func (rdb *RelDB) GetAllFeeders() (oracleconfigs []dia.OracleConfig, err error) 
 			log.Error(err)
 		}
 
-		oracleconfig.Symbols = strings.Split(symbols, " ")
+		oracleconfig.Symbols = strings.Split(symbols, ",")
 
 		oracleconfigs = append(oracleconfigs, oracleconfig)
 	}
