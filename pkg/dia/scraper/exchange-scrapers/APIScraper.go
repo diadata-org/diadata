@@ -73,6 +73,7 @@ func init() {
 	}
 
 	ExchangeDuplicates[dia.Binance2Exchange] = dia.Exchange{Name: "Binance2", Centralized: true, WatchdogDelay: 300}
+	ExchangeDuplicates[dia.BKEX2Exchange] = dia.Exchange{Name: "BKEX2", Centralized: true, WatchdogDelay: 1200}
 
 }
 
