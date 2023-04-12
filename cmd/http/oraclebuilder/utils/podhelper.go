@@ -16,6 +16,7 @@ import (
 	"k8s.io/client-go/util/homedir"
 
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/watch"
 )
@@ -187,20 +188,36 @@ func (kh *PodHelper) DeleteOracleFeeder(feederID string) error {
 }
 
 func (kh *PodHelper) RestartOracleFeeder(feederID string, oracleconfig dia.OracleConfig) (err error) {
-	err = kh.k8sclient.CoreV1().Pods(kh.NameSpace).Delete(context.TODO(), feederID, metav1.DeleteOptions{})
-	//if err != nil {
-	//	return err
-	//}
-	kh.waitPodDeleted(context.TODO(), oracleconfig.Address, func() {
-		time.Sleep(1000 * time.Millisecond)
+
+	_, err = kh.k8sclient.CoreV1().Pods(kh.NameSpace).Get(context.TODO(), feederID, metav1.GetOptions{})
+	if err != nil {
+		if errors.IsNotFound(err) {
+			log.Infof("Pod %s not found, no need to delete\n", feederID)
+		} else {
+			return err
+		}
 		err = kh.CreateOracleFeeder(feederID, oracleconfig.Owner, oracleconfig.Address, oracleconfig.ChainID, strings.Join(oracleconfig.Symbols[:], ","), oracleconfig.BlockchainNode, oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille, oracleconfig.MandatoryFrequency)
 		if err != nil {
 			log.Errorf("Pod %s start err\n", err)
 			return
 		}
 		log.Infof("Pod %s started\n", feederID)
-	})
-	log.Infof("Pod %s deleted\n", feederID)
+	} else {
+		err = kh.k8sclient.CoreV1().Pods(kh.NameSpace).Delete(context.TODO(), feederID, metav1.DeleteOptions{})
+		//if err != nil {
+		//	return err
+		//}
+		kh.waitPodDeleted(context.TODO(), oracleconfig.Address, func() {
+			time.Sleep(1000 * time.Millisecond)
+			err = kh.CreateOracleFeeder(feederID, oracleconfig.Owner, oracleconfig.Address, oracleconfig.ChainID, strings.Join(oracleconfig.Symbols[:], ","), oracleconfig.BlockchainNode, oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille, oracleconfig.MandatoryFrequency)
+			if err != nil {
+				log.Errorf("Pod %s start err\n", err)
+				return
+			}
+			log.Infof("Pod %s started\n", feederID)
+		})
+		log.Infof("Pod %s deleted\n", feederID)
+	}
 
 	return err
 }
