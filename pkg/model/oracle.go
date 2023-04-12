@@ -158,7 +158,7 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
 	query := fmt.Sprintf(`
 	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address
 	FROM %s 
-	WHERE owner=$1 and active=true`, oracleconfigTable)
+	WHERE owner=$1`, oracleconfigTable)
 	rows, err = rdb.postgresClient.Query(context.Background(), query, owner)
 	if err != nil {
 		return
