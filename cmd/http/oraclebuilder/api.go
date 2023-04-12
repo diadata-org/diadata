@@ -296,8 +296,12 @@ func (ob *Env) Restart(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, err)
 		return
 	}
-	// delete from db
-	context.JSON(http.StatusOK, oracleconfig)
+	err = ob.RelDB.ChangeOracleState(oracleconfig.FeederID, true)
+	if err != nil {
+		log.Errorln("error ChangeOracleState ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
 
 }
 
