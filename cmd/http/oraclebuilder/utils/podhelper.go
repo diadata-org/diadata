@@ -179,10 +179,20 @@ func (kh *PodHelper) UpdateOracleFeeder(feederID string, owner string, oracle st
 
 }
 func (kh *PodHelper) DeleteOracleFeeder(feederID string) error {
-	err := kh.k8sclient.CoreV1().Pods(kh.NameSpace).Delete(context.TODO(), feederID, metav1.DeleteOptions{})
+
+	_, err := kh.k8sclient.CoreV1().Pods(kh.NameSpace).Get(context.TODO(), feederID, metav1.GetOptions{})
 	if err != nil {
-		return err
+		if errors.IsNotFound(err) {
+			log.Infof("Pod %s not found, no need to delete\n", feederID)
+			return nil
+		} else {
+			err = kh.k8sclient.CoreV1().Pods(kh.NameSpace).Delete(context.TODO(), feederID, metav1.DeleteOptions{})
+			if err != nil {
+				return err
+			}
+		}
 	}
+
 	log.Infof("Pod %s deleted\n", feederID)
 	return err
 }
