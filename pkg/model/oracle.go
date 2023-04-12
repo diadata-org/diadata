@@ -175,7 +175,7 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
 			log.Error(err)
 		}
 
-		oracleconfig.Symbols = strings.Split(symbols, " ")
+		oracleconfig.Symbols = strings.Split(symbols, ",")
 
 		oracleconfigs = append(oracleconfigs, oracleconfig)
 	}
