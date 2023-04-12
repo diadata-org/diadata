@@ -30,17 +30,19 @@ type BKEXScraper struct {
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*BKEXPairScraper
 	exchangeName string
+	scraperName  string
 	chanTrades   chan *dia.Trade
 	db           *models.RelDB
 }
 
-func NewBKEXScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BKEXScraper {
+func NewBKEXScraper(exchange dia.Exchange, scraperName string, scrape bool, relDB *models.RelDB) *BKEXScraper {
 	s := &BKEXScraper{
 		wsClient:     make(map[int]*ws.Conn),
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*BKEXPairScraper),
 		exchangeName: exchange.Name,
+		scraperName:  scraperName,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
 		db:           relDB,
@@ -184,7 +186,7 @@ func (s *BKEXScraper) subLoop(wsClient *ws.Conn, pairs string) {
 			var exchangePair dia.ExchangePair
 			priceFloat, _ := strconv.ParseFloat(trade.Price, 64)
 
-			exchangePair, err = s.db.GetExchangePairCache(s.exchangeName, trade.Symbol)
+			exchangePair, err = s.db.GetExchangePairCache(s.scraperName, trade.Symbol)
 			if err != nil {
 				log.Error("Get Exchange Pair  ", trade.Symbol)
 			}

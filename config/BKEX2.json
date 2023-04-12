@@ -1,0 +1,238 @@
+{
+  "Coins": [
+    {
+      "Symbol": "JOE",
+      "ForeignName": "JOE_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "JONES",
+      "ForeignName": "JONES_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "KSM",
+      "ForeignName": "KSM_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LDO",
+      "ForeignName": "LDO_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LINK",
+      "ForeignName": "LINK_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MATIC",
+      "ForeignName": "MATIC_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "METIS",
+      "ForeignName": "METIS_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MOVR",
+      "ForeignName": "MOVR_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NEAR",
+      "ForeignName": "NEAR_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NEAR",
+      "ForeignName": "NEAR_USDC",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PLS",
+      "ForeignName": "PLS_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PREMIA",
+      "ForeignName": "PREMIA_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "QNT",
+      "ForeignName": "QNT_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "RAY",
+      "ForeignName": "RAY_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "RDNT",
+      "ForeignName": "RDNT_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "RDPX",
+      "ForeignName": "RDPX_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SAMO",
+      "ForeignName": "SAMO_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SAND",
+      "ForeignName": "SAND_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SDN",
+      "ForeignName": "SDN_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SHIB",
+      "ForeignName": "SHIB_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SOL",
+      "ForeignName": "SOL_USDC",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SOL",
+      "ForeignName": "SOL_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SPA",
+      "ForeignName": "SPA_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SPELL",
+      "ForeignName": "SPELL_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "STG",
+      "ForeignName": "STG_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SUSHI",
+      "ForeignName": "SUSHI_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SYN",
+      "ForeignName": "SYN_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TLOS",
+      "ForeignName": "TLOS_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TND",
+      "ForeignName": "TND_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TOMB",
+      "ForeignName": "TOMB_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TRX",
+      "ForeignName": "TRX_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "UNI",
+      "ForeignName": "UNI_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "USDC",
+      "ForeignName": "USDC_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "VELA",
+      "ForeignName": "VELA_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "WBTC",
+      "ForeignName": "WBTC_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XLM",
+      "ForeignName": "XLM_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XMR",
+      "ForeignName": "XMR_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XRP",
+      "ForeignName": "XRP_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "YFI",
+      "ForeignName": "YFI_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    }
+  ]
+}
