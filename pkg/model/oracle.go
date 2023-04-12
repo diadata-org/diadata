@@ -158,7 +158,7 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
 	query := fmt.Sprintf(`
 	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address
 	FROM %s 
-	WHERE owner=$1`, oracleconfigTable)
+	WHERE owner=$1 and deleted=false`, oracleconfigTable)
 	rows, err = rdb.postgresClient.Query(context.Background(), query, owner)
 	if err != nil {
 		return
@@ -205,6 +205,18 @@ func (rdb *RelDB) ChangeOracleState(feederID string, active bool) (err error) {
 	SET active=$1
 	WHERE feeder_id=$2`, oracleconfigTable)
 	_, err = rdb.postgresClient.Exec(context.Background(), query, active, feederID)
+	if err != nil {
+		return
+	}
+
+	return
+}
+func (rdb *RelDB) DeleteOracle(feederID string) (err error) {
+	query := fmt.Sprintf(`
+	UPDATE %s 
+	SET deleted=$1
+	WHERE feeder_id=$2`, oracleconfigTable)
+	_, err = rdb.postgresClient.Exec(context.Background(), query, true, feederID)
 	if err != nil {
 		return
 	}

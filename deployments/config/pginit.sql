@@ -274,6 +274,7 @@ CREATE TABLE oracleconfig (
     feeder_address text NOT NULL,
     chainID text NOT NULL,
     active  boolean default true,
+    deleted  boolean default false,
     frequency text ,
     sleepseconds text,
     deviationpermille text,

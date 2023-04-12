@@ -337,6 +337,13 @@ func (ob *Env) Restart(context *gin.Context) {
 		return
 	}
 
+	err = ob.RelDB.DeleteOracle(oracleconfig.FeederID)
+	if err != nil {
+		log.Errorln("error ChangeOracleState ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
 }
 
 func getAuthToken(req *http.Request) (string, error) {
