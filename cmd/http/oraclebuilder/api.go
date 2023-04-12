@@ -234,6 +234,40 @@ func (ob *Env) View(context *gin.Context) {
 	context.JSON(http.StatusOK, oracleconfig)
 
 }
+func (ob *Env) Pause(context *gin.Context) {
+	var (
+		// address string
+		err error
+	)
+	oracleaddress := context.Query("oracleaddress")
+
+	creator := context.Query("creator")
+
+	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress)
+	if err != nil {
+		log.Errorln("error GetOracleConfig ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	if oracleconfig.Owner != creator {
+		log.Errorln("not authorised to delete  ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	err = ob.PodHelper.DeleteOracleFeeder(oracleconfig.FeederID)
+	if err != nil {
+		log.Errorln("error DeleteOracleFeeder ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	err = ob.RelDB.ChangeOracleState(oracleconfig.FeederID, false)
+	if err != nil {
+		log.Errorln("error ChangeOracleState ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	context.JSON(http.StatusOK, oracleconfig)
+}
 
 func (ob *Env) Delete(context *gin.Context) {
 	var (
