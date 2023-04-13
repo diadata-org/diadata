@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/1_dZqpEo-3_IlZsrZ_J9X7Xw.png
-coverY: 0
----
-
 # 🏃 Get Started
 
 ## What is DIA?&#x20;
@@ -84,21 +79,11 @@ DIA through its DAO operations is working towards building the biggest open-sour
 
 Contribute to the DAO through the two verticals below:
 
-{% content-ref url="contribute/product-development.md" %}
-[product-development.md](contribute/product-development.md)
-{% endcontent-ref %}
-
-{% content-ref url="contribute/ecosystem-growth.md" %}
-[ecosystem-growth.md](contribute/ecosystem-growth.md)
-{% endcontent-ref %}
+- [Product development](contribute/product-development.md)
+- [Ecosystem growth](contribute/ecosystem-growth.md)
 
 ## Support
 
-{% content-ref url="support/discord.md" %}
-[discord.md](support/discord.md)
-{% endcontent-ref %}
-
-{% content-ref url="support/request-a-custom-oracle.md" %}
-[request-a-custom-oracle.md](support/request-a-custom-oracle.md)
-{% endcontent-ref %}
+- [Discord](support/discord.md)
+- [Request a custom oracle](support/request-a-custom-oracle.md)
 
