@@ -280,6 +280,8 @@ CREATE TABLE oracleconfig (
     deviationpermille text,
     blochchainnode text,
     mandatory_frequency text,
+    createddate TIMESTAMP NOT NULL DEFAULT NOW(),
+    lastupdate TIMESTAMP NOT NULL,
     UNIQUE (id),
     UNIQUE (feeder_id)
 );

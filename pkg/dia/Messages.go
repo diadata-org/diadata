@@ -658,4 +658,6 @@ type OracleConfig struct {
 	DeviationPermille  string
 	BlockchainNode     string
 	MandatoryFrequency string
+	CreatedDate        time.Time
+	LastUpdate         time.Time
 }
