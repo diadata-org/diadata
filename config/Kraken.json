@@ -44,6 +44,12 @@
     },
     {
       "Exchange": "Kraken",
+      "ForeignName": "BNCUSD",
+      "Ignore": false,
+      "Symbol": "BNC"
+    },
+    {
+      "Exchange": "Kraken",
       "ForeignName": "CFGUSD",
       "Ignore": false,
       "Symbol": "CFG"

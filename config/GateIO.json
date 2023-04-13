@@ -14,6 +14,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "BNC_USDT",
+      "Ignore": false,
+      "Symbol": "BNC"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "GMX_USDT",
       "Ignore": false,
       "Symbol": "GMX"
