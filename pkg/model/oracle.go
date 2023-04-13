@@ -153,6 +153,32 @@ func (rdb *RelDB) GetAllFeeders() (oracleconfigs []dia.OracleConfig, err error) 
 	}
 	return
 }
+func (rdb *RelDB) GetFeederResources() (addresses []string, err error) {
+	var (
+		rows pgx.Rows
+	)
+	query := fmt.Sprintf(`
+	SELECT owner
+	FROM %s`, feederResourceTable)
+	rows, err = rdb.postgresClient.Query(context.Background(), query, owner)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			address string
+		)
+		err := rows.Scan(&address)
+		if err != nil {
+			log.Error(err)
+		}
+		addresses = append(addresses, address)
+	}
+	return
+
+}
 
 func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleConfig, err error) {
 	var (

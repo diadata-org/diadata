@@ -64,6 +64,8 @@ func main() {
 	routerGroup.DELETE("/delete", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to delete oracle") }, oracle.Auth, oracle.Delete)
 	routerGroup.PATCH("/restart", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to restart oracle feeder") }, oracle.Auth, oracle.Restart)
 	routerGroup.PATCH("/pause", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to pause oracle feeder") }, oracle.Auth, oracle.Pause)
+	routerGroup.GET("/whitelist", oracle.Whitelist)
+
 	authMiddleware := basicAuth(oracleMonitoringUser, oracleMonitoringPassword)
 
 	routerGroup.GET("/listAll", authMiddleware, oracle.ListAll)
