@@ -2,13 +2,13 @@
     "Tokens": [
         {
             "Symbol": "1INCH",
-            "Exchange": "BKEX22",
+            "Exchange": "BKEX2",
             "Blockchain": "Ethereum",
             "Address": "0x111111111117dC0aa78b770fA6A738034120C302"
         },
         {
             "Symbol": "ADA",
-            "Exchange": "BKEX22",
+            "Exchange": "BKEX2",
             "Blockchain": "Cardano",
             "Address": "0x0000000000000000000000000000000000000000"
         },
