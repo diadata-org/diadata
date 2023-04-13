@@ -178,8 +178,6 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
 		if err != nil {
 			log.Error(err)
 		}
-		log.Infoln("LastUpdate", oracleconfig.LastUpdate)
-		log.Infoln("CreatedDate", oracleconfig.CreatedDate)
 
 		oracleconfig.Symbols = strings.Split(symbols, ",")
 
