@@ -31,21 +31,27 @@
             "Address": "0x0c7D5ae016f806603CB1782bEa29AC69471CAb9c"
         },
         {
+            "Symbol": "BNC",
+            "Exchange": "GateIO",
+            "Blockchain": "Bifrost",
+            "Address": "Token:BNC"
+        },
+        {
             "Symbol": "CFG",
             "Exchange": "GateIO",
             "Blockchain": "Centrifuge",
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
-            "Symbol": "INTR",
-            "Exchange": "GateIO",
-            "Blockchain": "Interlay",
-            "Address": "0x0000000000000000000000000000000000000000"
-        },
-        {
             "Symbol": "CKB",
             "Exchange": "GateIO",
             "Blockchain": "Nervos",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "INTR",
+            "Exchange": "GateIO",
+            "Blockchain": "Interlay",
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {

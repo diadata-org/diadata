@@ -277,8 +277,8 @@
             "Ignore": false
         },
         {
-            "Symbol": "BNB",
-            "ForeignName": "BNB-KCS",
+            "Symbol": "BNC",
+            "ForeignName": "BNC-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
         },

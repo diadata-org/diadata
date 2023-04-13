@@ -85,6 +85,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "BNC",
+      "Exchange": "MEXC",
+      "Blockchain": "Bifrost",
+      "Address": "Token:BNC"
+    },
+    {
       "Symbol": "BOO",
       "Exchange": "MEXC",
       "Blockchain": "Fantom",

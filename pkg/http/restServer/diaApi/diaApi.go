@@ -2935,6 +2935,10 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 	}
 
 	// Check whether time range is feasible.
+	if starttime.After(endtime) {
+		restApi.SendError(c, http.StatusNotAcceptable, fmt.Errorf("endtime must be later than starttime"))
+		return
+	}
 	if ok := utils.ValidTimeRange(starttime, endtime, time.Duration(24*time.Hour)); !ok {
 		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 24*time.Hour))
 		return
@@ -3037,7 +3041,13 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 			result.TradesDistribution.NumLowBins++
 		}
 	}
-	result.TradesDistribution.AvgNumPerBin = float64(result.TradesDistribution.NumTradesTotal) / float64(len(numTradesSeries))
+	if len(volumeMap) == 0 {
+		result.TradesDistribution.NumBins = int(endtime.Sub(starttime).Seconds()) / sizeBinSeconds
+		result.TradesDistribution.NumLowBins = result.TradesDistribution.NumBins
+	}
+	if len(numTradesSeries) > 0 {
+		result.TradesDistribution.AvgNumPerBin = float64(result.TradesDistribution.NumTradesTotal) / float64(len(numTradesSeries))
+	}
 	result.TradesDistribution.StdDeviation = utils.StandardDeviation(numTradesSeriesFloat)
 	result.TradesDistribution.TimeRangeSeconds = int64(endtime.Sub(starttime).Seconds())
 
