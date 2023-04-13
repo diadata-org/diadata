@@ -160,7 +160,7 @@ func (rdb *RelDB) GetFeederResources() (addresses []string, err error) {
 	query := fmt.Sprintf(`
 	SELECT owner
 	FROM %s`, feederResourceTable)
-	rows, err = rdb.postgresClient.Query(context.Background(), query, owner)
+	rows, err = rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return
 	}
