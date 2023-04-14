@@ -441,41 +441,41 @@ func (s *UniswapScraper) ListenToPair(i int, address common.Address) {
 					VerifiedPair:   true,
 				}
 
-				// TO DO: Refactor approach for reversing pairs.
-				switch {
-				case utils.Contains(reverseBasetokens, pair.Token1.Address.Hex()):
-					// If we need quotation of a base token, reverse pair
-					tSwapped, err := dia.SwapTrade(*t)
-					if err == nil {
-						t = &tSwapped
-					}
-				case utils.Contains(reverseQuotetokens, pair.Token0.Address.Hex()):
-					// If we don't need quotation of quote token, reverse pair.
-					tSwapped, err := dia.SwapTrade(*t)
-					if err == nil {
-						t = &tSwapped
-					}
-				case token0.Address == "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" && !utils.Contains(&mainBaseAssets, token1.Address):
-					// Reverse almost all pairs WETH-XXX ...
-					if s.exchangeName == dia.UniswapExchange || s.exchangeName == dia.SushiSwapExchange {
-						tSwapped, err := dia.SwapTrade(*t)
-						if err == nil {
-							t = &tSwapped
-						}
-					}
-				// ...and USDT-XXX on Ethereum, i.e. Uniswap and Sushiswap
-				case token0.Address == mainBaseAssets[0] && token0.Blockchain == dia.ETHEREUM:
-					tSwapped, err := dia.SwapTrade(*t)
-					if err == nil {
-						t = &tSwapped
-					}
-				// Reverse USDC-XXX pairs on Fantom
-				case token0.Address == "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75" && token0.Blockchain == dia.FANTOM:
-					tSwapped, err := dia.SwapTrade(*t)
-					if err == nil {
-						t = &tSwapped
-					}
-				}
+				// // TO DO: Refactor approach for reversing pairs.
+				// switch {
+				// case utils.Contains(reverseBasetokens, pair.Token1.Address.Hex()):
+				// 	// If we need quotation of a base token, reverse pair
+				// 	tSwapped, err := dia.SwapTrade(*t)
+				// 	if err == nil {
+				// 		t = &tSwapped
+				// 	}
+				// case utils.Contains(reverseQuotetokens, pair.Token0.Address.Hex()):
+				// 	// If we don't need quotation of quote token, reverse pair.
+				// 	tSwapped, err := dia.SwapTrade(*t)
+				// 	if err == nil {
+				// 		t = &tSwapped
+				// 	}
+				// case token0.Address == "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" && !utils.Contains(&mainBaseAssets, token1.Address):
+				// 	// Reverse almost all pairs WETH-XXX ...
+				// 	if s.exchangeName == dia.UniswapExchange || s.exchangeName == dia.SushiSwapExchange {
+				// 		tSwapped, err := dia.SwapTrade(*t)
+				// 		if err == nil {
+				// 			t = &tSwapped
+				// 		}
+				// 	}
+				// // ...and USDT-XXX on Ethereum, i.e. Uniswap and Sushiswap
+				// case token0.Address == mainBaseAssets[0] && token0.Blockchain == dia.ETHEREUM:
+				// 	tSwapped, err := dia.SwapTrade(*t)
+				// 	if err == nil {
+				// 		t = &tSwapped
+				// 	}
+				// // Reverse USDC-XXX pairs on Fantom
+				// case token0.Address == "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75" && token0.Blockchain == dia.FANTOM:
+				// 	tSwapped, err := dia.SwapTrade(*t)
+				// 	if err == nil {
+				// 		t = &tSwapped
+				// 	}
+				// }
 				if price > 0 {
 					log.Info("tx hash: ", swap.ID)
 					log.Infof("Got trade at time %v - symbol: %s, pair: %s, price: %v, volume:%v", t.Time, t.Symbol, t.Pair, t.Price, t.Volume)
