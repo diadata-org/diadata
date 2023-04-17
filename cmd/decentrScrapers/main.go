@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -16,6 +17,7 @@ import (
 	ws "github.com/gorilla/websocket"
 	"github.com/ipfs/go-libipfs/files"
 	icore "github.com/ipfs/interface-go-ipfs-core"
+	"github.com/ipfs/interface-go-ipfs-core/path"
 	ma "github.com/multiformats/go-multiaddr"
 	log "github.com/sirupsen/logrus"
 
@@ -28,7 +30,11 @@ import (
 	"github.com/libp2p/go-libp2p/core/peer"
 )
 
-var binancewsBaseString = "wss://stream.binance.com:9443/ws/"
+var (
+	binancewsBaseString = "wss://stream.binance.com:9443/ws/"
+	inputBasePath       = "data/"
+	inputPathBinance    = inputBasePath + "trades_Binance_BTC_USDT/"
+)
 
 type BinanceTrade struct {
 	Symbol    string `json:"s"`
@@ -199,16 +205,49 @@ func getUnixfsNode(path string) (files.Node, error) {
 
 /// -------
 
+func init() {
+
+}
+
 var flagExp = flag.Bool("experimental", false, "enable experimental features")
 
 func main() {
 	flag.Parse()
 
-	wg := sync.WaitGroup{}
-	wg.Add(1)
-	chanTrade := make(chan dia.Trade)
-	go scrapeBinance("btcusdt", chanTrade, &wg)
-	defer wg.Wait()
+	// wg := sync.WaitGroup{}
+	// wg.Add(1)
+	// chanTrade := make(chan dia.Trade)
+	// go scrapeBinance("btcusdt", chanTrade, &wg)
+	// defer wg.Wait()
+
+	var tradesBlock dia.TradesBlock
+	for i := 0; i < 1000; i++ {
+		t := dia.Trade{
+			Symbol:     "BTC",
+			Pair:       "BTC-USDT",
+			BaseToken:  dia.Asset{Symbol: "USDT", Blockchain: dia.ETHEREUM, Address: "0xdAC17F958D2ee523a2206206994597C13D831ec7"},
+			QuoteToken: dia.Asset{Symbol: "BTC", Blockchain: dia.BITCOIN, Address: "0x0000000000000000000000000000000000000000"},
+			Price:      float64(28000) + float64(i/1000),
+			Volume:     float64(1),
+			Time:       time.Now(),
+		}
+		tradesBlock.TradesBlockData.Trades = append(tradesBlock.TradesBlockData.Trades, t)
+	}
+	tradesBlock.TradesBlockData.BeginTime = tradesBlock.TradesBlockData.Trades[0].Time
+	tradesBlock.TradesBlockData.EndTime = tradesBlock.TradesBlockData.Trades[len(tradesBlock.TradesBlockData.Trades)-1].Time
+	fileIdentifier := strconv.Itoa(int(tradesBlock.TradesBlockData.BeginTime.Unix())) + "-" + strconv.Itoa(int(tradesBlock.TradesBlockData.EndTime.Unix()))
+
+	tradesBlockMarsh, err := tradesBlock.MarshalBinary()
+	if err != nil {
+		log.Error("marshal tradesblock")
+	}
+
+	err = ioutil.WriteFile(inputBasePath+inputPathBinance+fileIdentifier+".json", tradesBlockMarsh, 0666)
+	if err != nil {
+		log.Error("write file: ", err)
+	}
+
+	time.Sleep(10 * time.Minute)
 
 	/// --- Part I: Getting a IPFS node running
 
@@ -217,25 +256,11 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	// Spawn a local peer using a temporary path, for testing purposes
-	ipfsA, nodeA, err := spawnEphemeral(ctx)
-	if err != nil {
-		panic(fmt.Errorf("failed to spawn peer node: %s", err))
-	}
-
-	peerCidFile, err := ipfsA.Unixfs().Add(ctx,
-		files.NewBytesFile([]byte("hello from ipfs 101 in Kubo")))
-	if err != nil {
-		panic(fmt.Errorf("could not add File: %s", err))
-	}
-
-	fmt.Printf("Added file to peer with CID %s\n", peerCidFile.String())
-
 	// Spawn a node using a temporary path, creating a temporary repo for the run
 	fmt.Println("Spawning Kubo node on a temporary repo")
-	ipfsB, _, err := spawnEphemeral(ctx)
+	ipfsA, _, err := spawnEphemeral(ctx)
 	if err != nil {
-		panic(fmt.Errorf("failed to spawn ephemeral node: %s", err))
+		panic(fmt.Errorf("failed to spawn ephemeral node: %w", err))
 	}
 
 	fmt.Println("IPFS node is running")
@@ -244,30 +269,26 @@ func main() {
 
 	fmt.Println("\n-- Adding and getting back files & directories --")
 
-	inputBasePath := "../trades_Binance_BTC_USDT/"
-	inputPathFile := inputBasePath + ""
-	inputPathDirectory := inputBasePath + "test-dir"
-
-	someFile, err := getUnixfsNode(inputPathFile)
+	someFile, err := getUnixfsNode(inputBasePath)
 	if err != nil {
-		panic(fmt.Errorf("could not get File: %s", err))
+		panic(fmt.Errorf("could not get File: %w", err))
 	}
 
-	cidFile, err := ipfsB.Unixfs().Add(ctx, someFile)
+	cidFile, err := ipfsA.Unixfs().Add(ctx, someFile)
 	if err != nil {
-		panic(fmt.Errorf("could not add File: %s", err))
+		panic(fmt.Errorf("could not add File: %w", err))
 	}
 
 	fmt.Printf("Added file to IPFS with CID %s\n", cidFile.String())
 
-	someDirectory, err := getUnixfsNode(inputPathDirectory)
+	someDirectory, err := getUnixfsNode(inputBasePath)
 	if err != nil {
-		panic(fmt.Errorf("could not get File: %s", err))
+		panic(fmt.Errorf("could not get File: %w", err))
 	}
 
-	cidDirectory, err := ipfsB.Unixfs().Add(ctx, someDirectory)
+	cidDirectory, err := ipfsA.Unixfs().Add(ctx, someDirectory)
 	if err != nil {
-		panic(fmt.Errorf("could not add Directory: %s", err))
+		panic(fmt.Errorf("could not add Directory: %w", err))
 	}
 
 	fmt.Printf("Added directory to IPFS with CID %s\n", cidDirectory.String())
@@ -361,6 +382,11 @@ func main() {
 	// fmt.Printf("Wrote the file to %s\n", outputPath)
 
 	// fmt.Println("\nAll done! You just finalized your first tutorial on how to use Kubo as a library")
+}
+
+func storeTrades(ipfsA icore.CoreAPI, trades files.Node) (cidFile path.Resolved, err error) {
+	cidFile, err = ipfsA.Unixfs().Add(context.Background(), trades)
+	return
 }
 
 func scrapeBinance(market string, tradesChan chan dia.Trade, wg *sync.WaitGroup) error {
