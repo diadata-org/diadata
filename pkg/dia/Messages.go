@@ -660,4 +660,5 @@ type OracleConfig struct {
 	MandatoryFrequency string
 	CreatedDate        time.Time
 	LastUpdate         time.Time
+	Deleted            bool
 }
