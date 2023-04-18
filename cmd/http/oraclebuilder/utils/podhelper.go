@@ -66,7 +66,7 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 	chainidenv := corev1.EnvVar{Name: "ORACLE_CHAINID", Value: chainID}
 	signerservice := corev1.EnvVar{Name: "ORACLE_SIGNER", Value: "signer.dia-oracle-feeder:50052"}
 	sleepsecondenv := corev1.EnvVar{Name: "ORACLE_SLEEPSECONDS", Value: sleepSeconds}
-	deviationenv := corev1.EnvVar{Name: "DEVIATION_PERMILLE", Value: deviationPermille}
+	deviationenv := corev1.EnvVar{Name: "ORACLE_DEVIATIONPERMILLE", Value: deviationPermille}
 	frequencyseconds := corev1.EnvVar{Name: "ORACLE_FREQUENCYSECONDS", Value: frequency}
 	oracletype := corev1.EnvVar{Name: "ORACLE_ORACLETYPE", Value: "3"}
 	oraclesymbols := corev1.EnvVar{Name: "ORACLE_SYMBOLS", Value: symbols}
@@ -129,7 +129,7 @@ func (kh *PodHelper) UpdateOracleFeeder(feederID string, owner string, oracle st
 	chainidenv := corev1.EnvVar{Name: "ORACLE_CHAINID", Value: chainID}
 	signerservice := corev1.EnvVar{Name: "ORACLE_SIGNER", Value: "signer.dia-oracle-feeder:50052"}
 	sleepsecondenv := corev1.EnvVar{Name: "ORACLE_SLEEPSECONDS", Value: sleepSeconds}
-	deviationenv := corev1.EnvVar{Name: "DEVIATION_PERMILLE", Value: deviationPermille}
+	deviationenv := corev1.EnvVar{Name: "ORACLE_DEVIATIONPERMILLE", Value: deviationPermille}
 	frequencyseconds := corev1.EnvVar{Name: "ORACLE_FREQUENCYSECONDS", Value: frequency}
 	oracletype := corev1.EnvVar{Name: "ORACLE_ORACLETYPE", Value: "3"}
 	oraclesymbols := corev1.EnvVar{Name: "ORACLE_SYMBOLS", Value: symbols}
