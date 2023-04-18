@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/1_dZqpEo-3_IlZsrZ_J9X7Xw.png
-coverY: 0
----
-
 # 🏃 Get Started
 
 ## What is DIA?&#x20;
@@ -21,7 +16,7 @@ Links: [Homepage](https://diadata.org/) | [Medium Blog](https://medium.com/dia-i
 
 DIA is an open-source ecosystem for financial data. The aim of DIA is to make transparent, accurate and verifiable data accessible for Web3, by bringing together data providers, users and DAO community members.
 
-![](.gitbook/assets/Architecture.svg)
+![architecure](https://user-images.githubusercontent.com/103409771/231812128-bb1d2fd0-5946-418b-a82c-641bf586a3d5.png)
 
 <mark style="color:blue;">**Data sources:**</mark> every second, thousands of trade level data points from multiple on-chain and off-chain sources (CEXs, DEXs, DeFi, NFT, Metaverse, etc) are aggregated into the DIA Platform.
 
@@ -43,7 +38,7 @@ DIA's crowd-sourcing approach to data sourcing uniquely positions DIA to utilise
 
 Here is a high-level overview of DIA's data offering:
 
-![](<.gitbook/assets/Data categories.svg>)
+![data offering](https://user-images.githubusercontent.com/103409771/231812400-71aafd2a-2ded-478c-970e-f4724fec656a.png)
 
 ### <mark style="color:blue;">Data sources</mark>
 
@@ -51,7 +46,7 @@ By leveraging a community of developers and a distributed network of nodes, DIA 
 
 Here is a high-level overview of data sources DIA leverages:
 
-![to seel all data sources, visit the Data Sources section](<.gitbook/assets/Data sources.svg>)
+![to seel all data sources, visit the Data Sources section](https://user-images.githubusercontent.com/103409771/231812534-60fe69b3-2d9d-4f12-bab8-d14043f485d8.png)
 
 ### <mark style="color:blue;">Delivery methods</mark>
 
@@ -84,21 +79,11 @@ DIA through its DAO operations is working towards building the biggest open-sour
 
 Contribute to the DAO through the two verticals below:
 
-{% content-ref url="contribute/product-development.md" %}
-[product-development.md](contribute/product-development.md)
-{% endcontent-ref %}
-
-{% content-ref url="contribute/ecosystem-growth.md" %}
-[ecosystem-growth.md](contribute/ecosystem-growth.md)
-{% endcontent-ref %}
+- [Product development](contribute/product-development.md)
+- [Ecosystem growth](contribute/ecosystem-growth.md)
 
 ## Support
 
-{% content-ref url="support/discord.md" %}
-[discord.md](support/discord.md)
-{% endcontent-ref %}
-
-{% content-ref url="support/request-a-custom-oracle.md" %}
-[request-a-custom-oracle.md](support/request-a-custom-oracle.md)
-{% endcontent-ref %}
+- [Discord](support/discord.md)
+- [Request a custom oracle](support/request-a-custom-oracle.md)
 
