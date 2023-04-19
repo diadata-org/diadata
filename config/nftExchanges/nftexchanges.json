@@ -76,6 +76,17 @@
             "RestAPI": "",
             "WsAPI": "",
             "WatchdogDelay": 7200
+        },
+        {
+            "Name": "BlurV1",
+            "Centralized": false,
+            "Contract": "0x000000000000Ad05Ccc4F10045630fb830B95127",
+            "Blockchain": {
+                "Name": "Ethereum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "WatchdogDelay": 7200
         }
     ]
 }

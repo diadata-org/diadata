@@ -88,6 +88,9 @@ func main() {
 	case dia.OpenseaSeaport:
 		log.Infoln("NFT Trades Scraper: Start scraping trades from Opensea Seaport contract")
 		scraper = nfttradescrapers.NewOpenSeaSeaportScraper(rdb, NFTExchanges[dia.Opensea])
+	case dia.BlurV1:
+		log.Infoln("NFT Trades Scraper: Start scraping trades from BlurV1 contract")
+		scraper = nfttradescrapers.NewBlurV1Scraper(rdb, NFTExchanges[dia.BlurV1])
 	case dia.LooksRare:
 		log.Infoln("NFT Trades Scraper: Start scraping trades from LooksRare")
 		scraper = nfttradescrapers.NewLooksRareScraper(rdb, NFTExchanges[dia.LooksRare])
