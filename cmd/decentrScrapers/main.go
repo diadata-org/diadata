@@ -6,19 +6,21 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	ws "github.com/gorilla/websocket"
+	"github.com/ipfs/go-cid"
 	"github.com/ipfs/go-libipfs/files"
 	icore "github.com/ipfs/interface-go-ipfs-core"
 	"github.com/ipfs/interface-go-ipfs-core/path"
 	ma "github.com/multiformats/go-multiaddr"
+	"github.com/multiformats/go-multihash"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/ipfs/kubo/config"
@@ -220,36 +222,23 @@ func main() {
 	// go scrapeBinance("btcusdt", chanTrade, &wg)
 	// defer wg.Wait()
 
-	var tradesBlock dia.TradesBlock
-	for i := 0; i < 1000; i++ {
-		t := dia.Trade{
-			Symbol:     "BTC",
-			Pair:       "BTC-USDT",
-			BaseToken:  dia.Asset{Symbol: "USDT", Blockchain: dia.ETHEREUM, Address: "0xdAC17F958D2ee523a2206206994597C13D831ec7"},
-			QuoteToken: dia.Asset{Symbol: "BTC", Blockchain: dia.BITCOIN, Address: "0x0000000000000000000000000000000000000000"},
-			Price:      float64(28000) + float64(i/1000),
-			Volume:     float64(1),
-			Time:       time.Now(),
-		}
-		tradesBlock.TradesBlockData.Trades = append(tradesBlock.TradesBlockData.Trades, t)
-	}
-	tradesBlock.TradesBlockData.BeginTime = tradesBlock.TradesBlockData.Trades[0].Time
-	tradesBlock.TradesBlockData.EndTime = tradesBlock.TradesBlockData.Trades[len(tradesBlock.TradesBlockData.Trades)-1].Time
+	tradesBlock := createTradesblock(10)
 	fileIdentifier := strconv.Itoa(int(tradesBlock.TradesBlockData.BeginTime.Unix())) + "-" + strconv.Itoa(int(tradesBlock.TradesBlockData.EndTime.Unix()))
-
 	tradesBlockMarsh, err := tradesBlock.MarshalBinary()
 	if err != nil {
 		log.Error("marshal tradesblock")
 	}
 
-	err = ioutil.WriteFile(inputBasePath+inputPathBinance+fileIdentifier+".json", tradesBlockMarsh, 0666)
+	filename := inputPathBinance + fileIdentifier + ".json"
+	err = os.WriteFile(filename, tradesBlockMarsh, 0666)
 	if err != nil {
 		log.Error("write file: ", err)
 	}
+	log.Info("successfully wrote file")
 
-	time.Sleep(10 * time.Minute)
+	// time.Sleep(10 * time.Minute)
 
-	/// --- Part I: Getting a IPFS node running
+	/// Getting a IPFS node running
 
 	fmt.Println("-- Getting an IPFS node running -- ")
 
@@ -265,128 +254,73 @@ func main() {
 
 	fmt.Println("IPFS node is running")
 
-	/// --- Part II: Adding a file and a directory to IPFS
+	/// Adding a tradesblock to IPFS
 
 	fmt.Println("\n-- Adding and getting back files & directories --")
 
-	someFile, err := getUnixfsNode(inputBasePath)
+	// binanceFolder, err := getUnixfsNode(inputPathBinance)
+	// if err != nil {
+	// 	panic(fmt.Errorf("could not get File: %w", err))
+	// }
+
+	tradesblockFile, err := getUnixfsNode(filename)
 	if err != nil {
-		panic(fmt.Errorf("could not get File: %w", err))
+		panic(fmt.Errorf("could not create node for File: %w", err))
 	}
 
-	cidFile, err := ipfsA.Unixfs().Add(ctx, someFile)
+	cidTradesblock, err := ipfsA.Unixfs().Add(ctx, tradesblockFile)
 	if err != nil {
 		panic(fmt.Errorf("could not add File: %w", err))
 	}
 
-	fmt.Printf("Added file to IPFS with CID %s\n", cidFile.String())
+	fmt.Printf("Added tradesblock to IPFS with CID %s\n", cidTradesblock.String())
 
-	someDirectory, err := getUnixfsNode(inputBasePath)
-	if err != nil {
-		panic(fmt.Errorf("could not get File: %w", err))
-	}
-
-	cidDirectory, err := ipfsA.Unixfs().Add(ctx, someDirectory)
-	if err != nil {
-		panic(fmt.Errorf("could not add Directory: %w", err))
-	}
-
-	fmt.Printf("Added directory to IPFS with CID %s\n", cidDirectory.String())
-
-	// /// --- Part III: Getting the file and directory you added back
-
-	// outputBasePath, err := os.MkdirTemp("", "example")
+	// someDirectory, err := getUnixfsNode(inputBasePath)
 	// if err != nil {
-	// 	panic(fmt.Errorf("could not create output dir (%v)", err))
+	// 	panic(fmt.Errorf("could not get File: %w", err))
 	// }
-	// fmt.Printf("output folder: %s\n", outputBasePath)
-	// outputPathFile := outputBasePath + strings.Split(cidFile.String(), "/")[2]
+
+	// cidDirectory, err := ipfsA.Unixfs().Add(ctx, someDirectory)
+	// if err != nil {
+	// 	panic(fmt.Errorf("could not add Directory: %w", err))
+	// }
+
+	// fmt.Printf("Added directory to IPFS with CID %s\n", cidDirectory.String())
+
+	// Getting tradesblock from the IPFS Network
+
+	mHashTBS, err := multihash.FromB58String(strings.Split(cidTradesblock.String(), "/")[2])
+	if err != nil {
+		log.Error("multihash: ", mHashTBS)
+	}
+	cidTradesblockRecovered, err := ipfsA.ResolvePath(ctx, path.IpfsPath(cid.NewCidV0(mHashTBS)))
+	if err != nil {
+		log.Error("resolve path: ", err)
+	}
+
+	log.Info("recovered cid: ", cidTradesblockRecovered.String())
+	// cidTradesblock = path.NewResolvedPath(path.New("/ipfs/QmUsehujVVSHxJtneWW49fVbAjyJWsDJSnJ5EiXX82VEBi"), cid.NewCidV1())
+
+	outputBasePath, err := os.MkdirTemp("", "tradesblock")
+	if err != nil {
+		panic(fmt.Errorf("could not create output dir (%w)", err))
+	}
+	fmt.Printf("output folder: %s\n", outputBasePath)
+	outputPathFile := outputBasePath + strings.Split(cidTradesblock.String(), "/")[2]
 	// outputPathDirectory := outputBasePath + strings.Split(cidDirectory.String(), "/")[2]
 
-	// rootNodeFile, err := ipfsB.Unixfs().Get(ctx, cidFile)
-	// if err != nil {
-	// 	panic(fmt.Errorf("could not get file with CID: %s", err))
-	// }
+	rootNodeFile, err := ipfsA.Unixfs().Get(ctx, cidTradesblock)
+	if err != nil {
+		panic(fmt.Errorf("could not get file with CID: %w", err))
+	}
 
-	// err = files.WriteTo(rootNodeFile, outputPathFile)
-	// if err != nil {
-	// 	panic(fmt.Errorf("could not write out the fetched CID: %s", err))
-	// }
+	err = files.WriteTo(rootNodeFile, outputPathFile)
+	if err != nil {
+		panic(fmt.Errorf("could not write out the fetched CID: %w", err))
+	}
 
-	// fmt.Printf("got file back from IPFS (IPFS path: %s) and wrote it to %s\n", cidFile.String(), outputPathFile)
+	fmt.Printf("got file back from IPFS (IPFS path: %s) and wrote it to %s\n", cidTradesblock.String(), outputPathFile)
 
-	// rootNodeDirectory, err := ipfsB.Unixfs().Get(ctx, cidDirectory)
-	// if err != nil {
-	// 	panic(fmt.Errorf("could not get file with CID: %s", err))
-	// }
-
-	// err = files.WriteTo(rootNodeDirectory, outputPathDirectory)
-	// if err != nil {
-	// 	panic(fmt.Errorf("could not write out the fetched CID: %s", err))
-	// }
-
-	// fmt.Printf("Got directory back from IPFS (IPFS path: %s) and wrote it to %s\n", cidDirectory.String(), outputPathDirectory)
-
-	// /// --- Part IV: Getting a file from the IPFS Network
-
-	// fmt.Println("\n-- Going to connect to a few nodes in the Network as bootstrappers --")
-
-	// peerMa := fmt.Sprintf("/ip4/127.0.0.1/udp/4010/p2p/%s", nodeA.Identity.String())
-
-	// bootstrapNodes := []string{
-	// 	// IPFS Bootstrapper nodes.
-	// 	// "/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN",
-	// 	// "/dnsaddr/bootstrap.libp2p.io/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa",
-	// 	// "/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb",
-	// 	// "/dnsaddr/bootstrap.libp2p.io/p2p/QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt",
-
-	// 	// IPFS Cluster Pinning nodes
-	// 	// "/ip4/138.201.67.219/tcp/4001/p2p/QmUd6zHcbkbcs7SMxwLs48qZVX3vpcM8errYS7xEczwRMA",
-	// 	// "/ip4/138.201.67.219/udp/4001/quic/p2p/QmUd6zHcbkbcs7SMxwLs48qZVX3vpcM8errYS7xEczwRMA",
-	// 	// "/ip4/138.201.67.220/tcp/4001/p2p/QmNSYxZAiJHeLdkBg38roksAR9So7Y5eojks1yjEcUtZ7i",
-	// 	// "/ip4/138.201.67.220/udp/4001/quic/p2p/QmNSYxZAiJHeLdkBg38roksAR9So7Y5eojks1yjEcUtZ7i",
-	// 	// "/ip4/138.201.68.74/tcp/4001/p2p/QmdnXwLrC8p1ueiq2Qya8joNvk3TVVDAut7PrikmZwubtR",
-	// 	// "/ip4/138.201.68.74/udp/4001/quic/p2p/QmdnXwLrC8p1ueiq2Qya8joNvk3TVVDAut7PrikmZwubtR",
-	// 	// "/ip4/94.130.135.167/tcp/4001/p2p/QmUEMvxS2e7iDrereVYc5SWPauXPyNwxcy9BXZrC1QTcHE",
-	// 	// "/ip4/94.130.135.167/udp/4001/quic/p2p/QmUEMvxS2e7iDrereVYc5SWPauXPyNwxcy9BXZrC1QTcHE",
-
-	// 	// You can add more nodes here, for example, another IPFS node you might have running locally, mine was:
-	// 	// "/ip4/127.0.0.1/tcp/4010/p2p/QmZp2fhDLxjYue2RiUvLwT9MWdnbDxam32qYFnGmxZDh5L",
-	// 	// "/ip4/127.0.0.1/udp/4010/quic/p2p/QmZp2fhDLxjYue2RiUvLwT9MWdnbDxam32qYFnGmxZDh5L",
-	// 	peerMa,
-	// }
-
-	// go func() {
-	// 	err := connectToPeers(ctx, ipfsB, bootstrapNodes)
-	// 	if err != nil {
-	// 		log.Printf("failed connect to peers: %s", err)
-	// 	}
-	// }()
-
-	// exampleCIDStr := peerCidFile.Cid().String()
-
-	// fmt.Printf("Fetching a file from the network with CID %s\n", exampleCIDStr)
-	// outputPath := outputBasePath + exampleCIDStr
-	// testCID := icorepath.New(exampleCIDStr)
-
-	// rootNode, err := ipfsB.Unixfs().Get(ctx, testCID)
-	// if err != nil {
-	// 	panic(fmt.Errorf("could not get file with CID: %s", err))
-	// }
-
-	// err = files.WriteTo(rootNode, outputPath)
-	// if err != nil {
-	// 	panic(fmt.Errorf("could not write out the fetched CID: %s", err))
-	// }
-
-	// fmt.Printf("Wrote the file to %s\n", outputPath)
-
-	// fmt.Println("\nAll done! You just finalized your first tutorial on how to use Kubo as a library")
-}
-
-func storeTrades(ipfsA icore.CoreAPI, trades files.Node) (cidFile path.Resolved, err error) {
-	cidFile, err = ipfsA.Unixfs().Add(context.Background(), trades)
-	return
 }
 
 func scrapeBinance(market string, tradesChan chan dia.Trade, wg *sync.WaitGroup) error {
@@ -430,4 +364,22 @@ func scrapeBinance(market string, tradesChan chan dia.Trade, wg *sync.WaitGroup)
 		// tradesChan <- t
 
 	}
+}
+
+func createTradesblock(size int) (tradesBlock dia.TradesBlock) {
+	for i := 0; i < size; i++ {
+		t := dia.Trade{
+			Symbol:     "BTC",
+			Pair:       "BTC-USDT",
+			BaseToken:  dia.Asset{Symbol: "USDT", Blockchain: dia.ETHEREUM, Address: "0xdAC17F958D2ee523a2206206994597C13D831ec7"},
+			QuoteToken: dia.Asset{Symbol: "BTC", Blockchain: dia.BITCOIN, Address: "0x0000000000000000000000000000000000000000"},
+			Price:      float64(28000) + float64(i/1000),
+			Volume:     float64(1),
+			Time:       time.Now(),
+		}
+		tradesBlock.TradesBlockData.Trades = append(tradesBlock.TradesBlockData.Trades, t)
+	}
+	tradesBlock.TradesBlockData.BeginTime = tradesBlock.TradesBlockData.Trades[0].Time
+	tradesBlock.TradesBlockData.EndTime = tradesBlock.TradesBlockData.Trades[len(tradesBlock.TradesBlockData.Trades)-1].Time
+	return
 }
