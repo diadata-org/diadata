@@ -118,6 +118,10 @@ type Datastore interface {
 	GetForeignPriceYesterday(symbol, source string) (float64, error)
 	GetForeignSymbolsInflux(source string) ([]string, error)
 
+	// Historical Quotes methods
+	GetLastHistoricalQuoteTimestamp(assetSymbol string) (time.Time, error)
+	SetHistoricalQuote(historicalQuote *HistoricalQuote) error
+
 	SetVWAPFirefly(foreignName string, value float64, timestamp time.Time) error
 	GetVWAPFirefly(foreignName string, starttime time.Time, endtime time.Time) ([]float64, []time.Time, error)
 
@@ -156,6 +160,7 @@ const (
 	influxDbDEXPoolTable              = "DEXPools"
 	influxDbStockQuotationsTable      = "stockquotations"
 	influxDBAssetQuotationsTable      = "assetQuotations"
+	influxDBHistoricalQuotesTable     = "historicalquotes"
 	influxDbBenchmarkedIndexTableName = "benchmarkedIndexValues"
 	influxDbVwapFireflyTable          = "vwapFirefly"
 	influxDbSynthSupplyTable          = "synthsupply"
