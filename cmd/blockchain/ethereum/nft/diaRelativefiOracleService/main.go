@@ -115,7 +115,7 @@ func periodicOracleUpdateHelper(oldValue float64, deviationPermille int, auth *b
 	// Get floorMA for NFT and update Oracle
 	floorMA, err := getFloorMA(blockchain, address)
 	if err != nil {
-		log.Fatalf("Failed to get floor price: %v", err)
+		log.Println("Failed to get floor price: %v", err)
 		return oldValue, err
 	}
 
