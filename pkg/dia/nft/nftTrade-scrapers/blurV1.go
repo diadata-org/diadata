@@ -311,6 +311,7 @@ func (s *BlurV1Scraper) FetchTrades() error {
 		s.state.LastTxIndex = tx.TXIndex
 		s.state.LastErr = ""
 		log.Info("current state.ErrCounter: ", s.state.ErrCounter)
+		// log.Info("txhash ", tx.TXHash)
 
 		skipped, err := s.processTx(ctx, tx)
 		if err != nil {
@@ -363,11 +364,6 @@ func (s *BlurV1Scraper) FetchTrades() error {
 func (s *BlurV1Scraper) processTx(ctx context.Context, tx *utils.EthFilteredTx) (bool, error) {
 	log.Tracef("process tx -> block: %d, tx index: %d, tx hash: %s", tx.BlockNum, tx.TXIndex, tx.TXHash.Hex())
 
-	// skip if the transaction has multiple OrdersMatched logs
-	if len(tx.Logs) != 1 {
-		return true, nil
-	}
-
 	marketContract, err := blurv1.NewBlurv1(tx.Logs[0].Address, s.tradeScraper.ethConnection)
 	if err != nil {
 		log.Errorf("unable to make new market contract for address: %s", tx.Logs[0].Address.Hex())
@@ -380,7 +376,7 @@ func (s *BlurV1Scraper) processTx(ctx context.Context, tx *utils.EthFilteredTx) 
 		return true, nil // skip
 	}
 
-	txData, pending, err := s.tradeScraper.ethConnection.TransactionByHash(ctx, tx.TXHash)
+	_, pending, err := s.tradeScraper.ethConnection.TransactionByHash(ctx, tx.TXHash)
 	if err != nil {
 		log.Errorf("unable to read transaction(%s): %s", tx.TXHash, err.Error())
 		return false, err
@@ -395,28 +391,6 @@ func (s *BlurV1Scraper) processTx(ctx context.Context, tx *utils.EthFilteredTx) 
 	if err != nil {
 		log.Errorf("unable to read transaction(%s) receipt: %s", tx.TXHash, err.Error())
 		return false, err
-	}
-
-	currSymbol := "ETH"
-	currAddr := common.Address{}
-	currDecimals := 18
-
-	// if an ERC20 token used for the trade
-	if new(big.Int).Cmp(txData.Value()) == 0 {
-		var tokenTransfers []*erc20Transfer
-		tokenTransfers, err = s.findERC20Transfers(ctx, receipt, ev.Sell.Price)
-		if err != nil {
-			log.Errorf("unable to find erc20 transfers for transaction(%s): %s", tx.TXHash, err.Error())
-			return false, err
-		}
-
-		if len(tokenTransfers) == 1 {
-			currAddr = tokenTransfers[0].TokenAddr
-			currDecimals = tokenTransfers[0].Decimals
-			if v := tokenTransfers[0].TokenSymbol; v != nil {
-				currSymbol = *v
-			}
-		}
 	}
 
 	transfers, err := s.findERC721Transfers(ctx, receipt)
@@ -437,11 +411,9 @@ func (s *BlurV1Scraper) processTx(ctx context.Context, tx *utils.EthFilteredTx) 
 		return true, nil
 	}
 
-	if transfers[0].NFTAddress == common.HexToAddress("0xA5c807A62CD6774d6BF518dD2dEc0aE17446Ad8d") {
-		log.Warnf("skip class %s because of decoding error.", "0xA5c807A62CD6774d6BF518dD2dEc0aE17446Ad8d")
-		return true, nil
-	}
-
+	currSymbol := "ETH"
+	currAddr := common.Address{}
+	currDecimals := 18
 	normPrice := decimal.NewFromBigInt(ev.Sell.Price, 0).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(int64(currDecimals))))
 
 	usdPrice, err := s.calcUSDPrice(currSymbol, normPrice)
@@ -449,25 +421,33 @@ func (s *BlurV1Scraper) processTx(ctx context.Context, tx *utils.EthFilteredTx) 
 		log.Errorf("unable to calculate usd price of the event(block: %d, log: %d, tx: %s): %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
 		return false, err
 	}
-
-	if err := s.notifyTrade(ev, transfers[0], ev.Sell.Price, usdPrice, currAddr); err != nil {
-		if !errors.Is(err, errBlurV1ShutdownRequest) {
-			log.Warnf("event(block: %d, tx index: %d, tx: %s) couldn't processed: %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
+	for _, transfer := range transfers {
+		if err := s.notifyTrade(ev, transfer, ev.Sell.Price, usdPrice, currAddr, len(transfers) > 1); err != nil {
+			if !errors.Is(err, errBlurV1ShutdownRequest) {
+				log.Warnf("event(block: %d, tx index: %d, tx: %s) couldn't processed: %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
+			}
+			return false, err
 		}
-
-		return false, err
 	}
 
 	return false, nil
 }
 
-func (s *BlurV1Scraper) notifyTrade(ev *blurv1.Blurv1OrdersMatched, transfer *erc721Transfer, price *big.Int, usdPrice float64, currAddr common.Address) error {
-	nftClass, err := s.createOrReadNFTClass(transfer)
+func (s *BlurV1Scraper) notifyTrade(
+	ev *blurv1.Blurv1OrdersMatched,
+	erc721Transfer *erc721Transfer,
+	price *big.Int,
+	usdPrice float64,
+	currAddr common.Address,
+	isBulk bool,
+) error {
+
+	nftClass, err := s.createOrReadNFTClass(erc721Transfer)
 	if err != nil {
 		return err
 	}
 
-	nft, err := s.createOrReadNFT(nftClass, transfer)
+	nft, err := s.createOrReadNFT(nftClass, erc721Transfer)
 	if err != nil {
 		return err
 	}
@@ -482,12 +462,16 @@ func (s *BlurV1Scraper) notifyTrade(ev *blurv1.Blurv1OrdersMatched, transfer *er
 		NFT:         *nft,
 		Price:       price,
 		PriceUSD:    usdPrice,
-		FromAddress: transfer.From.Hex(),
-		ToAddress:   transfer.To.Hex(),
+		FromAddress: erc721Transfer.From.Hex(),
+		ToAddress:   erc721Transfer.To.Hex(),
 		BlockNumber: ev.Raw.BlockNumber,
 		Timestamp:   timestamp,
 		TxHash:      ev.Raw.TxHash.Hex(),
 		Exchange:    s.exchange.Name,
+	}
+
+	if isBulk {
+		trade.BundleSale = true
 	}
 
 	if asset, ok := assetCacheBlurV1[dia.ETHEREUM+"-"+currAddr.Hex()]; ok {
@@ -500,7 +484,6 @@ func (s *BlurV1Scraper) notifyTrade(ev *blurv1.Blurv1OrdersMatched, transfer *er
 		trade.Currency = currency
 		assetCacheBlurV1[dia.ETHEREUM+"-"+currAddr.Hex()] = currency
 	}
-
 	fmt.Println("found trade: ", trade)
 
 	// handle close request if the chanTrade not consumed immediately
@@ -599,9 +582,6 @@ func (s *BlurV1Scraper) findPrice(symbol string) (decimal.Decimal, error) {
 	switch symbol {
 	case "ETH", "WETH":
 		return decimal.NewFromString("2040.0910")
-
-	case "MANA":
-		return decimal.NewFromString("0.5")
 
 	default:
 		return decimal.NewFromString("1")
@@ -722,7 +702,7 @@ func (s *BlurV1Scraper) findERC20Transfers(ctx context.Context, receipt *types.R
 			continue
 		}
 
-		if filterAmount != nil && filterAmount.Cmp(ev.Value) != 0 {
+		if filterAmount == nil {
 			continue
 		}
 
@@ -735,34 +715,15 @@ func (s *BlurV1Scraper) findERC20Transfers(ctx context.Context, receipt *types.R
 		}
 
 		transfers = append(transfers, transfer)
-
-		metadata, err := erc20.NewERC20Metadata(txLog.Address, s.tradeScraper.ethConnection)
-		if err != nil {
-			log.Warnf("unable to bind erc20 metadata contract at address %s: %s", txLog.Address.Hex(), err.Error())
-			continue
-		}
-
 		callOpts := &bind.CallOpts{Context: ctx}
 
 		if s.conf.UseArchiveNode {
 			callOpts.BlockNumber = new(big.Int).SetUint64(txLog.BlockNumber)
 		}
 
-		symbol, err := metadata.Symbol(callOpts)
-		if err != nil {
-			log.Warnf("unable to read token symbol from metadata interface of erc20(addr: %s): %s", txLog.Address.Hex(), err.Error())
-			continue
-		}
-
-		transfer.TokenSymbol = &symbol
-
-		decimals, err := metadata.Decimals(callOpts)
-		if err != nil {
-			log.Warnf("unable to read token decimals from metadata interface of erc20(addr: %s): %s", txLog.Address.Hex(), err.Error())
-			continue
-		}
-
-		transfer.Decimals = int(decimals)
+		var ethSymbol = "ETH"
+		transfer.TokenSymbol = &ethSymbol
+		transfer.Decimals = 18
 	}
 
 	return transfers, nil
@@ -791,9 +752,9 @@ func (s *BlurV1Scraper) findERC721Transfers(ctx context.Context, receipt *types.
 			// so it is not compliant with the eip-721.
 
 			// best effort...
-			compat, err := erc721.NewERC721Compat(txLog.Address, s.tradeScraper.ethConnection)
-			if err != nil {
-				log.Warnf("unable to bind erc721compat contract at address %s: %s", txLog.Address.Hex(), err.Error())
+			compat, errCompat := erc721.NewERC721Compat(txLog.Address, s.tradeScraper.ethConnection)
+			if errCompat != nil {
+				log.Warnf("unable to bind erc721compat contract at address %s: %s", txLog.Address.Hex(), errCompat.Error())
 				continue
 			}
 
@@ -817,6 +778,15 @@ func (s *BlurV1Scraper) findERC721Transfers(ctx context.Context, receipt *types.
 			To:         transferLog.To,
 			TokenID:    transferLog.TokenId,
 			TokenAttrs: make(map[string]interface{}),
+		}
+
+		addr, err := nft.OwnerOf(&bind.CallOpts{}, transfer.TokenID)
+		if err != nil {
+			// token is not erc721.
+			continue
+		} else if addr == common.HexToAddress("0x0000000000000000000000000000000000000000") {
+			log.Error("zero address")
+			continue
 		}
 
 		callOpts := &bind.CallOpts{Context: ctx}
