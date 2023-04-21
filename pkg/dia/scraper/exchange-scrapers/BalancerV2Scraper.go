@@ -269,20 +269,20 @@ func (s *BalancerV2Scraper) mainLoop() {
 				QuoteToken:     assetOut,
 				VerifiedPair:   true,
 			}
-			switch {
-			case utils.Contains(reverseBasetokensBalancer, trade.BaseToken.Address):
-				// If we need quotation of a base token, reverse pair
-				tSwapped, err := dia.SwapTrade(*trade)
-				if err == nil {
-					trade = &tSwapped
-				}
-			case utils.Contains(reverseQuotetokensBalancer, trade.QuoteToken.Address):
-				// If we don't need quotation of quote token, reverse pair.
-				tSwapped, err := dia.SwapTrade(*trade)
-				if err == nil {
-					trade = &tSwapped
-				}
-			}
+			// switch {
+			// case utils.Contains(reverseBasetokensBalancer, trade.BaseToken.Address):
+			// 	// If we need quotation of a base token, reverse pair
+			// 	tSwapped, err := dia.SwapTrade(*trade)
+			// 	if err == nil {
+			// 		trade = &tSwapped
+			// 	}
+			// case utils.Contains(reverseQuotetokensBalancer, trade.QuoteToken.Address):
+			// 	// If we don't need quotation of quote token, reverse pair.
+			// 	tSwapped, err := dia.SwapTrade(*trade)
+			// 	if err == nil {
+			// 		trade = &tSwapped
+			// 	}
+			// }
 
 			select {
 			case <-s.shutdown:
