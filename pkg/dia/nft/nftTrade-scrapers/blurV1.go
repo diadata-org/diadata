@@ -311,7 +311,6 @@ func (s *BlurV1Scraper) FetchTrades() error {
 		s.state.LastTxIndex = tx.TXIndex
 		s.state.LastErr = ""
 		log.Info("current state.ErrCounter: ", s.state.ErrCounter)
-		// log.Info("txhash ", tx.TXHash)
 
 		skipped, err := s.processTx(ctx, tx)
 		if err != nil {
@@ -392,41 +391,35 @@ func (s *BlurV1Scraper) processTx(ctx context.Context, tx *utils.EthFilteredTx) 
 		log.Errorf("unable to read transaction(%s) receipt: %s", tx.TXHash, err.Error())
 		return false, err
 	}
+	// Get block time.
+	timestamp, err := ethhelper.GetBlockTimeEth(int64(ev.Raw.BlockNumber), s.tradeScraper.datastore, s.tradeScraper.ethConnection)
+	if err != nil {
+		log.Errorf("getting block time: %+v", err)
+	}
 
-	transfers, err := s.findERC721Transfers(ctx, receipt)
+	transfers, err := s.findERC721Transfers(ctx, receipt, timestamp)
 	if err != nil {
 		log.Errorf("unable to find transfers of the event(block: %d, tx index: %d, tx: %s): %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
 		return false, err
-	}
-
-	// skip if the event has no transfer
-	if len(transfers) == 0 {
-		log.Tracef("event(block: %d, tx index: %d, tx: %s) skipped due to it has no erc721 transfer log", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex())
-		return true, nil
-	}
-
-	// skip if the event has multiple transfers due to we can't calculate the price of trade
-	if len(transfers) > 1 {
-		log.Tracef("event(block: %d, tx index: %d, tx: %s) skipped due to it has multiple erc721 transfer logs", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex())
-		return true, nil
 	}
 
 	currSymbol := "ETH"
 	currAddr := common.Address{}
 	currDecimals := 18
 	normPrice := decimal.NewFromBigInt(ev.Sell.Price, 0).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(int64(currDecimals))))
-
+  normPrice = normPrice.Div(decimal.NewFromInt(int64(len(transfers))))
 	usdPrice, err := s.calcUSDPrice(currSymbol, normPrice)
 	if err != nil {
 		log.Errorf("unable to calculate usd price of the event(block: %d, log: %d, tx: %s): %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
 		return false, err
 	}
 	for _, transfer := range transfers {
-		if err := s.notifyTrade(ev, transfer, ev.Sell.Price, usdPrice, currAddr, len(transfers) > 1); err != nil {
+		if err := s.notifyTrade(ev, transfer, ev.Sell.Price, usdPrice, currAddr, len(transfers) > 1, timestamp); err != nil {
 			if !errors.Is(err, errBlurV1ShutdownRequest) {
 				log.Warnf("event(block: %d, tx index: %d, tx: %s) couldn't processed: %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
+			} else {
+				log.Error("notifyTradeErr: ", err)
 			}
-			return false, err
 		}
 	}
 
@@ -440,6 +433,7 @@ func (s *BlurV1Scraper) notifyTrade(
 	usdPrice float64,
 	currAddr common.Address,
 	isBulk bool,
+	timestamp time.Time,
 ) error {
 
 	nftClass, err := s.createOrReadNFTClass(erc721Transfer)
@@ -452,11 +446,7 @@ func (s *BlurV1Scraper) notifyTrade(
 		return err
 	}
 
-	// Get block time.
-	timestamp, err := ethhelper.GetBlockTimeEth(int64(ev.Raw.BlockNumber), s.tradeScraper.datastore, s.tradeScraper.ethConnection)
-	if err != nil {
-		log.Errorf("getting block time: %+v", err)
-	}
+
 
 	trade := dia.NFTTrade{
 		NFT:         *nft,
@@ -730,14 +720,17 @@ func (s *BlurV1Scraper) findERC20Transfers(ctx context.Context, receipt *types.R
 }
 
 // it finds the transfer events of ERC721 in the given transaction
-func (s *BlurV1Scraper) findERC721Transfers(ctx context.Context, receipt *types.Receipt) ([]*erc721Transfer, error) {
+func (s *BlurV1Scraper) findERC721Transfers(ctx context.Context, receipt *types.Receipt, timestamp time.Time) ([]*erc721Transfer, error) {
 	transfers := make([]*erc721Transfer, 0, 1)
-
+	transfers_uniqe_id_timestamp := make(map[string]string)
 	for _, txLog := range receipt.Logs {
 		if len(txLog.Topics) < 1 || txLog.Topics[0] != erc721ABI.Events["Transfer"].ID {
 			continue
 		}
-
+		// skip internal transfers of blur
+		if txLog.Address.Hex() == "0x0000000000A39bb272e79075ade125fd351887Ac" {
+			continue
+		}
 		nft, err := erc721.NewERC721(txLog.Address, s.tradeScraper.ethConnection)
 		if err != nil {
 			log.Warnf("unable to bind erc721 contract at address %s: %s", txLog.Address.Hex(), err.Error())
@@ -780,15 +773,6 @@ func (s *BlurV1Scraper) findERC721Transfers(ctx context.Context, receipt *types.
 			TokenAttrs: make(map[string]interface{}),
 		}
 
-		addr, err := nft.OwnerOf(&bind.CallOpts{}, transfer.TokenID)
-		if err != nil {
-			// token is not erc721.
-			continue
-		} else if addr == common.HexToAddress("0x0000000000000000000000000000000000000000") {
-			log.Error("zero address")
-			continue
-		}
-
 		callOpts := &bind.CallOpts{Context: ctx}
 
 		if s.conf.UseArchiveNode {
@@ -803,7 +787,6 @@ func (s *BlurV1Scraper) findERC721Transfers(ctx context.Context, receipt *types.
 			} else {
 				transfer.Name = &nftName
 			}
-
 			if nftSymbol, err := md.Symbol(callOpts); err != nil {
 				log.Warnf("unable to read nft symbol from metadata interface of nft(addr: %s): %s", txLog.Address.Hex(), err.Error())
 			} else {
@@ -819,8 +802,13 @@ func (s *BlurV1Scraper) findERC721Transfers(ctx context.Context, receipt *types.
 				transfer.TokenAttrs = attrs
 			}
 		}
-
-		transfers = append(transfers, transfer)
+		// sometimes there are more than one transfer log per erc271transfer
+		key := transfer.TokenID.String() + timestamp.String()
+		_, ok := transfers_uniqe_id_timestamp[key]
+		if !ok {
+			transfers = append(transfers, transfer)
+			transfers_uniqe_id_timestamp[key] = key
+		}
 	}
 
 	return transfers, nil
