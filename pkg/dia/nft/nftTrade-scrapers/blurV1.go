@@ -92,6 +92,20 @@ type BlurV1Scraper struct {
 	exchange dia.NFTExchange
 }
 
+type BlurV1Erc721Transfer struct {
+	NFTAddress  common.Address
+	Name        *string
+	Symbol      *string
+	TotalSupply *big.Int
+	From        common.Address
+	To          common.Address
+	TokenID     *big.Int
+	Price       *big.Int
+	PriceUSD    float64
+	TokenURI    *string
+	TokenAttrs  map[string]interface{}
+}
+
 var (
 	errBlurV1ShutdownRequest = errors.New("shutdown requested")
 
@@ -403,18 +417,9 @@ func (s *BlurV1Scraper) processTx(ctx context.Context, tx *utils.EthFilteredTx) 
 		return false, err
 	}
 
-	currSymbol := "ETH"
 	currAddr := common.Address{}
-	currDecimals := 18
-	normPrice := decimal.NewFromBigInt(ev.Sell.Price, 0).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(int64(currDecimals))))
-  normPrice = normPrice.Div(decimal.NewFromInt(int64(len(transfers))))
-	usdPrice, err := s.calcUSDPrice(currSymbol, normPrice)
-	if err != nil {
-		log.Errorf("unable to calculate usd price of the event(block: %d, log: %d, tx: %s): %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
-		return false, err
-	}
 	for _, transfer := range transfers {
-		if err := s.notifyTrade(ev, transfer, ev.Sell.Price, usdPrice, currAddr, len(transfers) > 1, timestamp); err != nil {
+		if err := s.notifyTrade(ev, transfer, currAddr, len(transfers) > 1, timestamp); err != nil {
 			if !errors.Is(err, errBlurV1ShutdownRequest) {
 				log.Warnf("event(block: %d, tx index: %d, tx: %s) couldn't processed: %s", ev.Raw.BlockNumber, ev.Raw.TxIndex, ev.Raw.TxHash.Hex(), err.Error())
 			} else {
@@ -428,9 +433,7 @@ func (s *BlurV1Scraper) processTx(ctx context.Context, tx *utils.EthFilteredTx) 
 
 func (s *BlurV1Scraper) notifyTrade(
 	ev *blurv1.Blurv1OrdersMatched,
-	erc721Transfer *erc721Transfer,
-	price *big.Int,
-	usdPrice float64,
+	erc721Transfer *BlurV1Erc721Transfer,
 	currAddr common.Address,
 	isBulk bool,
 	timestamp time.Time,
@@ -450,8 +453,8 @@ func (s *BlurV1Scraper) notifyTrade(
 
 	trade := dia.NFTTrade{
 		NFT:         *nft,
-		Price:       price,
-		PriceUSD:    usdPrice,
+		Price:       erc721Transfer.Price,
+		PriceUSD:    erc721Transfer.PriceUSD,
 		FromAddress: erc721Transfer.From.Hex(),
 		ToAddress:   erc721Transfer.To.Hex(),
 		BlockNumber: ev.Raw.BlockNumber,
@@ -486,7 +489,7 @@ func (s *BlurV1Scraper) notifyTrade(
 	return nil
 }
 
-func (s *BlurV1Scraper) createOrReadNFTClass(transfer *erc721Transfer) (*dia.NFTClass, error) {
+func (s *BlurV1Scraper) createOrReadNFTClass(transfer *BlurV1Erc721Transfer) (*dia.NFTClass, error) {
 	nftClass, err := s.tradeScraper.datastore.GetNFTClass(transfer.NFTAddress.Hex(), dia.ETHEREUM)
 	if err != nil {
 		if !errors.Is(err, pgx.ErrNoRows) {
@@ -517,7 +520,7 @@ func (s *BlurV1Scraper) createOrReadNFTClass(transfer *erc721Transfer) (*dia.NFT
 	return &nftClass, nil
 }
 
-func (s *BlurV1Scraper) createOrReadNFT(nftClass *dia.NFTClass, transfer *erc721Transfer) (*dia.NFT, error) {
+func (s *BlurV1Scraper) createOrReadNFT(nftClass *dia.NFTClass, transfer *BlurV1Erc721Transfer) (*dia.NFT, error) {
 	nft, err := s.tradeScraper.datastore.GetNFT(nftClass.Address, dia.ETHEREUM, transfer.TokenID.String())
 	if err != nil {
 		if !errors.Is(err, pgx.ErrNoRows) {
@@ -720,9 +723,29 @@ func (s *BlurV1Scraper) findERC20Transfers(ctx context.Context, receipt *types.R
 }
 
 // it finds the transfer events of ERC721 in the given transaction
-func (s *BlurV1Scraper) findERC721Transfers(ctx context.Context, receipt *types.Receipt, timestamp time.Time) ([]*erc721Transfer, error) {
-	transfers := make([]*erc721Transfer, 0, 1)
+func (s *BlurV1Scraper) findERC721Transfers(ctx context.Context, receipt *types.Receipt, timestamp time.Time) ([]*BlurV1Erc721Transfer, error) {
+	transfers := make([]*BlurV1Erc721Transfer, 0, 1)
 	transfers_uniqe_id_timestamp := make(map[string]string)
+	nft_prices := make(map[string]*big.Int)
+	// save the price for each nft
+	for _, txLog := range receipt.Logs {
+		if len(txLog.Topics) > 0 && txLog.Topics[0].Hex() == "0x61cbb2a3dee0b6064c2e681aadd61677fb4ef319f0b547508d495626f5a62f64" {
+			marketContract, err := blurv1.NewBlurv1(txLog.Address, s.tradeScraper.ethConnection)
+			if err != nil {
+				log.Errorf("unable to make new market contract for address: %s", txLog.Address.Hex())
+				continue
+			}
+			ev, err := marketContract.ParseOrdersMatched(*txLog)
+			if err != nil {
+				log.Errorf(
+					"unable to decode BlurV1 OrdersMatched event(tx: %s, logIndex: %d) (SKIPPED!): %s", 
+					txLog.TxHash, txLog.Index, err.Error(),
+				)
+				continue
+			}
+			nft_prices[ev.Sell.TokenId.String()+"-"+ev.Sell.Collection.Hex()] = ev.Sell.Price
+		}
+	}
 	for _, txLog := range receipt.Logs {
 		if len(txLog.Topics) < 1 || txLog.Topics[0] != erc721ABI.Events["Transfer"].ID {
 			continue
@@ -764,12 +787,28 @@ func (s *BlurV1Scraper) findERC721Transfers(ctx context.Context, receipt *types.
 				Raw:     compatLog.Raw,
 			}
 		}
+		key_in_nft_prices := transferLog.TokenId.String()+"-"+txLog.Address.Hex()
+		price, price_ok := nft_prices[key_in_nft_prices]
+		if !price_ok {
+			log.Warn("couldn't find price for nft ", key_in_nft_prices)
+			price = big.NewInt(0)
+		}
+		currSymbol := "ETH"
+		currDecimals := 18
+		normPrice := decimal.NewFromBigInt(price, 0).Div(decimal.NewFromInt(10).Pow(decimal.NewFromInt(int64(currDecimals))))
+		usdPrice, err := s.calcUSDPrice(currSymbol, normPrice)
+		if err != nil {
+			log.Errorf("unable to calculate usd price of the event(block: %d, log: %d, tx: %s): %s", transferLog.Raw.BlockNumber, transferLog.Raw.TxIndex, transferLog.Raw.TxHash.Hex(), err.Error())
+			continue
+		}
 
-		transfer := &erc721Transfer{
+		transfer := &BlurV1Erc721Transfer{
 			NFTAddress: txLog.Address,
 			From:       transferLog.From,
 			To:         transferLog.To,
 			TokenID:    transferLog.TokenId,
+			Price: 			price,
+			PriceUSD:   usdPrice,
 			TokenAttrs: make(map[string]interface{}),
 		}
 
