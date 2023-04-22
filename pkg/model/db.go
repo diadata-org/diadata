@@ -93,6 +93,7 @@ type Datastore interface {
 	GetTopAssetByMcap(symbol string, relDB *RelDB) (dia.Asset, error)
 	GetTopAssetByVolume(symbol string, relDB *RelDB) (topAsset dia.Asset, err error)
 	GetAssetsWithVOLInflux(timeInit time.Time) ([]dia.Asset, error)
+	GetOldestQuotation(asset dia.Asset) (AssetQuotation, error)
 
 	// DEX Pool  methods
 	SavePoolInflux(p dia.Pool) error
@@ -117,10 +118,6 @@ type Datastore interface {
 	GetForeignQuotationInflux(symbol, source string, timestamp time.Time) (ForeignQuotation, error)
 	GetForeignPriceYesterday(symbol, source string) (float64, error)
 	GetForeignSymbolsInflux(source string) ([]string, error)
-
-	// Historical Quotes methods
-	GetLastHistoricalQuoteTimestamp(assetSymbol string) (time.Time, error)
-	SetHistoricalQuote(historicalQuote *HistoricalQuote) error
 
 	SetVWAPFirefly(foreignName string, value float64, timestamp time.Time) error
 	GetVWAPFirefly(foreignName string, starttime time.Time, endtime time.Time) ([]float64, []time.Time, error)
@@ -160,7 +157,6 @@ const (
 	influxDbDEXPoolTable              = "DEXPools"
 	influxDbStockQuotationsTable      = "stockquotations"
 	influxDBAssetQuotationsTable      = "assetQuotations"
-	influxDBHistoricalQuotesTable     = "historicalquotes"
 	influxDbBenchmarkedIndexTableName = "benchmarkedIndexValues"
 	influxDbVwapFireflyTable          = "vwapFirefly"
 	influxDbSynthSupplyTable          = "synthsupply"

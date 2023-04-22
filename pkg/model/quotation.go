@@ -289,54 +289,30 @@ func (datastore *DB) GetSortedAssetQuotations(assets []dia.Asset) ([]AssetQuotat
 	return quotationsSorted, nil
 }
 
+func (datastore *DB) GetOldestQuotation(asset dia.Asset) (AssetQuotation, error) {
+	// TO DO: Return assetquotation with oldest timestamp.
+	return AssetQuotation{}, nil
+}
+
 // ------------------------------------------------------------------------------
 // HISTORICAL QUOTES
 // ------------------------------------------------------------------------------
 
-// GetLastHistoricalQuoteTimestamp returns the timestamp of the last historical quote for asset symbol.
-func (datastore *DB) GetLastHistoricalQuoteTimestamp(assetSymbol string) (time.Time, error) {
-	var timestamp time.Time
-
-	q := fmt.Sprintf("SELECT last(price) FROM %s WHERE symbol='%s'", influxDBHistoricalQuotesTable, assetSymbol)
-	res, err := queryInfluxDB(datastore.influxClient, q)
-	if err != nil {
-		return timestamp, err
-	}
-
-	if len(res) > 0 && len(res[0].Series) > 0 {
-		if len(res[0].Series[0].Values) > 0 {
-			timestamp, err = time.Parse(time.RFC3339, res[0].Series[0].Values[0][0].(string))
-			if err != nil {
-				return timestamp, err
-			}
-		} else {
-			return timestamp, errors.New("no historical quote timestamp in DB")
-		}
-	} else {
-		return timestamp, errors.New("no historical quote timestamp in DB")
-	}
-
-	return timestamp, nil
+// SetHistoricalQuote stores a historical quote for an asset symbol at a specific time into postgres.
+func (rdb *RelDB) SetHistoricalQuotation(quotation AssetQuotation) error {
+	// TO DO
+	return nil
 }
 
-// SetHistoricalQuote stores a historical quote for an asset symbol at a specific time into influx.
-func (datastore *DB) SetHistoricalQuote(historicalQuote *HistoricalQuote) error {
-	// Write to InfluxDB
-	tags := map[string]string{
-		"symbol": historicalQuote.Symbol,
-	}
-	fields := map[string]interface{}{
-		"price": historicalQuote.Price,
-	}
+func (rdb *RelDB) GetHistoricalQuotation(asset dia.Asset, timestamp time.Time) (quotation AssetQuotation, err error) {
+	// TO DO
+	return
+}
 
-	pt, err := clientInfluxdb.NewPoint(influxDBHistoricalQuotesTable, tags, fields, historicalQuote.QuoteTime)
-	if err != nil {
-		log.Errorln("SetHistoricalQuote:", err)
-	} else {
-		datastore.addPoint(pt)
-	}
-
-	return err
+// GetLastHistoricalQuoteTimestamp returns the timestamp of the last historical quote for asset symbol.
+func (rdb *RelDB) GetLastHistoricalQuotationTimestamp(asset dia.Asset) (time.Time, error) {
+	// TO DO
+	return time.Now(), nil
 }
 
 // ------------------------------------------------------------------------------

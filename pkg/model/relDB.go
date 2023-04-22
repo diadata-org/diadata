@@ -47,6 +47,11 @@ type RelDatastore interface {
 	VerifyExchangeSymbol(exchange string, symbol string, assetID string) (bool, error)
 	GetExchangeSymbolAssetID(exchange string, symbol string) (string, bool, error)
 
+	// ----------------- Historical quotations methods -------------------
+	SetHistoricalQuotation(quotation AssetQuotation) error
+	GetHistoricalQuotation(asset dia.Asset, timestamp time.Time) (quotation AssetQuotation, err error)
+	GetLastHistoricalQuotationTimestamp(asset dia.Asset) (time.Time, error)
+
 	// ----------------- exchange methods -------------------
 	SetExchange(exchange dia.Exchange) error
 	GetExchange(name string) (dia.Exchange, error)
