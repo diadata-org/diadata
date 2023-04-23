@@ -1,6 +1,8 @@
 package models
 
 import (
+	"context"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -289,9 +291,41 @@ func (datastore *DB) GetSortedAssetQuotations(assets []dia.Asset) ([]AssetQuotat
 	return quotationsSorted, nil
 }
 
-func (datastore *DB) GetOldestQuotation(asset dia.Asset) (AssetQuotation, error) {
-	// TO DO: Return assetquotation with oldest timestamp.
-	return AssetQuotation{}, nil
+func (datastore *DB) GetOldestQuotation(asset dia.Asset) (quotation AssetQuotation, err error) {
+
+	q := fmt.Sprintf(`
+	SELECT price FROM %s WHERE address='%s' AND blockchain='%s' ORDER BY ASC LIMIT 1`,
+		influxDBAssetQuotationsTable,
+		asset.Address,
+		asset.Blockchain,
+	)
+	res, err := queryInfluxDB(datastore.influxClient, q)
+	if err != nil {
+		return
+	}
+
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		if len(res[0].Series[0].Values) > 0 {
+			quotation.Time, err = time.Parse(time.RFC3339, res[0].Series[0].Values[0][0].(string))
+			if err != nil {
+				return quotation, err
+			}
+			quotation.Price, err = res[0].Series[0].Values[0][1].(json.Number).Float64()
+			if err != nil {
+				return
+			}
+			log.Infof("queried price for %s: %v", asset.Symbol, quotation.Price)
+		} else {
+			err = errors.New("no assetQuotation in DB")
+			return
+		}
+	} else {
+		err = errors.New("no assetQuotation in DB")
+		return
+	}
+	quotation.Asset = asset
+	quotation.Source = dia.Diadata
+	return
 }
 
 // ------------------------------------------------------------------------------
@@ -300,7 +334,25 @@ func (datastore *DB) GetOldestQuotation(asset dia.Asset) (AssetQuotation, error)
 
 // SetHistoricalQuote stores a historical quote for an asset symbol at a specific time into postgres.
 func (rdb *RelDB) SetHistoricalQuotation(quotation AssetQuotation) error {
-	// TO DO
+	queryString := `
+	INSERT INTO %s (asset_id,price,quote_time,source) 
+	VALUES ((SELECT asset_id FROM %s WHERE address=$1 AND blockchain=$2),$3,$4,$5) 
+	ON CONFLICT (asset_id,quote_time,source) DO NOTHING
+	`
+	query := fmt.Sprintf(queryString, historicalQuotationTable, assetTable)
+	_, err := rdb.postgresClient.Exec(
+		context.Background(),
+		query,
+		quotation.Asset.Address,
+		quotation.Asset.Blockchain,
+		quotation.Price,
+		quotation.Time,
+		quotation.Source,
+	)
+	if err != nil {
+		log.Error("insert historical quotation: ", err)
+		return err
+	}
 	return nil
 }
 
@@ -310,9 +362,29 @@ func (rdb *RelDB) GetHistoricalQuotation(asset dia.Asset, timestamp time.Time) (
 }
 
 // GetLastHistoricalQuoteTimestamp returns the timestamp of the last historical quote for asset symbol.
-func (rdb *RelDB) GetLastHistoricalQuotationTimestamp(asset dia.Asset) (time.Time, error) {
-	// TO DO
-	return time.Now(), nil
+func (rdb *RelDB) GetLastHistoricalQuotationTimestamp(asset dia.Asset) (timestamp time.Time, err error) {
+	query := fmt.Sprintf(`
+	SELECT quote_time 
+	FROM %s hq
+	INNER JOIN %s a
+	ON hq.asset_id=a.asset_id
+	WHERE a.address=$1 
+	AND a.blockchain=$2 
+	ORDER BY hq.quote_time DESC 
+	LIMIT 1
+	`,
+		historicalQuotationTable,
+		assetTable,
+	)
+	var t sql.NullTime
+	err = rdb.postgresClient.QueryRow(context.Background(), query, asset.Address, asset.Blockchain).Scan(&t)
+	if err != nil {
+		return
+	}
+	if t.Valid {
+		timestamp = t.Time
+	}
+	return
 }
 
 // ------------------------------------------------------------------------------

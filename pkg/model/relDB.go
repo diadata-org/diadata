@@ -168,19 +168,18 @@ type RelDatastore interface {
 const (
 
 	// postgres tables
-	assetTable              = "asset"
-	assetIdent              = "assetIdent"
-	exchangepairTable       = "exchangepair"
-	exchangesymbolTable     = "exchangesymbol"
-	poolTable               = "pool"
-	poolassetTable          = "poolasset"
-	exchangeTable           = "exchange"
-	nftExchangeTable        = "nftexchange"
-	chainconfigTable        = "chainconfig"
-	blockchainTable         = "blockchain"
-	assetVolumeTable        = "assetvolume"
-	aggregatedVolumeTable   = "aggregatedvolume"
-	tradesDistributionTable = "tradesdistribution"
+	assetTable               = "asset"
+	assetIdent               = "assetIdent"
+	exchangepairTable        = "exchangepair"
+	exchangesymbolTable      = "exchangesymbol"
+	poolTable                = "pool"
+	poolassetTable           = "poolasset"
+	exchangeTable            = "exchange"
+	nftExchangeTable         = "nftexchange"
+	chainconfigTable         = "chainconfig"
+	blockchainTable          = "blockchain"
+	assetVolumeTable         = "assetvolume"
+	historicalQuotationTable = "historicalquotation"
 
 	// cache keys
 	keyAssetCache        = "dia_asset_"

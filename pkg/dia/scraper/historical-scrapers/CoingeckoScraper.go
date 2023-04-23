@@ -30,13 +30,20 @@ type CoingeckoScraper struct {
 	rdb              *models.RelDB
 	quotationChannel chan models.AssetQuotation
 	doneChannel      chan bool
-	dateLimit        time.Duration
+	firstDate        string
 }
+
+const (
+	firstDate       = "08-03-2023"
+	cgDateLayout    = "02-01-2006"
+	cgErrCountLimit = 5
+	cgWaitSeconds   = 1
+)
 
 func NewCoingeckoScraper(rdb *models.RelDB, datastore *models.DB) (cgScraper CoingeckoScraper) {
 	cgScraper.doneChannel = make(chan bool)
 	cgScraper.quotationChannel = make(chan models.AssetQuotation)
-	cgScraper.dateLimit = cmcDateLimit
+	cgScraper.firstDate = firstDate
 	cgScraper.datastore = datastore
 	cgScraper.rdb = rdb
 
@@ -50,6 +57,8 @@ func (s CoingeckoScraper) FetchQuotations() {
 
 	log.Info("Starting historical quotes scraper for Coingecko.")
 
+	// Outlook: Coingecko id for asset and blockchain,address as input so we can run
+	// the scraper for various assets.
 	ethAsset := dia.Asset{
 		Symbol:     "ETH",
 		Name:       "Ethereum",
@@ -59,28 +68,86 @@ func (s CoingeckoScraper) FetchQuotations() {
 	}
 
 	// cgAPIKey := utils.Getenv("CG_API_KEY", "")
-	endtime := time.Now()
-
-	latestTimestamp, err := s.rdb.GetLastHistoricalQuotationTimestamp(ethAsset)
+	endDate, err := time.Parse(cgDateLayout, time.Now().Format(cgDateLayout))
 	if err != nil {
-		// TO DO: Fetch historical data from CG
-		s.doneChannel <- true
+		log.Error("Normalize date: ", err)
 	}
+	// Fetch CG data up to @endDateCG. Afterwards, use our DB.
+	var endDateCG time.Time
+	var currentDate time.Time
 
 	oldestQuotation, err := s.datastore.GetOldestQuotation(ethAsset)
 	if err != nil {
-		log.Fatal("Fetch oldest quotation: ", err)
+		log.Error("Fetch oldest quotation: ", err)
+		endDateCG = endDate
+	} else {
+		// We only need CG data up to the oldest quotation in our DB. Normalize date to cg format.
+		endDateCG, err = time.Parse(cgDateLayout, oldestQuotation.Time.AddDate(0, 0, 1).Format(cgDateLayout))
+		if err != nil {
+			log.Error("Normalize date: ", err)
+		}
 	}
-	for latestTimestamp.Before(oldestQuotation.Time) {
-		// TO DO: Fetch from CG API
-		latestTimestamp.AddDate(0, 0, 1)
+
+	// Get latest recorded timestamp in historicalquotation table.
+	latestTimestamp, err := s.rdb.GetLastHistoricalQuotationTimestamp(ethAsset)
+	if err != nil {
+		log.Warn("fetch latestTimestamp: ", err)
+		var errDate error
+		currentDate, errDate = time.Parse(cgDateLayout, s.firstDate)
+		if errDate != nil {
+			log.Fatal("parse cg first date: ", errDate)
+		}
+		s.fetchCGPrices(endDateCG, currentDate, ethAsset)
+		currentDate = endDateCG
+	} else {
+		currentDate = latestTimestamp.AddDate(0, 0, 1)
 	}
-	for latestTimestamp.Before(endtime) {
-		// TO DO: Fetch from DIA DB
-		latestTimestamp.AddDate(0, 0, 1)
+
+	// In case the oldest quotation from DIA DB is not old enough, fetch remaining gap
+	// from Coingecko...
+	if currentDate.Before(endDateCG) {
+		s.fetchCGPrices(endDateCG, currentDate, ethAsset)
+		currentDate = endDateCG
+	}
+	// ... otherwise fetch quotations from DIA DB.
+	for currentDate.Before(endDate) {
+		quotation, err := s.datastore.GetAssetQuotation(ethAsset, currentDate)
+		if err != nil {
+			log.Fatal("Get asset quotation: ", err)
+		}
+		currentDate = currentDate.AddDate(0, 0, 1)
+		s.quotationChannel <- *quotation
+		time.Sleep(1 * time.Second)
 	}
 	s.doneChannel <- true
 
+}
+
+func (s *CoingeckoScraper) fetchCGPrices(endDate time.Time, currentDate time.Time, asset dia.Asset) {
+	var errCount int
+	for endDate.After(currentDate) {
+		price, errQuot := fetchCGQuotation("ethereum", currentDate.Format(cgDateLayout), "")
+		if errQuot != nil {
+			log.Error("fetch CG quotation: ", errQuot)
+			if errCount < cgErrCountLimit {
+				time.Sleep(3 * time.Second)
+				errCount++
+				continue
+			} else {
+				log.Fatal("Repeated fail on CG rest API.")
+			}
+		} else {
+			quotation := models.AssetQuotation{
+				Asset:  asset,
+				Price:  price,
+				Time:   currentDate,
+				Source: "Coingecko",
+			}
+			currentDate = currentDate.AddDate(0, 0, 1)
+			s.quotationChannel <- quotation
+			time.Sleep(cgWaitSeconds * time.Second)
+		}
+	}
 }
 
 func fetchCGQuotation(assetSymbol string, date string, apiKey string) (price float64, err error) {
@@ -102,7 +169,7 @@ func fetchCGQuotation(assetSymbol string, date string, apiKey string) (price flo
 
 	var quote cgAPIResponse
 	if err := json.Unmarshal(response, &quote); err != nil {
-		log.Error("unmarshal response: ", err)
+		log.Error("Unmarshal response: ", err)
 	}
 
 	price = quote.Quote.CurrentPrice.PriceUSD

@@ -128,16 +128,16 @@ CREATE TABLE nftclass (
     UNIQUE(nftclass_id)
 );
 
--- historicalquotes collects USD quotes with lower frequency
+-- historicalquotation collects USD quotes with lower frequency
 -- for a selection of assets.
-CREATE TABLE historicalquotes (
-    historicalquotes_id UUID DEFAULT gen_random_uuid(),
+CREATE TABLE historicalquotation (
+    historicalquotation_id UUID DEFAULT gen_random_uuid(),
     asset_id UUID REFERENCES asset(asset_id) NOT NULL, 
     price numeric,
     quote_time timestamp,
     source text,
-    UNIQUE(asset_id,quote_time),
-    UNIQUE(historicalquotes_id)
+    UNIQUE(asset_id,quote_time,source),
+    UNIQUE(historicalquotation_id)
 );
 
 -- an element from nft is a specific non-fungible nft, unqiuely
@@ -288,8 +288,6 @@ CREATE TABLE oracleconfig (
 
 
 -- ALTER TABLE oracleconfig ADD COLUMN active  boolean default true;
-
-
 
 
 
