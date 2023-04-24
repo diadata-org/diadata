@@ -1,0 +1,13 @@
+FROM us.icr.io/dia-registry/devops/build-117:latest as build
+
+WORKDIR $GOPATH/src/
+COPY cmd/foreignscraper/historicalQuotes .
+
+RUN go mod tidy -go=1.16 && go mod tidy -go=1.17 && go install
+
+FROM gcr.io/distroless/base
+
+COPY --from=build /go/bin/historicalscraper /bin/historicalscraper
+COPY --from=build /config/ /config/
+
+CMD ["historicalscraper"]
