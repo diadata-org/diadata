@@ -3,7 +3,7 @@ module github.com/diadata-org/diadata/cmd/foreignscraper/historicalQuotes
 go 1.17
 
 require (
-	github.com/diadata-org/diadata v1.4.207
+	github.com/diadata-org/diadata v1.4.208
 	github.com/sirupsen/logrus v1.7.0
 )
 
