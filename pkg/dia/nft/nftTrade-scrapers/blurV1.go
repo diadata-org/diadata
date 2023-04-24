@@ -114,10 +114,10 @@ var (
 	defBlurV1Conf = &BlurV1ScraperConfig{
 		ContractAddr:    "0x000000000000Ad05Ccc4F10045630fb830B95127", // Blur V1
 		BatchSize:       5000,
-		WaitPeriod:      60 * time.Second,
+		WaitPeriod:      2 * time.Second,
 		FollowDist:      10,
 		UseArchiveNode:  false,
-		MaxRetry:        5,
+		MaxRetry:        1,
 		SkipOnErr:       true,
 		MaxMetadataSize: 50 * 1024,
 		MetadataTimeout: 30 * time.Second,
@@ -131,7 +131,7 @@ var (
 	// This string is the identifier of the scraper in conf and state fields in postgres.
 	BlurV1 = "BlurV1"
 
-	BlurV1ABI  abi.ABI
+	BlurV1ABI abi.ABI
 
 	assetCacheBlurV1 = make(map[string]dia.Asset)
 )
@@ -159,7 +159,7 @@ func init() {
 		panic(err)
 	}
 
-	BlurV1 = utils.Getenv("SCRAPER_NAME_STATE", "")
+	BlurV1 = utils.Getenv("SCRAPER_NAME_STATE", BlurV1)
 
 	// If scraper state is not set yet, start from this block
 	initBlockNumString := utils.Getenv("LAST_BLOCK_NUM", "15779579")
@@ -449,8 +449,6 @@ func (s *BlurV1Scraper) notifyTrade(
 		return err
 	}
 
-
-
 	trade := dia.NFTTrade{
 		NFT:         *nft,
 		Price:       erc721Transfer.Price,
@@ -738,7 +736,7 @@ func (s *BlurV1Scraper) findERC721Transfers(ctx context.Context, receipt *types.
 			ev, err := marketContract.ParseOrdersMatched(*txLog)
 			if err != nil {
 				log.Errorf(
-					"unable to decode BlurV1 OrdersMatched event(tx: %s, logIndex: %d) (SKIPPED!): %s", 
+					"unable to decode BlurV1 OrdersMatched event(tx: %s, logIndex: %d) (SKIPPED!): %s",
 					txLog.TxHash, txLog.Index, err.Error(),
 				)
 				continue
@@ -787,7 +785,7 @@ func (s *BlurV1Scraper) findERC721Transfers(ctx context.Context, receipt *types.
 				Raw:     compatLog.Raw,
 			}
 		}
-		key_in_nft_prices := transferLog.TokenId.String()+"-"+txLog.Address.Hex()
+		key_in_nft_prices := transferLog.TokenId.String() + "-" + txLog.Address.Hex()
 		price, price_ok := nft_prices[key_in_nft_prices]
 		if !price_ok {
 			// skip over nfts which transferred over other marketplaces
@@ -807,7 +805,7 @@ func (s *BlurV1Scraper) findERC721Transfers(ctx context.Context, receipt *types.
 			From:       transferLog.From,
 			To:         transferLog.To,
 			TokenID:    transferLog.TokenId,
-			Price: 			price,
+			Price:      price,
 			PriceUSD:   usdPrice,
 			TokenAttrs: make(map[string]interface{}),
 		}
