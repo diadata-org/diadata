@@ -1,7 +1,9 @@
 package historicalscrapers
 
 import (
+	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	log "github.com/sirupsen/logrus"
 )
 
 type HistoricalScraper interface {
@@ -15,7 +17,11 @@ func NewHistoricalScraper(source string, rdb *models.RelDB, datastore *models.DB
 	case "Coinmarketcap":
 		return NewCoinmarketcapScraper(rdb, datastore)
 	case "Coingecko":
-		return NewCoingeckoScraper(rdb, datastore)
+		config, err := dia.GetConfig(source)
+		if err != nil {
+			log.Error("Get CG API key: ", err)
+		}
+		return NewCoingeckoScraper(rdb, datastore, config.ApiKey)
 	default:
 		return nil
 	}

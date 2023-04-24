@@ -31,6 +31,7 @@ type CoingeckoScraper struct {
 	quotationChannel chan models.AssetQuotation
 	doneChannel      chan bool
 	firstDate        string
+	apiKey           string
 }
 
 const (
@@ -40,12 +41,13 @@ const (
 	cgWaitSeconds   = 1
 )
 
-func NewCoingeckoScraper(rdb *models.RelDB, datastore *models.DB) (cgScraper CoingeckoScraper) {
+func NewCoingeckoScraper(rdb *models.RelDB, datastore *models.DB, apiKey string) (cgScraper CoingeckoScraper) {
 	cgScraper.doneChannel = make(chan bool)
 	cgScraper.quotationChannel = make(chan models.AssetQuotation)
 	cgScraper.firstDate = firstDate
 	cgScraper.datastore = datastore
 	cgScraper.rdb = rdb
+	cgScraper.apiKey = apiKey
 
 	go func() {
 		cgScraper.FetchQuotations()
@@ -126,7 +128,7 @@ func (s CoingeckoScraper) FetchQuotations() {
 func (s *CoingeckoScraper) fetchCGPrices(endDate time.Time, currentDate time.Time, asset dia.Asset) {
 	var errCount int
 	for endDate.After(currentDate) {
-		price, errQuot := fetchCGQuotation("ethereum", currentDate.Format(cgDateLayout), "")
+		price, errQuot := fetchCGQuotation("ethereum", currentDate.Format(cgDateLayout), s.apiKey)
 		if errQuot != nil {
 			log.Error("fetch CG quotation: ", errQuot)
 			if errCount < cgErrCountLimit {
