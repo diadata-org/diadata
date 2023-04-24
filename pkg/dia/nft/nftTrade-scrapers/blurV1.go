@@ -790,8 +790,8 @@ func (s *BlurV1Scraper) findERC721Transfers(ctx context.Context, receipt *types.
 		key_in_nft_prices := transferLog.TokenId.String()+"-"+txLog.Address.Hex()
 		price, price_ok := nft_prices[key_in_nft_prices]
 		if !price_ok {
-			log.Warn("couldn't find price for nft ", key_in_nft_prices)
-			price = big.NewInt(0)
+			// skip over nfts which transferred over other marketplaces
+			continue
 		}
 		currSymbol := "ETH"
 		currDecimals := 18
