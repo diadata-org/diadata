@@ -108,6 +108,7 @@ const (
 	Opensea                  = "OpenSea"
 	OpenseaBAYC              = "OpenseaBAYC"
 	OpenseaSeaport           = "OpenseaSeaport"
+	BlurV1                   = "BlurV1"
 	LooksRare                = "LooksRare"
 	TofuNFTAstar             = "TofuNFT-Astar"
 	TofuNFTBinanceSmartChain = "TofuNFT-BinanceSmartChain"
