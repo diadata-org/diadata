@@ -7,7 +7,7 @@ RUN go mod tidy -go=1.16 && go mod tidy -go=1.17 && go install
 
 FROM gcr.io/distroless/base
 
-COPY --from=build /go/bin/historicalscraper /bin/historicalscraper
+COPY --from=build /go/bin/historicalQuotes /bin/historicalQuotes
 COPY --from=build /config/ /config/
 
 CMD ["historicalscraper"]

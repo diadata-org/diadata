@@ -35,7 +35,7 @@ type CoingeckoScraper struct {
 }
 
 const (
-	firstDate       = "08-03-2023"
+	firstDate       = "01-01-2018"
 	cgDateLayout    = "02-01-2006"
 	cgErrCountLimit = 5
 	cgWaitSeconds   = 1
@@ -156,8 +156,10 @@ func fetchCGQuotation(assetSymbol string, date string, apiKey string) (price flo
 
 	var url string
 	if apiKey != "" {
+		log.Info("Found API key.")
 		url = fmt.Sprintf("https://pro-api.coingecko.com/api/v3/coins/%s/history?date=%s&x_cg_pro_api_key=%s", assetSymbol, date, apiKey)
 	} else {
+		log.Warn("No API key found. Proceed with standard API call.")
 		url = fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s/history?date=%s", assetSymbol, date)
 	}
 	response, statusCode, err := utils.GetRequest(url)
