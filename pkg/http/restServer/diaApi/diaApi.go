@@ -2891,6 +2891,86 @@ func (env *Env) GetNFTVolume(c *gin.Context) {
 
 }
 
+func (env *Env) GetNFTMarketCap(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	type localReturn struct {
+		Collection   dia.NFTClass
+		MarketCapUSD float64
+		Time         time.Time
+	}
+	var lr localReturn
+
+	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	nc, err := env.RelDB.GetNFTClass(address, blockchain)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find collection"))
+		return
+	}
+	nftTrades, err := env.RelDB.GetAllLastTrades(nc)
+	if err != nil {
+		lr.Time = time.Now()
+		lr.Collection = nc
+		c.JSON(http.StatusOK, lr)
+	}
+
+	// Determine first and last trade time in order to set time range for querying quotes of payment currency.
+	// Remark: For now, this only works for ETH/WETH as payment currency.
+	eth := dia.Asset{Address: "0x0000000000000000000000000000000000000000", Blockchain: dia.ETHEREUM}
+	endtime := nftTrades[len(nftTrades)-1].Timestamp
+	starttime := nftTrades[0].Timestamp.AddDate(0, 0, -1)
+	prices, err := env.RelDB.GetHistoricalQuotations(
+		eth,
+		starttime,
+		endtime,
+	)
+	if err != nil {
+		log.Error("getPrices: ", err)
+	}
+
+	// Iterate over NFT trades and find the closest ETH price for each sale.
+	var (
+		dBefore    float64
+		dAfter     float64
+		mCap       float64
+		priceIndex int
+	)
+
+	for i, trade := range nftTrades {
+		if trade.Timestamp.Before(prices[0].Time) {
+			continue
+		}
+		// Only take into account trades paid with ETH/WETH.
+		if trade.Currency.Address != eth.Address && trade.Currency.Address != "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" {
+			continue
+		}
+
+		tradePrice, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(trade.Price), new(big.Float).SetFloat64(math.Pow10(int(trade.Currency.Decimals)))).Float64()
+		for priceIndex < len(prices)-1 && prices[priceIndex].Time.Before(trade.Timestamp) {
+			dBefore = trade.Timestamp.Sub(prices[priceIndex].Time).Seconds()
+			priceIndex++
+		}
+		dAfter = trade.Timestamp.Sub(prices[priceIndex].Time).Seconds()
+		if math.Abs(dBefore) < math.Abs(dAfter) {
+			priceIndex--
+		}
+
+		// Compute trade's USD price.
+		nftTrades[i].PriceUSD = prices[priceIndex].Price * tradePrice
+		mCap += nftTrades[i].PriceUSD
+	}
+
+	lr.Collection = nc
+	lr.MarketCapUSD = mCap
+	lr.Time = time.Now()
+
+	c.JSON(http.StatusOK, lr)
+
+}
+
 func (env *Env) GetFeedStats(c *gin.Context) {
 	if !validateInputParams(c) {
 		return

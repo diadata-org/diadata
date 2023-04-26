@@ -13,6 +13,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
+	"github.com/jackc/pgx/v4"
 )
 
 const (
@@ -356,8 +357,59 @@ func (rdb *RelDB) SetHistoricalQuotation(quotation AssetQuotation) error {
 	return nil
 }
 
-func (rdb *RelDB) GetHistoricalQuotation(asset dia.Asset, timestamp time.Time) (quotation AssetQuotation, err error) {
-	// TO DO
+// GetHistoricalQuotations returns all historical quotations of @asset in the given time range.
+func (rdb *RelDB) GetHistoricalQuotations(asset dia.Asset, starttime time.Time, endtime time.Time) (quotations []AssetQuotation, err error) {
+	query := fmt.Sprintf(`
+	SELECT hq.price,hq.quote_time,hq.source,a.decimals 
+	FROM %s hq
+	INNER JOIN %s a
+	ON hq.asset_id=a.asset_id
+	WHERE a.address=$1 AND a.blockchain=$2
+	AND hq.quote_time>to_timestamp($3)
+	AND hq.quote_time<to_timestamp($4)
+	ORDER BY hq.quote_time ASC
+	`,
+		historicalQuotationTable,
+		assetTable,
+	)
+	var rows pgx.Rows
+	rows, err = rdb.postgresClient.Query(context.Background(), query, asset.Address, asset.Blockchain, starttime.Unix(), endtime.Unix())
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			price     sql.NullFloat64
+			source    sql.NullString
+			quotation AssetQuotation
+			decimals  sql.NullInt64
+		)
+		err = rows.Scan(
+			&price,
+			&quotation.Time,
+			&quotation.Source,
+			&decimals,
+		)
+		if err != nil {
+			return
+		}
+		quotation.Asset = asset
+		if decimals.Valid {
+			quotation.Asset.Decimals = uint8(decimals.Int64)
+		} else {
+			err = errors.New("Cannot parse decimals.")
+			return
+		}
+		if price.Valid {
+			quotation.Price = price.Float64
+		}
+		if source.Valid {
+			quotation.Source = source.String
+		}
+		quotations = append(quotations, quotation)
+	}
 	return
 }
 

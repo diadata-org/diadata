@@ -49,7 +49,7 @@ type RelDatastore interface {
 
 	// ----------------- Historical quotations methods -------------------
 	SetHistoricalQuotation(quotation AssetQuotation) error
-	GetHistoricalQuotation(asset dia.Asset, timestamp time.Time) (quotation AssetQuotation, err error)
+	GetHistoricalQuotations(asset dia.Asset, starttime time.Time, endtime time.Time) ([]AssetQuotation, error)
 	GetLastHistoricalQuotationTimestamp(asset dia.Asset) (time.Time, error)
 
 	// ----------------- exchange methods -------------------
@@ -99,6 +99,7 @@ type RelDatastore interface {
 	SetNFTTradeToTable(trade dia.NFTTrade, table string) error
 	GetNFTTrades(address string, blockchain string, tokenID string, starttime time.Time, endtime time.Time) ([]dia.NFTTrade, error)
 	GetNFTTradesCollection(address string, blockchain string, starttime time.Time, endtime time.Time) ([]dia.NFTTrade, error)
+	GetAllLastTrades(nftclass dia.NFTClass) ([]dia.NFTTrade, error)
 	GetNFTOffers(address string, blockchain string, tokenID string) ([]dia.NFTOffer, error)
 	GetNFTBids(address string, blockchain string, tokenID string) ([]dia.NFTBid, error)
 	GetNFTFloor(nftclass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, noBundles bool, exchange string) (float64, error)
