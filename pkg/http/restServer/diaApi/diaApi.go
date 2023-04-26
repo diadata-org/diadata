@@ -2896,9 +2896,17 @@ func (env *Env) GetNFTMarketCap(c *gin.Context) {
 		return
 	}
 
+	type localNFT struct {
+		Address    string `json:"Address"`
+		Symbol     string `json:"Symbol"`
+		Name       string `json:"Name"`
+		Blockchain string `json:"Blockchain"`
+	}
+
 	type localReturn struct {
-		Collection   dia.NFTClass
+		Collection   localNFT
 		MarketCapUSD float64
+		TradesNumber int
 		Time         time.Time
 	}
 	var lr localReturn
@@ -2913,7 +2921,7 @@ func (env *Env) GetNFTMarketCap(c *gin.Context) {
 	nftTrades, err := env.RelDB.GetAllLastTrades(nc)
 	if err != nil {
 		lr.Time = time.Now()
-		lr.Collection = nc
+		lr.Collection = localNFT{Address: nc.Address, Blockchain: nc.Blockchain, Symbol: nc.Symbol, Name: nc.Name}
 		c.JSON(http.StatusOK, lr)
 	}
 
@@ -2963,8 +2971,9 @@ func (env *Env) GetNFTMarketCap(c *gin.Context) {
 		mCap += nftTrades[i].PriceUSD
 	}
 
-	lr.Collection = nc
+	lr.Collection = localNFT{Address: nc.Address, Blockchain: nc.Blockchain, Symbol: nc.Symbol, Name: nc.Name}
 	lr.MarketCapUSD = mCap
+	lr.TradesNumber = len(nftTrades)
 	lr.Time = time.Now()
 
 	c.JSON(http.StatusOK, lr)
