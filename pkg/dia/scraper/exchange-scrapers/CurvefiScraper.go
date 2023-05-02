@@ -97,6 +97,7 @@ type CurveFIScraper struct {
 	WsClient    *ethclient.Client
 	RestClient  *ethclient.Client
 	relDB       *models.RelDB
+	datastore   *models.DB
 	curveCoins  map[string]*CurveCoin
 	resubscribe chan string
 	pools       *Pools
@@ -142,14 +143,26 @@ func makeCurvefiScraper(exchange dia.Exchange, restDial string, wsDial string) *
 	if err != nil {
 		log.Fatal("new postgres datastore: ", err)
 	}
+
+	scraper.datastore, err = models.NewDataStore()
+	if err != nil {
+		log.Fatal("new postgres datastore: ", err)
+	}
+
 	// Only include pools with (minimum) liquidity bigger than given env var.
 	liquidityThreshold, err := strconv.ParseFloat(utils.Getenv("LIQUIDITY_THRESHOLD", "0"), 64)
 	if err != nil {
 		liquidityThreshold = float64(0)
 		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThreshold)
 	}
+	// Only include pools with (minimum) liquidity bigger than given env var.
+	liquidityThresholdUSD, err := strconv.ParseFloat(utils.Getenv("LIQUIDITY_THRESHOLD_USD", "0"), 64)
+	if err != nil {
+		liquidityThresholdUSD = float64(0)
+		log.Warnf("parse liquidity threshold USD:  %v. Set to default %v", err, liquidityThresholdUSD)
+	}
 
-	scraper.loadPools(liquidityThreshold)
+	scraper.loadPools(liquidityThreshold, liquidityThresholdUSD)
 	return scraper
 }
 
@@ -337,7 +350,7 @@ func (scraper *CurveFIScraper) getSwapDataCurve(pool string, s *curvepool.Curvep
 	return
 }
 
-func (scraper *CurveFIScraper) loadPools(liquidityThreshold float64) {
+func (scraper *CurveFIScraper) loadPools(liquidityThreshold float64, liquidityThresholdUSD float64) {
 
 	pools, err := scraper.relDB.GetAllPoolsExchange(scraper.exchangeName, liquidityThreshold)
 	if err != nil {
@@ -346,20 +359,27 @@ func (scraper *CurveFIScraper) loadPools(liquidityThreshold float64) {
 	log.Infof("found %v pools to subscribe: ", len(pools))
 
 	for _, pool := range pools {
-		var poolCoinsMap = make(map[int]*CurveCoin)
-		for _, av := range pool.Assetvolumes {
-			poolCoinsMap[int(av.Index)] = &CurveCoin{
-				Symbol:   av.Asset.Symbol,
-				Decimals: av.Asset.Decimals,
-				Name:     av.Asset.Name,
-				Address:  av.Asset.Address,
+		liquidity, lowerBound, errLiqui := scraper.datastore.GetPoolLiquidityUSD(pool)
+		// Discard pool if complete USD liquidity is below threshold.
+		if errLiqui == nil && !lowerBound && liquidity < liquidityThresholdUSD {
+			continue
+		} else {
+			var poolCoinsMap = make(map[int]*CurveCoin)
+			for _, av := range pool.Assetvolumes {
+				poolCoinsMap[int(av.Index)] = &CurveCoin{
+					Symbol:   av.Asset.Symbol,
+					Decimals: av.Asset.Decimals,
+					Name:     av.Asset.Name,
+					Address:  av.Asset.Address,
+				}
+				scraper.curveCoins[av.Asset.Address] = &CurveCoin{
+					Symbol:   av.Asset.Symbol,
+					Decimals: av.Asset.Decimals,
+				}
 			}
-			scraper.curveCoins[av.Asset.Address] = &CurveCoin{
-				Symbol:   av.Asset.Symbol,
-				Decimals: av.Asset.Decimals,
-			}
+			scraper.pools.setPool(pool.Address, poolCoinsMap)
 		}
-		scraper.pools.setPool(pool.Address, poolCoinsMap)
+
 	}
 }
 
