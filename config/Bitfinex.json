@@ -1,6 +1,18 @@
 {
   "Coins": [
     {
+      "Symbol": "UDC",
+      "ForeignName": "UDCUST",
+      "Exchange": "Bitfinex",
+      "Ignore": false
+    },
+    {
+      "Symbol": "UDC",
+      "ForeignName": "UDCUSD",
+      "Exchange": "Bitfinex",
+      "Ignore": false
+    },
+    {
       "Symbol": "YFI",
       "ForeignName": "YFIUSD",
       "Exchange": "Bitfinex",

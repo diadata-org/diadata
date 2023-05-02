@@ -31,21 +31,27 @@
             "Address": "0x0c7D5ae016f806603CB1782bEa29AC69471CAb9c"
         },
         {
+            "Symbol": "BNC",
+            "Exchange": "GateIO",
+            "Blockchain": "Bifrost",
+            "Address": "Token:BNC"
+        },
+        {
             "Symbol": "CFG",
             "Exchange": "GateIO",
             "Blockchain": "Centrifuge",
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
-            "Symbol": "INTR",
-            "Exchange": "GateIO",
-            "Blockchain": "Interlay",
-            "Address": "0x0000000000000000000000000000000000000000"
-        },
-        {
             "Symbol": "CKB",
             "Exchange": "GateIO",
             "Blockchain": "Nervos",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "INTR",
+            "Exchange": "GateIO",
+            "Blockchain": "Interlay",
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
@@ -89,7 +95,7 @@
             "Exchange": "GateIO",
             "Blockchain": "Arbitrum",
             "Address": "0x0C4681e6C0235179ec3D4F4fc4DF3d14FDD96017"
-          },
+        },
         {
             "Symbol": "STG",
             "Exchange": "GateIO",
@@ -419,6 +425,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Kilt",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "KINT",
+            "Exchange": "GateIO",
+            "Blockchain": "Kintsugi",
+            "Address": "Token:KINT"
         },
         {
             "Symbol": "KSM",

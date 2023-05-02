@@ -161,6 +161,12 @@
             "ForeignName": "UNIUSDT",
             "Ignore": false,
             "Symbol": "UNI"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "USDCUSDT",
+            "Ignore": false,
+            "Symbol": "USDC"
         }
     ]
 }

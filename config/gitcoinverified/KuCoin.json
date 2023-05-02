@@ -91,6 +91,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "BNC",
+            "Exchange": "KuCoin",
+            "Blockchain": "Bifrost",
+            "Address": "Token:BNC"
+        },
+        {
             "Symbol": "BOLT",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

@@ -13,6 +13,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "BNC",
+      "Exchange": "Kraken",
+      "Blockchain": "Bifrost",
+      "Address": "Token:BNC"
+    },
+    {
       "Symbol": "CFG",
       "Exchange": "Kraken",
       "Blockchain": "Centrifuge",
@@ -41,6 +47,12 @@
       "Exchange": "Kraken",
       "Blockchain": "Kilt",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "KINT",
+      "Exchange": "Kraken",
+      "Blockchain": "Kintsugi",
+      "Address": "Token:KINT"
     },
     {
       "Symbol": "KSM",

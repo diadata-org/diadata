@@ -452,6 +452,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "USDCUSDT",
+      "Ignore": false,
+      "Symbol": "USDC"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "WANBTC",
       "Ignore": false,
       "Symbol": "WAN"

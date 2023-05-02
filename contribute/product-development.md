@@ -8,4 +8,5 @@ By completing bounties, decentralised contributors across the globe have been an
 
 Explore the latest DIA Gitcoin tickets below:
 
-{% embed url="https://gitcoin.co/diadata-org" %}
+- [Gitcoin](https://gitcoin.co/diadata-org)
+- [Dework](https://app.dework.xyz/dia-dao/dia-tech-guild)

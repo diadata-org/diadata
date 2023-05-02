@@ -649,6 +649,7 @@ type OracleConfig struct {
 	Symbols            []string
 	FeederID           string
 	Address            string
+	FeederAddress      string
 	Owner              string
 	ChainID            string
 	Active             bool
@@ -657,4 +658,7 @@ type OracleConfig struct {
 	DeviationPermille  string
 	BlockchainNode     string
 	MandatoryFrequency string
+	CreatedDate        time.Time
+	LastUpdate         time.Time
+	Deleted            bool
 }

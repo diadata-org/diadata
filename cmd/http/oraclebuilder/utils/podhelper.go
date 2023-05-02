@@ -16,6 +16,7 @@ import (
 	"k8s.io/client-go/util/homedir"
 
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/watch"
 )
@@ -65,7 +66,7 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 	chainidenv := corev1.EnvVar{Name: "ORACLE_CHAINID", Value: chainID}
 	signerservice := corev1.EnvVar{Name: "ORACLE_SIGNER", Value: "signer.dia-oracle-feeder:50052"}
 	sleepsecondenv := corev1.EnvVar{Name: "ORACLE_SLEEPSECONDS", Value: sleepSeconds}
-	deviationenv := corev1.EnvVar{Name: "DEVIATION_PERMILLE", Value: deviationPermille}
+	deviationenv := corev1.EnvVar{Name: "ORACLE_DEVIATIONPERMILLE", Value: deviationPermille}
 	frequencyseconds := corev1.EnvVar{Name: "ORACLE_FREQUENCYSECONDS", Value: frequency}
 	oracletype := corev1.EnvVar{Name: "ORACLE_ORACLETYPE", Value: "3"}
 	oraclesymbols := corev1.EnvVar{Name: "ORACLE_SYMBOLS", Value: symbols}
@@ -128,7 +129,7 @@ func (kh *PodHelper) UpdateOracleFeeder(feederID string, owner string, oracle st
 	chainidenv := corev1.EnvVar{Name: "ORACLE_CHAINID", Value: chainID}
 	signerservice := corev1.EnvVar{Name: "ORACLE_SIGNER", Value: "signer.dia-oracle-feeder:50052"}
 	sleepsecondenv := corev1.EnvVar{Name: "ORACLE_SLEEPSECONDS", Value: sleepSeconds}
-	deviationenv := corev1.EnvVar{Name: "DEVIATION_PERMILLE", Value: deviationPermille}
+	deviationenv := corev1.EnvVar{Name: "ORACLE_DEVIATIONPERMILLE", Value: deviationPermille}
 	frequencyseconds := corev1.EnvVar{Name: "ORACLE_FREQUENCYSECONDS", Value: frequency}
 	oracletype := corev1.EnvVar{Name: "ORACLE_ORACLETYPE", Value: "3"}
 	oraclesymbols := corev1.EnvVar{Name: "ORACLE_SYMBOLS", Value: symbols}
@@ -178,29 +179,55 @@ func (kh *PodHelper) UpdateOracleFeeder(feederID string, owner string, oracle st
 
 }
 func (kh *PodHelper) DeleteOracleFeeder(feederID string) error {
-	err := kh.k8sclient.CoreV1().Pods(kh.NameSpace).Delete(context.TODO(), feederID, metav1.DeleteOptions{})
+
+	_, err := kh.k8sclient.CoreV1().Pods(kh.NameSpace).Get(context.TODO(), feederID, metav1.GetOptions{})
 	if err != nil {
-		return err
+		if errors.IsNotFound(err) {
+			log.Infof("Pod %s not found, no need to delete\n", feederID)
+			return nil
+		} else {
+			err = kh.k8sclient.CoreV1().Pods(kh.NameSpace).Delete(context.TODO(), feederID, metav1.DeleteOptions{})
+			if err != nil {
+				return err
+			}
+		}
 	}
+
 	log.Infof("Pod %s deleted\n", feederID)
 	return err
 }
 
 func (kh *PodHelper) RestartOracleFeeder(feederID string, oracleconfig dia.OracleConfig) (err error) {
-	err = kh.k8sclient.CoreV1().Pods(kh.NameSpace).Delete(context.TODO(), feederID, metav1.DeleteOptions{})
-	//if err != nil {
-	//	return err
-	//}
-	kh.waitPodDeleted(context.TODO(), oracleconfig.Address, func() {
-		time.Sleep(1000 * time.Millisecond)
+
+	_, err = kh.k8sclient.CoreV1().Pods(kh.NameSpace).Get(context.TODO(), feederID, metav1.GetOptions{})
+	if err != nil {
+		if errors.IsNotFound(err) {
+			log.Infof("Pod %s not found, no need to delete\n", feederID)
+		} else {
+			return err
+		}
 		err = kh.CreateOracleFeeder(feederID, oracleconfig.Owner, oracleconfig.Address, oracleconfig.ChainID, strings.Join(oracleconfig.Symbols[:], ","), oracleconfig.BlockchainNode, oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille, oracleconfig.MandatoryFrequency)
 		if err != nil {
 			log.Errorf("Pod %s start err\n", err)
 			return
 		}
 		log.Infof("Pod %s started\n", feederID)
-	})
-	log.Infof("Pod %s deleted\n", feederID)
+	} else {
+		err = kh.k8sclient.CoreV1().Pods(kh.NameSpace).Delete(context.TODO(), feederID, metav1.DeleteOptions{})
+		//if err != nil {
+		//	return err
+		//}
+		kh.waitPodDeleted(context.TODO(), oracleconfig.Address, func() {
+			time.Sleep(1000 * time.Millisecond)
+			err = kh.CreateOracleFeeder(feederID, oracleconfig.Owner, oracleconfig.Address, oracleconfig.ChainID, strings.Join(oracleconfig.Symbols[:], ","), oracleconfig.BlockchainNode, oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille, oracleconfig.MandatoryFrequency)
+			if err != nil {
+				log.Errorf("Pod %s start err\n", err)
+				return
+			}
+			log.Infof("Pod %s started\n", feederID)
+		})
+		log.Infof("Pod %s deleted\n", feederID)
+	}
 
 	return err
 }

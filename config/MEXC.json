@@ -85,6 +85,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "BNC",
+      "ForeignName": "BNCUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "BOO",
       "ForeignName": "BOOUSDT",
       "Exchange": "MEXC",
