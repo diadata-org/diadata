@@ -49,6 +49,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "KINT",
+      "Exchange": "Kraken",
+      "Blockchain": "Kintsugi",
+      "Address": "Token:KINT"
+    },
+    {
       "Symbol": "KSM",
       "Exchange": "Kraken",
       "Blockchain": "Kusama",

@@ -26,6 +26,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "KINT_USDT",
+      "Ignore": false,
+      "Symbol": "KINT"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "ACA_USDT",
       "Ignore": false,
       "Symbol": "ACA"

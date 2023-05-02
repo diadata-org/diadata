@@ -55,6 +55,10 @@
     {
       "Address": "0xCfef8857E9C80e3440A823971420F7Fa5F62f020",
       "Symbol": "CFTI"
+    },
+    {
+      "Address": "0xc55126051B22eBb829D00368f4B12Bde432de5Da",
+      "Symbol": "BTRFLY"
     }
   ]
 }
