@@ -19,7 +19,7 @@ import (
 
 const (
 	balancerV2RateLimitPerSec = 50
-	balancerV2FilterPageSize  = 50000
+	balancerV2FilterPageSize  = 5000
 )
 
 type BalancerV2AssetSource struct {
