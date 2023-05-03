@@ -43,8 +43,12 @@ func NewBalancerV2AssetSource(exchange dia.Exchange) (bas *BalancerV2AssetSource
 	switch exchange.Name {
 	case dia.BalancerV2Exchange:
 		bas.startblockPoolRegister = 12272146
+	case dia.BalancerV2ExchangeArbitrum:
+		bas.startblockPoolRegister = 222832
 	case dia.BeetsExchange:
 		bas.startblockPoolRegister = 16896080
+	case dia.BalancerV2ExchangePolygon:
+		bas.startblockPoolRegister = 15832990
 	}
 
 	go func() {

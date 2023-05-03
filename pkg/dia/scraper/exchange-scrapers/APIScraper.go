@@ -167,6 +167,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewCurveFIScraper(Exchanges[dia.CurveFIExchangeArbitrum], scrape)
 	case dia.BalancerV2Exchange:
 		return NewBalancerV2Scraper(Exchanges[dia.BalancerV2Exchange], scrape)
+	case dia.BalancerV2ExchangeArbitrum:
+		return NewBalancerV2Scraper(Exchanges[dia.BalancerV2ExchangeArbitrum], scrape)
 	case dia.BalancerV2ExchangePolygon:
 		return NewBalancerV2Scraper(Exchanges[dia.BalancerV2ExchangePolygon], scrape)
 	case dia.BeetsExchange:

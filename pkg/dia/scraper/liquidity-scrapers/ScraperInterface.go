@@ -87,12 +87,14 @@ func NewLiquidityScraper(source string) LiquidityScraper {
 		return NewCurveFIScraper(exchanges[dia.CurveFIExchangeArbitrum])
 	case dia.BalancerV2Exchange:
 		return NewBalancerV2Scraper(exchanges[dia.BalancerV2Exchange])
-	case dia.PlatypusExchange:
-		return NewPlatypusScraper(exchanges[dia.PlatypusExchange])
-	case dia.BalancerV2ExchangePolygon:
-		return NewBalancerV2Scraper(exchanges[dia.BalancerV2ExchangePolygon])
+	case dia.BalancerV2ExchangeArbitrum:
+		return NewBalancerV2Scraper(exchanges[dia.BalancerV2ExchangeArbitrum])
 	case dia.BeetsExchange:
 		return NewBalancerV2Scraper(exchanges[dia.BeetsExchange])
+	case dia.BalancerV2ExchangePolygon:
+		return NewBalancerV2Scraper(exchanges[dia.BalancerV2ExchangePolygon])
+	case dia.PlatypusExchange:
+		return NewPlatypusScraper(exchanges[dia.PlatypusExchange])
 	case dia.UniswapExchangeV3:
 		return NewUniswapV3Scraper(exchanges[dia.UniswapExchangeV3])
 	case dia.UniswapExchangeV3Polygon:
