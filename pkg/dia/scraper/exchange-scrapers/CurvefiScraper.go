@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/curvefi/curvepool"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/curvefifactory"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 
@@ -232,6 +233,12 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 	}
 	sink := make(chan *curvepool.CurvepoolTokenExchange)
 
+	filtererV2, err := curvefifactory.NewCurvefifactoryFilterer(common.HexToAddress(pool), scraper.WsClient)
+	if err != nil {
+		log.Fatal(err)
+	}
+	sinkV2 := make(chan *curvefifactory.CurvefifactoryTokenExchange)
+
 	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
 	if err != nil {
 		log.Fatal(err)
@@ -243,10 +250,16 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 		log.Error("WatchTokenExchange: ", err)
 	}
 
+	subV2, err := filtererV2.WatchTokenExchange(&bind.WatchOpts{Start: &startblock}, sinkV2, nil)
+	if err != nil {
+		log.Error("WatchTokenExchange: ", err)
+	}
+
 	go func() {
 		fmt.Println("Curvefi Subscribed to pool: " + pool)
 		defer fmt.Println("Curvefi UnSubscribed to pool: " + pool)
 		defer sub.Unsubscribe()
+		defer subV2.Unsubscribe()
 		subscribed := true
 
 		for scraper.run && subscribed {
@@ -262,7 +275,12 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 				}
 				log.Warn("subscription error: ", err)
 			case swp := <-sink:
+				log.Info("got swap V1")
 				scraper.processSwap(pool, swp)
+
+			case swpV2 := <-sinkV2:
+				log.Info("got swap V2")
+				scraper.processSwap(pool, swpV2)
 			}
 		}
 	}()
@@ -271,12 +289,32 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 
 }
 
-func (scraper *CurveFIScraper) processSwap(pool string, swp *curvepool.CurvepoolTokenExchange) {
+func (scraper *CurveFIScraper) processSwap(pool string, swp interface{}) {
+	var (
+		foreignName    string
+		volume         float64
+		price          float64
+		baseToken      dia.Asset
+		quoteToken     dia.Asset
+		foreignTradeID string
+		err            error
+	)
 
-	foreignName, volume, price, baseToken, quoteToken, err := scraper.getSwapDataCurve(pool, swp)
-	if err != nil {
-		log.Error("getSwapDataCurve: ", err)
+	switch s := swp.(type) {
+	case *curvepool.CurvepoolTokenExchange:
+		foreignName, volume, price, baseToken, quoteToken, err = scraper.getSwapDataCurve(pool, s)
+		if err != nil {
+			log.Error("getSwapDataCurve: ", err)
+		}
+		foreignTradeID = s.Raw.TxHash.Hex() + "-" + fmt.Sprint(s.Raw.Index)
+	case *curvefifactory.CurvefifactoryTokenExchange:
+		foreignName, volume, price, baseToken, quoteToken, err = scraper.getSwapDataCurve(pool, s)
+		if err != nil {
+			log.Error("getSwapDataCurve: ", err)
+		}
+		foreignTradeID = s.Raw.TxHash.Hex() + "-" + fmt.Sprint(s.Raw.Index)
 	}
+
 	timestamp := time.Now().Unix()
 
 	trade := &dia.Trade{
@@ -287,7 +325,7 @@ func (scraper *CurveFIScraper) processSwap(pool string, swp *curvepool.Curvepool
 		Price:          price,
 		Volume:         volume,
 		Time:           time.Unix(timestamp, 0),
-		ForeignTradeID: swp.Raw.TxHash.Hex() + "-" + fmt.Sprint(swp.Raw.Index),
+		ForeignTradeID: foreignTradeID,
 		Source:         scraper.exchangeName,
 		VerifiedPair:   true,
 	}
@@ -298,36 +336,59 @@ func (scraper *CurveFIScraper) processSwap(pool string, swp *curvepool.Curvepool
 }
 
 // getSwapDataCurve returns the foreign name, volume and price of a swap
-func (scraper *CurveFIScraper) getSwapDataCurve(pool string, s *curvepool.CurvepoolTokenExchange) (foreignName string, volume float64, price float64, baseToken, quoteToken dia.Asset, err error) {
+func (scraper *CurveFIScraper) getSwapDataCurve(pool string, swp interface{}) (
+	foreignName string,
+	volume float64,
+	price float64,
+	baseToken,
+	quoteToken dia.Asset,
+	err error,
+) {
+	var (
+		fromToken *CurveCoin
+		toToken   *CurveCoin
+		amountIn  float64
+		amountOut float64
+		ok        bool
+	)
 
-	fromToken, ok := scraper.pools.getPoolCoin(pool, int(s.SoldId.Int64()))
-	if !ok {
-		err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
+	switch s := swp.(type) {
+	case *curvepool.CurvepoolTokenExchange:
+		fromToken, ok = scraper.pools.getPoolCoin(pool, int(s.SoldId.Int64()))
+		if !ok {
+			err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
+		}
+		toToken, ok = scraper.pools.getPoolCoin(pool, int(s.BoughtId.Int64()))
+		if !ok {
+			err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
+		}
+		amountIn, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(s.TokensSold), new(big.Float).SetFloat64(math.Pow10(int(fromToken.Decimals)))).Float64()
+		amountOut, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(s.TokensBought), new(big.Float).SetFloat64(math.Pow10(int(toToken.Decimals)))).Float64()
+	case *curvefifactory.CurvefifactoryTokenExchange:
+		fromToken, ok = scraper.pools.getPoolCoin(pool, int(s.SoldId.Int64()))
+		if !ok {
+			err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
+		}
+		toToken, ok = scraper.pools.getPoolCoin(pool, int(s.BoughtId.Int64()))
+		if !ok {
+			err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
+		}
+		amountIn, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(s.TokensSold), new(big.Float).SetFloat64(math.Pow10(int(fromToken.Decimals)))).Float64()
+		amountOut, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(s.TokensBought), new(big.Float).SetFloat64(math.Pow10(int(toToken.Decimals)))).Float64()
 	}
+
 	baseToken = dia.Asset{
 		Name:       fromToken.Name,
 		Address:    fromToken.Address,
 		Symbol:     fromToken.Symbol,
 		Blockchain: Exchanges[scraper.exchangeName].BlockChain.Name,
 	}
-
-	toToken, ok := scraper.pools.getPoolCoin(pool, int(s.BoughtId.Int64()))
-	if !ok {
-		err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
-	}
-
 	quoteToken = dia.Asset{
 		Name:       toToken.Name,
 		Address:    toToken.Address,
 		Symbol:     toToken.Symbol,
 		Blockchain: Exchanges[scraper.exchangeName].BlockChain.Name,
 	}
-
-	// amountIn := s.AmountSold. / math.Pow10( fromToken.Decimals )
-	amountIn, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.TokensSold), new(big.Float).SetFloat64(math.Pow10(int(fromToken.Decimals)))).Float64()
-
-	// amountOut := s.AmountBought / math.Pow10( toToken.Decimals )
-	amountOut, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.TokensBought), new(big.Float).SetFloat64(math.Pow10(int(toToken.Decimals)))).Float64()
 
 	volume = amountOut
 	price = amountIn / amountOut
