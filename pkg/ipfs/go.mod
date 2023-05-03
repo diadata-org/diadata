@@ -4,7 +4,6 @@ go 1.19
 
 require (
 	github.com/diadata-org/diadata v1.4.192
-	github.com/diadata-org/diadata/pkg/ipfs v0.0.0-00010101000000-000000000000
 	github.com/ipfs/go-ipfs-api v0.6.0
 	github.com/sirupsen/logrus v1.7.0
 )

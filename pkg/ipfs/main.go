@@ -2,6 +2,7 @@ package ipfs
 
 import (
 	"github.com/diadata-org/diadata/pkg/utils"
+	icore "github.com/ipfs/boxo/coreiface"
 	shell "github.com/ipfs/go-ipfs-api"
 	"github.com/sirupsen/logrus"
 	"io"
@@ -11,11 +12,14 @@ import (
 )
 
 type IPFSClient struct {
-	sh             *shell.Shell
+	coreApi        icore.CoreAPI
+	node           *interface{}
+	ctx
 	DefaultTimeout time.Duration
 }
 
 func NewIPFSClient() *IPFSClient {
+	ipfsApi, NodeApi := SpawnNode()
 	timeout, err := strconv.Atoi(utils.Getenv("IPFS_DEFAULT_TIMEOUT", "600"))
 	if err != nil {
 		logrus.Fatalln("Failed creating IPFSClient ", err)
