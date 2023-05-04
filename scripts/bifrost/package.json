@@ -1,0 +1,6 @@
+{
+    "dependencies": {
+        "@bifrost-finance/api": "^1.7.2",
+        "bignumber.js": "^9.0.1"
+    }
+}

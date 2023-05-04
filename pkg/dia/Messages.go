@@ -41,6 +41,7 @@ const (
 	POLKADOT                                = "Polkadot"
 	WANCHAIN                                = "Wanchain"
 	FIAT                                    = "Fiat"
+	BIFROST                                 = "bifrost"
 )
 
 type VerificationMechanism string
