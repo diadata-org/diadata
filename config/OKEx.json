@@ -8,6 +8,30 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "ATOM-USDT",
+      "Ignore": false,
+      "Symbol": "ATOM"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "ATOM-USDC",
+      "Ignore": false,
+      "Symbol": "ATOM"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "GMX-USDT",
+      "Ignore": false,
+      "Symbol": "GMX"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "GMX-USDC",
+      "Ignore": false,
+      "Symbol": "GMX"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "BAL-USDT",
       "Ignore": false,
       "Symbol": "BAL"

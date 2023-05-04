@@ -26,6 +26,12 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "ATOMUSDT",
+            "Ignore": false,
+            "Symbol": "ATOM"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "AVAXBUSD",
             "Ignore": false,
             "Symbol": "AVAX"
@@ -68,6 +74,12 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "GMXUSDT",
+            "Ignore": false,
+            "Symbol": "GMX"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "GNSUSDT",
             "Ignore": false,
             "Symbol": "GNS"
@@ -101,6 +113,12 @@
             "ForeignName": "MATICUSDT",
             "Ignore": false,
             "Symbol": "MATIC"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "RDNTUSDT",
+            "Ignore": false,
+            "Symbol": "RDNT"
         },
         {
             "Exchange": "Binance",
@@ -143,6 +161,12 @@
             "ForeignName": "UNIUSDT",
             "Ignore": false,
             "Symbol": "UNI"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "USDCUSDT",
+            "Ignore": false,
+            "Symbol": "USDC"
         }
     ]
 }

@@ -137,9 +137,20 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 		newPrice = rawPrice
 	}
 
+	// stablecoin gql
+	if address == "0x6B175474E89094C44Da98b954EedeAC495271d0F" {
+		log.Printf("Entered graphql mode")
+		rawPrice, _, err := getGraphqlAssetQuotationFromDia(blockchain, address, 120)
+		if err != nil {
+			log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
+			return oldPrice, err
+		}
+		newPrice = rawPrice
+	}
+
 	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
 		// USDC and BUSD emergency brake
-		if address == "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" || address == "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56" {
+		if address == "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56" {
 			log.Printf("brake check new price: %d\n", newPrice)
 			if newPrice < 0.99 || newPrice > 1.01 {
 				log.Printf("Error! Price read from API for asset %s is: %d", address, newPrice)

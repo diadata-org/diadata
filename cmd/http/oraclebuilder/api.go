@@ -51,6 +51,7 @@ func (ob *Env) Create(context *gin.Context) {
 	deviationPermille := context.PostForm("deviationpermille")
 
 	blockchainnode := context.PostForm("blockchainnode")
+	mandatoryFrequency := context.PostForm("mandatoryfrequency")
 
 	k := make(map[string]string)
 
@@ -128,7 +129,7 @@ func (ob *Env) Create(context *gin.Context) {
 	address = keypair.GetPublickey()
 
 	if !isUpdate {
-		err = ob.PodHelper.CreateOracleFeeder(feederID, address, oracleaddress, chainID, symbols, blockchainnode, frequency, sleepSeconds, deviationPermille)
+		err = ob.PodHelper.CreateOracleFeeder(feederID, address, oracleaddress, chainID, symbols, blockchainnode, frequency, sleepSeconds, deviationPermille, mandatoryFrequency)
 		if err != nil {
 			log.Errorln("error CreateOracleFeeder ", err)
 			context.JSON(http.StatusInternalServerError, errors.New("error creating oraclefeeder"))
@@ -137,7 +138,7 @@ func (ob *Env) Create(context *gin.Context) {
 
 	}
 
-	err = ob.RelDB.SetOracleConfig(oracleaddress, feederID, creator, symbols, chainID, frequency, sleepSeconds, deviationPermille, blockchainnode)
+	err = ob.RelDB.SetOracleConfig(oracleaddress, feederID, creator, address, symbols, chainID, frequency, sleepSeconds, deviationPermille, blockchainnode, mandatoryFrequency)
 	if err != nil {
 		log.Errorln("error SetOracleConfig ", err)
 		context.JSON(http.StatusInternalServerError, err)
@@ -181,6 +182,17 @@ func (ob *Env) List(context *gin.Context) {
 		return
 	}
 	context.JSON(http.StatusOK, oracles)
+}
+
+// list whitelisted addresses
+func (ob *Env) Whitelist(context *gin.Context) {
+	addresses, err := ob.RelDB.GetFeederResources()
+	if err != nil {
+		log.Errorln("List Whitelist: error on GetFeederResources ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	context.JSON(http.StatusOK, addresses)
 }
 
 // List: list All feeders
@@ -233,8 +245,7 @@ func (ob *Env) View(context *gin.Context) {
 	context.JSON(http.StatusOK, oracleconfig)
 
 }
-
-func (ob *Env) Delete(context *gin.Context) {
+func (ob *Env) Pause(context *gin.Context) {
 	var (
 		// address string
 		err error
@@ -269,6 +280,47 @@ func (ob *Env) Delete(context *gin.Context) {
 	context.JSON(http.StatusOK, oracleconfig)
 }
 
+func (ob *Env) Delete(context *gin.Context) {
+	var (
+		// address string
+		err error
+	)
+	oracleaddress := context.Query("oracleaddress")
+
+	creator := context.Query("creator")
+
+	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress)
+	if err != nil {
+		log.Errorln("error GetOracleConfig ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	if oracleconfig.Owner != creator {
+		log.Errorln("not authorised to delete  ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	err = ob.PodHelper.DeleteOracleFeeder(oracleconfig.FeederID)
+	if err != nil {
+		log.Errorln("error DeleteOracleFeeder ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	err = ob.RelDB.ChangeOracleState(oracleconfig.FeederID, false)
+	if err != nil {
+		log.Errorln("error ChangeOracleState ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	err = ob.RelDB.DeleteOracle(oracleconfig.FeederID)
+	if err != nil {
+		log.Errorln("error ChangeOracleState ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	context.JSON(http.StatusOK, oracleconfig)
+}
+
 func (ob *Env) Restart(context *gin.Context) {
 	var (
 		err error
@@ -295,8 +347,12 @@ func (ob *Env) Restart(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, err)
 		return
 	}
-	// delete from db
-	context.JSON(http.StatusOK, oracleconfig)
+	err = ob.RelDB.ChangeOracleState(oracleconfig.FeederID, true)
+	if err != nil {
+		log.Errorln("error ChangeOracleState ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
 
 }
 
@@ -322,7 +378,6 @@ func (ob *Env) Auth(context *gin.Context) {
 	}
 
 	signedData, err := getAuthToken(context.Request)
-	log.Infoln("signedData", signedData)
 
 	if err != nil {
 		context.JSON(http.StatusUnauthorized, errors.New("sign err"))
@@ -332,8 +387,16 @@ func (ob *Env) Auth(context *gin.Context) {
 	}
 	actionmessage := context.GetString("message")
 	log.Infoln("actionmessage", actionmessage)
+	log.Infoln("chainID", chainID)
+	log.Infoln("creator", creator)
+	log.Infoln("signedData", signedData)
+	log.Infoln("oracleaddress", oracleaddress)
 
-	signer, _ := utils.GetSigner(chainID, creator, oracleaddress, actionmessage, signedData)
+	signer, err := utils.GetSigner(chainID, creator, oracleaddress, actionmessage, signedData)
+
+	if err != nil {
+		log.Error("error while signign %v", err)
+	}
 
 	log.Infoln("signer", signer)
 

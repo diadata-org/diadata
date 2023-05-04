@@ -118,14 +118,26 @@ CREATE TABLE nftcategory (
 -- referring to the blockchain on which the nft was minted.
 CREATE TABLE nftclass (
     nftclass_id UUID DEFAULT gen_random_uuid(),
+    blockchain text NOT NULL,
     address text NOT NULL,
     symbol text,
     name text,
-    blockchain text REFERENCES blockchain(name),
     contract_type text,
     category text REFERENCES nftcategory(category),
-    UNIQUE(blockchain,address),
+    UNIQUE(blockchain, address),
     UNIQUE(nftclass_id)
+);
+
+-- historicalquotation collects USD quotes with lower frequency
+-- for a selection of assets.
+CREATE TABLE historicalquotation (
+    historicalquotation_id UUID DEFAULT gen_random_uuid(),
+    asset_id UUID REFERENCES asset(asset_id) NOT NULL, 
+    price numeric,
+    quote_time timestamp,
+    source text,
+    UNIQUE(asset_id,quote_time,source),
+    UNIQUE(historicalquotation_id)
 );
 
 -- an element from nft is a specific non-fungible nft, unqiuely
@@ -259,20 +271,23 @@ CREATE TABLE oracleconfig (
     feeder_id text NOT NULL,
     owner text NOT NULL,
     symbols text NOT NULL,
+    feeder_address text NOT NULL,
     chainID text NOT NULL,
     active  boolean default true,
+    deleted  boolean default false,
     frequency text ,
     sleepseconds text,
     deviationpermille text,
     blochchainnode text,
+    mandatory_frequency text,
+    createddate TIMESTAMP NOT NULL DEFAULT NOW(),
+    lastupdate TIMESTAMP NOT NULL,
     UNIQUE (id),
     UNIQUE (feeder_id)
 );
 
 
 -- ALTER TABLE oracleconfig ADD COLUMN active  boolean default true;
-
-
 
 
 

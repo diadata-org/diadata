@@ -49,6 +49,12 @@
             "Address": "0x2F800Db0fdb5223b3C3f354886d907A671414A7F"
         },
         {
+            "Symbol": "BFR",
+            "Exchange": "BKEX",
+            "Blockchain": "Arbitrum",
+            "Address": "0x1A5B0aaF478bf1FDA7b934c76E7692D722982a6D"
+        },
+        {
             "Symbol": "BNB",
             "Exchange": "BKEX",
             "Blockchain": "BinanceSmartChain",
@@ -199,16 +205,22 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "GMD",
+            "Exchange": "BKEX",
+            "Blockchain": "Arbitrum",
+            "Address": "0x4945970EfeEc98D393b4b979b9bE265A3aE28A8B"
+        },
+        {
             "Symbol": "GMT",
             "Exchange": "BKEX",
             "Blockchain": "Solana",
             "Address": "7i5KKsX2weiTkry7jA4ZwSuXGhs5eJBEjY8vVxR4pfRx"
         },
         {
-            "Symbol": "GMD",
+            "Symbol": "GMX",
             "Exchange": "BKEX",
             "Blockchain": "Arbitrum",
-            "Address": "0x4945970EfeEc98D393b4b979b9bE265A3aE28A8B"
+            "Address": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"
         },
         {
             "Symbol": "GNS",
@@ -275,6 +287,12 @@
             "Exchange": "BKEX",
             "Blockchain": "NEAR",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "PLS",
+            "Exchange": "BKEX",
+            "Blockchain": "Arbitrum",
+            "Address": "0x51318B7D00db7ACc4026C88c3952B66278B6A67F"
         },
         {
             "Symbol": "PREMIA",
@@ -371,6 +389,12 @@
             "Exchange": "BKEX",
             "Blockchain": "Telos",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "TND",
+            "Exchange": "BKEX",
+            "Blockchain": "Arbitrum",
+            "Address": "0xC47D9753F3b32aA9548a7C3F30b6aEc3B2d2798C"
         },
         {
             "Symbol": "TOMB",

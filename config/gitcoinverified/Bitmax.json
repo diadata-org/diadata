@@ -31,6 +31,12 @@
             "Address": "0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4"
         },
         {
+            "Symbol": "ATOM",
+            "Exchange": "Bitmax",
+            "Blockchain": "Cosmos",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "BTC",
             "Exchange": "Bitmax",
             "Blockchain": "Bitcoin",
@@ -197,6 +203,12 @@
             "Exchange": "Bitmax",
             "Blockchain": "Fantom",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "GMX",
+            "Exchange": "Bitmax",
+            "Blockchain": "Arbitrum",
+            "Address": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"
         },
         {
             "Symbol": "GT",

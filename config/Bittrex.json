@@ -1557,30 +1557,6 @@
     },
     {
       "Exchange": "Bittrex",
-      "ForeignName": "USDC-BTC",
-      "Ignore": false,
-      "Symbol": "USDC"
-    },
-    {
-      "Exchange": "Bittrex",
-      "ForeignName": "USDC-ETH",
-      "Ignore": false,
-      "Symbol": "USDC"
-    },
-    {
-      "Exchange": "Bittrex",
-      "ForeignName": "USDC-USD",
-      "Ignore": false,
-      "Symbol": "USDC"
-    },
-    {
-      "Exchange": "Bittrex",
-      "ForeignName": "USDC-USDT",
-      "Ignore": false,
-      "Symbol": "USDC"
-    },
-    {
-      "Exchange": "Bittrex",
       "ForeignName": "USDP-BTC",
       "Ignore": false,
       "Symbol": "USDP"

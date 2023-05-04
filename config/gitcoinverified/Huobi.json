@@ -25,6 +25,12 @@
       "Address": "0xa117000000f279D81A1D3cc75430fAA017FA5A2e"
     },
     {
+      "Symbol": "ATOM",
+      "Exchange": "Huobi",
+      "Blockchain": "Cosmos",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "AVAX",
       "Exchange": "Huobi",
       "Blockchain": "Avalanche",
@@ -95,6 +101,12 @@
       "Exchange": "Huobi",
       "Blockchain": "Evmos",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "GMX",
+      "Exchange": "Huobi",
+      "Blockchain": "Arbitrum",
+      "Address": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"
     },
     {
       "Symbol": "VLX",
@@ -209,6 +221,12 @@
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",
       "Address": "0x0000000000085d4780B73119b644AE5ecd22b376"
+    },
+    {
+      "Symbol": "USDC",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
     },
     {
       "Symbol": "USDT",

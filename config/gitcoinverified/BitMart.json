@@ -181,10 +181,10 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
-      "Symbol": "FTT",
+      "Symbol": "GMX",
       "Exchange": "BitMart",
-      "Blockchain": "Ethereum",
-      "Address": "0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9"
+      "Blockchain": "Arbitrum",
+      "Address": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"
     },
     {
       "Symbol": "GNS",
@@ -263,12 +263,6 @@
       "Exchange": "BitMart",
       "Blockchain": "Ethereum",
       "Address": "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"
-    },
-    {
-      "Symbol": "MSOL",
-      "Exchange": "BitMart",
-      "Blockchain": "Solana",
-      "Address": "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"
     },
     {
       "Symbol": "NEAR",

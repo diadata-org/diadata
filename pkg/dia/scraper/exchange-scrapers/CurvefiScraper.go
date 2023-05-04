@@ -6,14 +6,14 @@ import (
 	"fmt"
 	"math"
 	"math/big"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/curvefi"
 	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/curvefi/curvepool"
-	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/curvefi/token"
-	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/curvefimeta"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/curvefifactory"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -23,7 +23,6 @@ import (
 )
 
 const (
-	curveFiLookBackBlocks = 6 * 60 * 24 * 20
 	curveRestDialEth      = ""
 	curveWsDialEth        = ""
 	curveRestDialFantom   = ""
@@ -43,11 +42,6 @@ type CurveCoin struct {
 	Name     string
 }
 
-type curveRegistry struct {
-	Address common.Address
-	Type    int
-}
-
 type Pools struct {
 	pools     map[string]map[int]*CurveCoin
 	poolsLock sync.RWMutex
@@ -65,6 +59,7 @@ func (p *Pools) getPool(k string) (map[int]*CurveCoin, bool) {
 	r, ok := p.pools[k]
 	return r, ok
 }
+
 func (p *Pools) getPoolCoin(poolk string, coink int) (*CurveCoin, bool) {
 	p.poolsLock.RLock()
 	defer p.poolsLock.RUnlock()
@@ -100,17 +95,17 @@ type CurveFIScraper struct {
 	productPairIds map[string]int
 	chanTrades     chan *dia.Trade
 
-	WsClient         *ethclient.Client
-	RestClient       *ethclient.Client
-	curveCoins       map[string]*CurveCoin
-	resubscribe      chan string
-	pools            *Pools
-	screenPools      bool
-	basePoolRegistry curveRegistry
+	WsClient    *ethclient.Client
+	RestClient  *ethclient.Client
+	relDB       *models.RelDB
+	curveCoins  map[string]*CurveCoin
+	resubscribe chan string
+	pools       *Pools
+	screenPools bool
 }
 
 // makeCurvefiScraper returns a curve finance scraper as used in NewCurvefiScraper.
-func makeCurvefiScraper(exchange dia.Exchange, registries []curveRegistry, restDial string, wsDial string) *CurveFIScraper {
+func makeCurvefiScraper(exchange dia.Exchange, restDial string, wsDial string) *CurveFIScraper {
 	var (
 		restClient, wsClient *ethclient.Client
 		err                  error
@@ -144,15 +139,18 @@ func makeCurvefiScraper(exchange dia.Exchange, registries []curveRegistry, restD
 		},
 	}
 
-	// Load pools from registries.
-	for _, registry := range registries {
-		err := scraper.loadPoolsAndCoins(registry)
-		if err != nil {
-			log.Error("loadPoolsAndCoins: ", err)
-		}
-		log.Infof("loaded meta pools. Now %v pools.", len(scraper.pools.pools))
+	scraper.relDB, err = models.NewPostgresDataStore()
+	if err != nil {
+		log.Fatal("new postgres datastore: ", err)
+	}
+	// Only include pools with (minimum) liquidity bigger than given env var.
+	liquidityThreshold, err := strconv.ParseFloat(utils.Getenv("LIQUIDITY_THRESHOLD", "0"), 64)
+	if err != nil {
+		liquidityThreshold = float64(0)
+		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThreshold)
 	}
 
+	scraper.loadPools(liquidityThreshold)
 	return scraper
 }
 
@@ -162,43 +160,22 @@ func NewCurveFIScraper(exchange dia.Exchange, scrape bool) *CurveFIScraper {
 
 	switch exchange.Name {
 	case dia.CurveFIExchange:
-		// cryptoPools := curveRegistry{Type:2, Address: common.HexToAddress("0xF18056Bbd320E96A48e3Fbf8bC061322531aac99")}
-		metaPools := curveRegistry{Type: 2, Address: common.HexToAddress("0xB9fC157394Af804a3578134A6585C0dc9cc990d4")}
-		cryptoswapPools := curveRegistry{Type: 1, Address: common.HexToAddress("0x8F942C20D02bEfc377D41445793068908E2250D0")}
-		basePools := curveRegistry{Type: 1, Address: common.HexToAddress(exchange.Contract)}
-		registries := []curveRegistry{basePools, cryptoswapPools, metaPools}
-		scraper = makeCurvefiScraper(exchange, registries, curveRestDialEth, curveWsDialEth)
-		scraper.basePoolRegistry = basePools
+		scraper = makeCurvefiScraper(exchange, curveRestDialEth, curveWsDialEth)
 		scraper.screenPools = true
 
 	case dia.CurveFIExchangeFantom:
-		exchange.Contract = ""
-		// basePools := curveRegistry{Type: 1, Address: common.HexToAddress(exchange.Contract)}
-		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x686d67265703D1f124c45E33d47d794c566889Ba")}
-		registries := []curveRegistry{stableSwapFactory}
-		scraper = makeCurvefiScraper(exchange, registries, curveRestDialFantom, curveWsDialFantom)
+		scraper = makeCurvefiScraper(exchange, curveRestDialFantom, curveWsDialFantom)
 		scraper.screenPools = false
 
 	case dia.CurveFIExchangeMoonbeam:
-		exchange.Contract = ""
-		// basePools := curveRegistry{Type: 1, Address: common.HexToAddress(exchange.Contract)}
-		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x4244eB811D6e0Ef302326675207A95113dB4E1F8")}
-		registries := []curveRegistry{stableSwapFactory}
-		scraper = makeCurvefiScraper(exchange, registries, curveRestDialMoonbeam, curveWsDialMoonbeam)
+		scraper = makeCurvefiScraper(exchange, curveRestDialMoonbeam, curveWsDialMoonbeam)
 		scraper.screenPools = false
 
 	case dia.CurveFIExchangePolygon:
-		exchange.Contract = ""
-		// basePools := curveRegistry{Type: 1, Address: common.HexToAddress(exchange.Contract)}
-		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x722272D36ef0Da72FF51c5A65Db7b870E2e8D4ee")}
-		registries := []curveRegistry{stableSwapFactory}
-		scraper = makeCurvefiScraper(exchange, registries, curveRestDialPolygon, curveWsDialPolygon)
-
+		scraper = makeCurvefiScraper(exchange, curveRestDialPolygon, curveWsDialPolygon)
+		scraper.screenPools = false
 	case dia.CurveFIExchangeArbitrum:
-		exchange.Contract = ""
-		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0xb17b674D9c5CB2e441F8e196a2f048A81355d031")}
-		registries := []curveRegistry{stableSwapFactory}
-		scraper = makeCurvefiScraper(exchange, registries, curveRestDialArbitrum, curveWsDialArbitrum)
+		scraper = makeCurvefiScraper(exchange, curveRestDialArbitrum, curveWsDialArbitrum)
 	}
 
 	if scrape {
@@ -216,9 +193,6 @@ func (scraper *CurveFIScraper) mainLoop() {
 			log.Error("watchSwaps: ", err)
 		}
 	}
-	if scraper.screenPools {
-		scraper.watchNewPools()
-	}
 
 	go func() {
 		for scraper.run {
@@ -226,24 +200,18 @@ func (scraper *CurveFIScraper) mainLoop() {
 			log.Info("resub to p: ", p)
 
 			if scraper.run {
-				if p == "NEW_POOLS" {
-					if scraper.screenPools {
-						log.Info("resubscribe to new pools")
-						scraper.watchNewPools()
-					}
-				} else {
-					log.Info("resubscribe to swaps from Pool: " + p)
-					err := scraper.watchSwaps(p)
-					if err != nil {
-						log.Error("watchSwaps in resubscribe: ", err)
-					}
+				log.Info("resubscribe to swaps from Pool: " + p)
+				err := scraper.watchSwaps(p)
+				if err != nil {
+					log.Error("watchSwaps in resubscribe: ", err)
 				}
+
 			}
 		}
 	}()
 
 	if scraper.run {
-		if len(scraper.pairScrapers) == 0 {
+		if len(scraper.pools.pools) == 0 {
 			scraper.error = errors.New("no pairs to scrape provided")
 			log.Error(scraper.error.Error())
 		}
@@ -265,6 +233,12 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 	}
 	sink := make(chan *curvepool.CurvepoolTokenExchange)
 
+	filtererV2, err := curvefifactory.NewCurvefifactoryFilterer(common.HexToAddress(pool), scraper.WsClient)
+	if err != nil {
+		log.Fatal(err)
+	}
+	sinkV2 := make(chan *curvefifactory.CurvefifactoryTokenExchange)
+
 	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
 	if err != nil {
 		log.Fatal(err)
@@ -276,10 +250,16 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 		log.Error("WatchTokenExchange: ", err)
 	}
 
+	subV2, err := filtererV2.WatchTokenExchange(&bind.WatchOpts{Start: &startblock}, sinkV2, nil)
+	if err != nil {
+		log.Error("WatchTokenExchange: ", err)
+	}
+
 	go func() {
 		fmt.Println("Curvefi Subscribed to pool: " + pool)
 		defer fmt.Println("Curvefi UnSubscribed to pool: " + pool)
 		defer sub.Unsubscribe()
+		defer subV2.Unsubscribe()
 		subscribed := true
 
 		for scraper.run && subscribed {
@@ -295,7 +275,12 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 				}
 				log.Warn("subscription error: ", err)
 			case swp := <-sink:
+				log.Info("got swap V1")
 				scraper.processSwap(pool, swp)
+
+			case swpV2 := <-sinkV2:
+				log.Info("got swap V2")
+				scraper.processSwap(pool, swpV2)
 			}
 		}
 	}()
@@ -304,12 +289,32 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 
 }
 
-func (scraper *CurveFIScraper) processSwap(pool string, swp *curvepool.CurvepoolTokenExchange) {
+func (scraper *CurveFIScraper) processSwap(pool string, swp interface{}) {
+	var (
+		foreignName    string
+		volume         float64
+		price          float64
+		baseToken      dia.Asset
+		quoteToken     dia.Asset
+		foreignTradeID string
+		err            error
+	)
 
-	foreignName, volume, price, baseToken, quoteToken, err := scraper.getSwapDataCurve(pool, swp)
-	if err != nil {
-		log.Error("getSwapDataCurve: ", err)
+	switch s := swp.(type) {
+	case *curvepool.CurvepoolTokenExchange:
+		foreignName, volume, price, baseToken, quoteToken, err = scraper.getSwapDataCurve(pool, s)
+		if err != nil {
+			log.Error("getSwapDataCurve: ", err)
+		}
+		foreignTradeID = s.Raw.TxHash.Hex() + "-" + fmt.Sprint(s.Raw.Index)
+	case *curvefifactory.CurvefifactoryTokenExchange:
+		foreignName, volume, price, baseToken, quoteToken, err = scraper.getSwapDataCurve(pool, s)
+		if err != nil {
+			log.Error("getSwapDataCurve: ", err)
+		}
+		foreignTradeID = s.Raw.TxHash.Hex() + "-" + fmt.Sprint(s.Raw.Index)
 	}
+
 	timestamp := time.Now().Unix()
 
 	trade := &dia.Trade{
@@ -320,7 +325,7 @@ func (scraper *CurveFIScraper) processSwap(pool string, swp *curvepool.Curvepool
 		Price:          price,
 		Volume:         volume,
 		Time:           time.Unix(timestamp, 0),
-		ForeignTradeID: swp.Raw.TxHash.Hex() + "-" + fmt.Sprint(swp.Raw.Index),
+		ForeignTradeID: foreignTradeID,
 		Source:         scraper.exchangeName,
 		VerifiedPair:   true,
 	}
@@ -331,39 +336,59 @@ func (scraper *CurveFIScraper) processSwap(pool string, swp *curvepool.Curvepool
 }
 
 // getSwapDataCurve returns the foreign name, volume and price of a swap
-func (scraper *CurveFIScraper) getSwapDataCurve(pool string, s *curvepool.CurvepoolTokenExchange) (foreignName string, volume float64, price float64, baseToken, quoteToken dia.Asset, err error) {
+func (scraper *CurveFIScraper) getSwapDataCurve(pool string, swp interface{}) (
+	foreignName string,
+	volume float64,
+	price float64,
+	baseToken,
+	quoteToken dia.Asset,
+	err error,
+) {
+	var (
+		fromToken *CurveCoin
+		toToken   *CurveCoin
+		amountIn  float64
+		amountOut float64
+		ok        bool
+	)
 
-	// fromToken, _ := scraper.curveCoins[s.TokenSold.Hex()]
-	// toToken, _ := scraper.curveCoins[s.TokenBought.Hex()]
-
-	fromToken, ok := scraper.pools.getPoolCoin(pool, int(s.SoldId.Int64()))
-	if !ok {
-		err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
+	switch s := swp.(type) {
+	case *curvepool.CurvepoolTokenExchange:
+		fromToken, ok = scraper.pools.getPoolCoin(pool, int(s.SoldId.Int64()))
+		if !ok {
+			err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
+		}
+		toToken, ok = scraper.pools.getPoolCoin(pool, int(s.BoughtId.Int64()))
+		if !ok {
+			err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
+		}
+		amountIn, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(s.TokensSold), new(big.Float).SetFloat64(math.Pow10(int(fromToken.Decimals)))).Float64()
+		amountOut, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(s.TokensBought), new(big.Float).SetFloat64(math.Pow10(int(toToken.Decimals)))).Float64()
+	case *curvefifactory.CurvefifactoryTokenExchange:
+		fromToken, ok = scraper.pools.getPoolCoin(pool, int(s.SoldId.Int64()))
+		if !ok {
+			err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
+		}
+		toToken, ok = scraper.pools.getPoolCoin(pool, int(s.BoughtId.Int64()))
+		if !ok {
+			err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
+		}
+		amountIn, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(s.TokensSold), new(big.Float).SetFloat64(math.Pow10(int(fromToken.Decimals)))).Float64()
+		amountOut, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(s.TokensBought), new(big.Float).SetFloat64(math.Pow10(int(toToken.Decimals)))).Float64()
 	}
+
 	baseToken = dia.Asset{
 		Name:       fromToken.Name,
 		Address:    fromToken.Address,
 		Symbol:     fromToken.Symbol,
 		Blockchain: Exchanges[scraper.exchangeName].BlockChain.Name,
 	}
-
-	toToken, ok := scraper.pools.getPoolCoin(pool, int(s.BoughtId.Int64()))
-	if !ok {
-		err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
-	}
-
 	quoteToken = dia.Asset{
 		Name:       toToken.Name,
 		Address:    toToken.Address,
 		Symbol:     toToken.Symbol,
 		Blockchain: Exchanges[scraper.exchangeName].BlockChain.Name,
 	}
-
-	// amountIn := s.AmountSold. / math.Pow10( fromToken.Decimals )
-	amountIn, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.TokensSold), new(big.Float).SetFloat64(math.Pow10(int(fromToken.Decimals)))).Float64()
-
-	// amountOut := s.AmountBought / math.Pow10( toToken.Decimals )
-	amountOut, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(s.TokensBought), new(big.Float).SetFloat64(math.Pow10(int(toToken.Decimals)))).Float64()
 
 	volume = amountOut
 	price = amountIn / amountOut
@@ -373,214 +398,30 @@ func (scraper *CurveFIScraper) getSwapDataCurve(pool string, s *curvepool.Curvep
 	return
 }
 
-func (scraper *CurveFIScraper) watchNewPools() {
-	contract, err := curvefi.NewCurvefiFilterer(scraper.basePoolRegistry.Address, scraper.WsClient)
+func (scraper *CurveFIScraper) loadPools(liquidityThreshold float64) {
+
+	pools, err := scraper.relDB.GetAllPoolsExchange(scraper.exchangeName, liquidityThreshold)
 	if err != nil {
-		log.Error("NewCurvefiFilterer: ", err)
+		log.Fatal("fetch pools: ", err)
 	}
-	sink := make(chan *curvefi.CurvefiPoolAdded)
+	log.Infof("found %v pools to subscribe: ", len(pools))
 
-	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
-	if err != nil {
-		log.Fatal(err)
+	for _, pool := range pools {
+		var poolCoinsMap = make(map[int]*CurveCoin)
+		for _, av := range pool.Assetvolumes {
+			poolCoinsMap[int(av.Index)] = &CurveCoin{
+				Symbol:   av.Asset.Symbol,
+				Decimals: av.Asset.Decimals,
+				Name:     av.Asset.Name,
+				Address:  av.Asset.Address,
+			}
+			scraper.curveCoins[av.Asset.Address] = &CurveCoin{
+				Symbol:   av.Asset.Symbol,
+				Decimals: av.Asset.Decimals,
+			}
+		}
+		scraper.pools.setPool(pool.Address, poolCoinsMap)
 	}
-	startblock := header.Number.Uint64() - uint64(curveFiLookBackBlocks)
-
-	sub, err := contract.WatchPoolAdded(&bind.WatchOpts{Start: &startblock}, sink, nil)
-	if err != nil {
-		log.Error("WatchPoolAdded: ", err)
-	}
-
-	go func() {
-		fmt.Println("subscribed to new pools")
-		defer fmt.Println("Unsubscribed to new pools")
-		defer sub.Unsubscribe()
-		subscribed := true
-
-		for scraper.run && subscribed {
-
-			select {
-			case err = <-sub.Err():
-				if err != nil {
-					log.Error("subscription error in new pools: ", err)
-				}
-				subscribed = false
-				if scraper.run {
-					scraper.resubscribe <- "NEW_POOLS"
-				}
-			case vLog := <-sink:
-
-				if _, ok := scraper.pools.getPool(vLog.Pool.Hex()); !ok {
-					err = scraper.loadPoolData(vLog.Pool.Hex(), scraper.basePoolRegistry)
-					if err != nil {
-						log.Error("loadPoolData in new pools: ", err)
-					}
-					err = scraper.watchSwaps(vLog.Pool.Hex())
-					if err != nil {
-						log.Error("watchSwaps in new pools: ", err)
-					}
-				}
-			}
-		}
-	}()
-
-}
-
-// contract.poolList.map(contract.GetPoolCoins(pool).)
-func (scraper *CurveFIScraper) loadPoolsAndCoins(registry curveRegistry) (err error) {
-
-	if registry.Type == 1 {
-		log.Info("load base type pools..")
-		var contract *curvefi.CurvefiCaller
-		var poolCount *big.Int
-		contract, err = curvefi.NewCurvefiCaller(registry.Address, scraper.RestClient)
-		if err != nil {
-			log.Error("NewCurvefiCaller: ", err)
-		}
-		poolCount, err = contract.PoolCount(&bind.CallOpts{})
-		if err != nil {
-			log.Error("PoolCount: ", err)
-		}
-		log.Info("poolCount: ", int(poolCount.Int64()))
-		for i := 0; i < int(poolCount.Int64()); i++ {
-			var pool common.Address
-			pool, err = contract.PoolList(&bind.CallOpts{}, big.NewInt(int64(i)))
-			if err != nil {
-				log.Error("PoolList: ", err)
-			}
-			log.Info("pool: ", pool.Hex())
-
-			err = scraper.loadPoolData(pool.Hex(), registry)
-			if err != nil {
-				log.Info("load pool data: ", err)
-				// return err
-			}
-		}
-	}
-
-	if registry.Type == 2 {
-		log.Info("load meta type pools...")
-		var contract *curvefimeta.CurvefimetaCaller
-		var poolCount *big.Int
-		contract, err = curvefimeta.NewCurvefimetaCaller(registry.Address, scraper.RestClient)
-		if err != nil {
-			log.Error("NewCurvefiCaller: ", err)
-		}
-		poolCount, err = contract.PoolCount(&bind.CallOpts{})
-		if err != nil {
-			log.Error("PoolCount: ", err)
-		}
-		log.Info("poolCount: ", int(poolCount.Int64()))
-		for i := 0; i < int(poolCount.Int64()); i++ {
-			var pool common.Address
-			pool, err = contract.PoolList(&bind.CallOpts{}, big.NewInt(int64(i)))
-			if err != nil {
-				log.Error("PoolList: ", err)
-			}
-			log.Info("pool: ", pool.Hex())
-
-			err = scraper.loadPoolData(pool.Hex(), registry)
-			if err != nil {
-				log.Info("load pool data: ", err)
-				// return err
-			}
-		}
-	}
-	return err
-}
-
-func (scraper *CurveFIScraper) loadPoolData(pool string, registry curveRegistry) error {
-	var poolCoins [8]common.Address
-	var poolCoinsMap = make(map[int]*CurveCoin)
-
-	if registry.Type == 1 {
-		contract, err := curvefi.NewCurvefiCaller(registry.Address, scraper.RestClient)
-		if err != nil {
-			log.Error("loadPoolData - NewCurvefiCaller: ", err)
-		}
-
-		poolCoins, err = contract.GetCoins(&bind.CallOpts{}, common.HexToAddress(pool))
-		if err != nil {
-			log.Error("loadPoolData - GetCoins: ", err)
-		}
-		log.Info("pool coins: ", poolCoins)
-		poolName, err := contract.GetPoolName(&bind.CallOpts{}, common.HexToAddress(pool))
-		if err != nil {
-			log.Error("loadPoolData - GetPoolName: ", err)
-		}
-		log.Info("pool name: ", poolName)
-	}
-
-	if registry.Type == 2 {
-		// common.HexToAddress(curveFiMetaPoolsFactory) || factoryContract == common.HexToAddress(curveFiCryptoPoolFactory) {
-		contract, err := curvefimeta.NewCurvefimetaCaller(registry.Address, scraper.RestClient)
-
-		if err != nil {
-			log.Error("loadPoolData - NewCurvefiCaller: ", err)
-		}
-
-		aux, err := contract.GetCoins(&bind.CallOpts{}, common.HexToAddress(pool))
-		if err != nil {
-			log.Error("loadPoolData - GetCoins: ", err)
-		}
-		// GetCoins on meta pools returns [4]common.Address instead of [8]common.Address for standard pools.
-		for i, item := range aux {
-			poolCoins[i] = item
-		}
-		log.Info("pool coins: ", poolCoins)
-	}
-
-	var err error
-	for cIdx, c := range poolCoins {
-		var coinCaller *token.TokenCaller
-		var symbol string
-		var decimals *big.Int
-		var name string
-		if c == common.HexToAddress("0x0000000000000000000000000000000000000000") {
-			continue
-		} else if c == common.HexToAddress("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
-			symbol = "WETH"
-			decimals = big.NewInt(int64(18))
-			name = "Wrapped Ether"
-			c = common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")
-		} else {
-			coinCaller, err = token.NewTokenCaller(c, scraper.RestClient)
-			if err != nil {
-				log.Error("NewTokenCaller: ", err)
-				continue
-			}
-			symbol, err = coinCaller.Symbol(&bind.CallOpts{})
-			if err != nil {
-				log.Error("Symbol: ", err, c.Hex())
-				continue
-			}
-			decimals, err = coinCaller.Decimals(&bind.CallOpts{})
-			if err != nil {
-				log.Error("Decimals: ", err)
-				continue
-			}
-			name, err = coinCaller.Name(&bind.CallOpts{})
-			if err != nil {
-				log.Error("Name: ", err)
-				continue
-			}
-		}
-		log.Info(symbol, " ", decimals, " ", "'", name, "'", " ", c)
-
-		poolCoinsMap[cIdx] = &CurveCoin{
-			Symbol:   symbol,
-			Decimals: uint8(decimals.Uint64()),
-			Name:     name,
-			Address:  c.String(),
-		}
-		scraper.curveCoins[c.Hex()] = &CurveCoin{
-			Symbol:   symbol,
-			Decimals: uint8(decimals.Uint64()),
-		}
-		scraper.pools.setPool(pool, poolCoinsMap)
-
-	}
-	return err
 }
 
 func (scraper *CurveFIScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {

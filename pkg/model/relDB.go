@@ -30,7 +30,7 @@ type RelDatastore interface {
 	Count() (uint32, error)
 	SetAssetVolume24H(asset dia.Asset, volume float64, timestamp time.Time) error
 	GetLastAssetVolume24H(asset dia.Asset) (float64, error)
-	GetAssetsWithVOL(numAssets int64, skip int64, onlycex bool, substring string) ([]dia.AssetVolume, error)
+	GetAssetsWithVOL(starttime time.Time, numAssets int64, skip int64, onlycex bool, substring string) ([]dia.AssetVolume, error)
 	GetAssetSource(asset dia.Asset, onlycex bool) ([]string, error)
 	GetAssetsWithVolByBlockchain(starttime time.Time, endtime time.Time, blockchain string) ([]dia.AssetVolume, error)
 
@@ -46,6 +46,11 @@ type RelDatastore interface {
 	GetUnverifiedExchangeSymbols(exchange string) ([]string, error)
 	VerifyExchangeSymbol(exchange string, symbol string, assetID string) (bool, error)
 	GetExchangeSymbolAssetID(exchange string, symbol string) (string, bool, error)
+
+	// ----------------- Historical quotations methods -------------------
+	SetHistoricalQuotation(quotation AssetQuotation) error
+	GetHistoricalQuotations(asset dia.Asset, starttime time.Time, endtime time.Time) ([]AssetQuotation, error)
+	GetLastHistoricalQuotationTimestamp(asset dia.Asset) (time.Time, error)
 
 	// ----------------- exchange methods -------------------
 	SetExchange(exchange dia.Exchange) error
@@ -94,6 +99,7 @@ type RelDatastore interface {
 	SetNFTTradeToTable(trade dia.NFTTrade, table string) error
 	GetNFTTrades(address string, blockchain string, tokenID string, starttime time.Time, endtime time.Time) ([]dia.NFTTrade, error)
 	GetNFTTradesCollection(address string, blockchain string, starttime time.Time, endtime time.Time) ([]dia.NFTTrade, error)
+	GetAllLastTrades(nftclass dia.NFTClass) ([]dia.NFTTrade, error)
 	GetNFTOffers(address string, blockchain string, tokenID string) ([]dia.NFTOffer, error)
 	GetNFTBids(address string, blockchain string, tokenID string) ([]dia.NFTBid, error)
 	GetNFTFloor(nftclass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, noBundles bool, exchange string) (float64, error)
@@ -147,33 +153,34 @@ type RelDatastore interface {
 	GetKeyPairID(publickey string) string
 	GetFeederAccessByID(id string) (owner string)
 	GetFeederByID(id string) (owner string)
-	SetOracleConfig(address, keypairID, creator, symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode string) error
+	SetOracleConfig(address, feederID, owner, feederAddress, symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency string) error
 	SetFeederConfig(feederid, oracleconfigid string) error
 	GetFeederID(address string) (feederId string)
 	GetFeederLimit(owner string) (limit int)
 	GetTotalFeeder(owner string) (total int)
 	GetOracleConfig(address string) (oracleconfig dia.OracleConfig, err error)
 	ChangeOracleState(feederID string, active bool) (err error)
+	DeleteOracle(feederID string) (err error)
 	GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleConfig, err error)
 	GetAllFeeders() (oracleconfigs []dia.OracleConfig, err error)
+	GetFeederResources(owner string) (addresses []string, err error)
 }
 
 const (
 
 	// postgres tables
-	assetTable              = "asset"
-	assetIdent              = "assetIdent"
-	exchangepairTable       = "exchangepair"
-	exchangesymbolTable     = "exchangesymbol"
-	poolTable               = "pool"
-	poolassetTable          = "poolasset"
-	exchangeTable           = "exchange"
-	nftExchangeTable        = "nftexchange"
-	chainconfigTable        = "chainconfig"
-	blockchainTable         = "blockchain"
-	assetVolumeTable        = "assetvolume"
-	aggregatedVolumeTable   = "aggregatedvolume"
-	tradesDistributionTable = "tradesdistribution"
+	assetTable               = "asset"
+	assetIdent               = "assetIdent"
+	exchangepairTable        = "exchangepair"
+	exchangesymbolTable      = "exchangesymbol"
+	poolTable                = "pool"
+	poolassetTable           = "poolasset"
+	exchangeTable            = "exchange"
+	nftExchangeTable         = "nftexchange"
+	chainconfigTable         = "chainconfig"
+	blockchainTable          = "blockchain"
+	assetVolumeTable         = "assetvolume"
+	historicalQuotationTable = "historicalquotation"
 
 	// cache keys
 	keyAssetCache        = "dia_asset_"

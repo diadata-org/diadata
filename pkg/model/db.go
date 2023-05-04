@@ -93,6 +93,7 @@ type Datastore interface {
 	GetTopAssetByMcap(symbol string, relDB *RelDB) (dia.Asset, error)
 	GetTopAssetByVolume(symbol string, relDB *RelDB) (topAsset dia.Asset, err error)
 	GetAssetsWithVOLInflux(timeInit time.Time) ([]dia.Asset, error)
+	GetOldestQuotation(asset dia.Asset) (AssetQuotation, error)
 
 	// DEX Pool  methods
 	SavePoolInflux(p dia.Pool) error

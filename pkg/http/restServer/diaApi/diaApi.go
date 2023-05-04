@@ -34,6 +34,7 @@ var (
 type Env struct {
 	DataStore models.Datastore
 	RelDB     models.RelDB
+	signer    *utils.AssetQuotationSigner
 }
 
 func init() {
@@ -49,6 +50,10 @@ func init() {
 	for _, chain := range chains {
 		BLOCKCHAINS[chain.Name] = chain
 	}
+}
+
+func NewEnv(ds models.Datastore, rdb models.RelDB, signer *utils.AssetQuotationSigner) *Env {
+	return &Env{DataStore: ds, RelDB: rdb, signer: signer}
 }
 
 // PostSupply deprecated? TO DO
@@ -172,7 +177,10 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 	} else {
 		quotationExtended.VolumeYesterdayUSD = *volumeYesterday
 	}
-
+	signedData, err := env.signer.Sign(quotation.Asset.Symbol, quotation.Asset.Address, quotation.Asset.Blockchain, quotation.Price, quotation.Time)
+	if err != nil {
+		log.Warn("error signing data: ", err)
+	}
 	// Appropriate formatting.
 	quotationExtended.Symbol = quotation.Asset.Symbol
 	quotationExtended.Name = quotation.Asset.Name
@@ -181,6 +189,7 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 	quotationExtended.Price = quotation.Price
 	quotationExtended.Time = quotation.Time
 	quotationExtended.Source = quotation.Source
+	quotationExtended.Signature = signedData
 
 	c.JSON(http.StatusOK, quotationExtended)
 
@@ -745,7 +754,7 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 	if exchange == "noRange" {
 		if numSymbolsString != "" {
 			// -- Get top @numSymbols symbols across all exchanges. --
-			sortedAssets, err = env.RelDB.GetAssetsWithVOL(numSymbols, int64(0), false, "")
+			sortedAssets, err = env.RelDB.GetAssetsWithVOL(time.Now().AddDate(0, -1, 0), numSymbols, int64(0), false, "")
 			if err != nil {
 				log.Error("get assets with volume: ", err)
 			}
@@ -763,7 +772,7 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 
 			sort.Strings(s)
 			// Sort all symbols by volume, append if they have no volume.
-			sortedAssets, err = env.RelDB.GetAssetsWithVOL(numSymbols, int64(0), false, "")
+			sortedAssets, err = env.RelDB.GetAssetsWithVOL(time.Now().AddDate(0, -1, 0), numSymbols, int64(0), false, "")
 			if err != nil {
 				log.Error("get assets with volume: ", err)
 			}
@@ -1257,7 +1266,7 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 	numAssetsString := c.Param("numAssets")
 	pageString := c.DefaultQuery("Page", "1")
 	onlycexString := c.DefaultQuery("Cex", "false")
-	blokchain := c.DefaultQuery("Network", "")
+	blockchain := c.DefaultQuery("Network", "")
 
 	var (
 		numAssets    int64
@@ -1284,7 +1293,7 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 
 	offset = (pageNumber - 1) * numAssets
 
-	sortedAssets, err = env.RelDB.GetAssetsWithVOL(numAssets, offset, onlycex, blokchain)
+	sortedAssets, err = env.RelDB.GetAssetsWithVOL(time.Now().AddDate(0, 0, -7), numAssets, offset, onlycex, blockchain)
 	if err != nil {
 		log.Error("get assets with volume: ", err)
 
@@ -2882,6 +2891,95 @@ func (env *Env) GetNFTVolume(c *gin.Context) {
 
 }
 
+func (env *Env) GetNFTMarketCap(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	type localNFT struct {
+		Address    string `json:"Address"`
+		Symbol     string `json:"Symbol"`
+		Name       string `json:"Name"`
+		Blockchain string `json:"Blockchain"`
+	}
+
+	type localReturn struct {
+		Collection   localNFT
+		MarketCapUSD float64
+		TradesNumber int
+		Time         time.Time
+	}
+	var lr localReturn
+
+	blockchain := c.Param("blockchain")
+	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	nc, err := env.RelDB.GetNFTClass(address, blockchain)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find collection"))
+		return
+	}
+	nftTrades, err := env.RelDB.GetAllLastTrades(nc)
+	if err != nil {
+		lr.Time = time.Now()
+		lr.Collection = localNFT{Address: nc.Address, Blockchain: nc.Blockchain, Symbol: nc.Symbol, Name: nc.Name}
+		c.JSON(http.StatusOK, lr)
+	}
+
+	// Determine first and last trade time in order to set time range for querying quotes of payment currency.
+	// Remark: For now, this only works for ETH/WETH as payment currency.
+	eth := dia.Asset{Address: "0x0000000000000000000000000000000000000000", Blockchain: dia.ETHEREUM}
+	endtime := nftTrades[len(nftTrades)-1].Timestamp
+	starttime := nftTrades[0].Timestamp.AddDate(0, 0, -1)
+	prices, err := env.RelDB.GetHistoricalQuotations(
+		eth,
+		starttime,
+		endtime,
+	)
+	if err != nil {
+		log.Error("getPrices: ", err)
+	}
+
+	// Iterate over NFT trades and find the closest ETH price for each sale.
+	var (
+		dBefore    float64
+		dAfter     float64
+		mCap       float64
+		priceIndex int
+	)
+
+	for i, trade := range nftTrades {
+		if trade.Timestamp.Before(prices[0].Time) {
+			continue
+		}
+		// Only take into account trades paid with ETH/WETH.
+		if trade.Currency.Address != eth.Address && trade.Currency.Address != "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" {
+			continue
+		}
+
+		tradePrice, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(trade.Price), new(big.Float).SetFloat64(math.Pow10(int(trade.Currency.Decimals)))).Float64()
+		for priceIndex < len(prices)-1 && prices[priceIndex].Time.Before(trade.Timestamp) {
+			dBefore = trade.Timestamp.Sub(prices[priceIndex].Time).Seconds()
+			priceIndex++
+		}
+		dAfter = trade.Timestamp.Sub(prices[priceIndex].Time).Seconds()
+		if math.Abs(dBefore) < math.Abs(dAfter) {
+			priceIndex--
+		}
+
+		// Compute trade's USD price.
+		nftTrades[i].PriceUSD = prices[priceIndex].Price * tradePrice
+		mCap += nftTrades[i].PriceUSD
+	}
+
+	lr.Collection = localNFT{Address: nc.Address, Blockchain: nc.Blockchain, Symbol: nc.Symbol, Name: nc.Name}
+	lr.MarketCapUSD = mCap
+	lr.TradesNumber = len(nftTrades)
+	lr.Time = time.Now()
+
+	c.JSON(http.StatusOK, lr)
+
+}
+
 func (env *Env) GetFeedStats(c *gin.Context) {
 	if !validateInputParams(c) {
 		return
@@ -2926,6 +3024,10 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 	}
 
 	// Check whether time range is feasible.
+	if starttime.After(endtime) {
+		restApi.SendError(c, http.StatusNotAcceptable, fmt.Errorf("endtime must be later than starttime"))
+		return
+	}
 	if ok := utils.ValidTimeRange(starttime, endtime, time.Duration(24*time.Hour)); !ok {
 		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 24*time.Hour))
 		return
@@ -3028,7 +3130,13 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 			result.TradesDistribution.NumLowBins++
 		}
 	}
-	result.TradesDistribution.AvgNumPerBin = float64(result.TradesDistribution.NumTradesTotal) / float64(len(numTradesSeries))
+	if len(volumeMap) == 0 {
+		result.TradesDistribution.NumBins = int(endtime.Sub(starttime).Seconds()) / sizeBinSeconds
+		result.TradesDistribution.NumLowBins = result.TradesDistribution.NumBins
+	}
+	if len(numTradesSeries) > 0 {
+		result.TradesDistribution.AvgNumPerBin = float64(result.TradesDistribution.NumTradesTotal) / float64(len(numTradesSeries))
+	}
 	result.TradesDistribution.StdDeviation = utils.StandardDeviation(numTradesSeriesFloat)
 	result.TradesDistribution.TimeRangeSeconds = int64(endtime.Sub(starttime).Seconds())
 

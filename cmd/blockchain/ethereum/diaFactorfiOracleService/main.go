@@ -56,6 +56,12 @@ func main() {
 		"0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd", //JOE
 		"0x4945970EfeEc98D393b4b979b9bE265A3aE28A8B", //GMD
 		"0x088cd8f5eF3652623c22D48b1605DCfE860Cd704", //VELA
+		"0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a", //GMX
+		"0x1A5B0aaF478bf1FDA7b934c76E7692D722982a6D", //BFR
+		"0x0C4681e6C0235179ec3D4F4fc4DF3d14FDD96017", //RDNT
+		"0xC47D9753F3b32aA9548a7C3F30b6aEc3B2d2798C", //TND
+		"0x51318B7D00db7ACc4026C88c3952B66278B6A67F", //PLS
+		"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", //USDC
 	}
 	blockchains := []string{
 		"Arbitrum",  //GRAIL
@@ -71,6 +77,12 @@ func main() {
 		"Avalanche", //JOE
 		"Arbitrum",  //GMD
 		"Arbitrum",  //VELA
+		"Arbitrum",  //GMX
+    "Arbitrum",  //BFR
+    "Arbitrum",  //RDNT
+    "Arbitrum",  //TND
+    "Arbitrum",  //PLS
+    "Ethereum",  //USDC
 	}
 
 	oldPrices := make(map[int]float64)

@@ -1,6 +1,18 @@
 {
   "Coins": [
     {
+      "Symbol": "UDC",
+      "ForeignName": "UDCUST",
+      "Exchange": "Bitfinex",
+      "Ignore": false
+    },
+    {
+      "Symbol": "UDC",
+      "ForeignName": "UDCUSD",
+      "Exchange": "Bitfinex",
+      "Ignore": false
+    },
+    {
       "Symbol": "YFI",
       "ForeignName": "YFIUSD",
       "Exchange": "Bitfinex",
@@ -519,6 +531,12 @@
     {
       "Symbol": "MLN",
       "ForeignName": "MLNUSD",
+      "Exchange": "Bitfinex",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TLOS",
+      "ForeignName": "TLOSUSD",
       "Exchange": "Bitfinex",
       "Ignore": false
     },

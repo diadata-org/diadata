@@ -277,8 +277,8 @@
             "Ignore": false
         },
         {
-            "Symbol": "BNB",
-            "ForeignName": "BNB-KCS",
+            "Symbol": "BNC",
+            "ForeignName": "BNC-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
         },
@@ -801,6 +801,12 @@
         {
             "Symbol": "GLMR",
             "ForeignName": "GLMR-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GMX",
+            "ForeignName": "GMX-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
         },
