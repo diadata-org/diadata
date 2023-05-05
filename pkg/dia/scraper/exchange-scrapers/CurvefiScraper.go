@@ -257,7 +257,7 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 
 	go func() {
 		fmt.Println("Curvefi Subscribed to pool: " + pool)
-		defer fmt.Println("Curvefi UnSubscribed to pool: " + pool)
+		defer fmt.Printf("Curvefi UnSubscribed to pool %s with error: %v", pool, err)
 		defer sub.Unsubscribe()
 		defer subV2.Unsubscribe()
 		subscribed := true
@@ -305,12 +305,14 @@ func (scraper *CurveFIScraper) processSwap(pool string, swp interface{}) {
 		foreignName, volume, price, baseToken, quoteToken, err = scraper.getSwapDataCurve(pool, s)
 		if err != nil {
 			log.Error("getSwapDataCurve: ", err)
+			return
 		}
 		foreignTradeID = s.Raw.TxHash.Hex() + "-" + fmt.Sprint(s.Raw.Index)
 	case *curvefifactory.CurvefifactoryTokenExchange:
 		foreignName, volume, price, baseToken, quoteToken, err = scraper.getSwapDataCurve(pool, s)
 		if err != nil {
 			log.Error("getSwapDataCurve: ", err)
+			return
 		}
 		foreignTradeID = s.Raw.TxHash.Hex() + "-" + fmt.Sprint(s.Raw.Index)
 	}
@@ -373,6 +375,11 @@ func (scraper *CurveFIScraper) getSwapDataCurve(pool string, swp interface{}) (
 		if !ok {
 			err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
 		}
+		if toToken == nil || fromToken == nil {
+			err = errors.New("token not available, skip trade.")
+			return
+		}
+
 		amountIn, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(s.TokensSold), new(big.Float).SetFloat64(math.Pow10(int(fromToken.Decimals)))).Float64()
 		amountOut, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(s.TokensBought), new(big.Float).SetFloat64(math.Pow10(int(toToken.Decimals)))).Float64()
 	}
