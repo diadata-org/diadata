@@ -46,8 +46,11 @@ const (
 	yahooFinWebCurrencies     = "https://finance.yahoo.com/currencies"
 	yahooFinHttpV10Host       = "https://query1.finance.yahoo.com"
 	yahooFinHttpV11Host       = "https://query2.finance.yahoo.com"
-	yahooFinHttpPathQuote     = "/v7/finance/quote"
 	yahooFinTypeCurrency      = "CURRENCY"
+)
+
+var (
+	yahooFinHttpPathQuote = ""
 )
 
 func NewYahooFinScraper(datastore models.Datastore) (s *YahooFinScraper) {
@@ -68,6 +71,8 @@ func NewYahooFinScraper(datastore models.Datastore) (s *YahooFinScraper) {
 	if yahooFinUpdateFreqEnv != 0 {
 		updateFreq = time.Duration(yahooFinUpdateFreqEnv) * time.Second
 	}
+
+	yahooFinHttpPathQuote = utils.Getenv("HTTP_PATH_QUOTE", "/v6/finance/quote")
 
 	// Because Yahoo Finance don't have any public endpoint to discover available currency's symbols,
 	// we need to scrape webpage to extract metadata. This map is the fallback in case the crawling process fails.
@@ -136,6 +141,7 @@ func (scraper *YahooFinScraper) UpdateQuotation() error {
 	log.Printf("Executing %s quote update", yahooFinSource)
 	resp, err := scraper.getCurrencies()
 	if err != nil {
+		log.Error("Get currencies: ", err)
 		return err
 	}
 	if resp.QuoteResponse.Error != nil {
@@ -204,7 +210,10 @@ func (scraper *YahooFinScraper) getCurrencies() (quoteResp yahooFinHttpQuoteResp
 	if err != nil {
 		return quoteResp, err
 	}
-	body, _ := ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return quoteResp, err
+	}
 	err = json.Unmarshal(body, &quoteResp)
 	if err != nil {
 		return quoteResp, err
