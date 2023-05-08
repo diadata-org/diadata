@@ -385,6 +385,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "PEPE",
+      "ForeignName": "PEPEUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "PHA",
       "ForeignName": "PHAUSDT",
       "Exchange": "MEXC",

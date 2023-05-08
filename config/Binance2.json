@@ -116,6 +116,12 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "PEPEUSDT",
+            "Ignore": false,
+            "Symbol": "PEPE"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "RDNTUSDT",
             "Ignore": false,
             "Symbol": "RDNT"

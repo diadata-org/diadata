@@ -8,6 +8,12 @@
     },
     {
       "Exchange": "BitMart",
+      "ForeignName": "PEPE_USDT",
+      "Ignore": false,
+      "Symbol": "PEPE"
+    },
+    {
+      "Exchange": "BitMart",
       "ForeignName": "BTC_USDT",
       "Ignore": false,
       "Symbol": "BTC"
