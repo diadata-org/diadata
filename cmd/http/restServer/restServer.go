@@ -274,8 +274,8 @@ func main() {
 		// dia.GET("/stockQuotation/:source/:symbol/:time", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetStockQuotation))
 
 		// Endpoints for foreign sources
-		diaGroup.GET("/foreignQuotation/:source/:symbol", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetForeignQuotation))
-		diaGroup.GET("/foreignQuotation/:source/:symbol/:time", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetForeignQuotation))
+		diaGroup.GET("/foreignQuotation/:source/:symbol", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetForeignQuotation))
+		diaGroup.GET("/foreignQuotation/:source/:symbol/:time", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetForeignQuotation))
 		diaGroup.GET("/foreignSymbols/:source", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetForeignSymbols))
 
 		// Endpoints for customized products

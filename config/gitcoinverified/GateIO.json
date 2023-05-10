@@ -95,7 +95,7 @@
             "Exchange": "GateIO",
             "Blockchain": "Arbitrum",
             "Address": "0x0C4681e6C0235179ec3D4F4fc4DF3d14FDD96017"
-          },
+        },
         {
             "Symbol": "STG",
             "Exchange": "GateIO",
@@ -427,6 +427,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "KINT",
+            "Exchange": "GateIO",
+            "Blockchain": "Kintsugi",
+            "Address": "Token:KINT"
+        },
+        {
             "Symbol": "KSM",
             "Exchange": "GateIO",
             "Blockchain": "Kusama",
@@ -587,6 +593,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0xB97048628DB6B661D4C2aA833e95Dbe1A905B280"
+        },
+        {
+            "Symbol": "PEPE",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
         },
         {
             "Symbol": "PERP",

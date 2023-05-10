@@ -92,10 +92,12 @@ func NewBalancerV2Scraper(exchange dia.Exchange, scrape bool) *BalancerV2Scraper
 	switch exchange.Name {
 	case dia.BalancerV2Exchange:
 		balancerV2StartBlockPoolRegister = 12272146
-	case dia.BalancerV2ExchangePolygon:
-		balancerV2StartBlockPoolRegister = 15832990
+	case dia.BalancerV2ExchangeArbitrum:
+		balancerV2StartBlockPoolRegister = 222832
 	case dia.BeetsExchange:
 		balancerV2StartBlockPoolRegister = 16896080
+	case dia.BalancerV2ExchangePolygon:
+		balancerV2StartBlockPoolRegister = 15832990
 	}
 
 	ws, err := ethclient.Dial(utils.Getenv("ETH_URI_WS", balancerV2WSDial))

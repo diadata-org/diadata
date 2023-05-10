@@ -1207,6 +1207,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "PEPE",
+            "ForeignName": "PEPEUSDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "PHA",
             "ForeignName": "PHA-USDT",
             "Exchange": "KuCoin",

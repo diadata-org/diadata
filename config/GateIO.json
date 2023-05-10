@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "PEPE_USDT",
+      "Ignore": false,
+      "Symbol": "PEPE"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "ATOM_USDT",
       "Ignore": false,
       "Symbol": "ATOM"
@@ -23,6 +29,12 @@
       "ForeignName": "GMX_USDT",
       "Ignore": false,
       "Symbol": "GMX"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "KINT_USDT",
+      "Ignore": false,
+      "Symbol": "KINT"
     },
     {
       "Exchange": "GateIO",

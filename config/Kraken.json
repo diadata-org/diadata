@@ -92,6 +92,12 @@
     },
     {
       "Exchange": "Kraken",
+      "ForeignName": "KINTUSD",
+      "Ignore": false,
+      "Symbol": "KINT"
+    },
+    {
+      "Exchange": "Kraken",
       "ForeignName": "LDOUSD",
       "Ignore": false,
       "Symbol": "LDO"

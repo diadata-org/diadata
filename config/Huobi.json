@@ -392,6 +392,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "PEPEUSDT",
+      "Ignore": false,
+      "Symbol": "PEPE"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "QTUMBTC",
       "Ignore": false,
       "Symbol": "QTUM"

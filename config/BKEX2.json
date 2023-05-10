@@ -61,6 +61,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "PEPE",
+      "ForeignName": "PEPE_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
       "Symbol": "PLS",
       "ForeignName": "PLS_USDT",
       "Exchange": "BKEX",
