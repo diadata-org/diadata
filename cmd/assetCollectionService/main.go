@@ -120,6 +120,8 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 		return source.NewPlatypusScraper(exchanges[dia.PlatypusExchange])
 	case dia.OrcaExchange:
 		return source.NewOrcaScraper(exchanges[dia.OrcaExchange])
+	case dia.OsmosisExchange:
+		return source.NewOsmosisScraper(exchanges[dia.OsmosisExchange])
 	case "assetlists":
 		return source.NewJSONReader(exchange, secret)
 	default:
