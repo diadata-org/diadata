@@ -77,16 +77,13 @@ func NewOsmosisScraper(exchange dia.Exchange) *OsmosisAssetSource {
 		GRPCClient:   grpcClient,
 		assetsMap:    assetsMap,
 	}
-	go func() {
-		oas.loadMarketsMetadata()
-		oas.GRPCClient.grpcConn.Close()
-	}()
+
+	go oas.loadMarketsMetadata()
 	return oas
 }
 
 func (oas *OsmosisAssetSource) loadMarketsMetadata() {
 	oas.getAssetsTotalSupply(nil)
-	oas.Done() <- true
 }
 
 func (oas *OsmosisAssetSource) getAssetsTotalSupply(page *[]byte) {
@@ -109,6 +106,13 @@ func (oas *OsmosisAssetSource) getAssetsTotalSupply(page *[]byte) {
 	for _, coin := range res.Supply {
 		oas.getAssetInfo(coin)
 	}
+
+	if res.Pagination.NextKey == nil {
+		defer func() {
+			oas.GRPCClient.grpcConn.Close()
+			oas.Done() <- true
+		}()
+	}
 }
 
 // Get osmosis/ibc asset metadata
@@ -118,51 +122,66 @@ func (oas *OsmosisAssetSource) getAssetInfo(coin sdk.Coin) {
 	}
 	// ibc denoms start with `ibc/`
 	splittedDenom := strings.Split(coin.Denom, "/")
-	if splittedDenom[0] == "ibc" {
-		// TODO: once https://github.com/cosmos/ibc-go/pull/3104 gets merged
-		// we can use the following codes to get the metadata:
-		//
-		// 		res, err := oas.GRPCClient.ibc.DenomTrace(
-		// 			oas.GRPCClient.ctx,
-		// 			&ibctransfertypes.QueryDenomTraceRequest{Hash: splittedDenom[1]},
-		// 		)
-		// 		if err != nil {
-		// 			log.Warn("can't get denom metadata for ", coin.Denom)
-		// 			return
-		// 		}
+	switch splittedDenom[0] {
+	case "ibc":
+		{
+			// TODO: once https://github.com/cosmos/ibc-go/pull/3104 gets merged
+			// we can use the following codes to get the metadata:
+			//
+			// 		res, err := oas.GRPCClient.ibc.DenomTrace(
+			// 			oas.GRPCClient.ctx,
+			// 			&ibctransfertypes.QueryDenomTraceRequest{Hash: splittedDenom[1]},
+			// 		)
+			// 		if err != nil {
+			// 			log.Warn("can't get denom metadata for ", coin.Denom)
+			// 			return
+			// 		}
 
-		osmosisAsset := oas.assetsMap[coin.Denom]
-		if osmosisAsset == nil {
-			log.Warn("Couldn't find any info about ", coin.Denom)
+			osmosisAsset := oas.assetsMap[coin.Denom]
+			if osmosisAsset == nil {
+				log.Warn("Couldn't find any info about ", coin.Denom)
+				return
+			}
+			a.Name = osmosisAsset.Display
+			a.Symbol = osmosisAsset.Symbol
+			a.Address = coin.Denom // keeping base denom as address
+			a.Decimals = osmosisAsset.Decimals
+			oas.Asset() <- *a
 			return
 		}
-		a.Name = osmosisAsset.Display
-		a.Symbol = osmosisAsset.Symbol
-		a.Address = coin.Denom // keeping base denom as address
-		a.Decimals = osmosisAsset.Decimals
-	} else {
-		res, err := oas.GRPCClient.bank.DenomMetadata(
-			oas.GRPCClient.ctx,
-			&banktypes.QueryDenomMetadataRequest{Denom: coin.Denom},
-		)
-		if err != nil {
-			log.Warn("can't get denom metadata for ", coin.Denom, err)
+	case "factory":
+	case "gamm":
+		{
+			// we don't want factory/gamm assets in the db as they're not swappable.
+			// https://docs.osmosis.zone/osmosis-core/modules/tokenfactory/
+			// https://docs.osmosis.zone/osmosis-core/modules/gamm/
 			return
 		}
-		a.Name = res.Metadata.Display
-		a.Symbol = res.Metadata.Symbol
-		// fallback to Display if Metadata.Symbol is empty
-		if a.Symbol == "" {
-			a.Symbol = res.Metadata.Display
+	default:
+		{
+			res, err := oas.GRPCClient.bank.DenomMetadata(
+				oas.GRPCClient.ctx,
+				&banktypes.QueryDenomMetadataRequest{Denom: coin.Denom},
+			)
+			if err != nil {
+				log.Warn("can't get denom metadata for ", coin.Denom, err)
+				return
+			}
+			a.Name = res.Metadata.Display
+			a.Symbol = res.Metadata.Symbol
+			// fallback to Display if Metadata.Symbol is empty
+			if a.Symbol == "" {
+				a.Symbol = res.Metadata.Display
+			}
+			denomUnitsMap := make(map[string]uint8)
+			for _, du := range res.Metadata.DenomUnits {
+				denomUnitsMap[du.Denom] = uint8(du.Exponent)
+			}
+			a.Decimals = denomUnitsMap[res.Metadata.Display]
+			a.Address = res.Metadata.Base
+			oas.Asset() <- *a
 		}
-		denomUnitsMap := make(map[string]uint8)
-		for _, du := range res.Metadata.DenomUnits {
-			denomUnitsMap[du.Denom] = uint8(du.Exponent)
-		}
-		a.Decimals = denomUnitsMap[res.Metadata.Display]
-		a.Address = res.Metadata.Base
 	}
-	oas.Asset() <- *a
 }
 
 func (oas *OsmosisAssetSource) Asset() chan dia.Asset {
