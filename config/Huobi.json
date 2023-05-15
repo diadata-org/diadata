@@ -470,6 +470,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "XAUTUSDT",
+      "Ignore": false,
+      "Symbol": "XAUT"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "XMRBTC",
       "Ignore": false,
       "Symbol": "XMR"

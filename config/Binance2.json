@@ -116,6 +116,24 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "PAXGBUSD",
+            "Ignore": false,
+            "Symbol": "PAXG"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "PAXGBTC",
+            "Ignore": false,
+            "Symbol": "PAXG"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "PAXGUSDT",
+            "Ignore": false,
+            "Symbol": "PAXG"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "PEPEUSDT",
             "Ignore": false,
             "Symbol": "PEPE"
@@ -173,6 +191,12 @@
             "ForeignName": "USDCUSDT",
             "Ignore": false,
             "Symbol": "USDC"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "USDPUSDT",
+            "Ignore": false,
+            "Symbol": "USDP"
         }
     ]
 }

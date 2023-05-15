@@ -13,6 +13,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "XAUT",
+      "ForeignName": "XAUTUSD",
+      "Exchange": "Bitfinex",
+      "Ignore": false
+    },
+    {
       "Symbol": "YFI",
       "ForeignName": "YFIUSD",
       "Exchange": "Bitfinex",

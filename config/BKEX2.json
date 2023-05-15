@@ -217,6 +217,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "XAUT",
+      "ForeignName": "XAUT_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
       "Symbol": "XLM",
       "ForeignName": "XLM_USDT",
       "Exchange": "BKEX",

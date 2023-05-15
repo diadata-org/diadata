@@ -253,6 +253,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "XAUT",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0x68749665FF8D2d112Fa859AA293F07A622782F38"
+    },
+    {
       "Symbol": "YFI",
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",
