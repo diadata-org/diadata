@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
@@ -82,6 +83,11 @@ func main() {
 
 	config := dia.GetConfigApi()
 
+	urlFolderPrefix := utils.Getenv("URL_FOLDER_PREFIX", "/")
+	if !strings.HasPrefix(urlFolderPrefix, "/") {
+		urlFolderPrefix = "/" + urlFolderPrefix
+	}
+
 	// the jwt middleware
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "party zone",
@@ -156,16 +162,16 @@ func main() {
 		log.Error("creating middleware: ", err)
 	}
 
-	r.POST("/login", authMiddleware.LoginHandler)
+	r.POST(urlFolderPrefix+"/login", authMiddleware.LoginHandler)
 
-	auth := r.Group("/auth")
+	auth := r.Group(urlFolderPrefix + "/auth")
 	auth.Use(authMiddleware.MiddlewareFunc())
 	{
 		auth.GET("/hello", helloHandler)
 		auth.GET("/refresh_token", authMiddleware.RefreshHandler)
 	}
 
-	kafka := r.Group("/kafka")
+	kafka := r.Group(urlFolderPrefix + "/kafka")
 	{
 		kafka.GET("/tradesBlock", GetTradesBlock)
 		kafka.GET("/filtersBlock", GetFiltersBlock)
@@ -187,14 +193,14 @@ func main() {
 		RelDB:     *relStore,
 	}
 
-	diaAuth := r.Group("/v1")
+	diaAuth := r.Group(urlFolderPrefix + "/v1")
 	diaAuth.Use(authMiddleware.MiddlewareFunc())
 	{
 		diaAuth.POST("/supply", diaApiEnv.PostSupply)
 		diaAuth.POST("/quotation", diaApiEnv.SetQuotation)
 	}
 
-	diaGroup := r.Group("/v1")
+	diaGroup := r.Group(urlFolderPrefix + "/v1")
 	{
 		// Trades and prices endpoints.
 		diaGroup.GET("/quotation/:symbol", cache.CachePageAtomic(memoryStore, cacheTime.CachingTime20Secs, diaApiEnv.GetQuotation))
@@ -304,7 +310,7 @@ func main() {
 
 	}
 
-	r.Use(static.Serve("/v1/chart", static.LocalFile("/charts", true)))
+	r.Use(static.Serve(urlFolderPrefix+"/v1/chart", static.LocalFile("/charts", true)))
 
 	AddEndpoints(r)
 
