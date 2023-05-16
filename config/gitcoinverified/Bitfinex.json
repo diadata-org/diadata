@@ -67,6 +67,18 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "TLOS",
+            "Exchange": "Bitfinex",
+            "Blockchain": "Telos",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "UDC",
+            "Exchange": "Bitfinex",
+            "Blockchain": "Ethereum",
+            "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+        },
+        {
             "Symbol": "UNI",
             "Exchange": "Bitfinex",
             "Blockchain": "Ethereum",
@@ -83,6 +95,12 @@
             "Exchange": "Bitfinex",
             "Blockchain": "Ethereum",
             "Address": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD"
+        },
+        {
+            "Symbol": "XAUT",
+            "Exchange": "Bitfinex",
+            "Blockchain": "Ethereum",
+            "Address": "0x68749665FF8D2d112Fa859AA293F07A622782F38"
         },
         {
             "Symbol": "YFI",

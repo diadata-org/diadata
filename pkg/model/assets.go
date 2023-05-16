@@ -1037,7 +1037,7 @@ func (rdb *RelDB) GetSortedAssetSymbols(numAssets int64, skip int64, search stri
 // GetAssetsWithVOL returns the first @numAssets assets with entry in the assetvolume table, sorted by volume in descending order.
 // If @numAssets==0, all assets are returned.
 // If @substring is not the empty string, results are filtered by the first letters being @substring.
-func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, skip int64, onlycex bool, blockchain string) (volumeSortedAssets []dia.AssetVolume, err error) {
+func (rdb *RelDB) GetAssetsWithVOL(starttime time.Time, numAssets int64, skip int64, onlycex bool, blockchain string) (volumeSortedAssets []dia.AssetVolume, err error) {
 	var (
 		queryString string
 		query       string
@@ -1052,18 +1052,20 @@ func (rdb *RelDB) GetAssetsWithVOL(numAssets int64, skip int64, onlycex bool, bl
 		if blockchain == "" {
 			queryString = `
 			SELECT symbol,name,address,decimals,blockchain,volume 
-			FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) 
-			ORDER BY assetvolume.volume 
+			FROM %s a INNER JOIN %s av ON (a.asset_id = av.asset_id) 
+			WHERE av.time_stamp>to_timestamp(%v)
+			ORDER BY av.volume 
 			DESC LIMIT %d OFFSET %d`
-			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, numAssets, skip)
+			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, starttime.Unix(), numAssets, skip)
 		} else {
 			queryString = `
 			SELECT symbol,name,address,decimals,blockchain,volume 
-			FROM %s INNER JOIN %s ON (asset.asset_id = assetvolume.asset_id) 
-			WHERE blockchain= '%s' 
-			ORDER BY assetvolume.volume 
+			FROM %s a INNER JOIN %s av ON (a.asset_id = av.asset_id) 
+			WHERE blockchain= '%s'
+			AND av.time_stamp>to_timestamp(%v)
+			ORDER BY av.volume 
 			DESC LIMIT %d OFFSET %d`
-			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, blockchain, numAssets, skip)
+			query = fmt.Sprintf(queryString, assetTable, assetVolumeTable, blockchain, starttime.Unix(), numAssets, skip)
 		}
 
 	} else {

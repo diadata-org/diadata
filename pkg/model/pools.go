@@ -251,16 +251,21 @@ func (rdb *RelDB) GetAllPoolsExchange(exchange string, liquiThreshold float64) (
 	)
 
 	query = fmt.Sprintf(`
-		SELECT p.address,a.address,a.blockchain,a.decimals,a.symbol,a.name,pa.token_index
-		FROM %s p 
+		SELECT exch_pools.address,a.address,a.blockchain,a.decimals,a.symbol,a.name,pa.token_index,pa.liquidity
+		FROM (
+			SELECT p.pool_id,p.address, SUM(CASE WHEN pa.liquidity<%v THEN 1 ELSE 0 END) AS no_liqui 
+			FROM %s p 
+			INNER JOIN %s pa 
+			ON p.pool_id=pa.pool_id 
+			WHERE p.exchange='%s' 
+			GROUP BY p.pool_id,p.address
+			) exch_pools 
 		INNER JOIN %s pa 
-		ON p.pool_id=pa.pool_id 
+		ON exch_pools.pool_id=pa.pool_id 
 		INNER JOIN %s a 
-		ON pa.asset_id=a.asset_id
-		WHERE p.exchange='%s'
-		AND pa.liquidity>=%v
-		`, poolTable, poolassetTable, assetTable, exchange, liquiThreshold)
-
+		ON pa.asset_id=a.asset_id 
+		WHERE exch_pools.no_liqui=0;
+	`, liquiThreshold, poolTable, poolassetTable, exchange, poolassetTable, assetTable)
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return
@@ -275,6 +280,7 @@ func (rdb *RelDB) GetAllPoolsExchange(exchange string, liquiThreshold float64) (
 			av          dia.AssetVolume
 			decimals    sql.NullInt64
 			index       sql.NullInt64
+			liquidity   sql.NullFloat64
 		)
 		err := rows.Scan(
 			&poolAddress,
@@ -284,6 +290,7 @@ func (rdb *RelDB) GetAllPoolsExchange(exchange string, liquiThreshold float64) (
 			&av.Asset.Symbol,
 			&av.Asset.Name,
 			&index,
+			&liquidity,
 		)
 		if err != nil {
 			log.Error(err)
@@ -293,6 +300,9 @@ func (rdb *RelDB) GetAllPoolsExchange(exchange string, liquiThreshold float64) (
 		}
 		if index.Valid {
 			av.Index = uint8(index.Int64)
+		}
+		if liquidity.Valid {
+			av.Volume = liquidity.Float64
 		}
 
 		// map poolasset to pool if pool address already exists.

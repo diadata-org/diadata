@@ -2,15 +2,15 @@
   "Coins": [
     {
       "Exchange": "BitMart",
-      "ForeignName": "MSOL_USDT",
-      "Ignore": false,
-      "Symbol": "MSOL"
-    },
-    {
-      "Exchange": "BitMart",
       "ForeignName": "RAY_USDT",
       "Ignore": false,
       "Symbol": "RAY"
+    },
+    {
+      "Exchange": "BitMart",
+      "ForeignName": "PEPE_USDT",
+      "Ignore": false,
+      "Symbol": "PEPE"
     },
     {
       "Exchange": "BitMart",
@@ -77,6 +77,12 @@
       "ForeignName": "LINK_BTC",
       "Ignore": false,
       "Symbol": "LINK"
+    },
+    {
+      "Exchange": "BitMart",
+      "ForeignName": "GMX_USDT",
+      "Ignore": false,
+      "Symbol": "GMX"
     },
     {
       "Exchange": "BitMart",
@@ -206,6 +212,42 @@
     },
     {
       "Exchange": "BitMart",
+      "ForeignName": "CVX_USDT",
+      "Ignore": false,
+      "Symbol": "CVX"
+    },
+    {
+      "Exchange": "BitMart",
+      "ForeignName": "GNS_USDT",
+      "Ignore": false,
+      "Symbol": "GNS"
+    },
+    {
+      "Exchange": "BitMart",
+      "ForeignName": "GRAIL_USDT",
+      "Ignore": false,
+      "Symbol": "GRAIL"
+    },
+    {
+      "Exchange": "BitMart",
+      "ForeignName": "SPELL_USDT",
+      "Ignore": false,
+      "Symbol": "SPELL"
+    },
+    {
+      "Exchange": "BitMart",
+      "ForeignName": "SYN_USDT",
+      "Ignore": false,
+      "Symbol": "SYN"
+    },
+    {
+      "Exchange": "BitMart",
+      "ForeignName": "RDNT_USDT",
+      "Ignore": false,
+      "Symbol": "RDNT"
+    },
+    {
+      "Exchange": "BitMart",
       "ForeignName": "UNI_USDT",
       "Ignore": false,
       "Symbol": "UNI"
@@ -227,12 +269,6 @@
       "ForeignName": "LUNC_USDT",
       "Ignore": false,
       "Symbol": "LUNC"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "FTT_USDT",
-      "Ignore": false,
-      "Symbol": "FTT"
     },
     {
       "Exchange": "BitMart",
@@ -345,12 +381,6 @@
     {
       "Exchange": "BitMart",
       "ForeignName": "USDP_USDT",
-      "Ignore": false,
-      "Symbol": "USDP"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "USDP_USDC",
       "Ignore": false,
       "Symbol": "USDP"
     },

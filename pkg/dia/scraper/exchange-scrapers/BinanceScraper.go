@@ -3,12 +3,15 @@ package scrapers
 import (
 	"encoding/json"
 	"errors"
+	"io/ioutil"
+	"os"
 	"strconv"
 	"sync"
 	"time"
 
-	"github.com/adshao/go-binance"
+	"github.com/adshao/go-binance/v2"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
 	"github.com/zekroTJA/timedmap"
@@ -53,6 +56,13 @@ func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange, s
 		chanTrades:   make(chan *dia.Trade),
 		db:           relDB,
 	}
+
+	var err error
+	reverseBasetokens, err = getReverseTokensFromConfigFull("binance/reverse_tokens/" + s.exchangeName + "Basetoken")
+	if err != nil {
+		log.Error("error getting tokens for which pairs should be reversed: ", err)
+	}
+	log.Info("reverse basetokens: ", reverseBasetokens)
 
 	// establish connection in the background
 	if scrape {
@@ -169,9 +179,19 @@ func (s *BinanceScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) 
 				BaseToken:      exchangepair.UnderlyingPair.BaseToken,
 				QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
 			}
+
+			if utils.Contains(reverseBasetokens, t.BaseToken.Identifier()) {
+				// If we need quotation of a base token, reverse pair
+				tSwapped, errSwap := dia.SwapTrade(*t)
+				if errSwap == nil {
+					t = &tSwapped
+				}
+			}
+
 			if exchangepair.Verified {
 				log.Infoln("Got verified trade", t)
 			}
+
 			// Handle duplicate trades.
 			discardTrade := t.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
 			if !discardTrade {
@@ -290,4 +310,50 @@ func (ps *BinancePairScraper) Error() error {
 // Pair returns the pair this scraper is subscribed to
 func (ps *BinancePairScraper) Pair() dia.ExchangePair {
 	return ps.pair
+}
+
+// getReverseTokensFromConfigFull returns a list of addresses from config file.
+func getReverseTokensFromConfigFull(filename string) (*[]string, error) {
+
+	var reverseTokens []string
+
+	// Load file and read data
+	filehandle := configCollectors.ConfigFileConnectors(filename, ".json")
+	jsonFile, err := os.Open(filehandle)
+	if err != nil {
+		return &[]string{}, err
+	}
+	defer func() {
+		err = jsonFile.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
+
+	byteData, err := ioutil.ReadAll(jsonFile)
+	if err != nil {
+		return &[]string{}, err
+	}
+
+	// // Unmarshal read data
+	// type lockedAsset struct {
+	// 	Address    string `json:"Address"`
+	// 	Blockchain string `json:"Blockchain"`
+	// 	Symbol     string `json:"Symbol"`
+	// }
+	type lockedAssetList struct {
+		AllAssets []dia.Asset `json:"Tokens"`
+	}
+	var allAssets lockedAssetList
+	err = json.Unmarshal(byteData, &allAssets)
+	if err != nil {
+		return &[]string{}, err
+	}
+
+	// Extract addresses
+	for _, token := range allAssets.AllAssets {
+		reverseTokens = append(reverseTokens, token.Identifier())
+	}
+
+	return &reverseTokens, nil
 }

@@ -49,6 +49,12 @@
             "Address": "0x2F800Db0fdb5223b3C3f354886d907A671414A7F"
         },
         {
+            "Symbol": "BFR",
+            "Exchange": "BKEX",
+            "Blockchain": "Arbitrum",
+            "Address": "0x1A5B0aaF478bf1FDA7b934c76E7692D722982a6D"
+        },
+        {
             "Symbol": "BNB",
             "Exchange": "BKEX",
             "Blockchain": "BinanceSmartChain",
@@ -113,6 +119,12 @@
             "Exchange": "BKEX",
             "Blockchain": "Ethereum",
             "Address": "0xA0b73E1Ff0B80914AB6fe0444E65848C4C34450b"
+        },
+        {
+            "Symbol": "CVX",
+            "Exchange": "BKEX",
+            "Blockchain": "Ethereum",
+            "Address": "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B"
         },
         {
             "Symbol": "DIA",
@@ -193,10 +205,46 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "GMD",
+            "Exchange": "BKEX",
+            "Blockchain": "Arbitrum",
+            "Address": "0x4945970EfeEc98D393b4b979b9bE265A3aE28A8B"
+        },
+        {
             "Symbol": "GMT",
             "Exchange": "BKEX",
             "Blockchain": "Solana",
             "Address": "7i5KKsX2weiTkry7jA4ZwSuXGhs5eJBEjY8vVxR4pfRx"
+        },
+        {
+            "Symbol": "GMX",
+            "Exchange": "BKEX",
+            "Blockchain": "Arbitrum",
+            "Address": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"
+        },
+        {
+            "Symbol": "GNS",
+            "Exchange": "BKEX",
+            "Blockchain": "Arbitrum",
+            "Address": "0x18c11FD286C5EC11c3b683Caa813B77f5163A122"
+        },
+        {
+            "Symbol": "GRAIL",
+            "Exchange": "BKEX",
+            "Blockchain": "Arbitrum",
+            "Address": "0x3d9907F9a368ad0a51Be60f7Da3b97cf940982D8"
+        },
+        {
+            "Symbol": "JOE",
+            "Exchange": "BKEX",
+            "Blockchain": "Avalanche",
+            "Address": "0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd"
+        },
+        {
+            "Symbol": "JONES",
+            "Exchange": "BKEX",
+            "Blockchain": "Arbitrum",
+            "Address": "0x10393c20975cF177a3513071bC110f7962CD67da"
         },
         {
             "Symbol": "KSM",
@@ -241,6 +289,18 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "PLS",
+            "Exchange": "BKEX",
+            "Blockchain": "Arbitrum",
+            "Address": "0x51318B7D00db7ACc4026C88c3952B66278B6A67F"
+        },
+        {
+            "Symbol": "PREMIA",
+            "Exchange": "BKEX",
+            "Blockchain": "Arbitrum",
+            "Address": "0x51fC0f6660482Ea73330E414eFd7808811a57Fa2"
+        },
+        {
             "Symbol": "QNT",
             "Exchange": "BKEX",
             "Blockchain": "Ethereum",
@@ -251,6 +311,18 @@
             "Exchange": "BKEX",
             "Blockchain": "Solana",
             "Address": "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R"
+        },
+        {
+            "Symbol": "RDNT",
+            "Exchange": "BKEX",
+            "Blockchain": "Arbitrum",
+            "Address": "0x0C4681e6C0235179ec3D4F4fc4DF3d14FDD96017"
+        },
+        {
+            "Symbol": "RDPX",
+            "Exchange": "BKEX",
+            "Blockchain": "Arbitrum",
+            "Address": "0x32eb7902d4134bf98a28b963d26de779af92a212"
         },
         {
             "Symbol": "SAMO",
@@ -295,16 +367,34 @@
             "Address": "0x090185f2135308BaD17527004364eBcC2D37e5F6"
         },
         {
+            "Symbol": "STG",
+            "Exchange": "BKEX",
+            "Blockchain": "Ethereum",
+            "Address": "0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6"
+        },
+        {
             "Symbol": "SUSHI",
             "Exchange": "BKEX",
             "Blockchain": "Ethereum",
             "Address": "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2"
         },
         {
+            "Symbol": "SYN",
+            "Exchange": "BKEX",
+            "Blockchain": "Ethereum",
+            "Address": "0x0f2D719407FdBeFF09D87557AbB7232601FD9F29"
+        },
+        {
             "Symbol": "TLOS",
             "Exchange": "BKEX",
             "Blockchain": "Telos",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "TND",
+            "Exchange": "BKEX",
+            "Blockchain": "Arbitrum",
+            "Address": "0xC47D9753F3b32aA9548a7C3F30b6aEc3B2d2798C"
         },
         {
             "Symbol": "TOMB",
@@ -335,6 +425,12 @@
             "Exchange": "BKEX",
             "Blockchain": "Ethereum",
             "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+        },
+        {
+            "Symbol": "VELA",
+            "Exchange": "BKEX",
+            "Blockchain": "Arbitrum",
+            "Address": "0x088cd8f5eF3652623c22D48b1605DCfE860Cd704"
         },
         {
             "Symbol": "WBTC",

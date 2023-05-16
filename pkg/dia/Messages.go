@@ -72,14 +72,14 @@ func (nc *NFTClass) UnmarshalBinary(data []byte) error {
 // NFT is the container for a specific NFT defined by
 // the pair (address,tokenID).
 type NFT struct {
-	NFTClass       NFTClass  `json:"nft_class"`
-	TokenID        string    `json:"token_id"`
-	CreationTime   time.Time `json:"creation_time"`
-	CreatorAddress string    `json:"creator_address"`
-	URI            string    `json:"uri"`
+	NFTClass       NFTClass  `json:"NFTClass"`
+	TokenID        string    `json:"TokenID"`
+	CreationTime   time.Time `json:"CreationTme"`
+	CreatorAddress string    `json:"CreatorAddress"`
+	URI            string    `json:"URI"`
 	// @Attributes is a collection of attributes from on- and off-chain
 	// TO DO: Should we split up into two fields?
-	Attributes NFTAttributes `json:"attributes"`
+	Attributes NFTAttributes `json:"Attributes"`
 }
 
 // NFTAttributes can be stored as jasonb in postgres:
@@ -113,17 +113,17 @@ func (n *NFT) UnmarshalBinary(data []byte) error {
 }
 
 type NFTTrade struct {
-	NFT         NFT       `json:"nft"`
-	Price       *big.Int  `json:"price"`
-	PriceUSD    float64   `json:"price_usd"`
-	FromAddress string    `json:"from_address"`
-	ToAddress   string    `json:"to_address"`
-	Currency    Asset     `json:"currency"`
-	BundleSale  bool      `json:"bundle_sale"`
-	BlockNumber uint64    `json:"block_number"`
-	Timestamp   time.Time `json:"timestamp"`
-	TxHash      string    `json:"tx_hash"`
-	Exchange    string    `json:"exchange"`
+	NFT         NFT       `json:"NFT"`
+	Price       *big.Int  `json:"Price"`
+	PriceUSD    float64   `json:"PriceUSD"`
+	FromAddress string    `json:"FromAddress"`
+	ToAddress   string    `json:"ToAddress"`
+	Currency    Asset     `json:"Currency"`
+	BundleSale  bool      `json:"BundleSale"`
+	BlockNumber uint64    `json:"BlockNumber"`
+	Timestamp   time.Time `json:"Timestamp"`
+	TxHash      string    `json:"TxHash"`
+	Exchange    string    `json:"Exchange"`
 }
 
 // MarshalBinary for NFTTrade
@@ -140,17 +140,17 @@ func (ns *NFTTrade) UnmarshalBinary(data []byte) error {
 }
 
 type NFTBid struct {
-	NFT              NFT       `json:"nft"`
-	Value            *big.Int  `json:"value"`
-	FromAddress      string    `json:"from_address"`
-	CurrencySymbol   string    `json:"currency_symbol"`
-	CurrencyAddress  string    `json:"currency_address"`
-	CurrencyDecimals int32     `json:"currency_decimals"`
-	BlockNumber      uint64    `json:"block_number"`
-	BlockPosition    uint64    `json:"block_position"`
-	Timestamp        time.Time `json:"timestamp"`
-	TxHash           string    `json:"tx_hash"`
-	Exchange         string    `json:"exchange"`
+	NFT              NFT       `json:"NFT"`
+	Value            *big.Int  `json:"Value"`
+	FromAddress      string    `json:"FromAddress"`
+	CurrencySymbol   string    `json:"CurrencySymbol"`
+	CurrencyAddress  string    `json:"CurrencyAddress"`
+	CurrencyDecimals int32     `json:"CurrencyDecimals"`
+	BlockNumber      uint64    `json:"BlockNumber"`
+	BlockPosition    uint64    `json:"BlockPosition"`
+	Timestamp        time.Time `json:"Timestamp"`
+	TxHash           string    `json:"TxHash"`
+	Exchange         string    `json:"Exchange"`
 }
 
 // MarshalBinary for NFTBid
@@ -173,26 +173,26 @@ type NFTExchangeStats struct {
 }
 
 type NFTOffer struct {
-	NFT NFT `json:"nft"`
+	NFT NFT `json:"NFT"`
 	// Start and EndValue are for auction types. Otherwise, use StartValue
 	// and leave EndValue blank.
-	StartValue *big.Int `json:"start_value"`
-	EndValue   *big.Int `json:"end_value"`
+	StartValue *big.Int `json:"StartValue"`
+	EndValue   *big.Int `json:"EndValue"`
 	// Duration of the offer/auction measured in seconds
-	Duration    time.Duration `json:"duration"`
-	FromAddress string        `json:"from_address"`
+	Duration    time.Duration `json:"Duration"`
+	FromAddress string        `json:"FromAddress"`
 	// Type of offer can be auction, simple offer,...
-	AuctionType string `json:"auction_type"`
+	AuctionType string `json:"AuctionType"`
 
-	CurrencySymbol   string `json:"currency_symbol"`
-	CurrencyAddress  string `json:"currency_address"`
-	CurrencyDecimals int32  `json:"currency_decimals"`
+	CurrencySymbol   string `json:"CurrencySymbol"`
+	CurrencyAddress  string `json:"CurrencyAddress"`
+	CurrencyDecimals int32  `json:"CurrencyDecimals"`
 
-	BlockNumber   uint64    `json:"block_number"`
-	BlockPosition uint64    `json:"block_position"`
-	Timestamp     time.Time `json:"timestamp"`
-	TxHash        string    `json:"tx_hash"`
-	Exchange      string    `json:"exchange"`
+	BlockNumber   uint64    `json:"BlockNumber"`
+	BlockPosition uint64    `json:"BlockPosition"`
+	Timestamp     time.Time `json:"Timestamp"`
+	TxHash        string    `json:"TxHash"`
+	Exchange      string    `json:"Exchange"`
 }
 
 // MarshalBinary for NFTOffer
@@ -257,42 +257,22 @@ type PairVolumesList struct {
 	Timestamp time.Time    `json:"Timestamp"`
 }
 
-type AggregatedVolume struct {
-	Pair             Pair      `json:"Pair"`
-	Volume           float64   `json:"Volume"`
-	Exchange         string    `json:"ExchangeVolumes"`
-	TimeRangeSeconds int64     `json:"TimeRangeSeconds"`
-	Timestamp        time.Time `json:"Timestamp"`
-}
-
-type TradesDistribution struct {
-	Asset            Asset     `json:"Asset"`
-	NumTradesTotal   int       `json:"NumTradesTotal"`
-	NumLowBins       int       `json:"NumberLowBins"`
-	Threshold        int       `json:"Threshold"`
-	SizeBinSeconds   int64     `json:"SizeBin"`
-	AvgNumPerBin     float64   `json:"AverageNumberPerBin"`
-	StdDeviation     float64   `json:"StandardDeviation"`
-	TimeRangeSeconds int64     `json:"TimeRangeSeconds"`
-	Timestamp        time.Time `json:"Timestamp"`
-}
-
 type EthereumBlockData struct {
-	GasLimit    uint64             `json:"gas_limit"`
-	GasUsed     uint64             `json:"gas_used"`
-	Difficulty  *big.Int           `json:"difficulty"`
-	Time        uint64             `json:"time"`
-	Size        common.StorageSize `json:"size"`
-	Number      uint64             `json:"number"`
-	MixDigest   common.Hash        `json:"mix_digest"`
-	Nonce       uint64             `json:"nonce"`
-	Coinbase    common.Address     `json:"coinbase"`
-	Root        common.Hash        `json:"root"`
-	ParentHash  common.Hash        `json:"parent_hash"`
-	TxHash      common.Hash        `json:"tx_hash"`
-	ReceiptHash common.Hash        `json:"receipt_hash"`
-	UncleHash   common.Hash        `json:"uncle_hash"`
-	Extra       []byte             `json:"extra"`
+	GasLimit    uint64             `json:"GasLimit"`
+	GasUsed     uint64             `json:"GasUsed"`
+	Difficulty  *big.Int           `json:"Difficulty"`
+	Time        uint64             `json:"Time"`
+	Size        common.StorageSize `json:"Size"`
+	Number      uint64             `json:"Number"`
+	MixDigest   common.Hash        `json:"MixDigest"`
+	Nonce       uint64             `json:"Nonce"`
+	Coinbase    common.Address     `json:"Coinbase"`
+	Root        common.Hash        `json:"Root"`
+	ParentHash  common.Hash        `json:"ParentHash"`
+	TxHash      common.Hash        `json:"TxHash"`
+	ReceiptHash common.Hash        `json:"ReceiptHash"`
+	UncleHash   common.Hash        `json:"UncleHash"`
+	Extra       []byte             `json:"Extra"`
 }
 
 type Exchange struct {
@@ -319,20 +299,24 @@ type NFTExchange struct {
 }
 
 type Supply struct {
-	Asset             Asset     `json:"asset"`
-	Supply            float64   `json:"supply"`
-	CirculatingSupply float64   `json:"circulating_supply"`
-	Source            string    `json:"source"`
-	Time              time.Time `json:"time"`
+	Asset             Asset     `json:"Asset"`
+	Supply            float64   `json:"Supply"`
+	CirculatingSupply float64   `json:"CirculatingSupply"`
+	Source            string    `json:"Source"`
+	Time              time.Time `json:"Time"`
 }
 
 // Asset is the data type for all assets, ranging from fiat to crypto.
 type Asset struct {
-	Symbol     string `json:"symbol"`
-	Name       string `json:"name"`
-	Address    string `json:"address"`
-	Decimals   uint8  `json:"decimals"`
-	Blockchain string `json:"blockchain"`
+	Symbol     string `json:"Symbol"`
+	Name       string `json:"Name"`
+	Address    string `json:"Address"`
+	Decimals   uint8  `json:"Decimals"`
+	Blockchain string `json:"Blockchain"`
+}
+
+func (asset *Asset) Identifier() string {
+	return asset.Blockchain + "-" + asset.Address
 }
 
 // BlockChain is the type for blockchains. Uniquely defined by its @Name.
@@ -348,15 +332,15 @@ type BlockChain struct {
 }
 
 type ChainConfig struct {
-	RestURL string `json:"restURL"`
-	WSURL   string `json:"wsURL"`
+	RestURL string `json:"RestURL"`
+	WSURL   string `json:"WSURL"`
 	ChainID string `json:"ChainID"`
 }
 
 // Pair substitues the old dia.Pair. It includes the new asset type.
 type Pair struct {
-	QuoteToken Asset `json:"quote_token"`
-	BaseToken  Asset `json:"base_token"`
+	QuoteToken Asset `json:"QuoteToken"`
+	BaseToken  Asset `json:"BaseToken"`
 }
 
 func (p *Pair) Identifier() string {
@@ -410,11 +394,11 @@ func (a *Asset) UnmarshalBinary(data []byte) error {
 // ExchangePair is the container for a pair as used by exchanges.
 // Across exchanges, these pairs cannot be uniquely mapped on asset pairs.
 type ExchangePair struct {
-	Symbol         string `json:"symbol"`
-	ForeignName    string `json:"foreign_name"`
-	Exchange       string `json:"exchange"`
-	Verified       bool   `json:"verified"`
-	UnderlyingPair Pair   `json:"underlying_pair"`
+	Symbol         string `json:"Symbol"`
+	ForeignName    string `json:"ForeignName"`
+	Exchange       string `json:"EXchange"`
+	Verified       bool   `json:"Verified"`
+	UnderlyingPair Pair   `json:"UnderlyingPair"`
 }
 
 // MarshalBinary is a custom marshaller for ExchangePair type
@@ -435,18 +419,18 @@ type Pairs []ExchangePair
 // Trade remark: In a pair A-B, we call A the Quote token and B the Base token
 type Trade struct {
 	// TO DO: Deprecated fields. Delete as soon as token-to-type branch is deployed.
-	Symbol string `json:"symbol"`
-	Pair   string `json:"pair"`
+	Symbol string `json:"Symbol"`
+	Pair   string `json:"Pair"`
 	// Final fields for trade
-	QuoteToken        Asset     `json:"quote_token"`
-	BaseToken         Asset     `json:"base_token"`
-	Price             float64   `json:"price"`
-	Volume            float64   `json:"volume"` // Quantity of bought/sold units of Quote token. Negative if result of Market order Sell
-	Time              time.Time `json:"time"`
-	ForeignTradeID    string    `json:"foreign_trade_id"`
-	EstimatedUSDPrice float64   `json:"estimated_usd_price"` // will be filled by the TradesBlockService
-	Source            string    `json:"source"`
-	VerifiedPair      bool      `json:"verified_pair"` // will be filled by the pairDiscoveryService
+	QuoteToken        Asset     `json:"QuoteToken"`
+	BaseToken         Asset     `json:"BaseToken"`
+	Price             float64   `json:"Price"`
+	Volume            float64   `json:"Volume"` // Quantity of bought/sold units of Quote token. Negative if result of Market order Sell
+	Time              time.Time `json:"Time"`
+	ForeignTradeID    string    `json:"ForeignTradeID"`
+	EstimatedUSDPrice float64   `json:"EstimatedUSDPrice"` // will be filled by the TradesBlockService
+	Source            string    `json:"Source"`
+	VerifiedPair      bool      `json:"VerifiedPair"` // will be filled by the pairDiscoveryService
 }
 
 // SynthAssetSupply is a container for data on synthetic assets such as aUSDC.
@@ -466,28 +450,28 @@ type SynthAssetSupply struct {
 }
 
 type TradesBlockData struct {
-	BeginTime    time.Time `json:"begin_time"`
-	EndTime      time.Time `json:"end_time"`
-	TradesNumber int       `json:"trades_number"`
-	Trades       []Trade   `json:"trades"`
+	BeginTime    time.Time
+	EndTime      time.Time
+	TradesNumber int
+	Trades       []Trade
 }
 
 type TradesBlock struct {
-	BlockHash       string          `json:"block_hash"`
-	TradesBlockData TradesBlockData `json:"trades_block_data"`
+	BlockHash       string
+	TradesBlockData TradesBlockData
 }
 
 type FiltersBlock struct {
-	BlockHash        string           `json:"block_hash"`
-	FiltersBlockData FiltersBlockData `json:"filters_block_data"`
+	BlockHash        string
+	FiltersBlockData FiltersBlockData
 }
 
 type FiltersBlockData struct {
-	TradesBlockHash string        `json:"trades_block_hash"`
-	BeginTime       time.Time     `json:"begin_time"`
-	EndTime         time.Time     `json:"end_time"`
-	FilterPoints    []FilterPoint `json:"filter_points"`
-	FiltersNumber   int           `json:"filters_number"`
+	TradesBlockHash string
+	BeginTime       time.Time
+	EndTime         time.Time
+	FilterPoints    []FilterPoint
+	FiltersNumber   int
 }
 
 // FilterPoint contains the resulting value of a filter applied to an asset.
@@ -662,13 +646,19 @@ func (e *SuppliesBlock) UnmarshalBinary(data []byte) error {
 }
 
 type OracleConfig struct {
-	Symbols           []string
-	FeederID          string
-	Address           string
-	Owner             string
-	ChainID           string
-	Active            bool
-	Frequency         string
-	SleepSeconds      string
-	DeviationPermille string
+	Symbols            []string
+	FeederID           string
+	Address            string
+	FeederAddress      string
+	Owner              string
+	ChainID            string
+	Active             bool
+	Frequency          string
+	SleepSeconds       string
+	DeviationPermille  string
+	BlockchainNode     string
+	MandatoryFrequency string
+	CreatedDate        time.Time
+	LastUpdate         time.Time
+	Deleted            bool
 }

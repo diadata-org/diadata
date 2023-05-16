@@ -1,0 +1,430 @@
+{
+    "Coins": [
+        {
+            "Symbol": "btc",
+            "ForeignName": "btcusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "btc",
+            "ForeignName": "btcpax",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "gbp",
+            "ForeignName": "gbpusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eur",
+            "ForeignName": "eurusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xrp",
+            "ForeignName": "xrpusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xrp",
+            "ForeignName": "xrpbtc",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ltc",
+            "ForeignName": "ltcbtc",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ltc",
+            "ForeignName": "ltcusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eth",
+            "ForeignName": "ethbtc",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eth",
+            "ForeignName": "ethusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bch",
+            "ForeignName": "bchusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bch",
+            "ForeignName": "bchbtc",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "pax",
+            "ForeignName": "paxusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xlm",
+            "ForeignName": "xlmbtc",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xlm",
+            "ForeignName": "xlmusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "link",
+            "ForeignName": "linkusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "link",
+            "ForeignName": "linkbtc",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "omg",
+            "ForeignName": "omgusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "omg",
+            "ForeignName": "omgbtc",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "usdc",
+            "ForeignName": "usdcusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "btc",
+            "ForeignName": "btcusdc",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eth",
+            "ForeignName": "ethusdc",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "aave",
+            "ForeignName": "aaveusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "aave",
+            "ForeignName": "aavebtc",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "bat",
+            "ForeignName": "batusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "uma",
+            "ForeignName": "umausd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dai",
+            "ForeignName": "daiusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "knc",
+            "ForeignName": "kncusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mkr",
+            "ForeignName": "mkrusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "zrx",
+            "ForeignName": "zrxusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "algo",
+            "ForeignName": "algousd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "algo",
+            "ForeignName": "algobtc",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "audio",
+            "ForeignName": "audiousd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "audio",
+            "ForeignName": "audiobtc",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "crv",
+            "ForeignName": "crvusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "snx",
+            "ForeignName": "snxusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "uni",
+            "ForeignName": "uniusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "uni",
+            "ForeignName": "unibtc",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "yfi",
+            "ForeignName": "yfiusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "comp",
+            "ForeignName": "compusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "grt",
+            "ForeignName": "grtusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "lrc",
+            "ForeignName": "lrcusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "usdt",
+            "ForeignName": "usdtusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "usdc",
+            "ForeignName": "usdcusdt",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "btc",
+            "ForeignName": "btcusdt",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eth",
+            "ForeignName": "ethusdt",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xrp",
+            "ForeignName": "xrpusdt",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "mana",
+            "ForeignName": "manausd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "matic",
+            "ForeignName": "maticusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sushi",
+            "ForeignName": "sushiusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "chz",
+            "ForeignName": "chzusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "enj",
+            "ForeignName": "enjusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "hbar",
+            "ForeignName": "hbarusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "axs",
+            "ForeignName": "axsusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sand",
+            "ForeignName": "sandusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "storj",
+            "ForeignName": "storjusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ada",
+            "ForeignName": "adausd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ada",
+            "ForeignName": "adabtc",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "fet",
+            "ForeignName": "fetusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "skl",
+            "ForeignName": "sklusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "avax",
+            "ForeignName": "avaxusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dydx",
+            "ForeignName": "dydxusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ftm",
+            "ForeignName": "ftmusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "shib",
+            "ForeignName": "shibusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "gala",
+            "ForeignName": "galausd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "wbtc",
+            "ForeignName": "wbtcbtc",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ant",
+            "ForeignName": "antusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "sol",
+            "ForeignName": "solusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "dot",
+            "ForeignName": "dotusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "near",
+            "ForeignName": "nearusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "doge",
+            "ForeignName": "dogeusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        }
+    ]
+}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"strings"
+	"os"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
@@ -188,10 +189,15 @@ func main() {
 	if err != nil {
 		log.Errorln("NewRelDataStore", err)
 	}
-	diaApiEnv := &diaApi.Env{
-		DataStore: store,
-		RelDB:     *relStore,
-	}
+
+	signerKey := os.Getenv("SIGNER_KEY")
+	aqs := utils.NewAssetQuotationSigner(signerKey)
+	diaApiEnv := diaApi.NewEnv(store, *relStore, aqs)
+	// diaApiEnv := &diaApi.Env{
+	// 	DataStore: store,
+	// 	RelDB:     *relStore,
+	// 	signer:    aqs,
+	// }
 
 	diaAuth := r.Group(urlFolderPrefix + "/v1")
 	diaAuth.Use(authMiddleware.MiddlewareFunc())
@@ -238,8 +244,6 @@ func main() {
 		diaGroup.GET("/volume24/:exchange", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.Get24hVolume))
 		diaGroup.GET("/feedStats/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetFeedStats))
 
-		diaGroup.GET("/feedStats2/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetFeedStats2))
-
 		// Other endpoints.
 		diaGroup.GET("/search/:query", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.SearchAsset))
 		diaGroup.GET("/searchnft/:query", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.SearchNFTs))
@@ -276,8 +280,8 @@ func main() {
 		// dia.GET("/stockQuotation/:source/:symbol/:time", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetStockQuotation))
 
 		// Endpoints for foreign sources
-		diaGroup.GET("/foreignQuotation/:source/:symbol", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetForeignQuotation))
-		diaGroup.GET("/foreignQuotation/:source/:symbol/:time", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetForeignQuotation))
+		diaGroup.GET("/foreignQuotation/:source/:symbol", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetForeignQuotation))
+		diaGroup.GET("/foreignQuotation/:source/:symbol/:time", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetForeignQuotation))
 		diaGroup.GET("/foreignSymbols/:source", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetForeignSymbols))
 
 		// Endpoints for customized products
@@ -301,6 +305,8 @@ func main() {
 		diaGroup.GET("/NFTDistribution/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeMedium, diaApiEnv.GetNFTDistribution))
 		diaGroup.GET("/topNFT/:numCollections", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetTopNFTClasses))
 		diaGroup.GET("/NFTVolume/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetNFTVolume))
+		diaGroup.GET("/NFTMarketCap/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetNFTMarketCap))
+
 		diaGroup.GET("/assetmap/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetAssetMap))
 		diaGroup.GET("/assetUpdates/:blockchain/:address/:deviation/:frequencySeconds", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetAssetUpdates))
 

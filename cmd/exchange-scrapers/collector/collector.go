@@ -24,6 +24,7 @@ var (
 		dia.CurveFIExchangeFantom,
 		dia.CurveFIExchangeMoonbeam,
 		dia.CurveFIExchangePolygon,
+		dia.CurveFIExchangeArbitrum,
 		dia.PlatypusExchange,
 		dia.WanswapExchange,
 		dia.OmniDexExchange,

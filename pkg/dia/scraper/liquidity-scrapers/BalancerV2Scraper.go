@@ -63,6 +63,10 @@ func NewBalancerV2Scraper(exchange dia.Exchange) *BalancerV2Scraper {
 	switch exchange.Name {
 	case dia.BalancerV2Exchange:
 		scraper.startblockPoolRegister = 12272146
+	case dia.BalancerV2ExchangeArbitrum:
+		scraper.startblockPoolRegister = 222832
+	case dia.BalancerV2ExchangePolygon:
+		scraper.startblockPoolRegister = 15832990
 	case dia.BeetsExchange:
 		scraper.startblockPoolRegister = 16896080
 	}

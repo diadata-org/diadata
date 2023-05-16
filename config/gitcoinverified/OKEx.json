@@ -1,6 +1,12 @@
 {
     "Tokens": [
         {
+            "Symbol": "AAVE",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9"
+        },
+        {
             "Symbol": "ABT",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
@@ -31,6 +37,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "ATOM",
+            "Exchange": "OKEx",
+            "Blockchain": "Cosmos",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "AXS",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
@@ -41,6 +53,12 @@
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
             "Address": "0x3472A5A71965499acd81997a54BBA8D852C6E53d"
+        },
+        {
+            "Symbol": "BAL",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0xba100000625a3754423978a60c9317c58a424e3D"
         },
         {
             "Symbol": "CHAT",
@@ -103,6 +121,12 @@
             "Address": "0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e"
         },
         {
+            "Symbol": "JOE",
+            "Exchange": "OKEx",
+            "Blockchain": "Avalanche",
+            "Address": "0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd"
+        },
+        {
             "Symbol": "FLOW",
             "Exchange": "OKEx",
             "Blockchain": "Flow",
@@ -119,6 +143,12 @@
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
             "Address": "0x3F382DbD960E3a9bbCeaE22651E88158d2791550"
+        },
+        {
+            "Symbol": "GMX",
+            "Exchange": "OKEx",
+            "Blockchain": "Arbitrum",
+            "Address": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"
         },
         {
             "Symbol": "GTO",
@@ -143,6 +173,12 @@
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
             "Address": "0x1410434b0346f5bE678d0FB554E5c7ab620f8f4a"
+        },
+        {
+            "Symbol": "KNC",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0xdeFA4e8a7bcBA345F687a2f1456F5Edd9CE97202"
         },
         {
             "Symbol": "KP3R",
@@ -211,6 +247,12 @@
             "Address": "0xB97048628DB6B661D4C2aA833e95Dbe1A905B280"
         },
         {
+            "Symbol": "PEPE",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
+        },
+        {
             "Symbol": "PHA",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
@@ -263,6 +305,12 @@
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
             "Address": "0xF4134146AF2d511Dd5EA8cDB1C4AC88C57D60404"
+        },
+        {
+            "Symbol": "SPELL",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x090185f2135308BaD17527004364eBcC2D37e5F6"
         },
         {
             "Symbol": "STORJ",

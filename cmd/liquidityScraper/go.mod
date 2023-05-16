@@ -3,7 +3,7 @@ module github.com/diadata-org/diadata/liquidityScraper
 go 1.17
 
 require (
-	github.com/diadata-org/diadata v1.4.130
+	github.com/diadata-org/diadata v1.4.214
 	github.com/sirupsen/logrus v1.8.1
 )
 
@@ -37,6 +37,7 @@ require (
 	github.com/ethereum/go-ethereum v1.10.10 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
+	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gagliardetto/binary v0.7.7 // indirect
 	github.com/gagliardetto/metaplex-go v0.2.1 // indirect
 	github.com/gagliardetto/solana-go v1.8.1 // indirect
@@ -98,6 +99,7 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.23.0 // indirect
 	github.com/ybbus/jsonrpc v2.1.2+incompatible // indirect
+	github.com/zekroTJA/timedmap v1.4.0 // indirect
 	go.opencensus.io v0.22.5 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.7.0 // indirect

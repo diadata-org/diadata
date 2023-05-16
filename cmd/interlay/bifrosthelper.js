@@ -1,3 +1,8 @@
+const { ApiPromise, WsProvider } = require("@polkadot/api");
+const ethers = require("ethers");
+const bignumber = ethers.BigNumber;
+
+
 async function tokenPool(api, token) {
     const tokenPoolMap = new Map();
     const tokenPoolEntries = await api.query.vtokenMinting.tokenPool.entries();
@@ -34,12 +39,46 @@ async function tokenIssuance(api, token) {
   
     return totalIssuance;
   }
+
+  async function getBiFrostValues(token) {
+    let providerurl = "";
+  
+    switch (token) {
+      case "KSM":
+        providerurl = "wss://bifrost-parachain.api.onfinality.io/public-ws";
+        break;
+    }
+  
+    const wsProvider = new WsProvider(
+      // "wss://interlay.api.onfinality.io/public-ws"
+      providerurl
+    );
+    const api = await ApiPromise.create({
+      provider: wsProvider,
+    });
+  
+    let tokeninpool = await tokenPool(api, token);
+    // let tokenIssuance = await bifrosttokenIssuance(api, token);
+    let vtokenIssuance = await vTokenIssuance(api, token);
+  
+ 
+  
+    return {
+      total_backable: bignumber.from(tokeninpool.replaceAll(",", "")).toString(),
+      total_issued: vtokenIssuance.toString(),
+      decimal: 12,
+      token: token,
+      time: Date.now(),
+    };
+  }
+  
   
 
 module.exports = {
   tokenPool: tokenPool,
   bifrosttokenIssuance:tokenIssuance,
   vTokenIssuance:vTokenIssuance,
+  getBiFrostValues:getBiFrostValues,
 };
 
 // {

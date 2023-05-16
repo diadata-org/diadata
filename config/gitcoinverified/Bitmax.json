@@ -1,5 +1,5 @@
 {
-    "Tokens": [  
+    "Tokens": [
         {
             "Symbol": "1INCH",
             "Exchange": "Bitmax",
@@ -29,6 +29,12 @@
             "Exchange": "Bitmax",
             "Blockchain": "Ethereum",
             "Address": "0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4"
+        },
+        {
+            "Symbol": "ATOM",
+            "Exchange": "Bitmax",
+            "Blockchain": "Cosmos",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "BTC",
@@ -95,6 +101,12 @@
             "Exchange": "Bitmax",
             "Blockchain": "Ethereum",
             "Address": "0xD533a949740bb3306d119CC777fa900bA034cd52"
+        },
+        {
+            "Symbol": "CVX",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B"
         },
         {
             "Symbol": "DAFI",
@@ -193,6 +205,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "GMX",
+            "Exchange": "Bitmax",
+            "Blockchain": "Arbitrum",
+            "Address": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"
+        },
+        {
             "Symbol": "GT",
             "Exchange": "Bitmax",
             "Blockchain": "Ethereum",
@@ -221,6 +239,12 @@
             "Exchange": "Bitmax",
             "Blockchain": "Ethereum",
             "Address": "0x514910771AF9Ca656af840dff83E8264EcF986CA"
+        },
+        {
+            "Symbol": "LKR",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0x80CE3027a70e0A928d9268994e9B85d03Bd4CDcf"
         },
         {
             "Symbol": "MATIC",
@@ -277,6 +301,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "RDNT",
+            "Exchange": "Bitmax",
+            "Blockchain": "Arbitrum",
+            "Address": "0x0C4681e6C0235179ec3D4F4fc4DF3d14FDD96017"
+        },
+        {
             "Symbol": "RUNE",
             "Exchange": "Bitmax",
             "Blockchain": "Thorchain",
@@ -299,7 +329,7 @@
             "Exchange": "Bitmax",
             "Blockchain": "Ethereum",
             "Address": "0x476c5E26a75bd202a9683ffD34359C0CC15be0fF"
-        },     
+        },
         {
             "Symbol": "TRX",
             "Exchange": "Bitmax",

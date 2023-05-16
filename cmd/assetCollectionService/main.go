@@ -50,6 +50,12 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 		return source.NewUniswapAssetSource(exchanges[dia.PanCakeSwap])
 	case dia.SushiSwapExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.SushiSwapExchange])
+	case dia.SushiSwapExchangeArbitrum:
+		return source.NewUniswapAssetSource(exchanges[dia.SushiSwapExchangeArbitrum])
+	case dia.SushiSwapExchangeFantom:
+		return source.NewUniswapAssetSource(exchanges[dia.SushiSwapExchangeFantom])
+	case dia.CamelotExchange:
+		return source.NewUniswapAssetSource(exchanges[dia.CamelotExchange])
 	case dia.DfynNetwork:
 		return source.NewUniswapAssetSource(exchanges[dia.DfynNetwork])
 	case dia.QuickswapExchange:
@@ -70,10 +76,14 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 		return source.NewAnyswapAssetSource(exchanges[dia.AnyswapExchange])
 	case dia.NetswapExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.NetswapExchange])
-	case dia.BeetsExchange:
-		return source.NewBalancerV2AssetSource(exchanges[dia.BeetsExchange])
 	case dia.BalancerV2Exchange:
 		return source.NewBalancerV2AssetSource(exchanges[dia.BalancerV2Exchange])
+	case dia.BalancerV2ExchangeArbitrum:
+		return source.NewBalancerV2AssetSource(exchanges[dia.BalancerV2ExchangeArbitrum])
+	case dia.BeetsExchange:
+		return source.NewBalancerV2AssetSource(exchanges[dia.BeetsExchange])
+	case dia.BalancerV2ExchangePolygon:
+		return source.NewBalancerV2AssetSource(exchanges[dia.BalancerV2ExchangePolygon])
 	case dia.HuckleberryExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.HuckleberryExchange])
 	case dia.TraderJoeExchange:
@@ -108,6 +118,8 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 		return source.NewCurvefiAssetSource(exchanges[dia.CurveFIExchangeMoonbeam])
 	case dia.CurveFIExchangePolygon:
 		return source.NewCurvefiAssetSource(exchanges[dia.CurveFIExchangePolygon])
+	case dia.CurveFIExchangeArbitrum:
+		return source.NewCurvefiAssetSource(exchanges[dia.CurveFIExchangeArbitrum])
 	case dia.PlatypusExchange:
 		return source.NewPlatypusScraper(exchanges[dia.PlatypusExchange])
 	case dia.OrcaExchange:

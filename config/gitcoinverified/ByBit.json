@@ -139,6 +139,18 @@
             "Address": "0x0000000000000000000000000000000000001010"
         },
         {
+            "Symbol": "RDNT",
+            "Exchange": "ByBit",
+            "Blockchain": "Arbitrum",
+            "Address": "0x0C4681e6C0235179ec3D4F4fc4DF3d14FDD96017"
+        },
+        {
+            "Symbol": "STG",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6"
+        },
+        {
             "Symbol": "ETC",
             "Exchange": "ByBit",
             "Blockchain": "EthereumClassic",
@@ -457,6 +469,12 @@
             "Address": "7i5KKsX2weiTkry7jA4ZwSuXGhs5eJBEjY8vVxR4pfRx"
         },
         {
+            "Symbol": "GMX",
+            "Exchange": "ByBit",
+            "Blockchain": "Arbitrum",
+            "Address": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"
+        },
+        {
             "Symbol": "GTC",
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
@@ -587,6 +605,12 @@
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
             "Address": "0x888888848B652B3E3a0f34c96E00EEC0F3a23F72"
+        },
+        {
+            "Symbol": "USDC",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
         },
         {
             "Symbol": "WOO",

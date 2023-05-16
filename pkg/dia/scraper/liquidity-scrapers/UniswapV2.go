@@ -34,6 +34,7 @@ const (
 	restDialCelo      = ""
 	restDialFantom    = ""
 	restDialMoonriver = ""
+	restDialArbitrum  = ""
 	restDialAurora    = ""
 	restDialMetis     = ""
 	restDialAvalanche = ""
@@ -87,6 +88,10 @@ func NewUniswapScraper(exchange dia.Exchange) (us *UniswapScraper) {
 		us = makeUniswapPoolScraper(exchange, pathToPools, restDialPolygon, sushiswapWaitMilliseconds)
 	case dia.SushiSwapExchangeFantom:
 		us = makeUniswapPoolScraper(exchange, pathToPools, restDialFantom, sushiswapWaitMilliseconds)
+	case dia.SushiSwapExchangeArbitrum:
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialArbitrum, sushiswapWaitMilliseconds)
+	case dia.CamelotExchange:
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialArbitrum, sushiswapWaitMilliseconds)
 	case dia.PanCakeSwap:
 		us = makeUniswapPoolScraper(exchange, pathToPools, restDialBSC, pancakeswapWaitMilliseconds)
 	case dia.DfynNetwork:

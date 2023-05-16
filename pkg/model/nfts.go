@@ -408,6 +408,93 @@ func (rdb *RelDB) GetNFTTrades(address string, blockchain string, tokenID string
 	return
 }
 
+// GetAllLastTrades returns the last recorded trade for each NFT from the collection given by @nftclass.
+// Caution: Currently, not all dia.NFTTrade variables are returned.
+func (rdb *RelDB) GetAllLastTrades(nftclass dia.NFTClass) (trades []dia.NFTTrade, err error) {
+	query := fmt.Sprintf(
+		`SELECT s.price,s.token_id,s.trade_time,s.address,s.blockchain,s.decimals FROM (
+			SELECT DISTINCT ON (col.nft_id) ntc.price,col.token_id,ntc.trade_time,a.address,a.blockchain,a.decimals
+			FROM %s ntc 
+			INNER JOIN 
+			(
+				SELECT nft_id, token_id
+				FROM %s n 
+				INNER JOIN %s nc 
+				ON n.nftclass_id=nc.nftclass_id 
+				WHERE nc.address='%s' AND nc.blockchain='%s'
+			) AS col 
+			ON ntc.nft_id=col.nft_id 
+			INNER JOIN %s a 
+			ON ntc.currency_id=a.asset_id 
+			ORDER BY col.nft_id,ntc.trade_time ASC
+			) s ORDER BY s.trade_time ASC`,
+		NfttradeCurrTable,
+		nftTable,
+		nftclassTable,
+		nftclass.Address,
+		nftclass.Blockchain,
+		assetTable,
+	)
+
+	var rows pgx.Rows
+	rows, err = rdb.postgresClient.Query(context.Background(), query)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			trade              dia.NFTTrade
+			price              string
+			tokenID            sql.NullString
+			tradeTime          sql.NullTime
+			currencyAddress    sql.NullString
+			currencyBlockchain sql.NullString
+			currencyDecimals   sql.NullInt64
+		)
+		err = rows.Scan(
+			&price,
+			&tokenID,
+			&tradeTime,
+			&currencyAddress,
+			&currencyBlockchain,
+			&currencyDecimals,
+		)
+		if err != nil {
+			return
+		}
+		n := new(big.Int)
+		n, ok := n.SetString(price, 10)
+		if !ok {
+			err = errors.New("Cannot parse trade price.")
+			return
+		}
+		trade.Price = n
+		if tokenID.Valid {
+			trade.NFT.TokenID = tokenID.String
+		}
+		if tradeTime.Valid {
+			if tradeTime.Time == (time.Time{}) {
+				log.Warn("zero timestamp, continue.")
+				continue
+			}
+			trade.Timestamp = tradeTime.Time
+		}
+		if currencyAddress.Valid {
+			trade.Currency.Address = currencyAddress.String
+		}
+		if currencyBlockchain.Valid {
+			trade.Currency.Blockchain = currencyBlockchain.String
+		}
+		if currencyDecimals.Valid {
+			trade.Currency.Decimals = uint8(currencyDecimals.Int64)
+		}
+		trades = append(trades, trade)
+	}
+	return
+}
+
 // GetNFTFloorLevel returns the floor price of @nftclass w.r.t. the last 24h.
 // Here, floor is w.r.t the lower bound @level.
 // For Ethereum, only trades with @currencies are taken into account.

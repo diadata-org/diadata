@@ -2,9 +2,39 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "PEPE_USDT",
+      "Ignore": false,
+      "Symbol": "PEPE"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "ATOM_USDT",
+      "Ignore": false,
+      "Symbol": "ATOM"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "BFC_USDT",
       "Ignore": false,
       "Symbol": "BFC"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "BNC_USDT",
+      "Ignore": false,
+      "Symbol": "BNC"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "GMX_USDT",
+      "Ignore": false,
+      "Symbol": "GMX"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "KINT_USDT",
+      "Ignore": false,
+      "Symbol": "KINT"
     },
     {
       "Exchange": "GateIO",
@@ -62,6 +92,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "RDNT_USDT",
+      "Ignore": false,
+      "Symbol": "RDNT"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "SAMO_USDT",
       "Ignore": false,
       "Symbol": "SAMO"
@@ -71,6 +107,24 @@
       "ForeignName": "SAMO_ETH",
       "Ignore": false,
       "Symbol": "SAMO"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "STG_USDT",
+      "Ignore": false,
+      "Symbol": "STG"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "SYN_USDT",
+      "Ignore": false,
+      "Symbol": "SYN"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "LKR_USDT",
+      "Ignore": false,
+      "Symbol": "LKR"
     },
     {
       "Exchange": "GateIO",

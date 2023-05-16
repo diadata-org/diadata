@@ -111,6 +111,7 @@ type AssetQuotationFull struct {
 	VolumeYesterdayUSD float64   `json:"VolumeYesterdayUSD"`
 	Time               time.Time `json:"Time"`
 	Source             string    `json:"Source"`
+	Signature          string    `json:"Signature"`
 }
 
 // MarshalBinary for quotations
@@ -157,7 +158,7 @@ func (e *Change) UnmarshalBinary(data []byte) error {
 }
 
 type Points struct {
-	DataPoints []clientInfluxdb.Result `json:"data_points"`
+	DataPoints []clientInfluxdb.Result `json:"DataPoints"`
 }
 
 func (e *Points) UnmarshalBinary(data []byte) error {
@@ -179,4 +180,12 @@ type CoinSymbolAndName struct {
 
 type Pairs struct {
 	Pairs []dia.ExchangePair
+}
+
+// HistoricalQuote is a historical price of an asset.
+type HistoricalQuote struct {
+	Symbol    string    `db:"symbol"`
+	Price     float64   `db:"price"`
+	QuoteTime time.Time `db:"quote_time"`
+	Source    string    `db:"source"`
 }

@@ -88,7 +88,7 @@ func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool) *UniswapV3Scraper {
 		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThreshold)
 	}
 
-	poolMap, err = makeUniPoolMap(s.exchangeName, liquidityThreshold, s.relDB)
+	poolMap, err = s.makeUniV3PoolMap(liquidityThreshold)
 	if err != nil {
 		log.Fatal("build poolMap: ", err)
 	}
@@ -298,66 +298,6 @@ func (s *UniswapV3Scraper) normalizeUniswapSwap(swap UniswapV3Pair.UniswapV3Pair
 	return
 }
 
-// // GetPairByAddress returns the UniswapPair with pair address @pairAddress
-// func (s *UniswapV3Scraper) GetPairByAddress(pairAddress common.Address) (pair UniswapPair, err error) {
-// 	connection := s.RestClient
-// 	var pairContract *UniswapV3Pair.UniswapV3PairCaller
-// 	pairContract, err = UniswapV3Pair.NewUniswapV3PairCaller(pairAddress, connection)
-// 	if err != nil {
-// 		log.Error(err)
-// 		return UniswapPair{}, err
-// 	}
-
-// 	address0, _ := pairContract.Token0(&bind.CallOpts{})
-// 	address1, _ := pairContract.Token1(&bind.CallOpts{})
-// 	var token0Contract *uniswapcontract.IERC20Caller
-// 	var token1Contract *uniswapcontract.IERC20Caller
-// 	token0Contract, err = uniswapcontract.NewIERC20Caller(address0, connection)
-// 	if err != nil {
-// 		log.Error(err)
-// 	}
-// 	token1Contract, err = uniswapcontract.NewIERC20Caller(address1, connection)
-// 	if err != nil {
-// 		log.Error(err)
-// 	}
-// 	symbol0, err := token0Contract.Symbol(&bind.CallOpts{})
-// 	if err != nil {
-// 		log.Error(err)
-// 	}
-// 	symbol1, err := token1Contract.Symbol(&bind.CallOpts{})
-// 	if err != nil {
-// 		log.Error(err)
-// 	}
-// 	decimals0, err := s.GetDecimals(address0)
-// 	if err != nil {
-// 		log.Error(err)
-// 		return UniswapPair{}, err
-// 	}
-// 	decimals1, err := s.GetDecimals(address1)
-// 	if err != nil {
-// 		log.Error(err)
-// 		return UniswapPair{}, err
-// 	}
-// 	token0 := UniswapToken{
-// 		Address:  address0,
-// 		Symbol:   symbol0,
-// 		Decimals: decimals0,
-// 	}
-// 	token1 := UniswapToken{
-// 		Address:  address1,
-// 		Symbol:   symbol1,
-// 		Decimals: decimals1,
-// 	}
-// 	foreignName := symbol0 + "-" + symbol1
-// 	pair = UniswapPair{
-// 		ForeignName: foreignName,
-// 		Address:     pairAddress,
-// 		Token0:      token0,
-// 		Token1:      token1,
-// 	}
-// 	return pair, nil
-// }
-
 // FetchAvailablePairs returns a list with all available trade pairs as dia.Pair for the pairDiscorvery service
 func (s *UniswapV3Scraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	return
@@ -455,33 +395,6 @@ func (s *UniswapV3Scraper) feedPoolsToSubscriptions() (pairs []UniswapPair) {
 	return
 }
 
-// func (s *UniswapV3Scraper) getAllPoolsFromDB(liquiThreshold float64) (pairs []UniswapPair, err error) {
-// 	pools, err := s.relDB.GetAllPoolsExchange(s.exchangeName, liquiThreshold)
-// 	if err != nil {
-// 		log.Error("get all pools from DB: ", err)
-// 		return
-// 	}
-// 	for _, pool := range pools {
-// 		var up UniswapPair
-// 		up.Address = common.HexToAddress(pool.Address)
-// 		if len(pool.Assetvolumes) != 2 {
-// 			log.Warnf("pool %s does not have enough assets.", pool.Address)
-// 			continue
-// 		}
-// 		if pool.Assetvolumes[0].Index == 0 {
-// 			up.Token0 = asset2UniAsset(pool.Assetvolumes[0].Asset)
-// 			up.Token1 = asset2UniAsset(pool.Assetvolumes[1].Asset)
-// 		} else {
-// 			up.Token0 = asset2UniAsset(pool.Assetvolumes[1].Asset)
-// 			up.Token1 = asset2UniAsset(pool.Assetvolumes[0].Asset)
-// 		}
-// 		up.ForeignName = up.Token0.Symbol + "-" + up.Token1.Symbol
-// 		pairs = append(pairs, up)
-// 		s.pairRecieved <- &up
-// 	}
-// 	return
-// }
-
 func asset2UniAsset(asset dia.Asset) UniswapToken {
 	return UniswapToken{
 		Address:  common.HexToAddress(asset.Address),
@@ -490,53 +403,6 @@ func asset2UniAsset(asset dia.Asset) UniswapToken {
 		Name:     asset.Name,
 	}
 }
-
-// // getNumPairs returns the number of available pairs on Uniswap
-// func (s *UniswapV3Scraper) getAllPairs() (pairs []UniswapPair, err error) {
-
-// 	// filter from contract created https://etherscan.io/tx/0x1e20cd6d47d7021ae7e437792823517eeadd835df09dde17ab45afd7a5df4603
-
-// 	log.Info("get pool creations from address: ", s.factoryContractAddress.Hex())
-// 	poolsCount := 0
-// 	contract, err := uniswapcontractv3.NewUniswapV3Filterer(s.factoryContractAddress, s.WsClient)
-// 	if err != nil {
-// 		log.Error(err)
-// 	}
-
-// 	tInit := time.Now()
-// 	poolCreated, err := contract.FilterPoolCreated(
-// 		&bind.FilterOpts{Start: s.startBlock},
-// 		[]common.Address{},
-// 		[]common.Address{},
-// 		[]*big.Int{},
-// 	)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	log.Info("time spent for filter pool created: ", time.Since(tInit))
-// 	for poolCreated.Next() {
-// 		poolsCount++
-// 		log.Info("pools count: ", poolsCount)
-// 		pair, _ := s.GetPairData(poolCreated.Event)
-// 		pairs = append(pairs, pair)
-// 		s.pairRecieved <- &pair
-// 	}
-
-// 	return pairs, nil
-
-// }
-
-// func (s *UniswapV3Scraper) cleanup(err error) {
-// 	s.errorLock.Lock()
-// 	defer s.errorLock.Unlock()
-
-// 	if err != nil {
-// 		s.error = err
-// 	}
-// 	s.closed = true
-
-// 	close(s.shutdownDone)
-// }
 
 // Close closes any existing API connections, as well as channels of
 // PairScrapers from calls to ScrapePair
@@ -603,4 +469,38 @@ func (ps *UniswapPairV3Scraper) Error() error {
 // Pair returns the pair this scraper is subscribed to
 func (ps *UniswapPairV3Scraper) Pair() dia.ExchangePair {
 	return ps.pair
+}
+
+// makeUniPoolMap returns a map with pool addresses as keys and the underlying UniswapPair as values.
+func (s *UniswapV3Scraper) makeUniV3PoolMap(liquiThreshold float64) (map[string]UniswapPair, error) {
+	pm := make(map[string]UniswapPair)
+
+	// Load all pools above liqui threshold.
+	pools, err := s.relDB.GetAllPoolsExchange(s.exchangeName, liquiThreshold)
+	if err != nil {
+		return pm, err
+	}
+
+	log.Info("Found ", len(pools), " pools.")
+	log.Info("make pool map...")
+	for _, pool := range pools {
+		if len(pool.Assetvolumes) != 2 {
+			continue
+		}
+		up := UniswapPair{
+			Address: common.HexToAddress(pool.Address),
+		}
+		if pool.Assetvolumes[0].Index == 0 {
+			up.Token0 = asset2UniAsset(pool.Assetvolumes[0].Asset)
+			up.Token1 = asset2UniAsset(pool.Assetvolumes[1].Asset)
+		} else {
+			up.Token0 = asset2UniAsset(pool.Assetvolumes[1].Asset)
+			up.Token1 = asset2UniAsset(pool.Assetvolumes[0].Asset)
+		}
+		up.ForeignName = up.Token0.Symbol + "-" + up.Token1.Symbol
+		pm[pool.Address] = up
+	}
+
+	log.Infof("found %v subscribable pools.", len(pm))
+	return pm, err
 }

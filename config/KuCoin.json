@@ -277,8 +277,8 @@
             "Ignore": false
         },
         {
-            "Symbol": "BNB",
-            "ForeignName": "BNB-KCS",
+            "Symbol": "BNC",
+            "ForeignName": "BNC-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
         },
@@ -805,6 +805,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "GMX",
+            "ForeignName": "GMX-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "GRT",
             "ForeignName": "GRT-USDT",
             "Exchange": "KuCoin",
@@ -866,13 +872,7 @@
         },
         {
             "Symbol": "KNC",
-            "ForeignName": "KNC-ETH",
-            "Exchange": "KuCoin",
-            "Ignore": false
-        },
-        {
-            "Symbol": "KNC",
-            "ForeignName": "KNC-BTC",
+            "ForeignName": "KNC-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
         },
@@ -1207,6 +1207,18 @@
             "Ignore": false
         },
         {
+            "Symbol": "PAXG",
+            "ForeignName": "PAXGUSDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PEPE",
+            "ForeignName": "PEPEUSDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "PHA",
             "ForeignName": "PHA-USDT",
             "Exchange": "KuCoin",
@@ -1341,6 +1353,12 @@
         {
             "Symbol": "SPA",
             "ForeignName": "SPA-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "STG",
+            "ForeignName": "STG-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
         },
@@ -1509,6 +1527,12 @@
         {
             "Symbol": "USDT",
             "ForeignName": "USDT-TUSD",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDP",
+            "ForeignName": "USDP-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
         },

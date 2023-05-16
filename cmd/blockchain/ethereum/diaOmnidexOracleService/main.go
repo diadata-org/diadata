@@ -2,11 +2,10 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math/big"
-	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -18,6 +17,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
+	gql "github.com/machinebox/graphql"
 )
 
 func main() {
@@ -112,19 +112,31 @@ func main() {
 }
 
 func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string) (float64, error) {
+	// Empty quotation for our request
+	var rawQ *models.Quotation
+	rawQ = new(models.Quotation)
+	var err error
 
 	// Get quotation for token and update Oracle
-	rawQ, err := getAssetQuotationFromDia(blockchain, address)
+	price, symbol, err := getGraphqlAssetQuotationFromDia(blockchain, address, 120)
 	if err != nil {
 		log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
 		return oldPrice, err
 	}
-	rawQ.Name = rawQ.Symbol
+	rawQ.Symbol = symbol
+	rawQ.Name = symbol
+	rawQ.Price = price
 
 	// Check for deviation
 	newPrice := rawQ.Price
 
-	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
+	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) ||  
+     (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
+     	 // Check for "too steep" update
+     	 if oldPrice != 0 && (newPrice > (oldPrice * 2)) || (newPrice < (oldPrice * 0.5)) {
+					log.Println("New price %d out of bounds comparted to old price %d!", newPrice, oldPrice)
+					return oldPrice, nil
+			 }
 		log.Println("Entering deviation based update zone")
 		err = updateQuotation(rawQ, auth, contract, conn)
 		if err != nil {
@@ -209,24 +221,43 @@ func updateOracle(
 	return nil
 }
 
-func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, error) {
-	response, err := http.Get("https://rest.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
-	if err != nil {
-		return nil, err
+func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int) (float64, string, error) {
+	currentTime := time.Now()
+	starttime := currentTime.Add(time.Duration(-windowSize * 2) * time.Second)
+	type Response struct {
+		GetChart []struct {
+			Name   string    `json:"Name"`
+			Symbol string    `json:"Symbol"`
+			Time   time.Time `json:"Time"`
+			Value  float64   `json:"Value"`
+		} `json:"GetChart"`
 	}
+	client := gql.NewClient("https://api.diadata.org/graphql/query")
+	req := gql.NewRequest(`
+    query  {
+		 GetChart(
+		 	filter: "vwapir", 
+			Symbol:"Asset",
+			BlockDurationSeconds: ` + strconv.Itoa(windowSize) + `, 
+			BlockShiftSeconds: ` + strconv.Itoa(windowSize) + `,
+			StartTime: ` + strconv.FormatInt(starttime.Unix(), 10) + `, 
+			EndTime: ` + strconv.FormatInt(currentTime.Unix(), 10) + `, 
+			Address: "` + address + `", 
+			BlockChain: "` + blockchain + `") {
+				Name
+				Symbol
+				Time
+				Value
+	  	}
+		}`)
 
-	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return nil, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	ctx := context.Background()
+	var r Response
+	if err := client.Run(ctx, req, &r); err != nil {
+		return 0.0, "", err
 	}
-	contents, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
+	if len(r.GetChart) == 0 {
+		return 0.0, "", errors.New("no results")
 	}
-	var quotation models.Quotation
-	err = quotation.UnmarshalBinary(contents)
-	if err != nil {
-		return nil, err
-	}
-	return &quotation, nil
+	return r.GetChart[len(r.GetChart)-1].Value, r.GetChart[len(r.GetChart)-1].Symbol, nil
 }

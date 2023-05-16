@@ -307,6 +307,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "GMX",
+            "ForeignName": "GMXUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "GRT",
             "ForeignName": "GRTUSDT",
             "Exchange": "ByBit",
@@ -451,6 +457,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "RDNT",
+            "ForeignName": "RDNTUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "REN",
             "ForeignName": "RENUSDT",
             "Exchange": "ByBit",
@@ -523,6 +535,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "STG",
+            "ForeignName": "STGUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "STORJ",
             "ForeignName": "STORJUSDT",
             "Exchange": "ByBit",
@@ -561,6 +579,12 @@
         {
             "Symbol": "UNI",
             "ForeignName": "UNIUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDCUSDT",
             "Exchange": "ByBit",
             "Ignore": false
         },

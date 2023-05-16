@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "Huobi",
+      "ForeignName": "AAVEUSDT",
+      "Ignore": false,
+      "Symbol": "AAVE"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "ANKRUSDT",
       "Ignore": false,
       "Symbol": "ANKR"
@@ -44,6 +50,48 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "ATOMUSDT",
+      "Ignore": false,
+      "Symbol": "ATOM"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "GMXUSDT",
+      "Ignore": false,
+      "Symbol": "GMX"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "RDNTUSDT",
+      "Ignore": false,
+      "Symbol": "RDNT"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "KNCUSDT",
+      "Ignore": false,
+      "Symbol": "KNC"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "CVXUSDT",
+      "Ignore": false,
+      "Symbol": "CVX"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "BALUSDT",
+      "Ignore": false,
+      "Symbol": "BAL"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "STGUSDT",
+      "Ignore": false,
+      "Symbol": "STG"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "SPAUSDT",
       "Ignore": false,
       "Symbol": "SPA"
@@ -83,6 +131,12 @@
       "ForeignName": "FUSEUSDT",
       "Ignore": false,
       "Symbol": "FUSE"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "GRAILUSDT",
+      "Ignore": false,
+      "Symbol": "GRAIL"
     },
     {
       "Exchange": "Huobi",
@@ -338,6 +392,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "PEPEUSDT",
+      "Ignore": false,
+      "Symbol": "PEPE"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "QTUMBTC",
       "Ignore": false,
       "Symbol": "QTUM"
@@ -398,9 +458,21 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "USDCUSDT",
+      "Ignore": false,
+      "Symbol": "USDC"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "WANBTC",
       "Ignore": false,
       "Symbol": "WAN"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "XAUTUSDT",
+      "Ignore": false,
+      "Symbol": "XAUT"
     },
     {
       "Exchange": "Huobi",

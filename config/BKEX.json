@@ -49,6 +49,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "BFR",
+      "ForeignName": "BFR_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
       "Symbol": "BNB",
       "ForeignName": "BNB_USDT",
       "Exchange": "BKEX",
@@ -129,6 +135,12 @@
     {
       "Symbol": "CRO",
       "ForeignName": "CRO_USDT",
+      "Exchange": "BKEX",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CVX",
+      "ForeignName": "CVX_USDT",
       "Exchange": "BKEX",
       "Ignore": false
     },
@@ -229,170 +241,26 @@
       "Ignore": false
     },
     {
-      "Symbol": "KSM",
-      "ForeignName": "KSM_USDT",
+      "Symbol": "GMD",
+      "ForeignName": "GMD_USDT",
       "Exchange": "BKEX",
       "Ignore": false
     },
     {
-      "Symbol": "LDO",
-      "ForeignName": "LDO_USDT",
+      "Symbol": "GMX",
+      "ForeignName": "GMX_USDT",
       "Exchange": "BKEX",
       "Ignore": false
     },
     {
-      "Symbol": "LINK",
-      "ForeignName": "LINK_USDT",
+      "Symbol": "GNS",
+      "ForeignName": "GNS_USDT",
       "Exchange": "BKEX",
       "Ignore": false
     },
     {
-      "Symbol": "MATIC",
-      "ForeignName": "MATIC_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "METIS",
-      "ForeignName": "METIS_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "MOVR",
-      "ForeignName": "MOVR_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "NEAR",
-      "ForeignName": "NEAR_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "NEAR",
-      "ForeignName": "NEAR_USDC",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "QNT",
-      "ForeignName": "QNT_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "RAY",
-      "ForeignName": "RAY_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "SAMO",
-      "ForeignName": "SAMO_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "SAND",
-      "ForeignName": "SAND_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "SDN",
-      "ForeignName": "SDN_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "SHIB",
-      "ForeignName": "SHIB_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "SOL",
-      "ForeignName": "SOL_USDC",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "SOL",
-      "ForeignName": "SOL_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "SPA",
-      "ForeignName": "SPA_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "SPELL",
-      "ForeignName": "SPELL_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "SUSHI",
-      "ForeignName": "SUSHI_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "TLOS",
-      "ForeignName": "TLOS_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "TOMB",
-      "ForeignName": "TOMB_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "TRX",
-      "ForeignName": "TRX_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "UNI",
-      "ForeignName": "UNI_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "WBTC",
-      "ForeignName": "WBTC_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "XLM",
-      "ForeignName": "XLM_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "XMR",
-      "ForeignName": "XMR_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "XRP",
-      "ForeignName": "XRP_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
-      "Symbol": "YFI",
-      "ForeignName": "YFI_USDT",
+      "Symbol": "GRAIL",
+      "ForeignName": "GRAIL_USDT",
       "Exchange": "BKEX",
       "Ignore": false
     }

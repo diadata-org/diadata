@@ -1,6 +1,12 @@
 {
   "Tokens": [
     {
+      "Symbol": "AAVE",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9"
+    },
+    {
       "Symbol": "AKRO",
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",
@@ -17,6 +23,12 @@
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",
       "Address": "0xa117000000f279D81A1D3cc75430fAA017FA5A2e"
+    },
+    {
+      "Symbol": "ATOM",
+      "Exchange": "Huobi",
+      "Blockchain": "Cosmos",
+      "Address": "0x0000000000000000000000000000000000000000"
     },
     {
       "Symbol": "AVAX",
@@ -43,6 +55,12 @@
       "Address": "0x8BEc47865aDe3B172A928df8f990Bc7f2A3b9f79"
     },
     {
+      "Symbol": "BAL",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0xba100000625a3754423978a60c9317c58a424e3D"
+    },
+    {
       "Symbol": "BTG",
       "Exchange": "Huobi",
       "Blockchain": "BitcoinGold",
@@ -61,6 +79,12 @@
       "Address": "0xD533a949740bb3306d119CC777fa900bA034cd52"
     },
     {
+      "Symbol": "CVX",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B"
+    },
+    {
       "Symbol": "DOGE",
       "Exchange": "Huobi",
       "Blockchain": "Dogechain",
@@ -77,6 +101,12 @@
       "Exchange": "Huobi",
       "Blockchain": "Evmos",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "GMX",
+      "Exchange": "Huobi",
+      "Blockchain": "Arbitrum",
+      "Address": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"
     },
     {
       "Symbol": "VLX",
@@ -103,10 +133,22 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "GRAIL",
+      "Exchange": "Huobi",
+      "Blockchain": "Arbitrum",
+      "Address": "0x3d9907F9a368ad0a51Be60f7Da3b97cf940982D8"
+    },
+    {
       "Symbol": "GLM",
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",
       "Address": "0x7DD9c5Cba05E151C895FDe1CF355C9A1D5DA6429"
+    },
+    {
+      "Symbol": "KNC",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0xdeFA4e8a7bcBA345F687a2f1456F5Edd9CE97202"
     },
     {
       "Symbol": "KSM",
@@ -125,6 +167,18 @@
       "Exchange": "Huobi",
       "Blockchain": "Terra",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "PEPE",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
+    },
+    {
+      "Symbol": "RDNT",
+      "Exchange": "Huobi",
+      "Blockchain": "Arbitrum",
+      "Address": "0x0C4681e6C0235179ec3D4F4fc4DF3d14FDD96017"
     },
     {
       "Symbol": "SDN",
@@ -157,6 +211,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "STG",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6"
+    },
+    {
       "Symbol": "TLOS",
       "Exchange": "Huobi",
       "Blockchain": "Telos",
@@ -167,6 +227,12 @@
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",
       "Address": "0x0000000000085d4780B73119b644AE5ecd22b376"
+    },
+    {
+      "Symbol": "USDC",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
     },
     {
       "Symbol": "USDT",
@@ -185,6 +251,12 @@
       "Exchange": "Huobi",
       "Blockchain": "Wanchain",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "XAUT",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0x68749665FF8D2d112Fa859AA293F07A622782F38"
     },
     {
       "Symbol": "YFI",

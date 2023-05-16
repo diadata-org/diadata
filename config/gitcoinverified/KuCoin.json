@@ -91,6 +91,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "BNC",
+            "Exchange": "KuCoin",
+            "Blockchain": "Bifrost",
+            "Address": "Token:BNC"
+        },
+        {
             "Symbol": "BOLT",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
@@ -313,6 +319,12 @@
             "Address": "0xA0008F510fE9eE696E7E320C9e5cbf61E27791Ee"
         },
         {
+            "Symbol": "GMX",
+            "Exchange": "KuCoin",
+            "Blockchain": "Arbitrum",
+            "Address": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"
+        },
+        {
             "Symbol": "KAT",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
@@ -323,6 +335,12 @@
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
             "Address": "0x4CC19356f2D37338b9802aa8E8fc58B0373296E7"
+        },
+        {
+            "Symbol": "KNC",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xdeFA4e8a7bcBA345F687a2f1456F5Edd9CE97202"
         },
         {
             "Symbol": "KSM",
@@ -461,6 +479,18 @@
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
             "Address": "0x0258F474786DdFd37ABCE6df6BBb1Dd5dfC4434a"
+        },
+        {
+            "Symbol": "PAXG",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x45804880De22913dAFE09f4980848ECE6EcbAf78"
+        },
+        {
+            "Symbol": "PEPE",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
         },
         {
             "Symbol": "PHA",
@@ -607,6 +637,12 @@
             "Address": "0x9B02dD390a603Add5c07f9fd9175b7DABE8D63B7"
         },
         {
+            "Symbol": "STG",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6"
+        },
+        {
             "Symbol": "STRONG",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
@@ -701,6 +737,12 @@
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
             "Address": "0x8806926Ab68EB5a7b909DcAf6FdBe5d93271D6e2"
+        },
+        {
+            "Symbol": "USDP",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x8E870D67F660D95d5be530380D0eC0bd388289E1"
         },
         {
             "Symbol": "UST",

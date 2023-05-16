@@ -36,10 +36,10 @@ func init() {
 
 var (
 	stablecoins = map[string]interface{}{
-		"USDC": "",
 		"USDT": "",
 		"TUSD": "",
-		"DAI":  "",
+		// "DAI":  "",
+		// "USDC": "",
 		"PAX":  "",
 		"BUSD": "",
 	}
@@ -339,7 +339,7 @@ func buildBridge(t dia.Trade) dia.Asset {
 			Blockchain: dia.ETHEREUM,
 		}
 	}
-	if basetoken.Blockchain == dia.FANTOM && (t.Source == dia.SpookyswapExchange || t.Source == dia.SpiritswapExchange || t.Source == dia.BeetsExchange) {
+	if basetoken.Blockchain == dia.FANTOM && (t.Source == dia.SpookyswapExchange || t.Source == dia.SpiritswapExchange || t.Source == dia.BeetsExchange || t.Source == dia.SushiSwapExchangeFantom) {
 		if basetoken.Address == "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83" {
 			basetoken = dia.Asset{
 				Symbol:     "FTM",
@@ -371,11 +371,22 @@ func buildBridge(t dia.Trade) dia.Asset {
 			}
 		}
 	}
-	if t.Source == dia.StellaswapExchange && basetoken.Blockchain == dia.MOONBEAM && basetoken.Address == common.HexToAddress("0xAcc15dC74880C9944775448304B263D191c6077F").Hex() {
-		basetoken = dia.Asset{
-			Symbol:     "GLMR",
-			Address:    "0x0000000000000000000000000000000000000000",
-			Blockchain: dia.MOONBEAM,
+	if t.Source == dia.StellaswapExchange && basetoken.Blockchain == dia.MOONBEAM {
+		if basetoken.Address == common.HexToAddress("0xAcc15dC74880C9944775448304B263D191c6077F").Hex() {
+			basetoken = dia.Asset{
+				Symbol:     "GLMR",
+				Address:    "0x0000000000000000000000000000000000000000",
+				Blockchain: dia.MOONBEAM,
+			}
+		}
+	}
+	if t.Source == dia.CurveFIExchangeMoonbeam && basetoken.Blockchain == dia.MOONBEAM {
+		if basetoken.Address == common.HexToAddress("0xFFFFFFfFea09FB06d082fd1275CD48b191cbCD1d").Hex() {
+			basetoken = dia.Asset{
+				Symbol:     "USDT",
+				Address:    "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+				Blockchain: dia.ETHEREUM,
+			}
 		}
 	}
 	if (t.Source == dia.UniswapExchangeV3Polygon || t.Source == dia.QuickswapExchange || t.Source == dia.SushiSwapExchangePolygon || t.Source == dia.DfynNetwork) && basetoken.Blockchain == dia.POLYGON {
@@ -428,7 +439,7 @@ func buildBridge(t dia.Trade) dia.Asset {
 			}
 		}
 	}
-	if basetoken.Blockchain == dia.ARBITRUM && t.Source == dia.UniswapExchangeV3Arbitrum {
+	if basetoken.Blockchain == dia.ARBITRUM && (t.Source == dia.UniswapExchangeV3Arbitrum || t.Source == dia.SushiSwapExchangeArbitrum || t.Source == dia.CamelotExchange) {
 		if basetoken.Address == common.HexToAddress("0x82aF49447D8a07e3bd95BD0d56f35241523fBab1").Hex() {
 			basetoken = dia.Asset{
 				Symbol:     "ETH",

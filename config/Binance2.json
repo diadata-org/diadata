@@ -26,6 +26,12 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "ATOMUSDT",
+            "Ignore": false,
+            "Symbol": "ATOM"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "AVAXBUSD",
             "Ignore": false,
             "Symbol": "AVAX"
@@ -35,6 +41,18 @@
             "ForeignName": "BANDUSDT",
             "Ignore": false,
             "Symbol": "BAND"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "CVXUSDT",
+            "Ignore": false,
+            "Symbol": "CVX"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "CVXBUSD",
+            "Ignore": false,
+            "Symbol": "CVX"
         },
         {
             "Exchange": "Binance",
@@ -56,9 +74,93 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "GMXUSDT",
+            "Ignore": false,
+            "Symbol": "GMX"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "GNSUSDT",
+            "Ignore": false,
+            "Symbol": "GNS"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "JOEUSDT",
+            "Ignore": false,
+            "Symbol": "JOE"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "JOEBUSD",
+            "Ignore": false,
+            "Symbol": "JOE"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "KNCUSDT",
+            "Ignore": false,
+            "Symbol": "KNC"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "KNCBUSD",
+            "Ignore": false,
+            "Symbol": "KNC"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "MATICUSDT",
             "Ignore": false,
             "Symbol": "MATIC"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "PAXGBUSD",
+            "Ignore": false,
+            "Symbol": "PAXG"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "PAXGBTC",
+            "Ignore": false,
+            "Symbol": "PAXG"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "PAXGUSDT",
+            "Ignore": false,
+            "Symbol": "PAXG"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "PEPEUSDT",
+            "Ignore": false,
+            "Symbol": "PEPE"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "RDNTUSDT",
+            "Ignore": false,
+            "Symbol": "RDNT"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "SPELLUSDT",
+            "Ignore": false,
+            "Symbol": "SPELL"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "STGUSDT",
+            "Ignore": false,
+            "Symbol": "STG"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "STGBUSD",
+            "Ignore": false,
+            "Symbol": "STG"
         },
         {
             "Exchange": "Binance",
@@ -68,9 +170,33 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "SYNUSDT",
+            "Ignore": false,
+            "Symbol": "SYN"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "SYNBTC",
+            "Ignore": false,
+            "Symbol": "SYN"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "UNIUSDT",
             "Ignore": false,
             "Symbol": "UNI"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "USDCUSDT",
+            "Ignore": false,
+            "Symbol": "USDC"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "USDPUSDT",
+            "Ignore": false,
+            "Symbol": "USDP"
         }
     ]
 }

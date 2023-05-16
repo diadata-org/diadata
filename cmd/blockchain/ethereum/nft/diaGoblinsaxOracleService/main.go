@@ -154,12 +154,17 @@ func periodicOracleUpdateHelper(oldFloor float64, deviationPermille int, update 
 	data.Address = address
 
 	// Get floor price
-	data.Floor = 0.0
+	floor, err := getFloor(blockchain, address)
+	if err != nil {
+		log.Errorf("Failed to retrieve %s floor price from DIA: %v", address, err)
+		return oldFloor, err
+	}
+	data.Floor = floor.Value
 
 	// Get MA of floor price
-	floorMA, err := getFloorMA(blockchain, address)
+	floorMA, err := getFloorMA(blockchain, address, 86400, 1800)
 	if err != nil {
-		log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
+		log.Errorf("Failed to retrieve %s floor MA data from DIA: %v", address, err)
 		return oldFloor, err
 	}
 	data.FloorMA = floorMA.Value
@@ -267,8 +272,8 @@ func getFloor(blockchain, address string) (Floor, error) {
 	return resp, err
 }
 
-func getFloorMA(blockchain, address string) (FloorMA, error) {
-	response, err := http.Get("https://api.diadata.org/v1/NFTFloorMA/" + blockchain + "/" + address + "?lookbackWindow=")
+func getFloorMA(blockchain, address string, lookbackSeconds, floorWindow uint64) (FloorMA, error) {
+	response, err := http.Get("https://api.diadata.org/v1/NFTFloorMA/" + blockchain + "/" + address + "?lookbackSeconds=" + strconv.FormatUint(lookbackSeconds, 10) + "&floorWindow=" + strconv.FormatUint(floorWindow, 10))
 	if err != nil {
 		return FloorMA{}, err
 	}

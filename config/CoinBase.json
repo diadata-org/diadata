@@ -2,6 +2,42 @@
   "Coins": [
     {
       "Exchange": "CoinBase",
+      "ForeignName": "ATOM-USD",
+      "Ignore": false,
+      "Symbol": "ATOM"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "AAVE-USD",
+      "Ignore": false,
+      "Symbol": "AAVE"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "STG-USD",
+      "Ignore": false,
+      "Symbol": "STG"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "SPELL-USD",
+      "Ignore": false,
+      "Symbol": "SPELL"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "SYN-USD",
+      "Ignore": false,
+      "Symbol": "SYN"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "KNC-USD",
+      "Ignore": false,
+      "Symbol": "KNC"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "ANKR-USD",
       "Ignore": false,
       "Symbol": "ANKR"

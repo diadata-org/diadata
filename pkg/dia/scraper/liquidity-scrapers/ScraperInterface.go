@@ -29,6 +29,14 @@ func NewLiquidityScraper(source string) LiquidityScraper {
 		return NewUniswapScraper(exchanges[dia.UniswapExchange])
 	case dia.SushiSwapExchange:
 		return NewUniswapScraper(exchanges[dia.SushiSwapExchange])
+	case dia.SushiSwapExchangePolygon:
+		return NewUniswapScraper(exchanges[dia.SushiSwapExchangePolygon])
+	case dia.SushiSwapExchangeFantom:
+		return NewUniswapScraper(exchanges[dia.SushiSwapExchangeFantom])
+	case dia.SushiSwapExchangeArbitrum:
+		return NewUniswapScraper(exchanges[dia.SushiSwapExchangeArbitrum])
+	case dia.CamelotExchange:
+		return NewUniswapScraper(exchanges[dia.CamelotExchange])
 	case dia.PanCakeSwap:
 		return NewUniswapScraper(exchanges[dia.PanCakeSwap])
 	case dia.DfynNetwork:
@@ -47,10 +55,6 @@ func NewLiquidityScraper(source string) LiquidityScraper {
 		return NewUniswapScraper(exchanges[dia.TrisolarisExchange])
 	case dia.NetswapExchange:
 		return NewUniswapScraper(exchanges[dia.NetswapExchange])
-	case dia.SushiSwapExchangePolygon:
-		return NewUniswapScraper(exchanges[dia.SushiSwapExchangePolygon])
-	case dia.SushiSwapExchangeFantom:
-		return NewUniswapScraper(exchanges[dia.SushiSwapExchangeFantom])
 	case dia.HuckleberryExchange:
 		return NewUniswapScraper(exchanges[dia.HuckleberryExchange])
 	case dia.TraderJoeExchange:
@@ -79,14 +83,18 @@ func NewLiquidityScraper(source string) LiquidityScraper {
 		return NewCurveFIScraper(exchanges[dia.CurveFIExchangeFantom])
 	case dia.CurveFIExchangeMoonbeam:
 		return NewCurveFIScraper(exchanges[dia.CurveFIExchangeMoonbeam])
+	case dia.CurveFIExchangeArbitrum:
+		return NewCurveFIScraper(exchanges[dia.CurveFIExchangeArbitrum])
 	case dia.BalancerV2Exchange:
 		return NewBalancerV2Scraper(exchanges[dia.BalancerV2Exchange])
-	case dia.PlatypusExchange:
-		return NewPlatypusScraper(exchanges[dia.PlatypusExchange])
-	case dia.BalancerV2ExchangePolygon:
-		return NewBalancerV2Scraper(exchanges[dia.BalancerV2ExchangePolygon])
+	case dia.BalancerV2ExchangeArbitrum:
+		return NewBalancerV2Scraper(exchanges[dia.BalancerV2ExchangeArbitrum])
 	case dia.BeetsExchange:
 		return NewBalancerV2Scraper(exchanges[dia.BeetsExchange])
+	case dia.BalancerV2ExchangePolygon:
+		return NewBalancerV2Scraper(exchanges[dia.BalancerV2ExchangePolygon])
+	case dia.PlatypusExchange:
+		return NewPlatypusScraper(exchanges[dia.PlatypusExchange])
 	case dia.UniswapExchangeV3:
 		return NewUniswapV3Scraper(exchanges[dia.UniswapExchangeV3])
 	case dia.UniswapExchangeV3Polygon:

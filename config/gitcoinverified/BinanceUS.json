@@ -55,6 +55,12 @@
             "Address": "0x0b38210ea11411557c13457D4dA7dC6ea731B88a"
         },
         {
+            "Symbol": "ATOM",
+            "Exchange": "BinanceUS",
+            "Blockchain": "Cosmos",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "AUDIO",
             "Exchange": "BinanceUS",
             "Blockchain": "Ethereum",

@@ -1,6 +1,36 @@
 {
     "Coins": [
         {
+            "Symbol": "ATOM",
+            "ForeignName": "ATOM/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GMX",
+            "ForeignName": "GMX/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LKR",
+            "ForeignName": "LKR/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CVX",
+            "ForeignName": "CVX/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "RDNT",
+            "ForeignName": "RDNT/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
             "Symbol": "FUSE",
             "ForeignName": "FUSE/USDT",
             "Exchange": "Bitmax",

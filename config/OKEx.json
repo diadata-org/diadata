@@ -2,6 +2,72 @@
   "Coins": [
     {
       "Exchange": "OKEx",
+      "ForeignName": "AAVE-USDT",
+      "Ignore": false,
+      "Symbol": "AAVE"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "ATOM-USDT",
+      "Ignore": false,
+      "Symbol": "ATOM"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "ATOM-USDC",
+      "Ignore": false,
+      "Symbol": "ATOM"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "GMX-USDT",
+      "Ignore": false,
+      "Symbol": "GMX"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "GMX-USDC",
+      "Ignore": false,
+      "Symbol": "GMX"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "BAL-USDT",
+      "Ignore": false,
+      "Symbol": "BAL"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "SPELL-USDT",
+      "Ignore": false,
+      "Symbol": "SPELL"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "JOE-USDT",
+      "Ignore": false,
+      "Symbol": "JOE"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "KNC-USDT",
+      "Ignore": false,
+      "Symbol": "KNC"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "KNC-USDC",
+      "Ignore": false,
+      "Symbol": "KNC"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "PEPE-USDT",
+      "Ignore": false,
+      "Symbol": "PEPE"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "RAY-USDT",
       "Ignore": false,
       "Symbol": "RAY"

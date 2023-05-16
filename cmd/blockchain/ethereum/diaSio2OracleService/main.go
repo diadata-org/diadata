@@ -45,8 +45,8 @@ func main() {
 		log.Fatalf("Failed to parse deviationPermille: %v", err)
 	}
 
-	var nnc big.Int
-	nnc.SetUint64(29865)
+	//var nnc big.Int
+	//nnc.SetUint64(29865)
 	addresses := []string{
 		"", //nASTR
 		"0x0000000000000000000000000000000000000000", //ASTR
@@ -109,7 +109,7 @@ func main() {
 					blockchain := blockchains[i]
 					oldPrice := oldPrices[i]
 					log.Println("old price", oldPrice)
-					oldPrice, err = periodicOracleUpdateHelper(oldPrice, deviationPermille, auth, contract, conn, blockchain, address, &nnc)
+					oldPrice, err = periodicOracleUpdateHelper(oldPrice, deviationPermille, auth, contract, conn, blockchain, address)
 					oldPrices[i] = oldPrice
 					if err != nil {
 						log.Println(err)
@@ -122,7 +122,7 @@ func main() {
 	select {}
 }
 
-func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string, nnc *big.Int) (float64, error) {
+func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string) (float64, error) {
 
 	newPrice := 0.0
 	var (
@@ -162,9 +162,20 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 		newPrice = rawPrice
 	}
 
+	// stablecoin 2mins period
+	if address == "0x6B175474E89094C44Da98b954EedeAC495271d0F" {
+		log.Printf("Entered graphql mode")
+		rawPrice, _, err := getGraphqlAssetQuotationFromDia(blockchain, address, 120)
+		if err != nil {
+			log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
+			return oldPrice, err
+		}
+		newPrice = rawPrice
+	}
+
 	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
 		// USDC and BUSD emergency brake
-		if address == "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" || address == "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56" {
+		if address == "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56" {
 			log.Printf("brake check new price: %v\n", newPrice)
 			if newPrice < 0.99 || newPrice > 1.01 {
 				log.Printf("Error! Price read from API for asset %s is: %v", address, newPrice)
@@ -173,7 +184,7 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 		}
 		log.Println("Entering deviation based update zone")
 		rawQ.Price = newPrice
-		err = updateQuotation(rawQ, auth, contract, conn, nnc)
+		err = updateQuotation(rawQ, auth, contract, conn)
 		if err != nil {
 			log.Fatalf("Failed to update DIA Oracle: %v", err)
 			return oldPrice, err
@@ -207,16 +218,15 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 	return nil
 }
 
-func updateQuotation(quotation *models.Quotation, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, nnc *big.Int) error {
+func updateQuotation(quotation *models.Quotation, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client) error {
 	symbol := quotation.Symbol + "/USD"
 	price := quotation.Price
 	timestamp := time.Now().Unix()
-	err := updateOracle(conn, contract, auth, symbol, int64(price*100000000), timestamp, nnc)
+	err := updateOracle(conn, contract, auth, symbol, int64(price*100000000), timestamp)
 	if err != nil {
 		log.Fatalf("Failed to update Oracle: %v", err)
 		return err
 	}
-	nnc.Add(nnc, big.NewInt(1))
 
 	return nil
 }
@@ -227,8 +237,7 @@ func updateOracle(
 	auth *bind.TransactOpts,
 	key string,
 	value int64,
-	timestamp int64,
-	nnc *big.Int) error {
+	timestamp int64) error {
 
 	gasPrice, err := getGasSuggestion()
 	if err != nil {
@@ -243,7 +252,6 @@ func updateOracle(
 	tx, err := contract.SetValue(&bind.TransactOpts{
 		From:     auth.From,
 		Signer:   auth.Signer,
-		Nonce:    nnc,
 		GasLimit: 1000725,
 		GasPrice: gasPrice,
 	}, key, big.NewInt(value), big.NewInt(timestamp))
