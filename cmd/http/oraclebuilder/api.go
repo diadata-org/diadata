@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 
 	"strings"
 
@@ -71,6 +72,90 @@ func (ob *Env) Create(context *gin.Context) {
 		log.Errorln("Creating oracle: invalid signer", signer)
 		return
 	}
+
+	// validations
+	// check for  symbols
+
+	if symbols == "" {
+		context.JSON(http.StatusBadRequest, errors.New("no symbols"))
+		log.Errorln("Creating oracle: no symbols", symbols)
+		return
+
+	}
+	symbolsArray := strings.Split(symbols, ",")
+
+	if len(symbolsArray) > 10 {
+		context.JSON(http.StatusBadRequest, errors.New("max symbols exceed"))
+		log.Errorln("Creating oracle: max symbols exceed", symbols)
+		return
+
+	}
+
+	// check for duplicate symbol
+
+	if utils.CheckDuplicates(symbolsArray) {
+		context.JSON(http.StatusBadRequest, errors.New("duplicate symbols"))
+		log.Errorln("Creating oracle: duplicate symbols", symbols)
+		return
+	}
+
+	// check frequency limit
+
+	frequencyInt, err := strconv.Atoi(frequency)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, errors.New("invalid frequency"))
+		log.Errorln("Creating oracle: invalid frequency", err)
+		return
+
+	}
+
+	mandatoryFrequencyInt, err := strconv.Atoi(mandatoryFrequency)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, errors.New("invalid mandatoryFrequencyInt"))
+		log.Errorln("Creating oracle: invalid mandatoryFrequencyInt", err)
+		return
+
+	}
+
+	if frequencyInt != 0 || mandatoryFrequencyInt == 0 {
+		if frequencyInt < 120 || frequencyInt > 2630000 {
+			context.JSON(http.StatusBadRequest, errors.New("invalid frequency, out of range"))
+			log.Errorln("Creating oracle: invalid frequency, out of range", frequencyInt)
+			return
+		}
+	}
+
+	if frequencyInt == 0 || mandatoryFrequencyInt > 0 {
+		if mandatoryFrequencyInt < 120 || mandatoryFrequencyInt > 2630000 {
+			context.JSON(http.StatusBadRequest, errors.New("invalid mandatoryFrequencyInt, out of range"))
+			log.Errorln("Creating oracle: invalid mandatoryFrequencyInt, out of range", mandatoryFrequencyInt)
+			return
+		}
+
+	}
+
+	deviationPermilleFloat, err := strconv.ParseFloat(deviationPermille, 64)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, errors.New("invalid deviationPermilleInt"))
+		log.Errorln("Creating oracle: invalid deviationPermilleInt", err)
+		return
+
+	}
+
+	if deviationPermilleFloat > 0 {
+		if deviationPermilleFloat < 0.1 && deviationPermilleFloat > 10000 {
+			if err != nil {
+				context.JSON(http.StatusBadRequest, errors.New("invalid deviationPermille"))
+				log.Errorln("Creating oracle: invalid deviationPermille", err)
+				return
+			}
+
+		}
+
+	}
+
+	//
+	deviationPermilleFloat = deviationPermilleFloat * 10
 
 	log.Infoln("feederId from creator", feederID)
 
