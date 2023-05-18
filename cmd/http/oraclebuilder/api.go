@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -212,6 +213,8 @@ func (ob *Env) Create(context *gin.Context) {
 	}
 	log.Infoln("public key", keypair.GetPublickey())
 	address = keypair.GetPublickey()
+
+	deviationPermille = fmt.Sprintf("%f", deviationPermilleFloat)
 
 	if !isUpdate {
 		err = ob.PodHelper.CreateOracleFeeder(feederID, address, oracleaddress, chainID, symbols, blockchainnode, frequency, sleepSeconds, deviationPermille, mandatoryFrequency)
