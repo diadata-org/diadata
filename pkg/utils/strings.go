@@ -70,3 +70,14 @@ func MinString(sl []string) (string, int64) {
 	}
 	return min, index
 }
+
+func CheckDuplicates(arr []string) bool {
+	encountered := map[string]bool{}
+	for i := 0; i < len(arr); i++ {
+		if encountered[arr[i]] {
+			return true
+		}
+		encountered[arr[i]] = true
+	}
+	return false
+}
