@@ -186,7 +186,11 @@ func (kh *PodHelper) DeleteOracleFeeder(ctx context.Context, feederID string) er
 			log.Infof("Pod %s not found, no need to delete\n", feederID)
 			return nil
 		} else {
-			err = kh.k8sclient.CoreV1().Pods(kh.NameSpace).Delete(ctx, feederID, metav1.DeleteOptions{})
+			deletePolicy := metav1.DeletePropagationForeground
+
+			err = kh.k8sclient.CoreV1().Pods(kh.NameSpace).Delete(ctx, feederID, metav1.DeleteOptions{
+				PropagationPolicy: &deletePolicy,
+			})
 			if err != nil {
 				return err
 			}
