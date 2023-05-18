@@ -103,7 +103,7 @@ func (s *ZenlinkScraper) receive() {
 	for trade := range trades {
 		after := strings.Split(trade, "Trade:")[1]
 		fields := strings.Split(after, " ")
-		if len(fields) < 6 {
+		if len(fields) < 8 {
 			continue
 		}
 		FromAmount, err := strconv.ParseFloat(fields[3], 64)
@@ -120,12 +120,12 @@ func (s *ZenlinkScraper) receive() {
 		basetoken := dia.Asset{
 			Symbol:     fields[2],
 			Blockchain: dia.BIFROST,
-			Address:    fields[6],
+			Address:    fields[8],
 		}
 		quotetoken := dia.Asset{
 			Symbol:     fields[1],
 			Blockchain: dia.BIFROST,
-			Address:    fields[6],
+			Address:    fields[7],
 		}
 		trade := &dia.Trade{
 			Symbol:         fields[1],
