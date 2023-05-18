@@ -250,23 +250,27 @@ func (rdb *RelDB) GetOracleConfig(address string) (oracleconfig dia.OracleConfig
 }
 
 func (rdb *RelDB) ChangeOracleState(feederID string, active bool) (err error) {
+	currentTime := time.Now()
+
 	query := fmt.Sprintf(`
 	UPDATE %s 
-	SET active=$1
+	SET active=$1, lastupdate=$3
 	WHERE feeder_id=$2`, oracleconfigTable)
-	_, err = rdb.postgresClient.Exec(context.Background(), query, active, feederID)
+	_, err = rdb.postgresClient.Exec(context.Background(), query, active, feederID, currentTime)
 	if err != nil {
 		return
 	}
 
 	return
 }
+
 func (rdb *RelDB) DeleteOracle(feederID string) (err error) {
+	currentTime := time.Now()
 	query := fmt.Sprintf(`
 	UPDATE %s 
-	SET deleted=$1
+	SET deleted=$1,lastupdate=$3
 	WHERE feeder_id=$2`, oracleconfigTable)
-	_, err = rdb.postgresClient.Exec(context.Background(), query, true, feederID)
+	_, err = rdb.postgresClient.Exec(context.Background(), query, true, feederID, currentTime)
 	if err != nil {
 		return
 	}
