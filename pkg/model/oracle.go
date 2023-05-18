@@ -124,7 +124,8 @@ func (rdb *RelDB) GetTotalFeeder(owner string) (total int) {
 
 func (rdb *RelDB) GetAllFeeders() (oracleconfigs []dia.OracleConfig, err error) {
 	var (
-		rows pgx.Rows
+		rows           pgx.Rows
+		deviationFloat float64
 	)
 
 	query := fmt.Sprintf(`
@@ -148,6 +149,12 @@ func (rdb *RelDB) GetAllFeeders() (oracleconfigs []dia.OracleConfig, err error) 
 		}
 
 		oracleconfig.Symbols = strings.Split(symbols, ",")
+		deviationFloat, err = strconv.ParseFloat(oracleconfig.DeviationPermille, 64)
+		if err != nil {
+			log.Error(err)
+
+		}
+		oracleconfig.DeviationPermille = fmt.Sprintf("%.2f", deviationFloat/10)
 
 		oracleconfigs = append(oracleconfigs, oracleconfig)
 	}
@@ -182,7 +189,8 @@ func (rdb *RelDB) GetFeederResources() (addresses []string, err error) {
 
 func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleConfig, err error) {
 	var (
-		rows pgx.Rows
+		rows           pgx.Rows
+		deviationFloat float64
 	)
 
 	query := fmt.Sprintf(`
@@ -207,6 +215,13 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
 
 		oracleconfig.Symbols = strings.Split(symbols, ",")
 
+		deviationFloat, err = strconv.ParseFloat(oracleconfig.DeviationPermille, 64)
+		if err != nil {
+			log.Error(err)
+
+		}
+		oracleconfig.DeviationPermille = fmt.Sprintf("%.2f", deviationFloat/10)
+
 		oracleconfigs = append(oracleconfigs, oracleconfig)
 	}
 	return
@@ -214,7 +229,8 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
 
 func (rdb *RelDB) GetOracleConfig(address string) (oracleconfig dia.OracleConfig, err error) {
 	var (
-		symbols string
+		symbols        string
+		deviationFloat float64
 	)
 	query := fmt.Sprintf(`
 	SELECT address, feeder_id, owner,symbols, chainid, deviationpermille, sleepseconds,frequency, blockchainnode, mandatory_frequency
@@ -224,6 +240,13 @@ func (rdb *RelDB) GetOracleConfig(address string) (oracleconfig dia.OracleConfig
 	if err != nil {
 		return
 	}
+	deviationFloat, err = strconv.ParseFloat(oracleconfig.DeviationPermille, 64)
+	if err != nil {
+		log.Error(err)
+
+	}
+	oracleconfig.DeviationPermille = fmt.Sprintf("%.2f", deviationFloat/10)
+
 	oracleconfig.Symbols = strings.Split(symbols, " ")
 
 	return

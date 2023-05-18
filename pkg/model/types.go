@@ -111,7 +111,7 @@ type AssetQuotationFull struct {
 	VolumeYesterdayUSD float64   `json:"VolumeYesterdayUSD"`
 	Time               time.Time `json:"Time"`
 	Source             string    `json:"Source"`
-	Signature          string    `json:"Signature"`
+	Signature          string    `json:"Signature,omitempty"`
 }
 
 // MarshalBinary for quotations

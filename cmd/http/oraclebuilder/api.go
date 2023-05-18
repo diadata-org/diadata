@@ -194,11 +194,6 @@ func (ob *Env) Create(context *gin.Context) {
 		}
 		isUpdate = true
 
-		// if feederID {
-		// 	// TODO check if owner of feederid is correct
-
-		// }
-
 	}
 
 	item, err := ob.Keyring.Get(feederID)
@@ -214,7 +209,7 @@ func (ob *Env) Create(context *gin.Context) {
 	log.Infoln("public key", keypair.GetPublickey())
 	address = keypair.GetPublickey()
 
-	deviationPermille = fmt.Sprintf("%f", deviationPermilleFloat)
+	deviationPermille = fmt.Sprintf("%.2f", deviationPermilleFloat)
 
 	if !isUpdate {
 		err = ob.PodHelper.CreateOracleFeeder(feederID, address, oracleaddress, chainID, symbols, blockchainnode, frequency, sleepSeconds, deviationPermille, mandatoryFrequency)
