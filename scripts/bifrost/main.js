@@ -1,5 +1,6 @@
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const { options } = require('@bifrost-finance/api');
+const { default: BigNumber } = require('bignumber.js');
 
 async function main() {
   const wsProvider = new WsProvider('wss://bifrost-rpc.liebi.com/ws');
@@ -40,8 +41,7 @@ async function main() {
     }
     ).map((item) => {
       return item.pairAccount
-    }
-    )
+    })
     return result[0]
   }
 
@@ -62,7 +62,7 @@ async function main() {
         let from = getTokenByPair(from_native).token
         let to = getTokenByPair(to_native).token
         if (from == "vKSM" && to == "KSM" || from == "KSM" && to == "vKSM") {
-          let out = `${from}-${to} ${from} ${to} ${JSON.stringify(asset_balance[0])} ${JSON.stringify(asset_balance.pop())} ${header.number}-${phase.asApplyExtrinsic}`;
+          let out = `${from}-${to} ${from} ${to} ${BigNumber(asset_balance[0]).dividedBy(1_000_000_000_000)} ${BigNumber(asset_balance.pop()).dividedBy(1_000_000_000_000)} ${header.number}-${phase.asApplyExtrinsic}`;
           if (getPairAccount(from_native, to_native) != undefined) {
             out += ` ${getPairAccount(from_native, to_native)}`
           } else if (getPairAccount(to_native, from_native) != undefined) {
