@@ -149,12 +149,14 @@ func (rdb *RelDB) GetAllFeeders() (oracleconfigs []dia.OracleConfig, err error) 
 		}
 
 		oracleconfig.Symbols = strings.Split(symbols, ",")
-		deviationFloat, err = strconv.ParseFloat(oracleconfig.DeviationPermille, 64)
-		if err != nil {
-			log.Error(err)
+		if oracleconfig.DeviationPermille != "" {
+			deviationFloat, err = strconv.ParseFloat(oracleconfig.DeviationPermille, 64)
+			if err != nil {
+				log.Error(err)
 
+			}
+			oracleconfig.DeviationPermille = fmt.Sprintf("%.2f", deviationFloat/10)
 		}
-		oracleconfig.DeviationPermille = fmt.Sprintf("%.2f", deviationFloat/10)
 
 		oracleconfigs = append(oracleconfigs, oracleconfig)
 	}
@@ -215,12 +217,14 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
 
 		oracleconfig.Symbols = strings.Split(symbols, ",")
 
-		deviationFloat, err = strconv.ParseFloat(oracleconfig.DeviationPermille, 64)
-		if err != nil {
-			log.Error(err)
+		if oracleconfig.DeviationPermille != "" {
+			deviationFloat, err = strconv.ParseFloat(oracleconfig.DeviationPermille, 64)
+			if err != nil {
+				log.Error(err)
 
+			}
+			oracleconfig.DeviationPermille = fmt.Sprintf("%.2f", deviationFloat/10)
 		}
-		oracleconfig.DeviationPermille = fmt.Sprintf("%.2f", deviationFloat/10)
 
 		oracleconfigs = append(oracleconfigs, oracleconfig)
 	}
