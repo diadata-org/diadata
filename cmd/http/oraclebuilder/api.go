@@ -30,6 +30,12 @@ type Env struct {
 	Keyring   kr.Keyring
 }
 
+func handleError(context *gin.Context, status int, errorMsg, logMsg string, logArgs ...interface{}) {
+	context.JSON(status, errors.New(errorMsg))
+	log.Errorf(logMsg, logArgs...)
+	context.Abort() // Prevent further handlers from being called
+}
+
 // Create new oracle feeder if creator has resources
 func (ob *Env) Create(context *gin.Context) {
 
@@ -69,53 +75,39 @@ func (ob *Env) Create(context *gin.Context) {
 	log.Infoln("Creating oracle: signer", signer)
 
 	if signer.Hex() != creator {
-		context.JSON(http.StatusUnauthorized, errors.New("sign err"))
-		log.Errorln("Creating oracle: invalid signer", signer)
-		return
+		handleError(context, http.StatusUnauthorized, "sign err", "Creating oracle: invalid signer", signer)
 	}
 
 	// validations
 	// check for  symbols
 
 	if symbols == "" {
-		context.JSON(http.StatusBadRequest, errors.New("no symbols"))
-		log.Errorln("Creating oracle: no symbols", symbols)
-		return
+		handleError(context, http.StatusBadRequest, "no symbols", "Creating oracle: no symbols", symbols)
 
 	}
 	symbolsArray := strings.Split(symbols, ",")
 
 	if len(symbolsArray) > 10 {
-		context.JSON(http.StatusBadRequest, errors.New("max symbols exceed"))
-		log.Errorln("Creating oracle: max symbols exceed", symbols)
-		return
-
+		handleError(context, http.StatusBadRequest, "max symbols exceed", "Creating oracle: max symbols exceed", symbols)
 	}
 
 	// check for duplicate symbol
 
 	if utils.CheckDuplicates(symbolsArray) {
-		context.JSON(http.StatusBadRequest, errors.New("duplicate symbols"))
-		log.Errorln("Creating oracle: duplicate symbols", symbols)
-		return
+		handleError(context, http.StatusBadRequest, "duplicate symbols", "Creating oracle: duplicate symbols", symbols)
+
 	}
 
 	// check frequency limit
 
 	frequencyInt, err := strconv.Atoi(frequency)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, errors.New("invalid frequency"))
-		log.Errorln("Creating oracle: invalid frequency", err)
-		return
-
+		handleError(context, http.StatusBadRequest, "invalid frequency", "Creating oracle: invalid frequency", err)
 	}
 
 	mandatoryFrequencyInt, err := strconv.Atoi(mandatoryFrequency)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, errors.New("invalid mandatoryFrequencyInt"))
-		log.Errorln("Creating oracle: invalid mandatoryFrequencyInt", err)
-		return
-
+		handleError(context, http.StatusBadRequest, "invalid mandatoryFrequencyInt", "Creating oracle: invalid mandatoryFrequencyInt", err)
 	}
 
 	if frequencyInt != 0 || mandatoryFrequencyInt == 0 {
@@ -128,18 +120,14 @@ func (ob *Env) Create(context *gin.Context) {
 
 	if frequencyInt == 0 || mandatoryFrequencyInt > 0 {
 		if mandatoryFrequencyInt < 120 || mandatoryFrequencyInt > 2630000 {
-			context.JSON(http.StatusBadRequest, errors.New("invalid mandatoryFrequencyInt, out of range"))
-			log.Errorln("Creating oracle: invalid mandatoryFrequencyInt, out of range", mandatoryFrequencyInt)
-			return
+			handleError(context, http.StatusBadRequest, "invalid mandatoryFrequencyInt, out of range", "Creating oracle: invalid mandatoryFrequencyInt, out of range", err)
 		}
 
 	}
 
 	deviationPermilleFloat, err := strconv.ParseFloat(deviationPermille, 64)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, errors.New("invalid deviationPermilleInt"))
-		log.Errorln("Creating oracle: invalid deviationPermilleInt", err)
-		return
+		handleError(context, http.StatusBadRequest, "invalid deviationPermilleInt", "Creating oracle: invalid deviationPermilleInt", err)
 
 	}
 
@@ -212,7 +200,7 @@ func (ob *Env) Create(context *gin.Context) {
 	deviationPermille = fmt.Sprintf("%.2f", deviationPermilleFloat)
 
 	if !isUpdate {
-		err = ob.PodHelper.CreateOracleFeeder(feederID, address, oracleaddress, chainID, symbols, blockchainnode, frequency, sleepSeconds, deviationPermille, mandatoryFrequency)
+		err = ob.PodHelper.CreateOracleFeeder(context, feederID, address, oracleaddress, chainID, symbols, blockchainnode, frequency, sleepSeconds, deviationPermille, mandatoryFrequency)
 		if err != nil {
 			log.Errorln("error CreateOracleFeeder ", err)
 			context.JSON(http.StatusInternalServerError, errors.New("error creating oraclefeeder"))
@@ -236,7 +224,7 @@ func (ob *Env) Create(context *gin.Context) {
 			return
 		}
 
-		err = ob.PodHelper.RestartOracleFeeder(feederID, oracleconfig)
+		err = ob.PodHelper.RestartOracleFeeder(context, feederID, oracleconfig)
 		if err != nil {
 			log.Errorln("error RestartOracleFeeder ", err)
 			context.JSON(http.StatusInternalServerError, err)
@@ -348,7 +336,7 @@ func (ob *Env) Pause(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, err)
 		return
 	}
-	err = ob.PodHelper.DeleteOracleFeeder(oracleconfig.FeederID)
+	err = ob.PodHelper.DeleteOracleFeeder(context, oracleconfig.FeederID)
 	if err != nil {
 		log.Errorln("error DeleteOracleFeeder ", err)
 		context.JSON(http.StatusInternalServerError, err)
@@ -383,7 +371,7 @@ func (ob *Env) Delete(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, err)
 		return
 	}
-	err = ob.PodHelper.DeleteOracleFeeder(oracleconfig.FeederID)
+	err = ob.PodHelper.DeleteOracleFeeder(context, oracleconfig.FeederID)
 	if err != nil {
 		log.Errorln("error DeleteOracleFeeder ", err)
 		context.JSON(http.StatusInternalServerError, err)
@@ -424,7 +412,7 @@ func (ob *Env) Restart(context *gin.Context) {
 		return
 	}
 
-	err = ob.PodHelper.RestartOracleFeeder(oracleconfig.FeederID, oracleconfig)
+	err = ob.PodHelper.RestartOracleFeeder(context, oracleconfig.FeederID, oracleconfig)
 	if err != nil {
 		log.Errorln("error RestartOracleFeeder ", err)
 		context.JSON(http.StatusInternalServerError, err)
