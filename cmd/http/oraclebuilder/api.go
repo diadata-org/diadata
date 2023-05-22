@@ -69,6 +69,7 @@ func (ob *Env) Create(context *gin.Context) {
 	log.Infoln("Creating oracle: creator", creator)
 	log.Infoln("Creating oracle: oracleaddress", oracleaddress)
 	log.Infoln("Creating oracle: feederID", feederID)
+	log.Infoln("Creating oracle: deviationPermille", deviationPermille)
 
 	signer, _ := utils.GetSigner(chainID, creator, oracleaddress, "Verify its your address to call oracle builder", signedData)
 
