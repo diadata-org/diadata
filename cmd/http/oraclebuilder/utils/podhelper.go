@@ -106,19 +106,20 @@ func (kh *PodHelper) CreateOracleFeeder(ctx context.Context, feederID string, ow
 			},
 			ImagePullSecrets: []corev1.LocalObjectReference{imagepullrequest},
 			Affinity: &corev1.Affinity{
-				PodAffinity: &corev1.PodAffinity{
-					RequiredDuringSchedulingIgnoredDuringExecution: []corev1.PodAffinityTerm{
-						{
-							LabelSelector: &metav1.LabelSelector{
-								MatchExpressions: []metav1.LabelSelectorRequirement{
+				NodeAffinity: &corev1.NodeAffinity{
+					RequiredDuringSchedulingIgnoredDuringExecution: &corev1.NodeSelector{
+						NodeSelectorTerms: []corev1.NodeSelectorTerm{
+							{
+								MatchExpressions: []corev1.NodeSelectorRequirement{
 									{
 										Key:      "ibm-cloud.kubernetes.io/worker-pool-name",
-										Operator: metav1.LabelSelectorOpIn,
-										Values:   []string{"default"},
+										Operator: corev1.NodeSelectorOpIn,
+										Values: []string{
+											"default",
+										},
 									},
 								},
 							},
-							TopologyKey: "kubernetes.io/hostname",
 						},
 					},
 				},
