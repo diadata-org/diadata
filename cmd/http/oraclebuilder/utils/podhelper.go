@@ -118,6 +118,7 @@ func (kh *PodHelper) CreateOracleFeeder(ctx context.Context, feederID string, ow
 									},
 								},
 							},
+							TopologyKey: "kubernetes.io/hostname",
 						},
 					},
 				},
