@@ -55,10 +55,6 @@ func NewPodHelper(image, namespace string) *PodHelper {
 }
 
 func (kh *PodHelper) CreateOracleFeeder(ctx context.Context, feederID string, owner string, oracle string, chainID string, symbols, blockchainnode string, frequency, sleepSeconds, deviationPermille, mandatoryFrequency string) error {
-	fields := make(map[string]string)
-	fields["oracle"] = oracle
-	fields["chainID"] = chainID
-	fields["owner"] = owner
 
 	// -- oracle config
 	publickeyenv := corev1.EnvVar{Name: "ORACLE_PUBLICKEY", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: ".public", LocalObjectReference: corev1.LocalObjectReference{Name: feederID}}}}
@@ -90,8 +86,12 @@ func (kh *PodHelper) CreateOracleFeeder(ctx context.Context, feederID string, ow
 
 	pod := &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:   feederID,
-			Labels: fields,
+			Name: feederID,
+			Labels: map[string]string{
+				"oracle":  oracle,
+				"chainID": chainID,
+				"owner":   owner,
+			},
 		},
 		Spec: corev1.PodSpec{
 			Containers: []corev1.Container{
@@ -105,11 +105,29 @@ func (kh *PodHelper) CreateOracleFeeder(ctx context.Context, feederID string, ow
 				},
 			},
 			ImagePullSecrets: []corev1.LocalObjectReference{imagepullrequest},
+			Affinity: &corev1.Affinity{
+				PodAffinity: &corev1.PodAffinity{
+					RequiredDuringSchedulingIgnoredDuringExecution: []corev1.PodAffinityTerm{
+						{
+							LabelSelector: &metav1.LabelSelector{
+								MatchExpressions: []metav1.LabelSelectorRequirement{
+									{
+										Key:      "ibm-cloud.kubernetes.io/worker-pool-name",
+										Operator: metav1.LabelSelectorOpIn,
+										Values:   []string{"default"},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
 		},
 	}
 
 	result, err := kh.k8sclient.CoreV1().Pods(kh.NameSpace).Create(ctx, pod, metav1.CreateOptions{})
 	if err != nil {
+		log.Errorf("Failed to start pod %s: %v", feederID, err)
 		return err
 	}
 	log.Infof("Pod %s started\n", result.GetObjectMeta().GetName())

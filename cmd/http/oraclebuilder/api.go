@@ -160,7 +160,7 @@ func (ob *Env) Create(context *gin.Context) {
 			return
 		}
 
-		feederID = utils.GenerateAutoname("-")
+		feederID = "feeder-" + utils.GenerateAutoname("-")
 
 		err = ob.Keyring.Set(kr.Item{
 			Key: feederID,
