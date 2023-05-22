@@ -124,27 +124,28 @@ func (ob *Env) Create(context *gin.Context) {
 		}
 
 	}
+	if deviationPermille != "" {
 
-	deviationPermilleFloat, err := strconv.ParseFloat(deviationPermille, 64)
-	if err != nil {
-		handleError(context, http.StatusBadRequest, "invalid deviationPermilleInt", "Creating oracle: invalid deviationPermilleInt", err)
+		deviationPermilleFloat, err := strconv.ParseFloat(deviationPermille, 64)
+		if err != nil {
+			handleError(context, http.StatusBadRequest, "invalid deviationPermilleInt", "Creating oracle: invalid deviationPermilleInt", err)
 
-	}
+		}
 
-	if deviationPermilleFloat > 0 {
-		if deviationPermilleFloat < 0.1 && deviationPermilleFloat > 10000 {
-			if err != nil {
-				context.JSON(http.StatusBadRequest, errors.New("invalid deviationPermille"))
-				log.Errorln("Creating oracle: invalid deviationPermille", err)
-				return
+		if deviationPermilleFloat > 0 {
+			if deviationPermilleFloat < 0.1 && deviationPermilleFloat > 10000 {
+				if err != nil {
+					context.JSON(http.StatusBadRequest, errors.New("invalid deviationPermille"))
+					log.Errorln("Creating oracle: invalid deviationPermille", err)
+					return
+				}
+
 			}
 
 		}
 
+		deviationPermilleFloat = deviationPermilleFloat * 10
 	}
-
-	//
-	deviationPermilleFloat = deviationPermilleFloat * 10
 
 	log.Infoln("feederId from creator", feederID)
 
