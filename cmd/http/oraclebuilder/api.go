@@ -146,6 +146,8 @@ func (ob *Env) Create(context *gin.Context) {
 		}
 
 		deviationPermilleFloat = deviationPermilleFloat * 10
+		deviationPermille = fmt.Sprintf("%.2f", deviationPermilleFloat)
+
 	}
 
 	log.Infoln("feederId from creator", feederID)
@@ -198,8 +200,6 @@ func (ob *Env) Create(context *gin.Context) {
 	}
 	log.Infoln("public key", keypair.GetPublickey())
 	address = keypair.GetPublickey()
-
-	deviationPermille = fmt.Sprintf("%.2f", deviationPermilleFloat)
 
 	if !isUpdate {
 		err = ob.PodHelper.CreateOracleFeeder(context, feederID, address, oracleaddress, chainID, symbols, blockchainnode, frequency, sleepSeconds, deviationPermille, mandatoryFrequency)
