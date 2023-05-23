@@ -111,7 +111,7 @@ func NewOsmosisScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		Bech32ValPrefix:   "osmovaloper",
 		Bech32PkValPrefix: "osmovalpub",
 		Encoding:          encoding,
-		RpcURL:            "https://rpc.osmosis.zone:443",
+		RpcURL:            "https://osmosis-rpc.polkachu.com",
 	}
 	wsClient, err := NewWsClient(*cfg)
 	if err != nil {
@@ -261,7 +261,7 @@ func NewWsClient(conf OsmosisConfig) (*tendermint.WSClient, error) {
 
 	client, err := tendermint.NewWS(conf.RpcURL, "/websocket")
 	if err != nil {
-		log.Fatal("failed to create websocket client: %s", err)
+		log.Fatal("failed to create websocket client: ", err)
 	}
 	client.Dialer = net.Dial
 	return client, nil
@@ -305,7 +305,7 @@ func NewOsmosisEncoding() *OsmosisEncodingConfig {
 func (s *OsmosisScraper) Start() error {
 	err := s.wsClient.Start()
 	if err != nil {
-		log.Warn("failed to start websocket client: %s", err)
+		log.Warn("failed to start websocket client: ", err)
 		return err
 	}
 
