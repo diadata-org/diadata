@@ -463,18 +463,6 @@
       "Ignore": false
     },
     {
-      "Symbol": "STETH",
-      "ForeignName": "STETHUSDC",
-      "Exchange": "MEXC",
-      "Ignore": false
-    },
-    {
-      "Symbol": "STETH",
-      "ForeignName": "STETHUSDT",
-      "Exchange": "MEXC",
-      "Ignore": false
-    },
-    {
       "Symbol": "SYN",
       "ForeignName": "SYNUSDT",
       "Exchange": "MEXC",
