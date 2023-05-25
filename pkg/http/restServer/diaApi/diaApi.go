@@ -3594,8 +3594,8 @@ func normalizeAddress(address string, blockchain string) string {
 		return makeAddressEIP55Compliant(address, blockchain)
 	}
 	if BLOCKCHAINS[blockchain].Name == dia.OSMOSIS {
-		if strings.Contains(address, "ibc-") {
-			return "ibc/" + address
+		if strings.Contains(address, "ibc-") && len(strings.Split(address, "-")[1]) > 1 {
+			return "ibc/" + strings.Split(address, "-")[1]
 		}
 	}
 	return address
