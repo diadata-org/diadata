@@ -40,6 +40,7 @@ const (
 	ACALA                                   = "Acala"
 	POLKADOT                                = "Polkadot"
 	WANCHAIN                                = "Wanchain"
+	OSMOSIS                                 = "Osmosis"
 	FIAT                                    = "Fiat"
 )
 

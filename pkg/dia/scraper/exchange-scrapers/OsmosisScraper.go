@@ -28,6 +28,7 @@ import (
 	ibccoretypes "github.com/cosmos/ibc-go/v3/modules/core/types"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/go-resty/resty/v2"
 	gammtypes "github.com/osmosis-labs/osmosis/v6/x/gamm/types"
 	lockuptypes "github.com/osmosis-labs/osmosis/v6/x/lockup/types"
@@ -111,7 +112,7 @@ func NewOsmosisScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		Bech32ValPrefix:   "osmovaloper",
 		Bech32PkValPrefix: "osmovalpub",
 		Encoding:          encoding,
-		RpcURL:            "https://osmosis-rpc.polkachu.com",
+		RpcURL:            utils.Getenv("OSMOSIS_RPC_URL", ""),
 	}
 	wsClient, err := NewWsClient(*cfg)
 	if err != nil {
@@ -387,11 +388,21 @@ func (s *OsmosisScraper) handleTx(tx tmtypes.EventDataTx) {
 			log.Error(err, ", failed to get asset: ", messages[1].Token)
 			return
 		}
-		volume, err := strconv.ParseFloat(messages[1].Value, 64)
+		volumeOut, err := strconv.ParseFloat(messages[0].Value, 64)
 		if err != nil {
 			log.Error(err, ", failed to parse volume of: ", txid)
 			return
 		}
+		volumeIn, err := strconv.ParseFloat(messages[1].Value, 64)
+		if err != nil {
+			log.Error(err, ", failed to parse volume of: ", txid)
+			return
+		}
+
+		if volumeOut == 0 {
+			return
+		}
+		price := (volumeIn / math.Pow(10, float64(baseToken.Decimals))) / (volumeOut / math.Pow(10, float64(quoteToken.Decimals)))
 		timestamp := s.blockTimestampsCache[tx.Height]
 		if timestamp == nil {
 			// get timestamp from rpc
@@ -404,7 +415,10 @@ func (s *OsmosisScraper) handleTx(tx tmtypes.EventDataTx) {
 			timestamp = rpcTimestamp
 		}
 		t := &dia.Trade{
-			Volume:         volume / math.Pow(10, float64(quoteToken.Decimals)),
+			Symbol:         quoteToken.Symbol,
+			Pair:           quoteToken.Symbol + "-" + baseToken.Symbol,
+			Volume:         volumeOut / math.Pow(10, float64(quoteToken.Decimals)),
+			Price:          price,
 			Time:           *timestamp,
 			ForeignTradeID: txid,
 			Source:         dia.OsmosisExchange,

@@ -15,6 +15,7 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	"github.com/diadata-org/diadata/pkg/dia"
 	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
@@ -58,13 +59,14 @@ func NewOsmosisScraper(exchange dia.Exchange) *OsmosisAssetSource {
 	if err != nil {
 		log.Fatal("failed to download assets json file: ", err)
 	}
+
 	cfg := &scrapers.OsmosisConfig{
 		Bech32AddrPrefix:  "osmo",
 		Bech32PkPrefix:    "osmopub",
 		Bech32ValPrefix:   "osmovaloper",
 		Bech32PkValPrefix: "osmovalpub",
 		Encoding:          nil,
-		RpcURL:            "osmosis.stakesystems.io:2083",
+		RpcURL:            utils.Getenv("OSMOSIS_RPC_URL", ""),
 	}
 	grpcClient, err := NewGRPCClient(cfg)
 	if err != nil {

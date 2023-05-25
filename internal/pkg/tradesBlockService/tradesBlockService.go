@@ -448,5 +448,14 @@ func buildBridge(t dia.Trade) dia.Asset {
 			}
 		}
 	}
+	if basetoken.Blockchain == dia.OSMOSIS && t.Source == dia.OsmosisExchange {
+		if basetoken.Address == "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858" {
+			basetoken = dia.Asset{
+				Symbol:     "USDC",
+				Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+				Blockchain: dia.ETHEREUM,
+			}
+		}
+	}
 	return basetoken
 }
