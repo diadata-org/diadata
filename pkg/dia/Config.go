@@ -97,7 +97,7 @@ const (
 	MultiChain                 = "MultiChain"
 	StellaswapExchange         = "Stellaswap"
 	WanswapExchange            = "Wanswap"
-
+	OsmosisExchange            = "Osmosis"
 	// FinageForex        = "FinageForex"
 )
 

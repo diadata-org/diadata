@@ -881,6 +881,20 @@
             "pairsAPI": "",
             "WatchdogDelay": 7200,
             "ScraperActive": true
+        },
+        {
+            "Name": "Osmosis",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": "Cosmos"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
         }
     ]
 }
