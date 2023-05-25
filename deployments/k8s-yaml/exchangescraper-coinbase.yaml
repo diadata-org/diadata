@@ -1,0 +1,59 @@
+apiVersion: "v1"
+kind: Pod
+metadata:
+  name: "exchangescraper-coinbase"
+spec:
+  containers:
+  - name: exchangescraper-coinbase
+    image: diadata.exchangescrapercollector:latest
+    imagePullPolicy: Never
+    command: ["collector"]
+    args: ["-exchange=CoinBase", "-mode=current", "-pairsfile=true"]
+    env:
+    - name: USE_ENV
+      value: "true"
+    - name: POSTGRES_USER
+      value: "postgres"
+    - name: POSTGRES_PASSWORD
+      value: "password"
+    - name: POSTGRES_DB
+      value: "postgres"
+    - name: POSTGRES_HOST
+      value: "postgres.default.svc.cluster.local"
+    - name: INFLUXURL
+      value: "http://influx.default.svc.cluster.local:8086"
+    - name: INFLUXUSER
+      value: "test"
+    - name: INFLUXPASSWORD
+      value: "testtest"
+    - name: REDISURL
+      value: "redis.default.svc.cluster.local:6379"
+    - name: KAFKAURL
+      value: "kafka.default.svc.cluster.local:9094"
+  initContainers:
+  - name: pairdiscovery-coinbase
+    image: diadata.pairdiscoveryservice:latest
+    imagePullPolicy: Never
+    command: ["pairDiscoveryService"]
+    args: ["-exchange=CoinBase", "-mode=verification"]
+    env:
+    - name: USE_ENV
+      value: "true"
+    - name: POSTGRES_USER
+      value: "postgres"
+    - name: POSTGRES_PASSWORD
+      value: "password"
+    - name: POSTGRES_DB
+      value: "postgres"
+    - name: POSTGRES_HOST
+      value: "postgres.default.svc.cluster.local"
+    - name: INFLUXURL
+      value: "http://influx.default.svc.cluster.local:8086"
+    - name: INFLUXUSER
+      value: "test"
+    - name: INFLUXPASSWORD
+      value: "testtest"
+    - name: REDISURL
+      value: "redis.default.svc.cluster.local:6379"
+    - name: KAFKAURL
+      value: "kafka.default.svc.cluster.local:9094"

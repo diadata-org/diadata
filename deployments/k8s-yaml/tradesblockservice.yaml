@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: filtersblockservice
+  name: tradesblockservice
   labels:
-    app: filtersblockservice
+    app: tradesblockservice
 spec:
   selector:
     matchLabels:
-      app: filtersblockservice
+      app: tradesblockservice
   template:
     metadata:
       labels:
-        app: filtersblockservice
+        app: tradesblockservice
     spec:
       containers:
-        - name: filtersblockservice
-          image: diadata.filtersblockservice:latest
+        - name: tradesblockservice
+          image: diadata.tradesblockservice:latest
           imagePullPolicy: Never
-          command: ["filtersBlockService"]
-          args: ["-replayInflux=false", "-historical=true", "-testing=true"]
+          command: ["tradesBlockService"]
+          args: ["-historical=true", "-testing=true"]
           env:
             - name: USE_ENV
               value: "true"
@@ -40,6 +40,8 @@ spec:
               value: "redis.default.svc.cluster.local:6379"
             - name: KAFKAURL
               value: "kafka.default.svc.cluster.local:9094"
+            - name: TRADE_VOLUME_THRESHOLD_EXPONENT
+              value: "4"
       initContainers:
         - name: check-postgres-connection
           image: postgres:15-alpine
