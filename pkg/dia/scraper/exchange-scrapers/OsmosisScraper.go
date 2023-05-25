@@ -424,6 +424,7 @@ func (s *OsmosisScraper) handleTx(tx tmtypes.EventDataTx) {
 			Source:         dia.OsmosisExchange,
 			BaseToken:      baseToken,
 			QuoteToken:     quoteToken,
+			VerifiedPair:   true,
 		}
 		log.Info("New Trade: ", t)
 		s.chanTrades <- t
