@@ -420,6 +420,20 @@
             "WatchdogDelay": 7200,
             "ScraperActive": true
         },
+		{
+            "Name": "Zenlink",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": "Bifrost"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
+        },
         {
             "Name": "GateIO",
             "Centralized": true,
