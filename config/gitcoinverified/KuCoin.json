@@ -94,7 +94,7 @@
             "Symbol": "BNC",
             "Exchange": "KuCoin",
             "Blockchain": "Bifrost",
-            "Address": "Token:BNC"
+            "Address": "0"
         },
         {
             "Symbol": "BOLT",
