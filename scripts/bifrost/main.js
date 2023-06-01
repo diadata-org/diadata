@@ -8,6 +8,15 @@ async function main() {
     provider: wsProvider
   }));
 
+  const currency_metadatas_native = await api.query.assetRegistry.currencyMetadatas.entries();
+  const currency_metadatas = currency_metadatas_native.
+    map((item) => {
+      let out = { currency_id: '', decimals: '' };
+      out.currency_id = JSON.stringify(item[0].toHuman()[0]);
+      out.decimals = item[1].toJSON().decimals;
+      return out
+    }
+    )
   const pair_statuses_native = await api.query.zenlinkProtocol.pairStatuses.entries();
   const pair_statuses = pair_statuses_native.
     map((item) => {
@@ -59,17 +68,34 @@ async function main() {
         // We collect data as string with
         // pair toSymbol fromSymbol toAmount fromAmount toAssetIndex fromAssetIndex foreignTradeID
         let asset_balance = event.data[3];
-        let to_native = event.data[2][0];
-        let from_native = event.data[2].pop();
-        let from = getTokenByPair(from_native).token;
-        let to = getTokenByPair(to_native).token;
-        let fromDecimals = getTokenByPair(from_native).decimals;
-        let toDecimals = getTokenByPair(to_native).decimals;
-        let out = `${to}-${from} ${to} ${from}`
-        out += ` ${BigNumber(asset_balance[0]).dividedBy(10 ** toDecimals)} ${BigNumber(asset_balance.pop()).dividedBy(10 ** fromDecimals)}`;
-        out += ` ${JSON.parse(to_native).assetIndex} ${JSON.parse(from_native).assetIndex}`;
-        out += ` ${header.number}-${phase.asApplyExtrinsic}`;
-        console.log(`Trade:${out}`)
+        let from_native = event.data[2][0];
+        let to_native = event.data[2].pop();
+        let from = getTokenByPair(from_native).token
+        let to = getTokenByPair(to_native).token
+        if (from == "vKSM" && to == "KSM" || from == "KSM" && to == "vKSM") {
+          let out = `${from}-${to} ${from} ${to} ${BigNumber(asset_balance[0]).dividedBy(Math.pow(10, getDecimal(currency_metadatas, getCurrencyId(from))))} ${BigNumber(asset_balance.pop()).dividedBy(Math.pow(10, getDecimal(currency_metadatas, getCurrencyId(to))))} ${header.number}-${phase.asApplyExtrinsic}`;
+          if (getPairAccount(from_native, to_native) != undefined) {
+            out += ` ${getPairAccount(from_native, to_native)}`
+          } else if (getPairAccount(to_native, from_native) != undefined) {
+            out += ` ${getPairAccount(to_native, from_native)}`
+          } else {
+            console.error(`Fail to getPairAccount: ${out}`)
+            return
+          }
+          if (getLocation(from) != undefined) {
+            out += ` ${getLocation(from)}`
+          } else {
+            console.error(`Fail to getLocation: ${out}`)
+            return
+          }
+          if (getLocation(to) != undefined) {
+            out += ` ${getLocation(to)}`
+          } else {
+            console.error(`Fail to getLocation: ${out}`)
+            return
+          }
+          console.log(`Trade:${out}`)
+        }
       });
   });
 }
@@ -136,3 +162,111 @@ const getTokenByPair = (value) => {
       return null;
   }
 }
+
+const getLocation = (token) => {
+  return TokenToLocation.filter((item) => {
+    if (item.token == token) {
+      return true
+    }
+  }).map((item) => {
+    return item.location
+  }
+  )[0]
+}
+const getCurrencyId = (token) => {
+  return TokenToLocation.filter((item) => {
+    if (item.token == token) {
+      return true
+    }
+  }).map((item) => {
+    return item.currency_id
+  }
+  )[0]
+}
+const getDecimal = (currency_metadatas, currency_id) => {
+  return currency_metadatas.filter((item) => {
+    if (item.currency_id == currency_id) {
+      return true
+    }
+  }).map((item) => {
+    return item.decimals
+  }
+  )[0]
+}
+const TokenToLocation = [
+  {
+    token: '',
+    currency_id: '{"Stable":"KUSD"}',
+    location: '{"parents":1,"interior":{"x2":[{"parachain":2000},{"generalKey":{"length":2,"data":"0x0081000000000000000000000000000000000000000000000000000000000000"}}]}}'
+  },
+  {
+    token: 'KSM',
+    currency_id: '{"Token":"KSM"}',
+    location: '{"parents":1,"interior":{"here":null}}'
+  },
+  {
+    token: '',
+    currency_id: '{"Token2":"2"}',
+    location: '{"parents":1,"interior":{"x2":[{"parachain":2092},{"generalKey":{"length":2,"data":"0x000b000000000000000000000000000000000000000000000000000000000000"}}]}}'
+  },
+  {
+    token: '',
+    currency_id: '{"Token":"RMRK"}',
+    location: '{"parents":1,"interior":{"x3":[{"parachain":1000},{"palletInstance":50},{"generalIndex":8}]}}'
+  },
+  {
+    token: '',
+    currency_id: '{"Token2":"0"}',
+    location: '{"parents":1,"interior":{"x3":[{"parachain":1000},{"palletInstance":50},{"generalIndex":1984}]}}'
+  },
+  {
+    token: '',
+    currency_id: '{"Token2":"1"}',
+    location: '{"parents":1,"interior":{"x2":[{"parachain":2092},{"generalKey":{"length":2,"data":"0x000c000000000000000000000000000000000000000000000000000000000000"}}]}}'
+  },
+  {
+    token: 'vKSM',
+    currency_id: '{"VToken":"KSM"}',
+    location: '{"parents":0,"interior":{"x1":{"generalKey":{"length":2,"data":"0x0104000000000000000000000000000000000000000000000000000000000000"}}}}'
+  },
+  {
+    token: '',
+    currency_id: '{"Token2":"4"}',
+    location: '{"parents":1,"interior":{"x2":[{"parachain":2110},{"generalKey":{"length":4,"data":"0x0000000000000000000000000000000000000000000000000000000000000000"}}]}}'
+  },
+  {
+    token: '',
+    currency_id: '{"Token":"MOVR"}',
+    location: '{"parents":1,"interior":{"x2":[{"parachain":2023},{"palletInstance":10}]}}'
+  },
+  {
+    token: '',
+    currency_id: '{"Token":"ZLK"}',
+    location: '{"parents":0,"interior":{"x1":{"generalKey":{"length":2,"data":"0x0207000000000000000000000000000000000000000000000000000000000000"}}}}'
+  },
+  {
+    token: '',
+    currency_id: '{"Token":"PHA"}',
+    location: '{"parents":1,"interior":{"x1":{"parachain":2004}}}'
+  },
+  {
+    token: '',
+    currency_id: '{"Token":"KAR"}',
+    location: '{"parents":1,"interior":{"x2":[{"parachain":2000},{"generalKey":{"length":2,"data":"0x0080000000000000000000000000000000000000000000000000000000000000"}}]}}'
+  },
+  {
+    token: '',
+    currency_id: '{"VSToken":"KSM"}',
+    location: '{"parents":0,"interior":{"x1":{"generalKey":{"length":2,"data":"0x0404000000000000000000000000000000000000000000000000000000000000"}}}}'
+  },
+  {
+    token: 'BNC',
+    currency_id: '{"Native":"BNC"}',
+    location: '{"parents":0,"interior":{"x1":{"generalKey":{"length":2,"data":"0x0001000000000000000000000000000000000000000000000000000000000000"}}}}'
+  },
+  {
+    token: '',
+    currency_id: '{"Token2":"3"}',
+    location: '{"parents":1,"interior":{"x1":{"parachain":2007}}}'
+  }
+]
