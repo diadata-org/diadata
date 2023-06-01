@@ -16,23 +16,23 @@ import (
 )
 
 type ZenlinkPairResponse struct {
-	Code int           `json: "code"`
-	Data []ZenlinkPair `json: "data"`
+	Code int           `json:"code"`
+	Data []ZenlinkPair `json:"data"`
 }
 
 type ZenlinkPair struct {
-	Symbol                string `json: "symbol"`
-	DisplayName           string `json: "displayName"`
-	BaseAsset             string `json: "baseAsset"`
-	QuoteAsset            string `json: "quoteAsset"`
-	Status                string `json: "status"`
-	MinNotional           string `json: "minNotional"`
-	MaxNotional           string `json: "maxNotional"`
-	MarginTradable        bool   `json: "marginTradable"`
-	CommissionType        string `json: "commissionType"`
-	CommissionReserveRate string `json: "commissionReserveRate"`
-	TickSize              string `json: "tickSize"`
-	LotSize               string `json: "lotSize"`
+	Symbol                string `json:"symbol"`
+	DisplayName           string `json:"displayName"`
+	BaseAsset             string `json:"baseAsset"`
+	QuoteAsset            string `json:"quoteAsset"`
+	Status                string `json:"status"`
+	MinNotional           string `json:"minNotional"`
+	MaxNotional           string `json:"maxNotional"`
+	MarginTradable        bool   `json:"marginTradable"`
+	CommissionType        string `json:"commissionType"`
+	CommissionReserveRate string `json:"commissionReserveRate"`
+	TickSize              string `json:"tickSize"`
+	LotSize               string `json:"lotSize"`
 }
 
 type ZenlinkScraper struct {
@@ -86,12 +86,14 @@ func (s *ZenlinkScraper) receive() {
 	go func() {
 		cmd := exec.Command("node", "scripts/bifrost/main.js")
 		stdout, _ := cmd.StdoutPipe()
-		cmd.Start()
+		err := cmd.Start()
+		if err != nil {
+			log.Error("start main.js: ", err)
+		} else {
+			log.Info("started main.js")
+		}
 		scanner := bufio.NewScanner(stdout)
 		for scanner.Scan() {
-			if strings.HasPrefix(scanner.Text(), "Trade:") {
-				trades <- scanner.Text()
-			}
 			if strings.HasPrefix(scanner.Text(), "blockHeight:") {
 				fmt.Println(scanner.Text())
 			}
@@ -106,34 +108,34 @@ func (s *ZenlinkScraper) receive() {
 		if len(fields) < 8 {
 			continue
 		}
-		FromAmount, err := strconv.ParseFloat(fields[3], 64)
+		FromAmount, err := strconv.ParseFloat(fields[4], 64)
 		if err != nil {
 			fmt.Println("Error:", err)
 			continue
 		}
-		toAmount, err := strconv.ParseFloat(fields[4], 64)
+		toAmount, err := strconv.ParseFloat(fields[3], 64)
 		if err != nil {
 			fmt.Println("Error:", err)
 			continue
 		}
-		price := toAmount / FromAmount
+		price := FromAmount / toAmount
 		basetoken := dia.Asset{
 			Symbol:     fields[2],
 			Blockchain: dia.BIFROST,
-			Address:    fields[8],
+			Address:    fields[6],
 		}
 		quotetoken := dia.Asset{
 			Symbol:     fields[1],
 			Blockchain: dia.BIFROST,
-			Address:    fields[7],
+			Address:    fields[5],
 		}
 		trade := &dia.Trade{
 			Symbol:         fields[1],
 			Pair:           fields[0],
 			Price:          price,
-			Volume:         FromAmount,
+			Volume:         toAmount,
 			Time:           time.Now(),
-			ForeignTradeID: fields[5],
+			ForeignTradeID: fields[7],
 			Source:         s.exchangeName,
 			BaseToken:      basetoken,
 			QuoteToken:     quotetoken,

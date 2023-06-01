@@ -552,6 +552,97 @@
       "Decimals": 18,
       "Blockchain": "Wanchain",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "BNC",
+      "Name": "Bifrost",
+      "Decimals": 12,
+      "Blockchain": "Bifrost",
+      "Address": "0"
+    },
+    {
+      "Symbol": "vBNC",
+      "Name": "Voucher BNC",
+      "Decimals": 12,
+      "Blockchain": "Bifrost",
+      "Address": "257"
+    },
+    {
+      "Symbol": "MOVR",
+      "Name": "Moonriver Native Token",
+      "Decimals": 18,
+      "Blockchain": "Bifrost",
+      "Address": "522"
+    },
+    {
+      "Symbol": "vMOVR",
+      "Name": "Voucher MOVR",
+      "Decimals": 18,
+      "Blockchain": "Bifrost",
+      "Address": "266"
+    },
+    {
+      "Symbol": "KSM",
+      "Name": "Kusama",
+      "Decimals": 12,
+      "Blockchain": "Bifrost",
+      "Address": "516"
+    },
+    {
+      "Symbol": "vKSM",
+      "Name": "Voucher KSM",
+      "Decimals": 12,
+      "Blockchain": "Bifrost",
+      "Address": "260"
+    },
+    {
+      "Symbol": "vsKSM",
+      "Name": "vsKusama",
+      "Decimals": 12,
+      "Blockchain": "Bifrost",
+      "Address": "1028"
+    },
+    {
+      "Symbol": "USDT",
+      "Name": "Tether USD",
+      "Decimals": 6,
+      "Blockchain": "Bifrost",
+      "Address": "2048"
+    },
+    {
+      "Symbol": "ZLK",
+      "Name": "Zenlink",
+      "Decimals": 18,
+      "Blockchain": "Bifrost",
+      "Address": "519"
+    },
+    {
+      "Symbol": "kBTC",
+      "Name": "kintsugiBTC",
+      "Decimals": 8,
+      "Blockchain": "Bifrost",
+      "Address": "2050"
+    },
+    {
+      "Symbol": "KAR",
+      "Name": "Karura",
+      "Decimals": 12,
+      "Blockchain": "Bifrost",
+      "Address": "518"
+    },
+    {
+      "Symbol": "PHA",
+      "Name": "Phala Native Token",
+      "Decimals": 12,
+      "Blockchain": "Bifrost",
+      "Address": "520"
+    },
+    {
+      "Symbol": "RMRK",
+      "Name": "RMRK Token",
+      "Decimals": 10,
+      "Blockchain": "Bifrost",
+      "Address": "521"
     }
   ]
 }

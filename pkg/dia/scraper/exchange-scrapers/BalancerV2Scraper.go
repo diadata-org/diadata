@@ -239,6 +239,16 @@ func (s *BalancerV2Scraper) mainLoop() {
 			select {
 			case <-s.shutdown:
 			case s.chanTrades <- trade:
+				// Take into account reversed trade as well in either of both cases
+				// 1. Base asset is not bluechip
+				// 2. Both assets are bluechip
+				if !utils.Contains(reverseQuotetokensBalancer, trade.BaseToken.Address) ||
+					(utils.Contains(reverseQuotetokensBalancer, trade.BaseToken.Address) && utils.Contains(reverseQuotetokensBalancer, trade.QuoteToken.Address)) {
+					tSwapped, err := dia.SwapTrade(*trade)
+					if err == nil {
+						s.chanTrades <- &tSwapped
+					}
+				}
 				log.Info("got trade: ", trade)
 			}
 		}

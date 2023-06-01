@@ -42,7 +42,7 @@ const (
 	WANCHAIN                                = "Wanchain"
 	OSMOSIS                                 = "Osmosis"
 	FIAT                                    = "Fiat"
-	BIFROST                                 = "bifrost"
+	BIFROST                                 = "Bifrost"
 )
 
 type VerificationMechanism string

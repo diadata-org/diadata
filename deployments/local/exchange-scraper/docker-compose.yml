@@ -5,17 +5,17 @@ services:
     ports:
       - "6379:6379"
   influxdb:
-    image: influxdb:2.0
+    image: influxdb:1.8.3
     ports:
       - "8086:8086"
-  influxdb_cli:
-    links:
-      - influxdb
-    image: influxdb:2.0
-    entrypoint: influx setup --bucket test_bucket -t test_token -o test_org --username test --password testtest --host http://127.0.0.1:8086 -f
-    restart: on-failure:20
-    depends_on:
-      - influxdb
+  # influxdb_cli:
+  #   links:
+  #     - influxdb
+  #   image: influxdb:2.0
+  #   entrypoint: influx setup --bucket test_bucket -t test_token -o test_org --username test --password testtest --host http://127.0.0.1:8086 -f
+  #   restart: on-failure:20
+  #   depends_on:
+  #     - influxdb
   postgres:
     image: postgres
     restart: always
