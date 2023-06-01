@@ -1,0 +1,19 @@
+FROM us.icr.io/dia-registry/devops/build-117:latest as build
+
+WORKDIR $GOPATH/src/
+
+COPY ./cmd/exchange-scrapers/generic-collector/zenlink ./
+RUN go mod tidy -go=1.16 && go mod tidy -go=1.17 && go install
+
+FROM node:lts
+
+COPY ./scripts/bifrost/package.json ./
+COPY ./scripts/bifrost/yarn.lock ./
+
+RUN yarn install
+
+COPY --from=build /go/bin/zenlink /bin/zenlink
+COPY --from=build /config/ /config/
+COPY ./scripts/main.js /usr/src/app/main.js
+
+CMD ["zenlink"]

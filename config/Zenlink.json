@@ -1,0 +1,10 @@
+{
+    "Coins": [
+        {
+            "Symbol": "BNC",
+            "ForeignName": "BNC-KSM",
+            "Exchange": "Zenlink",
+            "Ignore": false
+        }
+    ]
+}
