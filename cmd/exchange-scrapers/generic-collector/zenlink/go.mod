@@ -3,7 +3,7 @@ module github.com/diadata-org/diadata/exchange-scrapers/generic-collector/zenlin
 go 1.17
 
 require (
-	github.com/diadata-org/diadata v1.4.249
+	github.com/diadata-org/diadata v1.4.250
 	github.com/segmentio/kafka-go v0.4.35
 	github.com/sirupsen/logrus v1.8.1
 )

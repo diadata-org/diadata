@@ -12,8 +12,8 @@ COPY ./scripts/bifrost/yarn.lock ./
 
 RUN yarn install
 
+COPY ./scripts/bifrost/main.js /usr/src/app/main.js
 COPY --from=build /go/bin/zenlink /bin/zenlink
 COPY --from=build /config/ /config/
-COPY ./scripts/main.js /usr/src/app/main.js
 
 CMD ["zenlink"]

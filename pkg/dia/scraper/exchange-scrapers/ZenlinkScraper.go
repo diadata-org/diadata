@@ -12,7 +12,12 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
+)
+
+var (
+	NodeScriptPath = utils.Getenv("PATH_TO_NODE_SCRIPT", "scripts/bifrost/main.js")
 )
 
 type ZenlinkPairResponse struct {
@@ -39,7 +44,6 @@ type ZenlinkScraper struct {
 	exchangeName string
 
 	// channels to signal events
-	run          bool
 	initDone     chan nothing
 	shutdown     chan nothing
 	shutdownDone chan nothing
@@ -84,7 +88,7 @@ func (s *ZenlinkScraper) receive() {
 	trades := make(chan string)
 
 	go func() {
-		cmd := exec.Command("node", "scripts/bifrost/main.js")
+		cmd := exec.Command("node", NodeScriptPath)
 		stdout, _ := cmd.StdoutPipe()
 		err := cmd.Start()
 		if err != nil {
