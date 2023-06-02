@@ -1,8 +1,8 @@
 package main
 
 import (
-	"strings"
 	"os"
+	"strings"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
@@ -235,6 +235,7 @@ func main() {
 		diaGroup.GET("/poolSlippage/:blockchain/:addressPool/:addressAsset/:poolType/:priceDeviation", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetPoolSlippage))
 		diaGroup.GET("/poolPriceImpact/:blockchain/:addressPool/:addressAsset/:poolType/:priceDeviation", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetPoolPriceImpact))
 		diaGroup.GET("/priceImpactSimulation/:poolType/:liquidityA/:liquidityB/:priceDeviation", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetPriceImpactSimulation))
+		diaGroup.GET("/poolsByAsset/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetPoolsByAsset))
 
 		// Pairs endpoints
 		diaGroup.GET("/pairsCex/:exchange", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetExchangePairs))

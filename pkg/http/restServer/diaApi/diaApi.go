@@ -26,9 +26,10 @@ import (
 )
 
 var (
-	DECIMALS_CACHE = make(map[dia.Asset]uint8)
-	ASSET_CACHE    = make(map[string]dia.Asset)
-	BLOCKCHAINS    = make(map[string]dia.BlockChain)
+	DECIMALS_CACHE  = make(map[dia.Asset]uint8)
+	ASSET_CACHE     = make(map[string]dia.Asset)
+	QUOTATION_CACHE = make(map[string]*models.AssetQuotation)
+	BLOCKCHAINS     = make(map[string]dia.BlockChain)
 )
 
 type Env struct {
@@ -799,6 +800,113 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 // -----------------------------------------------------------------------------
 // POOLS AND LIQUIDITY
 // -----------------------------------------------------------------------------
+
+func (env *Env) GetPoolsByAsset(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+	blockchain := c.Param("blockchain")
+	address := normalizeAddress(c.Param("address"), blockchain)
+	asset := env.getAssetFromCache(ASSET_CACHE, blockchain, address)
+
+	liquidityThreshold, err := strconv.ParseFloat(c.DefaultQuery("liquidityThreshold", "10"), 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot parse liquidityThreshold"))
+		return
+	}
+
+	liquidityThresholdUSD, err := strconv.ParseFloat(c.DefaultQuery("liquidityThresholdUSD", "10000"), 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot parse liquidityThresholdUSD"))
+		return
+	}
+
+	usdLiquidity, err := strconv.ParseBool(c.DefaultQuery("usdLiquidity", "true"))
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot parse usdLiquidity"))
+		return
+	}
+
+	// Set liquidity threshold measured in native currency to 1 in order to filter out noise.
+	pools, err := env.RelDB.GetPoolsByAsset(asset, liquidityThreshold)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find pool"))
+		return
+	}
+
+	type poolInfo struct {
+		Exchange          string
+		Blockchain        string
+		Address           string
+		Time              time.Time
+		TotalLiquidityUSD float64
+		Message           string
+		Liquidity         []dia.AssetLiquidity
+	}
+	var result []poolInfo
+
+	// Get total liquidity for each filtered pool.
+	for _, pool := range pools {
+		var (
+			totalLiquidity float64
+			noPrice        bool
+			pi             poolInfo
+		)
+
+		// Look from asset prices in Redis in case @usdLiquidity is true.
+		if usdLiquidity {
+			for _, assetvol := range pool.Assetvolumes {
+				quotation, err := env.getQuotationFromCache(QUOTATION_CACHE, assetvol.Asset)
+				if err != nil {
+					log.Warnf("no quotation for %v: %v", assetvol.Asset, err)
+					totalLiquidity = 0
+					noPrice = true
+					break
+				}
+				totalLiquidity += quotation.Price * assetvol.Volume
+			}
+			// In case we can determine USD liquidity and it's below the threshold, continue.
+			if !noPrice && totalLiquidity < liquidityThresholdUSD {
+				continue
+			}
+		}
+
+		pi.Exchange = pool.Exchange.Name
+		pi.Blockchain = pool.Blockchain.Name
+		pi.Address = pool.Address
+		pi.TotalLiquidityUSD = totalLiquidity
+		pi.Time = pool.Time
+		for i := range pool.Assetvolumes {
+			var al dia.AssetLiquidity = dia.AssetLiquidity(pool.Assetvolumes[i])
+			pi.Liquidity = append(pi.Liquidity, al)
+		}
+		if noPrice {
+			pi.Message = "Not enough US-Dollar price information on one or more pool assets available."
+		}
+		result = append(result, pi)
+	}
+
+	// Sort by total USD liquidity if @usdLiquidity is true.
+	if usdLiquidity {
+		sort.Slice(result, func(m, n int) bool {
+			return result[m].TotalLiquidityUSD > result[n].TotalLiquidityUSD
+		})
+	} else {
+		// Sort by sum of both (native) liquidities in case USD liquidity is not computed.
+		sort.Slice(result, func(m, n int) bool {
+			var liquidity_m float64
+			var liquidity_n float64
+			for _, l := range result[m].Liquidity {
+				liquidity_m += l.Volume
+			}
+			for _, l := range result[n].Liquidity {
+				liquidity_n += l.Volume
+			}
+			return liquidity_m > liquidity_n
+		})
+	}
+	c.JSON(http.StatusOK, result)
+}
 
 func (env *Env) GetPoolLiquidityByAddress(c *gin.Context) {
 	if !validateInputParams(c) {
@@ -3629,7 +3737,18 @@ func (env *Env) getAssetFromCache(localCache map[string]dia.Asset, blockchain st
 	}
 	localCache[assetIdentifier(blockchain, address)] = fullAsset
 	return fullAsset
+}
 
+func (env *Env) getQuotationFromCache(localCache map[string]*models.AssetQuotation, asset dia.Asset) (q *models.AssetQuotation, err error) {
+	delayThreshold := time.Duration(1 * time.Hour)
+	var ok bool
+	if q, ok = localCache[assetIdentifier(asset.Blockchain, asset.Address)]; ok {
+		if q.Time.Add(delayThreshold).After(time.Now()) {
+			return
+		}
+	}
+	q, err = env.DataStore.GetAssetQuotationCache(asset)
+	return
 }
 
 func assetIdentifier(blockchain string, address string) string {

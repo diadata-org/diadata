@@ -242,7 +242,7 @@ func (rdb *RelDB) GetAllPoolAddrsExchange(exchange string, liquiThreshold float6
 	return
 }
 
-// GetAllPoolAddrsExchange returns all pool addresses available for @exchange.
+// GetAllPoolsExchange returns all pool addresses available for @exchange.
 // Remark that it returns each pool n times where n is the number of assets in the pool.
 func (rdb *RelDB) GetAllPoolsExchange(exchange string, liquiThreshold float64) (pools []dia.Pool, err error) {
 	var (
@@ -309,6 +309,94 @@ func (rdb *RelDB) GetAllPoolsExchange(exchange string, liquiThreshold float64) (
 		if _, ok := poolIndexMap[poolAddress]; !ok {
 			// Pool does not exist yet, so initialize.
 			pool := dia.Pool{Exchange: dia.Exchange{Name: exchange}, Address: poolAddress, Blockchain: dia.BlockChain{Name: av.Asset.Blockchain}}
+			pool.Assetvolumes = append(pool.Assetvolumes, av)
+			pools = append(pools, pool)
+			poolIndexMap[poolAddress] = len(pools) - 1
+		} else {
+			// Pool already exists, just add pool asset.
+			pools[poolIndexMap[poolAddress]].Assetvolumes = append(pools[poolIndexMap[poolAddress]].Assetvolumes, av)
+		}
+
+	}
+	return
+}
+
+// GetPoolsByAsset returns all pools with @asset as a pool asset and both assets have liquidity above @liquiThreshold.
+func (rdb *RelDB) GetPoolsByAsset(asset dia.Asset, liquiThreshold float64) (pools []dia.Pool, err error) {
+	var (
+		rows  pgx.Rows
+		query string
+	)
+
+	query = fmt.Sprintf(`
+		SELECT exch_pools.exchange,exch_pools.address,a.address,a.blockchain,a.decimals,a.symbol,a.name,pa.token_index,pa.liquidity,pa.time_stamp
+		FROM (
+			SELECT p.exchange,p.pool_id,p.address, SUM(CASE WHEN pa.liquidity>=%v THEN 0 ELSE 1 END) AS no_liqui, SUM(CASE WHEN a.address='%s' THEN 1 ELSE 0 END) AS correct_asset 
+			FROM %s p 
+			INNER JOIN %s pa 
+			ON p.pool_id=pa.pool_id 
+			INNER JOIN %s a 
+			ON pa.asset_id=a.asset_id 
+			WHERE p.blockchain='%s' 
+			GROUP BY p.exchange,p.pool_id,p.address
+			) exch_pools 
+		INNER JOIN %s pa 
+		ON exch_pools.pool_id=pa.pool_id 
+		INNER JOIN %s a ON pa.asset_id=a.asset_id 
+		WHERE exch_pools.no_liqui=0 
+		AND exch_pools.correct_asset=1
+		AND pa.time_stamp IS NOT NULL;
+	`, liquiThreshold, asset.Address, poolTable, poolassetTable, assetTable, asset.Blockchain, poolassetTable, assetTable)
+	rows, err = rdb.postgresClient.Query(context.Background(), query)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	poolIndexMap := make(map[string]int)
+
+	for rows.Next() {
+		var (
+			exchange    string
+			poolAddress string
+			av          dia.AssetVolume
+			decimals    sql.NullInt64
+			index       sql.NullInt64
+			liquidity   sql.NullFloat64
+			timestamp   sql.NullTime
+		)
+		err := rows.Scan(
+			&exchange,
+			&poolAddress,
+			&av.Asset.Address,
+			&av.Asset.Blockchain,
+			&decimals,
+			&av.Asset.Symbol,
+			&av.Asset.Name,
+			&index,
+			&liquidity,
+			&timestamp,
+		)
+		if err != nil {
+			log.Error(err)
+		}
+		if decimals.Valid {
+			av.Asset.Decimals = uint8(decimals.Int64)
+		}
+		if index.Valid {
+			av.Index = uint8(index.Int64)
+		}
+		if liquidity.Valid {
+			av.Volume = liquidity.Float64
+		}
+
+		// map poolasset to pool if pool address already exists.
+		if _, ok := poolIndexMap[poolAddress]; !ok {
+			// Pool does not exist yet, so initialize.
+			pool := dia.Pool{Exchange: dia.Exchange{Name: exchange}, Address: poolAddress, Blockchain: dia.BlockChain{Name: av.Asset.Blockchain}}
+			if timestamp.Valid {
+				pool.Time = timestamp.Time
+			}
 			pool.Assetvolumes = append(pool.Assetvolumes, av)
 			pools = append(pools, pool)
 			poolIndexMap[poolAddress] = len(pools) - 1
