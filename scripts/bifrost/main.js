@@ -69,6 +69,7 @@ async function main() {
         out += ` ${BigNumber(asset_balance[0]).dividedBy(10 ** toDecimals)} ${BigNumber(asset_balance.pop()).dividedBy(10 ** fromDecimals)}`;
         out += ` ${JSON.parse(to_native).assetIndex} ${JSON.parse(from_native).assetIndex}`;
         out += ` ${header.number}-${phase.asApplyExtrinsic}`;
+        console.log(`Trade:${out}`)
       });
   });
 }

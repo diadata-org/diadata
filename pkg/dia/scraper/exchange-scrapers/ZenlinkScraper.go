@@ -98,6 +98,9 @@ func (s *ZenlinkScraper) receive() {
 		}
 		scanner := bufio.NewScanner(stdout)
 		for scanner.Scan() {
+			if strings.HasPrefix(scanner.Text(), "Trade:") {
+				trades <- scanner.Text()
+			}
 			if strings.HasPrefix(scanner.Text(), "blockHeight:") {
 				fmt.Println(scanner.Text())
 			}
