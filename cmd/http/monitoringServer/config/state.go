@@ -4,7 +4,7 @@ import "github.com/diadata-org/diadata/http/monitoringServer/enums"
 
 type State struct {
 	Name       string
-	State      enums.HealthSate
+	State      enums.HealthState
 	Subsection []State
 }
 
