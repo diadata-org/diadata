@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/diadata-org/diadata/http/monitoringServer/stateFilter"
 	"github.com/diadata-org/diadata/pkg/utils/probes"
 	"net/http"
 	"strings"
@@ -76,9 +77,11 @@ func live() bool {
 }
 
 type MonitoringGroup struct {
-	id            uuid.UUID
-	groupName     string
-	groupParentId uuid.UUID
+	id                   uuid.UUID
+	groupName            string
+	operationalThreshold float64
+	minorThreshold       float64
+	groupParentId        uuid.UUID
 }
 
 type MonitoringItem struct {
@@ -97,7 +100,7 @@ func getMonitoringGroupConfigStates(conn *pgxpool.Pool, groupParentId uuid.UUID)
 		parentWhere = fmt.Sprintf(" and group_parent_id = %s", groupParentId)
 	}
 	//goland:noinspection SqlResolve
-	query := fmt.Sprintf("select id, group_name from monitoring_groups where active = true %s", parentWhere)
+	query := fmt.Sprintf("select id, group_name, operational_threshold, minor_threshold from monitoring_groups where active = true %s", parentWhere)
 
 	log.Info("reading service monitoring endpoints")
 	rows, err := conn.Query(context.Background(), query)
@@ -113,6 +116,8 @@ func getMonitoringGroupConfigStates(conn *pgxpool.Pool, groupParentId uuid.UUID)
 		err := rows.Scan(
 			&monitoringGroup.id,
 			&monitoringGroup.groupName,
+			&monitoringGroup.operationalThreshold,
+			&monitoringGroup.minorThreshold,
 		)
 		monitorState := config.GetOperationalHealthState(monitoringGroup.groupName)
 		itemQuery := fmt.Sprintf("select item_name, k8s_namespace, k8s_servicename from monitoring_items WHERE monitoring_group_id = '%s' AND active = true", monitoringGroup.id.String())
@@ -167,19 +172,10 @@ func getMonitoringGroupConfigStates(conn *pgxpool.Pool, groupParentId uuid.UUID)
 				}
 			}
 			monitorState.Subsection = append(monitorState.Subsection, itemState)
-			/*subStates := getMonitoringGroupConfigStates(conn, monitoringGroup.id)
-
-			subState := config.GetOperationalHealthState(monitoringGroup.groupName + " Children")
-			for _, subStateItem := range subStates {
-				subState.Subsection = append(subState.Subsection, subStateItem)
-			}
-			*/
 		}
 		//goland:noinspection GoDeferInLoop
 		defer itemRows.Close()
-		for _, item := range monitorState.Subsection {
-			monitorState.State = enums.CompareStates(item.State, monitorState.State)
-		}
+		monitorState.State = stateFilter.CheckHealthState(monitorState.Subsection, monitoringGroup.operationalThreshold, monitoringGroup.minorThreshold)
 		states = append(states, monitorState)
 	}
 	defer rows.Close()
