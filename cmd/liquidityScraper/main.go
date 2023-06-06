@@ -37,7 +37,7 @@ func main() {
 
 func runLiquiditySource(relDB *models.RelDB, source string) {
 	log.Info("Fetching pools from ", source)
-	scraper := liquidityscraper.NewLiquidityScraper(source)
+	scraper := liquidityscraper.NewLiquidityScraper(source, relDB)
 
 	for {
 		select {

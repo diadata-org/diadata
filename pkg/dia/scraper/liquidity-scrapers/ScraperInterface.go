@@ -3,6 +3,7 @@ package liquidityscrapers
 import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/sirupsen/logrus"
 )
 
@@ -23,7 +24,7 @@ func init() {
 }
 
 // NewLiquidityScraper returns a liquidity scraper for @source.
-func NewLiquidityScraper(source string) LiquidityScraper {
+func NewLiquidityScraper(source string, relDB *models.RelDB) LiquidityScraper {
 	switch source {
 	case dia.UniswapExchange:
 		return NewUniswapScraper(exchanges[dia.UniswapExchange])
@@ -109,6 +110,8 @@ func NewLiquidityScraper(source string) LiquidityScraper {
 		return NewBancorPoolScraper(exchanges[dia.BancorExchange])
 	case dia.OrcaExchange:
 		return NewOrcaScraper(exchanges[dia.OrcaExchange])
+	case dia.OsmosisExchange:
+		return NewOsmosisScraper(exchanges[dia.OsmosisExchange], relDB)
 
 	default:
 		return nil
