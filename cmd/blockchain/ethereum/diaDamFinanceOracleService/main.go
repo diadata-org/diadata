@@ -234,19 +234,6 @@ func updateOracle(
 	fGas := new(big.Float).SetInt(gasPrice)
 	fGas.Mul(fGas, big.NewFloat(1.1))
 	gasPrice, _ = fGas.Int(nil)
-	// Write values to smart contract
-
-	// rawTx, _ := parsedAbi.Pack("setValue", key, big.NewInt(value), big.NewInt(timestamp))
-
-	// tx, err := damcontract.SetValue(&bind.TransactOpts{
-	// 	From:     auth.From,
-	// 	Signer:   auth.Signer,
-	// 	GasLimit: 1000725,
-	// 	GasPrice: gasPrice,
-	// }, key, big.NewInt(value), big.NewInt(timestamp))
-	// if err != nil {
-	// 	return err
-	// }
 
 	tx, err := contract.Transact(&bind.TransactOpts{
 		From:     auth.From,
@@ -255,24 +242,10 @@ func updateOracle(
 		GasPrice: gasPrice,
 	}, "setValues", key, big.NewInt(value), big.NewInt(timestamp), totalsupply, usdcbalance)
 
-	// nonce, err := client.PendingNonceAt(context.Background(), auth.From)
-	// if err != nil {
-	// 	log.Println(" client.NonceAt error  tx", err)
-	// }
-
-	// tx := types.NewTransaction(nonce, common.HexToAddress(deployedContract), nil, 1100725, gasPrice, rawTx)
-
-	// err = client.SendTransaction(context.Background(), tx)
-	// if err != nil {
-	// 	log.Println(" SendTransaction error  tx", err)
-	// 	return nil
-	// }
-
 	fmt.Println(tx.GasPrice())
 	log.Printf("from: %s\n", auth.From.Hex())
 
 	log.Printf("key: %s\n", key)
-	// log.Println("nonce: ", nonce)
 
 	log.Printf("Tx To: %s\n", tx.To().String())
 	log.Printf("Tx Hash: 0x%x\n", tx.Hash())
@@ -280,7 +253,7 @@ func updateOracle(
 }
 
 func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, error) {
-	response, err := http.Get("https://rest.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
+	response, err := http.Get("https://api.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
 	if err != nil {
 		return nil, err
 	}
