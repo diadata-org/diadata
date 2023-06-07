@@ -46,6 +46,7 @@ type RelDatastore interface {
 	GetUnverifiedExchangeSymbols(exchange string) ([]string, error)
 	VerifyExchangeSymbol(exchange string, symbol string, assetID string) (bool, error)
 	GetExchangeSymbolAssetID(exchange string, symbol string) (string, bool, error)
+	GetAllExchangeAssets(verified bool) ([]dia.Asset, error)
 
 	// ----------------- Historical quotations methods -------------------
 	SetHistoricalQuotation(quotation AssetQuotation) error
@@ -82,6 +83,7 @@ type RelDatastore interface {
 	// NFT class methods
 	SetNFTClass(nftClass dia.NFTClass) error
 	GetAllNFTClasses(blockchain string) ([]dia.NFTClass, error)
+	GetTradedNFTClasses(starttime time.Time) ([]dia.NFTClass, error)
 	GetNFTClasses(limit, offset uint64) ([]dia.NFTClass, error)
 	GetNFTClass(address string, blockchain string) (dia.NFTClass, error)
 	GetNFTClassID(address string, blockchain string) (string, error)

@@ -88,6 +88,36 @@ func (rdb *RelDB) GetAllNFTClasses(blockchain string) (nftClasses []dia.NFTClass
 	return
 }
 
+func (rdb *RelDB) GetTradedNFTClasses(starttime time.Time) (nftClasses []dia.NFTClass, err error) {
+	var rows pgx.Rows
+	query := fmt.Sprintf(`
+		SELECT DISTINCT nc.address, nc.blockchain,nc.symbol,nc.name
+		FROM %s nc 
+		WHERE EXISTS (
+			SELECT 1 
+			FROM %s ntc 
+			WHERE ntc.nftclass_id=nc.nftclass_id
+			AND ntc.trade_time>=to_timestamp(%v)
+		)`, nftclassTable, NfttradeCurrTable, starttime.Unix())
+	rows, err = rdb.postgresClient.Query(context.Background(), query)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var nftClass dia.NFTClass
+		var category pgtype.Unknown
+		err := rows.Scan(&nftClass.Address, &nftClass.Blockchain, &nftClass.Symbol, &nftClass.Name)
+		if err != nil {
+			log.Error(err)
+		}
+		nftClass.Category = category.String
+		nftClasses = append(nftClasses, nftClass)
+	}
+	return
+}
+
 // GetNFTClassPage returns @limit NFT classes with @offset.
 func (rdb *RelDB) GetNFTClasses(limit, offset uint64) (nftClasses []dia.NFTClass, err error) {
 

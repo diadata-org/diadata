@@ -3661,6 +3661,40 @@ func (env *Env) GetSyntheticAsset(c *gin.Context) {
 	}
 }
 
+func (env *Env) GetAvailableAssets(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	assetClass := c.Param("assetClass")
+	// Default starttime is 01-01-2018
+	starttimeInt, err := strconv.ParseInt(c.DefaultQuery("starttime", "1514764800"), 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("Unable to parse timestamp."))
+		return
+	}
+	starttime := time.Unix(starttimeInt, 0)
+
+	if assetClass == "NFT" {
+		nftCollections, err := env.RelDB.GetTradedNFTClasses(starttime)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		c.JSON(http.StatusOK, nftCollections)
+	} else if assetClass == "CryptoToken" {
+		assets, err := env.RelDB.GetAllExchangeAssets(true)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		c.JSON(http.StatusOK, assets)
+	} else {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("Unknown asset class"))
+		return
+	}
+}
+
 func validateInputParams(c *gin.Context) bool {
 
 	// Validate input parameters.

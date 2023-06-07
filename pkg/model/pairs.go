@@ -286,3 +286,41 @@ func (rdb *RelDB) GetNumPairs(exchange dia.Exchange) (numPairs int, err error) {
 
 	return
 }
+
+// GetAllExchangeAssets returns all assets traded as quotetoken on a CEX.
+func (rdb *RelDB) GetAllExchangeAssets(verified bool) (assets []dia.Asset, err error) {
+	query := fmt.Sprintf(`
+		SELECT DISTINCT (a.address,a.blockchain), a.symbol,a.name,a.decimals FROM %s a
+		INNER JOIN %s ep
+		ON a.asset_id=ep.id_quotetoken
+		WHERE ep.verified=%v
+		`, assetTable, exchangepairTable, verified)
+	var rows pgx.Rows
+	rows, err = rdb.postgresClient.Query(context.Background(), query)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			asset    dia.Asset
+			tmp      []interface{}
+			decimals sql.NullInt64
+		)
+
+		err = rows.Scan(&tmp, &asset.Symbol, &asset.Name, &decimals)
+		if err != nil {
+			return
+		}
+		if decimals.Valid {
+			asset.Decimals = uint8(decimals.Int64)
+		}
+		if len(tmp) == 2 {
+			asset.Address = tmp[0].(string)
+			asset.Blockchain = tmp[1].(string)
+		}
+		assets = append(assets, asset)
+	}
+	return
+}
