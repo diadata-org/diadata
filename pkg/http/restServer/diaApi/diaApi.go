@@ -150,7 +150,13 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 		asset             dia.Asset
 		quotationExtended models.AssetQuotationFull
 	)
-	timestamp := time.Now()
+	// Time for quotation is now by default.
+	timestampInt, err := strconv.ParseInt(c.DefaultQuery("timestamp", strconv.Itoa(int(time.Now().Unix()))), 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, errors.New("Could not parse Unix timestamp."))
+		return
+	}
+	timestamp := time.Unix(timestampInt, 0)
 
 	// An asset is uniquely defined by blockchain and address.
 	asset, err = env.RelDB.GetAsset(address, blockchain)
