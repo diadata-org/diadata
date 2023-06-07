@@ -118,3 +118,13 @@ func (t *Trade) TradeIdentifierTagset() string {
 		t.BaseToken.Address +
 		t.BaseToken.Blockchain
 }
+
+// ------------------------------------------------------------------------------------------------
+// DECENTRALIZED TRADES
+// ------------------------------------------------------------------------------------------------
+
+// SetTimeRange determines a (D)tradesblocks start and endtime based on a given current time.
+func (dt *DTradesBlock) SetTimeRange(centralTime time.Time, periodSeconds uint32, currentTime time.Time) {
+	dt.StartTime = time.Unix(currentTime.Unix()-(currentTime.Unix()-centralTime.Unix())%int64(periodSeconds), 0)
+	dt.EndTime = dt.StartTime.Add(time.Duration(periodSeconds) * time.Second)
+}

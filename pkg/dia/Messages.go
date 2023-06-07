@@ -433,6 +433,59 @@ type Trade struct {
 	VerifiedPair      bool      `json:"VerifiedPair"` // will be filled by the pairDiscoveryService
 }
 
+// DExchangePair is the analogue to ExchangePair for decentralized scraper pools.
+type DExchangePair struct {
+	Symbol         string `json:"Symbol"`
+	ForeignName    string `json:"ForeignName"`
+	Exchange       string `json:"Exchange"`
+	UnderlyingPair Pair   `json:"UnderlyingPair"`
+}
+
+// MarshalBinary is a custom marshaller for ExchangePair type
+func (dep *DExchangePair) MarshalBinary() ([]byte, error) {
+	return json.Marshal(dep)
+}
+
+// UnmarshalBinary is a custom unmarshaller for ExchangePair type
+func (dep *DExchangePair) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &dep); err != nil {
+		return err
+	}
+	return nil
+}
+
+type DTrade struct {
+	QuoteToken     Asset
+	BaseToken      Asset
+	Price          float64
+	Volume         float64
+	Time           time.Time
+	Exchange       string
+	PoolAddress    string
+	ForeignTradeID string
+	// Depending on the connection to the processing layer we might not need it here.
+	EstimatedUSDPrice float64
+}
+
+// Struct for decentralized scraper pools.
+// TO DO: Should ScraperID be a type?
+type DTradesBlock struct {
+	Trades    []DTrade
+	StartTime time.Time
+	EndTime   time.Time
+	BlockHash string
+	ScraperID string
+}
+
+// ScraperID is the container identifying a scraper node.
+type ScraperID struct {
+	// ID could for instance be evm address.
+	ID string
+	// Human readable name of the entity that is running the scraper.
+	Name             string
+	RegistrationTime time.Time
+}
+
 // SynthAssetSupply is a container for data on synthetic assets such as aUSDC.
 // https://etherscan.io/address/0xbcca60bb61934080951369a648fb03df4f96263c
 type SynthAssetSupply struct {
