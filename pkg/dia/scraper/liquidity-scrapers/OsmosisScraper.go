@@ -3,6 +3,7 @@ package liquidityscrapers
 import (
 	"context"
 	"fmt"
+	"math"
 	"net/url"
 	"time"
 
@@ -142,10 +143,10 @@ func (s *OsmosisScraper) HandlePool(pool *gammtypes.Pool) {
 			Name:       diaAsset.Name,
 		}
 		log.Info("pool asset: ", poolAsset)
-
+		volume := asset.Token.Amount.ToDec().MustFloat64() / math.Pow(10, float64(diaAsset.Decimals))
 		diaPool.Assetvolumes = append(diaPool.Assetvolumes, dia.AssetVolume{
 			Asset:  poolAsset,
-			Volume: asset.Token.Amount.ToDec().MustFloat64(),
+			Volume: volume,
 			Index:  uint8(idx),
 		})
 	}
