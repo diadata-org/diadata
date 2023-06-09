@@ -56,6 +56,12 @@
     },
     {
       "Exchange": "CoinBase",
+      "ForeignName": "EUROC-USD",
+      "Ignore": false,
+      "Symbol": "EUROC"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "YFI-USD",
       "Ignore": false,
       "Symbol": "YFI"

@@ -25,6 +25,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "euroc",
+            "ForeignName": "eurocusdc",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
             "Symbol": "xrp",
             "ForeignName": "xrpusd",
             "Exchange": "Bitstamp",

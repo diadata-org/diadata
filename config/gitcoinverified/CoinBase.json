@@ -43,6 +43,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "EUROC",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c"
+        },
+        {
             "Symbol": "DOGE",
             "Exchange": "CoinBase",
             "Blockchain": "Dogechain",
