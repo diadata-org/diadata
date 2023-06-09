@@ -1,6 +1,12 @@
 {
     "Tokens": [
         {
+            "Symbol": "MCRT",
+            "Exchange": "ByBit",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0x4b8285aB433D8f69CB48d5Ad62b415ed1a221e4f"
+        },
+        {
             "Symbol": "USD",
             "Exchange": "ByBit",
             "Blockchain": "Fiat",

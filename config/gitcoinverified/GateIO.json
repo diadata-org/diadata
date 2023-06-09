@@ -25,6 +25,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "BEPRO",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0xCF3C8Be2e2C42331Da80EF210e9B1b307C03d36A"
+        },
+        {
             "Symbol": "BFC",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -59,6 +65,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Arbitrum",
             "Address": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"
+        },
+        {
+            "Symbol": "MCRT",
+            "Exchange": "GateIO",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0x4b8285aB433D8f69CB48d5Ad62b415ed1a221e4f"
         },
         {
             "Symbol": "MSOL",

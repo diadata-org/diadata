@@ -79,6 +79,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "BEPRO",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xCF3C8Be2e2C42331Da80EF210e9B1b307C03d36A"
+        },
+        {
             "Symbol": "BFC",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

@@ -368,6 +368,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "MCRTUSDT",
+      "Ignore": false,
+      "Symbol": "MCRT"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "OMGBTC",
       "Ignore": false,
       "Symbol": "OMG"
@@ -413,6 +419,12 @@
       "ForeignName": "QTUMUSDT",
       "Ignore": false,
       "Symbol": "QTUM"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "QUICKUSDT",
+      "Ignore": false,
+      "Symbol": "QUICK"
     },
     {
       "Exchange": "Huobi",

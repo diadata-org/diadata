@@ -169,10 +169,22 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "MCRT",
+      "Exchange": "Huobi",
+      "Blockchain": "BinanceSmartChain",
+      "Address": "0x4b8285aB433D8f69CB48d5Ad62b415ed1a221e4f"
+    },
+    {
       "Symbol": "PEPE",
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",
       "Address": "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
+    },
+    {
+      "Symbol": "QUICK",
+      "Exchange": "Huobi",
+      "Blockchain": "Polygon",
+      "Address": "0xB5C064F955D8e7F38fE0460C556a72987494eE17"
     },
     {
       "Symbol": "RDNT",

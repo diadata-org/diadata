@@ -7,6 +7,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "QUICK",
+            "ForeignName": "QUICK/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
             "Symbol": "GMX",
             "ForeignName": "GMX/USDT",
             "Exchange": "Bitmax",

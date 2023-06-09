@@ -37,12 +37,6 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
-            "Symbol": "BTC",
-            "Exchange": "Bitmax",
-            "Blockchain": "Bitcoin",
-            "Address": "0x0000000000000000000000000000000000000000"
-        },
-        {
             "Symbol": "BAND",
             "Exchange": "Bitmax",
             "Blockchain": "Ethereum",
@@ -61,6 +55,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "BEPRO",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0xCF3C8Be2e2C42331Da80EF210e9B1b307C03d36A"
+        },
+        {
             "Symbol": "BNB",
             "Exchange": "Bitmax",
             "Blockchain": "Ethereum",
@@ -70,6 +70,12 @@
             "Symbol": "BSV",
             "Exchange": "Bitmax",
             "Blockchain": "BitcoinSV",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "BTC",
+            "Exchange": "Bitmax",
+            "Blockchain": "Bitcoin",
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
@@ -293,6 +299,12 @@
             "Exchange": "Bitmax",
             "Blockchain": "Ethereum",
             "Address": "0xbC396689893D065F41bc2C6EcbeE5e0085233447"
+        },
+        {
+            "Symbol": "QUICK",
+            "Exchange": "Bitmax",
+            "Blockchain": "Polygon",
+            "Address": "0xB5C064F955D8e7F38fE0460C556a72987494eE17"
         },
         {
             "Symbol": "QTUM",

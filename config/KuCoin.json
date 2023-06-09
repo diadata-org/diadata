@@ -259,6 +259,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "BEPRO",
+            "ForeignName": "BEPRO-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "BFC",
             "ForeignName": "BFC-USDT",
             "Exchange": "KuCoin",

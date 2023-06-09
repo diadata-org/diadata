@@ -349,6 +349,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "MCRT",
+      "ForeignName": "MCRTUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "METIS",
       "ForeignName": "METISUSDT",
       "Exchange": "MEXC",

@@ -313,6 +313,12 @@
       "Address": "0x0000000000000000000000000000000000001010"
     },
     {
+      "Symbol": "MCRT",
+      "Exchange": "MEXC",
+      "Blockchain": "BinanceSmartChain",
+      "Address": "0x4b8285aB433D8f69CB48d5Ad62b415ed1a221e4f"
+    },
+    {
       "Symbol": "METIS",
       "Exchange": "MEXC",
       "Blockchain": "Metis",
