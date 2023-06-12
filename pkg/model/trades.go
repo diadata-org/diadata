@@ -428,6 +428,78 @@ func (datastore *DB) GetTradesByExchangesBatchedFull(
 	return r, nil
 }
 
+// GetxcTradesByExchangesBatched executes multiple select queries on the trades table in one batch.
+// The time ranges of the queries are given by the intervals [startTimes[i], endTimes[i]].
+func (datastore *DB) GetxcTradesByExchangesBatched(
+	quoteassets []dia.Asset,
+	exchanges []string,
+	startTimes []time.Time,
+	endTimes []time.Time,
+) ([]dia.Trade, error) {
+
+	var r []dia.Trade
+	if len(startTimes) != len(endTimes) {
+		return []dia.Trade{}, errors.New("number of start times must equal number of end times.")
+	}
+	var query string
+	for i := range startTimes {
+		subQueryExchanges := ""
+		subQueryAssets := ""
+		if len(exchanges) > 0 {
+			for _, exchange := range exchanges {
+				subQueryExchanges = subQueryExchanges + fmt.Sprintf("%s|", exchange)
+			}
+			subQueryExchanges = " exchange =~ /" + strings.TrimRight(subQueryExchanges, "|") + "/"
+		}
+
+		if len(quoteassets) > 0 {
+			for i, quoteasset := range quoteassets {
+				if i == 0 {
+					subQueryAssets = subQueryAssets + fmt.Sprintf(` AND ((quotetokenaddress='%s' AND quotetokenblockchain='%s')`, quoteasset.Address, quoteasset.Blockchain)
+
+				} else {
+					subQueryAssets = subQueryAssets + fmt.Sprintf(` OR (quotetokenaddress='%s' AND quotetokenblockchain='%s')`, quoteasset.Address, quoteasset.Blockchain)
+				}
+
+			}
+			subQueryAssets = subQueryAssets + ") "
+
+		}
+		query = query + fmt.Sprintf(`
+		SELECT time,estimatedUSDPrice,exchange,foreignTradeID,pair,price,symbol,volume,verified,basetokenblockchain,basetokenaddress
+		FROM %s 
+		WHERE estimatedUSDPrice > 0 
+		AND time > %d AND time <= %d
+		%s %s ;`,
+			influxDbTradesTable, startTimes[i].UnixNano(), endTimes[i].UnixNano(), subQueryExchanges, subQueryAssets)
+	}
+
+	res, err := queryInfluxDB(datastore.influxClient, query)
+	if err != nil {
+		return r, err
+	}
+
+	if len(res) > 0 {
+		for i := range res {
+			if len(res[i].Series) > 0 {
+				log.Infof("parse %v trades...", len(res[i].Series[0].Values))
+				for _, row := range res[i].Series[0].Values {
+					t := parseTrade(row, false)
+					if t != nil {
+						r = append(r, *t)
+					}
+				}
+				log.Info("...done parsing.")
+			}
+		}
+	} else {
+		log.Error("Empty response GetxcTradesByExchangesBatched")
+		return nil, fmt.Errorf("no trades found")
+	}
+
+	return r, nil
+}
+
 // GetAllTrades returns at most @maxTrades trades from influx with timestamp > @t. Only used by replayInflux option.
 func (datastore *DB) GetAllTrades(t time.Time, maxTrades int) ([]dia.Trade, error) {
 	var r []dia.Trade

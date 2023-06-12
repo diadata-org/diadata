@@ -74,7 +74,7 @@ type TradeBlock struct {
 	Trades []dia.Trade
 }
 
-type BaseAssetInput struct {
+type AssetInput struct {
 	Address    graphql.NullString
 	BlockChain graphql.NullString
 }
@@ -94,7 +94,7 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	Exchanges            *[]graphql.NullString
 	Address              graphql.NullString
 	BlockChain           graphql.NullString
-	BaseAsset            *[]BaseAssetInput
+	BaseAsset            *[]AssetInput
 }) (*[]*FilterPointResolver, error) {
 	fpr, _ := r.GetChartMeta(ctx, args)
 
@@ -112,7 +112,7 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 	Exchanges            *[]graphql.NullString
 	Address              graphql.NullString
 	BlockChain           graphql.NullString
-	BaseAsset            *[]BaseAssetInput
+	BaseAsset            *[]AssetInput
 }) (*FilterPointMetaResolver, error) {
 	var (
 		blockShiftSeconds int64
@@ -310,10 +310,144 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 	return &FilterPointMetaResolver{fpr: &fpr, min: filterMetadata.Min, max: filterMetadata.Max}, nil
 }
 
+// GetxcFeed returns filter points for a (possibly) cross chain feed given by @QuoteAssets.
+func (r *DiaResolver) GetxcFeed(ctx context.Context, args struct {
+	Filter            graphql.NullString
+	QuoteAssets       *[]AssetInput
+	Exchanges         *[]graphql.NullString
+	BlockSizeSeconds  graphql.NullInt
+	BlockShiftSeconds graphql.NullInt
+	StartTime         graphql.NullTime
+	EndTime           graphql.NullTime
+}) (*[]*FilterPointResolver, error) {
+
+	// --- Parse input data ---
+	var (
+		vr           *[]*FilterPointResolver
+		tradeBlocks  []queryhelper.Block
+		filterPoints []dia.FilterPoint
+	)
+
+	filter := args.Filter.Value
+
+	var quoteAssets []dia.Asset
+	if len(*args.QuoteAssets) > 0 {
+		for i := range *args.QuoteAssets {
+			quoteAssets = append(quoteAssets, dia.Asset{Address: *(*args.QuoteAssets)[i].Address.Value, Blockchain: *(*args.QuoteAssets)[i].BlockChain.Value})
+		}
+	}
+
+	var exchanges []string
+	if len(*args.Exchanges) > 0 {
+		for i := range *args.Exchanges {
+			exchanges = append(exchanges, *(*args.Exchanges)[i].Value)
+		}
+	}
+
+	blockSizeSeconds := int64(*args.BlockSizeSeconds.Value)
+	var blockShiftSeconds int64
+	if args.BlockShiftSeconds.Value != nil {
+		blockShiftSeconds = int64(*args.BlockShiftSeconds.Value)
+	} else {
+		blockShiftSeconds = blockSizeSeconds
+	}
+
+	// --- Make time bins according to block size and block shift parameters ---
+	starttime := args.StartTime.Value.Time
+	endtime := args.EndTime.Value.Time
+	if args.EndTime.Set {
+		endtime = args.EndTime.Value.Time
+	}
+	if endtime.After(time.Now()) {
+		endtime = time.Now()
+	}
+
+	// --- Limit the (time-)range of the query to 24 hours ---
+	maxStartTime := endtime.Add(-time.Duration(60*24) * time.Minute)
+	if starttime.Before(maxStartTime) {
+		starttime = maxStartTime
+	}
+
+	// (Potentially) decrease starttime such that an integer number of bins fits into the whole range.
+	if endtime.Unix()-starttime.Unix() < blockSizeSeconds {
+		// Just one block.
+		starttime = time.Unix(endtime.Unix()-blockSizeSeconds, 0)
+	} else {
+		starttime = time.Unix(starttime.Unix()-(blockShiftSeconds-((endtime.Unix()-starttime.Unix()-blockSizeSeconds)%blockShiftSeconds)), 0)
+	}
+
+	// --- Make time bins according to block size and block shift parameters ---
+	bins := utils.MakeBins(starttime, endtime, blockSizeSeconds, blockShiftSeconds)
+	var (
+		starttimes []time.Time
+		endtimes   []time.Time
+	)
+	if blockShiftSeconds <= blockSizeSeconds {
+		// Bins overlap and hence all trades in total time range are needed.
+		starttimes = []time.Time{starttime}
+		endtimes = []time.Time{endtime}
+	} else {
+		// Bins are disjoint. Hence, only fetch trades per bin.
+		for _, bin := range bins {
+			starttimes = append(starttimes, bin.Starttime)
+			endtimes = append(endtimes, bin.Endtime)
+		}
+	}
+
+	// --- Fetch trades ---
+	trades, err := r.DS.GetxcTradesByExchangesBatched(quoteAssets, exchanges, starttimes, endtimes)
+	if err != nil {
+		return vr, err
+	}
+
+	if len(trades) > 0 && len(bins) > 0 {
+		// In case the first bin is empty, look for the last trade before @starttime.
+		if !utils.IsInBin(trades[0].Time, bins[0]) {
+			trades = r.fillFirstBin(quoteAssets, exchanges, trades, starttime.AddDate(0, 0, -10), starttime)
+		}
+		tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateBlocks(blockSizeSeconds, blockShiftSeconds, bins)
+		log.Println("Total TradeBlocks", len(tradeBlocks))
+	}
+
+	switch *filter {
+	case "mair":
+		{
+			filterPoints, _ = queryhelper.FilterMAIR(tradeBlocks, quoteAssets[0], int(blockSizeSeconds))
+		}
+	case "ma":
+		{
+			filterPoints, _ = queryhelper.FilterMA(tradeBlocks, quoteAssets[0], int(blockSizeSeconds))
+		}
+	case "vwap":
+		{
+			filterPoints, _ = queryhelper.FilterVWAP(tradeBlocks, quoteAssets[0], int(blockSizeSeconds))
+		}
+	case "vwapir":
+		{
+			filterPoints, _ = queryhelper.FilterVWAPIR(tradeBlocks, quoteAssets[0], int(blockSizeSeconds))
+		}
+	case "medir":
+		{
+			filterPoints, _ = queryhelper.FilterMEDIR(tradeBlocks, quoteAssets[0], int(blockSizeSeconds))
+		}
+	case "vol":
+		{
+			filterPoints, _ = queryhelper.FilterVOL(tradeBlocks, quoteAssets[0], int(blockSizeSeconds))
+		}
+	}
+
+	var fpr []*FilterPointResolver
+	for _, fp := range filterPoints {
+		fpr = append(fpr, &FilterPointResolver{q: fp})
+	}
+
+	return &fpr, nil
+}
+
 func (r *DiaResolver) GetVWALP(ctx context.Context, args struct {
 	Quotetokenblockchain graphql.NullString
 	Quotetokenaddress    graphql.NullString
-	BaseAssets           *[]BaseAssetInput
+	BaseAssets           *[]AssetInput
 	Exchanges            *[]graphql.NullString
 	BlockDurationSeconds graphql.NullInt
 	EndTime              graphql.NullTime
@@ -487,4 +621,21 @@ func (r *DiaResolver) GetNFTBids(ctx context.Context, args struct {
 	}
 
 	return &br, nil
+}
+
+func (r *DiaResolver) fillFirstBin(assets []dia.Asset, exchanges []string, trades []dia.Trade, starttime time.Time, endtime time.Time) []dia.Trade {
+	previousTrade, quoteAssetsErr := r.DS.GetxcTradesByExchangesBatched(assets, exchanges, []time.Time{starttime}, []time.Time{endtime})
+	if quoteAssetsErr != nil || len(previousTrade) == 0 {
+		log.Error("get initial trade: ", quoteAssetsErr)
+		// Fill with a zero trade so we can build blocks.
+		auxTrade := trades[0]
+		auxTrade.Volume = 0
+		auxTrade.Price = 0
+		auxTrade.EstimatedUSDPrice = 0
+		trades = append([]dia.Trade{auxTrade}, trades...)
+	} else {
+		trades = append([]dia.Trade{previousTrade[len(previousTrade)-1]}, trades...)
+		log.Warn("previous trade: ", previousTrade[len(previousTrade)-1])
+	}
+	return trades
 }
