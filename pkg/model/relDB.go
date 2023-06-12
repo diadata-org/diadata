@@ -74,7 +74,7 @@ type RelDatastore interface {
 
 	// ------ Caching ------
 	SetAssetCache(asset dia.Asset) error
-	GetAssetCache(assetID string) (dia.Asset, error)
+	GetAssetCache(blockchain string, address string) (dia.Asset, error)
 	SetExchangePairCache(exchange string, pair dia.ExchangePair) error
 	GetExchangePairCache(exchange string, foreignName string) (dia.ExchangePair, error)
 	CountCache() (uint32, error)
@@ -213,6 +213,7 @@ type RelDB struct {
 	URI            string
 	postgresClient *pgxpool.Pool
 	redisClient    *redis.Client
+	redisPipe      redis.Pipeliner
 	pagesize       uint32
 }
 
@@ -234,9 +235,12 @@ func NewCachingLayer() (*RelDB, error) {
 
 // NewRelDataStoreWithOptions returns a postgres datastore and/or redis caching layer.
 func NewRelDataStoreWithOptions(withPostgres bool, withRedis bool) (*RelDB, error) {
-	var postgresClient *pgxpool.Pool
-	var redisClient *redis.Client
-	var url string
+	var (
+		postgresClient *pgxpool.Pool
+		redisClient    *redis.Client
+		redisPipe      redis.Pipeliner
+		url            string
+	)
 
 	if withPostgres {
 		url = db.GetPostgresURL()
@@ -244,8 +248,9 @@ func NewRelDataStoreWithOptions(withPostgres bool, withRedis bool) (*RelDB, erro
 	}
 	if withRedis {
 		redisClient = db.GetRedisClient()
+		redisPipe = redisClient.TxPipeline()
 	}
-	return &RelDB{url, postgresClient, redisClient, 32}, nil
+	return &RelDB{url, postgresClient, redisClient, redisPipe, 32}, nil
 }
 
 // GetKeys returns a slice of strings holding the names of the keys of @table in postgres

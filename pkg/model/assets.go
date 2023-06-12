@@ -768,25 +768,15 @@ func (rdb *RelDB) Count() (count uint32, err error) {
 // SetAssetCache stores @asset in redis, using its primary key in postgres as key.
 // As a consequence, @asset is only cached iff it exists in postgres.
 func (rdb *RelDB) SetAssetCache(asset dia.Asset) error {
-	key, err := rdb.GetKeyAsset(asset)
-	fmt.Printf("cache asset %s with key %s\n ", asset.Symbol, key)
-	if err != nil {
-		return err
-	}
-	return rdb.redisClient.Set(key, &asset, 0).Err()
+	return rdb.redisClient.Set(keyAssetCache+asset.Identifier(), &asset, 0).Err()
 }
 
 // GetAssetCache returns an asset by its asset_id as defined in asset table in postgres
-func (rdb *RelDB) GetAssetCache(assetID string) (dia.Asset, error) {
-	asset := dia.Asset{}
-	err := rdb.redisClient.Get(keyAssetCache + assetID).Scan(&asset)
-	if err != nil {
-		if !errors.Is(err, redis.Nil) {
-			log.Errorf("Error: %v on GetAssetCache with postgres asset_id %s\n", err, assetID)
-		}
-		return asset, err
-	}
-	return asset, nil
+func (rdb *RelDB) GetAssetCache(blockchain string, address string) (asset dia.Asset, err error) {
+	asset.Blockchain = blockchain
+	asset.Address = address
+	err = rdb.redisClient.Get(keyAssetCache + asset.Identifier()).Scan(&asset)
+	return
 }
 
 // CountCache returns the number of assets in the cache

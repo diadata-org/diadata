@@ -208,10 +208,12 @@ func NewDataStoreWithoutRedis() (*DB, error) {
 }
 
 func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
-	var influxClient clientInfluxdb.Client
-	var influxBatchPoints clientInfluxdb.BatchPoints
-	var redisClient *redis.Client
-	var redisPipe redis.Pipeliner
+	var (
+		influxClient      clientInfluxdb.Client
+		influxBatchPoints clientInfluxdb.BatchPoints
+		redisClient       *redis.Client
+		redisPipe         redis.Pipeliner
+	)
 
 	if withRedis {
 		redisClient = db.GetRedisClient()
