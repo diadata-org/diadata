@@ -150,6 +150,8 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 		asset             dia.Asset
 		quotationExtended models.AssetQuotationFull
 	)
+
+	_, isTimeStampQuery := c.GetQuery("timestamp")
 	// Time for quotation is now by default.
 	timestampInt, err := strconv.ParseInt(c.DefaultQuery("timestamp", strconv.Itoa(int(time.Now().Unix()))), 10, 64)
 	if err != nil {
@@ -194,7 +196,11 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 	quotationExtended.Address = quotation.Asset.Address
 	quotationExtended.Blockchain = quotation.Asset.Blockchain
 	quotationExtended.Price = quotation.Price
-	quotationExtended.Time = quotation.Time
+	if isTimeStampQuery {
+		quotationExtended.Time = timestamp
+	} else {
+		quotationExtended.Time = quotation.Time
+	}
 	quotationExtended.Source = quotation.Source
 	quotationExtended.Signature = signedData
 
