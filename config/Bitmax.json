@@ -739,6 +739,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "MIM",
+            "ForeignName": "MIM/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
             "Symbol": "BHD",
             "ForeignName": "BHD/USDT",
             "Exchange": "Bitmax",
