@@ -151,11 +151,10 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 		quotationExtended models.AssetQuotationFull
 	)
 
-	_, isTimeStampQuery := c.GetQuery("timestamp")
 	// Time for quotation is now by default.
 	timestampInt, err := strconv.ParseInt(c.DefaultQuery("timestamp", strconv.Itoa(int(time.Now().Unix()))), 10, 64)
 	if err != nil {
-		restApi.SendError(c, http.StatusNotFound, errors.New("Could not parse Unix timestamp."))
+		restApi.SendError(c, http.StatusNotFound, errors.New("could not parse Unix timestamp"))
 		return
 	}
 	timestamp := time.Unix(timestampInt, 0)
@@ -193,11 +192,7 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 	quotationExtended.Address = quotation.Asset.Address
 	quotationExtended.Blockchain = quotation.Asset.Blockchain
 	quotationExtended.Price = quotation.Price
-	if isTimeStampQuery {
-		quotationExtended.Time = timestamp
-	} else {
-		quotationExtended.Time = quotation.Time
-	}
+	quotationExtended.Time = timestamp
 	quotationExtended.Source = quotation.Source
 
 	signedData, err := env.signer.Sign(quotation.Asset.Symbol, quotation.Asset.Address, quotation.Asset.Blockchain, quotation.Price, quotationExtended.Time)
