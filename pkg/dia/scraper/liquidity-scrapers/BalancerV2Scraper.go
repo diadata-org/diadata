@@ -13,6 +13,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	balancervault "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/balancerv2/vault"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -25,6 +26,7 @@ const (
 
 type BalancerV2Scraper struct {
 	RestClient             *ethclient.Client
+	relDB                  *models.RelDB
 	poolChannel            chan dia.Pool
 	doneChannel            chan bool
 	blockchain             string
@@ -35,7 +37,7 @@ type BalancerV2Scraper struct {
 }
 
 // NewBalancerV2Scraper returns a Balancer V2 scraper
-func NewBalancerV2Scraper(exchange dia.Exchange) *BalancerV2Scraper {
+func NewBalancerV2Scraper(exchange dia.Exchange, relDB *models.RelDB) *BalancerV2Scraper {
 	var (
 		restClient  *ethclient.Client
 		err         error
@@ -52,6 +54,7 @@ func NewBalancerV2Scraper(exchange dia.Exchange) *BalancerV2Scraper {
 
 	scraper = &BalancerV2Scraper{
 		RestClient:    restClient,
+		relDB:         relDB,
 		poolChannel:   poolChannel,
 		doneChannel:   doneChannel,
 		blockchain:    exchange.BlockChain.Name,
@@ -168,9 +171,14 @@ func (scraper *BalancerV2Scraper) extractPoolInfo(poolTokens struct {
 	LastChangeBlock *big.Int
 }) (assetvolumes []dia.AssetVolume) {
 	for i := range poolTokens.Tokens {
-		asset, err := scraper.assetFromToken(poolTokens.Tokens[i])
+
+		asset, err := scraper.relDB.GetAsset(poolTokens.Tokens[i].Hex(), scraper.blockchain)
 		if err != nil {
-			log.Error("get asset from token: ", err)
+			asset, err = ethhelper.ETHAddressToAsset(poolTokens.Tokens[i], scraper.RestClient, scraper.blockchain)
+			if err != nil {
+				log.Warn("cannot fetch asset from address ", poolTokens.Tokens[i].Hex())
+				continue
+			}
 		}
 
 		volume, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(poolTokens.Balances[i]), new(big.Float).SetFloat64(math.Pow10(int(asset.Decimals)))).Float64()

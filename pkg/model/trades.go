@@ -449,7 +449,7 @@ func (datastore *DB) GetxcTradesByExchangesBatched(
 			for _, exchange := range exchanges {
 				subQueryExchanges = subQueryExchanges + fmt.Sprintf("%s|", exchange)
 			}
-			subQueryExchanges = " exchange =~ /" + strings.TrimRight(subQueryExchanges, "|") + "/"
+			subQueryExchanges = "AND exchange =~ /" + strings.TrimRight(subQueryExchanges, "|") + "/"
 		}
 
 		if len(quoteassets) > 0 {
@@ -469,11 +469,10 @@ func (datastore *DB) GetxcTradesByExchangesBatched(
 		SELECT time,estimatedUSDPrice,exchange,foreignTradeID,pair,price,symbol,volume,verified,basetokenblockchain,basetokenaddress
 		FROM %s 
 		WHERE estimatedUSDPrice > 0 
-		AND time > %d AND time <= %d
+		AND time > %d AND time <= %d 
 		%s %s ;`,
 			influxDbTradesTable, startTimes[i].UnixNano(), endTimes[i].UnixNano(), subQueryExchanges, subQueryAssets)
 	}
-
 	res, err := queryInfluxDB(datastore.influxClient, query)
 	if err != nil {
 		return r, err

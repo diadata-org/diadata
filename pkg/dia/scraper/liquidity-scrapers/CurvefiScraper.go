@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/curvefi"
 	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/curvefifactory"
 	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/curvefimeta"
@@ -20,7 +21,6 @@ import (
 
 var (
 	curveRestDial = ""
-	ASSET_CACHE   = make(map[string]dia.Asset)
 )
 
 type CurveFIScraper struct {
@@ -92,7 +92,7 @@ func NewCurveFIScraper(exchange dia.Exchange) *CurveFIScraper {
 		blockchain:   exchange.BlockChain.Name,
 		exchangeName: exchange.Name,
 	}
-	scraper.relDB, err = models.NewPostgresDataStore()
+	scraper.relDB, err = models.NewRelDataStore()
 	if err != nil {
 		log.Fatal("new postgres datastore: ", err)
 	}
@@ -207,7 +207,13 @@ func (scraper *CurveFIScraper) loadPoolData(poolAddress string, registry curveRe
 			if poolCoins[i].Hex() == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" {
 				poolCoins[i] = common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")
 			}
-			asset := scraper.getAssetFromCache(ASSET_CACHE, scraper.blockchain, poolCoins[i].Hex())
+			asset, err := scraper.relDB.GetAsset(poolCoins[i].Hex(), scraper.blockchain)
+			if err != nil {
+				asset, err = ethhelper.ETHAddressToAsset(poolCoins[i], scraper.RestClient, scraper.blockchain)
+				if err != nil {
+					return
+				}
+			}
 			liquidity, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(liquidities[i]), new(big.Float).SetFloat64(math.Pow10(int(asset.Decimals)))).Float64()
 			av := dia.AssetVolume{Asset: asset, Volume: liquidity, Index: uint8(i)}
 			pool.Assetvolumes = append(pool.Assetvolumes, av)
@@ -243,7 +249,13 @@ func (scraper *CurveFIScraper) loadPoolData(poolAddress string, registry curveRe
 			if poolCoins[i].Hex() == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" {
 				poolCoins[i] = common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")
 			}
-			asset := scraper.getAssetFromCache(ASSET_CACHE, scraper.blockchain, poolCoins[i].Hex())
+			asset, err := scraper.relDB.GetAsset(poolCoins[i].Hex(), scraper.blockchain)
+			if err != nil {
+				asset, err = ethhelper.ETHAddressToAsset(poolCoins[i], scraper.RestClient, scraper.blockchain)
+				if err != nil {
+					return
+				}
+			}
 			liquidity, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(liquidities[i]), new(big.Float).SetFloat64(math.Pow10(int(asset.Decimals)))).Float64()
 			av := dia.AssetVolume{Asset: asset, Volume: liquidity, Index: uint8(i)}
 			pool.Assetvolumes = append(pool.Assetvolumes, av)
@@ -280,7 +292,13 @@ func (scraper *CurveFIScraper) loadPoolData(poolAddress string, registry curveRe
 				log.Error("Get Balances: ", err)
 			}
 
-			asset := scraper.getAssetFromCache(ASSET_CACHE, scraper.blockchain, poolAssetAddress.Hex())
+			asset, err := scraper.relDB.GetAsset(poolCoins[i].Hex(), scraper.blockchain)
+			if err != nil {
+				asset, err = ethhelper.ETHAddressToAsset(poolCoins[i], scraper.RestClient, scraper.blockchain)
+				if err != nil {
+					return
+				}
+			}
 			liquidity, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(liquidityBig), new(big.Float).SetFloat64(math.Pow10(int(asset.Decimals)))).Float64()
 			av := dia.AssetVolume{Asset: asset, Volume: liquidity, Index: uint8(i)}
 			pool.Assetvolumes = append(pool.Assetvolumes, av)
