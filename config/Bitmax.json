@@ -1597,12 +1597,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "DOT",
-            "ForeignName": "DOT/PERP",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
             "Symbol": "OM",
             "ForeignName": "OM/USDT",
             "Exchange": "Bitmax",
