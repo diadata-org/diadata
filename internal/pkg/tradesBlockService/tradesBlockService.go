@@ -476,13 +476,13 @@ func buildBridge(t dia.Trade) dia.Asset {
 
 	basetoken := t.BaseToken
 
-	if basetoken.Blockchain == dia.ETHEREUM && basetoken.Address == "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" {
-		basetoken = dia.Asset{
-			Symbol:     "ETH",
-			Address:    "0x0000000000000000000000000000000000000000",
-			Blockchain: dia.ETHEREUM,
-		}
-	}
+	// if basetoken.Blockchain == dia.ETHEREUM && basetoken.Address == "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" {
+	// 	basetoken = dia.Asset{
+	// 		Symbol:     "ETH",
+	// 		Address:    "0x0000000000000000000000000000000000000000",
+	// 		Blockchain: dia.ETHEREUM,
+	// 	}
+	// }
 	if basetoken.Blockchain == dia.SOLANA && t.Source == dia.OrcaExchange {
 		if basetoken.Address == "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" {
 			basetoken = dia.Asset{
