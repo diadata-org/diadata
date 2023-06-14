@@ -3,6 +3,14 @@
     {
       "Address": "0x5575552988A3A80504bBaeB1311674fCFd40aD4B",
       "Symbol": "SPA"
+    },
+    {
+      "Address": "0xFEa7a6a0B346362BF88A9e4A88416B77a57D6c2A",
+      "Symbol": "MIM"
+    },
+    {
+      "Address": "0xB0B195aEFA3650A6908f15CdaC7D92F8a5791B0B",
+      "Symbol": "BOB"
     }
   ]
 }

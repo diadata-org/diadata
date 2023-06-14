@@ -1,15 +1,15 @@
 package enums
 
-type HealthSate string
+type HealthState string
 
 const (
-	HealthStateOperational HealthSate = "Operational"
-	HealthStateMinor       HealthSate = "Minor Outage"
-	HealthStateMajor       HealthSate = "Major Outage"
-	HealthStateMaintenance HealthSate = "Maintenance"
+	HealthStateOperational HealthState = "Operational"
+	HealthStateMinor       HealthState = "Minor Outage"
+	HealthStateMajor       HealthState = "Major Outage"
+	HealthStateMaintenance HealthState = "Maintenance"
 )
 
-func CompareStates(itemState HealthSate, groupState HealthSate) HealthSate {
+func CompareStates(itemState HealthState, groupState HealthState) HealthState {
 	switch itemState {
 	case HealthStateMajor:
 		return HealthStateMajor

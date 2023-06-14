@@ -100,10 +100,12 @@ func NewBalancerV2Scraper(exchange dia.Exchange, scrape bool) *BalancerV2Scraper
 	switch exchange.Name {
 	case dia.BalancerV2Exchange:
 		balancerV2StartBlockPoolRegister = 12272146
-	case dia.BalancerV2ExchangePolygon:
-		balancerV2StartBlockPoolRegister = 15832990
+	case dia.BalancerV2ExchangeArbitrum:
+		balancerV2StartBlockPoolRegister = 222832
 	case dia.BeetsExchange:
 		balancerV2StartBlockPoolRegister = 16896080
+	case dia.BalancerV2ExchangePolygon:
+		balancerV2StartBlockPoolRegister = 15832990
 	}
 
 	var err error
@@ -287,6 +289,16 @@ func (s *BalancerV2Scraper) mainLoop() {
 			select {
 			case <-s.shutdown:
 			case s.chanTrades <- trade:
+				// Take into account reversed trade as well in either of both cases
+				// 1. Base asset is not bluechip
+				// 2. Both assets are bluechip
+				if !utils.Contains(reverseQuotetokensBalancer, trade.BaseToken.Address) ||
+					(utils.Contains(reverseQuotetokensBalancer, trade.BaseToken.Address) && utils.Contains(reverseQuotetokensBalancer, trade.QuoteToken.Address)) {
+					tSwapped, err := dia.SwapTrade(*trade)
+					if err == nil {
+						s.chanTrades <- &tSwapped
+					}
+				}
 				log.Info("got trade: ", trade)
 			}
 		}

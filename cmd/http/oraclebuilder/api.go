@@ -3,7 +3,9 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"strings"
 
@@ -26,6 +28,12 @@ type Env struct {
 	RelDB     *models.RelDB
 	PodHelper *builderUtils.PodHelper
 	Keyring   kr.Keyring
+}
+
+func handleError(context *gin.Context, status int, errorMsg, logMsg string, logArgs ...interface{}) {
+	context.JSON(status, errors.New(errorMsg))
+	log.Errorf(logMsg, logArgs...)
+	context.Abort() // Prevent further handlers from being called
 }
 
 // Create new oracle feeder if creator has resources
@@ -61,15 +69,83 @@ func (ob *Env) Create(context *gin.Context) {
 	log.Infoln("Creating oracle: creator", creator)
 	log.Infoln("Creating oracle: oracleaddress", oracleaddress)
 	log.Infoln("Creating oracle: feederID", feederID)
+	log.Infoln("Creating oracle: deviationPermille", deviationPermille)
 
 	signer, _ := utils.GetSigner(chainID, creator, oracleaddress, "Verify its your address to call oracle builder", signedData)
 
 	log.Infoln("Creating oracle: signer", signer)
 
 	if signer.Hex() != creator {
-		context.JSON(http.StatusUnauthorized, errors.New("sign err"))
-		log.Errorln("Creating oracle: invalid signer", signer)
-		return
+		handleError(context, http.StatusUnauthorized, "sign err", "Creating oracle: invalid signer", signer)
+	}
+
+	// validations
+	// check for  symbols
+
+	if symbols == "" {
+		handleError(context, http.StatusBadRequest, "no symbols", "Creating oracle: no symbols", symbols)
+
+	}
+	symbolsArray := strings.Split(symbols, ",")
+
+	if len(symbolsArray) > 10 {
+		handleError(context, http.StatusBadRequest, "max symbols exceed", "Creating oracle: max symbols exceed", symbols)
+	}
+
+	// check for duplicate symbol
+
+	if utils.CheckDuplicates(symbolsArray) {
+		handleError(context, http.StatusBadRequest, "duplicate symbols", "Creating oracle: duplicate symbols", symbols)
+
+	}
+
+	// check frequency limit
+
+	frequencyInt, err := strconv.Atoi(frequency)
+	if err != nil {
+		handleError(context, http.StatusBadRequest, "invalid frequency", "Creating oracle: invalid frequency", err)
+	}
+
+	mandatoryFrequencyInt, err := strconv.Atoi(mandatoryFrequency)
+	if err != nil {
+		handleError(context, http.StatusBadRequest, "invalid mandatoryFrequencyInt", "Creating oracle: invalid mandatoryFrequencyInt", err)
+	}
+
+	if frequencyInt != 0 || mandatoryFrequencyInt == 0 {
+		if frequencyInt < 120 || frequencyInt > 2630000 {
+			context.JSON(http.StatusBadRequest, errors.New("invalid frequency, out of range"))
+			log.Errorln("Creating oracle: invalid frequency, out of range", frequencyInt)
+			return
+		}
+	}
+
+	if frequencyInt == 0 || mandatoryFrequencyInt > 0 {
+		if mandatoryFrequencyInt < 120 || mandatoryFrequencyInt > 2630000 {
+			handleError(context, http.StatusBadRequest, "invalid mandatoryFrequencyInt, out of range", "Creating oracle: invalid mandatoryFrequencyInt, out of range", err)
+		}
+
+	}
+
+	deviationPermilleFloat, err := strconv.ParseFloat(deviationPermille, 64)
+	if err != nil {
+		deviationPermilleFloat = 0.0
+		log.Errorln("Creating oracle:  deviationPermille is empty set to zero", err)
+
+	}
+
+	if deviationPermilleFloat > 0 {
+		if deviationPermilleFloat < 0.1 && deviationPermilleFloat > 10000 {
+			if err != nil {
+				context.JSON(http.StatusBadRequest, errors.New("invalid deviationPermille"))
+				log.Errorln("Creating oracle: invalid deviationPermille", err)
+				return
+			}
+
+		}
+
+		deviationPermilleFloat = deviationPermilleFloat * 10
+		deviationPermille = fmt.Sprintf("%.2f", deviationPermilleFloat)
+
 	}
 
 	log.Infoln("feederId from creator", feederID)
@@ -86,7 +162,7 @@ func (ob *Env) Create(context *gin.Context) {
 			return
 		}
 
-		feederID = utils.GenerateAutoname("-")
+		feederID = "feeder-" + utils.GenerateAutoname("-")
 
 		err = ob.Keyring.Set(kr.Item{
 			Key: feederID,
@@ -108,11 +184,6 @@ func (ob *Env) Create(context *gin.Context) {
 		}
 		isUpdate = true
 
-		// if feederID {
-		// 	// TODO check if owner of feederid is correct
-
-		// }
-
 	}
 
 	item, err := ob.Keyring.Get(feederID)
@@ -129,7 +200,7 @@ func (ob *Env) Create(context *gin.Context) {
 	address = keypair.GetPublickey()
 
 	if !isUpdate {
-		err = ob.PodHelper.CreateOracleFeeder(feederID, address, oracleaddress, chainID, symbols, blockchainnode, frequency, sleepSeconds, deviationPermille, mandatoryFrequency)
+		err = ob.PodHelper.CreateOracleFeeder(context, feederID, address, oracleaddress, chainID, symbols, blockchainnode, frequency, sleepSeconds, deviationPermille, mandatoryFrequency)
 		if err != nil {
 			log.Errorln("error CreateOracleFeeder ", err)
 			context.JSON(http.StatusInternalServerError, errors.New("error creating oraclefeeder"))
@@ -153,7 +224,7 @@ func (ob *Env) Create(context *gin.Context) {
 			return
 		}
 
-		err = ob.PodHelper.RestartOracleFeeder(feederID, oracleconfig)
+		err = ob.PodHelper.RestartOracleFeeder(context, feederID, oracleconfig)
 		if err != nil {
 			log.Errorln("error RestartOracleFeeder ", err)
 			context.JSON(http.StatusInternalServerError, err)
@@ -265,7 +336,7 @@ func (ob *Env) Pause(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, err)
 		return
 	}
-	err = ob.PodHelper.DeleteOracleFeeder(oracleconfig.FeederID)
+	err = ob.PodHelper.DeleteOracleFeeder(context, oracleconfig.FeederID)
 	if err != nil {
 		log.Errorln("error DeleteOracleFeeder ", err)
 		context.JSON(http.StatusInternalServerError, err)
@@ -300,7 +371,7 @@ func (ob *Env) Delete(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, err)
 		return
 	}
-	err = ob.PodHelper.DeleteOracleFeeder(oracleconfig.FeederID)
+	err = ob.PodHelper.DeleteOracleFeeder(context, oracleconfig.FeederID)
 	if err != nil {
 		log.Errorln("error DeleteOracleFeeder ", err)
 		context.JSON(http.StatusInternalServerError, err)
@@ -341,7 +412,7 @@ func (ob *Env) Restart(context *gin.Context) {
 		return
 	}
 
-	err = ob.PodHelper.RestartOracleFeeder(oracleconfig.FeederID, oracleconfig)
+	err = ob.PodHelper.RestartOracleFeeder(context, oracleconfig.FeederID, oracleconfig)
 	if err != nil {
 		log.Errorln("error RestartOracleFeeder ", err)
 		context.JSON(http.StatusInternalServerError, err)

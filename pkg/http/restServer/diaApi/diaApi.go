@@ -26,9 +26,10 @@ import (
 )
 
 var (
-	DECIMALS_CACHE = make(map[dia.Asset]uint8)
-	ASSET_CACHE    = make(map[string]dia.Asset)
-	BLOCKCHAINS    = make(map[string]dia.BlockChain)
+	DECIMALS_CACHE  = make(map[dia.Asset]uint8)
+	ASSET_CACHE     = make(map[string]dia.Asset)
+	QUOTATION_CACHE = make(map[string]*models.AssetQuotation)
+	BLOCKCHAINS     = make(map[string]dia.BlockChain)
 )
 
 type Env struct {
@@ -142,14 +143,21 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 	}
 
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 
 	var (
 		err               error
 		asset             dia.Asset
 		quotationExtended models.AssetQuotationFull
 	)
-	timestamp := time.Now()
+
+	// Time for quotation is now by default.
+	timestampInt, err := strconv.ParseInt(c.DefaultQuery("timestamp", strconv.Itoa(int(time.Now().Unix()))), 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, errors.New("could not parse Unix timestamp"))
+		return
+	}
+	timestamp := time.Unix(timestampInt, 0)
 
 	// An asset is uniquely defined by blockchain and address.
 	asset, err = env.RelDB.GetAsset(address, blockchain)
@@ -177,18 +185,20 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 	} else {
 		quotationExtended.VolumeYesterdayUSD = *volumeYesterday
 	}
-	signedData, err := env.signer.Sign(quotation.Asset.Symbol, quotation.Asset.Address, quotation.Asset.Blockchain, quotation.Price, quotation.Time)
-	if err != nil {
-		log.Warn("error signing data: ", err)
-	}
+
 	// Appropriate formatting.
 	quotationExtended.Symbol = quotation.Asset.Symbol
 	quotationExtended.Name = quotation.Asset.Name
 	quotationExtended.Address = quotation.Asset.Address
 	quotationExtended.Blockchain = quotation.Asset.Blockchain
 	quotationExtended.Price = quotation.Price
-	quotationExtended.Time = quotation.Time
+	quotationExtended.Time = timestamp
 	quotationExtended.Source = quotation.Source
+
+	signedData, err := env.signer.Sign(quotation.Asset.Symbol, quotation.Asset.Address, quotation.Asset.Blockchain, quotation.Price, quotationExtended.Time)
+	if err != nil {
+		log.Warn("error signing data: ", err)
+	}
 	quotationExtended.Signature = signedData
 
 	c.JSON(http.StatusOK, quotationExtended)
@@ -251,7 +261,7 @@ func (env *Env) GetAssetMap(c *gin.Context) {
 	}
 
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 
 	timestamp := time.Now()
 	var quotations []models.AssetQuotationFull
@@ -341,7 +351,7 @@ func (env *Env) GetAssetSupply(c *gin.Context) {
 	}
 
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 
 	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*time.Hour))
 	if err != nil {
@@ -570,7 +580,7 @@ func (env *Env) GetAssetChartPoints(c *gin.Context) {
 
 	filter := c.Param("filter")
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 
 	exchange := c.Query("exchange")
 
@@ -670,7 +680,7 @@ func (env *Env) GetFilterPerSource(c *gin.Context) {
 	}
 
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 	filter := c.Param("filter")
 
 	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(30)*time.Minute)
@@ -800,12 +810,119 @@ func (env *Env) GetAllSymbols(c *gin.Context) {
 // POOLS AND LIQUIDITY
 // -----------------------------------------------------------------------------
 
+func (env *Env) GetPoolsByAsset(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+	blockchain := c.Param("blockchain")
+	address := normalizeAddress(c.Param("address"), blockchain)
+	asset := env.getAssetFromCache(ASSET_CACHE, blockchain, address)
+
+	liquidityThreshold, err := strconv.ParseFloat(c.DefaultQuery("liquidityThreshold", "10"), 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot parse liquidityThreshold"))
+		return
+	}
+
+	liquidityThresholdUSD, err := strconv.ParseFloat(c.DefaultQuery("liquidityThresholdUSD", "10000"), 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot parse liquidityThresholdUSD"))
+		return
+	}
+
+	usdLiquidity, err := strconv.ParseBool(c.DefaultQuery("usdLiquidity", "true"))
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot parse usdLiquidity"))
+		return
+	}
+
+	// Set liquidity threshold measured in native currency to 1 in order to filter out noise.
+	pools, err := env.RelDB.GetPoolsByAsset(asset, liquidityThreshold)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find pool"))
+		return
+	}
+
+	type poolInfo struct {
+		Exchange          string
+		Blockchain        string
+		Address           string
+		Time              time.Time
+		TotalLiquidityUSD float64
+		Message           string
+		Liquidity         []dia.AssetLiquidity
+	}
+	var result []poolInfo
+
+	// Get total liquidity for each filtered pool.
+	for _, pool := range pools {
+		var (
+			totalLiquidity float64
+			noPrice        bool
+			pi             poolInfo
+		)
+
+		// Look from asset prices in Redis in case @usdLiquidity is true.
+		if usdLiquidity {
+			for _, assetvol := range pool.Assetvolumes {
+				quotation, err := env.getQuotationFromCache(QUOTATION_CACHE, assetvol.Asset)
+				if err != nil {
+					log.Warnf("no quotation for %v: %v", assetvol.Asset, err)
+					totalLiquidity = 0
+					noPrice = true
+					break
+				}
+				totalLiquidity += quotation.Price * assetvol.Volume
+			}
+			// In case we can determine USD liquidity and it's below the threshold, continue.
+			if !noPrice && totalLiquidity < liquidityThresholdUSD {
+				continue
+			}
+		}
+
+		pi.Exchange = pool.Exchange.Name
+		pi.Blockchain = pool.Blockchain.Name
+		pi.Address = pool.Address
+		pi.TotalLiquidityUSD = totalLiquidity
+		pi.Time = pool.Time
+		for i := range pool.Assetvolumes {
+			var al dia.AssetLiquidity = dia.AssetLiquidity(pool.Assetvolumes[i])
+			pi.Liquidity = append(pi.Liquidity, al)
+		}
+		if noPrice {
+			pi.Message = "Not enough US-Dollar price information on one or more pool assets available."
+		}
+		result = append(result, pi)
+	}
+
+	// Sort by total USD liquidity if @usdLiquidity is true.
+	if usdLiquidity {
+		sort.Slice(result, func(m, n int) bool {
+			return result[m].TotalLiquidityUSD > result[n].TotalLiquidityUSD
+		})
+	} else {
+		// Sort by sum of both (native) liquidities in case USD liquidity is not computed.
+		sort.Slice(result, func(m, n int) bool {
+			var liquidity_m float64
+			var liquidity_n float64
+			for _, l := range result[m].Liquidity {
+				liquidity_m += l.Volume
+			}
+			for _, l := range result[n].Liquidity {
+				liquidity_n += l.Volume
+			}
+			return liquidity_m > liquidity_n
+		})
+	}
+	c.JSON(http.StatusOK, result)
+}
+
 func (env *Env) GetPoolLiquidityByAddress(c *gin.Context) {
 	if !validateInputParams(c) {
 		return
 	}
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 
 	pool, err := env.RelDB.GetPoolByAddress(blockchain, address)
 	if err != nil {
@@ -883,8 +1000,8 @@ func (env *Env) GetPoolSlippage(c *gin.Context) {
 		return
 	}
 	blockchain := c.Param("blockchain")
-	addressPool := makeAddressEIP55Compliant(c.Param("addressPool"), blockchain)
-	addressAsset := makeAddressEIP55Compliant(c.Param("addressAsset"), blockchain)
+	addressPool := normalizeAddress(c.Param("addressPool"), blockchain)
+	addressAsset := normalizeAddress(c.Param("addressAsset"), blockchain)
 	poolType := c.Param("poolType")
 	priceDeviationInt, err := strconv.ParseInt(c.Param("priceDeviation"), 10, 64)
 	if err != nil {
@@ -951,8 +1068,8 @@ func (env *Env) GetPoolPriceImpact(c *gin.Context) {
 		return
 	}
 	blockchain := c.Param("blockchain")
-	addressPool := makeAddressEIP55Compliant(c.Param("addressPool"), blockchain)
-	addressAsset := makeAddressEIP55Compliant(c.Param("addressAsset"), blockchain)
+	addressPool := normalizeAddress(c.Param("addressPool"), blockchain)
+	addressAsset := normalizeAddress(c.Param("addressAsset"), blockchain)
 	poolType := c.Param("poolType")
 	priceDeviationInt, err := strconv.ParseInt(c.Param("priceDeviation"), 10, 64)
 	if err != nil {
@@ -1159,7 +1276,7 @@ func (env *Env) GetAssetPairs(c *gin.Context) {
 		return
 	}
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 	var (
 		filterVerified bool
 		verified       bool
@@ -1851,7 +1968,7 @@ func (env *Env) GetLastTradeTime(c *gin.Context) {
 
 	exchange := c.Param("exchange")
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 
 	t, err := env.DataStore.GetLastTradeTimeForExchange(dia.Asset{Address: address, Blockchain: blockchain}, exchange)
 	if err != nil {
@@ -1872,7 +1989,7 @@ func (env *Env) GetLastTradesAsset(c *gin.Context) {
 	}
 
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 
 	numTradesString := c.DefaultQuery("numTrades", "1000")
 	exchange := c.Query("exchange")
@@ -2021,7 +2138,7 @@ func (env *Env) GetNFT(c *gin.Context) {
 	}
 
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 
 	id := c.Param("id")
 
@@ -2039,7 +2156,7 @@ func (env *Env) GetNFTTrades(c *gin.Context) {
 	}
 
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 
 	id := c.Param("id")
 	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*30)*time.Hour)
@@ -2062,7 +2179,7 @@ func (env *Env) GetNFTTradesCollection(c *gin.Context) {
 	}
 
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 
 	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*30)*time.Hour)
 	if err != nil {
@@ -2127,7 +2244,7 @@ func (env *Env) GetNFTFloor(c *gin.Context) {
 
 	// ------ Parse parameters -----
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 
 	timestampUnixString := c.Query("timestamp")
 	var timestamp time.Time
@@ -2207,7 +2324,7 @@ func (env *Env) GetNFTFloorMA(c *gin.Context) {
 
 	// NFT collection.
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 
 	nftClass := dia.NFTClass{Address: address, Blockchain: blockchain}
 
@@ -2299,7 +2416,7 @@ func (env *Env) GetNFTDownday(c *gin.Context) {
 
 	// NFT collection.
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 
 	nftClass := dia.NFTClass{Address: address, Blockchain: blockchain}
 
@@ -2401,7 +2518,7 @@ func (env *Env) GetNFTFloorVola(c *gin.Context) {
 
 	// NFT collection.
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 
 	nftClass := dia.NFTClass{Address: address, Blockchain: blockchain}
 
@@ -2479,7 +2596,7 @@ func (env *Env) GetNFTDistribution(c *gin.Context) {
 
 	// NFT collection.
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 
 	nftClass, err := env.RelDB.GetNFTClass(address, blockchain)
 	if err != nil {
@@ -2772,7 +2889,7 @@ func (env *Env) GetNFTVolume(c *gin.Context) {
 	)
 
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 
 	endtimeString := c.Query("endtime")
 	if endtimeString != "" {
@@ -2912,7 +3029,7 @@ func (env *Env) GetNFTMarketCap(c *gin.Context) {
 	var lr localReturn
 
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 	nc, err := env.RelDB.GetNFTClass(address, blockchain)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find collection"))
@@ -3015,7 +3132,7 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 	// ---- Parse / check input ----
 
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 
 	// Make starttime and endtime from Unix time input strings.
 	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*time.Hour))
@@ -3163,7 +3280,7 @@ func (env *Env) GetAssetUpdates(c *gin.Context) {
 	}
 
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 
 	// Deviation in per mille.
 	deviation, err := strconv.Atoi(c.Param("deviation"))
@@ -3265,7 +3382,7 @@ func (env *Env) GetAssetInfo(c *gin.Context) {
 	}
 
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 
 	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*60)*time.Minute)
 	if err != nil {
@@ -3368,7 +3485,7 @@ func (env *Env) GetPairsInFeed(c *gin.Context) {
 	var quotationExtended localAssetInfoReturn
 
 	blockchain := c.Param("blockchain")
-	address := makeAddressEIP55Compliant(c.Param("address"), blockchain)
+	address := normalizeAddress(c.Param("address"), blockchain)
 	numTradesThreshold, err := strconv.ParseInt(c.Param("numTradesThreshold"), 10, 64)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, err)
@@ -3452,7 +3569,7 @@ func (env *Env) GetSyntheticAsset(c *gin.Context) {
 	blockchain := c.Param("blockchain")
 	protocol := c.Param("protocol")
 
-	address := makeAddressEIP55Compliant(c.Query("address"), blockchain)
+	address := normalizeAddress(c.Query("address"), blockchain)
 
 	starttimeStr := c.Query("starttime")
 	endtimeStr := c.Query("endtime")
@@ -3553,6 +3670,40 @@ func (env *Env) GetSyntheticAsset(c *gin.Context) {
 	}
 }
 
+func (env *Env) GetAvailableAssets(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	assetClass := c.Param("assetClass")
+	// Default starttime is 01-01-2018
+	starttimeInt, err := strconv.ParseInt(c.DefaultQuery("starttime", "1514764800"), 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("Unable to parse timestamp."))
+		return
+	}
+	starttime := time.Unix(starttimeInt, 0)
+
+	if assetClass == "NFT" {
+		nftCollections, err := env.RelDB.GetTradedNFTClasses(starttime)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		c.JSON(http.StatusOK, nftCollections)
+	} else if assetClass == "CryptoToken" {
+		assets, err := env.RelDB.GetAllExchangeAssets(true)
+		if err != nil {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
+		}
+		c.JSON(http.StatusOK, assets)
+	} else {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("Unknown asset class"))
+		return
+	}
+}
+
 func validateInputParams(c *gin.Context) bool {
 
 	// Validate input parameters.
@@ -3588,6 +3739,19 @@ func makeAddressEIP55Compliant(address string, blockchain string) string {
 	return address
 }
 
+// Normalize address depending on the blockchain.
+func normalizeAddress(address string, blockchain string) string {
+	if strings.Contains(BLOCKCHAINS[blockchain].ChainID, "Ethereum") {
+		return makeAddressEIP55Compliant(address, blockchain)
+	}
+	if BLOCKCHAINS[blockchain].Name == dia.OSMOSIS {
+		if strings.Contains(address, "ibc-") && len(strings.Split(address, "-")[1]) > 1 {
+			return "ibc/" + strings.Split(address, "-")[1]
+		}
+	}
+	return address
+}
+
 // getDecimalsFromCache returns the decimals of @asset, either from the map @localCache or from
 // Postgres, in which latter case it also adds the decimals to the local cache.
 // Remember that maps are always passed by reference.
@@ -3616,7 +3780,18 @@ func (env *Env) getAssetFromCache(localCache map[string]dia.Asset, blockchain st
 	}
 	localCache[assetIdentifier(blockchain, address)] = fullAsset
 	return fullAsset
+}
 
+func (env *Env) getQuotationFromCache(localCache map[string]*models.AssetQuotation, asset dia.Asset) (q *models.AssetQuotation, err error) {
+	delayThreshold := time.Duration(1 * time.Hour)
+	var ok bool
+	if q, ok = localCache[assetIdentifier(asset.Blockchain, asset.Address)]; ok {
+		if q.Time.Add(delayThreshold).After(time.Now()) {
+			return
+		}
+	}
+	q, err = env.DataStore.GetAssetQuotationCache(asset)
+	return
 }
 
 func assetIdentifier(blockchain string, address string) string {

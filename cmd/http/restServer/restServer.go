@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"strings"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
@@ -83,6 +84,11 @@ func main() {
 
 	config := dia.GetConfigApi()
 
+	urlFolderPrefix := utils.Getenv("URL_FOLDER_PREFIX", "/")
+	if !strings.HasPrefix(urlFolderPrefix, "/") {
+		urlFolderPrefix = "/" + urlFolderPrefix
+	}
+
 	// the jwt middleware
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "party zone",
@@ -157,16 +163,16 @@ func main() {
 		log.Error("creating middleware: ", err)
 	}
 
-	r.POST("/login", authMiddleware.LoginHandler)
+	r.POST(urlFolderPrefix+"/login", authMiddleware.LoginHandler)
 
-	auth := r.Group("/auth")
+	auth := r.Group(urlFolderPrefix + "/auth")
 	auth.Use(authMiddleware.MiddlewareFunc())
 	{
 		auth.GET("/hello", helloHandler)
 		auth.GET("/refresh_token", authMiddleware.RefreshHandler)
 	}
 
-	kafka := r.Group("/kafka")
+	kafka := r.Group(urlFolderPrefix + "/kafka")
 	{
 		kafka.GET("/tradesBlock", GetTradesBlock)
 		kafka.GET("/filtersBlock", GetFiltersBlock)
@@ -193,14 +199,14 @@ func main() {
 	// 	signer:    aqs,
 	// }
 
-	diaAuth := r.Group("/v1")
+	diaAuth := r.Group(urlFolderPrefix + "/v1")
 	diaAuth.Use(authMiddleware.MiddlewareFunc())
 	{
 		diaAuth.POST("/supply", diaApiEnv.PostSupply)
 		diaAuth.POST("/quotation", diaApiEnv.SetQuotation)
 	}
 
-	diaGroup := r.Group("/v1")
+	diaGroup := r.Group(urlFolderPrefix + "/v1")
 	{
 		// Trades and prices endpoints.
 		diaGroup.GET("/quotation/:symbol", cache.CachePageAtomic(memoryStore, cacheTime.CachingTime20Secs, diaApiEnv.GetQuotation))
@@ -229,6 +235,7 @@ func main() {
 		diaGroup.GET("/poolSlippage/:blockchain/:addressPool/:addressAsset/:poolType/:priceDeviation", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetPoolSlippage))
 		diaGroup.GET("/poolPriceImpact/:blockchain/:addressPool/:addressAsset/:poolType/:priceDeviation", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetPoolPriceImpact))
 		diaGroup.GET("/priceImpactSimulation/:poolType/:liquidityA/:liquidityB/:priceDeviation", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetPriceImpactSimulation))
+		diaGroup.GET("/poolsByAsset/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetPoolsByAsset))
 
 		// Pairs endpoints
 		diaGroup.GET("/pairsCex/:exchange", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetExchangePairs))
@@ -245,6 +252,7 @@ func main() {
 		diaGroup.GET("/pairsInFeed/:blockchain/:address/:numTradesThreshold", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetPairsInFeed))
 		diaGroup.GET("/filterPerSource/:blockchain/:address/:filter", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeMedium, diaApiEnv.GetFilterPerSource))
 		diaGroup.GET("/token/:symbol", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetAsset))
+		diaGroup.GET("/availableAssets/:assetClass", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetAvailableAssets))
 
 		diaGroup.GET("/missingToken/:exchange", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetMissingExchangeSymbol))
 		diaGroup.GET("/tokenexchanges/:symbol", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetAssetExchanges))
@@ -274,8 +282,8 @@ func main() {
 		// dia.GET("/stockQuotation/:source/:symbol/:time", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetStockQuotation))
 
 		// Endpoints for foreign sources
-		diaGroup.GET("/foreignQuotation/:source/:symbol", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetForeignQuotation))
-		diaGroup.GET("/foreignQuotation/:source/:symbol/:time", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetForeignQuotation))
+		diaGroup.GET("/foreignQuotation/:source/:symbol", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetForeignQuotation))
+		diaGroup.GET("/foreignQuotation/:source/:symbol/:time", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetForeignQuotation))
 		diaGroup.GET("/foreignSymbols/:source", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetForeignSymbols))
 
 		// Endpoints for customized products
@@ -310,7 +318,7 @@ func main() {
 
 	}
 
-	r.Use(static.Serve("/v1/chart", static.LocalFile("/charts", true)))
+	r.Use(static.Serve(urlFolderPrefix+"/v1/chart", static.LocalFile("/charts", true)))
 
 	AddEndpoints(r)
 

@@ -420,6 +420,20 @@
             "WatchdogDelay": 7200,
             "ScraperActive": true
         },
+		{
+            "Name": "Zenlink",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": "Bifrost"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
+        },
         {
             "Name": "GateIO",
             "Centralized": true,
@@ -875,6 +889,20 @@
             "Contract": "0x1125C5F53C72eFd175753d427aA116B972Aa5537",
             "Blockchain": {
                 "Name": "Wanchain"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
+        },
+        {
+            "Name": "Osmosis",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": "Cosmos"
             },
             "RestAPI": "",
             "WsAPI": "",

@@ -4,6 +4,16 @@ type Query {
 
   GetSupplies(symbol: String!): [Supply]
 
+  GetxcFeed(
+    filter: String!
+    QuoteAssets: [Asset!]
+    Exchanges: [String]
+    BlockSizeSeconds: Int!
+    BlockShiftSeconds: Int
+    StartTime: Time!
+    EndTime: Time!
+  ): [FilterPoint]
+
   GetChart(
     filter: String!
     BlockDurationSeconds: Int!
@@ -14,7 +24,7 @@ type Query {
     Exchanges: [String!]
     Address: String
     BlockChain: String
-    BaseAsset: [BaseAsset!]
+    BaseAsset: [Asset!]
   ): [FilterPoint]
 
   GetChartMeta(
@@ -27,13 +37,13 @@ type Query {
     Exchanges: [String!]
     Address: String
     BlockChain: String
-    BaseAsset: [BaseAsset!]
+    BaseAsset: [Asset!]
   ): FilterPointMeta
 
   GetVWALP(
     Quotetokenblockchain: String!
 	  Quotetokenaddress: String!
-	  BaseAssets: [BaseAsset!]
+	  BaseAssets: [Asset!]
 	  Exchanges: [String]
 	  BlockDurationSeconds: Int!
 	  EndTime: Time
@@ -70,7 +80,7 @@ type FilterPointMeta {
   Points: [FilterPoint]
 }
 
-input BaseAsset {
+input Asset {
   Address: String
   BlockChain: String
 }

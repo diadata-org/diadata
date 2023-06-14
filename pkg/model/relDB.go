@@ -46,6 +46,7 @@ type RelDatastore interface {
 	GetUnverifiedExchangeSymbols(exchange string) ([]string, error)
 	VerifyExchangeSymbol(exchange string, symbol string, assetID string) (bool, error)
 	GetExchangeSymbolAssetID(exchange string, symbol string) (string, bool, error)
+	GetAllExchangeAssets(verified bool) ([]dia.Asset, error)
 
 	// ----------------- Historical quotations methods -------------------
 	SetHistoricalQuotation(quotation AssetQuotation) error
@@ -63,6 +64,7 @@ type RelDatastore interface {
 	GetPoolByAddress(blockchain string, address string) (pool dia.Pool, err error)
 	GetAllPoolAddrsExchange(exchange string, liquiThreshold float64) ([]string, error)
 	GetAllPoolsExchange(exchange string, liquiThreshold float64) ([]dia.Pool, error)
+	GetPoolsByAsset(asset dia.Asset, liquiThreshold float64) ([]dia.Pool, error)
 
 	// ----------------- blockchain methods -------------------
 	SetBlockchain(blockchain dia.BlockChain) error
@@ -72,7 +74,7 @@ type RelDatastore interface {
 
 	// ------ Caching ------
 	SetAssetCache(asset dia.Asset) error
-	GetAssetCache(assetID string) (dia.Asset, error)
+	GetAssetCache(blockchain string, address string) (dia.Asset, error)
 	SetExchangePairCache(exchange string, pair dia.ExchangePair) error
 	GetExchangePairCache(exchange string, foreignName string) (dia.ExchangePair, error)
 	CountCache() (uint32, error)
@@ -81,6 +83,7 @@ type RelDatastore interface {
 	// NFT class methods
 	SetNFTClass(nftClass dia.NFTClass) error
 	GetAllNFTClasses(blockchain string) ([]dia.NFTClass, error)
+	GetTradedNFTClasses(starttime time.Time) ([]dia.NFTClass, error)
 	GetNFTClasses(limit, offset uint64) ([]dia.NFTClass, error)
 	GetNFTClass(address string, blockchain string) (dia.NFTClass, error)
 	GetNFTClassID(address string, blockchain string) (string, error)
@@ -210,6 +213,7 @@ type RelDB struct {
 	URI            string
 	postgresClient *pgxpool.Pool
 	redisClient    *redis.Client
+	redisPipe      redis.Pipeliner
 	pagesize       uint32
 }
 
@@ -231,9 +235,12 @@ func NewCachingLayer() (*RelDB, error) {
 
 // NewRelDataStoreWithOptions returns a postgres datastore and/or redis caching layer.
 func NewRelDataStoreWithOptions(withPostgres bool, withRedis bool) (*RelDB, error) {
-	var postgresClient *pgxpool.Pool
-	var redisClient *redis.Client
-	var url string
+	var (
+		postgresClient *pgxpool.Pool
+		redisClient    *redis.Client
+		redisPipe      redis.Pipeliner
+		url            string
+	)
 
 	if withPostgres {
 		url = db.GetPostgresURL()
@@ -241,8 +248,9 @@ func NewRelDataStoreWithOptions(withPostgres bool, withRedis bool) (*RelDB, erro
 	}
 	if withRedis {
 		redisClient = db.GetRedisClient()
+		redisPipe = redisClient.TxPipeline()
 	}
-	return &RelDB{url, postgresClient, redisClient, 32}, nil
+	return &RelDB{url, postgresClient, redisClient, redisPipe, 32}, nil
 }
 
 // GetKeys returns a slice of strings holding the names of the keys of @table in postgres

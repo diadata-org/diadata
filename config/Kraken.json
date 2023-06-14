@@ -92,6 +92,12 @@
     },
     {
       "Exchange": "Kraken",
+      "ForeignName": "KILTUSD",
+      "Ignore": false,
+      "Symbol": "KILT"
+    },
+    {
+      "Exchange": "Kraken",
       "ForeignName": "KINTUSD",
       "Ignore": false,
       "Symbol": "KINT"
@@ -110,21 +116,9 @@
     },
     {
       "Exchange": "Kraken",
-      "ForeignName": "XETCXETH",
+      "ForeignName": "PAXGUSD",
       "Ignore": false,
-      "Symbol": "ETC"
-    },
-    {
-      "Exchange": "Kraken",
-      "ForeignName": "XETCXXBT",
-      "Ignore": false,
-      "Symbol": "ETC"
-    },
-    {
-      "Exchange": "Kraken",
-      "ForeignName": "KILTUSD",
-      "Ignore": false,
-      "Symbol": "KILT"
+      "Symbol": "PAXG"
     },
     {
       "Exchange": "Kraken",
@@ -173,6 +167,18 @@
       "ForeignName": "WBTCXBT",
       "Ignore": false,
       "Symbol": "WBTC"
+    },
+    {
+      "Exchange": "Kraken",
+      "ForeignName": "XETCXETH",
+      "Ignore": false,
+      "Symbol": "ETC"
+    },
+    {
+      "Exchange": "Kraken",
+      "ForeignName": "XETCXXBT",
+      "Ignore": false,
+      "Symbol": "ETC"
     },
     {
       "Exchange": "Kraken",

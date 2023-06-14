@@ -50,6 +50,7 @@ type Datastore interface {
 
 	GetTradesByExchangesBatchedFull(asset dia.Asset, baseAssets []dia.Asset, exchanges []string, returnBasetoken bool, startTimes, endTimes []time.Time, maxTrades int) ([]dia.Trade, error)
 	GetTradesByExchangesBatched(asset dia.Asset, baseAssets []dia.Asset, exchanges []string, startTimes, endTimes []time.Time, maxTrades int) ([]dia.Trade, error)
+	GetxcTradesByExchangesBatched(quoteassets []dia.Asset, exchanges []string, startTimes []time.Time, endTimes []time.Time) ([]dia.Trade, error)
 
 	GetActiveExchangesAndPairs(address string, blockchain string, numTradesThreshold int64, starttime time.Time, endtime time.Time) (map[string][]dia.Pair, map[string]int64, error)
 	GetOldTradesFromInflux(table string, exchange string, verified bool, timeInit, timeFinal time.Time) ([]dia.Trade, error)
@@ -208,10 +209,12 @@ func NewDataStoreWithoutRedis() (*DB, error) {
 }
 
 func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
-	var influxClient clientInfluxdb.Client
-	var influxBatchPoints clientInfluxdb.BatchPoints
-	var redisClient *redis.Client
-	var redisPipe redis.Pipeliner
+	var (
+		influxClient      clientInfluxdb.Client
+		influxBatchPoints clientInfluxdb.BatchPoints
+		redisClient       *redis.Client
+		redisPipe         redis.Pipeliner
+	)
 
 	if withRedis {
 		redisClient = db.GetRedisClient()

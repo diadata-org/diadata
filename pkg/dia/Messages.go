@@ -40,7 +40,9 @@ const (
 	ACALA                                   = "Acala"
 	POLKADOT                                = "Polkadot"
 	WANCHAIN                                = "Wanchain"
+	OSMOSIS                                 = "Osmosis"
 	FIAT                                    = "Fiat"
+	BIFROST                                 = "Bifrost"
 )
 
 type VerificationMechanism string
@@ -660,5 +662,5 @@ type OracleConfig struct {
 	MandatoryFrequency string
 	CreatedDate        time.Time
 	LastUpdate         time.Time
-	Deleted            bool
+	Deleted            bool `json:"Deleted,omitempty"`
 }

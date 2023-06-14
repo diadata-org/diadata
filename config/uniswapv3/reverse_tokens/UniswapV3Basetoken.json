@@ -59,6 +59,10 @@
     {
       "Address": "0xc55126051B22eBb829D00368f4B12Bde432de5Da",
       "Symbol": "BTRFLY"
+    },
+    {
+      "Address": "0xf951E335afb289353dc249e82926178EaC7DEd78",
+      "Symbol": "swETH"
     }
   ]
 }

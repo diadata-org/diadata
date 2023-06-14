@@ -103,6 +103,18 @@
             "Address": "0x0000000000000000000000000000000000001010"
         },
         {
+            "Symbol": "PAXG",
+            "Exchange": "Binance2",
+            "Blockchain": "Ethereum",
+            "Address": "0x45804880De22913dAFE09f4980848ECE6EcbAf78"
+        },
+        {
+            "Symbol": "PEPE",
+            "Exchange": "Binance2",
+            "Blockchain": "Ethereum",
+            "Address": "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
+        },
+        {
             "Symbol": "RDNT",
             "Exchange": "Binance2",
             "Blockchain": "Arbitrum",
@@ -143,6 +155,12 @@
             "Exchange": "Binance2",
             "Blockchain": "Ethereum",
             "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+        },
+        {
+            "Symbol": "USDP",
+            "Exchange": "Binance2",
+            "Blockchain": "Ethereum",
+            "Address": "0x8E870D67F660D95d5be530380D0eC0bd388289E1"
         },
         {
             "Symbol": "USDT",

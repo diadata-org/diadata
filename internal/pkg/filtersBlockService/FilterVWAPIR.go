@@ -32,7 +32,7 @@ func NewFilterVWAPIR(asset dia.Asset, exchange string, currentTime time.Time, pa
 		volumes:     []float64{},
 		currentTime: currentTime,
 		param:       param,
-		filterName:  "VWAP" + strconv.Itoa(param),
+		filterName:  "VWAPIR" + strconv.Itoa(param),
 	}
 	return s
 }

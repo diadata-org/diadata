@@ -7,6 +7,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "QUICK",
+            "ForeignName": "QUICK/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
             "Symbol": "GMX",
             "ForeignName": "GMX/USDT",
             "Exchange": "Bitmax",
@@ -729,6 +735,12 @@
         {
             "Symbol": "MIX",
             "ForeignName": "MIX/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MIM",
+            "ForeignName": "MIM/USDT",
             "Exchange": "Bitmax",
             "Ignore": false
         },
@@ -1581,12 +1593,6 @@
         {
             "Symbol": "DOT",
             "ForeignName": "DOT/USDT",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "DOT",
-            "ForeignName": "DOT/PERP",
             "Exchange": "Bitmax",
             "Ignore": false
         },

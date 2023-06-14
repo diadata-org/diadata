@@ -43,6 +43,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "EUROC",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c"
+        },
+        {
             "Symbol": "DOGE",
             "Exchange": "CoinBase",
             "Blockchain": "Dogechain",
@@ -53,6 +59,12 @@
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
             "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
+        },
+        {
+            "Symbol": "SPA",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xB4A3B0Faf0Ab53df58001804DdA5Bfc6a3D59008"
         },
         {
             "Symbol": "SHIB",

@@ -349,6 +349,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "MCRT",
+      "ForeignName": "MCRTUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "METIS",
       "ForeignName": "METISUSDT",
       "Exchange": "MEXC",
@@ -381,6 +387,12 @@
     {
       "Symbol": "PAXG",
       "ForeignName": "PAXGUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PEPE",
+      "ForeignName": "PEPEUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     },
@@ -453,18 +465,6 @@
     {
       "Symbol": "SPELL",
       "ForeignName": "SPELLUSDT",
-      "Exchange": "MEXC",
-      "Ignore": false
-    },
-    {
-      "Symbol": "STETH",
-      "ForeignName": "STETHUSDC",
-      "Exchange": "MEXC",
-      "Ignore": false
-    },
-    {
-      "Symbol": "STETH",
-      "ForeignName": "STETHUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     },

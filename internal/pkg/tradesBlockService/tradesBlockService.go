@@ -507,13 +507,6 @@ func buildBridge(t dia.Trade) dia.Asset {
 		}
 	}
 	if basetoken.Blockchain == dia.FANTOM && (t.Source == dia.SpookyswapExchange || t.Source == dia.SpiritswapExchange || t.Source == dia.BeetsExchange || t.Source == dia.SushiSwapExchangeFantom) {
-		if basetoken.Address == "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83" {
-			basetoken = dia.Asset{
-				Symbol:     "FTM",
-				Address:    "0x0000000000000000000000000000000000000000",
-				Blockchain: dia.FANTOM,
-			}
-		}
 		if basetoken.Address == "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75" {
 			basetoken = dia.Asset{
 				Symbol:     "USDC",
@@ -538,11 +531,22 @@ func buildBridge(t dia.Trade) dia.Asset {
 			}
 		}
 	}
-	if t.Source == dia.StellaswapExchange && basetoken.Blockchain == dia.MOONBEAM && basetoken.Address == common.HexToAddress("0xAcc15dC74880C9944775448304B263D191c6077F").Hex() {
-		basetoken = dia.Asset{
-			Symbol:     "GLMR",
-			Address:    "0x0000000000000000000000000000000000000000",
-			Blockchain: dia.MOONBEAM,
+	if t.Source == dia.StellaswapExchange && basetoken.Blockchain == dia.MOONBEAM {
+		if basetoken.Address == common.HexToAddress("0xAcc15dC74880C9944775448304B263D191c6077F").Hex() {
+			basetoken = dia.Asset{
+				Symbol:     "GLMR",
+				Address:    "0x0000000000000000000000000000000000000000",
+				Blockchain: dia.MOONBEAM,
+			}
+		}
+	}
+	if t.Source == dia.CurveFIExchangeMoonbeam && basetoken.Blockchain == dia.MOONBEAM {
+		if basetoken.Address == common.HexToAddress("0xFFFFFFfFea09FB06d082fd1275CD48b191cbCD1d").Hex() {
+			basetoken = dia.Asset{
+				Symbol:     "USDT",
+				Address:    "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+				Blockchain: dia.ETHEREUM,
+			}
 		}
 	}
 	if (t.Source == dia.UniswapExchangeV3Polygon || t.Source == dia.QuickswapExchange || t.Source == dia.SushiSwapExchangePolygon || t.Source == dia.DfynNetwork) && basetoken.Blockchain == dia.POLYGON {
@@ -601,6 +605,24 @@ func buildBridge(t dia.Trade) dia.Asset {
 				Symbol:     "ETH",
 				Address:    "0x0000000000000000000000000000000000000000",
 				Blockchain: dia.ETHEREUM,
+			}
+		}
+	}
+	if basetoken.Blockchain == dia.OSMOSIS && t.Source == dia.OsmosisExchange {
+		if basetoken.Address == "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858" {
+			basetoken = dia.Asset{
+				Symbol:     "USDC",
+				Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+				Blockchain: dia.ETHEREUM,
+			}
+		}
+	}
+	if basetoken.Blockchain == dia.BIFROST && t.Source == dia.ZenlinkswapExchange {
+		if basetoken.Address == "516" {
+			basetoken = dia.Asset{
+				Symbol:     "KSM",
+				Address:    "0x0000000000000000000000000000000000000000",
+				Blockchain: dia.KUSAMA,
 			}
 		}
 	}

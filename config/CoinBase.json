@@ -56,6 +56,18 @@
     },
     {
       "Exchange": "CoinBase",
+      "ForeignName": "EUROC-USD",
+      "Ignore": false,
+      "Symbol": "EUROC"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "SPA-USD",
+      "Ignore": false,
+      "Symbol": "SPA"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "YFI-USD",
       "Ignore": false,
       "Symbol": "YFI"

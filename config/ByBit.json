@@ -433,6 +433,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "MCRT",
+            "ForeignName": "MCRTUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "NEAR",
             "ForeignName": "NEARUSDT",
             "Exchange": "ByBit",

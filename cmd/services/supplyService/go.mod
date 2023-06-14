@@ -3,7 +3,7 @@ module github.com/diadata-org/diadata/services/supplyService
 go 1.17
 
 require (
-	github.com/diadata-org/diadata v1.4.158
+	github.com/diadata-org/diadata v1.4.254
 	github.com/sirupsen/logrus v1.8.1
 )
 
@@ -39,9 +39,14 @@ require (
 	github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf // indirect
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
 	github.com/tklauser/numcpus v0.2.2 // indirect
+	github.com/zekroTJA/timedmap v1.4.0 // indirect
 	golang.org/x/crypto v0.1.0 // indirect
 	golang.org/x/sys v0.3.0 // indirect
 	golang.org/x/text v0.5.0 // indirect
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+)
+
+replace (
+	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 )

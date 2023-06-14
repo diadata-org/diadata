@@ -54,11 +54,7 @@ func NewPodHelper(image, namespace string) *PodHelper {
 	return &PodHelper{k8sclient: client, Image: image, NameSpace: namespace}
 }
 
-func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle string, chainID string, symbols, blockchainnode string, frequency, sleepSeconds, deviationPermille, mandatoryFrequency string) error {
-	fields := make(map[string]string)
-	fields["oracle"] = oracle
-	fields["chainID"] = chainID
-	fields["owner"] = owner
+func (kh *PodHelper) CreateOracleFeeder(ctx context.Context, feederID string, owner string, oracle string, chainID string, symbols, blockchainnode string, frequency, sleepSeconds, deviationPermille, mandatoryFrequency string) error {
 
 	// -- oracle config
 	publickeyenv := corev1.EnvVar{Name: "ORACLE_PUBLICKEY", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: ".public", LocalObjectReference: corev1.LocalObjectReference{Name: feederID}}}}
@@ -90,8 +86,12 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 
 	pod := &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:   feederID,
-			Labels: fields,
+			Name: feederID,
+			Labels: map[string]string{
+				"oracle":  oracle,
+				"chainID": chainID,
+				"owner":   owner,
+			},
 		},
 		Spec: corev1.PodSpec{
 			Containers: []corev1.Container{
@@ -105,11 +105,31 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 				},
 			},
 			ImagePullSecrets: []corev1.LocalObjectReference{imagepullrequest},
+			Affinity: &corev1.Affinity{
+				NodeAffinity: &corev1.NodeAffinity{
+					RequiredDuringSchedulingIgnoredDuringExecution: &corev1.NodeSelector{
+						NodeSelectorTerms: []corev1.NodeSelectorTerm{
+							{
+								MatchExpressions: []corev1.NodeSelectorRequirement{
+									{
+										Key:      "ibm-cloud.kubernetes.io/worker-pool-name",
+										Operator: corev1.NodeSelectorOpIn,
+										Values: []string{
+											"default",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
 		},
 	}
 
-	result, err := kh.k8sclient.CoreV1().Pods(kh.NameSpace).Create(context.TODO(), pod, metav1.CreateOptions{})
+	result, err := kh.k8sclient.CoreV1().Pods(kh.NameSpace).Create(ctx, pod, metav1.CreateOptions{})
 	if err != nil {
+		log.Errorf("Failed to start pod %s: %v", feederID, err)
 		return err
 	}
 	log.Infof("Pod %s started\n", result.GetObjectMeta().GetName())
@@ -117,7 +137,7 @@ func (kh *PodHelper) CreateOracleFeeder(feederID string, owner string, oracle st
 
 }
 
-func (kh *PodHelper) UpdateOracleFeeder(feederID string, owner string, oracle string, chainID string, symbols, blockchainnode string, frequency, sleepSeconds, deviationPermille, mandatoryFrequency string) error {
+func (kh *PodHelper) UpdateOracleFeeder(ctx context.Context, feederID string, owner string, oracle string, chainID string, symbols, blockchainnode string, frequency, sleepSeconds, deviationPermille, mandatoryFrequency string) error {
 	fields := make(map[string]string)
 	fields["oracle"] = oracle
 	fields["chainID"] = chainID
@@ -170,7 +190,7 @@ func (kh *PodHelper) UpdateOracleFeeder(feederID string, owner string, oracle st
 		},
 	}
 
-	result, err := kh.k8sclient.CoreV1().Pods(kh.NameSpace).Update(context.TODO(), pod, metav1.UpdateOptions{})
+	result, err := kh.k8sclient.CoreV1().Pods(kh.NameSpace).Update(ctx, pod, metav1.UpdateOptions{})
 	if err != nil {
 		return err
 	}
@@ -178,48 +198,54 @@ func (kh *PodHelper) UpdateOracleFeeder(feederID string, owner string, oracle st
 	return err
 
 }
-func (kh *PodHelper) DeleteOracleFeeder(feederID string) error {
 
-	_, err := kh.k8sclient.CoreV1().Pods(kh.NameSpace).Get(context.TODO(), feederID, metav1.GetOptions{})
+func (kh *PodHelper) DeleteOracleFeeder(ctx context.Context, feederID string) error {
+	_, err := kh.k8sclient.CoreV1().Pods(kh.NameSpace).Get(ctx, feederID, metav1.GetOptions{})
 	if err != nil {
 		if errors.IsNotFound(err) {
 			log.Infof("Pod %s not found, no need to delete\n", feederID)
 			return nil
-		} else {
-			err = kh.k8sclient.CoreV1().Pods(kh.NameSpace).Delete(context.TODO(), feederID, metav1.DeleteOptions{})
-			if err != nil {
-				return err
-			}
 		}
+		return err // return error if it's other than not found
+	}
+
+	// if no error, that means pod exists and needs to be deleted.
+	deletePolicy := metav1.DeletePropagationForeground
+	err = kh.k8sclient.CoreV1().Pods(kh.NameSpace).Delete(ctx, feederID, metav1.DeleteOptions{
+		PropagationPolicy: &deletePolicy,
+	})
+
+	if err != nil {
+		return err
 	}
 
 	log.Infof("Pod %s deleted\n", feederID)
-	return err
+	return nil
 }
 
-func (kh *PodHelper) RestartOracleFeeder(feederID string, oracleconfig dia.OracleConfig) (err error) {
+func (kh *PodHelper) RestartOracleFeeder(ctx context.Context, feederID string, oracleconfig dia.OracleConfig) (err error) {
 
-	_, err = kh.k8sclient.CoreV1().Pods(kh.NameSpace).Get(context.TODO(), feederID, metav1.GetOptions{})
+	_, err = kh.k8sclient.CoreV1().Pods(kh.NameSpace).Get(ctx, feederID, metav1.GetOptions{})
 	if err != nil {
 		if errors.IsNotFound(err) {
 			log.Infof("Pod %s not found, no need to delete\n", feederID)
 		} else {
 			return err
 		}
-		err = kh.CreateOracleFeeder(feederID, oracleconfig.Owner, oracleconfig.Address, oracleconfig.ChainID, strings.Join(oracleconfig.Symbols[:], ","), oracleconfig.BlockchainNode, oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille, oracleconfig.MandatoryFrequency)
+		err = kh.CreateOracleFeeder(ctx, feederID, oracleconfig.Owner, oracleconfig.Address, oracleconfig.ChainID, strings.Join(oracleconfig.Symbols[:], ","), oracleconfig.BlockchainNode, oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille, oracleconfig.MandatoryFrequency)
 		if err != nil {
 			log.Errorf("Pod %s start err\n", err)
 			return
 		}
 		log.Infof("Pod %s started\n", feederID)
 	} else {
-		err = kh.k8sclient.CoreV1().Pods(kh.NameSpace).Delete(context.TODO(), feederID, metav1.DeleteOptions{})
+		err = kh.k8sclient.CoreV1().Pods(kh.NameSpace).Delete(ctx, feederID, metav1.DeleteOptions{})
 		//if err != nil {
 		//	return err
 		//}
-		kh.waitPodDeleted(context.TODO(), oracleconfig.Address, func() {
+		kh.waitPodDeleted(ctx, oracleconfig.Address, func() {
 			time.Sleep(1000 * time.Millisecond)
-			err = kh.CreateOracleFeeder(feederID, oracleconfig.Owner, oracleconfig.Address, oracleconfig.ChainID, strings.Join(oracleconfig.Symbols[:], ","), oracleconfig.BlockchainNode, oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille, oracleconfig.MandatoryFrequency)
+			err = kh.CreateOracleFeeder(ctx, feederID, oracleconfig.Owner, oracleconfig.Address, oracleconfig.ChainID, strings.Join(oracleconfig.Symbols[:], ","), oracleconfig.BlockchainNode, oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille, oracleconfig.MandatoryFrequency)
 			if err != nil {
 				log.Errorf("Pod %s start err\n", err)
 				return

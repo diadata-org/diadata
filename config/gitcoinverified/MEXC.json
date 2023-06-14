@@ -88,7 +88,7 @@
       "Symbol": "BNC",
       "Exchange": "MEXC",
       "Blockchain": "Bifrost",
-      "Address": "Token:BNC"
+      "Address": "0"
     },
     {
       "Symbol": "BOO",
@@ -313,6 +313,12 @@
       "Address": "0x0000000000000000000000000000000000001010"
     },
     {
+      "Symbol": "MCRT",
+      "Exchange": "MEXC",
+      "Blockchain": "BinanceSmartChain",
+      "Address": "0x4b8285aB433D8f69CB48d5Ad62b415ed1a221e4f"
+    },
+    {
       "Symbol": "METIS",
       "Exchange": "MEXC",
       "Blockchain": "Metis",
@@ -347,6 +353,12 @@
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",
       "Address": "0x45804880De22913dAFE09f4980848ECE6EcbAf78"
+    },
+    {
+      "Symbol": "PEPE",
+      "Exchange": "MEXC",
+      "Blockchain": "Ethereum",
+      "Address": "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
     },
     {
       "Symbol": "PHA",

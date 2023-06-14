@@ -2,6 +2,24 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "BEPRO_USDT",
+      "Ignore": false,
+      "Symbol": "BEPRO"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "MCRT_USDT",
+      "Ignore": false,
+      "Symbol": "MCRT"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "PEPE_USDT",
+      "Ignore": false,
+      "Symbol": "PEPE"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "ATOM_USDT",
       "Ignore": false,
       "Symbol": "ATOM"

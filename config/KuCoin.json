@@ -259,6 +259,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "BEPRO",
+            "ForeignName": "BEPRO-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "BFC",
             "ForeignName": "BFC-USDT",
             "Exchange": "KuCoin",
@@ -1207,6 +1213,18 @@
             "Ignore": false
         },
         {
+            "Symbol": "PAXG",
+            "ForeignName": "PAXGUSDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PEPE",
+            "ForeignName": "PEPEUSDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "PHA",
             "ForeignName": "PHA-USDT",
             "Exchange": "KuCoin",
@@ -1515,6 +1533,12 @@
         {
             "Symbol": "USDT",
             "ForeignName": "USDT-TUSD",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDP",
+            "ForeignName": "USDP-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
         },

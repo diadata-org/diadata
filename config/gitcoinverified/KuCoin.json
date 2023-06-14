@@ -79,6 +79,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "BEPRO",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xCF3C8Be2e2C42331Da80EF210e9B1b307C03d36A"
+        },
+        {
             "Symbol": "BFC",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
@@ -94,7 +100,7 @@
             "Symbol": "BNC",
             "Exchange": "KuCoin",
             "Blockchain": "Bifrost",
-            "Address": "Token:BNC"
+            "Address": "0"
         },
         {
             "Symbol": "BOLT",
@@ -481,6 +487,18 @@
             "Address": "0x0258F474786DdFd37ABCE6df6BBb1Dd5dfC4434a"
         },
         {
+            "Symbol": "PAXG",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x45804880De22913dAFE09f4980848ECE6EcbAf78"
+        },
+        {
+            "Symbol": "PEPE",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
+        },
+        {
             "Symbol": "PHA",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
@@ -725,6 +743,12 @@
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
             "Address": "0x8806926Ab68EB5a7b909DcAf6FdBe5d93271D6e2"
+        },
+        {
+            "Symbol": "USDP",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x8E870D67F660D95d5be530380D0eC0bd388289E1"
         },
         {
             "Symbol": "UST",

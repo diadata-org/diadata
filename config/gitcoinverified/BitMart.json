@@ -55,6 +55,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "BEPRO",
+      "Exchange": "BitMart",
+      "Blockchain": "Ethereum",
+      "Address": "0xCF3C8Be2e2C42331Da80EF210e9B1b307C03d36A"
+    },
+    {
       "Symbol": "BNB",
       "Exchange": "BitMart",
       "Blockchain": "BinanceSmartChain",
@@ -253,6 +259,12 @@
       "Address": "0x0000000000000000000000000000000000001010"
     },
     {
+      "Symbol": "MCRT",
+      "Exchange": "BitMart",
+      "Blockchain": "BinanceSmartChain",
+      "Address": "0x4b8285aB433D8f69CB48d5Ad62b415ed1a221e4f"
+    },
+    {
       "Symbol": "METIS",
       "Exchange": "BitMart",
       "Blockchain": "Metis",
@@ -277,10 +289,22 @@
       "Address": "0x75231F58b43240C9718Dd58B4967c5114342a86c"
     },
     {
+      "Symbol": "PEPE",
+      "Exchange": "BitMart",
+      "Blockchain": "Ethereum",
+      "Address": "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
+    },
+    {
       "Symbol": "QNT",
       "Exchange": "BitMart",
       "Blockchain": "Ethereum",
       "Address": "0x4a220E6096B25EADb88358cb44068A3248254675"
+    },
+    {
+      "Symbol": "QUICK",
+      "Exchange": "BitMart",
+      "Blockchain": "Polygon",
+      "Address": "0x831753DD7087CaC61aB5644b308642cc1c33Dc13"
     },
     {
       "Symbol": "RAY",

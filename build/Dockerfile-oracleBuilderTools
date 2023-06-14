@@ -1,0 +1,12 @@
+FROM us.icr.io/dia-registry/devops/build-119:latest as build
+
+WORKDIR $GOPATH/src/
+COPY ./cmd/oraclebuildertools ./
+RUN go install
+
+FROM gcr.io/distroless/base
+
+COPY --from=build /go/bin/oraclebuildertools /bin/oraclebuildertools
+COPY --from=build /config/ /config/
+
+CMD ["oraclebuildertools"]

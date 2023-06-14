@@ -6,8 +6,9 @@ import (
 	"strings"
 	"time"
 
-	uniswapcontract "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	uniswapcontractv3 "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswapv3"
+	models "github.com/diadata-org/diadata/pkg/model"
 
 	"github.com/diadata-org/diadata/pkg/utils"
 
@@ -20,6 +21,7 @@ import (
 type UniswapV3Scraper struct {
 	RestClient      *ethclient.Client
 	WsClient        *ethclient.Client
+	relDB           *models.RelDB
 	poolChannel     chan dia.Pool
 	doneChannel     chan bool
 	blockchain      string
@@ -30,7 +32,7 @@ type UniswapV3Scraper struct {
 }
 
 // NewUniswapV3Scraper returns a new UniswapV3Scraper.
-func NewUniswapV3Scraper(exchange dia.Exchange) *UniswapV3Scraper {
+func NewUniswapV3Scraper(exchange dia.Exchange, relDB *models.RelDB) *UniswapV3Scraper {
 	log.Info("NewUniswapScraper ", exchange.Name)
 	log.Info("NewUniswapScraper Address ", exchange.Contract)
 
@@ -38,11 +40,11 @@ func NewUniswapV3Scraper(exchange dia.Exchange) *UniswapV3Scraper {
 
 	switch exchange.Name {
 	case dia.UniswapExchangeV3:
-		uls = makeUniswapV3Scraper(exchange, "", "", "200", uint64(12369621))
+		uls = makeUniswapV3Scraper(exchange, "", "", relDB, "200", uint64(12369621))
 	case dia.UniswapExchangeV3Polygon:
-		uls = makeUniswapV3Scraper(exchange, "", "", "200", uint64(22757913))
+		uls = makeUniswapV3Scraper(exchange, "", "", relDB, "200", uint64(22757913))
 	case dia.UniswapExchangeV3Arbitrum:
-		uls = makeUniswapV3Scraper(exchange, "", "", "200", uint64(165))
+		uls = makeUniswapV3Scraper(exchange, "", "", relDB, "200", uint64(165))
 	}
 
 	go func() {
@@ -52,7 +54,7 @@ func NewUniswapV3Scraper(exchange dia.Exchange) *UniswapV3Scraper {
 }
 
 // makeUniswapV3Scraper returns a uniswap scraper as used in NewUniswapV3Scraper.
-func makeUniswapV3Scraper(exchange dia.Exchange, restDial string, wsDial string, waitMilliseconds string, startBlock uint64) *UniswapV3Scraper {
+func makeUniswapV3Scraper(exchange dia.Exchange, restDial string, wsDial string, relDB *models.RelDB, waitMilliseconds string, startBlock uint64) *UniswapV3Scraper {
 	var (
 		restClient  *ethclient.Client
 		wsClient    *ethclient.Client
@@ -83,6 +85,7 @@ func makeUniswapV3Scraper(exchange dia.Exchange, restDial string, wsDial string,
 	uls = &UniswapV3Scraper{
 		WsClient:        wsClient,
 		RestClient:      restClient,
+		relDB:           relDB,
 		poolChannel:     poolChannel,
 		doneChannel:     doneChannel,
 		blockchain:      exchange.BlockChain.Name,
@@ -118,16 +121,28 @@ func (uls *UniswapV3Scraper) fetchPools() {
 
 	for poolCreated.Next() {
 		poolsCount++
-		var pool dia.Pool
+		var (
+			pool   dia.Pool
+			asset0 dia.Asset
+			asset1 dia.Asset
+		)
 		log.Info("pools count: ", poolsCount)
 
-		asset0, err := uls.GetAssetFromAddress(poolCreated.Event.Token0)
+		asset0, err = uls.relDB.GetAsset(poolCreated.Event.Token0.Hex(), uls.blockchain)
 		if err != nil {
-			log.Warn("cannot fetch asset from address ", poolCreated.Event.Token0.Hex())
+			asset0, err = ethhelper.ETHAddressToAsset(poolCreated.Event.Token0, uls.RestClient, uls.blockchain)
+			if err != nil {
+				log.Warn("cannot fetch asset from address ", poolCreated.Event.Token0.Hex())
+				continue
+			}
 		}
-		asset1, err := uls.GetAssetFromAddress(poolCreated.Event.Token1)
+		asset1, err = uls.relDB.GetAsset(poolCreated.Event.Token1.Hex(), uls.blockchain)
 		if err != nil {
-			log.Warn("cannot fetch asset from address ", poolCreated.Event.Token1.Hex())
+			asset1, err = ethhelper.ETHAddressToAsset(poolCreated.Event.Token1, uls.RestClient, uls.blockchain)
+			if err != nil {
+				log.Warn("cannot fetch asset from address ", poolCreated.Event.Token1.Hex())
+				continue
+			}
 		}
 
 		pool.Exchange = dia.Exchange{Name: uls.exchangeName}
@@ -141,40 +156,6 @@ func (uls *UniswapV3Scraper) fetchPools() {
 
 	}
 	uls.doneChannel <- true
-}
-
-func (uls *UniswapV3Scraper) GetAssetFromAddress(address common.Address) (asset dia.Asset, err error) {
-	connection := uls.RestClient
-
-	var tokenContract *uniswapcontract.IERC20Caller
-
-	tokenContract, err = uniswapcontract.NewIERC20Caller(address, connection)
-	if err != nil {
-		log.Error(err)
-	}
-
-	symbol, err := tokenContract.Symbol(&bind.CallOpts{})
-	if err != nil {
-		log.Error(err)
-	}
-	name, err := tokenContract.Name(&bind.CallOpts{})
-	if err != nil {
-		log.Error(err)
-	}
-	decimals, err := tokenContract.Decimals(&bind.CallOpts{})
-	if err != nil {
-		log.Error(err)
-	}
-
-	asset = dia.Asset{
-		Symbol:     symbol,
-		Name:       name,
-		Address:    address.Hex(),
-		Blockchain: uls.blockchain,
-		Decimals:   decimals,
-	}
-
-	return
 }
 
 func (uas *UniswapV3Scraper) Pool() chan dia.Pool {

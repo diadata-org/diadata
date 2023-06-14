@@ -2,9 +2,33 @@
   "Coins": [
     {
       "Exchange": "BitMart",
+      "ForeignName": "QUICK_USDT",
+      "Ignore": false,
+      "Symbol": "QUICK"
+    },
+    {
+      "Exchange": "BitMart",
+      "ForeignName": "BEPRO_USDT",
+      "Ignore": false,
+      "Symbol": "BEPRO"
+    },
+    {
+      "Exchange": "BitMart",
+      "ForeignName": "MCRT_USDT",
+      "Ignore": false,
+      "Symbol": "MCRT"
+    },
+    {
+      "Exchange": "BitMart",
       "ForeignName": "RAY_USDT",
       "Ignore": false,
       "Symbol": "RAY"
+    },
+    {
+      "Exchange": "BitMart",
+      "ForeignName": "PEPE_USDT",
+      "Ignore": false,
+      "Symbol": "PEPE"
     },
     {
       "Exchange": "BitMart",

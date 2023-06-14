@@ -113,19 +113,22 @@ func (rdb *RelDB) InsertNewAssetMap(asset_id string) error {
 	return nil
 }
 
-var assetCache = make(map[string]dia.Asset)
-
 // GetAsset is the standard method in order to uniquely retrieve an asset from asset table.
 func (rdb *RelDB) GetAsset(address, blockchain string) (asset dia.Asset, err error) {
-	assetKey := "GetAsset_" + address + "_" + blockchain
-	cachedAsset, found := assetCache[assetKey]
-	if found {
+	cachedAsset, errCache := rdb.GetAssetCache(blockchain, address)
+	if errCache == nil {
 		asset = cachedAsset
 		return
 	}
 	var decimals string
 	query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE address=$1 AND blockchain=$2", assetTable)
-	err = rdb.postgresClient.QueryRow(context.Background(), query, address, blockchain).Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, address, blockchain).Scan(
+		&asset.Symbol,
+		&asset.Name,
+		&asset.Address,
+		&decimals,
+		&asset.Blockchain,
+	)
 	if err != nil {
 		return
 	}
@@ -134,7 +137,6 @@ func (rdb *RelDB) GetAsset(address, blockchain string) (asset dia.Asset, err err
 		return
 	}
 	asset.Decimals = uint8(decimalsInt)
-	assetCache[assetKey] = asset
 	return
 }
 
@@ -768,25 +770,15 @@ func (rdb *RelDB) Count() (count uint32, err error) {
 // SetAssetCache stores @asset in redis, using its primary key in postgres as key.
 // As a consequence, @asset is only cached iff it exists in postgres.
 func (rdb *RelDB) SetAssetCache(asset dia.Asset) error {
-	key, err := rdb.GetKeyAsset(asset)
-	fmt.Printf("cache asset %s with key %s\n ", asset.Symbol, key)
-	if err != nil {
-		return err
-	}
-	return rdb.redisClient.Set(key, &asset, 0).Err()
+	return rdb.redisClient.Set(keyAssetCache+asset.Identifier(), &asset, 0).Err()
 }
 
 // GetAssetCache returns an asset by its asset_id as defined in asset table in postgres
-func (rdb *RelDB) GetAssetCache(assetID string) (dia.Asset, error) {
-	asset := dia.Asset{}
-	err := rdb.redisClient.Get(keyAssetCache + assetID).Scan(&asset)
-	if err != nil {
-		if !errors.Is(err, redis.Nil) {
-			log.Errorf("Error: %v on GetAssetCache with postgres asset_id %s\n", err, assetID)
-		}
-		return asset, err
-	}
-	return asset, nil
+func (rdb *RelDB) GetAssetCache(blockchain string, address string) (asset dia.Asset, err error) {
+	asset.Blockchain = blockchain
+	asset.Address = address
+	err = rdb.redisClient.Get(keyAssetCache + asset.Identifier()).Scan(&asset)
+	return
 }
 
 // CountCache returns the number of assets in the cache

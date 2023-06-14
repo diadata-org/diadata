@@ -25,6 +25,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "BEPRO",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0xCF3C8Be2e2C42331Da80EF210e9B1b307C03d36A"
+        },
+        {
             "Symbol": "BFC",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -34,7 +40,7 @@
             "Symbol": "BNC",
             "Exchange": "GateIO",
             "Blockchain": "Bifrost",
-            "Address": "Token:BNC"
+            "Address": "0"
         },
         {
             "Symbol": "CFG",
@@ -59,6 +65,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Arbitrum",
             "Address": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"
+        },
+        {
+            "Symbol": "MCRT",
+            "Exchange": "GateIO",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0x4b8285aB433D8f69CB48d5Ad62b415ed1a221e4f"
         },
         {
             "Symbol": "MSOL",
@@ -593,6 +605,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0xB97048628DB6B661D4C2aA833e95Dbe1A905B280"
+        },
+        {
+            "Symbol": "PEPE",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
         },
         {
             "Symbol": "PERP",

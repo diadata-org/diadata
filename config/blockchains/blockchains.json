@@ -264,6 +264,22 @@
             "ChainID": "Polkadot2032"
         },
         {
+            "Name": "Osmosis",
+            "GenesisDate": 1622548800,
+            "NativeToken": {
+                "Address": "uosmo"
+            },
+            "VerificationMechanism": "pos"
+        },
+        {
+            "Name": "Bifrost",
+            "GenesisDate": 1658491200,
+            "NativeToken": {
+                "Address": "0"
+            },
+            "VerificationMechanism": "pos"
+        },
+        {
             "Name": "Fiat",
             "GenesisDate": 0,
             "VerificationMechanism": "poa"
