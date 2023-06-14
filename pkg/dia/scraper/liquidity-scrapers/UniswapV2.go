@@ -11,7 +11,9 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
+	models "github.com/diadata-org/diadata/pkg/model"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -65,6 +67,7 @@ const (
 
 type UniswapScraper struct {
 	RestClient   *ethclient.Client
+	relDB        *models.RelDB
 	poolChannel  chan dia.Pool
 	doneChannel  chan bool
 	blockchain   string
@@ -75,65 +78,65 @@ type UniswapScraper struct {
 
 var exchangeFactoryContractAddress string
 
-func NewUniswapScraper(exchange dia.Exchange) (us *UniswapScraper) {
+func NewUniswapScraper(exchange dia.Exchange, relDB *models.RelDB) (us *UniswapScraper) {
 
 	pathToPools := utils.Getenv("PATH_TO_POOLS", "")
 
 	switch exchange.Name {
 	case dia.UniswapExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialEthereum, uniswapWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialEthereum, relDB, uniswapWaitMilliseconds)
 	case dia.SushiSwapExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialEthereum, sushiswapWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialEthereum, relDB, sushiswapWaitMilliseconds)
 	case dia.SushiSwapExchangePolygon:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialPolygon, sushiswapWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialPolygon, relDB, sushiswapWaitMilliseconds)
 	case dia.SushiSwapExchangeFantom:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialFantom, sushiswapWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialFantom, relDB, sushiswapWaitMilliseconds)
 	case dia.SushiSwapExchangeArbitrum:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialArbitrum, sushiswapWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialArbitrum, relDB, sushiswapWaitMilliseconds)
 	case dia.CamelotExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialArbitrum, sushiswapWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialArbitrum, relDB, sushiswapWaitMilliseconds)
 	case dia.PanCakeSwap:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialBSC, pancakeswapWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialBSC, relDB, pancakeswapWaitMilliseconds)
 	case dia.DfynNetwork:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialPolygon, dfynWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialPolygon, relDB, dfynWaitMilliseconds)
 	case dia.QuickswapExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialPolygon, dfynWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialPolygon, relDB, dfynWaitMilliseconds)
 	case dia.UbeswapExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialCelo, ubeswapWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialCelo, relDB, ubeswapWaitMilliseconds)
 	case dia.SpookyswapExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialFantom, spookyswapWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialFantom, relDB, spookyswapWaitMilliseconds)
 	case dia.SpiritswapExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialFantom, spiritswapWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialFantom, relDB, spiritswapWaitMilliseconds)
 	case dia.SolarbeamExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialMoonriver, solarbeamWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialMoonriver, relDB, solarbeamWaitMilliseconds)
 	case dia.TrisolarisExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialAurora, trisolarisWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialAurora, relDB, trisolarisWaitMilliseconds)
 	case dia.NetswapExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialMetis, metisWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialMetis, relDB, metisWaitMilliseconds)
 	case dia.HuckleberryExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialMoonriver, moonriverWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialMoonriver, relDB, moonriverWaitMilliseconds)
 	case dia.TraderJoeExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialAvalanche, avalancheWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialAvalanche, relDB, avalancheWaitMilliseconds)
 	case dia.PangolinExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialAvalanche, avalancheWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialAvalanche, relDB, avalancheWaitMilliseconds)
 	case dia.TethysExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialMetis, metisWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialMetis, relDB, metisWaitMilliseconds)
 	case dia.HermesExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialMetis, metisWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialMetis, relDB, metisWaitMilliseconds)
 	case dia.OmniDexExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialTelos, telosWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialTelos, relDB, telosWaitMilliseconds)
 	case dia.DiffusionExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialEvmos, evmosWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialEvmos, relDB, evmosWaitMilliseconds)
 	case dia.ArthswapExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialAstar, astarWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialAstar, relDB, astarWaitMilliseconds)
 	case dia.ApeswapExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialAstar, astarWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialAstar, relDB, astarWaitMilliseconds)
 	case dia.BiswapExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialAstar, astarWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialAstar, relDB, astarWaitMilliseconds)
 	case dia.StellaswapExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialMoonbeam, moonbeamWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialMoonbeam, relDB, moonbeamWaitMilliseconds)
 	case dia.WanswapExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialWanchain, wanchainWaitMilliseconds)
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialWanchain, relDB, wanchainWaitMilliseconds)
 	}
 
 	exchangeFactoryContractAddress = exchange.Contract
@@ -146,7 +149,7 @@ func NewUniswapScraper(exchange dia.Exchange) (us *UniswapScraper) {
 }
 
 // makeUniswapPoolScraper returns an asset source as used in NewUniswapAssetSource.
-func makeUniswapPoolScraper(exchange dia.Exchange, pathToPools string, restDial string, waitMilliseconds string) *UniswapScraper {
+func makeUniswapPoolScraper(exchange dia.Exchange, pathToPools string, restDial string, relDB *models.RelDB, waitMilliseconds string) *UniswapScraper {
 	var (
 		restClient  *ethclient.Client
 		err         error
@@ -170,6 +173,7 @@ func makeUniswapPoolScraper(exchange dia.Exchange, pathToPools string, restDial 
 	}
 	us = &UniswapScraper{
 		RestClient:   restClient,
+		relDB:        relDB,
 		poolChannel:  poolChannel,
 		doneChannel:  doneChannel,
 		blockchain:   exchange.BlockChain.Name,
@@ -253,9 +257,9 @@ func (us *UniswapScraper) GetPoolByID(num int64) (dia.Pool, error) {
 // Get a pool by its LP token address.
 func (us *UniswapScraper) GetPoolByAddress(pairAddress common.Address) (pool dia.Pool, err error) {
 	var (
-		pairContract   *uniswap.IUniswapV2PairCaller
-		token0Contract *uniswap.IERC20Caller
-		token1Contract *uniswap.IERC20Caller
+		pairContract *uniswap.IUniswapV2PairCaller
+		token0       dia.Asset
+		token1       dia.Asset
 	)
 
 	connection := us.RestClient
@@ -269,52 +273,20 @@ func (us *UniswapScraper) GetPoolByAddress(pairAddress common.Address) (pool dia
 	address0, _ := pairContract.Token0(&bind.CallOpts{})
 	address1, _ := pairContract.Token1(&bind.CallOpts{})
 
-	token0Contract, err = uniswap.NewIERC20Caller(address0, connection)
+	// Only fetch assets from on-chain in case they are not in our DB.
+	token0, err = us.relDB.GetAsset(address0.Hex(), us.blockchain)
 	if err != nil {
-		log.Error(err)
+		token0, err = ethhelper.ETHAddressToAsset(address0, us.RestClient, us.blockchain)
+		if err != nil {
+			return
+		}
 	}
-	token1Contract, err = uniswap.NewIERC20Caller(address1, connection)
+	token0, err = us.relDB.GetAsset(address0.Hex(), us.blockchain)
 	if err != nil {
-		log.Error(err)
-	}
-	symbol0, err := token0Contract.Symbol(&bind.CallOpts{})
-	if err != nil {
-		log.Error(err)
-	}
-	symbol1, err := token1Contract.Symbol(&bind.CallOpts{})
-	if err != nil {
-		log.Error(err)
-	}
-	decimals0, err := token0Contract.Decimals(&bind.CallOpts{})
-	if err != nil {
-		log.Error(err)
-	}
-	decimals1, err := token1Contract.Decimals(&bind.CallOpts{})
-	if err != nil {
-		log.Error(err)
-	}
-
-	name0, err := us.GetName(address0)
-	if err != nil {
-		log.Error("get name: ", err)
-	}
-	name1, err := us.GetName(address1)
-	if err != nil {
-		log.Error("get name: ", err)
-	}
-	token0 := dia.Asset{
-		Address:    address0.Hex(),
-		Blockchain: us.blockchain,
-		Symbol:     symbol0,
-		Name:       name0,
-		Decimals:   decimals0,
-	}
-	token1 := dia.Asset{
-		Address:    address1.Hex(),
-		Blockchain: us.blockchain,
-		Symbol:     symbol1,
-		Name:       name1,
-		Decimals:   decimals1,
+		token0, err = ethhelper.ETHAddressToAsset(address1, us.RestClient, us.blockchain)
+		if err != nil {
+			return
+		}
 	}
 
 	// Getting liquidity

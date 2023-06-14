@@ -113,19 +113,22 @@ func (rdb *RelDB) InsertNewAssetMap(asset_id string) error {
 	return nil
 }
 
-var assetCache = make(map[string]dia.Asset)
-
 // GetAsset is the standard method in order to uniquely retrieve an asset from asset table.
 func (rdb *RelDB) GetAsset(address, blockchain string) (asset dia.Asset, err error) {
-	assetKey := "GetAsset_" + address + "_" + blockchain
-	cachedAsset, found := assetCache[assetKey]
-	if found {
+	cachedAsset, errCache := rdb.GetAssetCache(blockchain, address)
+	if errCache == nil {
 		asset = cachedAsset
 		return
 	}
 	var decimals string
 	query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE address=$1 AND blockchain=$2", assetTable)
-	err = rdb.postgresClient.QueryRow(context.Background(), query, address, blockchain).Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, address, blockchain).Scan(
+		&asset.Symbol,
+		&asset.Name,
+		&asset.Address,
+		&decimals,
+		&asset.Blockchain,
+	)
 	if err != nil {
 		return
 	}
@@ -134,7 +137,6 @@ func (rdb *RelDB) GetAsset(address, blockchain string) (asset dia.Asset, err err
 		return
 	}
 	asset.Decimals = uint8(decimalsInt)
-	assetCache[assetKey] = asset
 	return
 }
 
