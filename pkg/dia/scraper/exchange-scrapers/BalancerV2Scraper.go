@@ -265,6 +265,7 @@ func (s *BalancerV2Scraper) mainLoop() {
 				Price:          swap.SellVolume / swap.BuyVolume,
 				Volume:         volume,
 				Time:           time.Unix(swap.Timestamp, 0),
+				PoolAddress:    poolAddress.Hex(),
 				ForeignTradeID: swap.ID,
 				Source:         s.exchangeName,
 				BaseToken:      assetIn,

@@ -436,6 +436,7 @@ func (s *UniswapScraper) ListenToPair(i int, address common.Address) {
 					BaseToken:      token1,
 					QuoteToken:     token0,
 					Time:           time.Unix(swap.Timestamp, 0),
+					PoolAddress:    rawSwap.Raw.Address.Hex(),
 					ForeignTradeID: swap.ID,
 					Source:         s.exchangeName,
 					VerifiedPair:   true,

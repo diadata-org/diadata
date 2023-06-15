@@ -224,6 +224,7 @@ func (s *UniswapV3Scraper) mainLoop() {
 						QuoteToken:     token0,
 						Time:           time.Unix(swap.Timestamp, 0),
 						ForeignTradeID: swap.ID,
+						PoolAddress:    pool.Address.Hex(),
 						Source:         s.exchangeName,
 						VerifiedPair:   true,
 					}
