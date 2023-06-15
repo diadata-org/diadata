@@ -192,7 +192,7 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 	quotationExtended.Address = quotation.Asset.Address
 	quotationExtended.Blockchain = quotation.Asset.Blockchain
 	quotationExtended.Price = quotation.Price
-	quotationExtended.Time = timestamp
+	quotationExtended.Time = quotation.Time
 	quotationExtended.Source = quotation.Source
 
 	signedData, err := env.signer.Sign(quotation.Asset.Symbol, quotation.Asset.Address, quotation.Asset.Blockchain, quotation.Price, quotationExtended.Time)
