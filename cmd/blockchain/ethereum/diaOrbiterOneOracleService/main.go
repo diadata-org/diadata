@@ -144,6 +144,15 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 		}
 		rawQ.Price = rawQ.Price * collateralRatio
 		rawQ.Symbol = "kBTC"
+	} else if address == "0x853d955aCEf822Db058eb8505911ED77F175b99e" && blockchain == "Ethereum" {
+		// Second special case: for FRAX use GQL with a selection of markets
+			price, symbol, err := getFraxGraphqlAssetQuotationFromDia(blockchain, address, 120, "vwap")
+			if err != nil {
+				log.Printf("Failed to retrieve %s quotation data from Graphql on DIA: %v", address, err)
+				return oldPrice, err
+			}
+			rawQ.Symbol = symbol
+			rawQ.Price = price
 	} else {
 		// Do the "normal thing"
 		// Get quotation for token and update Oracle
@@ -169,6 +178,14 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 	newPrice := rawQ.Price
 
 	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
+		// FRAX emergency brake
+		if address == "0x853d955aCEf822Db058eb8505911ED77F175b99e" {
+			log.Printf("brake check new price: %d\n", newPrice)
+			if newPrice < 0.99 || newPrice > 1.01 {
+				log.Printf("Error! Price read from API for asset %s is: %d", address, newPrice)
+				return oldPrice, nil
+			}
+		}
 		log.Println("Entering deviation based update zone")
 		err = updateQuotation(rawQ, auth, contract, conn)
 		if err != nil {
@@ -298,6 +315,48 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int,
 			StartTime: ` + strconv.FormatInt(starttime.Unix(), 10) + `, 
 			EndTime: ` + strconv.FormatInt(currentTime.Unix(), 10) + `, 
 			Address: "` + address + `", 
+			BlockChain: "` + blockchain + `") {
+				Name
+				Symbol
+				Time
+				Value
+	  	}
+		}`)
+
+	ctx := context.Background()
+	var r Response
+	if err := client.Run(ctx, req, &r); err != nil {
+		return 0.0, "", err
+	}
+	if len(r.GetChart) == 0 {
+		return 0.0, "", errors.New("no results")
+	}
+	return r.GetChart[len(r.GetChart)-1].Value, r.GetChart[len(r.GetChart)-1].Symbol, nil
+}
+
+func getFraxGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int, gqlMethodology string) (float64, string, error) {
+	currentTime := time.Now()
+	starttime := currentTime.Add(time.Duration(-windowSize * 2) * time.Second)
+	type Response struct {
+		GetChart []struct {
+			Name   string    `json:"Name"`
+			Symbol string    `json:"Symbol"`
+			Time   time.Time `json:"Time"`
+			Value  float64   `json:"Value"`
+		} `json:"GetChart"`
+	}
+	client := gql.NewClient("https://api.diadata.org/graphql/query")
+	req := gql.NewRequest(`
+    query  {
+		 GetChart(
+		 	filter: "` + gqlMethodology + `", 
+			Symbol:"Asset",
+			BlockDurationSeconds: ` + strconv.Itoa(windowSize) + `, 
+			BlockShiftSeconds: ` + strconv.Itoa(windowSize) + `,
+			StartTime: ` + strconv.FormatInt(starttime.Unix(), 10) + `, 
+			EndTime: ` + strconv.FormatInt(currentTime.Unix(), 10) + `, 
+			Address: "` + address + `", 
+			Exchanges:["Curvefi"],
 			BlockChain: "` + blockchain + `") {
 				Name
 				Symbol
