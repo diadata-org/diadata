@@ -19,6 +19,8 @@ import (
 type YahooFinScraper struct {
 	ticker          *time.Ticker
 	foreignScrapper ForeignScraper
+	updateRange     string
+	updateInterval  string
 	currenciesMap   map[string]string
 }
 
@@ -107,6 +109,9 @@ const (
 	yahooFinSource            = "YahooFinance"
 	yahooFinUpdateFreqDefault = 60 * 2 // Default update frequency (in seconds)
 	yahooFinUpdateFreqEnv     = "YAHOOFIN_UPDATE_FREQ"
+	yahooFinUpdateRangeEnv    = "YAHOOFIN_UPDATE_RANGE"
+	yahooFinUpdateIntervalEnv = "YAHOOFIN_UPDATE_INTERVAL"
+	yahooFinCurrenciesMapEnv  = "YAHOOFIN_CURRENCIES_MAP"
 	yahooFinWebCurrencies     = "https://finance.yahoo.com/currencies"
 	yahooFinHttpV10Host       = "https://query1.finance.yahoo.com"
 	yahooFinHttpV11Host       = "https://query2.finance.yahoo.com"
@@ -123,64 +128,87 @@ func NewYahooFinScraper(datastore models.Datastore) (s *YahooFinScraper) {
 		chanQuotation: make(chan *models.ForeignQuotation),
 	}
 
-	// Define the update frequency
+	// Define the defaults
+	updateRange := "120m"
+	log.Infof("Default update range set to %s\n", updateRange)
+	updateInterval := "1m"
+	log.Infof("Default update interval set to %s\n", updateInterval)
 	updateFreq := yahooFinUpdateFreqDefault * time.Second
-	yahooFinUpdateFreqEnv, err := strconv.ParseInt(utils.Getenv(yahooFinUpdateFreqEnv, "0"), 10, 64)
+	log.Infof("Default update frequency set to %d seconds\n", yahooFinUpdateFreqDefault)
+	currencyMap := make(map[string]string)
+
+	// Read env variables and override defaults if needed
+	// TODO: validate range and interval formats (1m, 1h, 1d, 1w, 1mo, 1y)
+	yahooFinUpdateRange := utils.Getenv(yahooFinUpdateRangeEnv, "")
+	if yahooFinUpdateRange != "" {
+		updateRange = yahooFinUpdateRange
+		log.Infof("Config set update range to %s\n", updateRange)
+	}
+	yahooFinUpdateInterval := utils.Getenv(yahooFinUpdateIntervalEnv, "")
+	if yahooFinUpdateInterval != "" {
+		updateInterval = yahooFinUpdateInterval
+		log.Infof("Config set update interval to %s\n", updateInterval)
+	}
+	yahooFinUpdateFreq, err := strconv.ParseInt(utils.Getenv(yahooFinUpdateFreqEnv, "0"), 10, 64)
 	if err != nil {
-		log.Errorf("parse fail to %v env variable: %v", yahooFinUpdateFreqEnv, err)
+		log.Errorf("fail to parse %v env variable: %v", yahooFinUpdateFreqEnv, err)
 		return
 	}
-	if yahooFinUpdateFreqEnv != 0 {
-		updateFreq = time.Duration(yahooFinUpdateFreqEnv) * time.Second
+	if yahooFinUpdateFreq != 0 {
+		updateFreq = time.Duration(yahooFinUpdateFreq) * time.Second
+		log.Infof("Config set update frequency to %f seconds\n", updateFreq.Seconds())
 	}
-
 	// Because Yahoo Finance don't have any public endpoint to discover available currency's symbols,
 	// we need to scrape webpage to extract metadata. This map is the fallback in case the crawling process fails.
 	// Also, some of the pairs are not contained in the webpage. These need to be added to the env var manually.
 	// The data was extracted on Jan10 2023, maps the Yahoo Finance symbols to a pair of ISO 4217 friendly format.
 	// Use the <YAHOO_SYMBOL>:<AAA-BBB> format separeted by a comma: EURGBP=X:EUR-GBP,CNY=X:USD-CNY
-	currencyMapDefault := make(map[string]string)
-	currenciesList := strings.Split(utils.Getenv("CURRENCIES_LIST_YAHOO", ""), ",")
-	log.Infof("Meta info for %d currencies have been loaded into mapping\n", len(currenciesList))
-	for _, c := range currenciesList {
-		currency := strings.Split(c, ":")
-		log.Debugf("- %s %s", currency[1], currency[0])
-		if len(currency) != 2 {
-			log.Fatal("currency must have 2 identifier: ", currency)
+	currenciesList := utils.Getenv(yahooFinCurrenciesMapEnv, "")
+	if currenciesList != "" {
+		currenciesListSplit := strings.Split(currenciesList, ",")
+		if len(currenciesListSplit) > 1 {
+			currencyMapDefault := make(map[string]string)
+			log.Infof("Config set meta-info for %d currencies\n", len(currenciesListSplit))
+			for _, c := range currenciesListSplit {
+				currency := strings.Split(c, ":")
+				if len(currency) != 2 {
+					log.Fatal("currency must have 2 identifier: ", currency)
+				}
+				symbol := currency[0]
+				if symbol[len(symbol)-2:] == "=X" {
+					if len(symbol) == 5 {
+						symbol = "USD" + symbol
+					}
+				}
+				currencyMapDefault[symbol] = currency[1]
+				log.Infof("- %s %s", currency[1], symbol)
+
+			}
+			currencyMap = currencyMapDefault
 		}
-		currencyMapDefault[currency[0]] = currency[1]
 	}
 
-	currencyMap := currencyMapDefault
-
-	crawlStartTime := time.Now()
+	// Crawl currencies webpage to extract metadata
 	data, err := yahooCrawlCurrencies()
 	if err != nil {
 		log.Warnf("Failed to crawl currencies, using default map: %s", err)
 	} else {
-		updateElapsedTime := time.Since(crawlStartTime)
-		log.Infof("Meta information for %d currencies found in %f seconds", len(data), updateElapsedTime.Seconds())
+		log.Infof("Meta information for %d currencies found", len(data))
 		for _, currency := range data {
-			currencyMap[currency.Symbol] = currency.Name
-		}
-		for symbol, name := range currencyMap {
-			log.Debugf("- %s %s", name, symbol)
-		}
-		if len(currencyMap) < len(currencyMapDefault) {
-			for symbol, name := range currencyMapDefault {
-				if _, ok := currencyMap[symbol]; !ok {
-					currencyMap[symbol] = name
-				}
+			if _, ok := currencyMap[currency.Symbol]; !ok {
+				currencyMap[currency.Symbol] = currency.Name
 			}
 		}
 	}
 
+	// Create the scraper
 	s = &YahooFinScraper{
 		ticker:          time.NewTicker(updateFreq),
+		updateRange:     updateRange,
+		updateInterval:  updateInterval,
 		foreignScrapper: foreignScrapper,
 		currenciesMap:   currencyMap,
 	}
-
 	go s.mainLoop()
 
 	return s
@@ -205,7 +233,6 @@ func (scraper *YahooFinScraper) GetQuoteChannel() chan *models.ForeignQuotation 
 
 // Retrieves new coin information from the Yahoo Finance API and stores it to influx
 func (scraper *YahooFinScraper) UpdateQuotation() error {
-	log.Infof("Updating quotes for %d currencies", len(scraper.currenciesMap))
 	updateStartTime := time.Now()
 
 	for k := range scraper.currenciesMap {
@@ -215,10 +242,16 @@ func (scraper *YahooFinScraper) UpdateQuotation() error {
 			return err
 		}
 		for _, result := range chartDataRes {
-			quoteSymbol := scraper.currenciesMap[result.Meta.Symbol]
-			if quoteSymbol == "" {
-				log.Warnf("Warning, symbol %s not found in currencies map", result.Meta.Symbol)
-			} else {
+			symbol := result.Meta.Symbol
+			if (len(symbol) == 8 || len(symbol) == 5) && symbol[len(symbol)-2:] == "=X" {
+				if _, ok := scraper.currenciesMap[symbol]; !ok {
+					if len(symbol) == 5 {
+						symbol = "USD" + symbol[len(symbol)-5:]
+					}
+				}
+
+				quoteSymbol := scraper.currenciesMap[symbol]
+
 				for i, quoteUnixTime := range result.Timestamp {
 					quoteDateTime := time.Unix(int64(quoteUnixTime), 0)
 					quotePrice := result.Indicators.Quote[0].Close[i]
@@ -239,6 +272,8 @@ func (scraper *YahooFinScraper) UpdateQuotation() error {
 						scraper.foreignScrapper.chanQuotation <- &quote
 					}
 				}
+			} else {
+				log.Warnf("Warning, the received symbol %s was not parsed, ignoring it", result.Meta.Symbol)
 			}
 		}
 	}
@@ -250,12 +285,15 @@ func (scraper *YahooFinScraper) UpdateQuotation() error {
 
 // Main loop runs in a goroutine until channel s is closed.
 func (scraper *YahooFinScraper) mainLoop() {
-	log.Infof("Initializing scraper with %d currencies loaded", len(scraper.currenciesMap))
+
+	// Update quotes on startup
+	log.Infof("Initializing scraper with %d currencies", len(scraper.currenciesMap))
 	err := scraper.UpdateQuotation()
 	if err != nil {
 		log.Error(err)
 	}
 
+	// Start main loop with ticker
 	log.Infof("Starting main loop")
 	for {
 		select {
@@ -284,8 +322,8 @@ func (scraper *YahooFinScraper) fetchChartData(symbol string) (chart []yahooFinV
 
 	// Add URL query parameters and encode them
 	q := url.Values{}
-	q.Add("interval", "1m")
-	q.Add("range", "180m")
+	q.Add("interval", scraper.updateInterval)
+	q.Add("range", scraper.updateRange)
 	req.URL.RawQuery = q.Encode()
 
 	// Make the request
@@ -337,21 +375,28 @@ func yahooCrawlCurrencies() (currencies []yahooFinWebCurrency, err error) {
 		e.ForEach("tr", func(_ int, el *colly.HTMLElement) {
 			symbol := el.ChildText("td:nth-child(1)")
 			name := el.ChildText("td:nth-child(2)")
-			if nameSplit := strings.Split(name, "/"); len(nameSplit) != 2 {
-				log.Errorf("Cannot parse name %s", name)
-				return
+			if (len(symbol) == 5 || len(symbol) == 8) && symbol[len(symbol)-2:] == "=X" {
+				if len(symbol) == 5 {
+					symbol = "USD" + symbol
+				}
+				if nameSplit := strings.Split(name, "/"); len(nameSplit) != 2 {
+					log.Errorf("Cannot parse name %s", name)
+					return
+				}
+				currency := yahooFinWebCurrency{
+					Symbol: symbol,
+					Name:   strings.Split(name, "/")[0] + "-" + strings.Split(name, "/")[1],
+				}
+				log.Debugf("- %s: %s", currency.Name, currency.Symbol)
+				currencies = append(currencies, currency)
+			} else {
+				log.Warnf("Warning, cannot parse symbol %s", symbol)
 			}
-			currency := yahooFinWebCurrency{
-				Symbol: symbol,
-				Name:   strings.Split(name, "/")[0] + "-" + strings.Split(name, "/")[1],
-			}
-			log.Debugf("- %s: %s", currency.Name, currency.Symbol)
-			currencies = append(currencies, currency)
 		})
 	})
 
-	// Start scraping
-	log.Printf("Crawling currencies metadata from %s", yahooFinWebCurrencies)
+	// Visit the currencies webpage
+	log.Printf("Crawling currencies metadata")
 	err = c.Visit(yahooFinWebCurrencies)
 	if err != nil {
 		return currencies, err
