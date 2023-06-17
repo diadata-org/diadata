@@ -176,7 +176,7 @@ func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *dia
 
 	if address == "0xb5DFABd7fF7F83BAB83995E72A52B97ABb7bcf63" {
 		log.Printf("brake check new price: %d\n", newPrice)
-		if newPrice < 0.99 || newPrice > 1.1 {
+		if newPrice < 0.9 || newPrice > 1.1 {
 			log.Printf("Error! Price read from API for asset %s is: %d", address, newPrice)
 			return oldPrice, nil
 		}
@@ -223,7 +223,7 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 
 		if address == "0xb5DFABd7fF7F83BAB83995E72A52B97ABb7bcf63" {
 			log.Printf("brake check new price: %d\n", newPrice)
-			if newPrice < 0.99 || newPrice > 1.1 {
+			if newPrice < 0.9 || newPrice > 1.1 {
 				log.Printf("Error! Price read from API for asset %s is: %d", address, newPrice)
 				return oldPrice, nil
 			}
