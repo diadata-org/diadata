@@ -281,9 +281,9 @@ func (us *UniswapScraper) GetPoolByAddress(pairAddress common.Address) (pool dia
 			return
 		}
 	}
-	token0, err = us.relDB.GetAsset(address0.Hex(), us.blockchain)
+	token1, err = us.relDB.GetAsset(address1.Hex(), us.blockchain)
 	if err != nil {
-		token0, err = ethhelper.ETHAddressToAsset(address1, us.RestClient, us.blockchain)
+		token1, err = ethhelper.ETHAddressToAsset(address1, us.RestClient, us.blockchain)
 		if err != nil {
 			return
 		}

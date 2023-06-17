@@ -52,6 +52,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse frequencySeconds: %v")
 	}
+	mandatoryFrequencySeconds, err := strconv.Atoi(utils.Getenv("MANDATORY_FREQUENCY_SECONDS", "0"))
+	if err != nil {
+		log.Fatalf("Failed to parse mandatoryFrequencySeconds: %v")
+	}
 	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "1"), 10, 64)
 	if err != nil {
 		log.Fatalf("Failed to parse chainId: %v")
@@ -130,6 +134,23 @@ func main() {
 			}
 		}
 	}()
+
+	if mandatoryFrequencySeconds > 0 {
+		mandatoryticker := time.NewTicker(time.Duration(mandatoryFrequencySeconds) * time.Second)
+		go func() {
+			for {
+				select {
+				case <-mandatoryticker.C:
+					log.Println("old price", oldPrice)
+					oldPrice, err = oracleUpdateHelper(oldPrice, deviationPermille, auth, damfinancecontract, usdcconn, d20tokenconn, conn, baseblockchain, baseaddress)
+					if err != nil {
+						log.Println(err)
+					}
+					time.Sleep(time.Duration(sleepSeconds) * time.Second)
+				}
+			}
+		}()
+	}
 	select {}
 }
 

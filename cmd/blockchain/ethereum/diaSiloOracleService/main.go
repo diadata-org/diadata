@@ -47,6 +47,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse deviationPermille: %v")
 	}
+	xcDeviationPermille, err := strconv.Atoi(utils.Getenv("XC_DEVIATION_PERMILLE", "10"))
+	if err != nil {
+		log.Fatalf("Failed to parse xcDeviationPermille: %v")
+	}
 	gqlWindowSize, err := strconv.Atoi(utils.Getenv("GQL_WINDOW_SIZE", "120"))
 	if err != nil {
 		log.Fatalf("Failed to parse gqlWindowSize: %v")
@@ -54,11 +58,16 @@ func main() {
 	gqlMethodology := utils.Getenv("GQL_METHODOLOGY", "vwap")
 	assetsStr := utils.Getenv("ASSETS", "")
 	gqlAssetsStr := utils.Getenv("GQL_ASSETS", "")
+	xcAssetsStr := utils.Getenv("XC_ASSETS", "")
+	xcAssetSymbol := utils.Getenv("XC_ASSET_SYMBOL", "SILO")
 
 	addresses := []string{}
 	blockchains := []string{}
 	useGql := false
+	xcBlockchains := []string{}
+	xcAddresses := []string{}
 	var assetsToParse string
+	var xcAssetsToParse string
 
 	// Either Assets or GQL Assets must be non-empty
 	if gqlAssetsStr != "" && assetsStr == "" {
@@ -70,7 +79,9 @@ func main() {
 	} else {
 		log.Fatalf("Use either ASSETS or GQL_ASSETS env variable")
 	}
+	xcAssetsToParse = xcAssetsStr
 	assetsParsed := strings.Split(assetsToParse, ",")
+	xcAssetsParsed := strings.Split(xcAssetsToParse, ",")
 
 	for _, asset := range assetsParsed {
 		entries := strings.Split(asset, "-")
@@ -78,7 +89,14 @@ func main() {
 		addresses = append(addresses, strings.TrimSpace(entries[1]))
 	}
 
+	for _, asset := range xcAssetsParsed {
+		entries := strings.Split(asset, "-")
+		xcBlockchains = append(xcBlockchains, strings.TrimSpace(entries[0]))
+		xcAddresses = append(xcAddresses, strings.TrimSpace(entries[1]))
+	}
+
 	oldPrices := make(map[int]float64)
+	oldXcPrice := 0.0
 
 	/*
 	 * Setup connection to contract, deploy if necessary
@@ -119,6 +137,12 @@ func main() {
 					}
 					time.Sleep(time.Duration(sleepSeconds) * time.Second)
 				}
+				// xc updater
+				log.Println("old xc price:", oldXcPrice)
+				oldXcPrice, err = periodicXcOracleUpdateHelper(oldXcPrice, xcDeviationPermille, xcAssetSymbol, auth, contract, conn, xcBlockchains, xcAddresses, 3600, 120, "vwapir")
+				if err != nil {
+					log.Println(err)
+				}
 			}
 		}
 	}()
@@ -139,6 +163,12 @@ func main() {
 							log.Println(err)
 						}
 						time.Sleep(time.Duration(sleepSeconds) * time.Second)
+					}
+					// xc updater
+					log.Println("old xc price:", oldXcPrice)
+					oldXcPrice, err = xcOracleUpdateHelper(oldXcPrice, xcAssetSymbol, auth, contract, conn, xcBlockchains, xcAddresses, 3600, 120, "vwapir")
+					if err != nil {
+						log.Println(err)
 					}
 				}
 			}
@@ -183,6 +213,34 @@ func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *dia
 
 }
 
+func xcOracleUpdateHelper(oldPrice float64, xcAssetSymbol string, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchains []string, addresses []string, gqlWindowSize int, gqlWindowShift int, gqlMethodology string) (float64, error) {
+
+	// Empty quotation for our request
+	var rawQ *models.Quotation
+	rawQ = new(models.Quotation)
+	var err error
+
+	// Get quotation for token and update Oracle
+	price, err := getGraphqlXcAssetQuotationFromDia(blockchains, addresses, gqlWindowSize, gqlWindowShift, gqlMethodology)
+	if err != nil {
+		log.Printf("Failed to retrieve %s quotation data from xcGraphql on DIA: %v", addresses, err)
+		return oldPrice, err
+	}
+	rawQ.Symbol = xcAssetSymbol
+	rawQ.Price = price
+	rawQ.Name = rawQ.Symbol
+
+	// Check for deviation
+	newPrice := rawQ.Price
+
+	err = updateQuotation(rawQ, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update DIA Oracle: %v", err)
+		return oldPrice, err
+	}
+	return newPrice, nil
+}
+
 func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string, useGql bool, gqlWindowSize int, gqlMethodology string) (float64, error) {
 
 	// Empty quotation for our request
@@ -215,6 +273,39 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 	if blockchain == "Ethereum" && address == "0x0000000000000000000000000000000000000000" {
 		deviationPermille = 5
 	}
+
+	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
+		log.Println("Entering deviation based update zone")
+		err = updateQuotation(rawQ, auth, contract, conn)
+		if err != nil {
+			log.Fatalf("Failed to update DIA Oracle: %v", err)
+			return oldPrice, err
+		}
+		return newPrice, nil
+	}
+
+	return oldPrice, nil
+}
+
+func periodicXcOracleUpdateHelper(oldPrice float64, deviationPermille int, xcAssetSymbol string, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchains []string, addresses []string, gqlWindowSize int, gqlWindowShift int, gqlMethodology string) (float64, error) {
+
+	// Empty quotation for our request
+	var rawQ *models.Quotation
+	rawQ = new(models.Quotation)
+	var err error
+
+	// Get quotation for token and update Oracle
+	price, err := getGraphqlXcAssetQuotationFromDia(blockchains, addresses, gqlWindowSize, gqlWindowShift, gqlMethodology)
+	if err != nil {
+		log.Printf("Failed to retrieve %s quotation data from xcGraphql on DIA: %v", addresses, err)
+		return oldPrice, err
+	}
+	rawQ.Symbol = xcAssetSymbol
+	rawQ.Price = price
+	rawQ.Name = rawQ.Symbol
+
+	// Check for deviation
+	newPrice := rawQ.Price
 
 	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
 		log.Println("Entering deviation based update zone")
@@ -363,4 +454,52 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int,
 		return 0.0, "", errors.New("no results")
 	}
 	return r.GetChart[len(r.GetChart)-1].Value, r.GetChart[len(r.GetChart)-1].Symbol, nil
+}
+
+func getGraphqlXcAssetQuotationFromDia(blockchains, addresses []string, windowSize int, windowShift int, gqlMethodology string) (float64, error) {
+	currentTime := time.Now()
+	starttime := currentTime.Add(time.Duration(-windowSize*2) * time.Second)
+	quoteAssetsArrayStr := ""
+	for i, address := range addresses {
+		quoteAssetsArrayStr += "{Address:\"" + address + "\",BlockChain:\"" + blockchains[i] + "\"}"
+		if i < len(addresses) - 1 {
+			quoteAssetsArrayStr += ","
+		}
+		quoteAssetsArrayStr += "\n"
+	}
+	type Response struct {
+		GetxcFeed []struct {
+			Name   string    `json:"Name"`
+			Time   time.Time `json:"Time"`
+			Value  float64   `json:"Value"`
+		} `json:"GetxcFeed"`
+	}
+	client := gql.NewClient("https://api.diadata.org/graphql/query")
+	req := gql.NewRequest(`
+    query  {
+		 GetxcFeed(
+		 	filter: "` + gqlMethodology + `", 
+			BlockSizeSeconds: ` + strconv.Itoa(windowSize) + `, 
+			BlockShiftSeconds: ` + strconv.Itoa(windowShift) + `,
+			StartTime: ` + strconv.FormatInt(starttime.Unix(), 10) + `, 
+			EndTime: ` + strconv.FormatInt(currentTime.Unix(), 10) + `, 
+			Exchanges: [],
+			QuoteAssets: [` + quoteAssetsArrayStr +
+			`])
+			{
+				Name
+				Time
+				Value
+	  	}
+		}`)
+
+	ctx := context.Background()
+	var r Response
+	if err := client.Run(ctx, req, &r); err != nil {
+		return 0.0, err
+	}
+	if len(r.GetxcFeed) == 0 {
+		return 0.0, errors.New("no results")
+	}
+	return r.GetxcFeed[len(r.GetxcFeed)-1].Value, nil
 }
