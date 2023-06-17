@@ -174,6 +174,14 @@ func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *dia
 
 	newPrice := rawQ.Price
 
+	if address == "0xb5DFABd7fF7F83BAB83995E72A52B97ABb7bcf63" {
+		log.Printf("brake check new price: %d\n", newPrice)
+		if newPrice < 0.99 || newPrice > 1.1 {
+			log.Printf("Error! Price read from API for asset %s is: %d", address, newPrice)
+			return oldPrice, nil
+		}
+	}
+
 	err = updateQuotation(rawQ, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update DIA Oracle: %v", err)
