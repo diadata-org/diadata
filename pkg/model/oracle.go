@@ -294,18 +294,27 @@ func (rdb *RelDB) GetOracleUpdates(address string, chainid string) ([]dia.Oracle
 	var updates []dia.OracleUpdate
 
 	for rows.Next() {
-		var update dia.OracleUpdate
+
+		var (
+			update          dia.OracleUpdate
+			assetprice      string
+			block           string
+			frombalance     string
+			gascost         string
+			gasused         string
+			transactioncost string
+		)
 		err := rows.Scan(
 			&update.OracleAddress,
 			&update.TransactionHash,
-			&update.TransactionCost,
+			&transactioncost,
 			&update.AssetKey,
-			&update.AssetPrice,
-			&update.UpdateBlock,
+			&assetprice,
+			&block,
 			&update.UpdateFrom,
-			&update.FromBalance,
-			&update.GasCost,
-			&update.GasUsed,
+			&frombalance,
+			&gascost,
+			&gasused,
 			&update.ChainID,
 		)
 		if err != nil {
