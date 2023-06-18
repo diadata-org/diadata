@@ -666,15 +666,15 @@ type OracleConfig struct {
 }
 
 type OracleUpdate struct {
-	OracleAddress   string  `json:"oracle_address"`
-	TransactionHash string  `json:"transaction_hash"`
-	TransactionCost float64 `json:"transaction_cost"`
-	AssetKey        string  `json:"asset_key"`
-	AssetPrice      float64 `json:"asset_price"`
-	UpdateBlock     int64   `json:"update_block"`
-	UpdateFrom      string  `json:"update_from"`
-	FromBalance     float64 `json:"from_balance"`
-	GasCost         float64 `json:"gas_cost"`
-	GasUsed         int64   `json:"gas_used"`
-	ChainID         string  `json:"chain_id"`
+	OracleAddress   string `json:"oracle_address"`
+	TransactionHash string `json:"transaction_hash"`
+	TransactionCost string `json:"transaction_cost"`
+	AssetKey        string `json:"asset_key"`
+	AssetPrice      string `json:"asset_price"`
+	UpdateBlock     string `json:"update_block"`
+	UpdateFrom      string `json:"update_from"`
+	FromBalance     string `json:"from_balance"`
+	GasCost         string `json:"gas_cost"`
+	GasUsed         string `json:"gas_used"`
+	ChainID         string `json:"chain_id"`
 }
