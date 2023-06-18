@@ -282,7 +282,7 @@ func (rdb *RelDB) GetOracleUpdates(address string, chainid string) ([]dia.Oracle
 	query := fmt.Sprintf(`
 		SELECT oracle_address, transaction_hash, transaction_cost, asset_key, asset_price, update_block, update_from, from_balance, gas_cost, gas_used, chain_id
 		FROM %s
-		WHERE address=$1 AND chain_id=$2
+		WHERE oracle_address=$1 AND chain_id=$2
 	`, feederupdatesTable)
 
 	rows, err := rdb.postgresClient.Query(context.Background(), query, address, chainid)
