@@ -277,3 +277,47 @@ func (rdb *RelDB) DeleteOracle(feederID string) (err error) {
 
 	return
 }
+
+func (rdb *RelDB) GetOracleUpdates(address string, chainid string) ([]dia.OracleUpdate, error) {
+	query := fmt.Sprintf(`
+		SELECT oracle_address, transaction_hash, transaction_cost, asset_key, asset_price, update_block, update_from, from_balance, gas_cost, gas_used, chain_id
+		FROM %s
+		WHERE address=$1 AND chain_id=$2
+	`, feederupdatesTable)
+
+	rows, err := rdb.postgresClient.Query(context.Background(), query, address, chainid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var updates []dia.OracleUpdate
+
+	for rows.Next() {
+		var update dia.OracleUpdate
+		err := rows.Scan(
+			&update.OracleAddress,
+			&update.TransactionHash,
+			&update.TransactionCost,
+			&update.AssetKey,
+			&update.AssetPrice,
+			&update.UpdateBlock,
+			&update.UpdateFrom,
+			&update.FromBalance,
+			&update.GasCost,
+			&update.GasUsed,
+			&update.ChainID,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		updates = append(updates, update)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return updates, nil
+}

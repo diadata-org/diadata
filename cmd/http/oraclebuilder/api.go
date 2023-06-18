@@ -255,7 +255,7 @@ func (ob *Env) List(context *gin.Context) {
 	context.JSON(http.StatusOK, oracles)
 }
 
-// list whitelisted addresses
+// List whitelisted addresses
 func (ob *Env) Whitelist(context *gin.Context) {
 	addresses, err := ob.RelDB.GetFeederResources()
 	if err != nil {
@@ -264,6 +264,22 @@ func (ob *Env) Whitelist(context *gin.Context) {
 		return
 	}
 	context.JSON(http.StatusOK, addresses)
+}
+
+// list whitelisted addresses
+func (ob *Env) Stats(context *gin.Context) {
+
+	address := context.Query("address")
+	chainID := context.Query("chainID")
+
+	updates, err := ob.RelDB.GetOracleUpdates(address, chainID)
+	if err != nil {
+		log.Errorln("Oracle Stats error ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	context.JSON(http.StatusOK, updates)
 }
 
 // List: list All feeders

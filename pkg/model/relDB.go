@@ -167,6 +167,7 @@ type RelDatastore interface {
 	GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleConfig, err error)
 	GetAllFeeders() (oracleconfigs []dia.OracleConfig, err error)
 	GetFeederResources(owner string) (addresses []string, err error)
+	GetOracleUpdates(address string, chainid string) ([]dia.OracleUpdate, error)
 }
 
 const (
@@ -203,6 +204,7 @@ const (
 	feederconfigTable    = "feederconfig"
 	feederaccessTable    = "feederaccess"
 	feederResourceTable  = "feederresource"
+	feederupdatesTable   = "feederupdates"
 
 	// time format for blockchain genesis dates
 	// timeFormatBlockchain = "2006-01-02"
