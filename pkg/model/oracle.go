@@ -298,7 +298,7 @@ func (rdb *RelDB) GetOracleUpdates(address string, chainid string) ([]dia.Oracle
 		var (
 			update          dia.OracleUpdate
 			assetprice      string
-			block           string
+			block           uint64
 			frombalance     string
 			gascost         string
 			gasused         string
