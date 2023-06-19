@@ -338,8 +338,8 @@ func (rdb *RelDB) GetOracleUpdates(address string, chainid string, offset int) (
 			&update.GasCost,
 			&update.GasUsed,
 			&update.ChainID,
-			&update.CreationBlock,
 			&update.UpdateTime,
+			&update.CreationBlock,
 		)
 		if err != nil {
 			return nil, err
