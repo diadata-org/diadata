@@ -167,7 +167,7 @@ type RelDatastore interface {
 	GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleConfig, err error)
 	GetAllFeeders() (oracleconfigs []dia.OracleConfig, err error)
 	GetFeederResources(owner string) (addresses []string, err error)
-	GetOracleUpdates(address string, chainid string) ([]dia.OracleUpdate, error)
+	GetOracleUpdates(address string, chainid string, offset int) ([]dia.OracleUpdate, error)
 }
 
 const (

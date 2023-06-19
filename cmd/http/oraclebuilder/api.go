@@ -268,11 +268,24 @@ func (ob *Env) Whitelist(context *gin.Context) {
 
 // list whitelisted addresses
 func (ob *Env) Stats(context *gin.Context) {
-
+	var err error
 	address := context.Query("address")
 	chainID := context.Query("chainID")
+	page := context.Query("page")
 
-	updates, err := ob.RelDB.GetOracleUpdates(address, chainID)
+	var offset int
+	if page != "" {
+		pageInt, err := strconv.Atoi(page)
+		if err != nil || pageInt < 1 {
+			offset = 0
+		} else {
+			offset = (pageInt - 1) * 20
+		}
+	} else {
+		offset = 0
+	}
+
+	updates, err := ob.RelDB.GetOracleUpdates(address, chainID, offset)
 	if err != nil {
 		log.Errorln("Oracle Stats error ", err)
 		context.JSON(http.StatusInternalServerError, err)

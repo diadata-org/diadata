@@ -278,7 +278,7 @@ func (rdb *RelDB) DeleteOracle(feederID string) (err error) {
 	return
 }
 
-func (rdb *RelDB) GetOracleUpdates(address string, chainid string) ([]dia.OracleUpdate, error) {
+func (rdb *RelDB) GetOracleUpdates(address string, chainid string, offset int) ([]dia.OracleUpdate, error) {
 	query := fmt.Sprintf(`
 	SELECT fu.oracle_address,
 		fu.transaction_hash,
@@ -294,8 +294,8 @@ func (rdb *RelDB) GetOracleUpdates(address string, chainid string) ([]dia.Oracle
 		oc.creation_block
 	FROM %s fu
 	JOIN %s oc ON fu.oracle_address = oc.address AND fu.chain_id = oc.chainID
-	WHERE fu.oracle_address = $1 AND fu.chain_id = $2
-	`, feederupdatesTable, oracleconfigTable)
+	WHERE fu.oracle_address = $1 AND fu.chain_id = $2 order by fu.update_block desc LIMIT 20 OFFSET %d
+	`, feederupdatesTable, oracleconfigTable, offset)
 
 	rows, err := rdb.postgresClient.Query(context.Background(), query, address, chainid)
 	if err != nil {
