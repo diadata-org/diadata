@@ -677,5 +677,5 @@ type OracleUpdate struct {
 	GasCost         string `json:"gas_cost"`
 	GasUsed         string `json:"gas_used"`
 	ChainID         string `json:"chain_id"`
-	CreationBlock   string
+	CreationBlock   uint64
 }
