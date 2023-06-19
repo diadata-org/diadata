@@ -679,6 +679,5 @@ type OracleUpdate struct {
 	GasUsed         string
 	ChainID         string
 	UpdateTime      sql.NullTime
-
-	CreationBlock uint64
+	CreationBlock   sql.NullInt64
 }
