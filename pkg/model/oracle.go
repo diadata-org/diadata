@@ -280,10 +280,22 @@ func (rdb *RelDB) DeleteOracle(feederID string) (err error) {
 
 func (rdb *RelDB) GetOracleUpdates(address string, chainid string) ([]dia.OracleUpdate, error) {
 	query := fmt.Sprintf(`
-		SELECT oracle_address, transaction_hash, transaction_cost, asset_key, asset_price, update_block, update_from, from_balance, gas_cost, gas_used, chain_id
-		FROM %s
-		WHERE oracle_address=$1 AND chain_id=$2
-	`, feederupdatesTable)
+	SELECT fu.oracle_address,
+		fu.transaction_hash,
+		fu.transaction_cost,
+		fu.asset_key,
+		fu.asset_price,
+		fu.update_block,
+		fu.update_from,
+		fu.from_balance,
+		fu.gas_cost,
+		fu.gas_used,
+		fu.chain_id,
+		oc.creation_block
+	FROM %s fu
+	JOIN %s oc ON fu.oracle_address = oc.address AND fu.chain_id = oc.chainID
+	WHERE fu.oracle_address = $1 AND fu.chain_id = $2
+	`, feederupdatesTable, oracleconfigTable)
 
 	rows, err := rdb.postgresClient.Query(context.Background(), query, address, chainid)
 	if err != nil {
@@ -296,26 +308,21 @@ func (rdb *RelDB) GetOracleUpdates(address string, chainid string) ([]dia.Oracle
 	for rows.Next() {
 
 		var (
-			update          dia.OracleUpdate
-			assetprice      string
-			block           uint64
-			frombalance     string
-			gascost         string
-			gasused         string
-			transactioncost string
+			update dia.OracleUpdate
 		)
 		err := rows.Scan(
 			&update.OracleAddress,
 			&update.TransactionHash,
-			&transactioncost,
+			&update.TransactionCost,
 			&update.AssetKey,
-			&assetprice,
-			&block,
+			&update.AssetPrice,
+			&update.UpdateBlock,
 			&update.UpdateFrom,
-			&frombalance,
-			&gascost,
-			&gasused,
+			&update.FromBalance,
+			&update.GasCost,
+			&update.GasUsed,
 			&update.ChainID,
+			&update.CreationBlock,
 		)
 		if err != nil {
 			return nil, err
