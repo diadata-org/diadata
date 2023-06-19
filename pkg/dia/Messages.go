@@ -1,7 +1,6 @@
 package dia
 
 import (
-	"database/sql"
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
@@ -678,6 +677,6 @@ type OracleUpdate struct {
 	GasCost         string
 	GasUsed         string
 	ChainID         string
-	UpdateTime      sql.NullTime
-	CreationBlock   sql.NullInt64
+	UpdateTime      time.Time
+	CreationBlock   uint64
 }

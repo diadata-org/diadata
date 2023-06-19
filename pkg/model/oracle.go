@@ -319,12 +319,16 @@ func (rdb *RelDB) GetOracleUpdates(address string, chainid string, offset int) (
 	}
 	defer rows.Close()
 
-	var updates []dia.OracleUpdate
+	var (
+		updates []dia.OracleUpdate
+	)
 
 	for rows.Next() {
 
 		var (
-			update dia.OracleUpdate
+			update        dia.OracleUpdate
+			updateTime    sql.NullTime
+			creationBlock sql.NullInt64
 		)
 		err := rows.Scan(
 			&update.OracleAddress,
@@ -338,9 +342,17 @@ func (rdb *RelDB) GetOracleUpdates(address string, chainid string, offset int) (
 			&update.GasCost,
 			&update.GasUsed,
 			&update.ChainID,
-			&update.UpdateTime,
-			&update.CreationBlock,
+			&updateTime,
+			&creationBlock,
 		)
+
+		if updateTime.Valid {
+			update.UpdateTime = updateTime.Time
+		}
+		if creationBlock.Valid {
+			update.CreationBlock = uint64(creationBlock.Int64)
+		}
+
 		if err != nil {
 			return nil, err
 		}
