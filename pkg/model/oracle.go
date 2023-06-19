@@ -306,6 +306,7 @@ func (rdb *RelDB) GetOracleUpdates(address string, chainid string, offset int) (
 		fu.gas_cost,
 		fu.gas_used,
 		fu.chain_id,
+		fu.update_time,
 		oc.creation_block
 	FROM %s fu
 	JOIN %s oc ON fu.oracle_address = oc.address AND fu.chain_id = oc.chainID
@@ -338,6 +339,7 @@ func (rdb *RelDB) GetOracleUpdates(address string, chainid string, offset int) (
 			&update.GasUsed,
 			&update.ChainID,
 			&update.CreationBlock,
+			&update.UpdateTime,
 		)
 		if err != nil {
 			return nil, err
