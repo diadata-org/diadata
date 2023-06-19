@@ -317,11 +317,11 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 				log.Info("got swap V2")
 				scraper.processSwap(pool, swpV2)
 			case swpUnderlying := <-sinkUnderlying:
-				log.Warn("got underlying swap")
+				log.Warn("got underlying USDR swap: ", swpUnderlying)
 				// Only fetch trades from USDR pool until we have parsing TokenExchangeUnderlying resolved.
-				if pool == common.HexToAddress("0xa138341185a9d0429b0021a11fb717b225e13e1f").Hex() && Exchanges[scraper.exchangeName].BlockChain.Name == dia.POLYGON {
-					scraper.processSwap(pool, swpUnderlying)
-				}
+				// if pool == common.HexToAddress("0xa138341185a9d0429b0021a11fb717b225e13e1f").Hex() && Exchanges[scraper.exchangeName].BlockChain.Name == dia.POLYGON {
+				// 	scraper.processSwap(pool, swpUnderlying)
+				// }
 			}
 		}
 	}()
