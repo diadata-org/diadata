@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"strconv"
 	"strings"
@@ -276,6 +277,20 @@ func (rdb *RelDB) DeleteOracle(feederID string) (err error) {
 	}
 
 	return
+}
+
+func (rdb *RelDB) GetOracleUpdateCount(address string, chainid string) (int64, error) {
+	query := fmt.Sprintf(`
+	SELECT  count(*) from %s
+	WHERE oracle_address=$1 and chain_id=$2`, feederupdatesTable)
+
+	var numUpdates sql.NullInt64
+	err := rdb.postgresClient.QueryRow(context.Background(), query, address, chainid).Scan(&numUpdates)
+	if numUpdates.Valid {
+		return numUpdates.Int64, nil
+	}
+	return 0, err
+
 }
 
 func (rdb *RelDB) GetOracleUpdates(address string, chainid string, offset int) ([]dia.OracleUpdate, error) {

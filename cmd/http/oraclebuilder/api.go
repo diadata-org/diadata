@@ -285,6 +285,13 @@ func (ob *Env) Stats(context *gin.Context) {
 		offset = 0
 	}
 
+	totalUpdates, err := ob.RelDB.GetOracleUpdateCount(address, chainID)
+	if err != nil {
+		log.Errorln("Oracle Stats error GetOracleUpdateCount ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
 	updates, err := ob.RelDB.GetOracleUpdates(address, chainID, offset)
 	if err != nil {
 		log.Errorln("Oracle Stats error ", err)
@@ -292,7 +299,11 @@ func (ob *Env) Stats(context *gin.Context) {
 		return
 	}
 
-	context.JSON(http.StatusOK, updates)
+	response := make(map[string]interface{})
+	response["Count"] = totalUpdates
+	response["Updates"] = updates
+
+	context.JSON(http.StatusOK, response)
 }
 
 // List: list All feeders
