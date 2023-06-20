@@ -18,10 +18,10 @@ require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/ethereum/go-ethereum v1.10.10
 	github.com/fatih/structs v1.1.0
-	github.com/gagliardetto/binary v0.7.7
+	github.com/gagliardetto/binary v0.7.8
 	github.com/gagliardetto/gofuzz v1.2.2
 	github.com/gagliardetto/metaplex-go v0.2.1
-	github.com/gagliardetto/solana-go v1.8.1
+	github.com/gagliardetto/solana-go v1.8.2
 	github.com/gagliardetto/treeout v0.1.4
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-redis/redis v6.15.9+incompatible
@@ -222,6 +222,7 @@ require (
 	github.com/ybbus/jsonrpc v2.1.2+incompatible // indirect
 	github.com/zondax/hid v0.9.1 // indirect
 	go.etcd.io/bbolt v1.3.7 // indirect
+	go.mongodb.org/mongo-driver v1.11.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
