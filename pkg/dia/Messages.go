@@ -37,6 +37,7 @@ const (
 	TELOS                                   = "Telos"
 	EVMOS                                   = "Evmos"
 	KUSAMA                                  = "Kusama"
+	KARURA                                  = "Karura"
 	ACALA                                   = "Acala"
 	POLKADOT                                = "Polkadot"
 	WANCHAIN                                = "Wanchain"

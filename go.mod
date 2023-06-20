@@ -7,7 +7,9 @@ require (
 	github.com/alexjorgef/go-bittrex v0.6.3
 	github.com/anaskhan96/soup v1.1.1
 	github.com/beldur/kraken-go-api-client v0.0.0-20200330152217-ed78f31b987e
+	github.com/benbjohnson/clock v1.3.0 // indirect
 	github.com/bitfinexcom/bitfinex-api-go v0.0.0-20200709134622-b8be40b33f25
+	github.com/bits-and-blooms/bitset v1.3.0 // indirect
 	github.com/blockstatecom/go-bitcoind v0.0.0-20180820094557-9dedf42af7c3
 	github.com/cnf/structhash v0.0.0-20180104161610-62a607eb0224
 	github.com/cosmos/cosmos-sdk v0.45.1
@@ -28,6 +30,8 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/graph-gophers/graphql-go v1.1.0
 	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab
+	github.com/itering/scale.go v1.2.5
+	github.com/itering/substrate-api-rpc v0.4.13
 	github.com/jackc/pgtype v1.7.0
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/mr-tron/base58 v1.2.0
