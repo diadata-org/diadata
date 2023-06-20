@@ -255,7 +255,7 @@ func (ob *Env) List(context *gin.Context) {
 	context.JSON(http.StatusOK, oracles)
 }
 
-// list whitelisted addresses
+// List whitelisted addresses
 func (ob *Env) Whitelist(context *gin.Context) {
 	addresses, err := ob.RelDB.GetFeederResources()
 	if err != nil {
@@ -264,6 +264,46 @@ func (ob *Env) Whitelist(context *gin.Context) {
 		return
 	}
 	context.JSON(http.StatusOK, addresses)
+}
+
+// list whitelisted addresses
+func (ob *Env) Stats(context *gin.Context) {
+	var err error
+	address := context.Query("address")
+	chainID := context.Query("chainID")
+	page := context.Query("page")
+
+	var offset int
+	if page != "" {
+		pageInt, err := strconv.Atoi(page)
+		if err != nil || pageInt < 1 {
+			offset = 0
+		} else {
+			offset = (pageInt - 1) * 20
+		}
+	} else {
+		offset = 0
+	}
+
+	totalUpdates, err := ob.RelDB.GetOracleUpdateCount(address, chainID)
+	if err != nil {
+		log.Errorln("Oracle Stats error GetOracleUpdateCount ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	updates, err := ob.RelDB.GetOracleUpdates(address, chainID, offset)
+	if err != nil {
+		log.Errorln("Oracle Stats error ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	response := make(map[string]interface{})
+	response["Count"] = totalUpdates
+	response["Updates"] = updates
+
+	context.JSON(http.StatusOK, response)
 }
 
 // List: list All feeders

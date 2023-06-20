@@ -73,6 +73,12 @@
             "Address": "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72"
         },
         {
+            "Symbol": "EUR",
+            "Exchange": "Binance2",
+            "Blockchain": "Fiat",
+            "Address": "978"
+        },
+        {
             "Symbol": "GMX",
             "Exchange": "Binance2",
             "Blockchain": "Arbitrum",

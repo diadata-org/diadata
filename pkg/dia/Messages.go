@@ -37,6 +37,7 @@ const (
 	TELOS                                   = "Telos"
 	EVMOS                                   = "Evmos"
 	KUSAMA                                  = "Kusama"
+	KARURA                                  = "Karura"
 	ACALA                                   = "Acala"
 	POLKADOT                                = "Polkadot"
 	WANCHAIN                                = "Wanchain"
@@ -664,4 +665,20 @@ type OracleConfig struct {
 	CreatedDate        time.Time
 	LastUpdate         time.Time
 	Deleted            bool `json:"Deleted,omitempty"`
+}
+
+type OracleUpdate struct {
+	OracleAddress   string
+	TransactionHash string
+	TransactionCost string
+	AssetKey        string
+	AssetPrice      string
+	UpdateBlock     uint64
+	UpdateFrom      string
+	FromBalance     string
+	GasCost         string
+	GasUsed         string
+	ChainID         string
+	UpdateTime      time.Time
+	CreationBlock   uint64
 }

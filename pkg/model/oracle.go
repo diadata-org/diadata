@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"strconv"
 	"strings"
@@ -276,4 +277,92 @@ func (rdb *RelDB) DeleteOracle(feederID string) (err error) {
 	}
 
 	return
+}
+
+func (rdb *RelDB) GetOracleUpdateCount(address string, chainid string) (int64, error) {
+	query := fmt.Sprintf(`
+	SELECT  count(*) from %s
+	WHERE oracle_address=$1 and chain_id=$2`, feederupdatesTable)
+
+	var numUpdates sql.NullInt64
+	err := rdb.postgresClient.QueryRow(context.Background(), query, address, chainid).Scan(&numUpdates)
+	if numUpdates.Valid {
+		return numUpdates.Int64, nil
+	}
+	return 0, err
+
+}
+
+func (rdb *RelDB) GetOracleUpdates(address string, chainid string, offset int) ([]dia.OracleUpdate, error) {
+	query := fmt.Sprintf(`
+	SELECT fu.oracle_address,
+		fu.transaction_hash,
+		fu.transaction_cost,
+		fu.asset_key,
+		fu.asset_price,
+		fu.update_block,
+		fu.update_from,
+		fu.from_balance,
+		fu.gas_cost,
+		fu.gas_used,
+		fu.chain_id,
+		fu.update_time,
+		oc.creation_block
+	FROM %s fu
+	JOIN %s oc ON fu.oracle_address = oc.address AND fu.chain_id = oc.chainID
+	WHERE fu.oracle_address = $1 AND fu.chain_id = $2 order by fu.update_block desc LIMIT 20 OFFSET %d
+	`, feederupdatesTable, oracleconfigTable, offset)
+
+	rows, err := rdb.postgresClient.Query(context.Background(), query, address, chainid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var (
+		updates []dia.OracleUpdate
+	)
+
+	for rows.Next() {
+
+		var (
+			update        dia.OracleUpdate
+			updateTime    sql.NullTime
+			creationBlock sql.NullInt64
+		)
+		err := rows.Scan(
+			&update.OracleAddress,
+			&update.TransactionHash,
+			&update.TransactionCost,
+			&update.AssetKey,
+			&update.AssetPrice,
+			&update.UpdateBlock,
+			&update.UpdateFrom,
+			&update.FromBalance,
+			&update.GasCost,
+			&update.GasUsed,
+			&update.ChainID,
+			&updateTime,
+			&creationBlock,
+		)
+
+		if updateTime.Valid {
+			update.UpdateTime = updateTime.Time
+		}
+		if creationBlock.Valid {
+			update.CreationBlock = uint64(creationBlock.Int64)
+		}
+
+		if err != nil {
+			return nil, err
+		}
+
+		updates = append(updates, update)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return updates, nil
 }

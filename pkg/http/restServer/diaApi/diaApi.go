@@ -192,7 +192,7 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 	quotationExtended.Address = quotation.Asset.Address
 	quotationExtended.Blockchain = quotation.Asset.Blockchain
 	quotationExtended.Price = quotation.Price
-	quotationExtended.Time = timestamp
+	quotationExtended.Time = quotation.Time
 	quotationExtended.Source = quotation.Source
 
 	signedData, err := env.signer.Sign(quotation.Asset.Symbol, quotation.Asset.Address, quotation.Asset.Blockchain, quotation.Price, quotationExtended.Time)
@@ -2397,14 +2397,21 @@ func (env *Env) GetNFTFloorMA(c *gin.Context) {
 	}
 
 	type returnStruct struct {
-		Floor  float64   `json:"Moving_Average_Floor_Price"`
-		Time   time.Time `json:"Time"`
-		Source string    `json:"Source"`
+		Floor     float64   `json:"Moving_Average_Floor_Price"`
+		Time      time.Time `json:"Time"`
+		Source    string    `json:"Source"`
+		Signature string    `json:"Signature"`
+	}
+
+	signedData, err := env.signer.Sign("NFT", address, blockchain, floorMA, endtime)
+	if err != nil {
+		log.Warn("error signing data: ", err)
 	}
 	var resp returnStruct
 	resp.Floor = floorMA
 	resp.Time = endtime
 	resp.Source = dia.Diadata
+	resp.Signature = signedData
 	c.JSON(http.StatusOK, resp)
 }
 

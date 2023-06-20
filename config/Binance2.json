@@ -74,6 +74,12 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "EURUSDT",
+            "Ignore": false,
+            "Symbol": "EUR"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "GMXUSDT",
             "Ignore": false,
             "Symbol": "GMX"
