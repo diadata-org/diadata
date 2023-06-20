@@ -250,18 +250,22 @@ func (scraper *YahooFinScraper) UpdateQuotation() error {
 					}
 				}
 
+				if _, ok := scraper.currenciesMap[symbol]; !ok {
+					log.Warnf("Symbol %s not found in the map", symbol)
+					continue
+				}
 				quoteSymbol := scraper.currenciesMap[symbol]
 
 				for i, quoteUnixTime := range result.Timestamp {
 					quoteDateTime := time.Unix(int64(quoteUnixTime), 0)
 					quotePrice := result.Indicators.Quote[0].Close[i]
 					if quotePrice > 0 {
-						priceYesterday, err := scraper.foreignScrapper.datastore.GetForeignPriceYesterday(scraper.currenciesMap[quoteSymbol], yahooFinSource)
+						priceYesterday, err := scraper.foreignScrapper.datastore.GetForeignPriceYesterday(quoteSymbol, yahooFinSource)
 						if err != nil {
 							priceYesterday = 0
 						}
 						quote := models.ForeignQuotation{
-							Symbol:             scraper.currenciesMap[quoteSymbol],
+							Symbol:             quoteSymbol,
 							Name:               quoteSymbol,
 							Price:              quotePrice,
 							PriceYesterday:     priceYesterday,
