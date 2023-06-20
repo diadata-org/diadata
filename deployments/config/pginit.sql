@@ -282,12 +282,13 @@ CREATE TABLE oracleconfig (
     mandatory_frequency text,
     createddate TIMESTAMP NOT NULL DEFAULT NOW(),
     lastupdate TIMESTAMP NOT NULL,
+    creation_block text,
     UNIQUE (id),
     UNIQUE (feeder_id)
 );
 
 
--- ALTER TABLE oracleconfig ADD COLUMN active  boolean default true;
+-- ALTER TABLE oracleconfig ADD COLUMN creation_block text default 0;
 
 
 
