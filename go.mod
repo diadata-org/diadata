@@ -28,7 +28,7 @@ require (
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gocolly/colly v1.2.0
 	github.com/gorilla/websocket v1.5.0
-	github.com/graph-gophers/graphql-go v1.3.0
+	github.com/graph-gophers/graphql-go v1.5.0
 	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab
 	github.com/itering/scale.go v1.6.5
 	github.com/itering/substrate-api-rpc v0.4.13
