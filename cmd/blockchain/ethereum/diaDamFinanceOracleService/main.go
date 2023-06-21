@@ -52,22 +52,17 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse frequencySeconds: %v")
 	}
-	mandatoryFrequencySeconds, err := strconv.Atoi(utils.Getenv("MANDATORY_FREQUENCY_SECONDS", "0"))
-	if err != nil {
-		log.Fatalf("Failed to parse mandatoryFrequencySeconds: %v")
-	}
 	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "1"), 10, 64)
 	if err != nil {
 		log.Fatalf("Failed to parse chainId: %v")
 	}
-	deviationPermille, err := strconv.Atoi(utils.Getenv("DEVIATION_PERMILLE", "10"))
-	if err != nil {
-		log.Fatalf("Failed to parse deviationPermille: %v")
-	}
 
 	baseaddress := "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
 	baseblockchain := "Ethereum"
+
 	oldPrice := 0.0
+	oldBalance := big.NewInt(0)
+	oldTotalSupply := big.NewInt(0)
 
 	parsedAbi, err = abi.JSON(strings.NewReader(damfinanceoracleabi))
 	if err != nil {
@@ -126,7 +121,9 @@ func main() {
 			select {
 			case <-ticker.C:
 				log.Println("old price", oldPrice)
-				oldPrice, err = periodicOracleUpdateHelper(oldPrice, deviationPermille, auth, damfinancecontract, usdcconn, d20tokenconn, conn, baseblockchain, baseaddress)
+				log.Println("old balance", oldBalance)
+				log.Println("old totalSupply", oldTotalSupply)
+				oldPrice, oldBalance, oldTotalSupply, err = periodicOracleUpdateHelper(oldPrice, oldBalance, oldTotalSupply, auth, damfinancecontract, usdcconn, d20tokenconn, conn, baseblockchain, baseaddress)
 				if err != nil {
 					log.Println(err)
 				}
@@ -135,67 +132,54 @@ func main() {
 		}
 	}()
 
-	if mandatoryFrequencySeconds > 0 {
-		mandatoryticker := time.NewTicker(time.Duration(mandatoryFrequencySeconds) * time.Second)
-		go func() {
-			for {
-				select {
-				case <-mandatoryticker.C:
-					log.Println("old price", oldPrice)
-					oldPrice, err = oracleUpdateHelper(oldPrice, deviationPermille, auth, damfinancecontract, usdcconn, d20tokenconn, conn, baseblockchain, baseaddress)
-					if err != nil {
-						log.Println(err)
-					}
-					time.Sleep(time.Duration(sleepSeconds) * time.Second)
-				}
-			}
-		}()
-	}
 	select {}
 }
 
-func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *bind.BoundContract, usdcconn, d20tokenconn *erc20.ERC20, conn *ethclient.Client, baseblockchain string, baseaddress string) (float64, error) {
+func periodicOracleUpdateHelper(oldPrice float64, oldBalance, oldTotalSupply *big.Int, auth *bind.TransactOpts, contract *bind.BoundContract, usdcconn, d20tokenconn *erc20.ERC20, conn *ethclient.Client, baseblockchain string, baseaddress string) (float64, *big.Int, *big.Int, error) {
 	var usdcbalance, totalSupply *big.Int
+
+	// Get asset quotation
 	rawBaseQ, err := getAssetQuotationFromDia(baseblockchain, baseaddress)
 	if err != nil {
 		log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", baseaddress, err)
-		return oldPrice, err
+		return oldPrice, oldBalance, oldTotalSupply, err
 	}
 	rawBaseQ.Name = rawBaseQ.Symbol
 
-	// Check for deviation
-	newPrice := rawBaseQ.Price
+	// Get USDC balance
+	usdcbalance, err = usdcconn.BalanceOf(&bind.CallOpts{}, common.HexToAddress("0xB1fbcD7415F9177F5EBD3d9700eD5F15B476a5Fe"))
+	if err != nil {
+		log.Fatalf("Failed to get balance of usdc: %v", err)
+		return oldPrice, oldBalance, oldTotalSupply, err
+	}
 
-	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
+	// Get total supply
+	totalSupply, err = d20tokenconn.TotalSupply(&bind.CallOpts{})
+	if err != nil {
+		log.Fatalf("Failed to get totalSupply of d20: %v", err)
+		return oldPrice, oldBalance, oldTotalSupply, err
+	}
+
+	newPrice := rawBaseQ.Price
+	newBalance := usdcbalance
+	newTotalSupply := totalSupply
+
+	// Check for deviation
+	if (newPrice != oldPrice || 
+		  newBalance.Cmp(oldBalance) != 0 ||
+		  newTotalSupply.Cmp(oldTotalSupply) != 0) {
 		log.Println("Entering deviation based update zone")
 
-		// Get USDC balance
-
-		usdcbalance, err = usdcconn.BalanceOf(&bind.CallOpts{}, common.HexToAddress("0xB1fbcD7415F9177F5EBD3d9700eD5F15B476a5Fe"))
-		if err != nil {
-			log.Fatalf("Failed to get balance of usdc: %v", err)
-			return oldPrice, err
-		}
-		// Get total supply
-
-		totalSupply, err = d20tokenconn.TotalSupply(&bind.CallOpts{})
-		if err != nil {
-			log.Fatalf("Failed to get totalSupply of d20: %v", err)
-			return oldPrice, err
-		}
-
-		fmt.Println("usdcbalance", usdcbalance)
-		fmt.Println("totalSupply", totalSupply)
 
 		err = updatePair(rawBaseQ, auth, contract, conn, usdcbalance, totalSupply)
 		if err != nil {
 			log.Fatalf("Failed to update DIA Oracle: %v", err)
-			return oldPrice, err
+			return oldPrice, oldBalance, oldTotalSupply, err
 		}
-		return newPrice, nil
+		return newPrice, newBalance, newTotalSupply, nil
 	}
 
-	return oldPrice, nil
+	return oldPrice, oldBalance, oldTotalSupply, nil
 }
 
 func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth *bind.TransactOpts, contract **diaOracleServiceV2.DIAOracleV2) error {
@@ -251,7 +235,7 @@ func updateOracle(
 	}
 
 	// Get 110% of the gas price
-	fmt.Println("gasPrice", gasPrice)
+	log.Println("gasPrice:", gasPrice)
 	fGas := new(big.Float).SetInt(gasPrice)
 	fGas.Mul(fGas, big.NewFloat(1.1))
 	gasPrice, _ = fGas.Int(nil)
@@ -263,7 +247,6 @@ func updateOracle(
 		GasPrice: gasPrice,
 	}, "setValues", key, big.NewInt(value), big.NewInt(timestamp), totalsupply, usdcbalance)
 
-	fmt.Println(tx.GasPrice())
 	log.Printf("from: %s\n", auth.From.Hex())
 
 	log.Printf("key: %s\n", key)
