@@ -84,6 +84,7 @@ require (
 	github.com/bgentry/speakeasy v0.1.1-0.20220910012023-760eaf8b6816 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/blendle/zapdriver v1.3.1 // indirect
+	github.com/bradfitz/gomemcache v0.0.0-20220106215444-fb4bf637b56d // indirect
 	github.com/btcsuite/btcd v0.22.0-beta // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2 // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
@@ -127,17 +128,19 @@ require (
 	github.com/go-openapi/swag v0.22.3 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
-	github.com/go-playground/validator/v10 v10.10.0 // indirect
+	github.com/go-playground/validator/v10 v10.11.1 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
 	github.com/go-test/deep v1.0.5 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
-	github.com/goccy/go-json v0.9.7 // indirect
+	github.com/goccy/go-json v0.10.0 // indirect
 	github.com/godbus/dbus v0.0.0-20190726142602-4481cbc300e2 // indirect
 	github.com/gogo/protobuf v1.3.3 // indirect
+	github.com/golang-jwt/jwt/v4 v4.4.3 // indirect
 	github.com/golang/glog v1.1.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
+	github.com/gomodule/redigo v1.8.9 // indirect
 	github.com/google/btree v1.1.2 // indirect
 	github.com/google/gnostic v0.5.7-v3refs // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
@@ -178,6 +181,7 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
+	github.com/memcachier/mc/v3 v3.0.3 // indirect
 	github.com/mimoo/StrobeGo v0.0.0-20220103164710-9a04d6ca976b // indirect
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
@@ -203,6 +207,7 @@ require (
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/regen-network/cosmos-proto v0.3.1 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
+	github.com/robfig/go-cache v0.0.0-20130306151617-9fc39e0dbf62 // indirect
 	github.com/rs/cors v1.8.2 // indirect
 	github.com/sasha-s/go-deadlock v0.3.1 // indirect
 	github.com/segmentio/fasthash v1.0.3 // indirect
@@ -266,9 +271,12 @@ require (
 	github.com/adshao/go-binance/v2 v2.3.6
 	github.com/antchfx/htmlquery v1.2.5 // indirect
 	github.com/antchfx/xmlquery v1.3.13 // indirect
+	github.com/appleboy/gin-jwt/v2 v2.9.1
 	github.com/centrifuge/go-substrate-rpc-client/v4 v4.0.13
 	github.com/deckarep/golang-set v1.8.0 // indirect
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
+	github.com/gin-contrib/cache v1.2.0
+	github.com/gin-gonic/contrib v0.0.0-20221130124618-7e01895a63f2
 	github.com/hdevalence/ed25519consensus v0.1.0 // indirect
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
 	github.com/kennygrant/sanitize v1.2.4 // indirect
@@ -279,12 +287,12 @@ require (
 	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d // indirect
 	github.com/spf13/cobra v1.6.1
 	github.com/temoto/robotstxt v1.1.2 // indirect
-	github.com/tidwall/gjson v1.12.1 // indirect
+	github.com/tidwall/gjson v1.14.3 // indirect
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
 	github.com/zekroTJA/timedmap v1.4.0
-	k8s.io/api v0.27.2
-	k8s.io/apimachinery v0.27.2
-	k8s.io/client-go v0.27.2
+	k8s.io/api v0.27.3
+	k8s.io/apimachinery v0.27.3
+	k8s.io/client-go v0.27.3
 )
 
 replace (
