@@ -3,6 +3,7 @@ package scrapers
 import (
 	"context"
 	"errors"
+	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -14,6 +15,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
+	"github.com/op/go-logging"
 	"github.com/zekroTJA/timedmap"
 )
 
@@ -52,6 +54,11 @@ func NewBitfinexScraper(key string, secret string, exchange dia.Exchange, scrape
 	//TODO: Set to false again because now we can have holes in our data stream
 	params.AutoReconnect = true
 	// params.HeartbeatTimeout = 5 * time.Second // used for testing
+	// Only info messages should be sent to log backend
+	loggerBackend := logging.AddModuleLevel(logging.NewLogBackend(os.Stdout, "", 0))
+	loggerBackend.SetLevel(logging.INFO, "")
+	params.Logger = logging.MustGetLogger("scrapers")
+	params.Logger.SetBackend(loggerBackend)
 
 	s := &BitfinexScraper{
 		wsClient:     websocket.NewWithParams(params),
