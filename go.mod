@@ -12,7 +12,7 @@ require (
 	github.com/bits-and-blooms/bitset v1.3.0 // indirect
 	github.com/blockstatecom/go-bitcoind v0.0.0-20180820094557-9dedf42af7c3
 	github.com/cnf/structhash v0.0.0-20180104161610-62a607eb0224
-	github.com/cosmos/cosmos-sdk v0.47.3
+	github.com/cosmos/cosmos-sdk v0.46.13
 	github.com/cosmos/ibc-go/v3 v3.0.0
 	github.com/cryptwire/go-binance/v2 v2.2.3
 	github.com/davecgh/go-spew v1.1.1
@@ -48,7 +48,7 @@ require (
 	github.com/streamingfast/solana-go v0.5.1-0.20220502224452-432fbe84aee8
 	github.com/stretchr/testify v1.8.2
 	github.com/tendermint/liquidity v1.5.0
-	github.com/tendermint/tendermint v0.34.15
+	github.com/tendermint/tendermint v0.34.24
 	github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf
 	github.com/vincent-petithory/dataurl v1.0.0
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
@@ -60,6 +60,8 @@ require (
 	google.golang.org/grpc v1.55.0
 	google.golang.org/protobuf v1.30.0
 )
+
+replace github.com/tendermint/tendermint  => github.com/tendermint/tendermint v0.34.24
 
 require (
 	contrib.go.opencensus.io/exporter/stackdriver v0.13.4 // indirect

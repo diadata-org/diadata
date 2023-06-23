@@ -1,11 +1,10 @@
 package main
 
 import (
+	"github.com/diadata-org/diadata/pkg/utils/oraclebuilder"
 	"net/http"
-	"time"
 
 	"github.com/99designs/keyring"
-	builderUtils "github.com/diadata-org/diadata/http/oraclebuilder/utils"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gin-gonic/gin"
@@ -15,16 +14,6 @@ import (
 )
 
 var log = logrus.New()
-
-const (
-	cachingTime1Sec   = 1 * time.Second
-	cachingTime20Secs = 20 * time.Second
-	cachingTimeShort  = time.Minute * 2
-	// cachingTimeMedium = time.Minute * 10
-	cachingTimeLong = time.Minute * 100
-)
-
-var identityKey = "id"
 
 func main() {
 
@@ -41,7 +30,7 @@ func main() {
 	oracleMonitoringUser := utils.Getenv("ORACLE_MONITORING_USER", "user")
 	oracleMonitoringPassword := utils.Getenv("ORACLE_MONITORING_PASSWORD", "password")
 
-	ph := builderUtils.NewPodHelper(oraclebaseimage, oraclenamespace)
+	ph := oraclebuilder.NewPodHelper(oraclebaseimage, oraclenamespace)
 
 	ring, _ := keyring.Open(keyring.Config{
 		ServiceName:     "oraclebuilder",
