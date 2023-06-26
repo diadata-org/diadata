@@ -1,11 +1,9 @@
 module github.com/diadata-org/diadata/exchange-scrapers/collector
 
-replace github.com/diadata-org/diadata => /home/eric/GolandProjects/Dia/diadata
-
 go 1.17
 
 require (
-	github.com/diadata-org/diadata v1.4.291-rc2
+	github.com/diadata-org/diadata v1.4.291-rc3
 	github.com/segmentio/kafka-go v0.4.35
 	github.com/sirupsen/logrus v1.9.3
 )
