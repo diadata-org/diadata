@@ -11,6 +11,8 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 )
 
+replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+
 require (
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/bradfitz/gomemcache v0.0.0-20180710155616-bc664df96737 // indirect

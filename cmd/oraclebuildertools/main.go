@@ -7,6 +7,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils/oraclebuilder"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 var log = logrus.New()
