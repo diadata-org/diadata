@@ -3,7 +3,7 @@ module github.com/diadata-org/diadata/exchange-scrapers/collector
 go 1.17
 
 require (
-	github.com/diadata-org/diadata v1.4.291-rc3
+	github.com/diadata-org/diadata v1.4.291-rc4
 	github.com/segmentio/kafka-go v0.4.35
 	github.com/sirupsen/logrus v1.9.3
 )
@@ -15,6 +15,7 @@ replace (
 
 require (
 	contrib.go.opencensus.io/exporter/stackdriver v0.13.4 // indirect
+	github.com/cosmos/cosmos-sdk v0.45.1 // indirect
 	filippo.io/edwards25519 v1.0.0 // indirect
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
 	github.com/99designs/keyring v1.2.2 // indirect
@@ -61,7 +62,6 @@ require (
 	github.com/dgryski/go-farm v0.0.0-20200201041132-a6ae2369ad13 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/dvsekhvalnov/jose2go v1.5.0 // indirect
-	github.com/ethereum/go-ethereum v1.10.20 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
