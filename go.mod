@@ -15,14 +15,14 @@ require (
 	github.com/cosmos/ibc-go/v3 v3.0.0
 	github.com/cryptwire/go-binance/v2 v2.2.3
 	github.com/davecgh/go-spew v1.1.1
-	github.com/ethereum/go-ethereum v1.10.20
+	github.com/ethereum/go-ethereum v1.10.22
 	github.com/fatih/structs v1.1.0
 	github.com/gagliardetto/binary v0.7.8
 	github.com/gagliardetto/gofuzz v1.2.2
 	github.com/gagliardetto/metaplex-go v0.2.1
 	github.com/gagliardetto/solana-go v1.8.2
 	github.com/gagliardetto/treeout v0.1.4
-	github.com/gin-gonic/gin v1.8.1
+	github.com/gin-gonic/gin v1.9.0
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gocolly/colly v1.2.0
@@ -47,7 +47,7 @@ require (
 	github.com/streamingfast/solana-go v0.5.1-0.20220502224452-432fbe84aee8
 	github.com/stretchr/testify v1.8.2
 	github.com/tendermint/liquidity v1.5.0
-	github.com/tendermint/tendermint v0.34.28
+	github.com/tendermint/tendermint v0.34.24
 	github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf
 	github.com/vincent-petithory/dataurl v1.0.0
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
@@ -62,10 +62,7 @@ require (
 
 replace (
 	github.com/99designs/keyring => github.com/nnn-gif/keyring v1.0.0
-	github.com/cosmos/cosmos-sdk v0.47.3 => github.com/cosmos/cosmos-sdk v0.45.13
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-	github.com/tendermint/tendermint v0.34.26 => github.com/tendermint/tendermint v0.34.24
-	github.com/tendermint/tendermint v0.34.28 => github.com/tendermint/tendermint v0.34.24
 )
 
 require (

@@ -9,9 +9,7 @@ require (
 )
 
 replace (
-	github.com/cosmos/cosmos-sdk v0.47.3 => github.com/cosmos/cosmos-sdk v0.45.13
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-	github.com/tendermint/tendermint v0.34.26 => github.com/tendermint/tendermint v0.34.24
 	github.com/tendermint/tendermint v0.34.28 => github.com/tendermint/tendermint v0.34.24
 )
 
@@ -36,7 +34,7 @@ require (
 	github.com/bitfinexcom/bitfinex-api-go v0.0.0-20200709134622-b8be40b33f25 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/blendle/zapdriver v1.3.1 // indirect
-	github.com/btcsuite/btcd v0.22.2 // indirect
+	github.com/btcsuite/btcd v0.22.3 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2 // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/centrifuge/go-substrate-rpc-client/v4 v4.0.13 // indirect
@@ -45,7 +43,6 @@ require (
 	github.com/cometbft/cometbft-db v0.7.0 // indirect
 	github.com/confio/ics23/go v0.9.0 // indirect
 	github.com/cosmos/btcutil v1.0.5 // indirect
-	github.com/cosmos/cosmos-sdk v0.47.3 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
 	github.com/cosmos/iavl v0.20.0 // indirect
@@ -169,7 +166,6 @@ require (
 	github.com/tecbot/gorocksdb v0.0.0-20191217155057-f0fad39f321c // indirect
 	github.com/tendermint/go-amino v0.16.0 // indirect
 	github.com/tendermint/liquidity v1.5.0 // indirect
-	github.com/tendermint/tendermint v0.34.28 // indirect
 	github.com/tendermint/tm-db v0.6.7 // indirect
 	github.com/teris-io/shortid v0.0.0-20201117134242-e59966efd125 // indirect
 	github.com/tidwall/btree v1.6.0 // indirect
