@@ -2,6 +2,7 @@ package ethhelper
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"math/big"
 	"os"
@@ -60,6 +61,22 @@ func bindToken(address common.Address, caller bind.ContractCaller, transactor bi
 		return nil, err
 	}
 	return bind.NewBoundContract(address, parsed, caller, transactor, nil), nil
+}
+
+func GetBalanceOf(tokenAddress common.Address, walletAddress common.Address, client *ethclient.Client) (*big.Int, error) {
+	var balance []interface{}
+	tokenCaller, err := NewTokenCaller(tokenAddress, client)
+	if err != nil {
+		return big.NewInt(0), err
+	}
+	err = tokenCaller.Contract.Call(&bind.CallOpts{}, &balance, "balanceOf", walletAddress)
+	if err != nil {
+		return big.NewInt(0), err
+	}
+	if len(balance) > 0 {
+		return balance[0].(*big.Int), nil
+	}
+	return big.NewInt(0), errors.New("Not enough data.")
 }
 
 // ETHAddressToAsset takes an Ethereum address and returns the underlying

@@ -1,6 +1,7 @@
 package liquidityscrapers
 
 import (
+	"math"
 	"math/big"
 	"strconv"
 	"strings"
@@ -148,8 +149,20 @@ func (uls *UniswapV3Scraper) fetchPools() {
 		pool.Exchange = dia.Exchange{Name: uls.exchangeName}
 		pool.Blockchain = dia.BlockChain{Name: uls.blockchain}
 		pool.Address = poolCreated.Event.Pool.Hex()
-		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset0, Index: uint8(0)})
-		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset1, Index: uint8(1)})
+
+		balance0Big, err := ethhelper.GetBalanceOf(common.HexToAddress(asset0.Address), common.HexToAddress(pool.Address), uls.RestClient)
+		if err != nil {
+			log.Error("GetBalanceOf: ", err)
+		}
+		balance1Big, err := ethhelper.GetBalanceOf(common.HexToAddress(asset1.Address), common.HexToAddress(pool.Address), uls.RestClient)
+		if err != nil {
+			log.Error("GetBalanceOf: ", err)
+		}
+		balance0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance0Big), new(big.Float).SetFloat64(math.Pow10(int(asset0.Decimals)))).Float64()
+		balance1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance1Big), new(big.Float).SetFloat64(math.Pow10(int(asset1.Decimals)))).Float64()
+
+		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset0, Volume: balance0, Index: uint8(0)})
+		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset1, Volume: balance1, Index: uint8(1)})
 		pool.Time = time.Now()
 
 		uls.poolChannel <- pool
