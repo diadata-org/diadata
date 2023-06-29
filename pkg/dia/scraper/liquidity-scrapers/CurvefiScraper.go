@@ -26,6 +26,7 @@ var (
 type CurveFIScraper struct {
 	RestClient   *ethclient.Client
 	relDB        *models.RelDB
+	datastore    *models.DB
 	poolChannel  chan dia.Pool
 	doneChannel  chan bool
 	blockchain   string
@@ -44,7 +45,7 @@ type CurveCoin struct {
 	Name     string
 }
 
-func NewCurveFIScraper(exchange dia.Exchange) *CurveFIScraper {
+func NewCurveFIScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *models.DB) *CurveFIScraper {
 	var (
 		restClient  *ethclient.Client
 		err         error
@@ -87,14 +88,12 @@ func NewCurveFIScraper(exchange dia.Exchange) *CurveFIScraper {
 
 	scraper = &CurveFIScraper{
 		RestClient:   restClient,
+		relDB:        relDB,
+		datastore:    datastore,
 		poolChannel:  poolChannel,
 		doneChannel:  doneChannel,
 		blockchain:   exchange.BlockChain.Name,
 		exchangeName: exchange.Name,
-	}
-	scraper.relDB, err = models.NewRelDataStore()
-	if err != nil {
-		log.Fatal("new postgres datastore: ", err)
 	}
 
 	go func() {
@@ -221,8 +220,6 @@ func (scraper *CurveFIScraper) loadPoolData(poolAddress string, registry curveRe
 			i++
 		}
 
-		scraper.poolChannel <- pool
-
 	}
 
 	if registry.Type == 2 {
@@ -262,8 +259,6 @@ func (scraper *CurveFIScraper) loadPoolData(poolAddress string, registry curveRe
 			pool.Time = time.Now()
 			i++
 		}
-
-		scraper.poolChannel <- pool
 
 	}
 	if registry.Type == 3 {
@@ -306,9 +301,14 @@ func (scraper *CurveFIScraper) loadPoolData(poolAddress string, registry curveRe
 			i++
 		}
 
-		scraper.poolChannel <- pool
-
 	}
+
+	// Determine USD liquidity.
+	if pool.SufficientNativeBalance(GLOBAL_NATIVE_LIQUIDITY_THRESHOLD) {
+		scraper.datastore.GetPoolLiquiditiesUSD(&pool, priceCache)
+	}
+
+	scraper.poolChannel <- pool
 
 }
 

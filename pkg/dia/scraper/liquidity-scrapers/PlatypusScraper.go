@@ -10,6 +10,7 @@ import (
 	platypusAssetABI "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/platypusfinance/asset"
 	platypusPoolABI "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/platypusfinance/pool"
 	platypusTokenABI "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/platypusfinance/token"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -40,6 +41,7 @@ type PlatypusCoin struct {
 // The scraper object for Platypus Finance
 type PlatypusScraper struct {
 	RestClient   *ethclient.Client
+	datastore    *models.DB
 	poolChannel  chan dia.Pool
 	doneChannel  chan bool
 	blockchain   string
@@ -51,7 +53,7 @@ type PlatypusScraper struct {
 }
 
 // Returns a new exchange scraper
-func NewPlatypusScraper(exchange dia.Exchange) *PlatypusScraper {
+func NewPlatypusScraper(exchange dia.Exchange, datastore *models.DB) *PlatypusScraper {
 
 	var (
 		restClient  *ethclient.Client
@@ -76,6 +78,7 @@ func NewPlatypusScraper(exchange dia.Exchange) *PlatypusScraper {
 		blockchain:   exchange.BlockChain.Name,
 		exchangeName: exchange.Name,
 		RestClient:   restClient,
+		datastore:    datastore,
 		poolChannel:  poolChannel,
 		doneChannel:  doneChannel,
 
@@ -219,6 +222,12 @@ func (scraper *PlatypusScraper) loadPoolData(poolAddress string) (pool dia.Pool)
 		})
 
 	}
+
+	// Determine USD liquidity.
+	if pool.SufficientNativeBalance(GLOBAL_NATIVE_LIQUIDITY_THRESHOLD) {
+		scraper.datastore.GetPoolLiquiditiesUSD(&pool, priceCache)
+	}
+
 	pool.Exchange = dia.Exchange{Name: scraper.exchangeName}
 	pool.Blockchain = dia.BlockChain{Name: scraper.blockchain}
 	pool.Address = poolAddress

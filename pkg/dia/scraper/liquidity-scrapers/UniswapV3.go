@@ -23,6 +23,7 @@ type UniswapV3Scraper struct {
 	RestClient      *ethclient.Client
 	WsClient        *ethclient.Client
 	relDB           *models.RelDB
+	datastore       *models.DB
 	poolChannel     chan dia.Pool
 	doneChannel     chan bool
 	blockchain      string
@@ -33,7 +34,7 @@ type UniswapV3Scraper struct {
 }
 
 // NewUniswapV3Scraper returns a new UniswapV3Scraper.
-func NewUniswapV3Scraper(exchange dia.Exchange, relDB *models.RelDB) *UniswapV3Scraper {
+func NewUniswapV3Scraper(exchange dia.Exchange, relDB *models.RelDB, datastore *models.DB) *UniswapV3Scraper {
 	log.Info("NewUniswapScraper ", exchange.Name)
 	log.Info("NewUniswapScraper Address ", exchange.Contract)
 
@@ -41,11 +42,11 @@ func NewUniswapV3Scraper(exchange dia.Exchange, relDB *models.RelDB) *UniswapV3S
 
 	switch exchange.Name {
 	case dia.UniswapExchangeV3:
-		uls = makeUniswapV3Scraper(exchange, "", "", relDB, "200", uint64(12369621))
+		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(12369621))
 	case dia.UniswapExchangeV3Polygon:
-		uls = makeUniswapV3Scraper(exchange, "", "", relDB, "200", uint64(22757913))
+		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(22757913))
 	case dia.UniswapExchangeV3Arbitrum:
-		uls = makeUniswapV3Scraper(exchange, "", "", relDB, "200", uint64(165))
+		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(165))
 	}
 
 	go func() {
@@ -55,7 +56,7 @@ func NewUniswapV3Scraper(exchange dia.Exchange, relDB *models.RelDB) *UniswapV3S
 }
 
 // makeUniswapV3Scraper returns a uniswap scraper as used in NewUniswapV3Scraper.
-func makeUniswapV3Scraper(exchange dia.Exchange, restDial string, wsDial string, relDB *models.RelDB, waitMilliseconds string, startBlock uint64) *UniswapV3Scraper {
+func makeUniswapV3Scraper(exchange dia.Exchange, restDial string, wsDial string, relDB *models.RelDB, datastore *models.DB, waitMilliseconds string, startBlock uint64) *UniswapV3Scraper {
 	var (
 		restClient  *ethclient.Client
 		wsClient    *ethclient.Client
@@ -87,6 +88,7 @@ func makeUniswapV3Scraper(exchange dia.Exchange, restDial string, wsDial string,
 		WsClient:        wsClient,
 		RestClient:      restClient,
 		relDB:           relDB,
+		datastore:       datastore,
 		poolChannel:     poolChannel,
 		doneChannel:     doneChannel,
 		blockchain:      exchange.BlockChain.Name,
@@ -163,6 +165,12 @@ func (uls *UniswapV3Scraper) fetchPools() {
 
 		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset0, Volume: balance0, Index: uint8(0)})
 		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset1, Volume: balance1, Index: uint8(1)})
+
+		// Determine USD liquidity
+		if balance0 > GLOBAL_NATIVE_LIQUIDITY_THRESHOLD && balance1 > GLOBAL_NATIVE_LIQUIDITY_THRESHOLD {
+			uls.datastore.GetPoolLiquiditiesUSD(&pool, priceCache)
+		}
+
 		pool.Time = time.Now()
 
 		uls.poolChannel <- pool

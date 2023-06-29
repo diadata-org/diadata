@@ -230,15 +230,17 @@ type ExchangeVolumesList struct {
 }
 
 type AssetVolume struct {
-	Asset  Asset   `json:"Asset"`
-	Volume float64 `json:"Volume"`
-	Index  uint8   `json:"Index"`
+	Asset     Asset   `json:"Asset"`
+	Volume    float64 `json:"Volume"`
+	VolumeUSD float64 `json:"VolumeUSD"`
+	Index     uint8   `json:"Index"`
 }
 
 type AssetLiquidity struct {
-	Asset  Asset   `json:"Asset"`
-	Volume float64 `json:"Liquidity"`
-	Index  uint8   `json:"Index"`
+	Asset     Asset   `json:"Asset"`
+	Volume    float64 `json:"Liquidity"`
+	VolumeUSD float64 `json:"LiquidityUSD"`
+	Index     uint8   `json:"Index"`
 }
 
 type TopAsset struct {
@@ -365,6 +367,17 @@ type Pool struct {
 	Address      string
 	Assetvolumes []AssetVolume
 	Time         time.Time
+}
+
+// SufficientNativeBalance returns true if all pool assets have at least @threshold liquidity.
+func (p *Pool) SufficientNativeBalance(threshold float64) bool {
+	sufficientNativeBalance := true
+	for _, av := range p.Assetvolumes {
+		if av.Volume < threshold {
+			sufficientNativeBalance = false
+		}
+	}
+	return sufficientNativeBalance
 }
 
 // MarshalBinary is a custom marshaller for BlockChain type

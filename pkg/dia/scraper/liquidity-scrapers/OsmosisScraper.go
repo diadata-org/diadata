@@ -32,11 +32,12 @@ type OsmosisScraper struct {
 	exchangeName string
 	grpcClient   *GRPCClient
 	relDb        *models.RelDB
+	datastore    *models.DB
 	poolChannel  chan dia.Pool
 	doneChannel  chan bool
 }
 
-func NewOsmosisScraper(exchange dia.Exchange, relDb *models.RelDB) *OsmosisScraper {
+func NewOsmosisScraper(exchange dia.Exchange, relDb *models.RelDB, datastore *models.DB) *OsmosisScraper {
 	log.Infof("init rpc client for %s", exchange.BlockChain.Name)
 	// encoding := scrapers.NewOsmosisEncoding()
 
@@ -59,6 +60,7 @@ func NewOsmosisScraper(exchange dia.Exchange, relDb *models.RelDB) *OsmosisScrap
 		exchangeName: exchange.Name,
 		grpcClient:   grpcClient,
 		relDb:        relDb,
+		datastore:    datastore,
 		poolChannel:  make(chan dia.Pool),
 		doneChannel:  make(chan bool),
 	}
@@ -149,6 +151,11 @@ func (s *OsmosisScraper) HandlePool(pool *gammtypes.Pool) {
 			Volume: volume,
 			Index:  uint8(idx),
 		})
+	}
+
+	// Determine USD liquidity.
+	if diaPool.SufficientNativeBalance(GLOBAL_NATIVE_LIQUIDITY_THRESHOLD) {
+		s.datastore.GetPoolLiquiditiesUSD(diaPool, priceCache)
 	}
 
 	diaPool.Exchange = dia.Exchange{Name: s.exchangeName}
