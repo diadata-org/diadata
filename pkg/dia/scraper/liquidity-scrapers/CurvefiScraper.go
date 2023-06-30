@@ -259,7 +259,6 @@ func (scraper *CurveFIScraper) loadPoolData(poolAddress string, registry curveRe
 			pool.Time = time.Now()
 			i++
 		}
-
 	}
 	if registry.Type == 3 {
 		contract, err := curvefifactory.NewCurvefifactoryCaller(common.HexToAddress(poolAddress), scraper.RestClient)
