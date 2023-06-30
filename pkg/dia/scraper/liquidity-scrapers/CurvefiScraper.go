@@ -67,7 +67,7 @@ func NewCurveFIScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *mo
 		cryptoswapPools := curveRegistry{Type: 1, Address: common.HexToAddress("0x8F942C20D02bEfc377D41445793068908E2250D0")}
 		metaPools := curveRegistry{Type: 2, Address: common.HexToAddress("0xB9fC157394Af804a3578134A6585C0dc9cc990d4")}
 		factoryPools := curveRegistry{Type: 3, Address: common.HexToAddress("0xF18056Bbd320E96A48e3Fbf8bC061322531aac99")}
-		registries = []curveRegistry{basePools, cryptoswapPools, metaPools, factoryPools}
+		registries = []curveRegistry{factoryPools, basePools, cryptoswapPools, metaPools}
 	case dia.CurveFIExchangeFantom:
 		exchange.Contract = ""
 		// basePools := curveRegistry{Type: 1, Address: common.HexToAddress(exchange.Contract)}
@@ -129,7 +129,7 @@ func (scraper *CurveFIScraper) fetchPoolAddresses(registry curveRegistry) (poolA
 		if err != nil {
 			log.Error("PoolCount: ", err)
 		}
-		log.Info("poolCount: ", int(poolCount.Int64()))
+		log.Infof("poolCount in registry %s: %v ", registry.Address.Hex(), int(poolCount.Int64()))
 		for i := 0; i < int(poolCount.Int64()); i++ {
 			poolAddress, errPool := contract.PoolList(&bind.CallOpts{}, big.NewInt(int64(i)))
 			if errPool != nil {
@@ -153,7 +153,7 @@ func (scraper *CurveFIScraper) fetchPoolAddresses(registry curveRegistry) (poolA
 		if err != nil {
 			log.Error("PoolCount: ", err)
 		}
-		log.Info("poolCount: ", int(poolCount.Int64()))
+		log.Infof("poolCount in registry %s: %v ", registry.Address.Hex(), int(poolCount.Int64()))
 		for i := 0; i < int(poolCount.Int64()); i++ {
 			poolAddress, err := contract.PoolList(&bind.CallOpts{}, big.NewInt(int64(i)))
 			if err != nil {
@@ -287,9 +287,9 @@ func (scraper *CurveFIScraper) loadPoolData(poolAddress string, registry curveRe
 				log.Error("Get Balances: ", err)
 			}
 
-			asset, err := scraper.relDB.GetAsset(poolCoins[i].Hex(), scraper.blockchain)
+			asset, err := scraper.relDB.GetAsset(poolAssetAddress.Hex(), scraper.blockchain)
 			if err != nil {
-				asset, err = ethhelper.ETHAddressToAsset(poolCoins[i], scraper.RestClient, scraper.blockchain)
+				asset, err = ethhelper.ETHAddressToAsset(poolAssetAddress, scraper.RestClient, scraper.blockchain)
 				if err != nil {
 					return
 				}
