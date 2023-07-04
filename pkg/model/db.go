@@ -99,7 +99,7 @@ type Datastore interface {
 	// DEX Pool  methods
 	SavePoolInflux(p dia.Pool) error
 	GetPoolInflux(poolAddress string, starttime time.Time, endtime time.Time) ([]dia.Pool, error)
-	GetPoolLiquidityUSD(p dia.Pool) (float64, bool, error)
+	GetPoolLiquiditiesUSD(p *dia.Pool, priceCache map[string]float64)
 
 	// Market Measures
 	GetAssetsMarketCap(asset dia.Asset) (float64, error)

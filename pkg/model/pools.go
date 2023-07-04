@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
 	"github.com/jackc/pgx/v4"
 )
@@ -113,10 +112,10 @@ func (rdb *RelDB) SetPool(pool dia.Pool) error {
 	var query1 string
 	for i := 0; i < len(pool.Assetvolumes); i++ {
 		query1 = fmt.Sprintf(
-			`INSERT INTO %s (pool_id,asset_id,liquidity,time_stamp,token_index)
-				VALUES ((SELECT pool_id from %s where address=$1 and blockchain=$2),(SELECT asset_id from %s where address=$3 and blockchain=$4),$5,$6,$7)
+			`INSERT INTO %s (pool_id,asset_id,liquidity,liquidity_usd,time_stamp,token_index)
+				VALUES ((SELECT pool_id from %s where address=$1 and blockchain=$2),(SELECT asset_id from %s where address=$3 and blockchain=$4),$5,$6,$7,$8)
 				ON CONFLICT (pool_id,asset_id) 
-				DO UPDATE SET liquidity=EXCLUDED.liquidity, time_stamp=EXCLUDED.time_stamp, token_index=EXCLUDED.token_index`,
+				DO UPDATE SET liquidity=EXCLUDED.liquidity, liquidity_usd=EXCLUDED.liquidity_usd, time_stamp=EXCLUDED.time_stamp, token_index=EXCLUDED.token_index`,
 			poolassetTable,
 			poolTable,
 			assetTable,
@@ -130,6 +129,7 @@ func (rdb *RelDB) SetPool(pool dia.Pool) error {
 			pool.Assetvolumes[i].Asset.Address,
 			pool.Assetvolumes[i].Asset.Blockchain,
 			pool.Assetvolumes[i].Volume,
+			pool.Assetvolumes[i].VolumeUSD,
 			pool.Time,
 			pool.Assetvolumes[i].Index,
 		)
@@ -137,9 +137,7 @@ func (rdb *RelDB) SetPool(pool dia.Pool) error {
 			return err
 		}
 	}
-
 	return nil
-
 }
 
 // GetPoolByAddress returns the most recent pool data, i.e. liquidity.
@@ -147,7 +145,7 @@ func (rdb *RelDB) GetPoolByAddress(blockchain string, address string) (pool dia.
 
 	var rows pgx.Rows
 	query := fmt.Sprintf(`
-		SELECT pa.liquidity,a.symbol,a.name,a.address,a.decimals,p.exchange,pa.time_stamp,pa.token_index 
+		SELECT pa.liquidity,pa.liquidity_usd,a.symbol,a.name,a.address,a.decimals,p.exchange,pa.time_stamp,pa.token_index 
 		FROM %s pa 
 		INNER JOIN %s p 
 		ON p.pool_id=pa.pool_id 
@@ -177,6 +175,7 @@ func (rdb *RelDB) GetPoolByAddress(blockchain string, address string) (pool dia.
 		)
 		err = rows.Scan(
 			&assetvolume.Volume,
+			&assetvolume.VolumeUSD,
 			&assetvolume.Asset.Symbol,
 			&assetvolume.Asset.Name,
 			&assetvolume.Asset.Address,
@@ -252,7 +251,7 @@ func (rdb *RelDB) GetAllPoolsExchange(exchange string, liquiThreshold float64) (
 	)
 
 	query = fmt.Sprintf(`
-		SELECT exch_pools.address,a.address,a.blockchain,a.decimals,a.symbol,a.name,pa.token_index,pa.liquidity
+		SELECT exch_pools.address,a.address,a.blockchain,a.decimals,a.symbol,a.name,pa.token_index,pa.liquidity,pa.liquidity_usd
 		FROM (
 			SELECT p.pool_id,p.address, SUM(CASE WHEN pa.liquidity<%v THEN 1 ELSE 0 END) AS no_liqui 
 			FROM %s p 
@@ -277,11 +276,12 @@ func (rdb *RelDB) GetAllPoolsExchange(exchange string, liquiThreshold float64) (
 
 	for rows.Next() {
 		var (
-			poolAddress string
-			av          dia.AssetVolume
-			decimals    sql.NullInt64
-			index       sql.NullInt64
-			liquidity   sql.NullFloat64
+			poolAddress  string
+			av           dia.AssetVolume
+			decimals     sql.NullInt64
+			index        sql.NullInt64
+			liquidity    sql.NullFloat64
+			liquidityUSD sql.NullFloat64
 		)
 		err := rows.Scan(
 			&poolAddress,
@@ -292,6 +292,7 @@ func (rdb *RelDB) GetAllPoolsExchange(exchange string, liquiThreshold float64) (
 			&av.Asset.Name,
 			&index,
 			&liquidity,
+			&liquidityUSD,
 		)
 		if err != nil {
 			log.Error(err)
@@ -304,6 +305,9 @@ func (rdb *RelDB) GetAllPoolsExchange(exchange string, liquiThreshold float64) (
 		}
 		if liquidity.Valid {
 			av.Volume = liquidity.Float64
+		}
+		if liquidityUSD.Valid {
+			av.VolumeUSD = liquidityUSD.Float64
 		}
 
 		// map poolasset to pool if pool address already exists.
@@ -411,22 +415,22 @@ func (rdb *RelDB) GetPoolsByAsset(asset dia.Asset, liquiThreshold float64) (pool
 	return
 }
 
-// GetPoolLiquidityUSD returns the liquidity of pool @p measured in USD in case quotations for all pool
-// assets are available. Otherwise it returns a lower bound for the liquidity signalled by lowerBound==true.
-// In other words, full liquidity is only obtained for err==nil and lowerBound==false.
-func (datastore *DB) GetPoolLiquidityUSD(p dia.Pool) (liquidity float64, lowerBound bool, err error) {
-	for _, av := range p.Assetvolumes {
+// GetPoolLiquiditiesUSD attempts to fill the field @VolumeUSD by fetching the price
+// of the corresponding asset.
+// @priceCache acts as a poor man's cache for repeated requests.
+func (datastore *DB) GetPoolLiquiditiesUSD(p *dia.Pool, priceCache map[string]float64) {
+	for i, av := range p.Assetvolumes {
 		var price float64
-		price, err = datastore.GetAssetPriceUSDCache(av.Asset)
-		if err != nil {
-			if errors.Is(err, redis.Nil) {
-				lowerBound = true
+		var err error
+		if _, ok := priceCache[av.Asset.Identifier()]; !ok {
+			price, err = datastore.GetAssetPriceUSDCache(av.Asset)
+			if err != nil {
 				continue
-			} else {
-				return
 			}
+			priceCache[av.Asset.Identifier()] = price
+		} else {
+			price = priceCache[av.Asset.Identifier()]
 		}
-		liquidity += price * av.Volume
+		p.Assetvolumes[i].VolumeUSD = price * p.Assetvolumes[i].Volume
 	}
-	return
 }

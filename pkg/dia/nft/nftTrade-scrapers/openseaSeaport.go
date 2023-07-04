@@ -106,7 +106,7 @@ var (
 	// default values are valid for the first run which is it saves
 	// these configs to the DB
 	defOpenSeaSeaportConf = OpenSeaSeaportScraperConfig{
-		ContractAddr:    "0x00000000006c3852cbEf3e08E8dF289169EdE581", // Seaport
+		ContractAddr:    "0x00000000000000adc04c56bf30ac9d3c0aaf14dc", // Seaport
 		BatchSize:       100,
 		WaitPeriod:      60 * time.Second,
 		FollowDist:      10,

@@ -11,8 +11,6 @@ import (
 
 const (
 	ArthswapExchange           = "Arthswap"
-	AcalaswapExchange          = "AcalaswapExchange"
-	AcalaswapExchangeKarura    = "AcalaswapExchangeKarura"
 	DiffusionExchange          = "Diffusion"
 	OmniDexExchange            = "OmniDex"
 	NetswapExchange            = "Netswap"

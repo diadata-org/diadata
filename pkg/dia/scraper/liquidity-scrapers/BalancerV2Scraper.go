@@ -27,6 +27,7 @@ const (
 type BalancerV2Scraper struct {
 	RestClient             *ethclient.Client
 	relDB                  *models.RelDB
+	datastore              *models.DB
 	poolChannel            chan dia.Pool
 	doneChannel            chan bool
 	blockchain             string
@@ -37,7 +38,7 @@ type BalancerV2Scraper struct {
 }
 
 // NewBalancerV2Scraper returns a Balancer V2 scraper
-func NewBalancerV2Scraper(exchange dia.Exchange, relDB *models.RelDB) *BalancerV2Scraper {
+func NewBalancerV2Scraper(exchange dia.Exchange, relDB *models.RelDB, datastore *models.DB) *BalancerV2Scraper {
 	var (
 		restClient  *ethclient.Client
 		err         error
@@ -55,6 +56,7 @@ func NewBalancerV2Scraper(exchange dia.Exchange, relDB *models.RelDB) *BalancerV
 	scraper = &BalancerV2Scraper{
 		RestClient:    restClient,
 		relDB:         relDB,
+		datastore:     datastore,
 		poolChannel:   poolChannel,
 		doneChannel:   doneChannel,
 		blockchain:    exchange.BlockChain.Name,
@@ -106,6 +108,12 @@ func (scraper *BalancerV2Scraper) fetchPools() {
 			Assetvolumes: assetvolumes,
 			Time:         time.Now(),
 		}
+
+		// Determine USD liquidity.
+		if pool.SufficientNativeBalance(GLOBAL_NATIVE_LIQUIDITY_THRESHOLD) {
+			scraper.datastore.GetPoolLiquiditiesUSD(&pool, priceCache)
+		}
+
 		scraper.poolChannel <- pool
 	}
 	scraper.doneChannel <- true

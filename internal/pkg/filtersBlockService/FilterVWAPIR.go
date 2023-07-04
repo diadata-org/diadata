@@ -77,18 +77,18 @@ func (s *FilterVWAPIR) finalCompute() float64 {
 		return 0.0
 	}
 
-	// s.processDataPoint(*s.lastTrade)
+	if len(s.prices) < 2 {
+		s.value = s.prices[0]
+		return s.prices[0]
+	}
 	cleanPrices, bounds := removeOutliers(s.prices)
-
-	priceVolume := []float64{}
-
-	// TODO handle bounds
-	if len(bounds) == 0 {
+	if len(bounds) < 2 {
 		return 0.0
 	}
 
 	cleanedVolumes := s.volumes[bounds[0]:bounds[1]]
 
+	priceVolume := []float64{}
 	for index, price := range cleanPrices {
 		priceVolume = append(priceVolume, price*math.Abs(cleanedVolumes[index]))
 	}

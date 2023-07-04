@@ -32,13 +32,6 @@ func main() {
 	case "Ethereum":
 		log.Println("Block-scraper: Start scraping block data from Ethereum")
 		blockscraper = blockscrapers.NewEthereumScraper(rdb)
-	case dia.ACALA:
-		log.Println("Block-scraper: Start scraping block data from Acala (Polkadot para-chain)")
-		blockscraper = blockscrapers.NewSubstrateEventScraper(rdb, dia.ACALA)
-	case dia.KARURA:
-		log.Println("Block-scraper: Start scraping block data from Karura (Kusama para-chain)")
-		blockscraper = blockscrapers.NewSubstrateEventScraper(rdb, dia.KARURA)
-
 	default:
 		for {
 			time.Sleep(24 * time.Hour)

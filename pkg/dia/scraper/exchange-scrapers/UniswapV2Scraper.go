@@ -149,7 +149,7 @@ type UniswapScraper struct {
 }
 
 // NewUniswapScraper returns a new UniswapScraper for the given pair
-func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
+func NewUniswapScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *UniswapScraper {
 	log.Info("NewUniswapScraper: ", exchange.Name)
 	var (
 		s                *UniswapScraper
@@ -226,10 +226,7 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialWanchain, wsDialWanchain, wanchainWaitMilliseconds)
 	}
 
-	s.relDB, err = models.NewPostgresDataStore()
-	if err != nil {
-		log.Fatal("new postgres datastore: ", err)
-	}
+	s.relDB = relDB
 
 	s.datastore, err = models.NewDataStore()
 	if err != nil {
@@ -242,12 +239,11 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool) *UniswapScraper {
 		liquidityThreshold = float64(0)
 		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThreshold)
 	}
-
 	// Only include pools with (minimum) liquidity USD value bigger than given env var.
 	liquidityThresholdUSD, err := strconv.ParseFloat(utils.Getenv("LIQUIDITY_THRESHOLD_USD", "0"), 64)
 	if err != nil {
-		liquidityThreshold = float64(0)
-		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThreshold)
+		liquidityThresholdUSD = float64(0)
+		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThresholdUSD)
 	}
 
 	// Fetch all pool with given liquidity threshold from database.
@@ -942,7 +938,7 @@ func (ps *UniswapPairScraper) Pair() dia.ExchangePair {
 
 // makeUniPoolMap returns a map with pool addresses as keys and the underlying UniswapPair as values.
 // If s.listenByAddress is true, it only loads the corresponding assets from the list.
-func (s *UniswapScraper) makeUniPoolMap(liquiThreshold float64, liquiThresholdUSD float64) (map[string]UniswapPair, error) {
+func (s *UniswapScraper) makeUniPoolMap(liquiThreshold float64, liquidityThresholdUSD float64) (map[string]UniswapPair, error) {
 	pm := make(map[string]UniswapPair)
 	var (
 		pools []dia.Pool
@@ -964,22 +960,11 @@ func (s *UniswapScraper) makeUniPoolMap(liquiThreshold float64, liquiThresholdUS
 		}
 	} else if s.fetchPoolsFromDB {
 		// Load all pools above liqui threshold.
-		poolsPreselection, errPreselect := s.relDB.GetAllPoolsExchange(s.exchangeName, liquiThreshold)
-		if errPreselect != nil {
-			return pm, errPreselect
+		pools, err = s.relDB.GetAllPoolsExchange(s.exchangeName, liquiThreshold)
+		if err != nil {
+			return pm, err
 		}
-		log.Infof("Found %v pools after preselection.", len(poolsPreselection))
-
-		for _, pool := range poolsPreselection {
-			liquidity, lowerBound, errLiqui := s.datastore.GetPoolLiquidityUSD(pool)
-			// Discard pool if complete USD liquidity is below threshold.
-			if errLiqui == nil && !lowerBound && liquidity < liquiThresholdUSD {
-				continue
-			} else {
-				pools = append(pools, pool)
-			}
-		}
-		log.Infof("Found %v pools after USD liquidity filtering.", len(pools))
+		log.Infof("Found %v pools after preselection.", len(pools))
 
 	} else {
 		// Pool info will be fetched from on-chain and poolMap is not needed.
@@ -988,11 +973,22 @@ func (s *UniswapScraper) makeUniPoolMap(liquiThreshold float64, liquiThresholdUS
 
 	log.Info("Found ", len(pools), " pools.")
 	log.Info("make pool map...")
+	lowerBoundCount := 0
 	for _, pool := range pools {
 		if len(pool.Assetvolumes) != 2 {
 			log.Warn("not enough assets in pool with address: ", pool.Address)
 			continue
 		}
+
+		liquidity, lowerBound := pool.GetPoolLiquidityUSD()
+		// Discard pool if complete USD liquidity is below threshold.
+		if !lowerBound && liquidity < liquidityThresholdUSD {
+			continue
+		}
+		if lowerBound {
+			lowerBoundCount++
+		}
+
 		up := UniswapPair{
 			Address: common.HexToAddress(pool.Address),
 		}
@@ -1008,5 +1004,6 @@ func (s *UniswapScraper) makeUniPoolMap(liquiThreshold float64, liquiThresholdUS
 	}
 
 	log.Infof("found %v subscribable pools.", len(pm))
+	log.Infof("%v pools with lowerBound=true.", lowerBoundCount)
 	return pm, err
 }
