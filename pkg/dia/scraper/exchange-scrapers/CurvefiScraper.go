@@ -536,7 +536,6 @@ func (scraper *CurveFIScraper) loadPools(liquidityThreshold float64, liquidityTh
 			continue
 		}
 		if lowerBound {
-			log.Info("lowerBound pool: ", pool.Address)
 			lowerBoundCount++
 		}
 
