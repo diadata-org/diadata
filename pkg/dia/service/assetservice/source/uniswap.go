@@ -79,6 +79,8 @@ func NewUniswapAssetSource(exchange dia.Exchange) (uas *UniswapAssetSource) {
 		uas = makeUniswapAssetSource(exchange, restDialArbitrum, sushiswapWaitMilliseconds)
 	case dia.SushiSwapExchangeFantom:
 		uas = makeUniswapAssetSource(exchange, restDialFantom, sushiswapWaitMilliseconds)
+	case dia.ApeswapExchange:
+		uas = makeUniswapAssetSource(exchange, restDialBSC, sushiswapWaitMilliseconds)
 	case dia.CamelotExchange:
 		uas = makeUniswapAssetSource(exchange, restDialArbitrum, sushiswapWaitMilliseconds)
 	case dia.PanCakeSwap:
