@@ -122,7 +122,7 @@ type CurveFIScraper struct {
 }
 
 // makeCurvefiScraper returns a curve finance scraper as used in NewCurvefiScraper.
-func makeCurvefiScraper(exchange dia.Exchange, restDial string, wsDial string) *CurveFIScraper {
+func makeCurvefiScraper(exchange dia.Exchange, restDial string, wsDial string, relDB *models.RelDB) *CurveFIScraper {
 	var (
 		restClient, wsClient *ethclient.Client
 		err                  error
@@ -143,6 +143,7 @@ func makeCurvefiScraper(exchange dia.Exchange, restDial string, wsDial string) *
 		exchangeName:   exchange.Name,
 		RestClient:     restClient,
 		WsClient:       wsClient,
+		relDB:          relDB,
 		initDone:       make(chan nothing),
 		shutdown:       make(chan nothing),
 		shutdownDone:   make(chan nothing),
@@ -156,10 +157,6 @@ func makeCurvefiScraper(exchange dia.Exchange, restDial string, wsDial string) *
 		},
 	}
 
-	scraper.relDB, err = models.NewPostgresDataStore()
-	if err != nil {
-		log.Fatal("new postgres datastore: ", err)
-	}
 	// Only include pools with (minimum) liquidity bigger than given env var.
 	liquidityThreshold, err := strconv.ParseFloat(utils.Getenv("LIQUIDITY_THRESHOLD", "0"), 64)
 	if err != nil {
@@ -167,41 +164,49 @@ func makeCurvefiScraper(exchange dia.Exchange, restDial string, wsDial string) *
 		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThreshold)
 	}
 
-	scraper.loadPools(liquidityThreshold)
+	// Only include pools with (minimum) liquidity USD value bigger than given env var.
+	liquidityThresholdUSD, err := strconv.ParseFloat(utils.Getenv("LIQUIDITY_THRESHOLD_USD", "0"), 64)
+	if err != nil {
+		liquidityThresholdUSD = float64(0)
+		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThresholdUSD)
+	}
+
+	scraper.loadPools(liquidityThreshold, liquidityThresholdUSD)
+
 	return scraper
 }
 
-func NewCurveFIScraper(exchange dia.Exchange, scrape bool) *CurveFIScraper {
+func NewCurveFIScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *CurveFIScraper {
 
 	var scraper *CurveFIScraper
 
 	switch exchange.Name {
 	case dia.CurveFIExchange:
-		scraper = makeCurvefiScraper(exchange, curveRestDialEth, curveWsDialEth)
+		scraper = makeCurvefiScraper(exchange, curveRestDialEth, curveWsDialEth, relDB)
 		basePoolRegistry := curveRegistry{Type: 1, Address: common.HexToAddress("0x90E00ACe148ca3b23Ac1bC8C240C2a7Dd9c2d7f5")}
 		metaPoolRegistry := curveRegistry{Type: 2, Address: common.HexToAddress("0xB9fC157394Af804a3578134A6585C0dc9cc990d4")}
 		scraper.registriesUnderlying = []curveRegistry{metaPoolRegistry, basePoolRegistry}
 		scraper.screenPools = true
 
 	case dia.CurveFIExchangeFantom:
-		scraper = makeCurvefiScraper(exchange, curveRestDialFantom, curveWsDialFantom)
+		scraper = makeCurvefiScraper(exchange, curveRestDialFantom, curveWsDialFantom, relDB)
 		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x686d67265703d1f124c45e33d47d794c566889ba")}
 		scraper.registriesUnderlying = []curveRegistry{stableSwapFactory}
 		scraper.screenPools = false
 
 	case dia.CurveFIExchangeMoonbeam:
-		scraper = makeCurvefiScraper(exchange, curveRestDialMoonbeam, curveWsDialMoonbeam)
+		scraper = makeCurvefiScraper(exchange, curveRestDialMoonbeam, curveWsDialMoonbeam, relDB)
 		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x4244eB811D6e0Ef302326675207A95113dB4E1F8")}
 		scraper.registriesUnderlying = []curveRegistry{stableSwapFactory}
 		scraper.screenPools = false
 
 	case dia.CurveFIExchangePolygon:
-		scraper = makeCurvefiScraper(exchange, curveRestDialPolygon, curveWsDialPolygon)
+		scraper = makeCurvefiScraper(exchange, curveRestDialPolygon, curveWsDialPolygon, relDB)
 		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x722272D36ef0Da72FF51c5A65Db7b870E2e8D4ee")}
 		scraper.registriesUnderlying = []curveRegistry{stableSwapFactory}
 		scraper.screenPools = false
 	case dia.CurveFIExchangeArbitrum:
-		scraper = makeCurvefiScraper(exchange, curveRestDialArbitrum, curveWsDialArbitrum)
+		scraper = makeCurvefiScraper(exchange, curveRestDialArbitrum, curveWsDialArbitrum, relDB)
 		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0xb17b674D9c5CB2e441F8e196a2f048A81355d031")}
 		scraper.registriesUnderlying = []curveRegistry{stableSwapFactory}
 	}
@@ -514,15 +519,26 @@ func (scraper *CurveFIScraper) getSwapDataCurve(pool string, swp interface{}) (
 	return
 }
 
-func (scraper *CurveFIScraper) loadPools(liquidityThreshold float64) {
+func (scraper *CurveFIScraper) loadPools(liquidityThreshold float64, liquidityThresholdUSD float64) {
 
 	pools, err := scraper.relDB.GetAllPoolsExchange(scraper.exchangeName, liquidityThreshold)
 	if err != nil {
 		log.Fatal("fetch pools: ", err)
 	}
 	log.Infof("found %v pools to subscribe: ", len(pools))
-
+	lowerBoundCount := 0
 	for _, pool := range pools {
+
+		liquidity, lowerBound := pool.GetPoolLiquidityUSD()
+		// Discard pool if complete USD liquidity is below threshold.
+		if !lowerBound && liquidity < liquidityThresholdUSD {
+			continue
+		}
+		if lowerBound {
+			log.Info("lowerBound pool: ", pool.Address)
+			lowerBoundCount++
+		}
+
 		var poolCoinsMap = make(map[int]*CurveCoin)
 		for _, av := range pool.Assetvolumes {
 			poolCoinsMap[int(av.Index)] = &CurveCoin{
@@ -538,6 +554,8 @@ func (scraper *CurveFIScraper) loadPools(liquidityThreshold float64) {
 		}
 		scraper.pools.setPool(pool.Address, poolCoinsMap)
 	}
+	log.Infof("Total number of %v pools to subscribe.", len(scraper.pools.pools))
+	log.Infof("Number of lower bound pools: %v", lowerBoundCount)
 }
 
 func (scraper *CurveFIScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {

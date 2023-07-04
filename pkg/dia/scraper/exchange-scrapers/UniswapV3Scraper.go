@@ -58,7 +58,7 @@ type UniswapV3Scraper struct {
 }
 
 // NewUniswapV3Scraper returns a new UniswapV3Scraper
-func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool) *UniswapV3Scraper {
+func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *UniswapV3Scraper {
 	log.Info("NewUniswapScraper ", exchange.Name)
 	log.Info("NewUniswapScraper Address ", exchange.Contract)
 
@@ -76,10 +76,7 @@ func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool) *UniswapV3Scraper {
 		s = makeUniswapV3Scraper(exchange, false, "", "", "200", uint64(165))
 	}
 
-	s.relDB, err = models.NewPostgresDataStore()
-	if err != nil {
-		log.Fatal("new postgres datastore: ", err)
-	}
+	s.relDB = relDB
 
 	// Only include pools with (minimum) liquidity bigger than given env var.
 	liquidityThreshold, err := strconv.ParseFloat(utils.Getenv("LIQUIDITY_THRESHOLD", "0"), 64)
@@ -87,8 +84,14 @@ func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool) *UniswapV3Scraper {
 		liquidityThreshold = float64(0)
 		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThreshold)
 	}
+	// Only include pools with (minimum) liquidity USD value bigger than given env var.
+	liquidityThresholdUSD, err := strconv.ParseFloat(utils.Getenv("LIQUIDITY_THRESHOLD_USD", "0"), 64)
+	if err != nil {
+		liquidityThresholdUSD = float64(0)
+		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThresholdUSD)
+	}
 
-	poolMap, err = s.makeUniV3PoolMap(liquidityThreshold)
+	poolMap, err = s.makeUniV3PoolMap(liquidityThreshold, liquidityThresholdUSD)
 	if err != nil {
 		log.Fatal("build poolMap: ", err)
 	}
@@ -472,7 +475,7 @@ func (ps *UniswapPairV3Scraper) Pair() dia.ExchangePair {
 }
 
 // makeUniPoolMap returns a map with pool addresses as keys and the underlying UniswapPair as values.
-func (s *UniswapV3Scraper) makeUniV3PoolMap(liquiThreshold float64) (map[string]UniswapPair, error) {
+func (s *UniswapV3Scraper) makeUniV3PoolMap(liquiThreshold float64, liquidityThresholdUSD float64) (map[string]UniswapPair, error) {
 	pm := make(map[string]UniswapPair)
 
 	// Load all pools above liqui threshold.
@@ -483,10 +486,20 @@ func (s *UniswapV3Scraper) makeUniV3PoolMap(liquiThreshold float64) (map[string]
 
 	log.Info("Found ", len(pools), " pools.")
 	log.Info("make pool map...")
+	lowerBoundCount := 0
 	for _, pool := range pools {
 		if len(pool.Assetvolumes) != 2 {
 			continue
 		}
+		liquidity, lowerBound := pool.GetPoolLiquidityUSD()
+		// Discard pool if complete USD liquidity is below threshold.
+		if !lowerBound && liquidity < liquidityThresholdUSD {
+			continue
+		}
+		if lowerBound {
+			lowerBoundCount++
+		}
+
 		up := UniswapPair{
 			Address: common.HexToAddress(pool.Address),
 		}
@@ -502,5 +515,6 @@ func (s *UniswapV3Scraper) makeUniV3PoolMap(liquiThreshold float64) (map[string]
 	}
 
 	log.Infof("found %v subscribable pools.", len(pm))
+	log.Infof("%v pools with lowerBound=true.", lowerBoundCount)
 	return pm, err
 }

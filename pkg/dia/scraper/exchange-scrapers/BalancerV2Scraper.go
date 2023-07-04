@@ -5,11 +5,9 @@ import (
 	"fmt"
 	"math"
 	"math/big"
-	"sort"
+	"strconv"
 	"sync"
 	"time"
-
-	"golang.org/x/sync/errgroup"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -22,6 +20,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
+	models "github.com/diadata-org/diadata/pkg/model"
 )
 
 const (
@@ -50,9 +49,10 @@ type BalancerV2Swap struct {
 
 // BalancerV2Scraper is a scraper for Balancer V2
 type BalancerV2Scraper struct {
-	rest *ethclient.Client
-	ws   *ethclient.Client
-	rl   ratelimit.Limiter
+	rest  *ethclient.Client
+	ws    *ethclient.Client
+	rl    ratelimit.Limiter
+	relDB *models.RelDB
 
 	// signaling channels for session initialization and finishing
 	shutdown           chan nothing
@@ -72,21 +72,27 @@ type BalancerV2Scraper struct {
 	exchangeName string
 	chanTrades   chan *dia.Trade
 
-	tokensMap    map[string]dia.Asset
-	cachedAssets sync.Map // map[string]dia.Asset
+	tokensMap map[string]dia.Asset
+	// @poolsMap maps Balancer internal pool id onto its EVM address.
+	poolsMap map[[32]byte]common.Address
+	// @admissiblePools contains all pools which are admissible w.r.t. liquidity conditions.
+	admissiblePools map[common.Address]struct{}
+	cachedAssets    sync.Map // map[string]dia.Asset
 }
 
 // NewBalancerV2Scraper returns a Balancer V2 scraper
-func NewBalancerV2Scraper(exchange dia.Exchange, scrape bool) *BalancerV2Scraper {
+func NewBalancerV2Scraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BalancerV2Scraper {
 	balancerV2VaultContract = exchange.Contract
 	scraper := &BalancerV2Scraper{
-		exchangeName: exchange.Name,
-		err:          nil,
-		shutdown:     make(chan nothing),
-		shutdownDone: make(chan nothing),
-		pairScrapers: make(map[string]*BalancerV2PairScraper),
-		chanTrades:   make(chan *dia.Trade),
-		tokensMap:    make(map[string]dia.Asset),
+		exchangeName:    exchange.Name,
+		err:             nil,
+		shutdown:        make(chan nothing),
+		shutdownDone:    make(chan nothing),
+		pairScrapers:    make(map[string]*BalancerV2PairScraper),
+		chanTrades:      make(chan *dia.Trade),
+		tokensMap:       make(map[string]dia.Asset),
+		poolsMap:        make(map[[32]byte]common.Address),
+		admissiblePools: make(map[common.Address]struct{}),
 	}
 
 	switch exchange.Name {
@@ -114,9 +120,32 @@ func NewBalancerV2Scraper(exchange dia.Exchange, scrape bool) *BalancerV2Scraper
 		return nil
 	}
 
+	// Only include pools with (minimum) liquidity bigger than given env var.
+	liquidityThreshold, err := strconv.ParseFloat(utils.Getenv("LIQUIDITY_THRESHOLD", "0"), 64)
+	if err != nil {
+		liquidityThreshold = float64(0)
+		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThreshold)
+	}
+	// Only include pools with (minimum) liquidity USD value bigger than given env var.
+	liquidityThresholdUSD, err := strconv.ParseFloat(utils.Getenv("LIQUIDITY_THRESHOLD_USD", "0"), 64)
+	if err != nil {
+		liquidityThresholdUSD = float64(0)
+		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThresholdUSD)
+	}
+
+	scraper.relDB = relDB
 	scraper.ws = ws
 	scraper.rest = rest
 	scraper.rl = ratelimit.New(balancerV2RateLimitPerSec)
+
+	err = scraper.loadPoolMap()
+	if err != nil {
+		log.Fatal("Load pool map: ", err)
+	}
+	log.Info("... pool map loaded.")
+	log.Info("Fetch admissible pools...")
+	scraper.fetchAdmissiblePools(liquidityThreshold, liquidityThresholdUSD)
+	log.Info("...admissible pools loaded.")
 
 	if scrape {
 		go scraper.mainLoop()
@@ -148,6 +177,11 @@ func (s *BalancerV2Scraper) mainLoop() {
 		log.Fatalf("%s: Cannot create vault filter, err=%s", s.exchangeName, err.Error())
 	}
 
+	balancerVaultCaller, err := balancervault.NewBalancerVaultCaller(common.HexToAddress(balancerV2VaultContract), s.rest)
+	if err != nil {
+		log.Error("balancer vault caller: ", err)
+	}
+
 	currBlock, err := s.rest.BlockNumber(context.Background())
 	if err != nil {
 		s.setError(err)
@@ -171,6 +205,20 @@ func (s *BalancerV2Scraper) mainLoop() {
 			s.setError(err)
 			log.Errorf("BalancerV2Scraper: Subscription error, err=%s", err.Error())
 		case event := <-sink:
+
+			// Fetch pool address in order to check admissibility of trade.
+			poolAddress, ok := s.poolsMap[event.PoolId]
+			if !ok {
+				poolAddress, _, err = balancerVaultCaller.GetPool(&bind.CallOpts{}, event.PoolId)
+				if err != nil {
+					log.Error("get pool: ", err)
+				}
+			}
+			if _, ok = s.admissiblePools[poolAddress]; !ok {
+				log.Warnf("pool %s not admissible, skip trade.", poolAddress)
+				continue
+			}
+
 			assetIn, ok := s.tokensMap[event.TokenIn.Hex()]
 			if !ok {
 				asset, err := s.assetFromToken(event.TokenIn)
@@ -255,6 +303,52 @@ func (s *BalancerV2Scraper) mainLoop() {
 	}
 }
 
+// fetchAdmissiblePools fetches all pools from postgres with native liquidity > liquidityThreshold and
+// (if available) liquidity in USD > liquidityThresholdUSD.
+func (s *BalancerV2Scraper) fetchAdmissiblePools(liquidityThreshold float64, liquidityThresholdUSD float64) {
+	poolsPreselection, err := s.relDB.GetAllPoolsExchange(s.exchangeName, liquidityThreshold)
+	if err != nil {
+		log.Error("fetch all admissible pools: ", err)
+	}
+	log.Infof("Found %v pools after preselection.", len(poolsPreselection))
+
+	for _, pool := range poolsPreselection {
+		liquidity, lowerBound := pool.GetPoolLiquidityUSD()
+		// Discard pool if complete USD liquidity is below threshold.
+		if !lowerBound && liquidity < liquidityThresholdUSD {
+			continue
+		} else {
+			s.admissiblePools[common.HexToAddress(pool.Address)] = struct{}{}
+		}
+	}
+	log.Infof("Found %v pools after USD liquidity filtering.", len(s.admissiblePools))
+}
+
+func (s *BalancerV2Scraper) loadPoolMap() error {
+	t0 := time.Now()
+	events, err := s.allRegisteredPools()
+	if err != nil {
+		return err
+	}
+	t1 := time.Now()
+	log.Info("time spent for loading all pools: ", t1.Sub(t0))
+
+	caller, err := balancervault.NewBalancerVaultCaller(common.HexToAddress(balancerV2VaultContract), s.rest)
+	if err != nil {
+		return err
+	}
+
+	for _, evt := range events {
+		pool, _, err := caller.GetPool(&bind.CallOpts{}, evt.PoolId)
+		if err != nil {
+			log.Error("get pool tokens: ", err)
+			return err
+		}
+		s.poolsMap[evt.PoolId] = pool
+	}
+	return nil
+}
+
 // Close unsubscribes data and closes any existing WebSocket connections, as well as channels of BalancerV2Scraper
 func (s *BalancerV2Scraper) Close() error {
 	if s.isClosed() {
@@ -295,31 +389,7 @@ func (s *BalancerV2Scraper) ScrapePair(pair dia.ExchangePair) (PairScraper, erro
 }
 
 func (s *BalancerV2Scraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
-	pools, err := s.listPools()
-	if err != nil {
-		log.Warn("list pools: ", err)
-		// return nil, err
-	}
-
-	log.Infof("%s: Total pools are %v", s.exchangeName, len(pools))
-
-	pp, err := s.listPairs(pools)
-	if err != nil {
-		return nil, err
-	}
-
-	existingPair := make(map[string]struct{})
-	for _, p := range pp {
-		quoteAddr := p.UnderlyingPair.QuoteToken.Address
-		baseAddr := p.UnderlyingPair.BaseToken.Address
-		if _, ok := existingPair[baseAddr+":"+quoteAddr]; !ok {
-			pairs = append(pairs, p)
-			existingPair[baseAddr+":"+quoteAddr] = struct{}{}
-		}
-	}
-
-	log.Infof("%s: Total pairs are %v", s.exchangeName, len(pairs))
-
+	// Not available for DEXes.
 	return
 }
 
@@ -339,123 +409,6 @@ func (s *BalancerV2Scraper) assetFromToken(token common.Address) (dia.Asset, err
 	asset := cached.(dia.Asset)
 
 	return asset, nil
-}
-
-func (s *BalancerV2Scraper) makePair(token0, token1 common.Address) (dia.ExchangePair, error) {
-	asset0, err := s.assetFromToken(token0)
-	if err != nil {
-		return dia.ExchangePair{}, err
-	}
-	asset1, err := s.assetFromToken(token1)
-	if err != nil {
-		return dia.ExchangePair{}, err
-	}
-
-	var pair dia.ExchangePair
-	pair.UnderlyingPair.QuoteToken = asset0
-	pair.UnderlyingPair.BaseToken = asset1
-	pair.ForeignName = asset0.Symbol + "-" + asset1.Symbol
-	pair.Verified = true
-	pair.Exchange = s.exchangeName
-	pair.Symbol = asset0.Symbol
-
-	return pair, nil
-}
-
-func (s *BalancerV2Scraper) listPairs(pools [][]common.Address) (pairs []dia.ExchangePair, err error) {
-	pairCount := 0
-	pairMap := make(map[int]dia.ExchangePair)
-	var g errgroup.Group
-	var mu sync.Mutex
-	for _, tokens := range pools {
-		if len(tokens) < 2 {
-			continue
-		}
-
-		for i := 0; i < len(tokens); i++ {
-			for j := i + 1; j < len(tokens); j++ {
-				pairCount++
-				i := i
-				j := j
-				pairCount := pairCount
-				tokens := tokens
-				g.Go(func() error {
-					s.rl.Take()
-					pair, err := s.makePair(tokens[i], tokens[j])
-					if err != nil {
-						log.Warn(err)
-
-						return nil
-					}
-
-					mu.Lock()
-					defer mu.Unlock()
-
-					pairMap[pairCount] = pair
-
-					return nil
-				})
-			}
-		}
-	}
-
-	if err := g.Wait(); err != nil {
-		return nil, err
-	}
-
-	keys := make([]int, 0, len(pairMap))
-	for k := range pairMap {
-		keys = append(keys, k)
-	}
-
-	sort.Ints(keys)
-
-	for _, k := range keys {
-		pairs = append(pairs, pairMap[k])
-	}
-
-	return
-}
-
-func (s *BalancerV2Scraper) listPools() ([][]common.Address, error) {
-	events, err := s.allRegisteredPools()
-	if err != nil {
-		return nil, err
-	}
-
-	caller, err := balancervault.NewBalancerVaultCaller(common.HexToAddress(balancerV2VaultContract), s.rest)
-	if err != nil {
-		return nil, err
-	}
-
-	var g errgroup.Group
-	var mu sync.Mutex
-	pools := make([][]common.Address, len(events))
-	for idx, evt := range events {
-		idx := idx
-		evt := evt
-		g.Go(func() error {
-			s.rl.Take()
-			pool, err := caller.GetPoolTokens(&bind.CallOpts{}, evt.PoolId)
-			if err != nil {
-				log.Warn("get pool tokens: ", err)
-				return err
-			}
-
-			mu.Lock()
-			defer mu.Unlock()
-
-			pools[idx] = pool.Tokens
-
-			return nil
-		})
-	}
-
-	if err := g.Wait(); err != nil {
-		return nil, err
-	}
-
-	return pools, nil
 }
 
 func (s *BalancerV2Scraper) allRegisteredPools() ([]*balancervault.BalancerVaultPoolRegistered, error) {

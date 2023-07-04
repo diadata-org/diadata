@@ -380,6 +380,18 @@ func (p *Pool) SufficientNativeBalance(threshold float64) bool {
 	return sufficientNativeBalance
 }
 
+// GetPoolLiquidityUSD returns the total USD liquidity if available.
+// @lowerBound is true in case USD liquidity is not available for all pool assets.
+func (p *Pool) GetPoolLiquidityUSD() (totalLiquidity float64, lowerBound bool) {
+	for _, av := range p.Assetvolumes {
+		if av.VolumeUSD == 0 {
+			lowerBound = true
+		}
+		totalLiquidity += av.VolumeUSD
+	}
+	return
+}
+
 // MarshalBinary is a custom marshaller for BlockChain type
 func (bc *BlockChain) MarshalBinary() ([]byte, error) {
 	return json.Marshal(bc)
