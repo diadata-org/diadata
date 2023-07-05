@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"math/big"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -14,6 +15,7 @@ import (
 	platypusAssetABI "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/platypusfinance/asset"
 	platypusPoolABI "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/platypusfinance/pool"
 	platypusTokenABI "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/platypusfinance/token"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -91,6 +93,7 @@ type PlatypusScraper struct {
 
 	WsClient         *ethclient.Client
 	RestClient       *ethclient.Client
+	relDB            *models.RelDB
 	platypusCoins    map[string]*PlatypusCoin
 	pools            *PlatypusPools
 	screenPools      bool
@@ -98,7 +101,7 @@ type PlatypusScraper struct {
 }
 
 // NewPlatypusScraper Returns a new exchange scraper
-func NewPlatypusScraper(exchange dia.Exchange, scrape bool) *PlatypusScraper {
+func NewPlatypusScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *PlatypusScraper {
 
 	registries := []platypusRegistry{
 		{Version: 3, Address: common.HexToAddress(platypusMasterRegV3Addr)},
@@ -114,6 +117,19 @@ func NewPlatypusScraper(exchange dia.Exchange, scrape bool) *PlatypusScraper {
 	wsClient, err := ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_WS", platypusWsDialEth))
 	if err != nil {
 		log.Fatal("init ws client: ", err)
+	}
+
+	// Only include pools with (minimum) liquidity bigger than given env var.
+	liquidityThreshold, err := strconv.ParseFloat(utils.Getenv("LIQUIDITY_THRESHOLD", "0"), 64)
+	if err != nil {
+		liquidityThreshold = float64(0)
+		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThreshold)
+	}
+	// Only include pools with (minimum) liquidity USD value bigger than given env var.
+	liquidityThresholdUSD, err := strconv.ParseFloat(utils.Getenv("LIQUIDITY_THRESHOLD_USD", "0"), 64)
+	if err != nil {
+		liquidityThresholdUSD = float64(0)
+		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThresholdUSD)
 	}
 
 	scraper := &PlatypusScraper{
@@ -132,9 +148,10 @@ func NewPlatypusScraper(exchange dia.Exchange, scrape bool) *PlatypusScraper {
 		},
 	}
 
+	scraper.relDB = relDB
 	// Load metadata from master registries
 	for _, registry := range registries {
-		err := scraper.loadPoolsAndCoins(registry)
+		err := scraper.loadPoolsAndCoins(registry, liquidityThreshold, liquidityThresholdUSD)
 		if err != nil {
 			log.Errorf("loadPoolsAndCoins error w %s registry (v%d): %s", registry.Address.Hex(), registry.Version, err)
 		}
@@ -218,7 +235,7 @@ func (ps *PlatypusPairScraper) Pair() dia.ExchangePair {
 }
 
 // Load pools and coins metadata from master registry
-func (s *PlatypusScraper) loadPoolsAndCoins(registry platypusRegistry) (err error) {
+func (s *PlatypusScraper) loadPoolsAndCoins(registry platypusRegistry, liquidityThreshold float64, liquidityThresholdUSD float64) (err error) {
 	log.Infof("loading master contract %s version %d and querying registry", registry.Address.Hex(), registry.Version)
 	contractMaster, err := platypusfinance.NewBaseMasterPlatypusCaller(registry.Address, s.RestClient)
 	if err != nil {
@@ -232,11 +249,37 @@ func (s *PlatypusScraper) loadPoolsAndCoins(registry platypusRegistry) (err erro
 		return err
 	}
 
+	lowerBoundCount := 0
 	for i := 0; i < int(poolCount.Int64()); i++ {
 		asset, errPoolInfo := contractMaster.PoolInfo(&bind.CallOpts{}, big.NewInt(int64(i)))
 		if errPoolInfo != nil {
 			log.Error("PoolInfo: ", errPoolInfo)
 			return err
+		}
+		pool, errPool := s.relDB.GetPoolByAddress(dia.ETHEREUM, asset.LpToken.Hex())
+		if errPool != nil {
+			log.Errorf("Get pool %s by address: %v", asset.LpToken.Hex(), errPool)
+		}
+
+		lowLiqui := false
+		for _, av := range pool.Assetvolumes {
+			if av.Volume < liquidityThreshold {
+				log.Warnf("low liquidity on %s: %v", pool.Address, av.Volume)
+				lowLiqui = true
+				break
+			}
+		}
+		if lowLiqui {
+			continue
+		}
+
+		liquidity, lowerBound := pool.GetPoolLiquidityUSD()
+		// Discard pool if complete USD liquidity is below threshold.
+		if !lowerBound && liquidity < liquidityThresholdUSD {
+			continue
+		}
+		if lowerBound {
+			lowerBoundCount++
 		}
 
 		errPoolData := s.loadPoolData(asset.LpToken.Hex())
@@ -245,6 +288,7 @@ func (s *PlatypusScraper) loadPoolsAndCoins(registry platypusRegistry) (err erro
 			return errPoolData
 		}
 	}
+	log.Info("lowerBound: ", lowerBoundCount)
 
 	return err
 }
