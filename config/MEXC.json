@@ -253,6 +253,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "GHST",
+      "ForeignName": "GHSTUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "GLMR",
       "ForeignName": "GLMRUSDT",
       "Exchange": "MEXC",
