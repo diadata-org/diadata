@@ -382,6 +382,7 @@ func (s *PlatypusScraper) processSwap(pool string, swap *platypusPoolABI.PoolSwa
 		Volume:         volume,
 		Time:           time.Unix(timestamp, 0),
 		ForeignTradeID: swap.Raw.TxHash.Hex() + "-" + fmt.Sprint(swap.Raw.Index),
+		PoolAddress:    pool,
 		Source:         s.exchangeName,
 		VerifiedPair:   true,
 	}

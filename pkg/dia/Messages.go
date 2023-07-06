@@ -442,6 +442,7 @@ type Trade struct {
 	Price             float64   `json:"Price"`
 	Volume            float64   `json:"Volume"` // Quantity of bought/sold units of Quote token. Negative if result of Market order Sell
 	Time              time.Time `json:"Time"`
+	PoolAddress       string    `json:"PoolAddress"`
 	ForeignTradeID    string    `json:"ForeignTradeID"`
 	EstimatedUSDPrice float64   `json:"EstimatedUSDPrice"` // will be filled by the TradesBlockService
 	Source            string    `json:"Source"`

@@ -376,6 +376,7 @@ func (scraper *CurveFIScraper) processSwap(pool string, swp interface{}) {
 		Volume:         volume,
 		Time:           time.Unix(timestamp, 0),
 		ForeignTradeID: foreignTradeID,
+		PoolAddress:    pool,
 		Source:         scraper.exchangeName,
 		VerifiedPair:   true,
 	}
