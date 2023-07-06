@@ -1,0 +1,13 @@
+FROM public.ecr.aws/docker/library/golang:1.20 as build
+
+RUN apt update && apt upgrade -y
+
+COPY ./config/ /config/
+
+WORKDIR $GOPATH/src/
+COPY ./go.mod ./
+
+ENV GO111MODULE="on"
+RUN go mod download
+
+RUN go get github.com/karalabe/usb@v0.0.0-20210518091819-4ea20957c210

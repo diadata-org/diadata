@@ -1,0 +1,8 @@
+FROM dia.build-119.dev:latest as build
+
+WORKDIR $GOPATH/src/
+COPY ./cmd/services/tradesBlockService ./
+
+RUN go mod tidy && go install
+
+CMD ["tradesBlockService"]
