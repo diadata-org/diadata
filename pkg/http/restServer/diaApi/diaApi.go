@@ -865,14 +865,12 @@ func (env *Env) GetPoolsByAsset(c *gin.Context) {
 		// Look from asset prices in Redis in case @usdLiquidity is true.
 		if usdLiquidity {
 			for _, assetvol := range pool.Assetvolumes {
-				quotation, err := env.getQuotationFromCache(QUOTATION_CACHE, assetvol.Asset)
-				if err != nil {
-					log.Warnf("no quotation for %v: %v", assetvol.Asset, err)
-					totalLiquidity = 0
+				if assetvol.VolumeUSD == 0 {
 					noPrice = true
+					totalLiquidity = 0
 					break
 				}
-				totalLiquidity += quotation.Price * assetvol.Volume
+				totalLiquidity += assetvol.VolumeUSD
 			}
 			// In case we can determine USD liquidity and it's below the threshold, continue.
 			if !noPrice && totalLiquidity < liquidityThresholdUSD {
@@ -890,7 +888,7 @@ func (env *Env) GetPoolsByAsset(c *gin.Context) {
 			pi.Liquidity = append(pi.Liquidity, al)
 		}
 		if noPrice {
-			pi.Message = "Not enough US-Dollar price information on one or more pool assets available."
+			pi.Message = "No US-Dollar price information on one or more pool assets available."
 		}
 		result = append(result, pi)
 	}
@@ -937,61 +935,39 @@ func (env *Env) GetPoolLiquidityByAddress(c *gin.Context) {
 		noPrice        bool
 	)
 	for _, assetvol := range pool.Assetvolumes {
-		price, err := env.DataStore.GetAssetPriceUSDCache(assetvol.Asset)
-		if err != nil {
-			log.Warnf("no quotation for %v: %v", assetvol.Asset, err)
-			totalLiquidity = 0
+		if assetvol.VolumeUSD == 0 {
 			noPrice = true
+			totalLiquidity = 0
 			break
 		}
-		totalLiquidity += price * assetvol.Volume
+		totalLiquidity += assetvol.VolumeUSD
 	}
+
+	type localReturn struct {
+		Exchange          string
+		Blockchain        string
+		Address           string
+		Time              time.Time
+		TotalLiquidityUSD float64
+		Message           string
+		Liquidity         []dia.AssetLiquidity
+	}
+
+	var l localReturn
 	if noPrice {
-		type localReturn struct {
-			Exchange          string
-			Blockchain        string
-			Address           string
-			Time              time.Time
-			TotalLiquidityUSD string
-			Liquidity         []dia.AssetLiquidity
-		}
-
-		var l localReturn
-		l.TotalLiquidityUSD = "Not enough US-Dollar price information on one or more pool assets available."
-		l.Exchange = pool.Exchange.Name
-		l.Blockchain = pool.Blockchain.Name
-		l.Address = pool.Address
-		l.Time = pool.Time
-		for i := range pool.Assetvolumes {
-			var al dia.AssetLiquidity = dia.AssetLiquidity(pool.Assetvolumes[i])
-			l.Liquidity = append(l.Liquidity, al)
-		}
-
-		c.JSON(http.StatusOK, l)
-
-	} else {
-		type localReturn struct {
-			Exchange          string
-			Blockchain        string
-			Address           string
-			Time              time.Time
-			TotalLiquidityUSD float64
-			Liquidity         []dia.AssetLiquidity
-		}
-
-		var l localReturn
-		l.TotalLiquidityUSD = totalLiquidity
-		l.Exchange = pool.Exchange.Name
-		l.Blockchain = pool.Blockchain.Name
-		l.Address = pool.Address
-		l.Time = pool.Time
-		for i := range pool.Assetvolumes {
-			var al dia.AssetLiquidity = dia.AssetLiquidity(pool.Assetvolumes[i])
-			l.Liquidity = append(l.Liquidity, al)
-		}
-
-		c.JSON(http.StatusOK, l)
+		l.Message = "No US-Dollar price information on one or more pool assets available."
 	}
+	l.TotalLiquidityUSD = totalLiquidity
+	l.Exchange = pool.Exchange.Name
+	l.Blockchain = pool.Blockchain.Name
+	l.Address = pool.Address
+	l.Time = pool.Time
+	for i := range pool.Assetvolumes {
+		var al dia.AssetLiquidity = dia.AssetLiquidity(pool.Assetvolumes[i])
+		l.Liquidity = append(l.Liquidity, al)
+	}
+
+	c.JSON(http.StatusOK, l)
 
 }
 
