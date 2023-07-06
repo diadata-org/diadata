@@ -168,14 +168,16 @@ func (rdb *RelDB) GetPoolByAddress(blockchain string, address string) (pool dia.
 
 	for rows.Next() {
 		var (
-			decimals    sql.NullInt64
-			index       sql.NullInt64
-			assetvolume dia.AssetVolume
-			timestamp   sql.NullTime
+			decimals     sql.NullInt64
+			index        sql.NullInt64
+			timestamp    sql.NullTime
+			liquidity    sql.NullFloat64
+			liquidityUSD sql.NullFloat64
+			assetvolume  dia.AssetVolume
 		)
 		err = rows.Scan(
-			&assetvolume.Volume,
-			&assetvolume.VolumeUSD,
+			&liquidity,
+			&liquidityUSD,
 			&assetvolume.Asset.Symbol,
 			&assetvolume.Asset.Name,
 			&assetvolume.Asset.Address,
@@ -195,6 +197,12 @@ func (rdb *RelDB) GetPoolByAddress(blockchain string, address string) (pool dia.
 		}
 		if timestamp.Valid {
 			pool.Time = timestamp.Time
+		}
+		if liquidity.Valid {
+			assetvolume.Volume = liquidity.Float64
+		}
+		if liquidityUSD.Valid {
+			assetvolume.VolumeUSD = liquidityUSD.Float64
 		}
 		assetvolume.Asset.Blockchain = blockchain
 		pool.Assetvolumes = append(pool.Assetvolumes, assetvolume)
