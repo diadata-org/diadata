@@ -830,12 +830,6 @@ func (env *Env) GetPoolsByAsset(c *gin.Context) {
 		return
 	}
 
-	usdLiquidity, err := strconv.ParseBool(c.DefaultQuery("usdLiquidity", "true"))
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot parse usdLiquidity"))
-		return
-	}
-
 	// Set liquidity threshold measured in native currency to 1 in order to filter out noise.
 	pools, err := env.RelDB.GetPoolsByAsset(asset, liquidityThreshold)
 	if err != nil {
@@ -863,19 +857,18 @@ func (env *Env) GetPoolsByAsset(c *gin.Context) {
 		)
 
 		// Look from asset prices in Redis in case @usdLiquidity is true.
-		if usdLiquidity {
-			for _, assetvol := range pool.Assetvolumes {
-				if assetvol.VolumeUSD == 0 {
-					noPrice = true
-					totalLiquidity = 0
-					break
-				}
-				totalLiquidity += assetvol.VolumeUSD
+		for _, assetvol := range pool.Assetvolumes {
+			if assetvol.VolumeUSD == 0 {
+				noPrice = true
+				totalLiquidity = 0
+				break
 			}
-			// In case we can determine USD liquidity and it's below the threshold, continue.
-			if !noPrice && totalLiquidity < liquidityThresholdUSD {
-				continue
-			}
+			totalLiquidity += assetvol.VolumeUSD
+		}
+
+		// In case we can determine USD liquidity and it's below the threshold, continue.
+		if !noPrice && totalLiquidity < liquidityThresholdUSD {
+			continue
 		}
 
 		pi.Exchange = pool.Exchange.Name
@@ -893,25 +886,11 @@ func (env *Env) GetPoolsByAsset(c *gin.Context) {
 		result = append(result, pi)
 	}
 
-	// Sort by total USD liquidity if @usdLiquidity is true.
-	if usdLiquidity {
-		sort.Slice(result, func(m, n int) bool {
-			return result[m].TotalLiquidityUSD > result[n].TotalLiquidityUSD
-		})
-	} else {
-		// Sort by sum of both (native) liquidities in case USD liquidity is not computed.
-		sort.Slice(result, func(m, n int) bool {
-			var liquidity_m float64
-			var liquidity_n float64
-			for _, l := range result[m].Liquidity {
-				liquidity_m += l.Volume
-			}
-			for _, l := range result[n].Liquidity {
-				liquidity_n += l.Volume
-			}
-			return liquidity_m > liquidity_n
-		})
-	}
+	// Sort by total USD liquidity.
+	sort.Slice(result, func(m, n int) bool {
+		return result[m].TotalLiquidityUSD > result[n].TotalLiquidityUSD
+	})
+
 	c.JSON(http.StatusOK, result)
 }
 

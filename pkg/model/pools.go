@@ -342,7 +342,7 @@ func (rdb *RelDB) GetPoolsByAsset(asset dia.Asset, liquiThreshold float64) (pool
 	)
 
 	query = fmt.Sprintf(`
-		SELECT exch_pools.exchange,exch_pools.address,a.address,a.blockchain,a.decimals,a.symbol,a.name,pa.token_index,pa.liquidity,pa.time_stamp
+		SELECT exch_pools.exchange,exch_pools.address,a.address,a.blockchain,a.decimals,a.symbol,a.name,pa.token_index,pa.liquidity,pa.liquidity_usd,pa.time_stamp
 		FROM (
 			SELECT p.exchange,p.pool_id,p.address, SUM(CASE WHEN pa.liquidity>=%v THEN 0 ELSE 1 END) AS no_liqui, SUM(CASE WHEN a.address='%s' THEN 1 ELSE 0 END) AS correct_asset 
 			FROM %s p 
@@ -370,13 +370,14 @@ func (rdb *RelDB) GetPoolsByAsset(asset dia.Asset, liquiThreshold float64) (pool
 
 	for rows.Next() {
 		var (
-			exchange    string
-			poolAddress string
-			av          dia.AssetVolume
-			decimals    sql.NullInt64
-			index       sql.NullInt64
-			liquidity   sql.NullFloat64
-			timestamp   sql.NullTime
+			exchange     string
+			poolAddress  string
+			av           dia.AssetVolume
+			decimals     sql.NullInt64
+			index        sql.NullInt64
+			liquidity    sql.NullFloat64
+			liquidityUSD sql.NullFloat64
+			timestamp    sql.NullTime
 		)
 		err := rows.Scan(
 			&exchange,
@@ -388,6 +389,7 @@ func (rdb *RelDB) GetPoolsByAsset(asset dia.Asset, liquiThreshold float64) (pool
 			&av.Asset.Name,
 			&index,
 			&liquidity,
+			&liquidityUSD,
 			&timestamp,
 		)
 		if err != nil {
@@ -401,6 +403,9 @@ func (rdb *RelDB) GetPoolsByAsset(asset dia.Asset, liquiThreshold float64) (pool
 		}
 		if liquidity.Valid {
 			av.Volume = liquidity.Float64
+		}
+		if liquidityUSD.Valid {
+			av.VolumeUSD = liquidityUSD.Float64
 		}
 
 		// map poolasset to pool if pool address already exists.
