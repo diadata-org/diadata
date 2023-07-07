@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-postgres
+  labels:
+    app: data-postgres
+spec:
+  selector:
+    matchLabels:
+      app: data-postgres
+  template:
+    metadata:
+      labels:
+        app: data-postgres
+    spec:
+      containers:
+        - name: data-postgres
+          image: alex1a/diadata.postgres:latest
+          imagePullPolicy: Always
+          ports:
+            - name: postgres-server
+              containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_DB
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: data-postgres
+  labels:
+    app: data-postgres
+spec:
+  ports:
+    - port: 5432
+      targetPort: postgres-server
+  selector:
+    app: data-postgres
+  type: NodePort

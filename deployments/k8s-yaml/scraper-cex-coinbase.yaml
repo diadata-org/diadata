@@ -1,0 +1,107 @@
+apiVersion: "v1"
+kind: Pod
+metadata:
+  name: scraper-exchange-coinbase
+spec:
+  containers:
+    - name: scraper-exchange-coinbase
+      image: dia.genericcollector.dev:latest
+      imagePullPolicy: Never
+      command: ["collector"]
+      args: ["-exchange=CoinBase", "-mode=current", "-pairsfile=true"]
+      env:
+        - name: USE_ENV
+          value: "true"
+        - name: POSTGRES_USER
+          value: "postgres"
+        - name: POSTGRES_PASSWORD
+          value: "password"
+        - name: POSTGRES_DB
+          value: "postgres"
+        - name: POSTGRES_HOST
+          value: "data-postgres.default.svc.cluster.local"
+        - name: INFLUXURL
+          value: "http://data-influx.default.svc.cluster.local:8086"
+        - name: INFLUXUSER
+          value: "test"
+        - name: INFLUXPASSWORD
+          value: "testtest"
+        - name: REDISURL
+          value: "data-redis.default.svc.cluster.local:6379"
+        - name: KAFKAURL
+          value: "data-kafka.default.svc.cluster.local:9094"
+      volumeMounts:
+        - name: env-context
+          mountPath: /mnt/env-context
+          readOnly: true
+  initContainers:
+    - name: check-postgres-connection
+      image: public.ecr.aws/docker/library/postgres:15-alpine
+      env:
+        - name: PGHOST
+          value: "data-postgres.default.svc.cluster.local"
+        - name: PGUSER
+          value: "postgres"
+        - name: PGPASSWORD
+          value: "password"
+      command:
+        ["sh", "-c", "until pg_isready -h $PGHOST -U $PGUSER; do sleep 1; done"]
+    - name: check-redis-connection
+      image: public.ecr.aws/docker/library/redis:7
+      env:
+        - name: REDISCLI_URL
+          value: "redis://data-redis.default.svc.cluster.local:6379/0"
+      command:
+        ["sh", "-c", "until redis-cli -u $REDISCLI_URL ping; do sleep 1; done"]
+    - name: check-influxdb-connection
+      image: public.ecr.aws/docker/library/influxdb:1.8
+      env:
+        - name: INFLUXDB_URL
+          value: "data-influx.default.svc.cluster.local"
+        - name: INFLUXDB_USERNAME
+          value: "test"
+        - name: INFLUXDB_PASSWORD
+          value: "testtest"
+      command:
+        [
+          "sh",
+          "-c",
+          "until influx -host $INFLUXDB_URL -username $INFLUXDB_USERNAME -password $INFLUXDB_PASSWORD -execute 'SHOW DATABASES'; do sleep 1; done",
+        ]
+    - name: check-kafka-connection
+      image: confluentinc/cp-kafkacat:6.2.1
+      env:
+        - name: KAFKA_BROKER_URL
+          value: "data-kafka.default.svc.cluster.local:9094"
+      command:
+        ["sh", "-c", "until kafkacat -b $KAFKA_BROKER_URL -L; do sleep 1; done"]
+    - name: scraper-exchange-example-coinbase-pairdiscovery
+      image: dia.pairdiscoveryservice.dev:latest
+      imagePullPolicy: Never
+      command: ["pairDiscoveryService"]
+      args: ["-exchange=CoinBase", "-mode=verification"]
+      env:
+        - name: USE_ENV
+          value: "true"
+        - name: POSTGRES_USER
+          value: "postgres"
+        - name: POSTGRES_PASSWORD
+          value: "password"
+        - name: POSTGRES_DB
+          value: "postgres"
+        - name: POSTGRES_HOST
+          value: "data-postgres.default.svc.cluster.local"
+        - name: INFLUXURL
+          value: "http://data-influx.default.svc.cluster.local:8086"
+        - name: INFLUXUSER
+          value: "test"
+        - name: INFLUXPASSWORD
+          value: "testtest"
+        - name: REDISURL
+          value: "data-redis.default.svc.cluster.local:6379"
+        - name: KAFKAURL
+          value: "data-kafka.default.svc.cluster.local:9094"
+  volumes:
+    - name: env-context
+      hostPath:
+        path: /mnt/diadata
