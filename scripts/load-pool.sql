@@ -1,0 +1,1 @@
+\COPY pool FROM '/tmp/dump-pool.csv' WITH (FORMAT csv, DELIMITER ';');
