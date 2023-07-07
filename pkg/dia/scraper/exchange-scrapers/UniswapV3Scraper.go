@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	PancakeswapV3Pair "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/pancakeswapv3"
 	uniswapcontract "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
 	uniswapcontractv3 "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswapv3"
 	UniswapV3Pair "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswapv3/uniswapV3Pair"
@@ -74,6 +75,8 @@ func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool) *UniswapV3Scraper {
 		s = makeUniswapV3Scraper(exchange, false, "", "", "200", uint64(22757913))
 	case dia.UniswapExchangeV3Arbitrum:
 		s = makeUniswapV3Scraper(exchange, false, "", "", "200", uint64(165))
+	case dia.PanCakeSwapExchangeV3:
+		s = makeUniswapV3Scraper(exchange, false, "", "", "200", uint64(26956207))
 	}
 
 	s.relDB, err = models.NewPostgresDataStore()
@@ -188,69 +191,94 @@ func (s *UniswapV3Scraper) mainLoop() {
 		}
 		log.Infof("%v found pair scraper for: %s with address %s", count, pool.ForeignName, pool.Address.Hex())
 		count++
-		sink, err := s.GetSwapsChannel(pool.Address)
-		if err != nil {
-			log.Error("error fetching swaps channel: ", err)
-		}
 
-		go func() {
-			for {
-				rawSwap, ok := <-sink
-				if ok {
-					swap := s.normalizeUniswapSwap(*rawSwap)
+		if s.exchangeName == dia.PanCakeSwapExchangeV3 {
 
-					price, volume := s.getSwapData(swap)
-					token0 := dia.Asset{
-						Address:    pool.Token0.Address.Hex(),
-						Symbol:     pool.Token0.Symbol,
-						Name:       pool.Token0.Name,
-						Decimals:   pool.Token0.Decimals,
-						Blockchain: Exchanges[s.exchangeName].BlockChain.Name,
-					}
-					token1 := dia.Asset{
-						Address:    pool.Token1.Address.Hex(),
-						Symbol:     pool.Token1.Symbol,
-						Name:       pool.Token1.Name,
-						Decimals:   pool.Token1.Decimals,
-						Blockchain: Exchanges[s.exchangeName].BlockChain.Name,
-					}
+			sink, err := s.GetPancakeSwapsChannel(pool.Address)
+			if err != nil {
+				log.Error("error fetching swaps channel: ", err)
+			}
 
-					t := &dia.Trade{
-						Symbol:         pool.Token0.Symbol,
-						Pair:           pool.ForeignName,
-						Price:          price,
-						Volume:         volume,
-						BaseToken:      token1,
-						QuoteToken:     token0,
-						Time:           time.Unix(swap.Timestamp, 0),
-						ForeignTradeID: swap.ID,
-						PoolAddress:    pool.Address.Hex(),
-						Source:         s.exchangeName,
-						VerifiedPair:   true,
-					}
-
-					switch {
-					case utils.Contains(reverseBasetokens, pool.Token1.Address.Hex()):
-						// If we need quotation of a base token, reverse pair
-						tSwapped, err := dia.SwapTrade(*t)
-						if err == nil {
-							t = &tSwapped
-						}
-					case utils.Contains(reverseQuotetokens, pool.Token0.Address.Hex()):
-						// If we need quotation of a base token, reverse pair
-						tSwapped, err := dia.SwapTrade(*t)
-						if err == nil {
-							t = &tSwapped
-						}
-					}
-					if price > 0 {
-						log.Infof("Got trade on pool %s: %v", rawSwap.Raw.Address.Hex(), t)
-						s.chanTrades <- t
+			go func() {
+				for {
+					rawSwap, ok := <-sink
+					if ok {
+						swap := s.normalizeUniswapSwap(*rawSwap)
+						s.sendTrade(swap, pool)
 					}
 				}
-			}
-		}()
+			}()
 
+		} else {
+
+			sink, err := s.GetSwapsChannel(pool.Address)
+			if err != nil {
+				log.Error("error fetching swaps channel: ", err)
+			}
+
+			go func() {
+				for {
+					rawSwap, ok := <-sink
+					if ok {
+						swap := s.normalizeUniswapSwap(*rawSwap)
+						s.sendTrade(swap, pool)
+					}
+				}
+			}()
+
+		}
+
+	}
+}
+
+func (s *UniswapV3Scraper) sendTrade(swap UniswapV3Swap, pool *UniswapPair) {
+	price, volume := s.getSwapData(swap)
+	token0 := dia.Asset{
+		Address:    pool.Token0.Address.Hex(),
+		Symbol:     pool.Token0.Symbol,
+		Name:       pool.Token0.Name,
+		Decimals:   pool.Token0.Decimals,
+		Blockchain: Exchanges[s.exchangeName].BlockChain.Name,
+	}
+	token1 := dia.Asset{
+		Address:    pool.Token1.Address.Hex(),
+		Symbol:     pool.Token1.Symbol,
+		Name:       pool.Token1.Name,
+		Decimals:   pool.Token1.Decimals,
+		Blockchain: Exchanges[s.exchangeName].BlockChain.Name,
+	}
+
+	t := &dia.Trade{
+		Symbol:         pool.Token0.Symbol,
+		Pair:           pool.ForeignName,
+		Price:          price,
+		Volume:         volume,
+		BaseToken:      token1,
+		QuoteToken:     token0,
+		Time:           time.Unix(swap.Timestamp, 0),
+		ForeignTradeID: swap.ID,
+		PoolAddress:    pool.Address.Hex(),
+		Source:         s.exchangeName,
+		VerifiedPair:   true,
+	}
+
+	switch {
+	case utils.Contains(reverseBasetokens, pool.Token1.Address.Hex()):
+		// If we need quotation of a base token, reverse pair
+		tSwapped, err := dia.SwapTrade(*t)
+		if err == nil {
+			t = &tSwapped
+		}
+	case utils.Contains(reverseQuotetokens, pool.Token0.Address.Hex()):
+		// If we need quotation of a base token, reverse pair
+		tSwapped, err := dia.SwapTrade(*t)
+		if err == nil {
+			t = &tSwapped
+		}
+	}
+	if price > 0 {
+		log.Infof("Got trade on pool %s: %v", pool.Address.Hex(), t)
+		s.chanTrades <- t
 	}
 }
 
@@ -273,6 +301,22 @@ func (s *UniswapV3Scraper) GetSwapsChannel(pairAddress common.Address) (chan *Un
 
 }
 
+func (s *UniswapV3Scraper) GetPancakeSwapsChannel(pairAddress common.Address) (chan *PancakeswapV3Pair.Pancakev3pairSwap, error) {
+	sink := make(chan *PancakeswapV3Pair.Pancakev3pairSwap)
+	var pairFiltererContract *PancakeswapV3Pair.Pancakev3pairFilterer
+
+	pairFiltererContract, err := PancakeswapV3Pair.NewPancakev3pairFilterer(pairAddress, s.WsClient)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = pairFiltererContract.WatchSwap(&bind.WatchOpts{}, sink, []common.Address{}, []common.Address{})
+	if err != nil {
+		log.Error("error in get swaps channel: ", err)
+	}
+	return sink, nil
+}
+
 func (s *UniswapV3Scraper) getSwapData(swap UniswapV3Swap) (price float64, volume float64) {
 	volume = swap.Amount0
 	price = math.Abs(swap.Amount1 / swap.Amount0)
@@ -280,22 +324,38 @@ func (s *UniswapV3Scraper) getSwapData(swap UniswapV3Swap) (price float64, volum
 }
 
 // normalizeUniswapSwap takes a swap as returned by the swap contract's channel and converts it to a UniswapSwap type
-func (s *UniswapV3Scraper) normalizeUniswapSwap(swap UniswapV3Pair.UniswapV3PairSwap) (normalizedSwap UniswapV3Swap) {
+func (s *UniswapV3Scraper) normalizeUniswapSwap(swapI interface{}) (normalizedSwap UniswapV3Swap) {
+	switch swap := swapI.(type) {
+	case UniswapV3Pair.UniswapV3PairSwap:
+		pair := poolMap[swap.Raw.Address.Hex()]
+		decimals0 := int(pair.Token0.Decimals)
+		decimals1 := int(pair.Token1.Decimals)
+		amount0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount0), new(big.Float).SetFloat64(math.Pow10(decimals0))).Float64()
+		amount1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount1), new(big.Float).SetFloat64(math.Pow10(decimals1))).Float64()
 
-	pair := poolMap[swap.Raw.Address.Hex()]
+		normalizedSwap = UniswapV3Swap{
+			ID:        swap.Raw.TxHash.Hex(),
+			Timestamp: time.Now().Unix(),
+			Pair:      pair,
+			Amount0:   amount0,
+			Amount1:   amount1,
+		}
+	case PancakeswapV3Pair.Pancakev3pairSwap:
+		pair := poolMap[swap.Raw.Address.Hex()]
+		decimals0 := int(pair.Token0.Decimals)
+		decimals1 := int(pair.Token1.Decimals)
+		amount0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount0), new(big.Float).SetFloat64(math.Pow10(decimals0))).Float64()
+		amount1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount1), new(big.Float).SetFloat64(math.Pow10(decimals1))).Float64()
 
-	decimals0 := int(pair.Token0.Decimals)
-	decimals1 := int(pair.Token1.Decimals)
-	amount0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount0), new(big.Float).SetFloat64(math.Pow10(decimals0))).Float64()
-	amount1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount1), new(big.Float).SetFloat64(math.Pow10(decimals1))).Float64()
-
-	normalizedSwap = UniswapV3Swap{
-		ID:        swap.Raw.TxHash.Hex(),
-		Timestamp: time.Now().Unix(),
-		Pair:      pair,
-		Amount0:   amount0,
-		Amount1:   amount1,
+		normalizedSwap = UniswapV3Swap{
+			ID:        swap.Raw.TxHash.Hex(),
+			Timestamp: time.Now().Unix(),
+			Pair:      pair,
+			Amount0:   amount0,
+			Amount1:   amount1,
+		}
 	}
+
 	return
 }
 
