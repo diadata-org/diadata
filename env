@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
-# Vesion:      0.1.0
-# Description: This script is used to manage the DIA development environment
-#              Helpful on start/stop the platform, and create/remove resources
-# Mantainers:  Alexandre Ferreira (hello [at] alexjorgef [dot] com)
+#
+# Description: This script is used to manage the DIA development environment. Helpful on start/stop the platform, and create/remove resources
+# Vesion: 0.1.0
 
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do
@@ -12,8 +11,6 @@ while [ -h "$SOURCE" ]; do
 done
 SCRIPT_FOLDER="$(cd -P "$(dirname "$SOURCE")" >/dev/null 2>&1 && pwd)"
 unset SOURCE
-
-###############################################################################
 
 function usage() {
     echo "DIA Test Space"
@@ -55,9 +52,6 @@ function usage() {
     echo "  ping                      Make ping tests"
     echo "  data-list                 List data"
     echo "  data-reset                Reset data"
-    echo "  code-lint                 Lint code"
-    echo "  code-test                 Run tests"
-    echo "  code-build                Build platform code"
     echo
     echo "Report bugs to: <https://github.com/diadata-org/diadata/issues>"
 }
@@ -129,11 +123,7 @@ function main() {
     # Arguments parsing
     local paths=()
     local args=
-    args=$(
-        getopt -o hnsvc: \
-            --long cpus:,disk-space:,nodetached,full,single,verbose,help \
-            -n 'env' -- "$@"
-    )
+    args=$(getopt -o hnsvc: --long cpus:,disk-space:,nodetached,full,single,verbose,help -n 'env' -- "$@")
     # shellcheck disable=SC2181
     if [ $? != 0 ]; then
         usage 1>&2
@@ -174,7 +164,6 @@ function main() {
 
     # Check dependencies
     if ! hash git 2> /dev/null; then echo "Git not found" >&2; return 1; fi
-    if ! hash jq 2> /dev/null; then echo "jq not found" >&2; return 1; fi
     if ! hash docker 2> /dev/null; then echo "Docker not found" >&2; return 1; fi
     if ! hash minikube 2> /dev/null; then echo "Minikube not found" >&2; return 1; fi
 
@@ -688,33 +677,6 @@ function main() {
             echo "PostgreSQL #exchangepair: $num_exchangepairs"
             num_exchangesymbols=$(minikube -p "${minikube_profile}" kubectl -- exec deployment/data-postgres -- psql -U postgres -tA -c "SELECT COUNT(*) FROM exchangesymbol")
             echo "PostgreSQL #exchangesymbol: $num_exchangesymbols"
-        fi
-        ;;
-    code-lint)
-        if [ "${#paths[@]}" -eq 1 ]; then
-            echo "Running linter ..."
-            golangci-lint run --config=./.golangci.yml --out-format=tab
-        else
-            echo "Unknown command" >&2
-            exit 1
-        fi
-        ;;
-    code-test)
-        if [ "${#paths[@]}" -eq 1 ]; then
-            echo "Running tests ..."
-            gotestsum --format pkgname
-        else
-            echo "Unknown command" >&2
-            exit 1
-        fi
-        ;;
-    code-build)
-        if [ "${#paths[@]}" -eq 1 ]; then
-            echo "Building codebase ..."
-            go build -v ./...
-        else
-            echo "Unknown command" >&2
-            exit 1
         fi
         ;;
     *)
