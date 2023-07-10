@@ -76,7 +76,7 @@ type Datastore interface {
 	GetNumTrades(exchange string, address string, blockchain string, starttime time.Time, endtime time.Time) (int64, error)
 	GetNumTradesSeries(asset dia.Asset, exchange string, starttime time.Time, endtime time.Time, grouping string) ([]int64, error)
 	GetVolumesAllExchanges(asset dia.Asset, starttime time.Time, endtime time.Time) (exchVolumes dia.ExchangeVolumesList, err error)
-	GetExchangePairVolumes(asset dia.Asset, starttime time.Time, endtime time.Time) (map[string][]dia.PairVolume, error)
+	GetExchangePairVolumes(asset dia.Asset, starttime time.Time, endtime time.Time, threshold float64) (map[string][]dia.PairVolume, error)
 
 	// New Asset pricing methods: 23/02/2021
 	SetAssetPriceUSD(asset dia.Asset, price float64, timestamp time.Time) error
