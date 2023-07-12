@@ -379,6 +379,12 @@
             "Address": "0x7DD9c5Cba05E151C895FDe1CF355C9A1D5DA6429"
         },
         {
+            "Symbol": "GNS",
+            "Exchange": "GateIO",
+            "Blockchain": "Arbitrum",
+            "Address": "0x18c11FD286C5EC11c3b683Caa813B77f5163A122"
+        },
+        {
             "Symbol": "GNX",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",

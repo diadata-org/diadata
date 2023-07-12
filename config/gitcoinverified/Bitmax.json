@@ -217,6 +217,12 @@
             "Address": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"
         },
         {
+            "Symbol": "GNS",
+            "Exchange": "Bitmax",
+            "Blockchain": "Arbitrum",
+            "Address": "0x18c11FD286C5EC11c3b683Caa813B77f5163A122"
+        },
+        {
             "Symbol": "GT",
             "Exchange": "Bitmax",
             "Blockchain": "Ethereum",

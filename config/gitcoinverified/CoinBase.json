@@ -109,6 +109,12 @@
             "Address": "826"
         },
         {
+            "Symbol": "GHST",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x3F382DbD960E3a9bbCeaE22651E88158d2791550"
+        },
+        {
             "Symbol": "GTC",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",

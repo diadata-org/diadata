@@ -252,13 +252,9 @@ type TopAsset struct {
 }
 
 type PairVolume struct {
-	Pair   Pair    `json:"Pair"`
-	Volume float64 `json:"Volume"`
-}
-
-type PairVolumesList struct {
-	Volumes   []PairVolume `json:"Volumes"`
-	Timestamp time.Time    `json:"Timestamp"`
+	Pair        Pair    `json:"Pair"`
+	PoolAddress string  `json:"Pooladdress"`
+	Volume      float64 `json:"Volume"`
 }
 
 type EthereumBlockData struct {

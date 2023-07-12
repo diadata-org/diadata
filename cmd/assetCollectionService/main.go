@@ -48,6 +48,10 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 		return source.NewUniswapAssetSource(exchanges[dia.UniswapExchange])
 	case dia.PanCakeSwap:
 		return source.NewUniswapAssetSource(exchanges[dia.PanCakeSwap])
+	case dia.PanCakeSwapExchangeV3:
+		return source.NewUniswapV3AssetSource(exchanges[dia.PanCakeSwapExchangeV3])
+	case dia.ApeswapExchange:
+		return source.NewUniswapAssetSource(exchanges[dia.ApeswapExchange])
 	case dia.SushiSwapExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.SushiSwapExchange])
 	case dia.SushiSwapExchangeArbitrum:

@@ -8,6 +8,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "GNS_USDT",
+      "Ignore": false,
+      "Symbol": "GNS"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "MCRT_USDT",
       "Ignore": false,
       "Symbol": "MCRT"

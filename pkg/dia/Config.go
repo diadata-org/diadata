@@ -70,6 +70,7 @@ const (
 	SushiSwapExchangePolygon   = "SushiSwap-polygon"
 	SushiSwapExchangeFantom    = "SushiSwap-fantom"
 	PanCakeSwap                = "PanCakeSwap"
+	PanCakeSwapExchangeV3      = "PanCakeSwapV3"
 	ApeswapExchange            = "Apeswap"
 	BiswapExchange             = "Biswap"
 	DforceExchange             = "Dforce"

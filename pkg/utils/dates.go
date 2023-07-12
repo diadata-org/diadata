@@ -137,8 +137,9 @@ func MakeTimeRanges(timeInit, timeFinal time.Time, numRanges int) (starttimes, e
 	return
 }
 
-// MakeTimerange parses Unix timestamps given as strings. In case one of the two is empty,
-// it returns a time-range based on @timeRange.
+// MakeTimerange parses Unix timestamps given as strings.
+// In case one of the two is empty, it returns a time-range based on @timeRange.
+// Default is a 24h window ending now.
 func MakeTimerange(starttimeString string, endtimeString string, timeRange time.Duration) (starttime time.Time, endtime time.Time, err error) {
 
 	var (

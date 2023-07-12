@@ -120,6 +120,8 @@ func NewBalancerV2Scraper(exchange dia.Exchange, scrape bool, relDB *models.RelD
 		return nil
 	}
 
+	scraper.relDB = relDB
+
 	// Only include pools with (minimum) liquidity bigger than given env var.
 	liquidityThreshold, err := strconv.ParseFloat(utils.Getenv("LIQUIDITY_THRESHOLD", "0"), 64)
 	if err != nil {
@@ -134,6 +136,9 @@ func NewBalancerV2Scraper(exchange dia.Exchange, scrape bool, relDB *models.RelD
 	}
 
 	scraper.relDB = relDB
+
+	scraper.fetchAdmissiblePools(liquidityThreshold, liquidityThresholdUSD)
+
 	scraper.ws = ws
 	scraper.rest = rest
 	scraper.rl = ratelimit.New(balancerV2RateLimitPerSec)
