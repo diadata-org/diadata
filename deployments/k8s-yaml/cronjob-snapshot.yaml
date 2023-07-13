@@ -5,7 +5,7 @@ metadata:
   labels:
     app: cronjob-postgresdump
 spec:
-  schedule: "*/2 * * * *"
+  schedule: "0 0 * * *"
   jobTemplate:
     spec:
       template:
