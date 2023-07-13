@@ -154,7 +154,7 @@ func (datastore *DB) GetVolumesAllExchanges(asset dia.Asset, starttime time.Time
 	return
 }
 
-func (datastore *DB) GetExchangePairVolumes(asset dia.Asset, starttime time.Time, endtime time.Time) (map[string][]dia.PairVolume, error) {
+func (datastore *DB) GetExchangePairVolumes(asset dia.Asset, starttime time.Time, endtime time.Time, threshold float64) (map[string][]dia.PairVolume, error) {
 	volumeMap := make(map[string][]dia.PairVolume)
 
 	query := fmt.Sprintf(
@@ -169,7 +169,7 @@ func (datastore *DB) GetExchangePairVolumes(asset dia.Asset, starttime time.Time
 			AND time>%d
 			AND time<=%d
 			)
-		GROUP BY "exchange","basetokenaddress","basetokenblockchain"
+		GROUP BY "exchange","basetokenaddress","basetokenblockchain","pooladdress"
 		`,
 		influxDbTradesTable,
 		asset.Address,
@@ -196,10 +196,14 @@ func (datastore *DB) GetExchangePairVolumes(asset dia.Asset, starttime time.Time
 				if err != nil {
 					log.Warn("parse volume: ", err)
 				}
+				if !(pairvolume.Volume >= threshold) {
+					continue
+				}
 				pairvolume.Pair = dia.Pair{
 					QuoteToken: dia.Asset{Blockchain: asset.Blockchain, Address: asset.Address},
 					BaseToken:  dia.Asset{Blockchain: row.Tags["basetokenblockchain"], Address: row.Tags["basetokenaddress"]},
 				}
+				pairvolume.PoolAddress = row.Tags["pooladdress"]
 				volumeMap[exchange] = append(volumeMap[exchange], pairvolume)
 			}
 		}

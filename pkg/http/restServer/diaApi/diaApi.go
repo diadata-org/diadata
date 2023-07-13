@@ -3124,6 +3124,11 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 		sizeBinSeconds = 120
 	}
 
+	volumeThreshold, err := strconv.ParseFloat(c.DefaultQuery("volumeThreshold", "0"), 64)
+	if err != nil {
+		log.Warn("parse volumeThreshold: ", err)
+	}
+
 	if sizeBinSeconds < 20 || sizeBinSeconds > 21600 {
 		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("sizeBinSeconds out of range. Must be between %v and %v.", 20*time.Second, 6*time.Hour))
 		return
@@ -3136,7 +3141,7 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
 	}
 
-	volumeMap, err := env.DataStore.GetExchangePairVolumes(asset, starttime, endtime)
+	volumeMap, err := env.DataStore.GetExchangePairVolumes(asset, starttime, endtime, volumeThreshold)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
 		return
