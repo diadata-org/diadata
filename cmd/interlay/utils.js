@@ -69,6 +69,13 @@ const allowedTokens = [
 
   },
   {
+    vtoken: "vDOT",
+    token: "DOT",
+    source: "bifrost",
+    issuer: "Bifrost",
+
+  },
+  {
     vtoken: "stDOT",
     token: "DOT",
     source: "stDOT",
@@ -115,7 +122,7 @@ module.exports = {
   tokenkey: tokenkey,
   redis: redis,
   createResponse:createResponse,
-  allowedtokens: allowedtokens,
+  allowedTokens: allowedTokens,
   getPrice: getPrice,
   pricekey:pricekey,
 };
