@@ -2,10 +2,13 @@ package resolver
 
 import (
 	"context"
+	"errors"
+	"strings"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	queryhelper "github.com/diadata-org/diadata/pkg/dia/helpers/queryHelper"
+	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/utils"
 
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -13,7 +16,11 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var log = logrus.New()
+var (
+	log            = logrus.New()
+	EXCHANGES      = scrapers.Exchanges
+	PAIR_SEPARATOR = "-"
+)
 
 // Resolver is the root resolver
 type DiaResolver struct {
@@ -47,36 +54,29 @@ func (r *DiaResolver) GetSupplies(ctx context.Context, args struct{ Symbol graph
 	return &sr, nil
 }
 
-// func (r *DiaResolver) GetSymbols(ctx context.Context, args struct{ Exchange graphql.NullString }) (*[]*string, error) {
-// 	exchange := args.Exchange.Value
-// 	var allSymbols []string
-
-// 	if *exchange == "" {
-// 		allSymbols = r.DS.GetAllSymbols()
-// 		if len(allSymbols) == 0 {
-// 			return nil, errors.New("error No symbols")
-// 		}
-// 	} else {
-// 		allSymbols = r.DS.GetSymbolsByExchange(*exchange)
-// 		if len(allSymbols) == 0 {
-// 			return nil, errors.New("error No Symbols for exchange " + *exchange)
-// 		}
-// 	}
-// 	var sr []*string
-
-// 	for _, symbol := range allSymbols {
-// 		sr = append(sr, &symbol)
-// 	}
-// 	return &sr, nil
-// }
-
 type TradeBlock struct {
 	Trades []dia.Trade
 }
 
-type AssetInput struct {
+type Asset struct {
 	Address    graphql.NullString
 	BlockChain graphql.NullString
+}
+
+type FeedSelection struct {
+	Address       graphql.NullString
+	Blockchain    graphql.NullString
+	Exchangepairs *[]Exchange
+}
+
+type Exchange struct {
+	Name  graphql.NullString
+	Pairs *[]Pair
+}
+
+type Pair struct {
+	Identifier graphql.NullString
+	Threshold  graphql.NullFloat
 }
 
 type BaseAsset struct {
@@ -94,7 +94,7 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	Exchanges            *[]graphql.NullString
 	Address              graphql.NullString
 	BlockChain           graphql.NullString
-	BaseAsset            *[]AssetInput
+	BaseAsset            *[]Asset
 }) (*[]*FilterPointResolver, error) {
 	fpr, _ := r.GetChartMeta(ctx, args)
 
@@ -112,7 +112,7 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 	Exchanges            *[]graphql.NullString
 	Address              graphql.NullString
 	BlockChain           graphql.NullString
-	BaseAsset            *[]AssetInput
+	BaseAsset            *[]Asset
 }) (*FilterPointMetaResolver, error) {
 	var (
 		blockShiftSeconds int64
@@ -313,7 +313,7 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 // GetxcFeed returns filter points for a (possibly) cross chain feed given by @QuoteAssets.
 func (r *DiaResolver) GetxcFeed(ctx context.Context, args struct {
 	Filter            graphql.NullString
-	QuoteAssets       *[]AssetInput
+	QuoteAssets       *[]Asset
 	Exchanges         *[]graphql.NullString
 	BlockSizeSeconds  graphql.NullInt
 	BlockShiftSeconds graphql.NullInt
@@ -444,10 +444,190 @@ func (r *DiaResolver) GetxcFeed(ctx context.Context, args struct {
 	return &fpr, nil
 }
 
+// TO DO: Use context?
+func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
+	Filter            graphql.NullString
+	BlockSizeSeconds  graphql.NullInt
+	BlockShiftSeconds graphql.NullInt
+	StartTime         graphql.NullTime
+	EndTime           graphql.NullTime
+	FeedSelection     *[]FeedSelection
+}) (*[]*FilterPointResolver, error) {
+	var (
+		tradeBlocks       []queryhelper.Block
+		sr                *[]*FilterPointResolver
+		starttime         time.Time
+		endtime           time.Time
+		blockShiftSeconds int64
+		err               error
+	)
+
+	// Parsing input parameters.
+	if args.Filter.Value == nil {
+		return sr, errors.New("Filter must be set.")
+	}
+	filter := *args.Filter.Value
+	blockSizeSeconds := int64(*args.BlockSizeSeconds.Value)
+	if args.BlockShiftSeconds.Value != nil {
+		blockShiftSeconds = int64(*args.BlockShiftSeconds.Value)
+	}
+	// Set blockShiftSeconds = blockSizeSeconds per default if not given.
+	if blockShiftSeconds == 0 {
+		blockShiftSeconds = blockSizeSeconds
+	}
+
+	// Handle timestamps.
+	if args.EndTime.Value != nil {
+		endtime = args.EndTime.Value.Time
+	} else {
+		endtime = time.Now()
+	}
+	if args.StartTime.Value != nil {
+		starttime = args.StartTime.Value.Time
+	} else {
+		starttime = endtime.Add(-time.Duration(1 * time.Hour))
+	}
+	if endtime.Before(starttime) {
+		return sr, errors.New("StartTime must be before EndTime.")
+	}
+	if endtime.After(time.Now()) {
+		endtime = time.Now()
+	}
+	// --- Limit the (time-)range of the query to 24 hours ---
+	maxStartTime := endtime.Add(-time.Duration(60*24) * time.Minute)
+	if starttime.Before(maxStartTime) {
+		starttime = maxStartTime
+	}
+	// (Potentially) decrease starttime such that an integer number of bins fits into the whole range.
+	if endtime.Unix()-starttime.Unix() < blockSizeSeconds {
+		// Just one block.
+		starttime = time.Unix(endtime.Unix()-blockSizeSeconds, 0)
+	} else {
+		starttime = time.Unix(starttime.Unix()-(blockShiftSeconds-((endtime.Unix()-starttime.Unix()-blockSizeSeconds)%blockShiftSeconds)), 0)
+	}
+	starttimeimmutable := starttime
+	endtimeimmutable := endtime
+
+	if args.FeedSelection == nil {
+		return sr, errors.New("At least 1 asset must be selected.")
+	}
+	feedselection, err := r.CastLocalFeedSelection(*args.FeedSelection)
+	if err != nil {
+		return sr, err
+	}
+
+	var (
+		filterPoints, emaFilterPoints []dia.FilterPoint
+	)
+
+	if filter != "ema" {
+
+		// Make time bins according to block size and block shift parameters.
+		bins := utils.MakeBins(starttime, endtime, blockSizeSeconds, blockShiftSeconds)
+
+		// Fetch trades.
+		var trades []dia.Trade
+		if blockShiftSeconds <= blockSizeSeconds {
+			// Fetch all trades in time range.
+			trades, err = r.DS.GetTradesByFeedSelection(feedselection, starttime, endtime)
+			if err != nil {
+				log.Error("GetTradesByExchangesAndBaseAssets: ", err)
+				return sr, err
+			}
+		} else {
+			// Fetch trades batched for disjoint bins.
+			var starttimes, endtimes []time.Time
+			for _, bin := range bins {
+				starttimes = append(starttimes, bin.Starttime)
+				endtimes = append(endtimes, bin.Endtime)
+			}
+			// trades, err = r.DS.GetTradesByExchangesBatched(asset, baseAssets, exchangesString, starttimes, endtimes, 0)
+			// if err != nil {
+			// 	log.Error("GetTradesByExchangesAndBaseAssets: ", err)
+			// 	return sr, err
+			// }
+		}
+		log.Println("Generating blocks, Total Trades", len(trades))
+		log.Info("generating bins. Total bins: ", len(bins))
+
+		if len(trades) > 0 && len(bins) > 0 {
+			// In case the first bin is empty, look for the last trade before @starttime.
+			if !utils.IsInBin(trades[0].Time, bins[0]) {
+				var exchanges []string
+				for _, f := range feedselection {
+					for _, e := range f.Exchangepairs {
+						exchanges = append(exchanges, e.Exchange.Name)
+					}
+				}
+				previousTrade, baseAsseteErr := r.DS.GetTradesByExchangesAndBaseAssets(feedselection[0].Asset, []dia.Asset{}, exchanges, endtime.AddDate(0, 0, -10), starttime, 1)
+				if baseAsseteErr != nil || len(previousTrade) == 0 {
+					log.Error("get initial trade: ", err, baseAsseteErr)
+					// Fill with a zero trade so we can build blocks.
+					auxTrade := trades[0]
+					auxTrade.Volume = 0
+					auxTrade.Price = 0
+					auxTrade.EstimatedUSDPrice = 0
+					trades = append([]dia.Trade{auxTrade}, trades...)
+				} else {
+					trades = append([]dia.Trade{previousTrade[0]}, trades...)
+				}
+			}
+			tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateBlocks(blockSizeSeconds, blockShiftSeconds, bins)
+			log.Println("Total TradeBlocks", len(tradeBlocks))
+		}
+
+	} else if filter == "ema" {
+		emaFilterPoints, err = r.DS.GetFilter("MA120", feedselection[0].Asset, "", starttimeimmutable, endtimeimmutable)
+		if err != nil {
+			log.Errorln("Error getting filter", err)
+		}
+	}
+
+	switch filter {
+	case "ema":
+		{
+			filterPoints, _ = queryhelper.FilterEMA(emaFilterPoints, feedselection[0].Asset, int(blockSizeSeconds))
+		}
+	case "mair":
+		{
+			filterPoints, _ = queryhelper.FilterMAIR(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
+		}
+	case "ma":
+		{
+			filterPoints, _ = queryhelper.FilterMA(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
+		}
+	case "vwap":
+		{
+			filterPoints, _ = queryhelper.FilterVWAP(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
+		}
+	case "vwapir":
+		{
+			filterPoints, _ = queryhelper.FilterVWAPIR(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
+		}
+	case "medir":
+		{
+			filterPoints, _ = queryhelper.FilterMEDIR(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
+		}
+	case "vol":
+		{
+			filterPoints, _ = queryhelper.FilterVOL(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
+		}
+
+	}
+
+	var fpr []*FilterPointResolver
+
+	for _, fp := range filterPoints {
+		fpr = append(fpr, &FilterPointResolver{q: fp})
+	}
+
+	return &fpr, nil
+}
+
 func (r *DiaResolver) GetVWALP(ctx context.Context, args struct {
 	Quotetokenblockchain graphql.NullString
 	Quotetokenaddress    graphql.NullString
-	BaseAssets           *[]AssetInput
+	BaseAssets           *[]Asset
 	Exchanges            *[]graphql.NullString
 	BlockDurationSeconds graphql.NullInt
 	EndTime              graphql.NullTime
@@ -638,4 +818,66 @@ func (r *DiaResolver) fillFirstBin(assets []dia.Asset, exchanges []string, trade
 		log.Warn("previous trade: ", previousTrade[len(previousTrade)-1])
 	}
 	return trades
+}
+
+func (r *DiaResolver) CastLocalFeedSelection(fs []FeedSelection) (dfs []dia.FeedSelection, err error) {
+	for _, localFeedSelection := range fs {
+		var diaFeedSelection dia.FeedSelection
+
+		// Parse asset.
+		if localFeedSelection.Address.Value == nil || localFeedSelection.Blockchain.Value == nil {
+			err = errors.New("Asset's address and blockchain are mandatory.")
+			return
+		}
+		diaFeedSelection.Asset = dia.Asset{Address: *localFeedSelection.Address.Value, Blockchain: *localFeedSelection.Blockchain.Value}
+
+		// Parse exchanges.
+		if localFeedSelection.Exchangepairs == nil {
+			dfs = append(dfs, diaFeedSelection)
+			continue
+		}
+		for _, ep := range *localFeedSelection.Exchangepairs {
+			var diaExchangepairselection dia.ExchangepairSelection
+			diaExchangepairselection.Exchange = dia.Exchange{Name: *ep.Name.Value}
+
+			// Parse pairs/pools.
+			if ep.Pairs == nil {
+				diaFeedSelection.Exchangepairs = append(diaFeedSelection.Exchangepairs, diaExchangepairselection)
+				continue
+			}
+			if EXCHANGES[diaExchangepairselection.Exchange.Name].Centralized {
+				for _, p := range *ep.Pairs {
+					if len(strings.Split(*p.Identifier.Value, PAIR_SEPARATOR)) < 2 {
+						return dfs, errors.New("Pair not in requested format TokenA-TokenB")
+					}
+
+					quotetoken, err := r.RelDB.GetExchangeSymbol(diaExchangepairselection.Exchange.Name, strings.Split(*p.Identifier.Value, PAIR_SEPARATOR)[0])
+					if err != nil {
+						return dfs, err
+					}
+					basetoken, err := r.RelDB.GetExchangeSymbol(diaExchangepairselection.Exchange.Name, strings.Split(*p.Identifier.Value, PAIR_SEPARATOR)[1])
+					if err != nil {
+						return dfs, err
+					}
+					pair := dia.Pair{
+						QuoteToken: quotetoken,
+						BaseToken:  basetoken,
+					}
+					diaExchangepairselection.Pairs = append(diaExchangepairselection.Pairs, pair)
+				}
+			} else {
+				for _, p := range *ep.Pairs {
+					pool, err := r.RelDB.GetPoolByAddress(diaFeedSelection.Asset.Blockchain, *p.Identifier.Value)
+					if err != nil {
+						return dfs, err
+					}
+					diaExchangepairselection.Pools = append(diaExchangepairselection.Pools, pool)
+				}
+			}
+			diaFeedSelection.Exchangepairs = append(diaFeedSelection.Exchangepairs, diaExchangepairselection)
+		}
+
+		dfs = append(dfs, diaFeedSelection)
+	}
+	return
 }

@@ -427,6 +427,17 @@ func (ep *ExchangePair) UnmarshalBinary(data []byte) error {
 
 type Pairs []ExchangePair
 
+type FeedSelection struct {
+	Asset         Asset
+	Exchangepairs []ExchangepairSelection
+}
+
+type ExchangepairSelection struct {
+	Exchange Exchange
+	Pairs    []Pair
+	Pools    []Pool
+}
+
 // Trade remark: In a pair A-B, we call A the Quote token and B the Base token
 type Trade struct {
 	// TO DO: Deprecated fields. Delete as soon as token-to-type branch is deployed.

@@ -5,58 +5,79 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/jackc/pgtype"
 	"github.com/jackc/pgx/v4"
 )
 
 // GetExchangePair returns the unique exchange pair given by @exchange and @foreignname from postgres.
 // It also returns the underlying pair if existent.
-func (rdb *RelDB) GetExchangePair(exchange string, foreignname string) (dia.ExchangePair, error) {
+// If @caseSensitive is false case of @foreignname is ignored.
+func (rdb *RelDB) GetExchangePair(exchange string, foreignname string, caseSensitive bool) (dia.ExchangePair, error) {
 	var (
-		exchangepair    dia.ExchangePair
-		verified        bool
-		uuid_quotetoken pgtype.UUID
-		uuid_basetoken  pgtype.UUID
+		exchangepair       dia.ExchangePair
+		verified           bool
+		query              string
+		decimalsQuoteAsset sql.NullInt64
+		decimalsBaseAsset  sql.NullInt64
 	)
 
 	exchangepair.Exchange = exchange
-	exchangepair.ForeignName = foreignname
 
-	query := fmt.Sprintf("SELECT symbol,verified,id_quotetoken,id_basetoken FROM %s WHERE exchange=$1 AND foreignname=$2", exchangepairTable)
-	err := rdb.postgresClient.QueryRow(context.Background(), query, exchange, foreignname).Scan(&exchangepair.Symbol, &verified, &uuid_quotetoken, &uuid_basetoken)
+	if caseSensitive {
+		query = fmt.Sprintf(`
+			SELECT ep.symbol,ep.foreignname,ep.verified,a.symbol,a.name,a.address,a.blockchain,a.decimals,b.symbol,b.name,b.address,b.blockchain,b.decimals
+			FROM %s ep
+			INNER JOIN %s a
+			ON ep.id_quotetoken=a.asset_id
+			INNER JOIN %s b
+			ON ep.id_basetoken=b.asset_id
+			WHERE exchange=$1 AND foreignname=$2`,
+			exchangepairTable,
+			assetTable,
+			assetTable,
+		)
+	} else {
+		query = fmt.Sprintf(`
+			SELECT ep.symbol,ep.foreignname,ep.verified,a.symbol,a.name,a.address,a.blockchain,a.decimals,b.symbol,b.name,b.address,b.blockchain,b.decimals
+			FROM %s ep
+			INNER JOIN %s a
+			ON ep.id_quotetoken=a.asset_id
+			INNER JOIN %s b
+			ON ep.id_basetoken=b.asset_id
+			WHERE exchange=$1 AND foreignname ILIKE $2`,
+			exchangepairTable,
+			assetTable,
+			assetTable,
+		)
+	}
+	err := rdb.postgresClient.QueryRow(context.Background(), query, exchange, foreignname).Scan(
+		&exchangepair.Symbol,
+		&exchangepair.ForeignName,
+		&verified,
+		&exchangepair.UnderlyingPair.QuoteToken.Symbol,
+		&exchangepair.UnderlyingPair.QuoteToken.Name,
+		&exchangepair.UnderlyingPair.QuoteToken.Address,
+		&exchangepair.UnderlyingPair.QuoteToken.Blockchain,
+		&decimalsQuoteAsset,
+		&exchangepair.UnderlyingPair.BaseToken.Symbol,
+		&exchangepair.UnderlyingPair.BaseToken.Name,
+		&exchangepair.UnderlyingPair.BaseToken.Address,
+		&exchangepair.UnderlyingPair.BaseToken.Blockchain,
+		&decimalsBaseAsset,
+	)
 	if err != nil {
 		return dia.ExchangePair{}, err
 	}
+	if decimalsQuoteAsset.Valid {
+		exchangepair.UnderlyingPair.QuoteToken.Decimals = uint8(decimalsQuoteAsset.Int64)
+	}
+	if decimalsQuoteAsset.Valid {
+		exchangepair.UnderlyingPair.BaseToken.Decimals = uint8(decimalsBaseAsset.Int64)
+	}
+
 	exchangepair.Verified = verified
-
-	// Decode uuids and fetch corresponding assets
-	val1, err := uuid_quotetoken.Value()
-	if err != nil {
-		log.Error(err)
-	}
-	if val1 != nil {
-		var quotetoken dia.Asset
-		quotetoken, err = rdb.GetAssetByID(val1.(string))
-		if err != nil {
-			return dia.ExchangePair{}, err
-		}
-		exchangepair.UnderlyingPair.QuoteToken = quotetoken
-	}
-
-	val2, err := uuid_basetoken.Value()
-	if err != nil {
-		log.Error(err)
-	}
-	if val2 != nil {
-		basetoken, err := rdb.GetAssetByID(val2.(string))
-		if err != nil {
-			return dia.ExchangePair{}, err
-		}
-		exchangepair.UnderlyingPair.BaseToken = basetoken
-	}
-
 	return exchangepair, nil
 }
 
@@ -103,6 +124,38 @@ func (rdb *RelDB) SetExchangePair(exchange string, pair dia.ExchangePair, cache 
 		}
 	}
 	return nil
+}
+
+// GetExchangePairSeparator returns the separator that is used as notation for an exchange pair.
+// Examples: BTC-USDT, BTCUSDT, BTC/USDT.
+func (rdb *RelDB) GetExchangePairSeparator(exchange string) (string, error) {
+	var (
+		foreignname      string
+		symbolQuoteAsset string
+		symbolBaseAsset  string
+	)
+	query := fmt.Sprintf(`
+		SELECT ep.symbol,a.symbol,ep.foreignname 
+		FROM %s ep
+		INNER JOIN %s a
+		ON ep.id_basetoken=a.asset_id
+		WHERE exchange=$1
+		LIMIT 1`,
+		exchangepairTable,
+		assetTable,
+	)
+	err := rdb.postgresClient.QueryRow(context.Background(), query, exchange).Scan(&symbolQuoteAsset, &symbolBaseAsset, &foreignname)
+	if err != nil {
+		return "", err
+	}
+	if len(strings.Split(foreignname, symbolQuoteAsset)) < 2 {
+		return "", errors.New("not enough data.")
+	}
+	if len(strings.Split(strings.Split(foreignname, symbolQuoteAsset)[1], symbolBaseAsset)) < 1 {
+		return "", errors.New("not enough data.")
+	}
+	separator := strings.Split(strings.Split(foreignname, symbolQuoteAsset)[1], symbolBaseAsset)[0]
+	return separator, nil
 }
 
 // GetExchangePairSymbols returns all foreign names on @exchange from exchangepair table.
