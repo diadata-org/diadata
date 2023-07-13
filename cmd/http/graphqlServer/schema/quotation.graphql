@@ -45,7 +45,7 @@ type Query {
     StartTime: Time
     EndTime: Time
     FeedSelection: [FeedSelection!]
-  ): FilterPoint
+  ): [FilterPoint]
 
   GetVWALP(
     Quotetokenblockchain: String!
