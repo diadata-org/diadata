@@ -6,14 +6,39 @@ const bignumber = ethers.BigNumber;
 async function tokenPool(api, token) {
     const tokenPoolMap = new Map();
     const tokenPoolEntries = await api.query.vtokenMinting.tokenPool.entries();
+
   
     tokenPoolEntries.forEach((tokenPool) => {
       let key = tokenPool[0].toHuman();
+      console.log("tokenPool",key)
+
       let value = tokenPool[1].toHuman();
       if (key[0].Token) {
         tokenPoolMap.set(key[0].Token, value);
       }
     });
+
+    console.log("tokenPoolMap",tokenPoolMap);
+
+  
+    return tokenPoolMap.get(token);
+  }
+
+  async function token2Pool(api, token) {
+    const tokenPoolMap = new Map();
+    const tokenPoolEntries = await api.query.vtokenMinting.tokenPool.entries();
+
+  
+    tokenPoolEntries.forEach((tokenPool) => {
+      let key = tokenPool[0].toHuman();
+ 
+      let value = tokenPool[1].toHuman();
+      if (key[0].Token2) {
+        tokenPoolMap.set(key[0].Token2, value);
+      }
+    });
+
+ 
   
     return tokenPoolMap.get(token);
   }
@@ -39,14 +64,21 @@ async function tokenIssuance(api, token) {
   
     return totalIssuance;
   }
+  async function vToken2Issuance(api, token) {
+    const totalIssuance = await api.query.tokens.totalIssuance({vToken2:token});
+  
+    return totalIssuance;
+  }
 
   async function getBiFrostValues(token) {
     let providerurl = "";
   
-    switch (token) {
-      case "KSM":
+    switch (token.toLowerCase()) {
+      case "KSM".toLowerCase():
         providerurl = "wss://bifrost-parachain.api.onfinality.io/public-ws";
         break;
+      case "DOT".toLowerCase():
+        providerurl = "wss://bifrost-polkadot.api.onfinality.io/public-ws"
     }
   
     const wsProvider = new WsProvider(
@@ -56,17 +88,31 @@ async function tokenIssuance(api, token) {
     const api = await ApiPromise.create({
       provider: wsProvider,
     });
+    let tokeninpool;
+    let vtokenIssuance;
+    let decimal;
   
-    let tokeninpool = await tokenPool(api, token);
-    // let tokenIssuance = await bifrosttokenIssuance(api, token);
-    let vtokenIssuance = await vTokenIssuance(api, token);
+    if (token.toLowerCase() == "DOT".toLowerCase()){
+     // 0 represents dot token in bifrost polkadot
+      tokeninpool = await token2Pool(api, "0");
+      vtokenIssuance = await vToken2Issuance(api, "0");
+      decimal =  10
+
+    }else{
+      tokeninpool = await tokenPool(api, token);
+      // let tokenIssuance = await bifrosttokenIssuance(api, token);
+        vtokenIssuance = await vTokenIssuance(api, token);
+        decimal = 12
+
+    }
+     
   
  
   
     return {
       total_backable: bignumber.from(tokeninpool.replaceAll(",", "")).toString(),
       total_issued: vtokenIssuance.toString(),
-      decimal: 12,
+      decimal: decimal,
       token: token,
       time: Date.now(),
     };
