@@ -37,7 +37,6 @@ const (
 	TELOS                                   = "Telos"
 	EVMOS                                   = "Evmos"
 	KUSAMA                                  = "Kusama"
-	KARURA                                  = "Karura"
 	ACALA                                   = "Acala"
 	POLKADOT                                = "Polkadot"
 	WANCHAIN                                = "Wanchain"
@@ -231,15 +230,17 @@ type ExchangeVolumesList struct {
 }
 
 type AssetVolume struct {
-	Asset  Asset   `json:"Asset"`
-	Volume float64 `json:"Volume"`
-	Index  uint8   `json:"Index"`
+	Asset     Asset   `json:"Asset"`
+	Volume    float64 `json:"Volume"`
+	VolumeUSD float64 `json:"VolumeUSD"`
+	Index     uint8   `json:"Index"`
 }
 
 type AssetLiquidity struct {
-	Asset  Asset   `json:"Asset"`
-	Volume float64 `json:"Liquidity"`
-	Index  uint8   `json:"Index"`
+	Asset     Asset   `json:"Asset"`
+	Volume    float64 `json:"Liquidity"`
+	VolumeUSD float64 `json:"LiquidityUSD"`
+	Index     uint8   `json:"Index"`
 }
 
 type TopAsset struct {
@@ -251,13 +252,9 @@ type TopAsset struct {
 }
 
 type PairVolume struct {
-	Pair   Pair    `json:"Pair"`
-	Volume float64 `json:"Volume"`
-}
-
-type PairVolumesList struct {
-	Volumes   []PairVolume `json:"Volumes"`
-	Timestamp time.Time    `json:"Timestamp"`
+	Pair        Pair    `json:"Pair"`
+	PoolAddress string  `json:"Pooladdress"`
+	Volume      float64 `json:"Volume"`
 }
 
 type EthereumBlockData struct {
@@ -368,6 +365,17 @@ type Pool struct {
 	Time         time.Time
 }
 
+// SufficientNativeBalance returns true if all pool assets have at least @threshold liquidity.
+func (p *Pool) SufficientNativeBalance(threshold float64) bool {
+	sufficientNativeBalance := true
+	for _, av := range p.Assetvolumes {
+		if av.Volume < threshold {
+			sufficientNativeBalance = false
+		}
+	}
+	return sufficientNativeBalance
+}
+
 // MarshalBinary is a custom marshaller for BlockChain type
 func (bc *BlockChain) MarshalBinary() ([]byte, error) {
 	return json.Marshal(bc)
@@ -430,6 +438,7 @@ type Trade struct {
 	Price             float64   `json:"Price"`
 	Volume            float64   `json:"Volume"` // Quantity of bought/sold units of Quote token. Negative if result of Market order Sell
 	Time              time.Time `json:"Time"`
+	PoolAddress       string    `json:"PoolAddress"`
 	ForeignTradeID    string    `json:"ForeignTradeID"`
 	EstimatedUSDPrice float64   `json:"EstimatedUSDPrice"` // will be filled by the TradesBlockService
 	Source            string    `json:"Source"`
@@ -667,17 +676,18 @@ type OracleConfig struct {
 }
 
 type OracleUpdate struct {
-	OracleAddress   string
-	TransactionHash string
-	TransactionCost string
-	AssetKey        string
-	AssetPrice      string
-	UpdateBlock     uint64
-	UpdateFrom      string
-	FromBalance     string
-	GasCost         string
-	GasUsed         string
-	ChainID         string
-	UpdateTime      time.Time
-	CreationBlock   uint64
+	OracleAddress     string
+	TransactionHash   string
+	TransactionCost   string
+	AssetKey          string
+	AssetPrice        string
+	UpdateBlock       uint64
+	UpdateFrom        string
+	FromBalance       string
+	GasCost           string
+	GasUsed           string
+	ChainID           string
+	UpdateTime        time.Time
+	CreationBlock     uint64
+	CreationBlockTime time.Time
 }

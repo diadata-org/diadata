@@ -145,6 +145,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapScraper(Exchanges[dia.UniswapExchange], scrape)
 	case dia.PanCakeSwap:
 		return NewUniswapScraper(Exchanges[dia.PanCakeSwap], scrape)
+	case dia.PanCakeSwapExchangeV3:
+		return NewUniswapV3Scraper(Exchanges[dia.PanCakeSwapExchangeV3], scrape)
 	case dia.SushiSwapExchange:
 		return NewUniswapScraper(Exchanges[dia.SushiSwapExchange], scrape)
 	case dia.SushiSwapExchangePolygon:
@@ -166,13 +168,13 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 	case dia.CurveFIExchangeArbitrum:
 		return NewCurveFIScraper(Exchanges[dia.CurveFIExchangeArbitrum], scrape)
 	case dia.BalancerV2Exchange:
-		return NewBalancerV2Scraper(Exchanges[dia.BalancerV2Exchange], scrape)
+		return NewBalancerV2Scraper(Exchanges[dia.BalancerV2Exchange], scrape, relDB)
 	case dia.BalancerV2ExchangeArbitrum:
-		return NewBalancerV2Scraper(Exchanges[dia.BalancerV2ExchangeArbitrum], scrape)
+		return NewBalancerV2Scraper(Exchanges[dia.BalancerV2ExchangeArbitrum], scrape, relDB)
 	case dia.BalancerV2ExchangePolygon:
-		return NewBalancerV2Scraper(Exchanges[dia.BalancerV2ExchangePolygon], scrape)
+		return NewBalancerV2Scraper(Exchanges[dia.BalancerV2ExchangePolygon], scrape, relDB)
 	case dia.BeetsExchange:
-		return NewBalancerV2Scraper(Exchanges[dia.BeetsExchange], scrape)
+		return NewBalancerV2Scraper(Exchanges[dia.BeetsExchange], scrape, relDB)
 	case dia.KuCoinExchange:
 		return NewKuCoinScraper(key, secret, Exchanges[dia.KuCoinExchange], scrape, relDB)
 	case dia.BitMartExchange:
@@ -191,10 +193,6 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapScraper(Exchanges[dia.DfynNetwork], scrape)
 	case dia.UbeswapExchange:
 		return NewUniswapScraper(Exchanges[dia.UbeswapExchange], scrape)
-	case dia.AcalaswapExchange:
-		return NewAcalaswapScraper(Exchanges[dia.AcalaswapExchange], scrape)
-	case dia.AcalaswapExchangeKarura:
-		return NewAcalaswapScraper(Exchanges[dia.AcalaswapExchangeKarura], scrape)
 	case dia.UniswapExchangeV3Polygon:
 		return NewUniswapV3Scraper(Exchanges[dia.UniswapExchangeV3Polygon], scrape)
 	case dia.UniswapExchangeV3Arbitrum:

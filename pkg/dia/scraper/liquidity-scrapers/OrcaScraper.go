@@ -9,6 +9,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
 	orcaWhirlpoolIdlBind "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/orca/whirlpool"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	bin "github.com/gagliardetto/binary"
 	tokenmetadata "github.com/gagliardetto/metaplex-go/clients/token-metadata"
@@ -26,11 +27,12 @@ type OrcaScraper struct {
 	blockchain   string
 	exchangeName string
 	RestClient   *rpc.Client
+	datastore    *models.DB
 	poolChannel  chan dia.Pool
 	doneChannel  chan bool
 }
 
-func NewOrcaScraper(exchange dia.Exchange) *OrcaScraper {
+func NewOrcaScraper(exchange dia.Exchange, datastore *models.DB) *OrcaScraper {
 
 	log.Infof("init rest and ws client for %s", exchange.BlockChain.Name)
 	restClient := rpc.New(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_REST", orcaSolanaHttpEndpoint))
@@ -39,6 +41,7 @@ func NewOrcaScraper(exchange dia.Exchange) *OrcaScraper {
 		blockchain:   exchange.BlockChain.Name,
 		exchangeName: exchange.Name,
 		RestClient:   restClient,
+		datastore:    datastore,
 		poolChannel:  make(chan dia.Pool),
 		doneChannel:  make(chan bool),
 	}
@@ -179,6 +182,12 @@ func (s *OrcaScraper) loadMarketWhirlpools() (err error) {
 					Asset:  tokenB,
 					Volume: *tokenBBalance.Value.UiAmount,
 				})
+
+				// Determine USD liquidity.
+				if pool.SufficientNativeBalance(GLOBAL_NATIVE_LIQUIDITY_THRESHOLD) {
+					s.datastore.GetPoolLiquiditiesUSD(&pool, priceCache)
+				}
+
 				pool.Exchange = dia.Exchange{Name: s.exchangeName}
 				pool.Blockchain = dia.BlockChain{Name: s.blockchain}
 				pool.Address = pubKey

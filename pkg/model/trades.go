@@ -32,6 +32,7 @@ func (datastore *DB) SaveTradeInfluxToTable(t *dia.Trade, table string) error {
 		"basetokenaddress":     t.BaseToken.Address,
 		"quotetokenblockchain": t.QuoteToken.Blockchain,
 		"basetokenblockchain":  t.BaseToken.Blockchain,
+		"pooladdress":          t.PoolAddress,
 	}
 	fields := map[string]interface{}{
 		"price":             t.Price,

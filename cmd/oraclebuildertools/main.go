@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
+	"os"
+
+	builderUtils "github.com/diadata-org/diadata/cmd/oraclebuildertools/utils"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
-	"github.com/diadata-org/diadata/pkg/utils/oraclebuilder"
 	"github.com/sirupsen/logrus"
+
 	"github.com/spf13/cobra"
-	"os"
 )
 
 var log = logrus.New()
@@ -37,7 +39,7 @@ func main() {
 				log.Errorln("error getting feeders", err)
 				return
 			}
-			ph := oraclebuilder.NewPodHelper(oraclebaseimage, oraclenamespace)
+			ph := builderUtils.NewPodHelper(oraclebaseimage, oraclenamespace)
 
 			for _, oracleconfig := range oracleconfigs {
 				err = ph.RestartOracleFeeder(cmd.Context(), oracleconfig.FeederID, oracleconfig)

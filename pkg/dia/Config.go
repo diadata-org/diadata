@@ -11,8 +11,6 @@ import (
 
 const (
 	ArthswapExchange           = "Arthswap"
-	AcalaswapExchange          = "AcalaswapExchange"
-	AcalaswapExchangeKarura    = "AcalaswapExchangeKarura"
 	DiffusionExchange          = "Diffusion"
 	OmniDexExchange            = "OmniDex"
 	NetswapExchange            = "Netswap"
@@ -72,6 +70,7 @@ const (
 	SushiSwapExchangePolygon   = "SushiSwap-polygon"
 	SushiSwapExchangeFantom    = "SushiSwap-fantom"
 	PanCakeSwap                = "PanCakeSwap"
+	PanCakeSwapExchangeV3      = "PanCakeSwapV3"
 	ApeswapExchange            = "Apeswap"
 	BiswapExchange             = "Biswap"
 	DforceExchange             = "Dforce"

@@ -185,13 +185,13 @@ func NewCurveFIScraper(exchange dia.Exchange, scrape bool) *CurveFIScraper {
 
 	case dia.CurveFIExchangeFantom:
 		scraper = makeCurvefiScraper(exchange, curveRestDialFantom, curveWsDialFantom)
-		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x722272D36ef0Da72FF51c5A65Db7b870E2e8D4ee")}
+		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x686d67265703d1f124c45e33d47d794c566889ba")}
 		scraper.registriesUnderlying = []curveRegistry{stableSwapFactory}
 		scraper.screenPools = false
 
 	case dia.CurveFIExchangeMoonbeam:
 		scraper = makeCurvefiScraper(exchange, curveRestDialMoonbeam, curveWsDialMoonbeam)
-		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x722272D36ef0Da72FF51c5A65Db7b870E2e8D4ee")}
+		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x4244eB811D6e0Ef302326675207A95113dB4E1F8")}
 		scraper.registriesUnderlying = []curveRegistry{stableSwapFactory}
 		scraper.screenPools = false
 
@@ -202,7 +202,7 @@ func NewCurveFIScraper(exchange dia.Exchange, scrape bool) *CurveFIScraper {
 		scraper.screenPools = false
 	case dia.CurveFIExchangeArbitrum:
 		scraper = makeCurvefiScraper(exchange, curveRestDialArbitrum, curveWsDialArbitrum)
-		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x722272D36ef0Da72FF51c5A65Db7b870E2e8D4ee")}
+		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0xb17b674D9c5CB2e441F8e196a2f048A81355d031")}
 		scraper.registriesUnderlying = []curveRegistry{stableSwapFactory}
 	}
 
@@ -376,6 +376,7 @@ func (scraper *CurveFIScraper) processSwap(pool string, swp interface{}) {
 		Volume:         volume,
 		Time:           time.Unix(timestamp, 0),
 		ForeignTradeID: foreignTradeID,
+		PoolAddress:    pool,
 		Source:         scraper.exchangeName,
 		VerifiedPair:   true,
 	}

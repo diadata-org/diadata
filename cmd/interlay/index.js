@@ -21,7 +21,7 @@ let app = express();
 
 app.get("/customer/interlay/state/:token", async function (req, res) {
   // kbtc, ibtc
-  const allowedTokens = ["IBTC", "KBTC"];
+  const allowedTokens = ["IBTC", "KBTC","DOT"];
 
   let token = req.params.token;
   token = token.toUpperCase();
@@ -36,7 +36,7 @@ app.get("/customer/interlay/state/:token", async function (req, res) {
 
 app.get("/customer/bifrost/state/:token", async function (req, res) {
   // kbtc, ibtc
-  const allowedTokens = ["KSM"];
+  const allowedTokens = ["KSM","DOT"];
 
   let token = req.params.token;
   token = token.toUpperCase();
@@ -45,7 +45,7 @@ app.get("/customer/bifrost/state/:token", async function (req, res) {
     let values = await getBiFrostValues(token);
     res.send(values);
   } else {
-    res.send({ err: "invalid token use, KSM" });
+    res.send({ err: "invalid token use, KSM or DOT" });
   }
 });
 
@@ -67,7 +67,7 @@ app.get("/xlsd", async function (req, res) {
 
   let response = [];
 
-  for (const token of allowedtokens) {
+  for (const token of allowedTokens) {
     let tokenvalues = JSON.parse(JSON.stringify(values));
     let baseassetprice;
     let cacheddata = JSON.parse(

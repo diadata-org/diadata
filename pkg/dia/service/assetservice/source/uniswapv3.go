@@ -42,6 +42,8 @@ func NewUniswapV3AssetSource(exchange dia.Exchange) *UniswapV3AssetSource {
 		uas = makeUniswapV3AssetSource(exchange, "", "", "200", uint64(22757913))
 	case dia.UniswapExchangeV3Arbitrum:
 		uas = makeUniswapV3AssetSource(exchange, "", "", "200", uint64(165))
+	case dia.PanCakeSwapExchangeV3:
+		uas = makeUniswapV3AssetSource(exchange, "", "", "200", uint64(26956207))
 	}
 
 	go func() {
@@ -115,7 +117,6 @@ func (uas *UniswapV3AssetSource) fetchAssets() {
 	if err != nil {
 		log.Error("filter pool created: ", err)
 	}
-
 	for poolCreated.Next() {
 		poolsCount++
 		log.Info("pools count: ", poolsCount)

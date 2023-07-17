@@ -1,4 +1,4 @@
-package oraclebuilder
+package utils
 
 import (
 	"context"

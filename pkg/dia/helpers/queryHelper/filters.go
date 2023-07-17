@@ -99,21 +99,21 @@ func FilterVWAP(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoin
 	metadata = dia.NewFilterPointMetadata()
 	for _, block := range tradeBlocks {
 		if len(block.Trades) > 0 {
-			maFilter := filters.NewFilterVWAP(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
-			firstBlock := block.Trades[0]
+			vwapFilter := filters.NewFilterVWAP(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
 
 			for _, trade := range block.Trades {
-				maFilter.Compute(trade)
+				vwapFilter.Compute(trade)
 			}
 
-			maFilter.FinalCompute(block.Trades[0].Time)
-			fp := maFilter.FilterPointForBlock()
+			vwapFilter.FinalCompute(block.Trades[0].Time)
+			fp := vwapFilter.FilterPointForBlock()
 			metadata.AddPoint(fp.Value)
-			fp.FirstTrade = firstBlock
+			fp.FirstTrade = block.Trades[0]
+
 			if len(block.Trades) > 0 {
 				fp.LastTrade = block.Trades[len(block.Trades)-1]
 			} else {
-				fp.LastTrade = block.Trades[0]
+				fp.LastTrade = fp.FirstTrade
 			}
 
 			fp.Time = time.Unix(block.TimeStamp/1e9, 0)
@@ -134,22 +134,22 @@ func FilterVWAPIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPo
 
 	for _, block := range tradeBlocks {
 		if len(block.Trades) > 0 {
-			maFilter := filters.NewFilterVWAPIR(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
-			firstBlock := block.Trades[0]
+
+			vwapirFilter := filters.NewFilterVWAPIR(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
 			for _, trade := range block.Trades {
-
-				maFilter.Compute(trade)
+				vwapirFilter.Compute(trade)
 			}
-
-			maFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
-			fp := maFilter.FilterPointForBlock()
+			vwapirFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
+			fp := vwapirFilter.FilterPointForBlock()
 
 			metadata.AddPoint(fp.Value)
-			fp.FirstTrade = firstBlock
+
+			fp.FirstTrade = block.Trades[0]
+
 			if len(block.Trades) > 0 {
 				fp.LastTrade = block.Trades[len(block.Trades)-1]
 			} else {
-				fp.LastTrade = block.Trades[0]
+				fp.LastTrade = fp.FirstTrade
 			}
 			if fp != nil && fp.Value > 0 {
 				fp.Time = time.Unix(block.TimeStamp/1e9, 0)
