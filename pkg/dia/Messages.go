@@ -676,17 +676,18 @@ type OracleConfig struct {
 }
 
 type OracleUpdate struct {
-	OracleAddress   string
-	TransactionHash string
-	TransactionCost string
-	AssetKey        string
-	AssetPrice      string
-	UpdateBlock     uint64
-	UpdateFrom      string
-	FromBalance     string
-	GasCost         string
-	GasUsed         string
-	ChainID         string
-	UpdateTime      time.Time
-	CreationBlock   uint64
+	OracleAddress     string
+	TransactionHash   string
+	TransactionCost   string
+	AssetKey          string
+	AssetPrice        string
+	UpdateBlock       uint64
+	UpdateFrom        string
+	FromBalance       string
+	GasCost           string
+	GasUsed           string
+	ChainID           string
+	UpdateTime        time.Time
+	CreationBlock     uint64
+	CreationBlockTime time.Time
 }
