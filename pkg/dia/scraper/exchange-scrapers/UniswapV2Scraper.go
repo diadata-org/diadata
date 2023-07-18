@@ -939,7 +939,7 @@ func (s *UniswapScraper) makeUniPoolMap(liquiThreshold float64) (map[string]Unis
 	if s.listenByAddress {
 		// Only load pool info for addresses from json file.
 		poolAddresses, errAddr := getAddressesFromConfig("uniswap/subscribe_pools/" + s.exchangeName)
-		if err != nil {
+		if errAddr != nil {
 			log.Error("fetch pool addresses from config file: ", errAddr)
 		}
 		for _, address := range poolAddresses {
