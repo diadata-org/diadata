@@ -53,7 +53,7 @@ type Datastore interface {
 	GetxcTradesByExchangesBatched(quoteassets []dia.Asset, exchanges []string, startTimes []time.Time, endTimes []time.Time) ([]dia.Trade, error)
 
 	GetTradesByExchangepairs(exchangepairMap map[string][]dia.Pair, exchangepoolMap map[string][]string, starttime time.Time, endtime time.Time) ([]dia.Trade, error)
-	GetTradesByFeedSelection(feedselection []dia.FeedSelection, starttime time.Time, endtime time.Time)
+	GetTradesByFeedSelection(feedselection []dia.FeedSelection, starttimes []time.Time, endtimes []time.Time)
 
 	GetActiveExchangesAndPairs(address string, blockchain string, numTradesThreshold int64, starttime time.Time, endtime time.Time) (map[string][]dia.Pair, map[string]int64, error)
 	GetOldTradesFromInflux(table string, exchange string, verified bool, timeInit, timeFinal time.Time) ([]dia.Trade, error)
@@ -166,7 +166,7 @@ const (
 	influxDbVwapFireflyTable          = "vwapFirefly"
 	influxDbSynthSupplyTable          = "synthsupply"
 
-	influxDBDefaultURL = "http://localhost:28088"
+	influxDBDefaultURL = "http://localhost:8086"
 )
 
 // queryInfluxDB convenience function to query the database.

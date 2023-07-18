@@ -335,10 +335,12 @@ func (rdb *RelDB) GetAllPoolsExchange(exchange string, liquiThreshold float64) (
 }
 
 // GetPoolsByAsset returns all pools with @asset as a pool asset and both assets have liquidity above @liquiThreshold.
-func (rdb *RelDB) GetPoolsByAsset(asset dia.Asset, liquiThreshold float64) (pools []dia.Pool, err error) {
+// If @liquidityThresholdUSD>0 AND @liquiThreshold=0, only pools where total liquidity is available
+// AND above @liquidityThresholdUSD are returned.
+func (rdb *RelDB) GetPoolsByAsset(asset dia.Asset, liquidityThreshold float64, liquidityThresholdUSD float64) ([]dia.Pool, error) {
 	var (
-		rows  pgx.Rows
 		query string
+		pools []dia.Pool
 	)
 
 	query = fmt.Sprintf(`
@@ -359,10 +361,10 @@ func (rdb *RelDB) GetPoolsByAsset(asset dia.Asset, liquiThreshold float64) (pool
 		WHERE exch_pools.no_liqui=0 
 		AND exch_pools.correct_asset=1
 		AND pa.time_stamp IS NOT NULL;
-	`, liquiThreshold, asset.Address, poolTable, poolassetTable, assetTable, asset.Blockchain, poolassetTable, assetTable)
-	rows, err = rdb.postgresClient.Query(context.Background(), query)
+	`, liquidityThreshold, asset.Address, poolTable, poolassetTable, assetTable, asset.Blockchain, poolassetTable, assetTable)
+	rows, err := rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
-		return
+		return pools, err
 	}
 	defer rows.Close()
 
@@ -424,7 +426,19 @@ func (rdb *RelDB) GetPoolsByAsset(asset dia.Asset, liquiThreshold float64) (pool
 		}
 
 	}
-	return
+
+	if liquidityThresholdUSD > 0 {
+		var filteredPools []dia.Pool
+		for _, pool := range pools {
+			totalLiquidity, lowerBound := pool.TotalUSDLiquidity()
+			if totalLiquidity > liquidityThresholdUSD && !lowerBound {
+				filteredPools = append(filteredPools, pool)
+			}
+		}
+		return filteredPools, nil
+	}
+
+	return pools, nil
 }
 
 // GetPoolLiquiditiesUSD attempts to fill the field @VolumeUSD by fetching the price

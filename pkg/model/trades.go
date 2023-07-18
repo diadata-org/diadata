@@ -596,94 +596,101 @@ func (datastore *DB) GetxcTradesByExchangesBatched(
 }
 
 // GetTradesByFeedSelection returns all trades with restrictions given by the struct @feedselection.
-func (datastore *DB) GetTradesByFeedSelection(feedselection []dia.FeedSelection, starttime time.Time, endtime time.Time) ([]dia.Trade, error) {
+func (datastore *DB) GetTradesByFeedSelection(feedselection []dia.FeedSelection, starttimes []time.Time, endtimes []time.Time) ([]dia.Trade, error) {
 	var (
 		query string
 		r     []dia.Trade
 	)
 
-	query = fmt.Sprintf(`
+	if len(starttimes) != len(endtimes) {
+		return []dia.Trade{}, errors.New("number of start times must equal number of end times.")
+	}
+
+	for i := range starttimes {
+		query = fmt.Sprintf(`
 		SELECT time,estimatedUSDPrice,exchange,foreignTradeID,pair,price,symbol,volume,verified,basetokenblockchain,basetokenaddress,quotetokenblockchain,quotetokenaddress  
 		FROM %s 
 		WHERE ( `,
-		influxDbTradesTable,
-	)
+			influxDbTradesTable,
+		)
 
-	// --------------------- Iterate over assets. ---------------------
-	for i, item := range feedselection {
-		if i > 0 {
-			query += " OR "
-		}
-		//  ---------------------Iterate over exchanges. ---------------------
-		var exchangeQuery string
-		for j, exchangepairs := range item.Exchangepairs {
-			if j == 0 {
-				exchangeQuery += " AND ("
-			} else {
-				exchangeQuery += " OR "
+		// --------------------- Iterate over assets. ---------------------
+		for i, item := range feedselection {
+			if i > 0 {
+				query += " OR "
 			}
+			//  ---------------------Iterate over exchanges. ---------------------
+			var exchangeQuery string
+			for j, exchangepairs := range item.Exchangepairs {
+				if j == 0 {
+					exchangeQuery += " AND ("
+				} else {
+					exchangeQuery += " OR  "
+				}
 
-			// --------------------- Iterate over pairs/pools. ---------------------
-			var pairsQuery string
-			if exchangepairs.Exchange.Centralized {
-				for k, pair := range exchangepairs.Pairs {
-					if k == 0 {
-						pairsQuery += " AND ("
-					} else {
-						pairsQuery += " OR "
-					}
-					pairsQuery += fmt.Sprintf(`
+				// --------------------- Iterate over pairs/pools. ---------------------
+				var pairsQuery string
+				if exchangepairs.Exchange.Centralized {
+					for k, pair := range exchangepairs.Pairs {
+						if k == 0 {
+							pairsQuery += " AND ("
+						} else {
+							pairsQuery += " OR "
+						}
+						pairsQuery += fmt.Sprintf(`
 							( quotetokenaddress='%s' AND quotetokenblockchain='%s' AND basetokenaddress='%s' and basetokenblockchain='%s')
 							`,
-						pair.QuoteToken.Address,
-						pair.QuoteToken.Blockchain,
-						pair.BaseToken.Address,
-						pair.BaseToken.Blockchain,
-					)
-				}
-			} else {
-				for k, pool := range exchangepairs.Pools {
-					if k == 0 {
-						pairsQuery += " AND ("
-					} else {
-						pairsQuery += " OR "
+							pair.QuoteToken.Address,
+							pair.QuoteToken.Blockchain,
+							pair.BaseToken.Address,
+							pair.BaseToken.Blockchain,
+						)
 					}
-					pairsQuery += fmt.Sprintf(" pooladdress='%s' ", pool.Address)
+				} else {
+					for k, pool := range exchangepairs.Pools {
+						if k == 0 {
+							pairsQuery += " AND ("
+						} else {
+							pairsQuery += " OR "
+						}
+						pairsQuery += fmt.Sprintf(" pooladdress='%s' ", pool.Address)
+					}
+				}
+				if len(exchangepairs.Pairs) > 0 || len(exchangepairs.Pools) > 0 {
+					pairsQuery += " ) "
+				}
+
+				if exchangepairs.Exchange.Name != "" {
+					exchangeQuery += fmt.Sprintf(`(exchange='%s' %s)`, exchangepairs.Exchange.Name, pairsQuery)
+				} else {
+					// Take into account trades on all exchanges.
+					exchangeQuery += fmt.Sprintf(`exchange=~/./ %s`, pairsQuery)
 				}
 			}
-			if len(exchangepairs.Pairs) > 0 || len(exchangepairs.Pools) > 0 {
-				pairsQuery += " ) "
+			if len(item.Exchangepairs) > 0 {
+				exchangeQuery += " ) "
 			}
 
-			exchangeQuery += fmt.Sprintf(`
-				exchange='%s' %s`,
-				exchangepairs.Exchange.Name,
-				pairsQuery,
-			)
-		}
-		if len(item.Exchangepairs) > 0 {
-			exchangeQuery += " ) "
-		}
-
-		// Main query for trades by asset.
-		query += fmt.Sprintf(`
+			// Main query for trades by asset.
+			query += fmt.Sprintf(`
 			( (quotetokenaddress='%s' AND quotetokenblockchain='%s') %s ) 
 			`,
-			item.Asset.Address,
-			item.Asset.Blockchain,
-			exchangeQuery,
-		)
-	}
+				item.Asset.Address,
+				item.Asset.Blockchain,
+				exchangeQuery,
+			)
+		}
 
-	// The bracket closes the main statement from the first WHERE clause.
-	query += fmt.Sprintf(`
+		// The bracket closes the main statement from the first WHERE clause.
+		query += fmt.Sprintf(`
 		 )	
 		AND estimatedUSDPrice > 0
 		AND time > %d
-		AND time < %d`,
-		starttime.UnixNano(),
-		endtime.UnixNano(),
-	)
+		AND time < %d ;`,
+			starttimes[i].UnixNano(),
+			endtimes[i].UnixNano(),
+		)
+	}
 
 	log.Info("query: ", query)
 	res, err := queryInfluxDB(datastore.influxClient, query)

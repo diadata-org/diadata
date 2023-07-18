@@ -376,6 +376,17 @@ func (p *Pool) SufficientNativeBalance(threshold float64) bool {
 	return sufficientNativeBalance
 }
 
+func (p *Pool) TotalUSDLiquidity() (totalLiquidity float64, lowerBound bool) {
+	for _, pa := range p.Assetvolumes {
+		if pa.VolumeUSD > 0 {
+			totalLiquidity += pa.VolumeUSD
+		} else {
+			lowerBound = true
+		}
+	}
+	return
+}
+
 // MarshalBinary is a custom marshaller for BlockChain type
 func (bc *BlockChain) MarshalBinary() ([]byte, error) {
 	return json.Marshal(bc)
@@ -428,14 +439,16 @@ func (ep *ExchangePair) UnmarshalBinary(data []byte) error {
 type Pairs []ExchangePair
 
 type FeedSelection struct {
-	Asset         Asset
-	Exchangepairs []ExchangepairSelection
+	Asset              Asset
+	Exchangepairs      []ExchangepairSelection
+	LiquidityThreshold float64
 }
 
 type ExchangepairSelection struct {
-	Exchange Exchange
-	Pairs    []Pair
-	Pools    []Pool
+	Exchange           Exchange
+	Pairs              []Pair
+	Pools              []Pool
+	LiquidityThreshold float64
 }
 
 // Trade remark: In a pair A-B, we call A the Quote token and B the Base token

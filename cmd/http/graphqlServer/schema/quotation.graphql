@@ -82,17 +82,14 @@ type Query {
 input FeedSelection {
   Address: String
   Blockchain: String
-  Exchangepairs: [Exchange!]
+  LiquidityThreshold: Float
+  Exchangepairs: [Exchangepair!]
 }
 
-input Exchange {
-  Name: String
-  Pairs: [Pair!]
-}
-
-input Pair {
-  Identifier: String
-  Threshold: Float
+input Exchangepair {
+  Exchange: String
+  Pairs: [String]
+  LiquidityThreshold: Float
 }
 
 scalar Time

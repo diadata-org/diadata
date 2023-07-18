@@ -66,7 +66,7 @@ type RelDatastore interface {
 	GetPoolByAddress(blockchain string, address string) (pool dia.Pool, err error)
 	GetAllPoolAddrsExchange(exchange string, liquiThreshold float64) ([]string, error)
 	GetAllPoolsExchange(exchange string, liquiThreshold float64) ([]dia.Pool, error)
-	GetPoolsByAsset(asset dia.Asset, liquiThreshold float64) ([]dia.Pool, error)
+	GetPoolsByAsset(asset dia.Asset, liquidityThreshold float64, liquidityThresholdUSD float64) ([]dia.Pool, error)
 
 	// ----------------- blockchain methods -------------------
 	SetBlockchain(blockchain dia.BlockChain) error

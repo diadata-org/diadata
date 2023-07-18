@@ -10,6 +10,7 @@ import (
 	queryhelper "github.com/diadata-org/diadata/pkg/dia/helpers/queryHelper"
 	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/utils"
+	"github.com/ethereum/go-ethereum/common"
 
 	models "github.com/diadata-org/diadata/pkg/model"
 	graphql "github.com/graph-gophers/graphql-go"
@@ -19,7 +20,9 @@ import (
 var (
 	log            = logrus.New()
 	EXCHANGES      = scrapers.Exchanges
+	BLOCKCHAINS    = scrapers.Blockchains
 	PAIR_SEPARATOR = "-"
+	LIST_SEPARATOR = ","
 )
 
 // Resolver is the root resolver
@@ -64,24 +67,16 @@ type Asset struct {
 }
 
 type FeedSelection struct {
-	Address       graphql.NullString
-	Blockchain    graphql.NullString
-	Exchangepairs *[]Exchange
+	Address            graphql.NullString
+	Blockchain         graphql.NullString
+	LiquidityThreshold graphql.NullFloat
+	Exchangepairs      *[]Exchangepair
 }
 
-type Exchange struct {
-	Name  graphql.NullString
-	Pairs *[]Pair
-}
-
-type Pair struct {
-	Identifier graphql.NullString
-	Threshold  graphql.NullFloat
-}
-
-type BaseAsset struct {
-	Address    string
-	BlockChain string
+type Exchangepair struct {
+	Exchange           graphql.NullString
+	Pairs              *[]graphql.NullString
+	LiquidityThreshold graphql.NullFloat
 }
 
 func (r *DiaResolver) GetChart(ctx context.Context, args struct {
@@ -97,7 +92,6 @@ func (r *DiaResolver) GetChart(ctx context.Context, args struct {
 	BaseAsset            *[]Asset
 }) (*[]*FilterPointResolver, error) {
 	fpr, _ := r.GetChartMeta(ctx, args)
-
 	return fpr.fpr, nil
 }
 
@@ -179,7 +173,6 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 
 		log.Infoln("All assets having same symbol", assets)
 		asset = assets[0]
-
 	}
 
 	log.Infoln("Asset Selected", asset)
@@ -511,7 +504,7 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 	if args.FeedSelection == nil {
 		return sr, errors.New("At least 1 asset must be selected.")
 	}
-	feedselection, err := r.CastLocalFeedSelection(*args.FeedSelection)
+	feedselection, err := r.castLocalFeedSelection(*args.FeedSelection)
 	if err != nil {
 		return sr, err
 	}
@@ -526,26 +519,26 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 		bins := utils.MakeBins(starttime, endtime, blockSizeSeconds, blockShiftSeconds)
 
 		// Fetch trades.
-		var trades []dia.Trade
+		var (
+			trades     []dia.Trade
+			starttimes []time.Time
+			endtimes   []time.Time
+		)
+
 		if blockShiftSeconds <= blockSizeSeconds {
 			// Fetch all trades in time range.
-			trades, err = r.DS.GetTradesByFeedSelection(feedselection, starttime, endtime)
-			if err != nil {
-				log.Error("GetTradesByExchangesAndBaseAssets: ", err)
-				return sr, err
-			}
+			starttimes = []time.Time{starttime}
+			endtimes = []time.Time{endtime}
 		} else {
 			// Fetch trades batched for disjoint bins.
-			var starttimes, endtimes []time.Time
 			for _, bin := range bins {
 				starttimes = append(starttimes, bin.Starttime)
 				endtimes = append(endtimes, bin.Endtime)
 			}
-			// trades, err = r.DS.GetTradesByExchangesBatched(asset, baseAssets, exchangesString, starttimes, endtimes, 0)
-			// if err != nil {
-			// 	log.Error("GetTradesByExchangesAndBaseAssets: ", err)
-			// 	return sr, err
-			// }
+		}
+		trades, err = r.DS.GetTradesByFeedSelection(feedselection, starttimes, endtimes)
+		if err != nil {
+			return sr, err
 		}
 		log.Println("Generating blocks, Total Trades", len(trades))
 		log.Info("generating bins. Total bins: ", len(bins))
@@ -820,42 +813,110 @@ func (r *DiaResolver) fillFirstBin(assets []dia.Asset, exchanges []string, trade
 	return trades
 }
 
-func (r *DiaResolver) CastLocalFeedSelection(fs []FeedSelection) (dfs []dia.FeedSelection, err error) {
+// castLocalFeedSelection casts the input selection into a @[]dia.FeedSelection type
+// so that we can call the corresponding influx trades getter.
+// It also checks for admissibility of the underlying input data.
+func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) (dfs []dia.FeedSelection, err error) {
 	for _, localFeedSelection := range fs {
 		var diaFeedSelection dia.FeedSelection
 
 		// Parse asset.
 		if localFeedSelection.Address.Value == nil || localFeedSelection.Blockchain.Value == nil {
-			err = errors.New("Asset's address and blockchain are mandatory.")
+			err = errors.New("Missing asset's address and blockchain.")
 			return
 		}
-		diaFeedSelection.Asset = dia.Asset{Address: *localFeedSelection.Address.Value, Blockchain: *localFeedSelection.Blockchain.Value}
+		diaFeedSelection.Asset = dia.Asset{
+			Address:    normalizeAddress(*localFeedSelection.Address.Value, *localFeedSelection.Blockchain.Value),
+			Blockchain: *localFeedSelection.Blockchain.Value,
+		}
 
-		// Parse exchanges.
-		if localFeedSelection.Exchangepairs == nil {
+		// Parse liquidity threshold.
+		if localFeedSelection.LiquidityThreshold.Value != nil {
+			diaFeedSelection.LiquidityThreshold = *localFeedSelection.LiquidityThreshold.Value
+		}
+
+		// Check for exchange input. Continue if neither of exchange and liquidty threshold are set.
+		if localFeedSelection.Exchangepairs == nil && diaFeedSelection.LiquidityThreshold == 0 {
 			dfs = append(dfs, diaFeedSelection)
 			continue
 		}
+
+		// Fetch admissible pools in case liquidity threshold is set.
+		if diaFeedSelection.LiquidityThreshold > 0 {
+			pools, errPools := r.RelDB.GetPoolsByAsset(diaFeedSelection.Asset, 0, diaFeedSelection.LiquidityThreshold)
+			if errPools != nil {
+				return dfs, err
+			}
+			for _, pool := range pools {
+
+				// In order to append pool to corresponding entry of diaFeedSelection first check
+				// if the exchange was already added.
+				var poolAdded bool
+				for i := range diaFeedSelection.Exchangepairs {
+					if diaFeedSelection.Exchangepairs[i].Exchange == pool.Exchange {
+						diaFeedSelection.Exchangepairs[i].Pools = append(diaFeedSelection.Exchangepairs[i].Pools, pool)
+						poolAdded = true
+						break
+					}
+				}
+				if !poolAdded {
+					var eps dia.ExchangepairSelection
+					eps.Exchange = pool.Exchange
+					eps.Pools = append(eps.Pools, pool)
+					diaFeedSelection.Exchangepairs = append(diaFeedSelection.Exchangepairs, eps)
+				}
+
+			}
+			dfs = append(dfs, diaFeedSelection)
+			continue
+		}
+
+		// Parse exchanges.
 		for _, ep := range *localFeedSelection.Exchangepairs {
 			var diaExchangepairselection dia.ExchangepairSelection
-			diaExchangepairselection.Exchange = dia.Exchange{Name: *ep.Name.Value}
+			if ep.Exchange.Value == nil {
+				err = errors.New("Missing exchange name.")
+				return
+			}
+			exchange := EXCHANGES[*ep.Exchange.Value]
+			diaExchangepairselection.Exchange = exchange
 
-			// Parse pairs/pools.
+			// Select all pairs on given exchange if not specified.
 			if ep.Pairs == nil {
 				diaFeedSelection.Exchangepairs = append(diaFeedSelection.Exchangepairs, diaExchangepairselection)
 				continue
 			}
-			if EXCHANGES[diaExchangepairselection.Exchange.Name].Centralized {
+
+			// Check whether pairs or pools are given.
+			var pairs bool
+			var pairsCount int
+			for _, p := range *ep.Pairs {
+				if p.Value == nil {
+					return dfs, errors.New("Missing pair identifier.")
+				}
+				if len(strings.Split(*p.Value, PAIR_SEPARATOR)) == 2 {
+					pairs = true
+					pairsCount++
+				}
+			}
+			if !(pairsCount == len(*ep.Pairs) || pairsCount == 0) {
+				return dfs, errors.New("Pair/pool notation not consistent.")
+			}
+
+			if exchange.Name != "" && exchange.Centralized {
+				if !pairs {
+					return dfs, errors.New("Wrong notation for pairs.")
+				}
 				for _, p := range *ep.Pairs {
-					if len(strings.Split(*p.Identifier.Value, PAIR_SEPARATOR)) < 2 {
+					if len(strings.Split(*p.Value, PAIR_SEPARATOR)) < 2 {
 						return dfs, errors.New("Pair not in requested format TokenA-TokenB")
 					}
 
-					quotetoken, err := r.RelDB.GetExchangeSymbol(diaExchangepairselection.Exchange.Name, strings.Split(*p.Identifier.Value, PAIR_SEPARATOR)[0])
+					quotetoken, err := r.RelDB.GetExchangeSymbol(exchange.Name, strings.Split(*p.Value, PAIR_SEPARATOR)[0])
 					if err != nil {
 						return dfs, err
 					}
-					basetoken, err := r.RelDB.GetExchangeSymbol(diaExchangepairselection.Exchange.Name, strings.Split(*p.Identifier.Value, PAIR_SEPARATOR)[1])
+					basetoken, err := r.RelDB.GetExchangeSymbol(exchange.Name, strings.Split(*p.Value, PAIR_SEPARATOR)[1])
 					if err != nil {
 						return dfs, err
 					}
@@ -865,9 +926,36 @@ func (r *DiaResolver) CastLocalFeedSelection(fs []FeedSelection) (dfs []dia.Feed
 					}
 					diaExchangepairselection.Pairs = append(diaExchangepairselection.Pairs, pair)
 				}
+			} else if exchange.Name == "" {
+				diaExchangepairselection.Exchange.Centralized = true
+				for _, p := range *ep.Pairs {
+
+					// Check admissibility of input.
+					pairString := strings.Split(*p.Value, LIST_SEPARATOR)
+					if len(pairString) < 2 {
+						return dfs, errors.New("Exactly 2 assets must be given for each pair.")
+					}
+					var pair dia.Pair
+
+					if len(strings.Split(pairString[0], PAIR_SEPARATOR)) < 2 {
+						return dfs, errors.New("Asset not in requested format Blockchain-Address")
+					}
+					blockchainQuotetoken := strings.Title(strings.ToLower(strings.Split(pairString[0], PAIR_SEPARATOR)[0]))
+					pair.QuoteToken.Address = normalizeAddress(strings.Split(pairString[0], PAIR_SEPARATOR)[1], blockchainQuotetoken)
+					pair.QuoteToken.Blockchain = blockchainQuotetoken
+
+					blockchainBasetoken := strings.Title(strings.ToLower(strings.Split(pairString[1], PAIR_SEPARATOR)[0]))
+					pair.BaseToken.Address = normalizeAddress(strings.Split(pairString[1], PAIR_SEPARATOR)[1], blockchainBasetoken)
+					pair.BaseToken.Blockchain = blockchainBasetoken
+
+					diaExchangepairselection.Pairs = append(diaExchangepairselection.Pairs, pair)
+				}
 			} else {
 				for _, p := range *ep.Pairs {
-					pool, err := r.RelDB.GetPoolByAddress(diaFeedSelection.Asset.Blockchain, *p.Identifier.Value)
+					pool, err := r.RelDB.GetPoolByAddress(
+						diaFeedSelection.Asset.Blockchain,
+						normalizeAddress(*p.Value, diaFeedSelection.Asset.Blockchain),
+					)
 					if err != nil {
 						return dfs, err
 					}
@@ -879,5 +967,27 @@ func (r *DiaResolver) CastLocalFeedSelection(fs []FeedSelection) (dfs []dia.Feed
 
 		dfs = append(dfs, diaFeedSelection)
 	}
+
 	return
+}
+
+// Returns the EIP55 compliant address in case @blockchain has an Ethereum ChainID.
+func makeAddressEIP55Compliant(address string, blockchain string) string {
+	if strings.Contains(BLOCKCHAINS[blockchain].ChainID, "Ethereum") {
+		return common.HexToAddress(address).Hex()
+	}
+	return address
+}
+
+// Normalize address depending on the blockchain.
+func normalizeAddress(address string, blockchain string) string {
+	if strings.Contains(BLOCKCHAINS[blockchain].ChainID, "Ethereum") {
+		return makeAddressEIP55Compliant(address, blockchain)
+	}
+	if BLOCKCHAINS[blockchain].Name == dia.OSMOSIS {
+		if strings.Contains(address, "ibc-") && len(strings.Split(address, "-")[1]) > 1 {
+			return "ibc/" + strings.Split(address, "-")[1]
+		}
+	}
+	return address
 }

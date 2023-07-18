@@ -3,7 +3,7 @@ module graphqlServer
 go 1.17
 
 require (
-	github.com/diadata-org/diadata v1.4.295
+	github.com/diadata-org/diadata v1.4.303-rc-1
 	github.com/graph-gophers/graphql-go v1.1.0
 	github.com/sirupsen/logrus v1.8.1
 )
@@ -188,7 +188,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/diadata-org/diadata => /home/philipp/go/src/github.com/diadata-org/diadata
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
