@@ -8,6 +8,12 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "ARB-USDT",
+      "Ignore": false,
+      "Symbol": "ARB"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "ATOM-USDT",
       "Ignore": false,
       "Symbol": "ATOM"

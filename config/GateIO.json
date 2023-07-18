@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "ARB_USDT",
+      "Ignore": false,
+      "Symbol": "ARB"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "BEPRO_USDT",
       "Ignore": false,
       "Symbol": "BEPRO"

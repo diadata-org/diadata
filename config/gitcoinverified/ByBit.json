@@ -1,6 +1,12 @@
 {
     "Tokens": [
         {
+            "Symbol": "ARB",
+            "Exchange": "ByBit",
+            "Blockchain": "Arbitrum",
+            "Address": "0x912CE59144191C1204E64559FE8253a0e49E6548"
+        },
+        {
             "Symbol": "MCRT",
             "Exchange": "ByBit",
             "Blockchain": "BinanceSmartChain",

@@ -13,6 +13,12 @@
             "Address": "0x31429d1856aD1377A8A0079410B297e1a9e214c2"
         },
         {
+            "Symbol": "ARB",
+            "Exchange": "GateIO",
+            "Blockchain": "Arbitrum",
+            "Address": "0x912CE59144191C1204E64559FE8253a0e49E6548"
+        },
+        {
             "Symbol": "AVAX",
             "Exchange": "GateIO",
             "Blockchain": "Avalanche",

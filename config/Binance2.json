@@ -26,6 +26,12 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "ARBUSDT",
+            "Ignore": false,
+            "Symbol": "ARB"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "ATOMUSDT",
             "Ignore": false,
             "Symbol": "ATOM"

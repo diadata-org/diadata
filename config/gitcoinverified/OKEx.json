@@ -25,6 +25,12 @@
             "Address": "0xa117000000f279D81A1D3cc75430fAA017FA5A2e"
         },
         {
+            "Symbol": "ARB",
+            "Exchange": "OKEx",
+            "Blockchain": "Arbitrum",
+            "Address": "0x912CE59144191C1204E64559FE8253a0e49E6548"
+        },
+        {
             "Symbol": "ARK",
             "Exchange": "OKEx",
             "Blockchain": "Ark",
