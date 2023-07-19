@@ -852,7 +852,7 @@ func (env *Env) GetPoolsByAsset(c *gin.Context) {
 	for _, pool := range pools {
 		var pi poolInfo
 
-		totalLiquidity, lowerBound := pool.TotalUSDLiquidity()
+		totalLiquidity, lowerBound := pool.GetPoolLiquidityUSD()
 
 		// In case we can determine USD liquidity and it's below the threshold, continue.
 		if !lowerBound && totalLiquidity < liquidityThresholdUSD {

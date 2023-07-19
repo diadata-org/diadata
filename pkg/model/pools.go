@@ -430,7 +430,7 @@ func (rdb *RelDB) GetPoolsByAsset(asset dia.Asset, liquidityThreshold float64, l
 	if liquidityThresholdUSD > 0 {
 		var filteredPools []dia.Pool
 		for _, pool := range pools {
-			totalLiquidity, lowerBound := pool.TotalUSDLiquidity()
+			totalLiquidity, lowerBound := pool.GetPoolLiquidityUSD()
 			if totalLiquidity > liquidityThresholdUSD && !lowerBound {
 				filteredPools = append(filteredPools, pool)
 			}

@@ -130,7 +130,14 @@ func NewBalancerV2Scraper(exchange dia.Exchange, scrape bool, relDB *models.RelD
 		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThreshold)
 	}
 
-	scraper.fetchAdmissiblePools(liquidityThreshold)
+	// Only include pools with (minimum) liquidity USD value bigger than given env var.
+	liquidityThresholdUSD, err := strconv.ParseFloat(utils.Getenv("LIQUIDITY_THRESHOLD_USD", "0"), 64)
+	if err != nil {
+		liquidityThresholdUSD = float64(0)
+		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThresholdUSD)
+	}
+
+	scraper.fetchAdmissiblePools(liquidityThreshold, liquidityThresholdUSD)
 
 	scraper.ws = ws
 	scraper.rest = rest
@@ -333,15 +340,23 @@ func (s *BalancerV2Scraper) ScrapePair(pair dia.ExchangePair) (PairScraper, erro
 
 // fetchAdmissiblePools fetches all pools from postgres with native liquidity > liquidityThreshold and
 // (if available) liquidity in USD > liquidityThresholdUSD.
-func (s *BalancerV2Scraper) fetchAdmissiblePools(liquidityThreshold float64) {
+func (s *BalancerV2Scraper) fetchAdmissiblePools(liquidityThreshold float64, liquidityThresholdUSD float64) {
 	poolsPreselection, err := s.relDB.GetAllPoolsExchange(s.exchangeName, liquidityThreshold)
 	if err != nil {
 		log.Error("fetch all admissible pools: ", err)
 	}
+	log.Infof("Found %v pools after preselection.", len(poolsPreselection))
+
 	for _, pool := range poolsPreselection {
-		s.admissiblePools[common.HexToAddress(pool.Address)] = struct{}{}
+		liquidity, lowerBound := pool.GetPoolLiquidityUSD()
+		// Discard pool if complete USD liquidity is below threshold.
+		if !lowerBound && liquidity < liquidityThresholdUSD {
+			continue
+		} else {
+			s.admissiblePools[common.HexToAddress(pool.Address)] = struct{}{}
+		}
 	}
-	log.Infof("Found %v pools after perselection.", len(poolsPreselection))
+	log.Infof("Found %v pools after USD liquidity filtering.", len(s.admissiblePools))
 }
 
 func (s *BalancerV2Scraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {

@@ -376,13 +376,14 @@ func (p *Pool) SufficientNativeBalance(threshold float64) bool {
 	return sufficientNativeBalance
 }
 
-func (p *Pool) TotalUSDLiquidity() (totalLiquidity float64, lowerBound bool) {
-	for _, pa := range p.Assetvolumes {
-		if pa.VolumeUSD > 0 {
-			totalLiquidity += pa.VolumeUSD
-		} else {
+// GetPoolLiquidityUSD returns the total USD liquidity if available.
+// @lowerBound is true in case USD liquidity is not available for all pool assets.
+func (p *Pool) GetPoolLiquidityUSD() (totalLiquidity float64, lowerBound bool) {
+	for _, av := range p.Assetvolumes {
+		if av.VolumeUSD == 0 {
 			lowerBound = true
 		}
+		totalLiquidity += av.VolumeUSD
 	}
 	return
 }
