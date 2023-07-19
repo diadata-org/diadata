@@ -64,7 +64,10 @@ func (rdb *RelDB) GetAssetMap(asset_id string) (ID string, err error) {
 }
 
 func (rdb *RelDB) GetAssetByGroupID(group_id string) (assets []dia.Asset, err error) {
-	var rows pgx.Rows
+	var (
+		rows     pgx.Rows
+		decimals sql.NullInt64
+	)
 
 	query := fmt.Sprintf("SELECT symbol,name,address,blockchain,decimals FROM %s WHERE asset_id in (select asset_id from %s where group_id=$1)", assetTable, assetIdent)
 
@@ -74,18 +77,15 @@ func (rdb *RelDB) GetAssetByGroupID(group_id string) (assets []dia.Asset, err er
 	}
 	defer rows.Close()
 
-	var decimals string
 	for rows.Next() {
 		var asset dia.Asset
 		err := rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &asset.Blockchain, &decimals)
 		if err != nil {
 			log.Error(err)
 		}
-		decimalsInt, err := strconv.Atoi(decimals)
-		if err != nil {
-			continue
+		if decimals.Valid {
+			asset.Decimals = uint8(decimals.Int64)
 		}
-		asset.Decimals = uint8(decimalsInt)
 		// asset.Blockchain = blockchain
 		assets = append(assets, asset)
 	}
@@ -120,7 +120,7 @@ func (rdb *RelDB) GetAsset(address, blockchain string) (asset dia.Asset, err err
 		asset = cachedAsset
 		return
 	}
-	var decimals string
+	var decimals sql.NullInt64
 	query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE address=$1 AND blockchain=$2", assetTable)
 	err = rdb.postgresClient.QueryRow(context.Background(), query, address, blockchain).Scan(
 		&asset.Symbol,
@@ -132,27 +132,24 @@ func (rdb *RelDB) GetAsset(address, blockchain string) (asset dia.Asset, err err
 	if err != nil {
 		return
 	}
-	decimalsInt, err := strconv.Atoi(decimals)
-	if err != nil {
-		return
+	if decimals.Valid {
+		asset.Decimals = uint8(decimals.Int64)
 	}
-	asset.Decimals = uint8(decimalsInt)
+
 	return
 }
 
 // GetAssetByID returns an asset by its uuid
 func (rdb *RelDB) GetAssetByID(assetID string) (asset dia.Asset, err error) {
-	var decimals string
+	var decimals sql.NullInt64
 	query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE asset_id=$1", assetTable)
 	err = rdb.postgresClient.QueryRow(context.Background(), query, assetID).Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
 	if err != nil {
 		return
 	}
-	decimalsInt, err := strconv.Atoi(decimals)
-	if err != nil {
-		return
+	if decimals.Valid {
+		asset.Decimals = uint8(decimals.Int64)
 	}
-	asset.Decimals = uint8(decimalsInt)
 	return
 }
 
@@ -166,18 +163,16 @@ func (rdb *RelDB) GetAllAssets(blockchain string) (assets []dia.Asset, err error
 	}
 	defer rows.Close()
 
-	var decimals string
+	var decimals sql.NullInt64
 	for rows.Next() {
 		var asset dia.Asset
 		err := rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals)
 		if err != nil {
 			log.Error(err)
 		}
-		decimalsInt, err := strconv.Atoi(decimals)
-		if err != nil {
-			continue
+		if decimals.Valid {
+			asset.Decimals = uint8(decimals.Int64)
 		}
-		asset.Decimals = uint8(decimalsInt)
 		asset.Blockchain = blockchain
 		assets = append(assets, asset)
 	}
@@ -188,9 +183,11 @@ func (rdb *RelDB) GetAllAssets(blockchain string) (assets []dia.Asset, err error
 // If @name is an empty string, it returns all assets with @symbol.
 // If @symbol is an empty string, it returns all assets with @name.
 func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset, err error) {
-	var decimals string
-	var rows pgx.Rows
-	var query string
+	var (
+		decimals sql.NullInt64
+		rows     pgx.Rows
+		query    string
+	)
 	if name == "" {
 		query = fmt.Sprintf(`
 		SELECT symbol,name,address,decimals,blockchain 
@@ -243,17 +240,14 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 	log.Infoln("GetAssetsBySymbolName query", query)
 	defer rows.Close()
 	for rows.Next() {
-		var decimalsInt int
 		var asset dia.Asset
 		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
 		if err != nil {
 			return
 		}
-		decimalsInt, err = strconv.Atoi(decimals)
-		if err != nil {
-			return
+		if decimals.Valid {
+			asset.Decimals = uint8(decimals.Int64)
 		}
-		asset.Decimals = uint8(decimalsInt)
 		assets = append(assets, asset)
 	}
 	return
@@ -261,8 +255,10 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 
 // GetAssetsByAddress returns a (possibly multiple) dia.Asset by its address from postgres.
 func (rdb *RelDB) GetAssetsByAddress(address string) (assets []dia.Asset, err error) {
-	var decimals string
-	var rows pgx.Rows
+	var (
+		decimals sql.NullInt64
+		rows     pgx.Rows
+	)
 	query := fmt.Sprintf(`
 	SELECT symbol,name,address,decimals,blockchain 
 	FROM %s a 
@@ -282,17 +278,14 @@ func (rdb *RelDB) GetAssetsByAddress(address string) (assets []dia.Asset, err er
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var decimalsInt int
 		var asset dia.Asset
 		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
 		if err != nil {
 			return
 		}
-		decimalsInt, err = strconv.Atoi(decimals)
-		if err != nil {
-			return
+		if decimals.Valid {
+			asset.Decimals = uint8(decimals.Int64)
 		}
-		asset.Decimals = uint8(decimalsInt)
 		assets = append(assets, asset)
 	}
 	return
@@ -301,17 +294,15 @@ func (rdb *RelDB) GetAssetsByAddress(address string) (assets []dia.Asset, err er
 // GetFiatAssetBySymbol returns a fiat asset by its symbol. This is possible as
 // fiat currencies are uniquely defined by their symbol.
 func (rdb *RelDB) GetFiatAssetBySymbol(symbol string) (asset dia.Asset, err error) {
-	var decimals string
+	var decimals sql.NullInt64
 	query := fmt.Sprintf("SELECT name,address,decimals FROM %s WHERE symbol=$1 AND blockchain='Fiat'", assetTable)
 	err = rdb.postgresClient.QueryRow(context.Background(), query, symbol).Scan(&asset.Name, &asset.Address, &decimals)
 	if err != nil {
 		return
 	}
-	decimalsInt, err := strconv.Atoi(decimals)
-	if err != nil {
-		return
+	if decimals.Valid {
+		asset.Decimals = uint8(decimals.Int64)
 	}
-	asset.Decimals = uint8(decimalsInt)
 	asset.Symbol = symbol
 	asset.Blockchain = "Fiat"
 	// TO DO: Get Blockchain by name from postgres and add to asset
@@ -355,19 +346,16 @@ func (rdb *RelDB) IdentifyAsset(asset dia.Asset) (assets []dia.Asset, err error)
 	}
 	defer rows.Close()
 
-	var decimals string
+	var decimals sql.NullInt64
 	for rows.Next() {
 		asset := dia.Asset{}
 		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
 		if err != nil {
 			return
 		}
-		intDecimals, err := strconv.Atoi(decimals)
-		if err != nil {
-			log.Error("error parsing decimals string")
-			continue
+		if decimals.Valid {
+			asset.Decimals = uint8(decimals.Int64)
 		}
-		asset.Decimals = uint8(intDecimals)
 		assets = append(assets, asset)
 	}
 
@@ -393,6 +381,35 @@ func (rdb *RelDB) SetExchangeSymbol(exchange string, symbol string) error {
 	return nil
 }
 
+func (rdb *RelDB) GetExchangeSymbol(exchange string, symbol string) (asset dia.Asset, err error) {
+	var decimals sql.NullInt64
+	query := fmt.Sprintf(`
+		SELECT a.symbol,a.name,a.address,a.blockchain,a.decimals
+		FROM %s es
+		INNER JOIN %s a
+		ON es.asset_id=a.asset_id
+		WHERE es.exchange=$1
+		AND es.symbol ILIKE $2
+		`,
+		exchangesymbolTable,
+		assetTable,
+	)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, exchange, symbol).Scan(
+		&asset.Symbol,
+		&asset.Name,
+		&asset.Address,
+		&asset.Blockchain,
+		&decimals,
+	)
+	if err != nil {
+		return
+	}
+	if decimals.Valid {
+		asset.Decimals = uint8(decimals.Int64)
+	}
+	return
+}
+
 // GetAssets returns all assets which share the symbol ticker @symbol.
 func (rdb *RelDB) GetAssets(symbol string) (assets []dia.Asset, err error) {
 	query := fmt.Sprintf("SELECT symbol,name,address,decimals,blockchain FROM %s WHERE symbol=$1 ", assetTable)
@@ -404,18 +421,15 @@ func (rdb *RelDB) GetAssets(symbol string) (assets []dia.Asset, err error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var decimals string
-		var decimalsInt int
+		var decimals sql.NullInt64
 		asset := dia.Asset{}
 		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
 		if err != nil {
 			return
 		}
-		decimalsInt, err = strconv.Atoi(decimals)
-		if err != nil {
-			return
+		if decimals.Valid {
+			asset.Decimals = uint8(decimals.Int64)
 		}
-		asset.Decimals = uint8(decimalsInt)
 		assets = append(assets, asset)
 	}
 	return
@@ -853,18 +867,15 @@ func (rdb *RelDB) GetTopAssetByVolume(symbol string) (assets []dia.Asset, err er
 	defer rows.Close()
 
 	for rows.Next() {
-		var decimals string
-		var decimalsInt int
+		var decimals sql.NullInt64
 		asset := dia.Asset{}
 		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
 		if err != nil {
 			return
 		}
-		decimalsInt, err = strconv.Atoi(decimals)
-		if err != nil {
-			return
+		if decimals.Valid {
+			asset.Decimals = uint8(decimals.Int64)
 		}
-		asset.Decimals = uint8(decimalsInt)
 		assets = append(assets, asset)
 	}
 	return
@@ -886,20 +897,17 @@ func (rdb *RelDB) GetByLimit(limit, skip uint32) (assets []dia.Asset, assetIds [
 	for rows.Next() {
 
 		var (
-			decimals    string
-			decimalsInt int
-			assetID     string
-			asset       dia.Asset
+			decimals sql.NullInt64
+			assetID  string
+			asset    dia.Asset
 		)
 		err = rows.Scan(&assetID, &asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain)
 		if err != nil {
 			return
 		}
-		decimalsInt, err = strconv.Atoi(decimals)
-		if err != nil {
-			return
+		if decimals.Valid {
+			asset.Decimals = uint8(decimals.Int64)
 		}
-		asset.Decimals = uint8(decimalsInt)
 
 		assets = append(assets, asset)
 		assetIds = append(assetIds, assetID)
@@ -1005,20 +1013,17 @@ func (rdb *RelDB) GetSortedAssetSymbols(numAssets int64, skip int64, search stri
 
 	for rows.Next() {
 		var (
-			decimals    string
-			decimalsInt int
-			volume      float64
+			decimals sql.NullInt64
+			volume   float64
 		)
 		asset := dia.Asset{}
 		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain, &volume)
 		if err != nil {
 			return
 		}
-		decimalsInt, err = strconv.Atoi(decimals)
-		if err != nil {
-			return
+		if decimals.Valid {
+			asset.Decimals = uint8(decimals.Int64)
 		}
-		asset.Decimals = uint8(decimalsInt)
 		assetvolume := dia.AssetVolume{Asset: asset, Volume: volume}
 		volumeSortedAssets = append(volumeSortedAssets, assetvolume)
 	}
@@ -1099,20 +1104,17 @@ func (rdb *RelDB) GetAssetsWithVOL(starttime time.Time, numAssets int64, skip in
 
 	for rows.Next() {
 		var (
-			decimals    string
-			decimalsInt int
-			volume      float64
+			decimals sql.NullInt64
+			volume   float64
 		)
 		asset := dia.Asset{}
 		err = rows.Scan(&asset.Symbol, &asset.Name, &asset.Address, &decimals, &asset.Blockchain, &volume)
 		if err != nil {
 			return
 		}
-		decimalsInt, err = strconv.Atoi(decimals)
-		if err != nil {
-			return
+		if decimals.Valid {
+			asset.Decimals = uint8(decimals.Int64)
 		}
-		asset.Decimals = uint8(decimalsInt)
 		assetvolume := dia.AssetVolume{Asset: asset, Volume: volume}
 		volumeSortedAssets = append(volumeSortedAssets, assetvolume)
 	}

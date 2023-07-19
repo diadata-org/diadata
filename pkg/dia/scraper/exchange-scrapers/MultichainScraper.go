@@ -274,7 +274,7 @@ func (s *BridgeSwapScraper) checkTransactionOnChain(events chan types.Log) {
 				Symbol:     quoteTokenSymbol,
 				Name:       quoteTokenName,
 				Decimals:   quoteTokenDecimal,
-				Blockchain: blockchains[quoteBlockchain].Name,
+				Blockchain: Blockchains[quoteBlockchain].Name,
 			}
 
 			baseTokenName, err := GetName(tokenbridged, fromChainIdValue.String())
@@ -296,7 +296,7 @@ func (s *BridgeSwapScraper) checkTransactionOnChain(events chan types.Log) {
 				Symbol:     baseTokenName,
 				Name:       baseTokenSymbol,
 				Decimals:   baseTokenDecimal,
-				Blockchain: blockchains[baseBlockchain].Name,
+				Blockchain: Blockchains[baseBlockchain].Name,
 			}
 
 			inAmountt := inAmount.Quo(inAmount, inAmount.Exp(big.NewInt(10), big.NewInt(int64(baseTokenDecimal)), nil))

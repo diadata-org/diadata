@@ -831,7 +831,7 @@ func (env *Env) GetPoolsByAsset(c *gin.Context) {
 	}
 
 	// Set liquidity threshold measured in native currency to 1 in order to filter out noise.
-	pools, err := env.RelDB.GetPoolsByAsset(asset, liquidityThreshold)
+	pools, err := env.RelDB.GetPoolsByAsset(asset, liquidityThreshold, 0)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find pool"))
 		return
@@ -850,24 +850,12 @@ func (env *Env) GetPoolsByAsset(c *gin.Context) {
 
 	// Get total liquidity for each filtered pool.
 	for _, pool := range pools {
-		var (
-			totalLiquidity float64
-			noPrice        bool
-			pi             poolInfo
-		)
+		var pi poolInfo
 
-		// Look from asset prices in Redis in case @usdLiquidity is true.
-		for _, assetvol := range pool.Assetvolumes {
-			if assetvol.VolumeUSD == 0 {
-				noPrice = true
-				totalLiquidity = 0
-				break
-			}
-			totalLiquidity += assetvol.VolumeUSD
-		}
+		totalLiquidity, lowerBound := pool.TotalUSDLiquidity()
 
 		// In case we can determine USD liquidity and it's below the threshold, continue.
-		if !noPrice && totalLiquidity < liquidityThresholdUSD {
+		if !lowerBound && totalLiquidity < liquidityThresholdUSD {
 			continue
 		}
 
@@ -880,7 +868,7 @@ func (env *Env) GetPoolsByAsset(c *gin.Context) {
 			var al dia.AssetLiquidity = dia.AssetLiquidity(pool.Assetvolumes[i])
 			pi.Liquidity = append(pi.Liquidity, al)
 		}
-		if noPrice {
+		if lowerBound {
 			pi.Message = "No US-Dollar price information on one or more pool assets available."
 		}
 		result = append(result, pi)
