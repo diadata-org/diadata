@@ -36,7 +36,6 @@ var (
 		dia.NetswapExchange,
 		dia.OrcaExchange,
 		dia.OsmosisExchange,
-		dia.PanCakeSwapExchangeV3,
 		dia.ZenlinkswapExchange,
 	}
 
