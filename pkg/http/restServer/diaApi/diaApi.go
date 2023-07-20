@@ -899,16 +899,9 @@ func (env *Env) GetPoolLiquidityByAddress(c *gin.Context) {
 	// Get total liquidity.
 	var (
 		totalLiquidity float64
-		noPrice        bool
+		lowerBound     bool
 	)
-	for _, assetvol := range pool.Assetvolumes {
-		if assetvol.VolumeUSD == 0 {
-			noPrice = true
-			totalLiquidity = 0
-			break
-		}
-		totalLiquidity += assetvol.VolumeUSD
-	}
+	totalLiquidity, lowerBound = pool.GetPoolLiquidityUSD()
 
 	type localReturn struct {
 		Exchange          string
@@ -921,7 +914,7 @@ func (env *Env) GetPoolLiquidityByAddress(c *gin.Context) {
 	}
 
 	var l localReturn
-	if noPrice {
+	if lowerBound {
 		l.Message = "No US-Dollar price information on one or more pool assets available."
 	}
 	l.TotalLiquidityUSD = totalLiquidity

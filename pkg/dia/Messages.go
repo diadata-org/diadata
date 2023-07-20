@@ -380,6 +380,10 @@ func (p *Pool) SufficientNativeBalance(threshold float64) bool {
 // @lowerBound is true in case USD liquidity is not available for all pool assets.
 func (p *Pool) GetPoolLiquidityUSD() (totalLiquidity float64, lowerBound bool) {
 	for _, av := range p.Assetvolumes {
+		// For some pools, for instance on BalancerV2 type contracts, the pool contains itself as an asset.
+		if av.Asset.Address == p.Address {
+			continue
+		}
 		if av.VolumeUSD == 0 {
 			lowerBound = true
 		}
