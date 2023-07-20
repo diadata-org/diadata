@@ -448,6 +448,11 @@ func (datastore *DB) GetPoolLiquiditiesUSD(p *dia.Pool, priceCache map[string]fl
 	for i, av := range p.Assetvolumes {
 		var price float64
 		var err error
+		// For some pools, for instance on BalancerV2 type contracts, the pool contains itself as an asset.
+		if av.Asset.Address == p.Address {
+			log.Warnf("%s: Pool token %s has the same address as pool itself.", p.Exchange.Name, p.Address)
+			continue
+		}
 		if _, ok := priceCache[av.Asset.Identifier()]; !ok {
 			price, err = datastore.GetAssetPriceUSDCache(av.Asset)
 			if err != nil {
