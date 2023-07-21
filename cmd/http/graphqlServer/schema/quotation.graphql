@@ -45,7 +45,7 @@ type Query {
     StartTime: Time
     EndTime: Time
     FeedSelection: [FeedSelection!]
-  ): [FilterPoint]
+  ): [FilterPointExtended]
 
   GetVWALP(
     Quotetokenblockchain: String!
@@ -131,15 +131,27 @@ type FilterPoint {
   Value: Float
   Name: String
   Time: Time
-  Address:String
+  Address: String
   Blockchain :String
   FirstTrade: Trade
   LastTrade: Trade
 }
 
+type FilterPointExtended {
+  Name: String
+  Symbol: String
+  Time: Time
+  Value: Float
+  Address: String
+  Blockchain: String
+  Pools: [String!]
+  Pairs: [String!]
+  TradesCount: Int
+}
+
 type Trade {
-  Price:Float
-  Pair:String
+  Price: Float
+  Pair: String
   Volume: Float
   Symbol: String
   EstimatedUSDPrice: Float

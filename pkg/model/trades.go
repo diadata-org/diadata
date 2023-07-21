@@ -190,10 +190,10 @@ func (datastore *DB) GetOldTradesFromInflux(table string, exchange string, verif
 	return allTrades, nil
 }
 
-// parseTrade parses a trade as retreived from influx. If fullAsset=true blockchain and address of
+// parseFullTrade parses a trade as retreived from influx. If fullAsset=true blockchain and address of
 // the corresponding asset is returned as well.
 func parseFullTrade(row []interface{}) *dia.Trade {
-	if len(row) > 12 {
+	if len(row) > 13 {
 		t, err := time.Parse(time.RFC3339, row[0].(string))
 		if err == nil {
 
@@ -257,17 +257,20 @@ func parseFullTrade(row []interface{}) *dia.Trade {
 			}
 			quotetokenblockchain, o := row[11].(string)
 			if !o {
-				log.Errorln("error on parsing row 9", row)
+				log.Errorln("error on parsing row 11", row)
 			}
 			quotetokenaddress, o := row[12].(string)
 			if !o {
-				log.Errorln("error on parsing row 10", row)
+				log.Errorln("error on parsing row 12", row)
 			}
+			pooladdress, _ := row[13].(string)
+
 			trade := dia.Trade{
 				Symbol:            symbol,
 				Pair:              pair,
 				QuoteToken:        dia.Asset{Address: quotetokenaddress, Blockchain: quotetokenblockchain},
 				BaseToken:         dia.Asset{Address: basetokenaddress, Blockchain: basetokenblockchain},
+				PoolAddress:       pooladdress,
 				Time:              t,
 				Source:            source,
 				EstimatedUSDPrice: estimatedUSDPrice,
@@ -608,7 +611,7 @@ func (datastore *DB) GetTradesByFeedSelection(feedselection []dia.FeedSelection,
 
 	for i := range starttimes {
 		query = fmt.Sprintf(`
-		SELECT time,estimatedUSDPrice,exchange,foreignTradeID,pair,price,symbol,volume,verified,basetokenblockchain,basetokenaddress,quotetokenblockchain,quotetokenaddress  
+		SELECT time,estimatedUSDPrice,exchange,foreignTradeID,pair,price,symbol,volume,verified,basetokenblockchain,basetokenaddress,quotetokenblockchain,quotetokenaddress,pooladdress  
 		FROM %s 
 		WHERE ( `,
 			influxDbTradesTable,

@@ -2,7 +2,12 @@ package queryhelper
 
 import (
 	"github.com/diadata-org/diadata/pkg/dia"
+	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/utils"
+)
+
+var (
+	EXCHANGES = scrapers.Exchanges
 )
 
 type Block struct {
@@ -12,6 +17,28 @@ type Block struct {
 
 type Blockgenerator struct {
 	trades []dia.Trade
+}
+
+// GetBlockSources returns a unique list of all pairs and pools contained in the block's @b trades.
+func (b *Block) GetBlockSources() (pairs []dia.ExchangePair, pools []dia.Pool) {
+
+	pairsCheckMap := make(map[string]struct{})
+	poolsCheckMap := make(map[string]struct{})
+
+	for _, t := range b.Trades {
+		if EXCHANGES[t.Source].Centralized {
+			if _, ok := pairsCheckMap[t.Source+t.Pair]; !ok {
+				pairs = append(pairs, dia.ExchangePair{Exchange: t.Source, ForeignName: t.Pair})
+				pairsCheckMap[t.Source+t.Pair] = struct{}{}
+			}
+		} else {
+			if _, ok := poolsCheckMap[t.Source+t.PoolAddress]; !ok {
+				pools = append(pools, dia.Pool{Exchange: EXCHANGES[t.Source], Address: t.PoolAddress})
+				poolsCheckMap[t.Source+t.PoolAddress] = struct{}{}
+			}
+		}
+	}
+	return
 }
 
 func NewBlockGenerator(trades []dia.Trade) *Blockgenerator {

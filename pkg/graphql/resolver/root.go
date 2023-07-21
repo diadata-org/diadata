@@ -3,6 +3,7 @@ package resolver
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 
@@ -445,10 +446,10 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 	StartTime         graphql.NullTime
 	EndTime           graphql.NullTime
 	FeedSelection     *[]FeedSelection
-}) (*[]*FilterPointResolver, error) {
+}) (*[]*FilterPointExtendedResolver, error) {
 	var (
 		tradeBlocks       []queryhelper.Block
-		sr                *[]*FilterPointResolver
+		sr                *[]*FilterPointExtendedResolver
 		starttime         time.Time
 		endtime           time.Time
 		blockShiftSeconds int64
@@ -498,8 +499,8 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 	} else {
 		starttime = time.Unix(starttime.Unix()-(blockShiftSeconds-((endtime.Unix()-starttime.Unix()-blockSizeSeconds)%blockShiftSeconds)), 0)
 	}
-	starttimeimmutable := starttime
-	endtimeimmutable := endtime
+	// starttimeimmutable := starttime
+	// endtimeimmutable := endtime
 
 	if args.FeedSelection == nil {
 		return sr, errors.New("At least 1 asset must be selected.")
@@ -510,7 +511,8 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 	}
 
 	var (
-		filterPoints, emaFilterPoints []dia.FilterPoint
+		// filterPoints, emaFilterPoints []dia.FilterPoint
+		filterPoints []dia.FilterPointExtended
 	)
 
 	if filter != "ema" {
@@ -568,53 +570,53 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 			tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateBlocks(blockSizeSeconds, blockShiftSeconds, bins)
 			log.Println("Total TradeBlocks", len(tradeBlocks))
 		}
-
-	} else if filter == "ema" {
-		emaFilterPoints, err = r.DS.GetFilter("MA120", feedselection[0].Asset, "", starttimeimmutable, endtimeimmutable)
-		if err != nil {
-			log.Errorln("Error getting filter", err)
-		}
 	}
+	// } else if filter == "ema" {
+	// 	emaFilterPoints, err = r.DS.GetFilter("MA120", feedselection[0].Asset, "", starttimeimmutable, endtimeimmutable)
+	// 	if err != nil {
+	// 		log.Errorln("Error getting filter", err)
+	// 	}
+	// }
 
 	switch filter {
-	case "ema":
-		{
-			filterPoints, _ = queryhelper.FilterEMA(emaFilterPoints, feedselection[0].Asset, int(blockSizeSeconds))
-		}
+	// case "ema":
+	// 	{
+	// 		filterPoints, _ = queryhelper.FilterEMA(emaFilterPoints, feedselection[0].Asset, int(blockSizeSeconds))
+	// 	}
 	case "mair":
 		{
-			filterPoints, _ = queryhelper.FilterMAIR(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
+			filterPoints = queryhelper.FilterMAIRextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
 		}
 	case "ma":
 		{
-			filterPoints, _ = queryhelper.FilterMA(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
+			filterPoints = queryhelper.FilterMAextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
 		}
 	case "vwap":
 		{
-			filterPoints, _ = queryhelper.FilterVWAP(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
+			filterPoints = queryhelper.FilterVWAPextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
 		}
 	case "vwapir":
 		{
-			filterPoints, _ = queryhelper.FilterVWAPIR(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
+			filterPoints = queryhelper.FilterVWAPIRextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
 		}
 	case "medir":
 		{
-			filterPoints, _ = queryhelper.FilterMEDIR(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
+			filterPoints = queryhelper.FilterMEDIRextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
 		}
 	case "vol":
 		{
-			filterPoints, _ = queryhelper.FilterVOL(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
+			filterPoints = queryhelper.FilterVOLextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
 		}
 
 	}
 
-	var fpr []*FilterPointResolver
+	var fper []*FilterPointExtendedResolver
 
-	for _, fp := range filterPoints {
-		fpr = append(fpr, &FilterPointResolver{q: fp})
+	for _, fpe := range filterPoints {
+		fper = append(fper, &FilterPointExtendedResolver{q: fpe})
 	}
 
-	return &fpr, nil
+	return &fper, nil
 }
 
 func (r *DiaResolver) GetVWALP(ctx context.Context, args struct {
@@ -878,7 +880,15 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) (dfs []dia.Feed
 				err = errors.New("Missing exchange name.")
 				return
 			}
-			exchange := EXCHANGES[*ep.Exchange.Value]
+			exchange, ok := EXCHANGES[*ep.Exchange.Value]
+			if !ok && *ep.Exchange.Value != "" {
+				var exchangeString string
+				for e := range EXCHANGES {
+					exchangeString += (e + "; ")
+				}
+				err = fmt.Errorf("Exchange name %s not valid. Available exchanges: %v", *ep.Exchange.Value, exchangeString)
+				return
+			}
 			diaExchangepairselection.Exchange = exchange
 
 			// Select all pairs on given exchange if not specified.

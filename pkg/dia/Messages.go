@@ -527,6 +527,14 @@ type FilterPoint struct {
 	LastTrade  Trade
 }
 
+type FilterPointExtended struct {
+	FilterPoint FilterPoint
+	// Pools and pairs of the filter point's underlying trades.
+	Pools       []Pool
+	Pairs       []ExchangePair
+	TradesCount int32
+}
+
 type IndexBlock struct {
 	BlockHash      string         `json:"BlockHash"`
 	IndexBlockData IndexBlockData `json:"IndexBlockData"`
