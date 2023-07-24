@@ -179,6 +179,12 @@
             "Exchange": "Binance2",
             "Blockchain": "Ethereum",
             "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+        },
+        {
+            "Symbol": "wBETH",
+            "Exchange": "Binance2",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xa2E3356610840701BDf5611a53974510Ae27E2e1"
         }
     ]
 }
