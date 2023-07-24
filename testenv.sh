@@ -29,6 +29,7 @@ function usage() {
     echo "  start                     Start cluster"
     echo "  stop                      Stop the cluster"
     echo "  delete                    Delete all cluster resources"
+    echo "  build                     Build DIA platform and prepare container images"
     echo "  install                   Install DIA platform"
     echo "  uninstall                 Un-install DIA platform"
     echo "  create <resource>         Create a new resource"
@@ -51,12 +52,30 @@ function usage() {
     echo "  info                      Show detailed information"
     echo "  ping                      Make ping tests"
     echo "  data-list                 List data"
+    echo "    exchanges               List exchanges"
+    echo "    exchange                Show exchange metadata"
+    echo "    blockchain              Show blockchain metadata"
+    echo "    scraper-cex             Show CEX scraper metadata"
+    echo "    scraper-dex             Show DEX scraper metadata"
+    echo "    scraper-liquidity       Show liquidity scraper metadata"
+    echo "    scraper-foreign         Show foreign scraper metadata"
     echo "  data-reset                Reset data"
     echo
     echo "Report bugs to: <https://github.com/diadata-org/diadata/issues>"
 }
 
-function _build_ifnotexist() {
+function _image_exist(){
+    minikube_docker_query="$(minikube -p "${minikube_profile}" ssh -- "docker images -q $1:latest" 2> /dev/null)"
+    if [[ "${minikube_docker_query}" == "" ]]; then
+        echo "Image $1 is not present"
+        return 1
+    else
+        echo "Image $1 is present"
+        return 0
+    fi
+}
+
+function _build_ifnotexist(){
     if [ "$arg_single_mode" = true ]; then
         docker_query="$(docker images -q "$2:latest" 2> /dev/null)"
         if [[ "${docker_query}" == "" ]]; then
@@ -115,7 +134,7 @@ function _info() {
     fi
 }
 
-function _status_host() {
+function _status_host(){
     echo "Uptime: $(uptime -p)"
 }
 
@@ -189,7 +208,8 @@ function main() {
     local snapshot_docker_password=dia_contributor_pw
     local snapshot_docker_email=dia_contributor@example.com
     # shellcheck disable=SC1091
-    source .env.local
+    # TODO: this will break the script?
+    source .testenv.local
     if [[ "$arg_cpus" != "" ]]; then
         minikube_hw_cpus="${arg_cpus}"
     fi
@@ -248,9 +268,9 @@ function main() {
             exit 1
         fi
         ;;
-    install)
+    build)
         if [ "${#paths[@]}" -eq 1 ]; then
-            echo "Checking if images exists ..."
+            echo "Building images ..."
             _build_ifnotexist build/Dockerfile-DiadataBuild-114-Dev dia.build-114.dev
             _build_ifnotexist build/Dockerfile-DiadataBuild-117-Dev dia.build-117.dev
             _build_ifnotexist build/Dockerfile-DiadataBuild-119-Dev dia.build-119.dev
@@ -261,9 +281,30 @@ function main() {
             _build_ifnotexist Dockerfile-genericCollector-Dev dia.genericcollector.dev
             _build_ifnotexist Dockerfile-genericForeignScraper-Dev dia.genericforeignscraper.dev
             _build_ifnotexist Dockerfile-liquidityScraper-Dev dia.liquidityscraper.dev
+            _build_ifnotexist Dockerfile-assetCollectionService-Dev dia.assetcollectionservice.dev
             if [ "$arg_full_mode" = true ]; then
                 _build_ifnotexist Dockerfile-blockchainservice-Dev dia.blockchainservice.dev
-                _build_ifnotexist Dockerfile-assetCollectionService-Dev dia.assetcollectionservice.dev
+            fi
+        else
+            echo "Unknown command" >&2
+            exit 1
+        fi
+        ;;
+    install)
+        if [ "${#paths[@]}" -eq 1 ]; then
+            _image_exist dia.build-114.dev || exit 1
+            _image_exist dia.build-117.dev || exit 1
+            _image_exist dia.build-119.dev || exit 1
+            _image_exist dia.build-120.dev || exit 1
+            _image_exist dia.filtersblockservice.dev || exit 1
+            _image_exist dia.tradesblockservice.dev || exit 1
+            _image_exist dia.pairdiscoveryservice.dev || exit 1
+            _image_exist dia.genericcollector.dev || exit 1
+            _image_exist dia.genericforeignscraper.dev || exit 1
+            _image_exist dia.liquidityscraper.dev || exit 1
+            _image_exist dia.assetcollectionservice.dev || exit 1
+            if [ "$arg_full_mode" = true ]; then
+                _image_exist dia.blockchainservice.dev || exit 1
             fi
             echo "Installing services ..."
             minikube -p "${minikube_profile}" kubectl -- create -f deployments/k8s-yaml/service-filtersblockservice.yaml
@@ -590,6 +631,12 @@ function main() {
         # TODO: "SELECT ... | wc" is very slow, maybe investigate to use COUNT statement
         if [ "${#paths[@]}" -gt 1 ]; then
             case "${paths[1]}" in
+            exchanges)
+                num_exchanges=$(minikube -p "${minikube_profile}" kubectl -- exec deployment/data-postgres -- psql -U postgres -tA -c "SELECT COUNT(*) FROM exchange")
+                echo "Exchanges:"
+                minikube -p "${minikube_profile}" kubectl -- exec deployment/data-postgres -- psql -U postgres -tA -c "SELECT * FROM exchange"
+                echo "#Exchanges: $num_exchanges"
+                ;;
             exchange)
                 echo "Exchange:"
                 read -r inputExchangeName
