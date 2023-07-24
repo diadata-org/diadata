@@ -115,10 +115,6 @@
         {
             "Address": "0x48d807E5Cb92617953A88ccE78dCf31012f4D6B6",
             "ForeignName": "WBNB-VLX"
-        },
-        {
-            "Address": "0x379044E32f5A162233E82de19DA852255d0951b8",
-            "ForeignName": "wBETH-ETH"
         }
     ]
 }
