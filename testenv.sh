@@ -51,7 +51,7 @@ function usage() {
     echo "  clean                     Clean unused files"
     echo "  info                      Show detailed information"
     echo "  ping                      Make ping tests"
-    echo "  data-list                 List data"
+    echo "  data                      List data"
     echo "    exchanges               List exchanges"
     echo "    exchange                Show exchange metadata"
     echo "    blockchain              Show blockchain metadata"
@@ -627,7 +627,7 @@ function main() {
             exit 1
         fi
         ;;
-    data-list)
+    data)
         # TODO: "SELECT ... | wc" is very slow, maybe investigate to use COUNT statement
         if [ "${#paths[@]}" -gt 1 ]; then
             case "${paths[1]}" in
