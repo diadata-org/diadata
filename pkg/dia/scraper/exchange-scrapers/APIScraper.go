@@ -22,7 +22,7 @@ type nothing struct{}
 var (
 	Exchanges          = make(map[string]dia.Exchange)
 	ExchangeDuplicates = make(map[string]dia.Exchange)
-	blockchains        map[string]dia.BlockChain
+	Blockchains        map[string]dia.BlockChain
 	chainConfigs       map[string]dia.ChainConfig
 )
 
@@ -58,9 +58,9 @@ func init() {
 	if err != nil {
 		log.Fatal("get all chains: ", err)
 	}
-	blockchains = make(map[string]dia.BlockChain)
+	Blockchains = make(map[string]dia.BlockChain)
 	for _, chain := range chains {
-		blockchains[chain.Name] = chain
+		Blockchains[chain.Name] = chain
 	}
 
 	chainconfigurations, err := relDB.GetAllChainConfig()
@@ -204,7 +204,7 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 	case dia.PangolinExchange:
 		return NewUniswapScraper(Exchanges[dia.PangolinExchange], scrape, relDB)
 	case dia.PlatypusExchange:
-		return NewPlatypusScraper(Exchanges[dia.PlatypusExchange], scrape)
+		return NewPlatypusScraper(Exchanges[dia.PlatypusExchange], scrape, relDB)
 	case dia.SpookyswapExchange:
 		return NewUniswapScraper(Exchanges[dia.SpookyswapExchange], scrape, relDB)
 	case dia.QuickswapExchange:

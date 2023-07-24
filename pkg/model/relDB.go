@@ -36,12 +36,14 @@ type RelDatastore interface {
 
 	// --------------- asset methods for exchanges ---------------
 	SetExchangePair(exchange string, pair dia.ExchangePair, cache bool) error
-	GetExchangePair(exchange string, foreignname string) (exchangepair dia.ExchangePair, err error)
+	GetExchangePair(exchange string, foreignname string, caseSensitive bool) (exchangepair dia.ExchangePair, err error)
+	GetExchangePairSeparator(exchange string) (string, error)
 	GetPairsForExchange(exchange dia.Exchange, filterVerified bool, verified bool) ([]dia.ExchangePair, error)
 	GetPairsForAsset(asset dia.Asset, filterVerified bool, verified bool) ([]dia.ExchangePair, error)
 	GetExchangePairSymbols(exchange string) ([]dia.ExchangePair, error)
 	GetNumPairs(exchange dia.Exchange) (int, error)
 	SetExchangeSymbol(exchange string, symbol string) error
+	GetExchangeSymbol(exchange string, symbol string) (dia.Asset, error)
 	GetExchangeSymbols(exchange string, substring string) ([]string, error)
 	GetUnverifiedExchangeSymbols(exchange string) ([]string, error)
 	VerifyExchangeSymbol(exchange string, symbol string, assetID string) (bool, error)
@@ -64,7 +66,7 @@ type RelDatastore interface {
 	GetPoolByAddress(blockchain string, address string) (pool dia.Pool, err error)
 	GetAllPoolAddrsExchange(exchange string, liquiThreshold float64) ([]string, error)
 	GetAllPoolsExchange(exchange string, liquiThreshold float64) ([]dia.Pool, error)
-	GetPoolsByAsset(asset dia.Asset, liquiThreshold float64) ([]dia.Pool, error)
+	GetPoolsByAsset(asset dia.Asset, liquidityThreshold float64, liquidityThresholdUSD float64) ([]dia.Pool, error)
 
 	// ----------------- blockchain methods -------------------
 	SetBlockchain(blockchain dia.BlockChain) error

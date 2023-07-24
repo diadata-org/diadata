@@ -287,8 +287,8 @@ CREATE TABLE oracleconfig (
     UNIQUE (feeder_id)
 );
 
-
--- ALTER TABLE oracleconfig ADD COLUMN active  boolean default true;
+ALTER TABLE oracleconfig  ADD COLUMN creation_block_time TIMESTAMP DEFAULT 'epoch'::timestamp;
+         
 
 
 

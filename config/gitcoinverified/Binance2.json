@@ -19,6 +19,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "ARB",
+            "Exchange": "Binance2",
+            "Blockchain": "Arbitrum",
+            "Address": "0x912CE59144191C1204E64559FE8253a0e49E6548"
+        },
+        {
             "Symbol": "ATOM",
             "Exchange": "Binance2",
             "Blockchain": "Cosmos",

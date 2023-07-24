@@ -380,6 +380,10 @@ func (p *Pool) SufficientNativeBalance(threshold float64) bool {
 // @lowerBound is true in case USD liquidity is not available for all pool assets.
 func (p *Pool) GetPoolLiquidityUSD() (totalLiquidity float64, lowerBound bool) {
 	for _, av := range p.Assetvolumes {
+		// For some pools, for instance on BalancerV2 type contracts, the pool contains itself as an asset.
+		if av.Asset.Address == p.Address {
+			continue
+		}
 		if av.VolumeUSD == 0 {
 			lowerBound = true
 		}
@@ -438,6 +442,19 @@ func (ep *ExchangePair) UnmarshalBinary(data []byte) error {
 }
 
 type Pairs []ExchangePair
+
+type FeedSelection struct {
+	Asset              Asset
+	Exchangepairs      []ExchangepairSelection
+	LiquidityThreshold float64
+}
+
+type ExchangepairSelection struct {
+	Exchange           Exchange
+	Pairs              []Pair
+	Pools              []Pool
+	LiquidityThreshold float64
+}
 
 // Trade remark: In a pair A-B, we call A the Quote token and B the Base token
 type Trade struct {
@@ -508,6 +525,14 @@ type FilterPoint struct {
 	Min        float64
 	FirstTrade Trade
 	LastTrade  Trade
+}
+
+type FilterPointExtended struct {
+	FilterPoint FilterPoint
+	// Pools and pairs of the filter point's underlying trades.
+	Pools       []Pool
+	Pairs       []ExchangePair
+	TradesCount int32
 }
 
 type IndexBlock struct {
@@ -688,17 +713,18 @@ type OracleConfig struct {
 }
 
 type OracleUpdate struct {
-	OracleAddress   string
-	TransactionHash string
-	TransactionCost string
-	AssetKey        string
-	AssetPrice      string
-	UpdateBlock     uint64
-	UpdateFrom      string
-	FromBalance     string
-	GasCost         string
-	GasUsed         string
-	ChainID         string
-	UpdateTime      time.Time
-	CreationBlock   uint64
+	OracleAddress     string
+	TransactionHash   string
+	TransactionCost   string
+	AssetKey          string
+	AssetPrice        string
+	UpdateBlock       uint64
+	UpdateFrom        string
+	FromBalance       string
+	GasCost           string
+	GasUsed           string
+	ChainID           string
+	UpdateTime        time.Time
+	CreationBlock     uint64
+	CreationBlockTime time.Time
 }

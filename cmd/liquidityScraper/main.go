@@ -30,7 +30,7 @@ func main() {
 		return
 	}
 
-	datastore, err := models.NewRedisDataStore()
+	datastore, err := models.NewDataStore()
 	if err != nil {
 		log.Errorln("Error connecting to postgres: ", err)
 		return

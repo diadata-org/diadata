@@ -64,19 +64,25 @@ func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 	log.Info("NewUniswapScraper Address ", exchange.Contract)
 
 	var (
-		s   *UniswapV3Scraper
-		err error
+		s               *UniswapV3Scraper
+		listenByAddress bool
+		err             error
 	)
+
+	listenByAddress, err = strconv.ParseBool(utils.Getenv("LISTEN_BY_ADDRESS", ""))
+	if err != nil {
+		log.Fatal("parse LISTEN_BY_ADDRESS: ", err)
+	}
 
 	switch exchange.Name {
 	case dia.UniswapExchangeV3:
-		s = makeUniswapV3Scraper(exchange, false, "", "", "200", uint64(12369621))
+		s = makeUniswapV3Scraper(exchange, listenByAddress, "", "", "200", uint64(12369621))
 	case dia.UniswapExchangeV3Polygon:
-		s = makeUniswapV3Scraper(exchange, false, "", "", "200", uint64(22757913))
+		s = makeUniswapV3Scraper(exchange, listenByAddress, "", "", "200", uint64(22757913))
 	case dia.UniswapExchangeV3Arbitrum:
-		s = makeUniswapV3Scraper(exchange, false, "", "", "200", uint64(165))
+		s = makeUniswapV3Scraper(exchange, listenByAddress, "", "", "200", uint64(165))
 	case dia.PanCakeSwapExchangeV3:
-		s = makeUniswapV3Scraper(exchange, false, "", "", "200", uint64(26956207))
+		s = makeUniswapV3Scraper(exchange, listenByAddress, "", "", "200", uint64(26956207))
 	}
 
 	s.relDB = relDB
@@ -538,11 +544,28 @@ func (ps *UniswapPairV3Scraper) Pair() dia.ExchangePair {
 // makeUniPoolMap returns a map with pool addresses as keys and the underlying UniswapPair as values.
 func (s *UniswapV3Scraper) makeUniV3PoolMap(liquiThreshold float64, liquidityThresholdUSD float64) (map[string]UniswapPair, error) {
 	pm := make(map[string]UniswapPair)
+	var pools []dia.Pool
+	var err error
 
-	// Load all pools above liqui threshold.
-	pools, err := s.relDB.GetAllPoolsExchange(s.exchangeName, liquiThreshold)
-	if err != nil {
-		return pm, err
+	if s.listenByAddress {
+		// Only load pool info for addresses from json file.
+		poolAddresses, errAddr := getAddressesFromConfig("uniswapv3/subscribe_pools/" + s.exchangeName)
+		if errAddr != nil {
+			log.Error("fetch pool addresses from config file: ", errAddr)
+		}
+		for _, address := range poolAddresses {
+			pool, errPool := s.relDB.GetPoolByAddress(Exchanges[s.exchangeName].BlockChain.Name, address.Hex())
+			if errPool != nil {
+				log.Fatalf("Get pool with address %s: %v", address.Hex(), errPool)
+			}
+			pools = append(pools, pool)
+		}
+	} else {
+		// Load all pools above liqui threshold.
+		pools, err = s.relDB.GetAllPoolsExchange(s.exchangeName, liquiThreshold)
+		if err != nil {
+			return pm, err
+		}
 	}
 
 	log.Info("Found ", len(pools), " pools.")

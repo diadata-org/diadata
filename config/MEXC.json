@@ -19,6 +19,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "ARB",
+      "ForeignName": "ARBUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "ASTR",
       "ForeignName": "ASTRUSDT",
       "Exchange": "MEXC",

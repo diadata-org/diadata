@@ -49,6 +49,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "ARB",
+            "ForeignName": "ARBUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "ATOM",
             "ForeignName": "ATOMUSDT",
             "Exchange": "ByBit",
