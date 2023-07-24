@@ -207,6 +207,10 @@ function main() {
     local snapshot_docker_username=dia_contributor
     local snapshot_docker_password=dia_contributor_pw
     local snapshot_docker_email=dia_contributor@example.com
+    local data_docker_registry=docker.io
+    local data_docker_username=dia
+    local data_docker_password=dia_pw
+    local data_docker_email=dia@diadata.com
     # shellcheck disable=SC1091
     # TODO: this will break the script?
     source .testenv.local
@@ -317,6 +321,12 @@ function main() {
                 minikube -p "${minikube_profile}" kubectl -- create -f deployments/k8s-yaml/data-postgres.yaml
                 minikube -p "${minikube_profile}" kubectl -- create -f deployments/k8s-yaml/job-prepare.yaml
             else
+                minikube -p "${minikube_profile}" kubectl -- \
+                    create secret docker-registry regcred-read \
+                    --docker-server="${data_docker_registry}" \
+                    --docker-username="${data_docker_username}" \
+                    --docker-password="${data_docker_password}" \
+                    --docker-email="${data_docker_email}"
                 minikube -p "${minikube_profile}" kubectl -- create -f deployments/k8s-yaml/data-postgres-prepopulated.yaml
             fi
             echo "Installation ended successfully"
@@ -337,6 +347,7 @@ function main() {
                 minikube -p "${minikube_profile}" kubectl -- delete -f deployments/k8s-yaml/data-postgres.yaml || true
                 minikube -p "${minikube_profile}" kubectl -- delete configmap postgres-schemma || true
             else
+                minikube -p "${minikube_profile}" kubectl -- delete secret regcred-read || true
                 minikube -p "${minikube_profile}" kubectl -- delete -f deployments/k8s-yaml/data-postgres-prepopulated.yaml || true
             fi
             echo "Services uninstalled with success"

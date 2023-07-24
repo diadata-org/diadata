@@ -13,9 +13,11 @@ spec:
       labels:
         app: data-postgres
     spec:
+      imagePullSecrets:
+        - name: regcred-read
       containers:
         - name: data-postgres
-          image: alex1a/diadata.postgres:latest
+          image: diadata/diadata.postgres:latest
           imagePullPolicy: Always
           ports:
             - name: postgres-server
