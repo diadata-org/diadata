@@ -114,7 +114,6 @@ type CurveFIScraper struct {
 	WsClient             *ethclient.Client
 	RestClient           *ethclient.Client
 	relDB                *models.RelDB
-	datastore            *models.DB
 	curveCoins           map[string]*CurveCoin
 	resubscribe          chan string
 	pools                *Pools

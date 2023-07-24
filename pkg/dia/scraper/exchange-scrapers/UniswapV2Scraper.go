@@ -127,7 +127,6 @@ type UniswapScraper struct {
 	WsClient   *ethclient.Client
 	RestClient *ethclient.Client
 	relDB      *models.RelDB
-	datastore  *models.DB
 	// signaling channels for session initialization and finishing
 	//initDone     chan nothing
 	run          bool
@@ -227,11 +226,6 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 	}
 
 	s.relDB = relDB
-
-	s.datastore, err = models.NewDataStore()
-	if err != nil {
-		log.Fatal("new datastore: ", err)
-	}
 
 	// Only include pools with (minimum) liquidity bigger than given env var.
 	liquidityThreshold, err := strconv.ParseFloat(utils.Getenv("LIQUIDITY_THRESHOLD", "0"), 64)
