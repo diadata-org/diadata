@@ -140,6 +140,8 @@ func NewTradesBlockService(datastore models.Datastore, relDB models.RelDatastore
 	log.Info("bluechip threshold: ", blueChipThreshold)
 	log.Info("smallX: ", smallX)
 	log.Info("normalX: ", normalX)
+	log.Info("tradeVolumeThreshold: ", tradeVolumeThreshold)
+	log.Info("tradeVolumeThresholdUSD: ", tradeVolumeThresholdUSD)
 
 	s.volumeCache = s.loadVolumes()
 	log.Info("...done loading volumes.")
@@ -310,6 +312,8 @@ func (s *TradesBlockService) process(t dia.Trade) {
 					t.EstimatedUSDPrice = t.Price * price
 					if t.USDVolume() > tradeVolumeThresholdUSD {
 						verifiedTrade = true
+					} else {
+						log.Warn("low $ volume on trade: ", t)
 					}
 				}
 			}
