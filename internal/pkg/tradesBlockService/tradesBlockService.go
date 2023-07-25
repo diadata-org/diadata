@@ -47,6 +47,11 @@ func init() {
 		log.Error("Parse TRADE_VOLUME_THRESHOLD_EXPONENT: ", err)
 	}
 	tradeVolumeThreshold = math.Pow(10, -tradeVolumeThresholdExponent)
+	tradeVolumeThresholdUSDExponent, err := strconv.ParseFloat(utils.Getenv("TRADE_VOLUME_THRESHOLD_USD_EXPONENT", ""), 64)
+	if err != nil {
+		log.Error("Parse TRADE_VOLUME_THRESHOLD_USD_EXPONENT: ", err)
+	}
+	tradeVolumeThresholdUSD = math.Pow(10, -tradeVolumeThresholdUSDExponent)
 }
 
 var (
@@ -73,16 +78,17 @@ var (
 		TUSD.Identifier(): "",
 	}
 
-	tol                  = float64(0.04)
-	log                  *logrus.Logger
-	batchTimeSeconds     int
-	tradeVolumeThreshold float64
-	volumeUpdateSeconds  = 60 * 10
-	volumeThreshold      float64
-	blueChipThreshold    float64
-	smallX               float64
-	normalX              float64
-	checkTradesDuplicate = make(map[string]struct{})
+	tol                     = float64(0.04)
+	log                     *logrus.Logger
+	batchTimeSeconds        int
+	tradeVolumeThreshold    float64
+	tradeVolumeThresholdUSD float64
+	volumeUpdateSeconds     = 60 * 10
+	volumeThreshold         float64
+	blueChipThreshold       float64
+	smallX                  float64
+	normalX                 float64
+	checkTradesDuplicate    = make(map[string]struct{})
 )
 
 type TradesBlockService struct {
@@ -302,7 +308,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 			} else {
 				if price > 0.0 {
 					t.EstimatedUSDPrice = t.Price * price
-					if t.EstimatedUSDPrice > 0 {
+					if t.USDVolume() > tradeVolumeThresholdUSD {
 						verifiedTrade = true
 					}
 				}
