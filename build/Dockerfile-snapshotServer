@@ -1,0 +1,16 @@
+FROM us.icr.io/dia-registry/devops/build-119:latest as build
+
+
+WORKDIR $GOPATH
+
+WORKDIR $GOPATH/src/
+COPY ./cmd/http/snapshotServer ./
+
+RUN go install
+
+FROM postgres:13-bullseye
+
+COPY --from=build /go/bin/snapshotServer /bin/snapshotServer
+
+CMD ["snapshotServer"]
+
