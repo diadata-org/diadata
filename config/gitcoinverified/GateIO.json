@@ -13,6 +13,12 @@
             "Address": "0x31429d1856aD1377A8A0079410B297e1a9e214c2"
         },
         {
+            "Symbol": "ARB",
+            "Exchange": "GateIO",
+            "Blockchain": "Arbitrum",
+            "Address": "0x912CE59144191C1204E64559FE8253a0e49E6548"
+        },
+        {
             "Symbol": "AVAX",
             "Exchange": "GateIO",
             "Blockchain": "Avalanche",
@@ -377,6 +383,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x7DD9c5Cba05E151C895FDe1CF355C9A1D5DA6429"
+        },
+        {
+            "Symbol": "GNS",
+            "Exchange": "GateIO",
+            "Blockchain": "Arbitrum",
+            "Address": "0x18c11FD286C5EC11c3b683Caa813B77f5163A122"
         },
         {
             "Symbol": "GNX",

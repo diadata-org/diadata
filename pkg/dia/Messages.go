@@ -37,7 +37,6 @@ const (
 	TELOS                                   = "Telos"
 	EVMOS                                   = "Evmos"
 	KUSAMA                                  = "Kusama"
-	KARURA                                  = "Karura"
 	ACALA                                   = "Acala"
 	POLKADOT                                = "Polkadot"
 	WANCHAIN                                = "Wanchain"
@@ -231,15 +230,17 @@ type ExchangeVolumesList struct {
 }
 
 type AssetVolume struct {
-	Asset  Asset   `json:"Asset"`
-	Volume float64 `json:"Volume"`
-	Index  uint8   `json:"Index"`
+	Asset     Asset   `json:"Asset"`
+	Volume    float64 `json:"Volume"`
+	VolumeUSD float64 `json:"VolumeUSD"`
+	Index     uint8   `json:"Index"`
 }
 
 type AssetLiquidity struct {
-	Asset  Asset   `json:"Asset"`
-	Volume float64 `json:"Liquidity"`
-	Index  uint8   `json:"Index"`
+	Asset     Asset   `json:"Asset"`
+	Volume    float64 `json:"Liquidity"`
+	VolumeUSD float64 `json:"LiquidityUSD"`
+	Index     uint8   `json:"Index"`
 }
 
 type TopAsset struct {
@@ -251,13 +252,9 @@ type TopAsset struct {
 }
 
 type PairVolume struct {
-	Pair   Pair    `json:"Pair"`
-	Volume float64 `json:"Volume"`
-}
-
-type PairVolumesList struct {
-	Volumes   []PairVolume `json:"Volumes"`
-	Timestamp time.Time    `json:"Timestamp"`
+	Pair        Pair    `json:"Pair"`
+	PoolAddress string  `json:"Pooladdress"`
+	Volume      float64 `json:"Volume"`
 }
 
 type EthereumBlockData struct {
@@ -368,6 +365,33 @@ type Pool struct {
 	Time         time.Time
 }
 
+// SufficientNativeBalance returns true if all pool assets have at least @threshold liquidity.
+func (p *Pool) SufficientNativeBalance(threshold float64) bool {
+	sufficientNativeBalance := true
+	for _, av := range p.Assetvolumes {
+		if av.Volume < threshold {
+			sufficientNativeBalance = false
+		}
+	}
+	return sufficientNativeBalance
+}
+
+// GetPoolLiquidityUSD returns the total USD liquidity if available.
+// @lowerBound is true in case USD liquidity is not available for all pool assets.
+func (p *Pool) GetPoolLiquidityUSD() (totalLiquidity float64, lowerBound bool) {
+	for _, av := range p.Assetvolumes {
+		// For some pools, for instance on BalancerV2 type contracts, the pool contains itself as an asset.
+		if av.Asset.Address == p.Address {
+			continue
+		}
+		if av.VolumeUSD == 0 {
+			lowerBound = true
+		}
+		totalLiquidity += av.VolumeUSD
+	}
+	return
+}
+
 // MarshalBinary is a custom marshaller for BlockChain type
 func (bc *BlockChain) MarshalBinary() ([]byte, error) {
 	return json.Marshal(bc)
@@ -419,6 +443,19 @@ func (ep *ExchangePair) UnmarshalBinary(data []byte) error {
 
 type Pairs []ExchangePair
 
+type FeedSelection struct {
+	Asset              Asset
+	Exchangepairs      []ExchangepairSelection
+	LiquidityThreshold float64
+}
+
+type ExchangepairSelection struct {
+	Exchange           Exchange
+	Pairs              []Pair
+	Pools              []Pool
+	LiquidityThreshold float64
+}
+
 // Trade remark: In a pair A-B, we call A the Quote token and B the Base token
 type Trade struct {
 	// TO DO: Deprecated fields. Delete as soon as token-to-type branch is deployed.
@@ -430,6 +467,7 @@ type Trade struct {
 	Price             float64   `json:"Price"`
 	Volume            float64   `json:"Volume"` // Quantity of bought/sold units of Quote token. Negative if result of Market order Sell
 	Time              time.Time `json:"Time"`
+	PoolAddress       string    `json:"PoolAddress"`
 	ForeignTradeID    string    `json:"ForeignTradeID"`
 	EstimatedUSDPrice float64   `json:"EstimatedUSDPrice"` // will be filled by the TradesBlockService
 	Source            string    `json:"Source"`
@@ -487,6 +525,14 @@ type FilterPoint struct {
 	Min        float64
 	FirstTrade Trade
 	LastTrade  Trade
+}
+
+type FilterPointExtended struct {
+	FilterPoint FilterPoint
+	// Pools and pairs of the filter point's underlying trades.
+	Pools       []Pool
+	Pairs       []ExchangePair
+	TradesCount int32
 }
 
 type IndexBlock struct {
@@ -667,17 +713,18 @@ type OracleConfig struct {
 }
 
 type OracleUpdate struct {
-	OracleAddress   string
-	TransactionHash string
-	TransactionCost string
-	AssetKey        string
-	AssetPrice      string
-	UpdateBlock     uint64
-	UpdateFrom      string
-	FromBalance     string
-	GasCost         string
-	GasUsed         string
-	ChainID         string
-	UpdateTime      time.Time
-	CreationBlock   uint64
+	OracleAddress     string
+	TransactionHash   string
+	TransactionCost   string
+	AssetKey          string
+	AssetPrice        string
+	UpdateBlock       uint64
+	UpdateFrom        string
+	FromBalance       string
+	GasCost           string
+	GasUsed           string
+	ChainID           string
+	UpdateTime        time.Time
+	CreationBlock     uint64
+	CreationBlockTime time.Time
 }

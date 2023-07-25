@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "CoinBase",
+      "ForeignName": "ARB-USD",
+      "Ignore": false,
+      "Symbol": "ARB"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "ATOM-USD",
       "Ignore": false,
       "Symbol": "ATOM"
@@ -11,6 +17,12 @@
       "ForeignName": "AAVE-USD",
       "Ignore": false,
       "Symbol": "AAVE"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "GHST-USD",
+      "Ignore": false,
+      "Symbol": "GHST"
     },
     {
       "Exchange": "CoinBase",

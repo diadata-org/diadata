@@ -20,6 +20,12 @@
     },
     {
       "Exchange": "Kraken",
+      "ForeignName": "ARBUSD",
+      "Ignore": false,
+      "Symbol": "ARB"
+    },
+    {
+      "Exchange": "Kraken",
       "ForeignName": "ASTRUSD",
       "Ignore": false,
       "Symbol": "ASTR"

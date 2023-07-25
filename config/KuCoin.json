@@ -151,6 +151,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "ARB",
+            "ForeignName": "ARB-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "ASTR",
             "ForeignName": "ASTR-USDT",
             "Exchange": "KuCoin",

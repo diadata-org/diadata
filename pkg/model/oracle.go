@@ -307,7 +307,10 @@ func (rdb *RelDB) GetOracleUpdates(address string, chainid string, offset int) (
 		fu.gas_used,
 		fu.chain_id,
 		fu.update_time,
-		oc.creation_block
+		oc.creation_block,
+		oc.creation_block_time
+
+
 	FROM %s fu
 	JOIN %s oc ON fu.oracle_address = oc.address AND fu.chain_id = oc.chainID
 	WHERE fu.oracle_address = $1 AND fu.chain_id = $2 order by fu.update_block desc LIMIT 20 OFFSET %d
@@ -326,9 +329,10 @@ func (rdb *RelDB) GetOracleUpdates(address string, chainid string, offset int) (
 	for rows.Next() {
 
 		var (
-			update        dia.OracleUpdate
-			updateTime    sql.NullTime
-			creationBlock sql.NullInt64
+			update            dia.OracleUpdate
+			updateTime        sql.NullTime
+			creationBlock     sql.NullInt64
+			creationBlockTime sql.NullTime
 		)
 		err := rows.Scan(
 			&update.OracleAddress,
@@ -344,10 +348,14 @@ func (rdb *RelDB) GetOracleUpdates(address string, chainid string, offset int) (
 			&update.ChainID,
 			&updateTime,
 			&creationBlock,
+			&creationBlockTime,
 		)
 
 		if updateTime.Valid {
 			update.UpdateTime = updateTime.Time
+		}
+		if creationBlockTime.Valid {
+			update.CreationBlockTime = creationBlockTime.Time
 		}
 		if creationBlock.Valid {
 			update.CreationBlock = uint64(creationBlock.Int64)

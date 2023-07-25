@@ -19,6 +19,12 @@
       "Address": "0x4d224452801ACEd8B2F0aebE155379bb5D594381"
     },
     {
+      "Symbol": "ARB",
+      "Exchange": "MEXC",
+      "Blockchain": "Arbitrum",
+      "Address": "0x912CE59144191C1204E64559FE8253a0e49E6548"
+    },
+    {
       "Symbol": "ASTR",
       "Exchange": "MEXC",
       "Blockchain": "Astar",
@@ -233,6 +239,12 @@
       "Exchange": "MEXC",
       "Blockchain": "Fuse",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "GHST",
+      "Exchange": "MEXC",
+      "Blockchain": "Ethereum",
+      "Address": "0x3F382DbD960E3a9bbCeaE22651E88158d2791550"
     },
     {
       "Symbol": "GLMR",

@@ -2,9 +2,21 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "ARB_USDT",
+      "Ignore": false,
+      "Symbol": "ARB"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "BEPRO_USDT",
       "Ignore": false,
       "Symbol": "BEPRO"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "GNS_USDT",
+      "Ignore": false,
+      "Symbol": "GNS"
     },
     {
       "Exchange": "GateIO",

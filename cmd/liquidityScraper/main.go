@@ -30,14 +30,20 @@ func main() {
 		return
 	}
 
-	runLiquiditySource(relDB, *exchangeName)
+	datastore, err := models.NewDataStore()
+	if err != nil {
+		log.Errorln("Error connecting to postgres: ", err)
+		return
+	}
+
+	runLiquiditySource(relDB, datastore, *exchangeName)
 	log.Infof("Successfully ran pool collector for %s", *exchangeName)
 
 }
 
-func runLiquiditySource(relDB *models.RelDB, source string) {
+func runLiquiditySource(relDB *models.RelDB, datastore *models.DB, source string) {
 	log.Info("Fetching pools from ", source)
-	scraper := liquidityscraper.NewLiquidityScraper(source, relDB)
+	scraper := liquidityscraper.NewLiquidityScraper(source, relDB, datastore)
 
 	for {
 		select {

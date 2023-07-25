@@ -19,6 +19,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "ARB",
+      "ForeignName": "ARBUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "ASTR",
       "ForeignName": "ASTRUSDT",
       "Exchange": "MEXC",
@@ -249,6 +255,12 @@
     {
       "Symbol": "FUSE",
       "ForeignName": "FUSEUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "GHST",
+      "ForeignName": "GHSTUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     },

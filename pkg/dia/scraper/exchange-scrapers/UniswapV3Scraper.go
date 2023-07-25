@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	PancakeswapV3Pair "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/pancakeswapv3"
 	uniswapcontract "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
 	uniswapcontractv3 "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswapv3"
 	UniswapV3Pair "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswapv3/uniswapV3Pair"
@@ -58,28 +59,33 @@ type UniswapV3Scraper struct {
 }
 
 // NewUniswapV3Scraper returns a new UniswapV3Scraper
-func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool) *UniswapV3Scraper {
+func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *UniswapV3Scraper {
 	log.Info("NewUniswapScraper ", exchange.Name)
 	log.Info("NewUniswapScraper Address ", exchange.Contract)
 
 	var (
-		s   *UniswapV3Scraper
-		err error
+		s               *UniswapV3Scraper
+		listenByAddress bool
+		err             error
 	)
+
+	listenByAddress, err = strconv.ParseBool(utils.Getenv("LISTEN_BY_ADDRESS", ""))
+	if err != nil {
+		log.Fatal("parse LISTEN_BY_ADDRESS: ", err)
+	}
 
 	switch exchange.Name {
 	case dia.UniswapExchangeV3:
-		s = makeUniswapV3Scraper(exchange, false, "", "", "200", uint64(12369621))
+		s = makeUniswapV3Scraper(exchange, listenByAddress, "", "", "200", uint64(12369621))
 	case dia.UniswapExchangeV3Polygon:
-		s = makeUniswapV3Scraper(exchange, false, "", "", "200", uint64(22757913))
+		s = makeUniswapV3Scraper(exchange, listenByAddress, "", "", "200", uint64(22757913))
 	case dia.UniswapExchangeV3Arbitrum:
-		s = makeUniswapV3Scraper(exchange, false, "", "", "200", uint64(165))
+		s = makeUniswapV3Scraper(exchange, listenByAddress, "", "", "200", uint64(165))
+	case dia.PanCakeSwapExchangeV3:
+		s = makeUniswapV3Scraper(exchange, listenByAddress, "", "", "200", uint64(26956207))
 	}
 
-	s.relDB, err = models.NewPostgresDataStore()
-	if err != nil {
-		log.Fatal("new postgres datastore: ", err)
-	}
+	s.relDB = relDB
 
 	// Only include pools with (minimum) liquidity bigger than given env var.
 	liquidityThreshold, err := strconv.ParseFloat(utils.Getenv("LIQUIDITY_THRESHOLD", "0"), 64)
@@ -87,8 +93,14 @@ func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool) *UniswapV3Scraper {
 		liquidityThreshold = float64(0)
 		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThreshold)
 	}
+	// Only include pools with (minimum) liquidity USD value bigger than given env var.
+	liquidityThresholdUSD, err := strconv.ParseFloat(utils.Getenv("LIQUIDITY_THRESHOLD_USD", "0"), 64)
+	if err != nil {
+		liquidityThresholdUSD = float64(0)
+		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThresholdUSD)
+	}
 
-	poolMap, err = s.makeUniV3PoolMap(liquidityThreshold)
+	poolMap, err = s.makeUniV3PoolMap(liquidityThreshold, liquidityThresholdUSD)
 	if err != nil {
 		log.Fatal("build poolMap: ", err)
 	}
@@ -188,68 +200,94 @@ func (s *UniswapV3Scraper) mainLoop() {
 		}
 		log.Infof("%v found pair scraper for: %s with address %s", count, pool.ForeignName, pool.Address.Hex())
 		count++
-		sink, err := s.GetSwapsChannel(pool.Address)
-		if err != nil {
-			log.Error("error fetching swaps channel: ", err)
-		}
 
-		go func() {
-			for {
-				rawSwap, ok := <-sink
-				if ok {
-					swap := s.normalizeUniswapSwap(*rawSwap)
+		if s.exchangeName == dia.PanCakeSwapExchangeV3 {
 
-					price, volume := s.getSwapData(swap)
-					token0 := dia.Asset{
-						Address:    pool.Token0.Address.Hex(),
-						Symbol:     pool.Token0.Symbol,
-						Name:       pool.Token0.Name,
-						Decimals:   pool.Token0.Decimals,
-						Blockchain: Exchanges[s.exchangeName].BlockChain.Name,
-					}
-					token1 := dia.Asset{
-						Address:    pool.Token1.Address.Hex(),
-						Symbol:     pool.Token1.Symbol,
-						Name:       pool.Token1.Name,
-						Decimals:   pool.Token1.Decimals,
-						Blockchain: Exchanges[s.exchangeName].BlockChain.Name,
-					}
+			sink, err := s.GetPancakeSwapsChannel(pool.Address)
+			if err != nil {
+				log.Error("error fetching swaps channel: ", err)
+			}
 
-					t := &dia.Trade{
-						Symbol:         pool.Token0.Symbol,
-						Pair:           pool.ForeignName,
-						Price:          price,
-						Volume:         volume,
-						BaseToken:      token1,
-						QuoteToken:     token0,
-						Time:           time.Unix(swap.Timestamp, 0),
-						ForeignTradeID: swap.ID,
-						Source:         s.exchangeName,
-						VerifiedPair:   true,
-					}
-
-					switch {
-					case utils.Contains(reverseBasetokens, pool.Token1.Address.Hex()):
-						// If we need quotation of a base token, reverse pair
-						tSwapped, err := dia.SwapTrade(*t)
-						if err == nil {
-							t = &tSwapped
-						}
-					case utils.Contains(reverseQuotetokens, pool.Token0.Address.Hex()):
-						// If we need quotation of a base token, reverse pair
-						tSwapped, err := dia.SwapTrade(*t)
-						if err == nil {
-							t = &tSwapped
-						}
-					}
-					if price > 0 {
-						log.Infof("Got trade on pool %s: %v", rawSwap.Raw.Address.Hex(), t)
-						s.chanTrades <- t
+			go func() {
+				for {
+					rawSwap, ok := <-sink
+					if ok {
+						swap := s.normalizeUniswapSwap(*rawSwap)
+						s.sendTrade(swap, pool)
 					}
 				}
-			}
-		}()
+			}()
 
+		} else {
+
+			sink, err := s.GetSwapsChannel(pool.Address)
+			if err != nil {
+				log.Error("error fetching swaps channel: ", err)
+			}
+
+			go func() {
+				for {
+					rawSwap, ok := <-sink
+					if ok {
+						swap := s.normalizeUniswapSwap(*rawSwap)
+						s.sendTrade(swap, pool)
+					}
+				}
+			}()
+
+		}
+
+	}
+}
+
+func (s *UniswapV3Scraper) sendTrade(swap UniswapV3Swap, pool *UniswapPair) {
+	price, volume := s.getSwapData(swap)
+	token0 := dia.Asset{
+		Address:    pool.Token0.Address.Hex(),
+		Symbol:     pool.Token0.Symbol,
+		Name:       pool.Token0.Name,
+		Decimals:   pool.Token0.Decimals,
+		Blockchain: Exchanges[s.exchangeName].BlockChain.Name,
+	}
+	token1 := dia.Asset{
+		Address:    pool.Token1.Address.Hex(),
+		Symbol:     pool.Token1.Symbol,
+		Name:       pool.Token1.Name,
+		Decimals:   pool.Token1.Decimals,
+		Blockchain: Exchanges[s.exchangeName].BlockChain.Name,
+	}
+
+	t := &dia.Trade{
+		Symbol:         pool.Token0.Symbol,
+		Pair:           pool.ForeignName,
+		Price:          price,
+		Volume:         volume,
+		BaseToken:      token1,
+		QuoteToken:     token0,
+		Time:           time.Unix(swap.Timestamp, 0),
+		ForeignTradeID: swap.ID,
+		PoolAddress:    pool.Address.Hex(),
+		Source:         s.exchangeName,
+		VerifiedPair:   true,
+	}
+
+	switch {
+	case utils.Contains(reverseBasetokens, pool.Token1.Address.Hex()):
+		// If we need quotation of a base token, reverse pair
+		tSwapped, err := dia.SwapTrade(*t)
+		if err == nil {
+			t = &tSwapped
+		}
+	case utils.Contains(reverseQuotetokens, pool.Token0.Address.Hex()):
+		// If we need quotation of a base token, reverse pair
+		tSwapped, err := dia.SwapTrade(*t)
+		if err == nil {
+			t = &tSwapped
+		}
+	}
+	if price > 0 {
+		log.Infof("Got trade on pool %s: %v", pool.Address.Hex(), t)
+		s.chanTrades <- t
 	}
 }
 
@@ -272,6 +310,22 @@ func (s *UniswapV3Scraper) GetSwapsChannel(pairAddress common.Address) (chan *Un
 
 }
 
+func (s *UniswapV3Scraper) GetPancakeSwapsChannel(pairAddress common.Address) (chan *PancakeswapV3Pair.Pancakev3pairSwap, error) {
+	sink := make(chan *PancakeswapV3Pair.Pancakev3pairSwap)
+	var pairFiltererContract *PancakeswapV3Pair.Pancakev3pairFilterer
+
+	pairFiltererContract, err := PancakeswapV3Pair.NewPancakev3pairFilterer(pairAddress, s.WsClient)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = pairFiltererContract.WatchSwap(&bind.WatchOpts{}, sink, []common.Address{}, []common.Address{})
+	if err != nil {
+		log.Error("error in get swaps channel: ", err)
+	}
+	return sink, nil
+}
+
 func (s *UniswapV3Scraper) getSwapData(swap UniswapV3Swap) (price float64, volume float64) {
 	volume = swap.Amount0
 	price = math.Abs(swap.Amount1 / swap.Amount0)
@@ -279,22 +333,38 @@ func (s *UniswapV3Scraper) getSwapData(swap UniswapV3Swap) (price float64, volum
 }
 
 // normalizeUniswapSwap takes a swap as returned by the swap contract's channel and converts it to a UniswapSwap type
-func (s *UniswapV3Scraper) normalizeUniswapSwap(swap UniswapV3Pair.UniswapV3PairSwap) (normalizedSwap UniswapV3Swap) {
+func (s *UniswapV3Scraper) normalizeUniswapSwap(swapI interface{}) (normalizedSwap UniswapV3Swap) {
+	switch swap := swapI.(type) {
+	case UniswapV3Pair.UniswapV3PairSwap:
+		pair := poolMap[swap.Raw.Address.Hex()]
+		decimals0 := int(pair.Token0.Decimals)
+		decimals1 := int(pair.Token1.Decimals)
+		amount0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount0), new(big.Float).SetFloat64(math.Pow10(decimals0))).Float64()
+		amount1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount1), new(big.Float).SetFloat64(math.Pow10(decimals1))).Float64()
 
-	pair := poolMap[swap.Raw.Address.Hex()]
+		normalizedSwap = UniswapV3Swap{
+			ID:        swap.Raw.TxHash.Hex(),
+			Timestamp: time.Now().Unix(),
+			Pair:      pair,
+			Amount0:   amount0,
+			Amount1:   amount1,
+		}
+	case PancakeswapV3Pair.Pancakev3pairSwap:
+		pair := poolMap[swap.Raw.Address.Hex()]
+		decimals0 := int(pair.Token0.Decimals)
+		decimals1 := int(pair.Token1.Decimals)
+		amount0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount0), new(big.Float).SetFloat64(math.Pow10(decimals0))).Float64()
+		amount1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount1), new(big.Float).SetFloat64(math.Pow10(decimals1))).Float64()
 
-	decimals0 := int(pair.Token0.Decimals)
-	decimals1 := int(pair.Token1.Decimals)
-	amount0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount0), new(big.Float).SetFloat64(math.Pow10(decimals0))).Float64()
-	amount1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount1), new(big.Float).SetFloat64(math.Pow10(decimals1))).Float64()
-
-	normalizedSwap = UniswapV3Swap{
-		ID:        swap.Raw.TxHash.Hex(),
-		Timestamp: time.Now().Unix(),
-		Pair:      pair,
-		Amount0:   amount0,
-		Amount1:   amount1,
+		normalizedSwap = UniswapV3Swap{
+			ID:        swap.Raw.TxHash.Hex(),
+			Timestamp: time.Now().Unix(),
+			Pair:      pair,
+			Amount0:   amount0,
+			Amount1:   amount1,
+		}
 	}
+
 	return
 }
 
@@ -472,21 +542,48 @@ func (ps *UniswapPairV3Scraper) Pair() dia.ExchangePair {
 }
 
 // makeUniPoolMap returns a map with pool addresses as keys and the underlying UniswapPair as values.
-func (s *UniswapV3Scraper) makeUniV3PoolMap(liquiThreshold float64) (map[string]UniswapPair, error) {
+func (s *UniswapV3Scraper) makeUniV3PoolMap(liquiThreshold float64, liquidityThresholdUSD float64) (map[string]UniswapPair, error) {
 	pm := make(map[string]UniswapPair)
+	var pools []dia.Pool
+	var err error
 
-	// Load all pools above liqui threshold.
-	pools, err := s.relDB.GetAllPoolsExchange(s.exchangeName, liquiThreshold)
-	if err != nil {
-		return pm, err
+	if s.listenByAddress {
+		// Only load pool info for addresses from json file.
+		poolAddresses, errAddr := getAddressesFromConfig("uniswapv3/subscribe_pools/" + s.exchangeName)
+		if errAddr != nil {
+			log.Error("fetch pool addresses from config file: ", errAddr)
+		}
+		for _, address := range poolAddresses {
+			pool, errPool := s.relDB.GetPoolByAddress(Exchanges[s.exchangeName].BlockChain.Name, address.Hex())
+			if errPool != nil {
+				log.Fatalf("Get pool with address %s: %v", address.Hex(), errPool)
+			}
+			pools = append(pools, pool)
+		}
+	} else {
+		// Load all pools above liqui threshold.
+		pools, err = s.relDB.GetAllPoolsExchange(s.exchangeName, liquiThreshold)
+		if err != nil {
+			return pm, err
+		}
 	}
 
 	log.Info("Found ", len(pools), " pools.")
 	log.Info("make pool map...")
+	lowerBoundCount := 0
 	for _, pool := range pools {
 		if len(pool.Assetvolumes) != 2 {
 			continue
 		}
+		liquidity, lowerBound := pool.GetPoolLiquidityUSD()
+		// Discard pool if complete USD liquidity is below threshold.
+		if !lowerBound && liquidity < liquidityThresholdUSD {
+			continue
+		}
+		if lowerBound {
+			lowerBoundCount++
+		}
+
 		up := UniswapPair{
 			Address: common.HexToAddress(pool.Address),
 		}
@@ -502,5 +599,6 @@ func (s *UniswapV3Scraper) makeUniV3PoolMap(liquiThreshold float64) (map[string]
 	}
 
 	log.Infof("found %v subscribable pools.", len(pm))
+	log.Infof("%v pools with lowerBound=true.", lowerBoundCount)
 	return pm, err
 }

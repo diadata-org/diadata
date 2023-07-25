@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	builderUtils "github.com/diadata-org/diadata/oraclebuildertools/utils"
+	builderUtils "github.com/diadata-org/diadata/cmd/oraclebuildertools/utils"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/sirupsen/logrus"

@@ -26,6 +26,12 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "ARBUSDT",
+            "Ignore": false,
+            "Symbol": "ARB"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "ATOMUSDT",
             "Ignore": false,
             "Symbol": "ATOM"
@@ -203,6 +209,18 @@
             "ForeignName": "USDPUSDT",
             "Ignore": false,
             "Symbol": "USDP"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "wBETHETH",
+            "Ignore": false,
+            "Symbol": "wBETH"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "wBETHUSDT",
+            "Ignore": false,
+            "Symbol": "wBETH"
         }
     ]
 }

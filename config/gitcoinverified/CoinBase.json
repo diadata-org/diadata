@@ -13,6 +13,12 @@
             "Address": "0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4"
         },
         {
+            "Symbol": "ARB",
+            "Exchange": "CoinBase",
+            "Blockchain": "Arbitrum",
+            "Address": "0x912CE59144191C1204E64559FE8253a0e49E6548"
+        },
+        {
             "Symbol": "ATOM",
             "Exchange": "CoinBase",
             "Blockchain": "Cosmos",
@@ -107,6 +113,12 @@
             "Exchange": "CoinBase",
             "Blockchain": "Fiat",
             "Address": "826"
+        },
+        {
+            "Symbol": "GHST",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x3F382DbD960E3a9bbCeaE22651E88158d2791550"
         },
         {
             "Symbol": "GTC",

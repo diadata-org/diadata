@@ -71,6 +71,7 @@ CREATE TABLE poolasset (
     pool_id UUID REFERENCES pool(pool_id) NOT NULL,
     asset_id UUID REFERENCES asset(asset_id) NOT NULL, 
     liquidity numeric,
+    liquidity_usd numeric,
     time_stamp timestamp,
     token_index integer,
     UNIQUE (poolasset_id),
@@ -282,13 +283,12 @@ CREATE TABLE oracleconfig (
     mandatory_frequency text,
     createddate TIMESTAMP NOT NULL DEFAULT NOW(),
     lastupdate TIMESTAMP NOT NULL,
-    creation_block text,
     UNIQUE (id),
     UNIQUE (feeder_id)
 );
 
-
--- ALTER TABLE oracleconfig ADD COLUMN creation_block text default 0;
+ALTER TABLE oracleconfig  ADD COLUMN creation_block_time TIMESTAMP DEFAULT 'epoch'::timestamp;
+         
 
 
 

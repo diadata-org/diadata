@@ -52,6 +52,9 @@ type Datastore interface {
 	GetTradesByExchangesBatched(asset dia.Asset, baseAssets []dia.Asset, exchanges []string, startTimes, endTimes []time.Time, maxTrades int) ([]dia.Trade, error)
 	GetxcTradesByExchangesBatched(quoteassets []dia.Asset, exchanges []string, startTimes []time.Time, endTimes []time.Time) ([]dia.Trade, error)
 
+	GetTradesByExchangepairs(exchangepairMap map[string][]dia.Pair, exchangepoolMap map[string][]string, starttime time.Time, endtime time.Time) ([]dia.Trade, error)
+	GetTradesByFeedSelection(feedselection []dia.FeedSelection, starttimes []time.Time, endtimes []time.Time) ([]dia.Trade, error)
+
 	GetActiveExchangesAndPairs(address string, blockchain string, numTradesThreshold int64, starttime time.Time, endtime time.Time) (map[string][]dia.Pair, map[string]int64, error)
 	GetOldTradesFromInflux(table string, exchange string, verified bool, timeInit, timeFinal time.Time) ([]dia.Trade, error)
 	CopyInfluxMeasurements(dbOrigin string, dbDestination string, tableOrigin string, tableDestination string, timeInit time.Time, timeFinal time.Time) (int64, error)
@@ -76,7 +79,7 @@ type Datastore interface {
 	GetNumTrades(exchange string, address string, blockchain string, starttime time.Time, endtime time.Time) (int64, error)
 	GetNumTradesSeries(asset dia.Asset, exchange string, starttime time.Time, endtime time.Time, grouping string) ([]int64, error)
 	GetVolumesAllExchanges(asset dia.Asset, starttime time.Time, endtime time.Time) (exchVolumes dia.ExchangeVolumesList, err error)
-	GetExchangePairVolumes(asset dia.Asset, starttime time.Time, endtime time.Time) (map[string][]dia.PairVolume, error)
+	GetExchangePairVolumes(asset dia.Asset, starttime time.Time, endtime time.Time, threshold float64) (map[string][]dia.PairVolume, error)
 
 	// New Asset pricing methods: 23/02/2021
 	SetAssetPriceUSD(asset dia.Asset, price float64, timestamp time.Time) error
@@ -99,6 +102,7 @@ type Datastore interface {
 	// DEX Pool  methods
 	SavePoolInflux(p dia.Pool) error
 	GetPoolInflux(poolAddress string, starttime time.Time, endtime time.Time) ([]dia.Pool, error)
+	GetPoolLiquiditiesUSD(p *dia.Pool, priceCache map[string]float64)
 
 	// Market Measures
 	GetAssetsMarketCap(asset dia.Asset) (float64, error)

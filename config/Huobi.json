@@ -20,6 +20,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "ARBUSDT",
+      "Ignore": false,
+      "Symbol": "ARB"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "AURORAUSDT",
       "Ignore": false,
       "Symbol": "AURORA"

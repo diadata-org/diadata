@@ -15,7 +15,7 @@ const { getValues: getValueAstar } = require("./nastrhelper");
 const {
   tokenkey,
   redis,
-  allowedtokens,
+  allowedTokens,
   getPrice,
   pricekey,
 } = require("./utils");
@@ -23,7 +23,7 @@ const {
 let cache = redis();
 
 async function cronstart() {
-  for (const value of allowedtokens) {
+  for (const value of allowedTokens) {
     switch (value.source) {
       case "interlay":
         {
@@ -53,15 +53,21 @@ async function cronstart() {
         break;
       case "bifrost":
         {
-          let saved = await getBiFrostValues("KSM");
-          let btcprice = await getPrice("KSM");
+          
+          let saved = await getBiFrostValues(value.token);
+          let btcprice = await getPrice(value.token);
+
+          let decimal = 1e12;
+          if(value.token=="DOT"){
+            decimal = 1e10
+          }
 
           cache.set(
             tokenkey("bifrost", value.vtoken),
             JSON.stringify({
               collateral_ratio: {
-                issued_token: saved.total_issued / 1e12,
-                locked_token: saved.total_backable / 1e12,
+                issued_token: saved.total_issued / decimal,
+                locked_token: saved.total_backable / decimal,
                 ratio: saved.total_backable / saved.total_issued,
                 // decimal: saved.decimal,
               },
@@ -121,7 +127,7 @@ async function cronstart() {
     await cache.set(pricekey(value.token), baseAssetPrice);
   }
 
-  for (const value of allowedtokens) {
+  for (const value of allowedTokens) {
     let val = await cache.get(tokenkey(value.source, value.vtoken));
     console.log("------", val);
     console.log("----value--", value);

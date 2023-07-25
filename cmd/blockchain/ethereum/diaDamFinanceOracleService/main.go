@@ -165,11 +165,10 @@ func periodicOracleUpdateHelper(oldPrice float64, oldBalance, oldTotalSupply *bi
 	newTotalSupply := totalSupply
 
 	// Check for deviation
-	if (newPrice != oldPrice || 
-		  newBalance.Cmp(oldBalance) != 0 ||
-		  newTotalSupply.Cmp(oldTotalSupply) != 0) {
+	if newPrice != oldPrice ||
+		newBalance.Cmp(oldBalance) != 0 ||
+		newTotalSupply.Cmp(oldTotalSupply) != 0 {
 		log.Println("Entering deviation based update zone")
-
 
 		err = updatePair(rawBaseQ, auth, contract, conn, usdcbalance, totalSupply)
 		if err != nil {

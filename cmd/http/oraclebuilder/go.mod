@@ -2,14 +2,14 @@ module github.com/diadata-org/diadata/http/oraclebuilder
 
 go 1.19
 
-replace (
-	github.com/99designs/keyring => github.com/nnn-gif/keyring v1.0.0
-	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-)
+replace github.com/99designs/keyring => github.com/nnn-gif/keyring v1.0.0
+
+
+replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 require (
 	github.com/99designs/keyring v1.2.2
-	github.com/diadata-org/diadata v1.4.288
+	github.com/diadata-org/diadata v1.4.172
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/sirupsen/logrus v1.9.0

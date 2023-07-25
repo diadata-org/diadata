@@ -24,7 +24,6 @@ type Query {
     Exchanges: [String!]
     Address: String
     BlockChain: String
-    BaseAsset: [Asset!]
   ): [FilterPoint]
 
   GetChartMeta(
@@ -37,8 +36,16 @@ type Query {
     Exchanges: [String!]
     Address: String
     BlockChain: String
-    BaseAsset: [Asset!]
   ): FilterPointMeta
+
+  GetFeed(
+    Filter: String!
+    BlockSizeSeconds: Int!
+    BlockShiftSeconds: Int
+    StartTime: Time
+    EndTime: Time
+    FeedSelection: [FeedSelection!]
+  ): [FilterPointExtended]
 
   GetVWALP(
     Quotetokenblockchain: String!
@@ -70,6 +77,19 @@ type Query {
     TokenID: String!
   ): [NFTBid]
 
+}
+
+input FeedSelection {
+  Address: String
+  Blockchain: String
+  LiquidityThreshold: Float
+  Exchangepairs: [Exchangepair!]
+}
+
+input Exchangepair {
+  Exchange: String
+  Pairs: [String]
+  LiquidityThreshold: Float
 }
 
 scalar Time
@@ -111,15 +131,27 @@ type FilterPoint {
   Value: Float
   Name: String
   Time: Time
-  Address:String
+  Address: String
   Blockchain :String
   FirstTrade: Trade
   LastTrade: Trade
 }
 
+type FilterPointExtended {
+  Name: String
+  Symbol: String
+  Time: Time
+  Value: Float
+  Address: String
+  Blockchain: String
+  Pools: [String!]
+  Pairs: [String!]
+  TradesCount: Int
+}
+
 type Trade {
-  Price:Float
-  Pair:String
+  Price: Float
+  Pair: String
   Volume: Float
   Symbol: String
   EstimatedUSDPrice: Float

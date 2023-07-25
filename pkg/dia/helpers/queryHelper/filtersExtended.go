@@ -5,16 +5,20 @@ import (
 
 	filters "github.com/diadata-org/diadata/internal/pkg/filtersBlockService"
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/sirupsen/logrus"
 )
 
-var log = logrus.New()
-
-func FilterMA(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint, metadata *dia.FilterPointMetadata) {
+func FilterMAextended(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPointsExtended []dia.FilterPointExtended) {
 
 	lastfp := &dia.FilterPoint{}
-	metadata = dia.NewFilterPointMetadata()
+
 	for _, block := range tradeBlocks {
+
+		fpe := &dia.FilterPointExtended{}
+		pairs, pools := block.GetBlockSources()
+		fpe.Pairs = pairs
+		fpe.Pools = pools
+		fpe.TradesCount = int32(len(block.Trades))
+
 		if len(block.Trades) > 0 {
 			maFilter := filters.NewFilterMA(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
 
@@ -25,8 +29,6 @@ func FilterMA(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints
 			maFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
 			fp := maFilter.FilterPointForBlock()
 
-			metadata.AddPoint(fp.Value)
-
 			if len(block.Trades) > 0 {
 				fp.LastTrade = block.Trades[len(block.Trades)-1]
 			} else {
@@ -35,28 +37,34 @@ func FilterMA(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints
 
 			if fp != nil {
 				fp.Time = time.Unix(block.TimeStamp/1e9, 0)
-				filterPoints = append(filterPoints, *fp)
+				fpe.FilterPoint = *fp
+				filterPointsExtended = append(filterPointsExtended, *fpe)
 				lastfp = fp
 			} else if lastfp != nil {
 				lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
-				filterPoints = append(filterPoints, *lastfp)
-
+				fpe.FilterPoint = *lastfp
+				filterPointsExtended = append(filterPointsExtended, *fpe)
 			}
 		} else {
 			lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
-			filterPoints = append(filterPoints, *lastfp)
+			fpe.FilterPoint = *lastfp
+			filterPointsExtended = append(filterPointsExtended, *fpe)
 		}
 	}
 
 	return
 }
 
-func FilterMAIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint, metadata *dia.FilterPointMetadata) {
+func FilterMAIRextended(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPointsExtended []dia.FilterPointExtended) {
 	lastfp := &dia.FilterPoint{}
-	metadata = dia.NewFilterPointMetadata()
 
 	for i, block := range tradeBlocks {
 		log.Infof("block number: %v", i)
+		fpe := &dia.FilterPointExtended{}
+		pairs, pools := block.GetBlockSources()
+		fpe.Pairs = pairs
+		fpe.Pools = pools
+		fpe.TradesCount = int32(len(block.Trades))
 
 		if len(block.Trades) > 0 {
 			mairFilter := filters.NewFilterMAIR(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
@@ -68,8 +76,6 @@ func FilterMAIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoin
 			mairFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
 			fp := mairFilter.FilterPointForBlock()
 
-			metadata.AddPoint(fp.Value)
-
 			fp.FirstTrade = firstBlock
 			if len(block.Trades) > 0 {
 				fp.LastTrade = block.Trades[len(block.Trades)-1]
@@ -79,35 +85,44 @@ func FilterMAIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoin
 
 			if fp != nil {
 				fp.Time = time.Unix(block.TimeStamp/1e9, 0)
-				filterPoints = append(filterPoints, *fp)
+				fpe.FilterPoint = *fp
+				filterPointsExtended = append(filterPointsExtended, *fpe)
 				lastfp = fp
 			} else if lastfp != nil {
 				lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
-				filterPoints = append(filterPoints, *lastfp)
+				fpe.FilterPoint = *lastfp
+				filterPointsExtended = append(filterPointsExtended, *fpe)
 			}
 		} else {
 			lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
-			filterPoints = append(filterPoints, *lastfp)
+			fpe.FilterPoint = *lastfp
+			filterPointsExtended = append(filterPointsExtended, *fpe)
 		}
 	}
 
 	return
 }
 
-func FilterVWAP(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint, metadata *dia.FilterPointMetadata) {
+func FilterVWAPextended(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPointsExtended []dia.FilterPointExtended) {
 	var lastfp *dia.FilterPoint
-	metadata = dia.NewFilterPointMetadata()
-	for _, block := range tradeBlocks {
-		if len(block.Trades) > 0 {
-			vwapFilter := filters.NewFilterVWAP(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
 
+	for _, block := range tradeBlocks {
+		fpe := &dia.FilterPointExtended{}
+		pairs, pools := block.GetBlockSources()
+		fpe.Pairs = pairs
+		fpe.Pools = pools
+		fpe.TradesCount = int32(len(block.Trades))
+
+		if len(block.Trades) > 0 {
+
+			vwapFilter := filters.NewFilterVWAP(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
 			for _, trade := range block.Trades {
 				vwapFilter.Compute(trade)
 			}
 
 			vwapFilter.FinalCompute(block.Trades[0].Time)
 			fp := vwapFilter.FilterPointForBlock()
-			metadata.AddPoint(fp.Value)
+
 			fp.FirstTrade = block.Trades[0]
 
 			if len(block.Trades) > 0 {
@@ -117,22 +132,30 @@ func FilterVWAP(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoin
 			}
 
 			fp.Time = time.Unix(block.TimeStamp/1e9, 0)
-			filterPoints = append(filterPoints, *fp)
+			fpe.FilterPoint = *fp
+			filterPointsExtended = append(filterPointsExtended, *fpe)
 			lastfp = fp
 
 		} else {
 			lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
-			filterPoints = append(filterPoints, *lastfp)
+			fpe.FilterPoint = *lastfp
+			filterPointsExtended = append(filterPointsExtended, *fpe)
 		}
 	}
 	return
 }
 
-func FilterVWAPIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint, metadata *dia.FilterPointMetadata) {
+func FilterVWAPIRextended(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPointsExtended []dia.FilterPointExtended) {
 	var lastfp *dia.FilterPoint
-	metadata = dia.NewFilterPointMetadata()
 
 	for _, block := range tradeBlocks {
+
+		fpe := &dia.FilterPointExtended{}
+		pairs, pools := block.GetBlockSources()
+		fpe.Pairs = pairs
+		fpe.Pools = pools
+		fpe.TradesCount = int32(len(block.Trades))
+
 		if len(block.Trades) > 0 {
 
 			vwapirFilter := filters.NewFilterVWAPIR(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
@@ -142,8 +165,6 @@ func FilterVWAPIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPo
 			vwapirFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
 			fp := vwapirFilter.FilterPointForBlock()
 
-			metadata.AddPoint(fp.Value)
-
 			fp.FirstTrade = block.Trades[0]
 
 			if len(block.Trades) > 0 {
@@ -151,47 +172,54 @@ func FilterVWAPIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPo
 			} else {
 				fp.LastTrade = fp.FirstTrade
 			}
+
 			if fp != nil && fp.Value > 0 {
 				fp.Time = time.Unix(block.TimeStamp/1e9, 0)
-				filterPoints = append(filterPoints, *fp)
+				fpe.FilterPoint = *fp
+				filterPointsExtended = append(filterPointsExtended, *fpe)
 				lastfp = fp
-			} else {
-				if lastfp != nil {
-					lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
-					filterPoints = append(filterPoints, *lastfp)
-				}
+			} else if lastfp != nil {
+				lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
+				fpe.FilterPoint = *lastfp
+				filterPointsExtended = append(filterPointsExtended, *fpe)
 			}
 		} else {
 			if lastfp != nil {
 				lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
-				filterPoints = append(filterPoints, *lastfp)
+				fpe.FilterPoint = *lastfp
+				filterPointsExtended = append(filterPointsExtended, *fpe)
 			}
 		}
 	}
 	return
 }
 
-func FilterMEDIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint, metadata *dia.FilterPointMetadata) {
+func FilterMEDIRextended(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPointsExtended []dia.FilterPointExtended) {
 	var lastfp *dia.FilterPoint
-	metadata = dia.NewFilterPointMetadata()
 
 	for _, block := range tradeBlocks {
+
+		fpe := &dia.FilterPointExtended{}
+		pairs, pools := block.GetBlockSources()
+		fpe.Pairs = pairs
+		fpe.Pools = pools
+		fpe.TradesCount = int32(len(block.Trades))
+
 		if len(block.Trades) > 0 {
+
 			medirFilter := filters.NewFilterMEDIR(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
-
 			for _, trade := range block.Trades {
-
 				medirFilter.Compute(trade)
 			}
-
 			medirFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
 			fp := medirFilter.FilterPointForBlock()
 			if fp == nil {
 				log.Error("failed getting FilterPointForBlock")
 				return
 			}
-			metadata.AddPoint(fp.Value)
+
 			fp.FirstTrade = block.Trades[0]
+
 			if len(block.Trades) > 0 {
 				fp.LastTrade = block.Trades[len(block.Trades)-1]
 			} else {
@@ -199,25 +227,26 @@ func FilterMEDIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoi
 			}
 			if fp != nil && fp.Value > 0 {
 				fp.Time = time.Unix(block.TimeStamp/1e9, 0)
-				filterPoints = append(filterPoints, *fp)
+				fpe.FilterPoint = *fp
+				filterPointsExtended = append(filterPointsExtended, *fpe)
 				lastfp = fp
-			} else {
-				if lastfp != nil {
-					lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
-					filterPoints = append(filterPoints, *lastfp)
-				}
+			} else if lastfp != nil {
+				lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
+				fpe.FilterPoint = *lastfp
+				filterPointsExtended = append(filterPointsExtended, *fpe)
 			}
 		} else {
 			if lastfp != nil {
 				lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
-				filterPoints = append(filterPoints, *lastfp)
+				fpe.FilterPoint = *lastfp
+				filterPointsExtended = append(filterPointsExtended, *fpe)
 			}
 		}
 	}
 	return
 }
 
-func FilterEMA(points []dia.FilterPoint, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint, metadata *dia.FilterPointMetadata) {
+func FilterEMAextended(points []dia.FilterPoint, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint, metadata *dia.FilterPointMetadata) {
 	emaFilter := filters.NewFilterEMA(asset, "", points[0].Time, blockSize)
 	metadata = dia.NewFilterPointMetadata()
 
@@ -242,21 +271,27 @@ func FilterEMA(points []dia.FilterPoint, asset dia.Asset, blockSize int) (filter
 	return
 }
 
-func FilterVOL(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints []dia.FilterPoint, metadata *dia.FilterPointMetadata) {
-	metadata = dia.NewFilterPointMetadata()
+func FilterVOLextended(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPointsExtended []dia.FilterPointExtended) {
 
-	lastFp := &dia.FilterPoint{}
+	lastfp := &dia.FilterPoint{}
+
 	for _, block := range tradeBlocks {
-		if len(block.Trades) > 0 {
-			volFilter := filters.NewFilterVOL(asset, "", blockSize)
 
+		fpe := &dia.FilterPointExtended{}
+		pairs, pools := block.GetBlockSources()
+		fpe.Pairs = pairs
+		fpe.Pools = pools
+		fpe.TradesCount = int32(len(block.Trades))
+
+		if len(block.Trades) > 0 {
+
+			volFilter := filters.NewFilterVOL(asset, "", blockSize)
 			for _, trade := range block.Trades {
 				volFilter.Compute(trade)
 			}
-
 			volFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
 			fp := volFilter.FilterPointForBlock()
-			metadata.AddPoint(fp.Value)
+
 			fp.FirstTrade = block.Trades[0]
 			if len(block.Trades) > 1 {
 				fp.LastTrade = block.Trades[len(block.Trades)-1]
@@ -265,13 +300,14 @@ func FilterVOL(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoint
 			}
 			if fp != nil {
 				fp.Time = time.Unix(block.TimeStamp/1e9, 0)
-				filterPoints = append(filterPoints, *fp)
-				lastFp = fp
+				fpe.FilterPoint = *fp
+				filterPointsExtended = append(filterPointsExtended, *fpe)
+				lastfp = fp
 			}
 		} else {
-			lastFp.Value = 0
-			lastFp.Time = time.Unix(block.TimeStamp/1e9, 0)
-			filterPoints = append(filterPoints, *lastFp)
+			lastfp.Time = time.Unix(block.TimeStamp/1e9, 0)
+			fpe.FilterPoint = *lastfp
+			filterPointsExtended = append(filterPointsExtended, *fpe)
 		}
 	}
 	return

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/curvefi/token"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -24,12 +25,14 @@ import (
 
 type BancorPoolScraper struct {
 	RestClient   *ethclient.Client
+	datastore    *models.DB
 	poolChannel  chan dia.Pool
 	doneChannel  chan bool
 	blockchain   string
 	exchangeName string
 	pool         string
 }
+
 type BancorPool struct {
 	Reserves []struct {
 		DltID   string `json:"dlt_id"`
@@ -69,6 +72,7 @@ type BancorPool struct {
 		Usd string `json:"usd"`
 	} `json:"fees_24h"`
 }
+
 type BancorPools struct {
 	Data      []BancorPool `json:"data"`
 	Timestamp struct {
@@ -79,7 +83,7 @@ type BancorPools struct {
 	} `json:"timestamp"`
 }
 
-func NewBancorPoolScraper(exchange dia.Exchange) *BancorPoolScraper {
+func NewBancorPoolScraper(exchange dia.Exchange, datastore *models.DB) *BancorPoolScraper {
 	var (
 		restClient  *ethclient.Client
 		err         error
@@ -97,6 +101,7 @@ func NewBancorPoolScraper(exchange dia.Exchange) *BancorPoolScraper {
 
 	scraper = &BancorPoolScraper{
 		RestClient:   restClient,
+		datastore:    datastore,
 		poolChannel:  poolChannel,
 		doneChannel:  doneChannel,
 		blockchain:   exchange.BlockChain.Name,
@@ -239,6 +244,12 @@ func (scraper *BancorPoolScraper) loadPoolData(poolCoinAddresses []common.Addres
 	pool.Exchange = dia.Exchange{Name: scraper.exchangeName}
 	pool.Blockchain = dia.BlockChain{Name: scraper.blockchain}
 	pool.Address = poolAddress.Hex()
+
+	// Determine USD liquidity.
+	if pool.SufficientNativeBalance(GLOBAL_NATIVE_LIQUIDITY_THRESHOLD) {
+		scraper.datastore.GetPoolLiquiditiesUSD(&pool, priceCache)
+	}
+
 	pool.Time = time.Now()
 
 	return pool

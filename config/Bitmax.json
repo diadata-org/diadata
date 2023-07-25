@@ -1,6 +1,12 @@
 {
     "Coins": [
         {
+            "Symbol": "GNS",
+            "ForeignName": "GNS/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
             "Symbol": "ATOM",
             "ForeignName": "ATOM/USDT",
             "Exchange": "Bitmax",

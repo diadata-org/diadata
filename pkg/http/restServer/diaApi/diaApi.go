@@ -830,14 +830,8 @@ func (env *Env) GetPoolsByAsset(c *gin.Context) {
 		return
 	}
 
-	usdLiquidity, err := strconv.ParseBool(c.DefaultQuery("usdLiquidity", "true"))
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot parse usdLiquidity"))
-		return
-	}
-
 	// Set liquidity threshold measured in native currency to 1 in order to filter out noise.
-	pools, err := env.RelDB.GetPoolsByAsset(asset, liquidityThreshold)
+	pools, err := env.RelDB.GetPoolsByAsset(asset, liquidityThreshold, 0)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, errors.New("cannot find pool"))
 		return
@@ -856,28 +850,13 @@ func (env *Env) GetPoolsByAsset(c *gin.Context) {
 
 	// Get total liquidity for each filtered pool.
 	for _, pool := range pools {
-		var (
-			totalLiquidity float64
-			noPrice        bool
-			pi             poolInfo
-		)
+		var pi poolInfo
 
-		// Look from asset prices in Redis in case @usdLiquidity is true.
-		if usdLiquidity {
-			for _, assetvol := range pool.Assetvolumes {
-				quotation, err := env.getQuotationFromCache(QUOTATION_CACHE, assetvol.Asset)
-				if err != nil {
-					log.Warnf("no quotation for %v: %v", assetvol.Asset, err)
-					totalLiquidity = 0
-					noPrice = true
-					break
-				}
-				totalLiquidity += quotation.Price * assetvol.Volume
-			}
-			// In case we can determine USD liquidity and it's below the threshold, continue.
-			if !noPrice && totalLiquidity < liquidityThresholdUSD {
-				continue
-			}
+		totalLiquidity, lowerBound := pool.GetPoolLiquidityUSD()
+
+		// In case we can determine USD liquidity and it's below the threshold, continue.
+		if !lowerBound && totalLiquidity < liquidityThresholdUSD {
+			continue
 		}
 
 		pi.Exchange = pool.Exchange.Name
@@ -889,31 +868,17 @@ func (env *Env) GetPoolsByAsset(c *gin.Context) {
 			var al dia.AssetLiquidity = dia.AssetLiquidity(pool.Assetvolumes[i])
 			pi.Liquidity = append(pi.Liquidity, al)
 		}
-		if noPrice {
-			pi.Message = "Not enough US-Dollar price information on one or more pool assets available."
+		if lowerBound {
+			pi.Message = "No US-Dollar price information on one or more pool assets available."
 		}
 		result = append(result, pi)
 	}
 
-	// Sort by total USD liquidity if @usdLiquidity is true.
-	if usdLiquidity {
-		sort.Slice(result, func(m, n int) bool {
-			return result[m].TotalLiquidityUSD > result[n].TotalLiquidityUSD
-		})
-	} else {
-		// Sort by sum of both (native) liquidities in case USD liquidity is not computed.
-		sort.Slice(result, func(m, n int) bool {
-			var liquidity_m float64
-			var liquidity_n float64
-			for _, l := range result[m].Liquidity {
-				liquidity_m += l.Volume
-			}
-			for _, l := range result[n].Liquidity {
-				liquidity_n += l.Volume
-			}
-			return liquidity_m > liquidity_n
-		})
-	}
+	// Sort by total USD liquidity.
+	sort.Slice(result, func(m, n int) bool {
+		return result[m].TotalLiquidityUSD > result[n].TotalLiquidityUSD
+	})
+
 	c.JSON(http.StatusOK, result)
 }
 
@@ -934,64 +899,35 @@ func (env *Env) GetPoolLiquidityByAddress(c *gin.Context) {
 	// Get total liquidity.
 	var (
 		totalLiquidity float64
-		noPrice        bool
+		lowerBound     bool
 	)
-	for _, assetvol := range pool.Assetvolumes {
-		price, err := env.DataStore.GetAssetPriceUSDCache(assetvol.Asset)
-		if err != nil {
-			log.Warnf("no quotation for %v: %v", assetvol.Asset, err)
-			totalLiquidity = 0
-			noPrice = true
-			break
-		}
-		totalLiquidity += price * assetvol.Volume
+	totalLiquidity, lowerBound = pool.GetPoolLiquidityUSD()
+
+	type localReturn struct {
+		Exchange          string
+		Blockchain        string
+		Address           string
+		Time              time.Time
+		TotalLiquidityUSD float64
+		Message           string
+		Liquidity         []dia.AssetLiquidity
 	}
-	if noPrice {
-		type localReturn struct {
-			Exchange          string
-			Blockchain        string
-			Address           string
-			Time              time.Time
-			TotalLiquidityUSD string
-			Liquidity         []dia.AssetLiquidity
-		}
 
-		var l localReturn
-		l.TotalLiquidityUSD = "Not enough US-Dollar price information on one or more pool assets available."
-		l.Exchange = pool.Exchange.Name
-		l.Blockchain = pool.Blockchain.Name
-		l.Address = pool.Address
-		l.Time = pool.Time
-		for i := range pool.Assetvolumes {
-			var al dia.AssetLiquidity = dia.AssetLiquidity(pool.Assetvolumes[i])
-			l.Liquidity = append(l.Liquidity, al)
-		}
-
-		c.JSON(http.StatusOK, l)
-
-	} else {
-		type localReturn struct {
-			Exchange          string
-			Blockchain        string
-			Address           string
-			Time              time.Time
-			TotalLiquidityUSD float64
-			Liquidity         []dia.AssetLiquidity
-		}
-
-		var l localReturn
-		l.TotalLiquidityUSD = totalLiquidity
-		l.Exchange = pool.Exchange.Name
-		l.Blockchain = pool.Blockchain.Name
-		l.Address = pool.Address
-		l.Time = pool.Time
-		for i := range pool.Assetvolumes {
-			var al dia.AssetLiquidity = dia.AssetLiquidity(pool.Assetvolumes[i])
-			l.Liquidity = append(l.Liquidity, al)
-		}
-
-		c.JSON(http.StatusOK, l)
+	var l localReturn
+	if lowerBound {
+		l.Message = "No US-Dollar price information on one or more pool assets available."
 	}
+	l.TotalLiquidityUSD = totalLiquidity
+	l.Exchange = pool.Exchange.Name
+	l.Blockchain = pool.Blockchain.Name
+	l.Address = pool.Address
+	l.Time = pool.Time
+	for i := range pool.Assetvolumes {
+		var al dia.AssetLiquidity = dia.AssetLiquidity(pool.Assetvolumes[i])
+		l.Liquidity = append(l.Liquidity, al)
+	}
+
+	c.JSON(http.StatusOK, l)
 
 }
 
@@ -3169,6 +3105,11 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 		sizeBinSeconds = 120
 	}
 
+	volumeThreshold, err := strconv.ParseFloat(c.DefaultQuery("volumeThreshold", "0"), 64)
+	if err != nil {
+		log.Warn("parse volumeThreshold: ", err)
+	}
+
 	if sizeBinSeconds < 20 || sizeBinSeconds > 21600 {
 		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("sizeBinSeconds out of range. Must be between %v and %v.", 20*time.Second, 6*time.Hour))
 		return
@@ -3181,7 +3122,7 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
 	}
 
-	volumeMap, err := env.DataStore.GetExchangePairVolumes(asset, starttime, endtime)
+	volumeMap, err := env.DataStore.GetExchangePairVolumes(asset, starttime, endtime, volumeThreshold)
 	if err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
 		return
