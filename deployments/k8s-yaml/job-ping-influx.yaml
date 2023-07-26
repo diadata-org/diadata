@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ping-influx
+spec:
+  ttlSecondsAfterFinished: 10
+  template:
+    spec:
+      containers:
+        - name: ping-influx
+          image: public.ecr.aws/docker/library/influxdb:1.8
+          env:
+            - name: INFLUXDB_URL
+              value: "data-influx.default.svc.cluster.local"
+            - name: INFLUXDB_USERNAME
+              value: "test"
+            - name: INFLUXDB_PASSWORD
+              value: "testtest"
+          command:
+            [
+              "sh",
+              "-c",
+              "influx -host $INFLUXDB_URL -username $INFLUXDB_USERNAME -password $INFLUXDB_PASSWORD -execute 'SHOW DATABASES'",
+            ]
+      restartPolicy: Never
+  backoffLimit: 0

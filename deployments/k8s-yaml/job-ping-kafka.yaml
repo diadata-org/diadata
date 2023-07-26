@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ping-kafka
+spec:
+  ttlSecondsAfterFinished: 10
+  template:
+    spec:
+      containers:
+        - name: ping-kafka
+          image: confluentinc/cp-kafkacat:6.2.1
+          env:
+            - name: KAFKA_BROKER_URL
+              value: "data-kafka.default.svc.cluster.local:9094"
+          command: ["sh", "-c", "kafkacat -b $KAFKA_BROKER_URL -L"]
+      restartPolicy: Never
+  backoffLimit: 0
