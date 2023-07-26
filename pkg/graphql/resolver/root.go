@@ -19,11 +19,15 @@ import (
 )
 
 var (
-	log            = logrus.New()
-	EXCHANGES      = scrapers.Exchanges
-	BLOCKCHAINS    = scrapers.Blockchains
-	PAIR_SEPARATOR = "-"
-	LIST_SEPARATOR = ","
+	log         = logrus.New()
+	EXCHANGES   = scrapers.Exchanges
+	BLOCKCHAINS = scrapers.Blockchains
+)
+
+const (
+	PAIR_SEPARATOR                 = "-"
+	LIST_SEPARATOR                 = ","
+	TRADE_VOLUME_THRESHOLD_DEFAULT = float64(0.001)
 )
 
 // Resolver is the root resolver
@@ -440,20 +444,22 @@ func (r *DiaResolver) GetxcFeed(ctx context.Context, args struct {
 
 // TO DO: Use context?
 func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
-	Filter            graphql.NullString
-	BlockSizeSeconds  graphql.NullInt
-	BlockShiftSeconds graphql.NullInt
-	StartTime         graphql.NullTime
-	EndTime           graphql.NullTime
-	FeedSelection     *[]FeedSelection
+	Filter               graphql.NullString
+	BlockSizeSeconds     graphql.NullInt
+	BlockShiftSeconds    graphql.NullInt
+	StartTime            graphql.NullTime
+	EndTime              graphql.NullTime
+	TradeVolumeThreshold graphql.NullFloat
+	FeedSelection        *[]FeedSelection
 }) (*[]*FilterPointExtendedResolver, error) {
 	var (
-		tradeBlocks       []queryhelper.Block
-		sr                *[]*FilterPointExtendedResolver
-		starttime         time.Time
-		endtime           time.Time
-		blockShiftSeconds int64
-		err               error
+		tradeBlocks          []queryhelper.Block
+		sr                   *[]*FilterPointExtendedResolver
+		starttime            time.Time
+		endtime              time.Time
+		blockShiftSeconds    int64
+		tradeVolumeThreshold float64
+		err                  error
 	)
 
 	// Parsing input parameters.
@@ -501,6 +507,12 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 	}
 	// starttimeimmutable := starttime
 	// endtimeimmutable := endtime
+
+	if args.TradeVolumeThreshold.Value != nil {
+		tradeVolumeThreshold = *args.TradeVolumeThreshold.Value
+	} else {
+		tradeVolumeThreshold = TRADE_VOLUME_THRESHOLD_DEFAULT
+	}
 
 	if args.FeedSelection == nil {
 		return sr, errors.New("At least 1 asset must be selected.")
@@ -585,23 +597,23 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 	// 	}
 	case "mair":
 		{
-			filterPoints = queryhelper.FilterMAIRextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
+			filterPoints = queryhelper.FilterMAIRextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold)
 		}
 	case "ma":
 		{
-			filterPoints = queryhelper.FilterMAextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
+			filterPoints = queryhelper.FilterMAextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold)
 		}
 	case "vwap":
 		{
-			filterPoints = queryhelper.FilterVWAPextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
+			filterPoints = queryhelper.FilterVWAPextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold)
 		}
 	case "vwapir":
 		{
-			filterPoints = queryhelper.FilterVWAPIRextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
+			filterPoints = queryhelper.FilterVWAPIRextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold)
 		}
 	case "medir":
 		{
-			filterPoints = queryhelper.FilterMEDIRextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds))
+			filterPoints = queryhelper.FilterMEDIRextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold)
 		}
 	case "vol":
 		{

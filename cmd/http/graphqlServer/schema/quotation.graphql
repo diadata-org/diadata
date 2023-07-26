@@ -44,6 +44,7 @@ type Query {
     BlockShiftSeconds: Int
     StartTime: Time
     EndTime: Time
+    TradeVolumeThreshold: Float
     FeedSelection: [FeedSelection!]
   ): [FilterPointExtended]
 

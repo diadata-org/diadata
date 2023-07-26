@@ -7,7 +7,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 )
 
-func FilterMAextended(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPointsExtended []dia.FilterPointExtended) {
+func FilterMAextended(tradeBlocks []Block, asset dia.Asset, blockSize int, volumeThresholdUSD float64) (filterPointsExtended []dia.FilterPointExtended) {
 
 	lastfp := &dia.FilterPoint{}
 
@@ -17,13 +17,15 @@ func FilterMAextended(tradeBlocks []Block, asset dia.Asset, blockSize int) (filt
 		pairs, pools := block.GetBlockSources()
 		fpe.Pairs = pairs
 		fpe.Pools = pools
-		fpe.TradesCount = int32(len(block.Trades))
 
 		if len(block.Trades) > 0 {
 			maFilter := filters.NewFilterMA(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
 
 			for _, trade := range block.Trades {
-				maFilter.Compute(trade)
+				if trade.VolumeUSD() > volumeThresholdUSD {
+					fpe.TradesCount++
+					maFilter.Compute(trade)
+				}
 			}
 
 			maFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
@@ -55,7 +57,7 @@ func FilterMAextended(tradeBlocks []Block, asset dia.Asset, blockSize int) (filt
 	return
 }
 
-func FilterMAIRextended(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPointsExtended []dia.FilterPointExtended) {
+func FilterMAIRextended(tradeBlocks []Block, asset dia.Asset, blockSize int, volumeThresholdUSD float64) (filterPointsExtended []dia.FilterPointExtended) {
 	lastfp := &dia.FilterPoint{}
 
 	for i, block := range tradeBlocks {
@@ -64,13 +66,15 @@ func FilterMAIRextended(tradeBlocks []Block, asset dia.Asset, blockSize int) (fi
 		pairs, pools := block.GetBlockSources()
 		fpe.Pairs = pairs
 		fpe.Pools = pools
-		fpe.TradesCount = int32(len(block.Trades))
 
 		if len(block.Trades) > 0 {
 			mairFilter := filters.NewFilterMAIR(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
 			firstBlock := block.Trades[0]
 			for _, trade := range block.Trades {
-				mairFilter.Compute(trade)
+				if trade.VolumeUSD() > volumeThresholdUSD {
+					fpe.TradesCount++
+					mairFilter.Compute(trade)
+				}
 			}
 
 			mairFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
@@ -103,7 +107,7 @@ func FilterMAIRextended(tradeBlocks []Block, asset dia.Asset, blockSize int) (fi
 	return
 }
 
-func FilterVWAPextended(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPointsExtended []dia.FilterPointExtended) {
+func FilterVWAPextended(tradeBlocks []Block, asset dia.Asset, blockSize int, volumeThresholdUSD float64) (filterPointsExtended []dia.FilterPointExtended) {
 	var lastfp *dia.FilterPoint
 
 	for _, block := range tradeBlocks {
@@ -111,13 +115,15 @@ func FilterVWAPextended(tradeBlocks []Block, asset dia.Asset, blockSize int) (fi
 		pairs, pools := block.GetBlockSources()
 		fpe.Pairs = pairs
 		fpe.Pools = pools
-		fpe.TradesCount = int32(len(block.Trades))
 
 		if len(block.Trades) > 0 {
 
 			vwapFilter := filters.NewFilterVWAP(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
 			for _, trade := range block.Trades {
-				vwapFilter.Compute(trade)
+				if trade.VolumeUSD() > volumeThresholdUSD {
+					fpe.TradesCount++
+					vwapFilter.Compute(trade)
+				}
 			}
 
 			vwapFilter.FinalCompute(block.Trades[0].Time)
@@ -145,7 +151,7 @@ func FilterVWAPextended(tradeBlocks []Block, asset dia.Asset, blockSize int) (fi
 	return
 }
 
-func FilterVWAPIRextended(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPointsExtended []dia.FilterPointExtended) {
+func FilterVWAPIRextended(tradeBlocks []Block, asset dia.Asset, blockSize int, volumeThresholdUSD float64) (filterPointsExtended []dia.FilterPointExtended) {
 	var lastfp *dia.FilterPoint
 
 	for _, block := range tradeBlocks {
@@ -154,13 +160,15 @@ func FilterVWAPIRextended(tradeBlocks []Block, asset dia.Asset, blockSize int) (
 		pairs, pools := block.GetBlockSources()
 		fpe.Pairs = pairs
 		fpe.Pools = pools
-		fpe.TradesCount = int32(len(block.Trades))
 
 		if len(block.Trades) > 0 {
 
 			vwapirFilter := filters.NewFilterVWAPIR(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
 			for _, trade := range block.Trades {
-				vwapirFilter.Compute(trade)
+				if trade.VolumeUSD() > volumeThresholdUSD {
+					fpe.TradesCount++
+					vwapirFilter.Compute(trade)
+				}
 			}
 			vwapirFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
 			fp := vwapirFilter.FilterPointForBlock()
@@ -194,7 +202,7 @@ func FilterVWAPIRextended(tradeBlocks []Block, asset dia.Asset, blockSize int) (
 	return
 }
 
-func FilterMEDIRextended(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPointsExtended []dia.FilterPointExtended) {
+func FilterMEDIRextended(tradeBlocks []Block, asset dia.Asset, blockSize int, volumeThresholdUSD float64) (filterPointsExtended []dia.FilterPointExtended) {
 	var lastfp *dia.FilterPoint
 
 	for _, block := range tradeBlocks {
@@ -203,13 +211,15 @@ func FilterMEDIRextended(tradeBlocks []Block, asset dia.Asset, blockSize int) (f
 		pairs, pools := block.GetBlockSources()
 		fpe.Pairs = pairs
 		fpe.Pools = pools
-		fpe.TradesCount = int32(len(block.Trades))
 
 		if len(block.Trades) > 0 {
 
 			medirFilter := filters.NewFilterMEDIR(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
 			for _, trade := range block.Trades {
-				medirFilter.Compute(trade)
+				if trade.VolumeUSD() > volumeThresholdUSD {
+					fpe.TradesCount++
+					medirFilter.Compute(trade)
+				}
 			}
 			medirFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
 			fp := medirFilter.FilterPointForBlock()

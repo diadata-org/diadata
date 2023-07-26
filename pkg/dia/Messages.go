@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
+	"math"
 	"math/big"
 	"time"
 
@@ -472,6 +473,10 @@ type Trade struct {
 	EstimatedUSDPrice float64   `json:"EstimatedUSDPrice"` // will be filled by the TradesBlockService
 	Source            string    `json:"Source"`
 	VerifiedPair      bool      `json:"VerifiedPair"` // will be filled by the pairDiscoveryService
+}
+
+func (t *Trade) VolumeUSD() float64 {
+	return t.EstimatedUSDPrice * math.Abs(t.Volume)
 }
 
 // SynthAssetSupply is a container for data on synthetic assets such as aUSDC.
