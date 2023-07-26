@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math"
 	"math/big"
 	"net/http"
 	"strconv"
@@ -20,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	gql "github.com/machinebox/graphql"
+	"github.com/tidwall/gjson"
 )
 
 func main() {
@@ -27,6 +29,7 @@ func main() {
 	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
 	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
+	coingeckoApiKey := utils.Getenv("COINGECKO_API_KEY", "")
 	sleepSeconds, err := strconv.Atoi(utils.Getenv("SLEEP_SECONDS", "120"))
 	if err != nil {
 		log.Fatalf("Failed to parse sleepSeconds: %v")
@@ -58,11 +61,14 @@ func main() {
 	gqlMethodology := utils.Getenv("GQL_METHODOLOGY", "vwap")
 	assetsStr := utils.Getenv("ASSETS", "")
 	gqlAssetsStr := utils.Getenv("GQL_ASSETS", "")
+	cgAssetsStr := utils.Getenv("CG_ASSETS", "")
 	xcAssetsStr := utils.Getenv("XC_ASSETS", "")
 	xcAssetSymbol := utils.Getenv("XC_ASSET_SYMBOL", "SILO")
+	xcCoingeckoName := utils.Getenv("XC_COINGECKO_NAME", "silo-finance")
 
 	addresses := []string{}
 	blockchains := []string{}
+	cgNames := []string{}
 	useGql := false
 	xcBlockchains := []string{}
 	xcAddresses := []string{}
@@ -83,6 +89,8 @@ func main() {
 	assetsParsed := strings.Split(assetsToParse, ",")
 	xcAssetsParsed := strings.Split(xcAssetsToParse, ",")
 
+	cgAssetsParsed := strings.Split(cgAssetsStr, ",")
+
 	for _, asset := range assetsParsed {
 		entries := strings.Split(asset, "-")
 		blockchains = append(blockchains, strings.TrimSpace(entries[0]))
@@ -93,6 +101,10 @@ func main() {
 		entries := strings.Split(asset, "-")
 		xcBlockchains = append(xcBlockchains, strings.TrimSpace(entries[0]))
 		xcAddresses = append(xcAddresses, strings.TrimSpace(entries[1]))
+	}
+
+	for _, cgName := range cgAssetsParsed {
+		cgNames = append(cgNames, strings.TrimSpace(cgName))
 	}
 
 	oldPrices := make(map[int]float64)
@@ -129,8 +141,9 @@ func main() {
 				for i, address := range addresses {
 					blockchain := blockchains[i]
 					oldPrice := oldPrices[i]
+					coinGeckoName := cgNames[i]
 					log.Println("old price", oldPrice)
-					oldPrice, err = periodicOracleUpdateHelper(oldPrice, deviationPermille, auth, contract, conn, blockchain, address, useGql, gqlWindowSize, gqlMethodology)
+					oldPrice, err = periodicOracleUpdateHelper(oldPrice, deviationPermille, auth, contract, conn, blockchain, address, useGql, gqlWindowSize, gqlMethodology, coinGeckoName, coingeckoApiKey)
 					oldPrices[i] = oldPrice
 					if err != nil {
 						log.Println(err)
@@ -139,7 +152,7 @@ func main() {
 				}
 				// xc updater
 				log.Println("old xc price:", oldXcPrice)
-				oldXcPrice, err = periodicXcOracleUpdateHelper(oldXcPrice, xcDeviationPermille, xcAssetSymbol, auth, contract, conn, xcBlockchains, xcAddresses, 3600, 120, "vwapir")
+				oldXcPrice, err = periodicXcOracleUpdateHelper(oldXcPrice, xcDeviationPermille, xcAssetSymbol, auth, contract, conn, xcBlockchains, xcAddresses, 3600, 120, "mair", xcCoingeckoName, coingeckoApiKey)
 				if err != nil {
 					log.Println(err)
 				}
@@ -156,8 +169,9 @@ func main() {
 					for i, address := range addresses {
 						blockchain := blockchains[i]
 						oldPrice := oldPrices[i]
+						coinGeckoName := cgNames[i]
 						log.Println("old price", oldPrice)
-						oldPrice, err = oracleUpdateHelper(oldPrice, auth, contract, conn, blockchain, address, useGql, gqlWindowSize, gqlMethodology)
+						oldPrice, err = oracleUpdateHelper(oldPrice, auth, contract, conn, blockchain, address, useGql, gqlWindowSize, gqlMethodology, coinGeckoName, coingeckoApiKey)
 						oldPrices[i] = oldPrice
 						if err != nil {
 							log.Println(err)
@@ -166,7 +180,7 @@ func main() {
 					}
 					// xc updater
 					log.Println("old xc price:", oldXcPrice)
-					oldXcPrice, err = xcOracleUpdateHelper(oldXcPrice, xcAssetSymbol, auth, contract, conn, xcBlockchains, xcAddresses, 3600, 120, "vwapir")
+					oldXcPrice, err = xcOracleUpdateHelper(oldXcPrice, xcAssetSymbol, auth, contract, conn, xcBlockchains, xcAddresses, 3600, 120, "mair", xcCoingeckoName, coingeckoApiKey)
 					if err != nil {
 						log.Println(err)
 					}
@@ -178,7 +192,7 @@ func main() {
 	select {}
 }
 
-func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string, useGql bool, gqlWindowSize int, gqlMethodology string) (float64, error) {
+func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string, useGql bool, gqlWindowSize int, gqlMethodology string, coingeckoName, coingeckoApiKey string) (float64, error) {
 	// Empty quotation for our request
 	var rawQ *models.Quotation
 	rawQ = new(models.Quotation)
@@ -204,6 +218,22 @@ func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *dia
 
 	newPrice := rawQ.Price
 
+	// check coingecko before sending out an update transaction
+	cgPrice, err := getCoingeckoPrice(coingeckoName, coingeckoApiKey)
+	if err != nil {
+		return oldPrice, err
+	}
+	if cgPrice == 0.0 {
+		log.Printf("Error! Coingecko API returned price 0.0.")
+		return oldPrice, nil
+	}
+	if (math.Abs(cgPrice - rawQ.Price) / cgPrice) > 0.2 {
+		// Error case, stop transaction from happening
+		log.Printf("Error! Price %f for asset %s-%s out of coingecko range %f.", rawQ.Price, blockchain, address, cgPrice)
+		return oldPrice, nil
+	}
+	log.Printf("Price %f for asset %s-%s in coingecko range %f.", rawQ.Price, blockchain, address, cgPrice)
+
 	err = updateQuotation(rawQ, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update DIA Oracle: %v", err)
@@ -213,7 +243,7 @@ func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *dia
 
 }
 
-func xcOracleUpdateHelper(oldPrice float64, xcAssetSymbol string, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchains []string, addresses []string, gqlWindowSize int, gqlWindowShift int, gqlMethodology string) (float64, error) {
+func xcOracleUpdateHelper(oldPrice float64, xcAssetSymbol string, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchains []string, addresses []string, gqlWindowSize int, gqlWindowShift int, gqlMethodology string, coingeckoName, coingeckoApiKey string) (float64, error) {
 
 	// Empty quotation for our request
 	var rawQ *models.Quotation
@@ -233,6 +263,22 @@ func xcOracleUpdateHelper(oldPrice float64, xcAssetSymbol string, auth *bind.Tra
 	// Check for deviation
 	newPrice := rawQ.Price
 
+	// check coingecko before sending out an update transaction
+	cgPrice, err := getCoingeckoPrice(coingeckoName, coingeckoApiKey)
+	if err != nil {
+		return oldPrice, err
+	}
+	if cgPrice == 0.0 {
+		log.Printf("Error! Coingecko API returned price 0.0.")
+		return oldPrice, nil
+	}
+	if (math.Abs(cgPrice - rawQ.Price) / cgPrice) > 0.2 {
+		// Error case, stop transaction from happening
+		log.Printf("Error! Price %f for asset %s out of coingecko range %f.", rawQ.Price, xcAssetSymbol, cgPrice)
+		return oldPrice, nil
+	}
+	log.Printf("Price %f for asset %s in coingecko range %f.", rawQ.Price, xcAssetSymbol, cgPrice)
+
 	err = updateQuotation(rawQ, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update DIA Oracle: %v", err)
@@ -241,7 +287,7 @@ func xcOracleUpdateHelper(oldPrice float64, xcAssetSymbol string, auth *bind.Tra
 	return newPrice, nil
 }
 
-func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string, useGql bool, gqlWindowSize int, gqlMethodology string) (float64, error) {
+func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string, useGql bool, gqlWindowSize int, gqlMethodology string, coingeckoName, coingeckoApiKey string) (float64, error) {
 
 	// Empty quotation for our request
 	var rawQ *models.Quotation
@@ -276,6 +322,23 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 
 	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
 		log.Println("Entering deviation based update zone")
+		
+		// check coingecko before sending out an update transaction
+		cgPrice, err := getCoingeckoPrice(coingeckoName, coingeckoApiKey)
+		if err != nil {
+			return oldPrice, err
+		}
+		if cgPrice == 0.0 {
+			log.Printf("Error! Coingecko API returned price 0.0.")
+			return oldPrice, nil
+		}
+		if (math.Abs(cgPrice - rawQ.Price) / cgPrice) > 0.2 {
+			// Error case, stop transaction from happening
+			log.Printf("Error! Price %f for asset %s-%s out of coingecko range %f.", rawQ.Price, blockchain, address, cgPrice)
+			return oldPrice, nil
+		}
+		log.Printf("Price %f for asset %s-%s in coingecko range %f.", rawQ.Price, blockchain, address, cgPrice)
+		
 		err = updateQuotation(rawQ, auth, contract, conn)
 		if err != nil {
 			log.Fatalf("Failed to update DIA Oracle: %v", err)
@@ -287,7 +350,7 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 	return oldPrice, nil
 }
 
-func periodicXcOracleUpdateHelper(oldPrice float64, deviationPermille int, xcAssetSymbol string, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchains []string, addresses []string, gqlWindowSize int, gqlWindowShift int, gqlMethodology string) (float64, error) {
+func periodicXcOracleUpdateHelper(oldPrice float64, deviationPermille int, xcAssetSymbol string, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchains []string, addresses []string, gqlWindowSize int, gqlWindowShift int, gqlMethodology string, coingeckoName, coingeckoApiKey string) (float64, error) {
 
 	// Empty quotation for our request
 	var rawQ *models.Quotation
@@ -309,6 +372,23 @@ func periodicXcOracleUpdateHelper(oldPrice float64, deviationPermille int, xcAss
 
 	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
 		log.Println("Entering deviation based update zone")
+
+		// check coingecko before sending out an update transaction
+		cgPrice, err := getCoingeckoPrice(coingeckoName, coingeckoApiKey)
+		if err != nil {
+			return oldPrice, err
+		}
+		if cgPrice == 0.0 {
+			log.Printf("Error! Coingecko API returned price 0.0.")
+			return oldPrice, nil
+		}
+		if (math.Abs(cgPrice - rawQ.Price) / cgPrice) > 0.2 {
+			// Error case, stop transaction from happening
+			log.Printf("Error! Price %f for asset %s out of coingecko range %f.", rawQ.Price, xcAssetSymbol, cgPrice)
+			return oldPrice, nil
+		}
+		log.Printf("Price %f for asset %s in coingecko range %f.", rawQ.Price, xcAssetSymbol, cgPrice)
+
 		err = updateQuotation(rawQ, auth, contract, conn)
 		if err != nil {
 			log.Fatalf("Failed to update DIA Oracle: %v", err)
@@ -502,4 +582,24 @@ func getGraphqlXcAssetQuotationFromDia(blockchains, addresses []string, windowSi
 		return 0.0, errors.New("no results")
 	}
 	return r.GetxcFeed[len(r.GetxcFeed)-1].Value, nil
+}
+
+func getCoingeckoPrice(assetName, coingeckoApiKey string) (float64, error) {
+	url := "https://pro-api.coingecko.com/api/v3/simple/price?ids=" + assetName + "&vs_currencies=usd&x_cg_pro_api_key=" + coingeckoApiKey
+	response, err := http.Get(url)
+	if err != nil {
+		return 0.0, err
+	}
+	
+	defer response.Body.Close()
+	if 200 != response.StatusCode {
+		return 0.0, fmt.Errorf("Error on coingecko API call with return code %d", response.StatusCode)
+	}
+
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return 0.0, err
+	}
+	price := gjson.Get(string(contents), assetName + ".usd").Float()
+	return price, nil
 }
