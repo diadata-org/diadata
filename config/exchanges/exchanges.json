@@ -435,6 +435,20 @@
             "ScraperActive": true
         },
         {
+            "Name": "Zenlink-bifrost-polkadot",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": "Bifrost-polkadot"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
+        },
+        {
             "Name": "GateIO",
             "Centralized": true,
             "Bridge": false,

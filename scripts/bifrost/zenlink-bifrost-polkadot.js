@@ -3,7 +3,7 @@ const { options } = require('@bifrost-finance/api');
 const { default: BigNumber } = require('bignumber.js');
 
 async function main() {
-  const wsProvider = new WsProvider('wss://bifrost-rpc.liebi.com/ws');
+  const wsProvider = new WsProvider('wss://hk.p.bifrost-rpc.liebi.com/ws');
   const api = await ApiPromise.create(options({
     provider: wsProvider
   }));
@@ -11,8 +11,8 @@ async function main() {
   await api.rpc.chain.subscribeNewHeads(async (header) => {
     console.log(`blockHeight: ${header.number}`);
     const blockHash = await api.rpc.chain.getBlockHash(header.number);
-    // const at = await api.at(blockHash);
-    const at = await api.at('0xb1cbc766d73b63f93accf36dfb96067bbed658482ac7a01015aab6c28927e7d9'); // for testing
+    const at = await api.at(blockHash);
+    // const at = await api.at('0xabad97ea80a0e3f696a7613c87099b336b8b5322a3f6f0d61ab8cf2fc8fa1b50'); // for testing
     const events = await at.query.system.events();
     events.filter((record) => {
       return record.event.section === 'zenlinkProtocol' && record.event.method === 'AssetSwap';
