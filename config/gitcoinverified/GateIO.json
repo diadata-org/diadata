@@ -112,7 +112,7 @@
             "Symbol": "RDNT",
             "Exchange": "GateIO",
             "Blockchain": "Arbitrum",
-            "Address": "0x0C4681e6C0235179ec3D4F4fc4DF3d14FDD96017"
+            "Address": "0x3082CC23568eA640225c2467653dB90e9250AaA0"
         },
         {
             "Symbol": "STG",
@@ -586,7 +586,7 @@
             "Symbol": "MOVR",
             "Exchange": "GateIO",
             "Blockchain": "Moonriver",
-            "Address": "0x98878B06940aE243284CA214f92Bb71a2b032B8A"
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "MTN",
