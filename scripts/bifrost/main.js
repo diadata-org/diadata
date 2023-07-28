@@ -11,8 +11,8 @@ async function main() {
   await api.rpc.chain.subscribeNewHeads(async (header) => {
     console.log(`blockHeight: ${header.number}`);
     const blockHash = await api.rpc.chain.getBlockHash(header.number);
-    // const at = await api.at(blockHash);
-    const at = await api.at('0xb1cbc766d73b63f93accf36dfb96067bbed658482ac7a01015aab6c28927e7d9'); // for testing
+    const at = await api.at(blockHash);
+    // const at = await api.at('0xb1cbc766d73b63f93accf36dfb96067bbed658482ac7a01015aab6c28927e7d9'); // for testing
     const events = await at.query.system.events();
     events.filter((record) => {
       return record.event.section === 'zenlinkProtocol' && record.event.method === 'AssetSwap';
