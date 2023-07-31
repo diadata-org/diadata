@@ -32,6 +32,7 @@ function usage() {
     echo "  build                     Build DIA platform and prepare container images"
     echo "  install                   Install DIA platform"
     echo "  uninstall                 Un-install DIA platform"
+    echo "  snapshot                  Pull and import snapshot of data"
     echo "  create <resource>         Create a new resource"
     echo "    scraper-cex [id]          Create a CEX scraper"
     echo "    scraper-dex [id]          Create a DEX scraper"
@@ -134,15 +135,20 @@ function _info() {
     fi
 }
 
+function command_exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+
 function _status_host(){
     echo "Uptime: $(uptime -p)"
 }
 
 function main() {
     # Arguments parsing
-    local paths=()
+    local command=("$@")
+
     local args=
-    args=$(getopt -o hnsvc: --long cpus:,disk-space:,nodetached,full,single,verbose,help -n 'env' -- "$@")
+    args=$(getopt -o hnsvc: --long cpus:,disk-space:,nodetached,full,single,verbose,help -n './testenv.sh' -- "$@")
     # shellcheck disable=SC2181
     if [ $? != 0 ]; then
         usage 1>&2
@@ -178,8 +184,6 @@ function main() {
         esac
     done
 
-    # Expand paths after parsing
-    paths=("$@")
 
     # Check dependencies
     if ! hash git 2> /dev/null; then echo "Git not found" >&2; return 1; fi
@@ -191,7 +195,7 @@ function main() {
         echo "Unknown operating system"
         exit 1
     fi
-    if [ -z "${paths[0]:-}" ]; then
+    if [ -z "${command[0]:-}" ]; then
         echo "No command specified" >&2
         exit 1
     fi
@@ -213,7 +217,9 @@ function main() {
     local data_docker_email=dia@diadata.com
     # shellcheck disable=SC1091
     # TODO: this will break the script?
-    source .testenv.local
+    if [ -e testenv.local ]; then
+    source ./testspace/.testenv.local
+    fi
     if [[ "$arg_cpus" != "" ]]; then
         minikube_hw_cpus="${arg_cpus}"
     fi
@@ -225,14 +231,15 @@ function main() {
     declare -a demos_scraper_foreign=("yahoofinance")
 
     # Command
-    case "${paths[0]}" in
+    case "${command[0]}" in
     start)
-        if [ "${#paths[@]}" -eq 1 ]; then
+      echo "running start"
+        if [ "${#command[@]}" -eq 1 ]; then
             if [ "$arg_verbose_mode" = true ]; then _info; fi
             if [ "$arg_single_mode" = true ]; then
                 echo "WIP"
             else
-                if ! _minikube_profile_isrunning "${minikube_profile}"; then               
+                if ! _minikube_profile_isrunning "${minikube_profile}"; then
                     echo "Starting cluster ..."
                     minikube --profile "${minikube_profile}" start \
                         --kubernetes-version "${minikube_k8s_version}" \
@@ -255,7 +262,7 @@ function main() {
         fi
         ;;
     stop)
-        if [ "${#paths[@]}" -eq 1 ]; then
+        if [ "${#command[@]}" -eq 1 ]; then
             echo "Stopping cluster ..."
             minikube -p "${minikube_profile}" stop
         else
@@ -264,7 +271,7 @@ function main() {
         fi
         ;;
     delete)
-        if [ "${#paths[@]}" -eq 1 ]; then
+        if [ "${#command[@]}" -eq 1 ]; then
             echo "Deleting cluster ..."
             minikube delete -p "${minikube_profile}"
         else
@@ -273,7 +280,7 @@ function main() {
         fi
         ;;
     build)
-        if [ "${#paths[@]}" -eq 1 ]; then
+        if [ "${#command[@]}" -eq 1 ]; then
             echo "Building images ..."
             _build_ifnotexist build/Dockerfile-DiadataBuild-114-Dev dia.build-114.dev
             _build_ifnotexist build/Dockerfile-DiadataBuild-117-Dev dia.build-117.dev
@@ -295,7 +302,7 @@ function main() {
         fi
         ;;
     install)
-        if [ "${#paths[@]}" -eq 1 ]; then
+        if [ "${#command[@]}" -eq 1 ]; then
             _image_exist dia.build-114.dev || exit 1
             _image_exist dia.build-117.dev || exit 1
             _image_exist dia.build-119.dev || exit 1
@@ -336,7 +343,7 @@ function main() {
         fi
         ;;
     uninstall)
-        if [ "${#paths[@]}" -eq 1 ]; then
+        if [ "${#command[@]}" -eq 1 ]; then
             echo "Uninstalling services ..."
             minikube -p "${minikube_profile}" kubectl -- delete -f deployments/k8s-yaml/service-filtersblockservice.yaml || true
             minikube -p "${minikube_profile}" kubectl -- delete -f deployments/k8s-yaml/service-tradesblockservice.yaml || true
@@ -356,13 +363,62 @@ function main() {
             exit 1
         fi
         ;;
+    snapshot)
+        if [ "${#command[@]}" -gt 1 ]; then
+        # Check if unzip, wget, and psql commands exist
+        if ! command_exists unzip; then
+          echo "Error: 'unzip' command not found. Please install unzip and try again."
+          exit 1
+        fi
+
+        if ! command_exists wget; then
+          echo "Error: 'wget' command not found. Please install wget and try again."
+          exit 1
+        fi
+
+        if ! command_exists psql; then
+          echo "Error: 'psql' command not found. Please install PostgreSQL client and try again."
+          exit 1
+        fi
+
+        # Ask for variables with _EXTRACT and export them
+        read -p "Enter Postgres Server: " PGHOST_EXTRACT
+        read -p "Enter Postgres Port: " PGPORT_EXTRACT
+        read -p "Enter Postgres User: " PGUSER_EXTRACT
+        read -p "Enter Postgres Password: " PGPASSWORD_EXTRACT
+        read -p "Enter Postgres Database: " PGDB_EXTRACT
+
+        export PGHOST=${PGHOST_EXTRACT}
+        export PGUSER=${PGUSER_EXTRACT}
+        export PGDB=${PGDB_EXTRACT}
+        export PGPASSWORD=${PGPASSWORD_EXTRACT}
+        export PGPORT=${PGPORT_EXTRACT}
+
+        # Download and unzip the file from rest.diadata.org
+        wget -qO snapshot.zip http://rest.diadata.org/snapshot/latest
+        unzip -o snapshot.zip
+
+        # Run the psql commands
+        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} --file output-blockchain.sql
+        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} --file output-exchange.sql
+        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} --file output-asset.sql
+        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} --file output-pool.sql
+        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} --file output-poolasset.sql
+        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} --file output-exchangepair.sql
+
+        # Delete the output-*.sql files
+        rm output-blockchain.sql
+
+        echo "Data import and processing completed successfully."
+      fi
+      ;;
     create)
-        if [ "${#paths[@]}" -gt 1 ]; then
-            case "${paths[1]}" in
+        if [ "${#command[@]}" -gt 1 ]; then
+            case "${command[1]}" in
             scraper-cex)
-                if [ "${#paths[@]}" -gt 2 ]; then
-                    if [[ " ${demos_scraper_cex[*]} " == *" ${paths[2]} "* ]]; then
-                        minikube -p "${minikube_profile}" kubectl -- create -f "deployments/k8s-yaml/scraper-cex-${paths[2]}.yaml"
+                if [ "${#command[@]}" -gt 2 ]; then
+                    if [[ " ${demos_scraper_cex[*]} " == *" ${command[2]} "* ]]; then
+                        minikube -p "${minikube_profile}" kubectl -- create -f "deployments/k8s-yaml/scraper-cex-${command[2]}.yaml"
                     else
                         echo "Unknown demo" >&2
                         exit 1
@@ -372,9 +428,9 @@ function main() {
                 fi
                 ;;
             scraper-dex)
-                if [ "${#paths[@]}" -gt 2 ]; then
-                    if [[ " ${demos_scraper_dex[*]} " == *" ${paths[2]} "* ]]; then
-                        minikube -p "${minikube_profile}" kubectl -- create -f "deployments/k8s-yaml/scraper-dex-${paths[2]}.yaml"
+                if [ "${#command[@]}" -gt 2 ]; then
+                    if [[ " ${demos_scraper_dex[*]} " == *" ${command[2]} "* ]]; then
+                        minikube -p "${minikube_profile}" kubectl -- create -f "deployments/k8s-yaml/scraper-dex-${command[2]}.yaml"
                     else
                         echo "Unknown demo" >&2
                         exit 1
@@ -384,9 +440,9 @@ function main() {
                 fi
                 ;;
             scraper-foreign)
-                if [ "${#paths[@]}" -gt 2 ]; then
-                    if [[ " ${demos_scraper_foreign[*]} " == *" ${paths[2]} "* ]]; then
-                        minikube -p "${minikube_profile}" kubectl -- create -f "deployments/k8s-yaml/scraper-foreign-${paths[2]}.yaml"
+                if [ "${#command[@]}" -gt 2 ]; then
+                    if [[ " ${demos_scraper_foreign[*]} " == *" ${command[2]} "* ]]; then
+                        minikube -p "${minikube_profile}" kubectl -- create -f "deployments/k8s-yaml/scraper-foreign-${command[2]}.yaml"
                     else
                         echo "Unknown demo" >&2
                         exit 1
@@ -396,9 +452,9 @@ function main() {
                 fi
                 ;;
             scraper-liquidity)
-                if [ "${#paths[@]}" -gt 2 ]; then
-                    if [[ " ${demos_scraper_liquidity[*]} " == *" ${paths[2]} "* ]]; then
-                        minikube -p "${minikube_profile}" kubectl -- create -f "deployments/k8s-yaml/scraper-liquidity-${paths[2]}.yaml"
+                if [ "${#command[@]}" -gt 2 ]; then
+                    if [[ " ${demos_scraper_liquidity[*]} " == *" ${command[2]} "* ]]; then
+                        minikube -p "${minikube_profile}" kubectl -- create -f "deployments/k8s-yaml/scraper-liquidity-${command[2]}.yaml"
                     else
                         echo "Unknown demo" >&2
                         exit 1
@@ -408,7 +464,7 @@ function main() {
                 fi
                 ;;
             cronjob)
-                if [ "${#paths[@]}" -eq 2 ]; then
+                if [ "${#command[@]}" -eq 2 ]; then
                     minikube -p "${minikube_profile}" kubectl -- create configmap postgres-entrypoint --from-file=deployments/config/postgres-docker-entrypoint.sh
                     minikube -p "${minikube_profile}" kubectl -- create configmap postgres-crondump --from-file=./scripts/dump.sh
                     minikube -p "${minikube_profile}" kubectl -- \
@@ -458,12 +514,12 @@ function main() {
         fi
         ;;
     remove)
-        if [ "${#paths[@]}" -gt 1 ]; then
-            case "${paths[1]}" in
+        if [ "${#command[@]}" -gt 1 ]; then
+            case "${command[1]}" in
             scraper-cex)
-                if [ "${#paths[@]}" -gt 2 ]; then
-                    if [[ " ${demos_scraper_cex[*]} " == *" ${paths[2]} "* ]]; then
-                        minikube -p "${minikube_profile}" kubectl -- delete -f "deployments/k8s-yaml/scraper-cex-${paths[2]}.yaml" || true
+                if [ "${#command[@]}" -gt 2 ]; then
+                    if [[ " ${demos_scraper_cex[*]} " == *" ${command[2]} "* ]]; then
+                        minikube -p "${minikube_profile}" kubectl -- delete -f "deployments/k8s-yaml/scraper-cex-${command[2]}.yaml" || true
                     else
                         echo "Unknown demo" >&2
                         exit 1
@@ -473,9 +529,9 @@ function main() {
                 fi
                 ;;
             scraper-dex)
-                if [ "${#paths[@]}" -gt 2 ]; then
-                    if [[ " ${demos_scraper_dex[*]} " == *" ${paths[2]} "* ]]; then
-                        minikube -p "${minikube_profile}" kubectl -- delete -f "deployments/k8s-yaml/scraper-dex-${paths[2]}.yaml" || true
+                if [ "${#command[@]}" -gt 2 ]; then
+                    if [[ " ${demos_scraper_dex[*]} " == *" ${command[2]} "* ]]; then
+                        minikube -p "${minikube_profile}" kubectl -- delete -f "deployments/k8s-yaml/scraper-dex-${command[2]}.yaml" || true
                     else
                         echo "Unknown demo" >&2
                         exit 1
@@ -485,9 +541,9 @@ function main() {
                 fi
                 ;;
             scraper-liquidity)
-                if [ "${#paths[@]}" -gt 2 ]; then
-                    if [[ " ${demos_scraper_liquidity[*]} " == *" ${paths[2]} "* ]]; then
-                        minikube -p "${minikube_profile}" kubectl -- delete -f "deployments/k8s-yaml/scraper-liquidity-${paths[2]}.yaml" || true
+                if [ "${#command[@]}" -gt 2 ]; then
+                    if [[ " ${demos_scraper_liquidity[*]} " == *" ${command[2]} "* ]]; then
+                        minikube -p "${minikube_profile}" kubectl -- delete -f "deployments/k8s-yaml/scraper-liquidity-${command[2]}.yaml" || true
                     else
                         echo "Unknown demo" >&2
                         exit 1
@@ -497,9 +553,9 @@ function main() {
                 fi
                 ;;
             scraper-foreign)
-                if [ "${#paths[@]}" -gt 2 ]; then
-                    if [[ " ${demos_scraper_foreign[*]} " == *" ${paths[2]} "* ]]; then
-                        minikube -p "${minikube_profile}" kubectl -- delete -f "deployments/k8s-yaml/scraper-foreign-${paths[2]}.yaml" || true
+                if [ "${#command[@]}" -gt 2 ]; then
+                    if [[ " ${demos_scraper_foreign[*]} " == *" ${command[2]} "* ]]; then
+                        minikube -p "${minikube_profile}" kubectl -- delete -f "deployments/k8s-yaml/scraper-foreign-${command[2]}.yaml" || true
                     else
                         echo "Unknown demo" >&2
                         exit 1
@@ -509,7 +565,7 @@ function main() {
                 fi
                 ;;
             cronjob)
-                if [ "${#paths[@]}" -eq 2 ]; then
+                if [ "${#command[@]}" -eq 2 ]; then
                     minikube -p "${minikube_profile}" kubectl -- delete -f "deployments/k8s-yaml/cronjob-snapshot.yaml" || true
                     minikube -p "${minikube_profile}" kubectl -- delete secret regcred || true
                     minikube -p "${minikube_profile}" kubectl -- delete configmap postgres-entrypoint || true
@@ -554,7 +610,7 @@ function main() {
         fi
         ;;
     shell)
-        if [ "${#paths[@]}" -eq 1 ]; then
+        if [ "${#command[@]}" -eq 1 ]; then
             minikube -p "${minikube_profile}" ssh
         else
             echo "Unknown command" >&2
@@ -562,7 +618,7 @@ function main() {
         fi
         ;;
     logs)
-        if [ "${#paths[@]}" -eq 1 ]; then
+        if [ "${#command[@]}" -eq 1 ]; then
             minikube -p "${minikube_profile}" logs -f
         else
             echo "Unknown command" >&2
@@ -570,7 +626,7 @@ function main() {
         fi
         ;;
     clean)
-        if [ "${#paths[@]}" -eq 1 ]; then
+        if [ "${#command[@]}" -eq 1 ]; then
             if [[ "$minikube_driver" == "docker" ]]; then
                 eval "$(minikube -p "${minikube_profile}" docker-env)"
                 docker buildx prune -a -f
@@ -586,7 +642,7 @@ function main() {
         fi
         ;;
     info)
-        if [ "${#paths[@]}" -eq 1 ]; then
+        if [ "${#command[@]}" -eq 1 ]; then
             minikube profile list
             _info
             # TODO: uptime show the host uptime, not the minikube: https://stackoverflow.com/a/28353785/2042014
@@ -608,7 +664,7 @@ function main() {
         fi
         ;;
     ping)
-        if [ "${#paths[@]}" -eq 1 ]; then
+        if [ "${#command[@]}" -eq 1 ]; then
             echo "Ping tests:"
             minikube -p "${minikube_profile}" kubectl -- delete -f deployments/k8s-yaml/job-ping-redis.yaml >/dev/null 2>&1 || true
             minikube -p "${minikube_profile}" kubectl -- create -f deployments/k8s-yaml/job-ping-redis.yaml >/dev/null 2>&1
@@ -629,7 +685,7 @@ function main() {
         ;;
     data-reset)
         # TODO: Also reset relational data and cache
-        if [ "${#paths[@]}" -eq 1 ]; then
+        if [ "${#command[@]}" -eq 1 ]; then
             echo "Resetting timeseries data ..."
             minikube -p "${minikube_profile}" kubectl -- exec deployment/data-influx -- influx -host 'localhost' -port '8086' -database 'dia' -execute 'DROP MEASUREMENT foreignquotation'
             minikube -p "${minikube_profile}" kubectl -- exec deployment/data-influx -- influx -host 'localhost' -port '8086' -database 'dia' -execute 'DROP MEASUREMENT tradesTmp'
@@ -640,8 +696,8 @@ function main() {
         ;;
     data)
         # TODO: "SELECT ... | wc" is very slow, maybe investigate to use COUNT statement
-        if [ "${#paths[@]}" -gt 1 ]; then
-            case "${paths[1]}" in
+        if [ "${#command[@]}" -gt 1 ]; then
+            case "${command[1]}" in
             exchanges)
                 num_exchanges=$(minikube -p "${minikube_profile}" kubectl -- exec deployment/data-postgres -- psql -U postgres -tA -c "SELECT COUNT(*) FROM exchange")
                 echo "Exchanges:"
@@ -738,7 +794,7 @@ function main() {
         fi
         ;;
     *)
-        echo "Unknown command" >&2
+        echo "Unknown command ${command[0]}" >&2
         exit 1
         ;;
     esac
