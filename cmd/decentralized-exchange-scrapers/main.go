@@ -27,6 +27,7 @@ func main() {
 		// A: Solution 2 poses again the problem of synchronization as we would need a timer running and sending an empty
 		// block to the processing layer as soon as the current block time is up.
 		t := <-scraper.TradeChannel()
+		log.Info("got trade: ", *t)
 
 		// With regards to timestamps we fill tradesblocks as half-open intervals being closed at the right border.
 		// i.e. the latest possible trade time is exactly @tradesblock.EndTime, while the earliest trade's time will

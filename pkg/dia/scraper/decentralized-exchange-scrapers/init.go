@@ -5,6 +5,6 @@ import (
 )
 
 func init() {
-	var log *logrus.Logger
+	log := logrus.New()
 	log.Info("init done.")
 }
