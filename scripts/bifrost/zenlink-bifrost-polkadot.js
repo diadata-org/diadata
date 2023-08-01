@@ -22,8 +22,9 @@ async function main() {
         // We collect data as string with
         // pair toSymbol fromSymbol toAmount fromAmount toAssetIndex fromAssetIndex foreignTradeID
         let asset_balance = event.data[3];
-        let to_native = JSON.parse(event.data[2][0]);
-        let from_native = JSON.parse(event.data[2].findLast((e) => e));
+        let assets = event.data[2];
+        let to_native = JSON.parse(assets[0]);
+        let from_native = JSON.parse(assets[assets.length - 1]);
         let from_asset_id = `${from_native.chainId}-${from_native.assetType}-${from_native.assetIndex}`;
         let to_asset_id = `${to_native.chainId}-${to_native.assetType}-${to_native.assetIndex}`;
         let from = getTokenByPair(from_asset_id).token;
@@ -31,7 +32,7 @@ async function main() {
         let fromDecimals = getDecimals(from);
         let toDecimals = getDecimals(to);
         let out = `${to}-${from} ${to} ${from}`
-        out += ` ${BigNumber(asset_balance[0]).dividedBy(10 ** toDecimals)} ${BigNumber(asset_balance.findLast((e) => e)).dividedBy(10 ** fromDecimals)}`;
+        out += ` ${BigNumber(asset_balance[0]).dividedBy(10 ** toDecimals)} ${BigNumber(asset_balance[asset_balance.length - 1]).dividedBy(10 ** fromDecimals)}`;
         out += ` ${to_asset_id} ${from_asset_id}`;
         out += ` ${header.number}-${phase.asApplyExtrinsic}`;
         console.log(`Trade:${out}`)
