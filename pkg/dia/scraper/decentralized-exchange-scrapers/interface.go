@@ -13,6 +13,9 @@ type Scraper struct {
 }
 
 type CEXScraper interface {
+	// TO DO: Add "Check duplicate trades" method. For details see implementation
+	// in legacy CEX scrapers.
+
 	// Read pairs from IPFS using a unique identifier (CID?).
 	ReadPairs(id string) ([]dia.ExchangePair, error)
 	// Central clock allowing all decentralized scrapers to synchronize.
