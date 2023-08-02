@@ -7,12 +7,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "btc",
-            "ForeignName": "btcpax",
-            "Exchange": "Bitstamp",
-            "Ignore": false
-        },
-        {
             "Symbol": "gbp",
             "ForeignName": "gbpusd",
             "Exchange": "Bitstamp",
