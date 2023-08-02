@@ -109,6 +109,12 @@
             "Address": "0"
         },
         {
+            "Symbol": "BOBA",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x42bBFa2e77757C645eeaAd1655E0911a7553Efbc"
+        },
+        {
             "Symbol": "BOLT",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

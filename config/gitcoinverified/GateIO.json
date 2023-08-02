@@ -49,6 +49,12 @@
             "Address": "0"
         },
         {
+            "Symbol": "BOBA",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x42bBFa2e77757C645eeaAd1655E0911a7553Efbc"
+        },
+        {
             "Symbol": "CFG",
             "Exchange": "GateIO",
             "Blockchain": "Centrifuge",

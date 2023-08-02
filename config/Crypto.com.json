@@ -109,6 +109,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "BOBA",
+            "ForeignName": "BOBA_USD",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
             "Symbol": "BOSON",
             "ForeignName": "BOSON_USDT",
             "Exchange": "Crypto.com",

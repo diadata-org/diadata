@@ -295,6 +295,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "BOBA",
+            "ForeignName": "BOBA-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "BOSON",
             "ForeignName": "BOSON-USDT",
             "Exchange": "KuCoin",
