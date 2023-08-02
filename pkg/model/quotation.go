@@ -13,6 +13,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
+	"github.com/influxdata/influxql"
 	"github.com/jackc/pgx/v4"
 )
 
@@ -77,8 +78,8 @@ func (datastore *DB) GetAssetPriceUSD(asset dia.Asset, timestamp time.Time) (pri
 func (datastore *DB) AddAssetQuotationsToBatch(quotations []*AssetQuotation) error {
 	for _, quotation := range quotations {
 		tags := map[string]string{
-			"symbol":     quotation.Asset.Symbol,
-			"name":       quotation.Asset.Name,
+			"symbol":     influxql.QuoteString(quotation.Asset.Symbol),
+			"name":       influxql.QuoteString(quotation.Asset.Name),
 			"address":    quotation.Asset.Address,
 			"blockchain": quotation.Asset.Blockchain,
 		}
@@ -99,8 +100,8 @@ func (datastore *DB) AddAssetQuotationsToBatch(quotations []*AssetQuotation) err
 func (datastore *DB) SetAssetQuotation(quotation *AssetQuotation) error {
 	// Write to influx
 	tags := map[string]string{
-		"symbol":     quotation.Asset.Symbol,
-		"name":       quotation.Asset.Name,
+		"symbol":     influxql.QuoteString(quotation.Asset.Symbol),
+		"name":       influxql.QuoteString(quotation.Asset.Name),
 		"address":    quotation.Asset.Address,
 		"blockchain": quotation.Asset.Blockchain,
 	}
@@ -117,7 +118,7 @@ func (datastore *DB) SetAssetQuotation(quotation *AssetQuotation) error {
 
 	// Write latest point to redis cache
 	// log.Printf("write to cache: %s", quotation.Asset.Symbol)
-	_, err = datastore.SetAssetQuotationCache(quotation, false)
+	// _, err = datastore.SetAssetQuotationCache(quotation, false)
 	return err
 
 }
