@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	exchange = dia.ZenlinkswapExchange
+	exchange = flag.String("exchange", "", "which exchange")
 	// mode==current:		default mode. Trades are forwarded to TBS and FBS.
 	// mode==storeTrades:	trades are not forwarded to TBS and FBS and stored as raw trades in influx.
 	// mode==estimation:	trades are forwarded to tradesEstimationService, i.e. same as storeTrades mode
@@ -36,7 +36,7 @@ func init() {
 // main manages all PairScrapers and handles incoming trade information
 func main() {
 
-	log.Infof("start collector for %s in %s mode...", exchange, *mode)
+	log.Infof("start collector for %s in %s mode...", *exchange, *mode)
 
 	relDB, err := models.NewRelDataStore()
 	if err != nil {
@@ -51,23 +51,18 @@ func main() {
 	// Fetch exchange pairs from database or json file in config folder.
 	var pairsExchange []dia.ExchangePair
 	if !*pairsfile {
-		pairsExchange, err = relDB.GetExchangePairSymbols(exchange)
+		pairsExchange, err = relDB.GetExchangePairSymbols(*exchange)
 		if err != nil {
 			log.Fatal("fetch pairs from database: ", err)
 		}
 	} else {
 		log.Error("error on GetExchangePairSymbols", err)
-		cc := configCollectors.NewConfigCollectors(exchange, ".json")
+		cc := configCollectors.NewConfigCollectors(*exchange, ".json")
 		pairsExchange = cc.AllPairs()
 	}
 	log.Info("available exchangePairs:", len(pairsExchange))
 
-	exchangeConfig, err := relDB.GetExchange(dia.ZenlinkswapExchange)
-	if err != nil {
-		log.Warning("no config for exchange ", err)
-	}
-
-	diaExchange := dia.Exchange{Name: exchange, Centralized: true, WatchdogDelay: exchangeConfig.WatchdogDelay}
+	diaExchange := scrapers.Exchanges[*exchange]
 	es := scrapers.NewZenlinkScraper(diaExchange, true)
 
 	// Set up kafka writers for various modes.
@@ -98,7 +93,7 @@ func main() {
 
 	wg := sync.WaitGroup{}
 
-	if scrapers.Exchanges[exchange].Centralized {
+	if scrapers.Exchanges[*exchange].Centralized {
 
 		// Scrape pairs for CEX scrapers.
 		for _, configPair := range pairsExchange {
@@ -121,7 +116,7 @@ func main() {
 		defer wg.Wait()
 
 	}
-	go handleTrades(es.Channel(), &wg, w, wTest, wReplica, ds, exchange, *mode)
+	go handleTrades(es.Channel(), &wg, w, wTest, wReplica, ds, *exchange, *mode)
 }
 
 func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wTest *kafka.Writer, wReplica *kafka.Writer, ds *models.DB, exchange string, mode string) {
