@@ -42,7 +42,7 @@ type ZenlinkPair struct {
 }
 
 type ZenlinkScraper struct {
-	exchangeName string
+	exchange dia.Exchange
 
 	// channels to signal events
 	initDone     chan nothing
@@ -81,7 +81,7 @@ func NewZenlinkScraper(exchange dia.Exchange, scrape bool) *ZenlinkScraper {
 	}
 
 	scraper := &ZenlinkScraper{
-		exchangeName: exchange.Name,
+		exchange:     exchange,
 		wsClient:     wsClient,
 		initDone:     make(chan nothing),
 		shutdown:     make(chan nothing),
@@ -103,6 +103,8 @@ func (s *ZenlinkScraper) receive(nodeScriptPath string) {
 	go func() {
 		cmd := exec.Command("node", nodeScriptPath)
 		stdout, _ := cmd.StdoutPipe()
+		stderr, _ := cmd.StderrPipe()
+
 		err := cmd.Start()
 		if err != nil {
 			log.Error("start main.js: ", err)
@@ -117,6 +119,10 @@ func (s *ZenlinkScraper) receive(nodeScriptPath string) {
 			if strings.HasPrefix(scanner.Text(), "blockHeight:") {
 				fmt.Println(scanner.Text())
 			}
+		}
+		scannerErr := bufio.NewScanner(stderr)
+		for scannerErr.Scan() {
+			log.Error("Run script: ", scannerErr.Text())
 		}
 		// Wait for the script to finish
 		cmd.Wait()
@@ -141,12 +147,12 @@ func (s *ZenlinkScraper) receive(nodeScriptPath string) {
 		price := FromAmount / toAmount
 		basetoken := dia.Asset{
 			Symbol:     fields[2],
-			Blockchain: dia.BIFROST,
+			Blockchain: s.exchange.BlockChain.Name,
 			Address:    fields[6],
 		}
 		quotetoken := dia.Asset{
 			Symbol:     fields[1],
-			Blockchain: dia.BIFROST,
+			Blockchain: s.exchange.BlockChain.Name,
 			Address:    fields[5],
 		}
 		trade := &dia.Trade{
@@ -156,7 +162,7 @@ func (s *ZenlinkScraper) receive(nodeScriptPath string) {
 			Volume:         toAmount,
 			Time:           time.Now(),
 			ForeignTradeID: fields[7],
-			Source:         s.exchangeName,
+			Source:         s.exchange.Name,
 			BaseToken:      basetoken,
 			QuoteToken:     quotetoken,
 			VerifiedPair:   true,
@@ -222,7 +228,7 @@ func (s *ZenlinkScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err er
 		pairToNormalize := dia.ExchangePair{
 			Symbol:      strings.Split(p.Symbol, "/")[0],
 			ForeignName: p.Symbol,
-			Exchange:    s.exchangeName,
+			Exchange:    s.exchange.Name,
 		}
 		pairs = append(pairs, pairToNormalize)
 	}

@@ -44,6 +44,7 @@ const (
 	OSMOSIS                                 = "Osmosis"
 	FIAT                                    = "Fiat"
 	BIFROST                                 = "Bifrost"
+	BIFROST_POLKADOT                        = "Bifrost-polkadot"
 )
 
 type VerificationMechanism string

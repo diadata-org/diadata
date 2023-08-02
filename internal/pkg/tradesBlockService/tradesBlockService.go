@@ -459,5 +459,14 @@ func buildBridge(t dia.Trade) dia.Asset {
 			}
 		}
 	}
+	if basetoken.Blockchain == dia.BIFROST_POLKADOT && t.Source == dia.ZenlinkswapExchangeBifrostPolkadot {
+		if basetoken.Address == "2048" {
+			basetoken = dia.Asset{
+				Symbol:     "KSM",
+				Address:    "0x0000000000000000000000000000000000000000",
+				Blockchain: dia.KUSAMA,
+			}
+		}
+	}
 	return basetoken
 }

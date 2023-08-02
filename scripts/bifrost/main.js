@@ -33,7 +33,7 @@ async function main() {
         let toDecimals = getDecimals(to);
         let out = `${to}-${from} ${to} ${from}`
         out += ` ${BigNumber(asset_balance[0]).dividedBy(10 ** toDecimals)} ${BigNumber(asset_balance[asset_balance.length - 1]).dividedBy(10 ** fromDecimals)}`;
-        out += ` ${to_asset_id} ${from_asset_id}`;
+        out += ` ${to_native.assetIndex} ${from_native.assetIndex}`;
         out += ` ${header.number}-${phase.asApplyExtrinsic}`;
         console.log(`Trade:${out}`)
       });
