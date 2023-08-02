@@ -17,7 +17,8 @@ import (
 )
 
 var (
-	NodeScriptPath = utils.Getenv("PATH_TO_NODE_SCRIPT", "scripts/bifrost/main.js")
+	NodeScriptPathBifrostKusama   = utils.Getenv("PATH_TO_NODE_SCRIPT", "scripts/bifrost/main.js")
+	NodeScriptPathBifrostPolkadot = utils.Getenv("PATH_TO_NODE_SCRIPT", "scripts/bifrost/zenlink-bifrost-polkadot.js")
 )
 
 type ZenlinkPairResponse struct {
@@ -59,10 +60,22 @@ type ZenlinkScraper struct {
 }
 
 func NewZenlinkScraper(exchange dia.Exchange, scrape bool) *ZenlinkScraper {
-	var zenlinkSocketURL = "wss://bifrost-rpc.liebi.com/ws"
+	var (
+		socketURL      string
+		nodeScriptPath string
+	)
+
+	switch exchange.Name {
+	case dia.ZenlinkswapExchange:
+		socketURL = "wss://bifrost-rpc.liebi.com/ws"
+		nodeScriptPath = NodeScriptPathBifrostKusama
+	case dia.ZenlinkswapExchangeBifrostPolkadot:
+		socketURL = "wss://hk.p.bifrost-rpc.liebi.com/ws"
+		nodeScriptPath = NodeScriptPathBifrostPolkadot
+	}
 	// establish connection in the background
 	var wsDialer ws.Dialer
-	wsClient, _, err := wsDialer.Dial(zenlinkSocketURL, nil)
+	wsClient, _, err := wsDialer.Dial(socketURL, nil)
 	if err != nil {
 		log.Fatal("connect to websocket server: ", err)
 	}
@@ -79,16 +92,16 @@ func NewZenlinkScraper(exchange dia.Exchange, scrape bool) *ZenlinkScraper {
 	}
 
 	if scrape {
-		go scraper.mainLoop()
+		go scraper.mainLoop(nodeScriptPath)
 	}
 	return scraper
 }
 
-func (s *ZenlinkScraper) receive() {
+func (s *ZenlinkScraper) receive(nodeScriptPath string) {
 	trades := make(chan string)
 
 	go func() {
-		cmd := exec.Command("node", NodeScriptPath)
+		cmd := exec.Command("node", nodeScriptPath)
 		stdout, _ := cmd.StdoutPipe()
 		err := cmd.Start()
 		if err != nil {
@@ -154,7 +167,7 @@ func (s *ZenlinkScraper) receive() {
 	}
 }
 
-func (s *ZenlinkScraper) mainLoop() {
+func (s *ZenlinkScraper) mainLoop(nodeScriptPath string) {
 	for {
 		select {
 		case <-s.shutdown:
@@ -163,7 +176,7 @@ func (s *ZenlinkScraper) mainLoop() {
 			return
 		default:
 		}
-		s.receive()
+		s.receive(nodeScriptPath)
 	}
 }
 

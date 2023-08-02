@@ -247,6 +247,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewOsmosisScraper(Exchanges[dia.OsmosisExchange], scrape, relDB)
 	case dia.ZenlinkswapExchange:
 		return NewZenlinkScraper(Exchanges[dia.ZenlinkswapExchange], scrape)
+	case dia.ZenlinkswapExchangeBifrostPolkadot:
+		return NewZenlinkScraper(Exchanges[dia.ZenlinkswapExchangeBifrostPolkadot], scrape)
 		// case dia.FinageForex:
 		// 	return NewFinageForexScraper(Exchanges[dia.FinageForex], scrape, relDB, key, secret)
 
