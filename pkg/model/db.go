@@ -154,7 +154,8 @@ type DB struct {
 	influxPointsInBatch int
 }
 
-var EscapeReplacer = strings.NewReplacer("\n", `\n`, `\`, `\\`, `'`, `\'`)
+// var EscapeReplacer = strings.NewReplacer("\n", `\n`, `\`, `\\`, `'`, `\'`)
+var EscapeReplacer = strings.NewReplacer("\n", `\n`)
 
 const (
 	influxDbName                      = "dia"
