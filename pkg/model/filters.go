@@ -10,7 +10,6 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
-	"github.com/influxdata/influxql"
 )
 
 // SetFilter stores a filter point
@@ -231,8 +230,8 @@ func (datastore *DB) SaveFilterInflux(filter string, asset dia.Asset, exchange s
 	// Create a point and add to batch
 	tags := map[string]string{
 		"filter":     filter,
-		"symbol":     influxql.QuoteString(asset.Symbol),
-		"address":    influxql.QuoteString(asset.Address),
+		"symbol":     EscapeReplacer.Replace(asset.Symbol),
+		"address":    EscapeReplacer.Replace(asset.Address),
 		"blockchain": asset.Blockchain,
 		"exchange":   exchange,
 	}

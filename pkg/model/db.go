@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia/helpers/db"
@@ -11,7 +12,6 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
-	"github.com/influxdata/influxql"
 )
 
 type Datastore interface {
@@ -153,6 +153,8 @@ type DB struct {
 	influxBatchPoints   clientInfluxdb.BatchPoints
 	influxPointsInBatch int
 }
+
+var EscapeReplacer = strings.NewReplacer("\n", `\n`, `\`, `\\`, `'`, `\'`)
 
 const (
 	influxDbName                      = "dia"
@@ -313,7 +315,7 @@ func (datastore *DB) CopyInfluxMeasurements(dbOrigin string, dbDestination strin
 
 func (datastore *DB) SetVWAPFirefly(foreignName string, value float64, timestamp time.Time) error {
 	tags := map[string]string{
-		"foreignName": influxql.QuoteString(foreignName),
+		"foreignName": EscapeReplacer.Replace(foreignName),
 	}
 	fields := map[string]interface{}{
 		"value": value,

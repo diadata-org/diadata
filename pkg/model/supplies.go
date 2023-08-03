@@ -11,7 +11,6 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
-	"github.com/influxdata/influxql"
 )
 
 func getKeySupply(asset dia.Asset) string {
@@ -33,8 +32,8 @@ func (datastore *DB) SaveSupplyInflux(supply *dia.Supply) error {
 		"source":            supply.Source,
 	}
 	tags := map[string]string{
-		"symbol":     influxql.QuoteString(supply.Asset.Symbol),
-		"name":       influxql.QuoteString(supply.Asset.Name),
+		"symbol":     EscapeReplacer.Replace(supply.Asset.Symbol),
+		"name":       EscapeReplacer.Replace(supply.Asset.Name),
 		"address":    supply.Asset.Address,
 		"blockchain": supply.Asset.Blockchain,
 	}
