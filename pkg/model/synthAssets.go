@@ -7,6 +7,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
+	"github.com/influxdata/influxql"
 )
 
 // SaveSynthSupplyInflux stores a synth supply in influx. Flushed when more than maxPoints in batch.
@@ -21,8 +22,8 @@ func (datastore *DB) SaveSynthSupplyInfluxToTable(t *dia.SynthAssetSupply, table
 
 	// Create a point and add to batch
 	tags := map[string]string{
-		"synthassetsymbol":       t.Asset.Symbol,
-		"underlyingassetsymbol":  t.AssetUnderlying.Symbol,
+		"synthassetsymbol":       influxql.QuoteString(t.Asset.Symbol),
+		"underlyingassetsymbol":  influxql.QuoteString(t.AssetUnderlying.Symbol),
 		"synthtokenaddress":      t.Asset.Address,
 		"underlyingtokenaddress": t.AssetUnderlying.Address,
 		"blockchain":             t.Asset.Blockchain,

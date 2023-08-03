@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
+	"github.com/influxdata/influxql"
 )
 
 func (datastore *DB) SetBatchFiatPriceInflux(fiatQuotations []*FiatQuotation) error {
@@ -32,8 +33,8 @@ func checkInfluxIsAvailable(db *DB) error {
 func addMultiplePointsToBatch(db *DB, fiatQuotations []*FiatQuotation) {
 	for _, fq := range fiatQuotations {
 		tags := map[string]string{
-			"quote_currency": fq.QuoteCurrency,
-			"base_currency":  fq.BaseCurrency,
+			"quote_currency": influxql.QuoteString(fq.QuoteCurrency),
+			"base_currency":  influxql.QuoteString(fq.BaseCurrency),
 			"source":         fq.Source,
 		}
 		fields := map[string]interface{}{

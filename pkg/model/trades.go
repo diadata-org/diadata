@@ -10,6 +10,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
+	"github.com/influxdata/influxql"
 )
 
 // SaveTradeInflux stores a trade in influx. Flushed when more than maxPoints in batch.
@@ -24,7 +25,7 @@ func (datastore *DB) SaveTradeInfluxToTable(t *dia.Trade, table string) error {
 
 	// Create a point and add to batch
 	tags := map[string]string{
-		"symbol":               t.Symbol,
+		"symbol":               influxql.QuoteString(t.Symbol),
 		"pair":                 t.Pair,
 		"exchange":             t.Source,
 		"verified":             strconv.FormatBool(t.VerifiedPair),
