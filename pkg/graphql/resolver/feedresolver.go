@@ -27,14 +27,6 @@ func (qr *FilterPointExtendedResolver) Value(ctx context.Context) (*float64, err
 	return &qr.q.FilterPoint.Value, nil
 }
 
-func (qr *FilterPointExtendedResolver) Address(ctx context.Context) (*string, error) {
-	return &qr.q.FilterPoint.Asset.Address, nil
-}
-
-func (qr *FilterPointExtendedResolver) Blockchain(ctx context.Context) (*string, error) {
-	return &qr.q.FilterPoint.Asset.Blockchain, nil
-}
-
 func (qr *FilterPointExtendedResolver) Pools(ctx context.Context) (*[]string, error) {
 	pools := []string{}
 	for _, p := range qr.q.Pools {

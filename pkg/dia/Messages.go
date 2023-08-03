@@ -6,6 +6,7 @@ import (
 	"errors"
 	"math"
 	"math/big"
+	"strings"
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -478,6 +479,25 @@ type Trade struct {
 
 func (t *Trade) VolumeUSD() float64 {
 	return t.EstimatedUSDPrice * math.Abs(t.Volume)
+}
+
+// NormalizeSymbols normalizes @t.Symbol and @t.Pair in a trade struct to
+// upper case letters like so A@pairSplitterB. For instance, btcusdt will be BTC-USDT.
+func (t *Trade) NormalizeSymbols(upperCase bool, pairSplitter string) error {
+	symbols, err := GetPairSymbols(ExchangePair{Exchange: t.Source, ForeignName: t.Pair, Symbol: t.Symbol})
+	if err != nil {
+		return err
+	}
+	if len(symbols) == 2 {
+		if upperCase {
+			t.Pair = strings.ToUpper(symbols[0] + pairSplitter + symbols[1])
+			t.Symbol = strings.ToUpper(symbols[0])
+		} else {
+			t.Pair = strings.ToLower(symbols[0] + pairSplitter + symbols[1])
+			t.Symbol = strings.ToLower(symbols[0])
+		}
+	}
+	return nil
 }
 
 // SynthAssetSupply is a container for data on synthetic assets such as aUSDC.

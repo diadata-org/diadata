@@ -143,8 +143,6 @@ type FilterPointExtended {
   Symbol: String
   Time: Time
   Value: Float
-  Address: String
-  Blockchain: String
   Pools: [String!]
   Pairs: [String!]
   TradesCount: Int
