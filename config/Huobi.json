@@ -44,6 +44,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "AZEROUSDT",
+      "Ignore": false,
+      "Symbol": "AZERO"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "SDNUSDT",
       "Ignore": false,
       "Symbol": "SDN"

@@ -31,6 +31,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "AZERO",
+            "Exchange": "GateIO",
+            "Blockchain": "AlephZero",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "BEPRO",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",

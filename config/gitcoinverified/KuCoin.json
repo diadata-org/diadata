@@ -79,6 +79,12 @@
             "Address": "Token:AUSD"
         },
         {
+            "Symbol": "AZERO",
+            "Exchange": "KuCoin",
+            "Blockchain": "AlephZero",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "BCHSV",
             "Exchange": "KuCoin",
             "Blockchain": "BitcoinSV",

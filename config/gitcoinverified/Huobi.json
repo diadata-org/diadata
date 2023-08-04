@@ -61,6 +61,12 @@
       "Address": "0x8BEc47865aDe3B172A928df8f990Bc7f2A3b9f79"
     },
     {
+      "Symbol": "AZERO",
+      "Exchange": "Huobi",
+      "Blockchain": "AlephZero",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "BAL",
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",

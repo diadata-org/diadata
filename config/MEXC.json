@@ -55,6 +55,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "AZERO",
+      "ForeignName": "AZEROUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "BADGER",
       "ForeignName": "BADGERUSDT",
       "Exchange": "MEXC",

@@ -205,6 +205,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "AZERO",
+            "ForeignName": "AZERO-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "BAT",
             "ForeignName": "BAT-USDT",
             "Exchange": "KuCoin",
