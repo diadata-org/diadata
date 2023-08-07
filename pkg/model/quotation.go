@@ -77,8 +77,8 @@ func (datastore *DB) GetAssetPriceUSD(asset dia.Asset, timestamp time.Time) (pri
 func (datastore *DB) AddAssetQuotationsToBatch(quotations []*AssetQuotation) error {
 	for _, quotation := range quotations {
 		tags := map[string]string{
-			"symbol":     quotation.Asset.Symbol,
-			"name":       quotation.Asset.Name,
+			"symbol":     EscapeReplacer.Replace(quotation.Asset.Symbol),
+			"name":       EscapeReplacer.Replace(quotation.Asset.Name),
 			"address":    quotation.Asset.Address,
 			"blockchain": quotation.Asset.Blockchain,
 		}
@@ -99,8 +99,8 @@ func (datastore *DB) AddAssetQuotationsToBatch(quotations []*AssetQuotation) err
 func (datastore *DB) SetAssetQuotation(quotation *AssetQuotation) error {
 	// Write to influx
 	tags := map[string]string{
-		"symbol":     quotation.Asset.Symbol,
-		"name":       quotation.Asset.Name,
+		"symbol":     EscapeReplacer.Replace(quotation.Asset.Symbol),
+		"name":       EscapeReplacer.Replace(quotation.Asset.Name),
 		"address":    quotation.Asset.Address,
 		"blockchain": quotation.Asset.Blockchain,
 	}

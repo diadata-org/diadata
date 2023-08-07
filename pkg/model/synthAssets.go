@@ -21,8 +21,8 @@ func (datastore *DB) SaveSynthSupplyInfluxToTable(t *dia.SynthAssetSupply, table
 
 	// Create a point and add to batch
 	tags := map[string]string{
-		"synthassetsymbol":       t.Asset.Symbol,
-		"underlyingassetsymbol":  t.AssetUnderlying.Symbol,
+		"synthassetsymbol":       EscapeReplacer.Replace(t.Asset.Symbol),
+		"underlyingassetsymbol":  EscapeReplacer.Replace(t.AssetUnderlying.Symbol),
 		"synthtokenaddress":      t.Asset.Address,
 		"underlyingtokenaddress": t.AssetUnderlying.Address,
 		"blockchain":             t.Asset.Blockchain,

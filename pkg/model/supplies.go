@@ -32,8 +32,8 @@ func (datastore *DB) SaveSupplyInflux(supply *dia.Supply) error {
 		"source":            supply.Source,
 	}
 	tags := map[string]string{
-		"symbol":     supply.Asset.Symbol,
-		"name":       supply.Asset.Name,
+		"symbol":     EscapeReplacer.Replace(supply.Asset.Symbol),
+		"name":       EscapeReplacer.Replace(supply.Asset.Name),
 		"address":    supply.Asset.Address,
 		"blockchain": supply.Asset.Blockchain,
 	}
