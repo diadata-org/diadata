@@ -8,9 +8,21 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "AZERO_USDT",
+      "Ignore": false,
+      "Symbol": "AZERO"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "BEPRO_USDT",
       "Ignore": false,
       "Symbol": "BEPRO"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "BOBA_USDT",
+      "Ignore": false,
+      "Symbol": "BOBA"
     },
     {
       "Exchange": "GateIO",

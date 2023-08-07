@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ping-postgres
+spec:
+  ttlSecondsAfterFinished: 10
+  template:
+    spec:
+      containers:
+        - name: ping-postgres
+          image: public.ecr.aws/docker/library/postgres:15-alpine
+          env:
+            - name: PGHOST
+              value: "data-postgres.default.svc.cluster.local"
+            - name: PGUSER
+              value: "postgres"
+            - name: PGPASSWORD
+              value: "password"
+          command: ["sh", "-c", "pg_isready -h $PGHOST -U $PGUSER"]
+      restartPolicy: Never
+  backoffLimit: 0

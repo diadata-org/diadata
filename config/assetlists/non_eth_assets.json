@@ -643,6 +643,62 @@
       "Decimals": 10,
       "Blockchain": "Bifrost",
       "Address": "521"
+    },
+    {
+      "Symbol": "BNC",
+      "Name": "Bifrost",
+      "Decimals": 12,
+      "Blockchain": "Bifrost-polkadot",
+      "Address": "0"
+    },
+    {
+      "Symbol": "DOT",
+      "Name": "Polkadot",
+      "Decimals": 10,
+      "Blockchain": "Bifrost-polkadot",
+      "Address": "2048"
+    },
+    {
+      "Symbol": "vDOT",
+      "Name": "Voucher DOT",
+      "Decimals": 10,
+      "Blockchain": "Bifrost-polkadot",
+      "Address": "2304"
+    },
+    {
+      "Symbol": "vsDOT",
+      "Name": "vsDOT",
+      "Decimals": 10,
+      "Blockchain": "Bifrost-polkadot",
+      "Address": "2560"
+    },
+    {
+      "Symbol": "GLMR",
+      "Name": "Moonriver",
+      "Decimals": 18,
+      "Blockchain": "Bifrost-polkadot",
+      "Address": "2049"
+    },
+    {
+      "Symbol": "FIL",
+      "Name": "Filecoin Network Token",
+      "Decimals": 18,
+      "Blockchain": "Bifrost-polkadot",
+      "Address": "2052"
+    },
+    {
+      "Symbol": "vGLMR",
+      "Name": "vGLMR",
+      "Decimals": 18,
+      "Blockchain": "Bifrost-polkadot",
+      "Address": "2305"
+    },
+    {
+      "Symbol": "vFIL",
+      "Name": "vFIL",
+      "Decimals": 18,
+      "Blockchain": "Bifrost-polkadot",
+      "Address": "2308"
     }
   ]
 }

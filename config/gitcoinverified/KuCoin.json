@@ -79,6 +79,12 @@
             "Address": "Token:AUSD"
         },
         {
+            "Symbol": "AZERO",
+            "Exchange": "KuCoin",
+            "Blockchain": "AlephZero",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "BCHSV",
             "Exchange": "KuCoin",
             "Blockchain": "BitcoinSV",
@@ -107,6 +113,12 @@
             "Exchange": "KuCoin",
             "Blockchain": "Bifrost",
             "Address": "0"
+        },
+        {
+            "Symbol": "BOBA",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x42bBFa2e77757C645eeaAd1655E0911a7553Efbc"
         },
         {
             "Symbol": "BOLT",
@@ -424,7 +436,7 @@
             "Symbol": "MOVR",
             "Exchange": "KuCoin",
             "Blockchain": "Moonriver",
-            "Address": "0x98878B06940aE243284CA214f92Bb71a2b032B8A"
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "MTC",

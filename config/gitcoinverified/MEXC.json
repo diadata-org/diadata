@@ -55,6 +55,12 @@
       "Address": "0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b"
     },
     {
+      "Symbol": "AZERO",
+      "Exchange": "MEXC",
+      "Blockchain": "AlephZero",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "BADGER",
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",
@@ -340,7 +346,7 @@
       "Symbol": "MOVR",
       "Exchange": "MEXC",
       "Blockchain": "Moonriver",
-      "Address": "0x98878B06940aE243284CA214f92Bb71a2b032B8A"
+      "Address": "0x0000000000000000000000000000000000000000"
     },
     {
       "Symbol": "NEAR",
@@ -394,7 +400,7 @@
       "Symbol": "RDNT",
       "Exchange": "MEXC",
       "Blockchain": "Arbitrum",
-      "Address": "0x0C4681e6C0235179ec3D4F4fc4DF3d14FDD96017"
+      "Address": "0x3082CC23568eA640225c2467653dB90e9250AaA0"
     },
     {
       "Symbol": "SAMO",

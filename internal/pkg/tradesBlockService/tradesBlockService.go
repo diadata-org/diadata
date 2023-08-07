@@ -310,7 +310,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 			} else {
 				if price > 0.0 {
 					t.EstimatedUSDPrice = t.Price * price
-					if t.USDVolume() > tradeVolumeThresholdUSD {
+					if t.VolumeUSD() > tradeVolumeThresholdUSD {
 						verifiedTrade = true
 					} else {
 						log.Warn("low $ volume on trade: ", t)
@@ -607,6 +607,15 @@ func buildBridge(t dia.Trade) dia.Asset {
 				Symbol:     "KSM",
 				Address:    "0x0000000000000000000000000000000000000000",
 				Blockchain: dia.KUSAMA,
+			}
+		}
+	}
+	if basetoken.Blockchain == dia.BIFROST_POLKADOT && t.Source == dia.ZenlinkswapExchangeBifrostPolkadot {
+		if basetoken.Address == "2048" {
+			basetoken = dia.Asset{
+				Symbol:     "DOT",
+				Address:    "0x0000000000000000000000000000000000000000",
+				Blockchain: dia.POLKADOT,
 			}
 		}
 	}

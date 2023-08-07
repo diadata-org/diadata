@@ -17,7 +17,8 @@ import (
 )
 
 var (
-	NodeScriptPath = utils.Getenv("PATH_TO_NODE_SCRIPT", "scripts/bifrost/main.js")
+	NodeScriptPathBifrostKusama   = utils.Getenv("PATH_TO_NODE_SCRIPT", "scripts/bifrost/main.js")
+	NodeScriptPathBifrostPolkadot = utils.Getenv("PATH_TO_NODE_SCRIPT", "scripts/bifrost/zenlink-bifrost-polkadot.js")
 )
 
 type ZenlinkPairResponse struct {
@@ -41,7 +42,7 @@ type ZenlinkPair struct {
 }
 
 type ZenlinkScraper struct {
-	exchangeName string
+	exchange dia.Exchange
 
 	// channels to signal events
 	initDone     chan nothing
@@ -59,16 +60,28 @@ type ZenlinkScraper struct {
 }
 
 func NewZenlinkScraper(exchange dia.Exchange, scrape bool) *ZenlinkScraper {
-	var zenlinkSocketURL = "wss://bifrost-rpc.liebi.com/ws"
+	var (
+		socketURL      string
+		nodeScriptPath string
+	)
+
+	switch exchange.Name {
+	case dia.ZenlinkswapExchange:
+		socketURL = "wss://bifrost-rpc.liebi.com/ws"
+		nodeScriptPath = NodeScriptPathBifrostKusama
+	case dia.ZenlinkswapExchangeBifrostPolkadot:
+		socketURL = "wss://hk.p.bifrost-rpc.liebi.com/ws"
+		nodeScriptPath = NodeScriptPathBifrostPolkadot
+	}
 	// establish connection in the background
 	var wsDialer ws.Dialer
-	wsClient, _, err := wsDialer.Dial(zenlinkSocketURL, nil)
+	wsClient, _, err := wsDialer.Dial(socketURL, nil)
 	if err != nil {
 		log.Fatal("connect to websocket server: ", err)
 	}
 
 	scraper := &ZenlinkScraper{
-		exchangeName: exchange.Name,
+		exchange:     exchange,
 		wsClient:     wsClient,
 		initDone:     make(chan nothing),
 		shutdown:     make(chan nothing),
@@ -79,17 +92,19 @@ func NewZenlinkScraper(exchange dia.Exchange, scrape bool) *ZenlinkScraper {
 	}
 
 	if scrape {
-		go scraper.mainLoop()
+		go scraper.mainLoop(nodeScriptPath)
 	}
 	return scraper
 }
 
-func (s *ZenlinkScraper) receive() {
+func (s *ZenlinkScraper) receive(nodeScriptPath string) {
 	trades := make(chan string)
 
 	go func() {
-		cmd := exec.Command("node", NodeScriptPath)
+		cmd := exec.Command("node", nodeScriptPath)
 		stdout, _ := cmd.StdoutPipe()
+		stderr, _ := cmd.StderrPipe()
+
 		err := cmd.Start()
 		if err != nil {
 			log.Error("start main.js: ", err)
@@ -104,6 +119,10 @@ func (s *ZenlinkScraper) receive() {
 			if strings.HasPrefix(scanner.Text(), "blockHeight:") {
 				fmt.Println(scanner.Text())
 			}
+		}
+		scannerErr := bufio.NewScanner(stderr)
+		for scannerErr.Scan() {
+			log.Error("Run script: ", scannerErr.Text())
 		}
 		// Wait for the script to finish
 		cmd.Wait()
@@ -128,12 +147,12 @@ func (s *ZenlinkScraper) receive() {
 		price := FromAmount / toAmount
 		basetoken := dia.Asset{
 			Symbol:     fields[2],
-			Blockchain: dia.BIFROST,
+			Blockchain: s.exchange.BlockChain.Name,
 			Address:    fields[6],
 		}
 		quotetoken := dia.Asset{
 			Symbol:     fields[1],
-			Blockchain: dia.BIFROST,
+			Blockchain: s.exchange.BlockChain.Name,
 			Address:    fields[5],
 		}
 		trade := &dia.Trade{
@@ -143,7 +162,7 @@ func (s *ZenlinkScraper) receive() {
 			Volume:         toAmount,
 			Time:           time.Now(),
 			ForeignTradeID: fields[7],
-			Source:         s.exchangeName,
+			Source:         s.exchange.Name,
 			BaseToken:      basetoken,
 			QuoteToken:     quotetoken,
 			VerifiedPair:   true,
@@ -154,7 +173,7 @@ func (s *ZenlinkScraper) receive() {
 	}
 }
 
-func (s *ZenlinkScraper) mainLoop() {
+func (s *ZenlinkScraper) mainLoop(nodeScriptPath string) {
 	for {
 		select {
 		case <-s.shutdown:
@@ -163,7 +182,7 @@ func (s *ZenlinkScraper) mainLoop() {
 			return
 		default:
 		}
-		s.receive()
+		s.receive(nodeScriptPath)
 	}
 }
 
@@ -209,7 +228,7 @@ func (s *ZenlinkScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err er
 		pairToNormalize := dia.ExchangePair{
 			Symbol:      strings.Split(p.Symbol, "/")[0],
 			ForeignName: p.Symbol,
-			Exchange:    s.exchangeName,
+			Exchange:    s.exchange.Name,
 		}
 		pairs = append(pairs, pairToNormalize)
 	}

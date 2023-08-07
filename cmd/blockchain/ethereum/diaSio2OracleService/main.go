@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math"
 	"math/big"
 	"net/http"
 	"strconv"
@@ -28,6 +29,7 @@ func main() {
 	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
 	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
+	coingeckoApiKey := utils.Getenv("COINGECKO_API_KEY", "")
 	sleepSeconds, err := strconv.Atoi(utils.Getenv("SLEEP_SECONDS", "120"))
 	if err != nil {
 		log.Fatalf("Failed to parse sleepSeconds: %v", err)
@@ -75,6 +77,20 @@ func main() {
 		"Astar",             //BAI
 		"Acala",             //aUSD
 	}
+	cgNames := []string{
+		"liquid-astr",
+		"astar",
+		"usd-coin",
+		"polkadot",
+		"binancecoin",
+		"bitcoin",
+		"ethereum",
+		"dai",
+		"binance-usd",
+		"tether",
+		"bai-stablecoin",
+		"acala-dollar-acala",
+	}
 	oldPrices := make(map[int]float64)
 
 	/*
@@ -107,9 +123,10 @@ func main() {
 			case <-ticker.C:
 				for i, address := range addresses {
 					blockchain := blockchains[i]
+					coingeckoName := cgNames[i]
 					oldPrice := oldPrices[i]
 					log.Println("old price", oldPrice)
-					oldPrice, err = periodicOracleUpdateHelper(oldPrice, deviationPermille, auth, contract, conn, blockchain, address)
+					oldPrice, err = periodicOracleUpdateHelper(oldPrice, deviationPermille, auth, contract, conn, blockchain, address, coingeckoName, coingeckoApiKey)
 					oldPrices[i] = oldPrice
 					if err != nil {
 						log.Println(err)
@@ -122,7 +139,7 @@ func main() {
 	select {}
 }
 
-func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string) (float64, error) {
+func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string, coingeckoName, coingeckoApiKey string) (float64, error) {
 
 	newPrice := 0.0
 	var (
@@ -184,6 +201,26 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 		}
 		log.Println("Entering deviation based update zone")
 		rawQ.Price = newPrice
+
+		// only perform CG check for asset that is not AUSD
+		if address != "Token:AUSD" {
+			// check coingecko before sending out an update transaction
+			cgPrice, err := getCoingeckoPrice(coingeckoName, coingeckoApiKey)
+			if err != nil {
+				return oldPrice, err
+			}
+			if cgPrice == 0.0 {
+				log.Printf("Error! Coingecko API returned price 0.0.")
+				return oldPrice, nil
+			}
+			if (math.Abs(cgPrice - rawQ.Price) / cgPrice) > 0.2 {
+				// Error case, stop transaction from happening
+				log.Printf("Error! Price %f for asset %s-%s out of coingecko range %f.", rawQ.Price, blockchain, address, cgPrice)
+				return oldPrice, nil
+			}
+			log.Printf("Price %f for asset %s-%s in coingecko range %f.", rawQ.Price, blockchain, address, cgPrice)
+	  }
+
 		err = updateQuotation(rawQ, auth, contract, conn)
 		if err != nil {
 			log.Fatalf("Failed to update DIA Oracle: %v", err)
@@ -350,4 +387,24 @@ func getGasSuggestion() (*big.Int, error) {
 	retval := big.NewInt(gasSuggestion.Int())
 
 	return retval, nil
+}
+
+func getCoingeckoPrice(assetName, coingeckoApiKey string) (float64, error) {
+	url := "https://pro-api.coingecko.com/api/v3/simple/price?ids=" + assetName + "&vs_currencies=usd&x_cg_pro_api_key=" + coingeckoApiKey
+	response, err := http.Get(url)
+	if err != nil {
+		return 0.0, err
+	}
+	
+	defer response.Body.Close()
+	if 200 != response.StatusCode {
+		return 0.0, fmt.Errorf("Error on coingecko API call with return code %d", response.StatusCode)
+	}
+
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return 0.0, err
+	}
+	price := gjson.Get(string(contents), assetName + ".usd").Float()
+	return price, nil
 }

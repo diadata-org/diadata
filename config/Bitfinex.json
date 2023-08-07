@@ -115,12 +115,6 @@
       "Ignore": false
     },
     {
-      "Symbol": "BTC",
-      "ForeignName": "BTCJPY",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
       "Symbol": "XRP",
       "ForeignName": "XRPUSD",
       "Exchange": "Bitfinex",
@@ -673,12 +667,6 @@
       "Ignore": false
     },
     {
-      "Symbol": "BTC",
-      "ForeignName": "BTCXCH",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
       "Symbol": "AMP",
       "ForeignName": "AMPUST",
       "Exchange": "Bitfinex",
@@ -705,18 +693,6 @@
     {
       "Symbol": "PAX",
       "ForeignName": "PAXUST",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
-      "Symbol": "BTC",
-      "ForeignName": "BTC:CNHT",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
-      "Symbol": "UST",
-      "ForeignName": "UST:CNHT",
       "Exchange": "Bitfinex",
       "Ignore": false
     },
@@ -985,74 +961,14 @@
       "Ignore": false
     },
     {
-      "Symbol": "BTC",
-      "ForeignName": "BTCF0:USTF0",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
-      "Symbol": "ETH",
-      "ForeignName": "ETHF0:USTF0",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
-      "Symbol": "BTC",
-      "ForeignName": "BTCDOMF0:USTF0",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
       "Symbol": "TES",
       "ForeignName": "TESTBTCF0:TESTUSDTF0",
       "Exchange": "Bitfinex",
       "Ignore": false
     },
     {
-      "Symbol": "AMP",
-      "ForeignName": "AMPF0:USTF0",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
-      "Symbol": "EOS",
-      "ForeignName": "EOSF0:USTF0",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
-      "Symbol": "LTC",
-      "ForeignName": "LTCF0:USTF0",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
-      "Symbol": "DOT",
-      "ForeignName": "DOTF0:USTF0",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
-      "Symbol": "UNI",
-      "ForeignName": "UNIF0:USTF0",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
       "Symbol": "ETH",
       "ForeignName": "ETHF0:BTCF0",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
-      "Symbol": "ADA",
-      "ForeignName": "ADAF0:USTF0",
-      "Exchange": "Bitfinex",
-      "Ignore": false
-    },
-    {
-      "Symbol": "XLM",
-      "ForeignName": "XLMF0:USTF0",
       "Exchange": "Bitfinex",
       "Ignore": false
     },

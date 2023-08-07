@@ -8,11 +8,11 @@ RUN go mod tidy -go=1.16 && go mod tidy -go=1.17 && go install
 FROM node:lts
 
 COPY ./scripts/bifrost/package.json ./
-COPY ./scripts/bifrost/yarn.lock ./
 
 RUN yarn install
 
 COPY ./scripts/bifrost/main.js /usr/src/app/main.js
+COPY ./scripts/bifrost/zenlink-bifrost-polkadot.js /usr/src/app/zenlink-bifrost-polkadot.js
 COPY --from=build /go/bin/zenlink /bin/zenlink
 COPY --from=build /config/ /config/
 

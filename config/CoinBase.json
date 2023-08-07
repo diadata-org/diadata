@@ -20,6 +20,12 @@
     },
     {
       "Exchange": "CoinBase",
+      "ForeignName": "BOBA-USD",
+      "Ignore": false,
+      "Symbol": "BOBA"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "GHST-USD",
       "Ignore": false,
       "Symbol": "GHST"

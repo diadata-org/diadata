@@ -10,6 +10,10 @@ var (
 	EXCHANGES = scrapers.Exchanges
 )
 
+const (
+	PAIR_SPLITTER = "-"
+)
+
 type Block struct {
 	Trades    []dia.Trade
 	TimeStamp int64
@@ -27,6 +31,10 @@ func (b *Block) GetBlockSources() (pairs []dia.ExchangePair, pools []dia.Pool) {
 
 	for _, t := range b.Trades {
 		if EXCHANGES[t.Source].Centralized {
+			err := t.NormalizeSymbols(true, PAIR_SPLITTER)
+			if err != nil {
+				log.Errorf("NormalizeSymbols on pair %s and exchange %s: %v", t.Pair, t.Source, err)
+			}
 			if _, ok := pairsCheckMap[t.Source+t.Pair]; !ok {
 				pairs = append(pairs, dia.ExchangePair{Exchange: t.Source, ForeignName: t.Pair})
 				pairsCheckMap[t.Source+t.Pair] = struct{}{}

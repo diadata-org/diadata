@@ -91,6 +91,10 @@
         {
             "Address": "0x89CC4347Eac9bdf71f9d783c7a25729e5C579108",
             "ForeignName": "unshETH-USDT"
+        },
+        {
+            "Address": "0x379044E32f5A162233E82de19DA852255d0951b8",
+            "ForeignName": "wBETH-ETH"
         }
     ]
 }

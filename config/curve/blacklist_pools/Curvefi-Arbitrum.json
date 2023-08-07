@@ -1,0 +1,28 @@
+{
+    "Pools": [
+        {
+            "Address": "0x316d06Dd6644AD630C73cD3A6a2c7AE0D22f939e"
+        },
+        {
+            "Address": "0x7DA64233Fefb352f8F501B357c018158ED8aA455"
+        },
+        {
+            "Address": "0x89287c32c2cac1c76227f6d300b2dbbab6b75c08"
+        },
+        {
+            "Address": "0x960ea3e3C7FB317332d990873d354E18d7645590"
+        },
+        {
+            "Address": "0x9cA6c4Bcfdf5580eA5e1e57aF4F921ad838b8316"
+        },
+        {
+            "Address": "0xAAe75FAebCae43b9d541Fd875622BE48D9B4f5D0"
+        },
+        {
+            "Address": "0xd4F94D0aaa640BBb72b5EEc2D85F6D114D81a88E"
+        },
+        {
+            "Address": "0xf9b1f177e883b90ffa64e50db29b7f74a17c9161"
+        }
+    ]
+}

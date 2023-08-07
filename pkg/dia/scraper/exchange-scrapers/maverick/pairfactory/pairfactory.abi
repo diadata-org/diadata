@@ -1,0 +1,224 @@
+[
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "poolAddress",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "fee",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "tickSpacing",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "int32",
+                "name": "activeTick",
+                "type": "int32"
+            },
+            {
+                "indexed": false,
+                "internalType": "int256",
+                "name": "lookback",
+                "type": "int256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint64",
+                "name": "protocolFeeRatio",
+                "type": "uint64"
+            },
+            {
+                "indexed": false,
+                "internalType": "contract IERC20",
+                "name": "tokenA",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "contract IERC20",
+                "name": "tokenB",
+                "type": "address"
+            }
+        ],
+        "name": "PoolCreated",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "owner",
+                "type": "address"
+            }
+        ],
+        "name": "SetFactoryOwner",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint64",
+                "name": "protocolFeeRatio",
+                "type": "uint64"
+            }
+        ],
+        "name": "SetFactoryProtocolFeeRatio",
+        "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_fee",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_tickSpacing",
+                "type": "uint256"
+            },
+            {
+                "internalType": "int256",
+                "name": "_lookback",
+                "type": "int256"
+            },
+            {
+                "internalType": "int32",
+                "name": "_activeTick",
+                "type": "int32"
+            },
+            {
+                "internalType": "contract IERC20",
+                "name": "_tokenA",
+                "type": "address"
+            },
+            {
+                "internalType": "contract IERC20",
+                "name": "_tokenB",
+                "type": "address"
+            }
+        ],
+        "name": "create",
+        "outputs": [
+            {
+                "internalType": "contract IPool",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "contract IPool",
+                "name": "pool",
+                "type": "address"
+            }
+        ],
+        "name": "isFactoryPool",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "fee",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "tickSpacing",
+                "type": "uint256"
+            },
+            {
+                "internalType": "int256",
+                "name": "lookback",
+                "type": "int256"
+            },
+            {
+                "internalType": "contract IERC20",
+                "name": "tokenA",
+                "type": "address"
+            },
+            {
+                "internalType": "contract IERC20",
+                "name": "tokenB",
+                "type": "address"
+            }
+        ],
+        "name": "lookup",
+        "outputs": [
+            {
+                "internalType": "contract IPool",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "position",
+        "outputs": [
+            {
+                "internalType": "contract IPosition",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "protocolFeeRatio",
+        "outputs": [
+            {
+                "internalType": "uint64",
+                "name": "",
+                "type": "uint64"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+]

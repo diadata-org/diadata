@@ -205,6 +205,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "AZERO",
+            "ForeignName": "AZERO-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "BAT",
             "ForeignName": "BAT-USDT",
             "Exchange": "KuCoin",
@@ -291,6 +297,12 @@
         {
             "Symbol": "BNC",
             "ForeignName": "BNC-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BOBA",
+            "ForeignName": "BOBA-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
         },

@@ -1,0 +1,118 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cronjob-postgresdump
+  labels:
+    app: cronjob-postgresdump
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: cronjob-postgresdump-kaniko
+              image: gcr.io/kaniko-project/executor:v1.6.0
+              imagePullPolicy: IfNotPresent
+              args:
+                - "--dockerfile=build/Dockerfile-postgrescronjob-Dev"
+                - "--context=dir:///kaniko-context"
+                - "--destination=registry.hub.docker.com/alex1a/diadata.postgres:latest"
+                - "--verbosity=debug"
+                - "--registry-mirror=public.ecr.aws"
+              volumeMounts:
+                - name: docker-config
+                  mountPath: /kaniko/.docker
+                - name: env-context
+                  mountPath: /kaniko-context
+                  readOnly: true
+                - name: env-context
+                  mountPath: /env-workdir/00-pginitscript.sql
+                  subPath: ./deployments/config/pginit.sql
+                - name: env-workdir
+                  mountPath: /env-workdir/01-pginitscript.sql
+                  subPath: ./pg_dump.sql
+          initContainers:
+            - name: check-postgres-connection
+              image: public.ecr.aws/docker/library/postgres:15-alpine
+              env:
+                - name: PGHOST
+                  value: "data-postgres.default.svc.cluster.local"
+                - name: PGUSER
+                  value: "postgres"
+                - name: PGDB
+                  value: "postgres"
+                - name: PGPASSWORD
+                  value: "password"
+              command:
+                [
+                  "sh",
+                  "-c",
+                  "until pg_isready -h $PGHOST -U $PGUSER; do sleep 1; done",
+                ]
+            - name: cronjob-postgresdump-extract
+              image: public.ecr.aws/docker/library/postgres:15-alpine
+              command:
+                [
+                  "/mnt/env-context/deployments/config/postgres-docker-entrypoint.sh",
+                ]
+              args: ["postgres"]
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: POSTGRES_USER
+                  value: postgres
+                - name: POSTGRES_PASSWORD
+                  value: password
+                - name: POSTGRES_DB
+                  value: postgres
+                - name: PGHOST_EXTRACT
+                  value: "data-postgres.default.svc.cluster.local"
+                - name: PGUSER_EXTRACT
+                  value: "postgres"
+                - name: PGDB_EXTRACT
+                  value: "postgres"
+                - name: PGPASSWORD_EXTRACT
+                  value: "password"
+                - name: PGHOST_TEMP
+                  value: "127.0.0.1"
+                - name: PGUSER_TEMP
+                  value: "postgres"
+                - name: PGDB_TEMP
+                  value: "postgres"
+                - name: PGPASSWORD_TEMP
+                  value: "password"
+              volumeMounts:
+                - name: postgres-schemma-volume
+                  mountPath: /docker-entrypoint-initdb.d/00-pginitscript.sql
+                  subPath: pginit.sql
+                  readOnly: true
+                - name: postgres-crondump-volume
+                  mountPath: /docker-entrypoint-initdb.d/01-pginitscript.sh
+                  subPath: dump.sh
+                  readOnly: true
+                - name: env-context
+                  mountPath: /mnt/env-context
+                  readOnly: true
+                - name: env-workdir
+                  mountPath: /mnt/env-workdir
+          volumes:
+            - name: docker-config
+              projected:
+                sources:
+                  - secret:
+                      name: regcred
+                      items:
+                        - key: .dockerconfigjson
+                          path: config.json
+            - name: postgres-schemma-volume
+              configMap:
+                name: postgres-schemma
+            - name: postgres-crondump-volume
+              configMap:
+                name: postgres-crondump
+            - name: env-context
+              hostPath:
+                path: /mnt/diadata
+            - name: env-workdir
+              emptyDir: {}

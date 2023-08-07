@@ -1,6 +1,10 @@
 {
 	"dependencies": {
-		"@bifrost-finance/api": "^1.7.2",
-		"bignumber.js": "^9.0.1"
+		"@bifrost-finance/api": "^1.8.4",
+		"@polkadot/api": "10.4.1",
+		"bignumber.js": "^9.0.1",
+		"@open-web3/orml-types": "^2.0.1",
+		"@open-web3/orml-type-definitions": "^2.0.1",
+		"@babel/preset-env": "^7.12.1"
 	}
 }

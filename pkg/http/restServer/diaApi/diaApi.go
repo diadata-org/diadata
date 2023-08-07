@@ -1782,6 +1782,9 @@ func (env *Env) GetForeignQuotation(c *gin.Context) {
 	if !validateInputParams(c) {
 		return
 	}
+	var (
+		q models.ForeignQuotation
+	)
 
 	source := c.Param("source")
 	symbol := c.Param("symbol")
@@ -1797,12 +1800,31 @@ func (env *Env) GetForeignQuotation(c *gin.Context) {
 		}
 		timestamp = time.Unix(int64(t), 0)
 	}
-	q, err := env.DataStore.GetForeignQuotationInflux(symbol, source, timestamp)
-	if err != nil {
-		if errors.Is(err, redis.Nil) {
-			restApi.SendError(c, http.StatusNotFound, err)
+
+	var err error
+	q, err = env.DataStore.GetForeignQuotationInflux(symbol, source, timestamp)
+	if err != nil || q.Time.Before(time.Unix(1689847252, 0)) {
+		// Attempt to fetch quotation for reversed order of symbol string.
+		assetsSymbols := strings.Split(symbol, "-")
+		if source == "YahooFinance" && len(assetsSymbols) == 2 {
+			symbolInflux := assetsSymbols[1] + "-" + assetsSymbols[0]
+			q, err = env.DataStore.GetForeignQuotationInflux(symbolInflux, source, timestamp)
+			if err != nil {
+				restApi.SendError(c, http.StatusInternalServerError, err)
+				return
+			}
+			if q.Price != 0 {
+				q.Price = 1 / q.Price
+			}
+			if q.PriceYesterday != 0 {
+				q.PriceYesterday = 1 / q.PriceYesterday
+			}
+			q.Symbol = symbol
+			q.Name = symbol
+			c.JSON(http.StatusOK, q)
 		} else {
 			restApi.SendError(c, http.StatusInternalServerError, err)
+			return
 		}
 	} else {
 		c.JSON(http.StatusOK, q)
