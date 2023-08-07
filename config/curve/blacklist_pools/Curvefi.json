@@ -1,0 +1,43 @@
+{
+    "Pools": [
+        {
+            "Address": "0x01b36Ff7d81b84487d5659c7857cBa8B4BB62cA1"
+        },
+        {
+            "Address": "0x0f7cd0e51ec3a904cee55098f68ea0c1cb2596dc"
+        },
+        {
+            "Address": "0x466c8fa3a6cd4625517594786013262a6abd3f96"
+        },
+        {
+            "Address": "0x6326DEbBAa15bCFE603d831e7D75f4fc10d9B43E"
+        },
+        {
+            "Address": "0x8301AE4fc9c624d1D396cbDAa1ed877821D7C511"
+        },
+        {
+            "Address": "0x88855cdF2b0A8413D470B86952E726684de915be"
+        },
+        {
+            "Address": "0x8c1aB78601c259E1B43F19816923609dC7d7de9B"
+        },
+        {
+            "Address": "0xFe625167BD77C6A520e093C4d2d065355a1e2E93"
+        },
+        {
+            "Address": "0xaAD072E917D97011EB3D7e7bce953BDE9227c21E"
+        },
+        {
+            "Address": "0xc64F268BD8075B3222A508d7869E9C600bE7c47F"
+        },
+        {
+            "Address": "0xde14B4a4A83dB5e506A62f06079ED3E85862A06B"
+        },
+        {
+            "Address": "0xefD2fCa091e4bA762A7dd7f0F3FBEF8075A7ca12"
+        },
+        {
+            "Address": "0xf8b8db73db0c3f4ff0d633836e939db23847ca1e"
+        }
+    ]
+}
