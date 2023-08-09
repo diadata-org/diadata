@@ -268,15 +268,15 @@ func updateOracle(
 	value int64,
 	timestamp int64) error {
 
-	gasPrice, err := client.SuggestGasPrice(context.Background())
+	/*gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
 		log.Fatal(err)
-	}
+	}*/
 
 	// Get Wei price of the gas price
-	fGas := new(big.Float).SetInt(gasPrice)
-	fGas.Mul(fGas, big.NewFloat(1e9))
-	gasPrice, _ = fGas.Int(nil)
+	//fGas := new(big.Float).Set(1e9)
+	//fGas.Mul(fGas, big.NewFloat(1e9))
+	gasPrice := big.NewInt(1000000000)
 
 	// Write values to smart contract
 	tx, err := contract.SetValue(&bind.TransactOpts{
