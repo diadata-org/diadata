@@ -19,7 +19,7 @@ import (
 var (
 	log                  *logrus.Logger
 	swapTradesOnExchange = []string{
-		dia.BalancerExchange,
+		dia.BalancerV2Exchange,
 		dia.SushiSwapExchange,
 		dia.UniswapExchange,
 		dia.UniswapExchangeV3,
