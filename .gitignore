@@ -37,3 +37,5 @@ scripts/bifrost/node_modules
 scripts/bifrost/yarn.lock
 
 .testenv.local
+
+.idea
