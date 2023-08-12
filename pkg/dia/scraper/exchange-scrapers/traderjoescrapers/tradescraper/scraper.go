@@ -3,9 +3,11 @@ package tradescraper
 import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/ethereum/go-ethereum/ethclient"
+	log "github.com/sirupsen/logrus"
 )
 
-func NewTraderJoeDEXScraper(config ScraperConfig, relDB *models.RelDB, datastore *models.DB) *TraderJoeScraper {
+func NewTraderJoeTradeScraper(config ScraperConfig, relDB *models.RelDB, datastore *models.DB) *TraderJoeScraper {
 	tjs := &TraderJoeScraper{
 		relDB:        relDB,
 		datastore:    datastore,
@@ -14,6 +16,20 @@ func NewTraderJoeDEXScraper(config ScraperConfig, relDB *models.RelDB, datastore
 		doneChannel:  make(chan bool),
 		config:       config,
 	}
+
+	// Initialize Ethereum REST client
+	restClient, err := ethclient.Dial(config.RestDial)
+	if err != nil {
+		log.Fatal("Error initializing REST client: ", err)
+	}
+	tjs.RestClient = restClient
+
+	// Initialize the Ethereum WebSocket client.
+	wsClient, err := ethclient.Dial(config.WsDial)
+	if err != nil {
+		log.Fatal("Error initializing WebSocket client: ", err)
+	}
+	tjs.WsClient = wsClient
 
 	go func() {
 		tjs.fetchPools()
