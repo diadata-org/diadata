@@ -1,17 +1,28 @@
 package tradescraper
 
-type TradeScraper struct {
-	ChainName   string
-	PoolAddress string
-	TradeType   string  // sell or buy
-	Amount0In   float64 // Token0 amount in
-	Amount1In   float64 // Token1 amount in
-	Amount0Out  float64 // Token0 amount out
-	Amount1Out  float64 // Token1 amount out
-	Price       float64
-	Timestamp   int64 // trade timestamp in Unix format
+import (
+	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/ethereum/go-ethereum/ethclient"
+)
+
+type TraderJoeScraper struct {
+	RestClient   *ethclient.Client
+	WsClient     *ethclient.Client
+	relDB        *models.RelDB
+	datastore    *models.DB
+	poolChannel  chan dia.Pool
+	tradeChannel chan dia.Trade
+	doneChannel  chan bool
+	config       ScraperConfig
 }
 
-type TradesData struct {
-	TradeEntries []TradeScraper
+type ScraperConfig struct {
+	BlockchainName  string
+	ExchangeName    string
+	RestDial        string
+	WsDial          string
+	FactoryContract string
+	StartBlock      uint64
+	WaitTime        int
 }
