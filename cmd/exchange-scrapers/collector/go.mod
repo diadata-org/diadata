@@ -192,3 +192,5 @@ require (
 )
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+
+replace github.com/diadata-org/diadata => /home/goga/Desktop/opensource/diadata
