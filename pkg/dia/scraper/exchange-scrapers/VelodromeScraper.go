@@ -36,12 +36,6 @@ type VelodromeSwap struct {
 type VelodromeScraper struct {
 	RestClient *ethclient.Client
 	WsClient   *ethclient.Client
-	// relDB      *models.RelDB
-	// signaling channels for session initialization and finishing
-	//initDone     chan nothing
-	run          bool
-	shutdown     chan nothing
-	shutdownDone chan nothing
 	// error handling; to read error or closed, first acquire read lock
 	// only cleanup method should hold write lock
 	errorLock sync.RWMutex
@@ -51,7 +45,6 @@ type VelodromeScraper struct {
 	pairScrapers map[string]*VelodromePairScraper
 	exchangeName string
 	chanTrades   chan *dia.Trade
-	testChan     chan int
 	waitTime     int
 }
 
@@ -106,13 +99,10 @@ func makeVelodromeScraper(exchange dia.Exchange, listenByAddress bool, fetchPool
 	s = &VelodromeScraper{
 		RestClient:   restClient,
 		WsClient:     wsClient,
-		shutdown:     make(chan nothing),
-		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*VelodromePairScraper),
 		exchangeName: exchange.Name,
 		error:        nil,
 		chanTrades:   make(chan *dia.Trade),
-		testChan:     make(chan int),
 		waitTime:     waitTime,
 	}
 

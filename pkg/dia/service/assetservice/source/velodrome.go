@@ -26,6 +26,8 @@ const (
 	velodromeWaitMilliseconds = "500"
 )
 
+var velodromeExchangeFactoryContractAddress string
+
 type VelodromeAssetSource struct {
 	RestClient   *ethclient.Client
 	assetChannel chan dia.Asset
@@ -40,7 +42,7 @@ func NewVelodromeAssetSource(exchange dia.Exchange) (uas *VelodromeAssetSource) 
 		uas = makeVelodromeAssetSource(exchange, exchange.RestAPI, velodromeWaitMilliseconds)
 	}
 
-	exchangeFactoryContractAddress = exchange.Contract
+	velodromeExchangeFactoryContractAddress = exchange.Contract
 
 	go func() {
 		uas.fetchAssets()
@@ -91,7 +93,7 @@ func (uas *VelodromeAssetSource) Done() chan bool {
 
 func (uas *VelodromeAssetSource) getNumPairs() (int, error) {
 	var contract *velodrome.PoolFactoryCaller
-	contract, err := velodrome.NewPoolFactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), uas.RestClient)
+	contract, err := velodrome.NewPoolFactoryCaller(common.HexToAddress(velodromeExchangeFactoryContractAddress), uas.RestClient)
 	if err != nil {
 		log.Error(err)
 	}
@@ -139,7 +141,7 @@ func (uas *VelodromeAssetSource) fetchAssets() {
 // GetPairByID returns the VelodromePair with the integer id @num
 func (uas *VelodromeAssetSource) GetPairByID(num int64) (VelodromePair, error) {
 	var contract *velodrome.PoolFactoryCaller
-	contract, err := velodrome.NewPoolFactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), uas.RestClient)
+	contract, err := velodrome.NewPoolFactoryCaller(common.HexToAddress(velodromeExchangeFactoryContractAddress), uas.RestClient)
 	if err != nil {
 		log.Error(err)
 		return VelodromePair{}, err
