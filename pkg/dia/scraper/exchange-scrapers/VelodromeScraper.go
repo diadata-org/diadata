@@ -18,10 +18,12 @@ import (
 
 var (
 	velodromeExchangeFactoryContractAddress = "0xF1046053aa5682b4F9a81b5481394DA16BE5FF5a"
+	velodromeWaitTimeMilliseconds           = "500"
 )
 
 type VelodromeScraper struct {
 	RestClient *ethclient.Client
+	WsClient   *ethclient.Client
 	// relDB      *models.RelDB
 	// signaling channels for session initialization and finishing
 	//initDone     chan nothing
@@ -45,21 +47,67 @@ type VelodromeScraper struct {
 }
 
 func NewVelodromeScraper(exchange dia.Exchange, scrape bool) *VelodromeScraper {
+	log.Info("NewVelodromeScraper: ", exchange.Name)
 	var (
-		restClient *ethclient.Client
-		err        error
-		s          *VelodromeScraper
-		waitTime   int
+		s                *VelodromeScraper
+		listenByAddress  bool
+		fetchPoolsFromDB bool
+		err              error
 	)
-	restClient, err = ethclient.Dial(exchange.RestAPI)
-	waitTime, err = strconv.Atoi(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_WAIT_TIME", "500"))
 
+	velodromeExchangeFactoryContractAddress = exchange.Contract
+
+	listenByAddress, err = strconv.ParseBool(utils.Getenv("LISTEN_BY_ADDRESS", "true"))
+	if err != nil {
+		log.Fatal("parse LISTEN_BY_ADDRESS: ", err)
+	}
+
+	fetchPoolsFromDB, err = strconv.ParseBool(utils.Getenv("FETCH_POOLS_FROM_DB", "true"))
+	if err != nil {
+		log.Fatal("parse FETCH_POOLS_FROM_DB: ", err)
+	}
+
+	switch exchange.Name {
+	case dia.VelodromeExchange:
+		s = makeVelodromeScraper(exchange, listenByAddress, fetchPoolsFromDB, velodromeWaitTimeMilliseconds)
+	}
+
+	if scrape {
+		go s.mainLoop()
+	}
+
+	return s
+
+}
+
+func makeVelodromeScraper(exchange dia.Exchange, listenByAddress bool, fetchPoolsFromDB bool, waitMilliseconds string) *VelodromeScraper {
+	var (
+		restClient, wsClient *ethclient.Client
+		err                  error
+		s                    *VelodromeScraper
+		waitTime             int
+	)
+
+	log.Infof("Init rest and ws client for %s.", exchange.BlockChain.Name)
+
+	restClient, err = ethclient.Dial(exchange.RestAPI)
+	if err != nil {
+		log.Fatal("init rest client: ", err)
+	}
+
+	wsClient, err = ethclient.Dial(exchange.WsAPI)
+	if err != nil {
+		log.Fatal("init ws client: ", err)
+	}
+
+	waitTime, err = strconv.Atoi(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_WAIT_TIME", waitMilliseconds))
 	if err != nil {
 		log.Fatal("waittime error", err)
 	}
 
 	s = &VelodromeScraper{
 		RestClient:       restClient,
+		WsClient:         wsClient,
 		shutdown:         make(chan nothing),
 		shutdownDone:     make(chan nothing),
 		pairScrapers:     make(map[string]*VelodromePairScraper),
@@ -72,16 +120,11 @@ func NewVelodromeScraper(exchange dia.Exchange, scrape bool) *VelodromeScraper {
 		fetchPoolsFromDB: true,
 	}
 
-	if scrape {
-		go s.mainLoop()
-	}
-
 	return s
-
 }
 
 func (s *VelodromeScraper) mainLoop() {
-
+	log.Info("MainLoop")
 }
 
 func (s *VelodromeScraper) Channel() chan *dia.Trade {
@@ -118,7 +161,9 @@ func (s *VelodromeScraper) GetAllPairs() ([]dia.ExchangePair, error) {
 	wg := sync.WaitGroup{}
 	defer wg.Wait()
 
-	lenPairs := int(numPairs.Int64())
+	// lenPairs := int(numPairs.Int64())
+	lenPairs := 10
+	log.Info(numPairs)
 	pairs := make([]dia.ExchangePair, lenPairs)
 
 	for i := 0; i < lenPairs; i++ {
@@ -127,6 +172,7 @@ func (s *VelodromeScraper) GetAllPairs() ([]dia.ExchangePair, error) {
 		wg.Add(1)
 		go func(index int) {
 			defer wg.Done()
+			log.Info("fetching pair - ", int64(index))
 			pair, err := s.GetPairByID(int64(index))
 			if err != nil {
 				log.Error("error retrieving pair by ID: ", err)
@@ -236,7 +282,7 @@ func (s *VelodromeScraper) GetPairByAddress(pairAddress common.Address) (pair di
 	pair = dia.ExchangePair{
 		Symbol:         token0.Symbol,
 		ForeignName:    foreignName,
-		Exchange:       "Velodrome",
+		Exchange:       s.exchangeName,
 		Verified:       true,
 		UnderlyingPair: dia.Pair{BaseToken: token0, QuoteToken: token1},
 	}
