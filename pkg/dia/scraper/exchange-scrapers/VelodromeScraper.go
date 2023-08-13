@@ -2,6 +2,7 @@ package scrapers
 
 import (
 	"errors"
+	"math"
 	"math/big"
 	"strconv"
 	"strings"
@@ -9,6 +10,7 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/velodrome"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -20,6 +22,16 @@ var (
 	velodromeExchangeFactoryContractAddress = "0xF1046053aa5682b4F9a81b5481394DA16BE5FF5a"
 	velodromeWaitTimeMilliseconds           = "500"
 )
+
+type VelodromeSwap struct {
+	ID         string
+	Timestamp  int64
+	Pair       dia.ExchangePair
+	Amount0In  float64
+	Amount0Out float64
+	Amount1In  float64
+	Amount1Out float64
+}
 
 type VelodromeScraper struct {
 	RestClient *ethclient.Client
@@ -41,9 +53,6 @@ type VelodromeScraper struct {
 	chanTrades   chan *dia.Trade
 	testChan     chan int
 	waitTime     int
-	// If true, only pairs given in config file are scraped. Default is false.
-	listenByAddress  bool
-	fetchPoolsFromDB bool
 }
 
 func NewVelodromeScraper(exchange dia.Exchange, scrape bool) *VelodromeScraper {
@@ -52,20 +61,9 @@ func NewVelodromeScraper(exchange dia.Exchange, scrape bool) *VelodromeScraper {
 		s                *VelodromeScraper
 		listenByAddress  bool
 		fetchPoolsFromDB bool
-		err              error
 	)
 
 	velodromeExchangeFactoryContractAddress = exchange.Contract
-
-	listenByAddress, err = strconv.ParseBool(utils.Getenv("LISTEN_BY_ADDRESS", "true"))
-	if err != nil {
-		log.Fatal("parse LISTEN_BY_ADDRESS: ", err)
-	}
-
-	fetchPoolsFromDB, err = strconv.ParseBool(utils.Getenv("FETCH_POOLS_FROM_DB", "true"))
-	if err != nil {
-		log.Fatal("parse FETCH_POOLS_FROM_DB: ", err)
-	}
 
 	switch exchange.Name {
 	case dia.VelodromeExchange:
@@ -106,25 +104,186 @@ func makeVelodromeScraper(exchange dia.Exchange, listenByAddress bool, fetchPool
 	}
 
 	s = &VelodromeScraper{
-		RestClient:       restClient,
-		WsClient:         wsClient,
-		shutdown:         make(chan nothing),
-		shutdownDone:     make(chan nothing),
-		pairScrapers:     make(map[string]*VelodromePairScraper),
-		exchangeName:     exchange.Name,
-		error:            nil,
-		chanTrades:       make(chan *dia.Trade),
-		testChan:         make(chan int),
-		waitTime:         waitTime,
-		listenByAddress:  true,
-		fetchPoolsFromDB: true,
+		RestClient:   restClient,
+		WsClient:     wsClient,
+		shutdown:     make(chan nothing),
+		shutdownDone: make(chan nothing),
+		pairScrapers: make(map[string]*VelodromePairScraper),
+		exchangeName: exchange.Name,
+		error:        nil,
+		chanTrades:   make(chan *dia.Trade),
+		testChan:     make(chan int),
+		waitTime:     waitTime,
 	}
 
 	return s
 }
 
 func (s *VelodromeScraper) mainLoop() {
-	log.Info("MainLoop")
+	numPairs, err := s.getNumPairs()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info("Found ", numPairs, " pairs")
+	log.Info("Found ", len(s.pairScrapers), " pairScrapers")
+
+	if len(s.pairScrapers) == 0 {
+		s.error = errors.New("velodrome: No pairs to scrap provided")
+		log.Error(s.error.Error())
+	}
+
+	var wg sync.WaitGroup
+	for i := 0; i < numPairs; i++ {
+		time.Sleep(time.Duration(s.waitTime) * time.Millisecond)
+		wg.Add(1)
+		go func(index int, address common.Address, w *sync.WaitGroup) {
+			defer w.Done()
+			s.ListenToPair(index, address)
+		}(i, common.Address{}, &wg)
+	}
+	wg.Wait()
+}
+
+func (s *VelodromeScraper) ListenToPair(i int, address common.Address) {
+	pairAddress, pair, err := s.GetPairByID(int64(i))
+
+	if len(pair.UnderlyingPair.BaseToken.Symbol) < 2 || len(pair.UnderlyingPair.QuoteToken.Symbol) < 2 {
+		log.Info("skip pair: ", pair.ForeignName)
+		return
+	}
+
+	if helpers.AddressIsBlacklisted(common.HexToAddress(pair.UnderlyingPair.BaseToken.Address)) ||
+		helpers.AddressIsBlacklisted(common.HexToAddress(pair.UnderlyingPair.QuoteToken.Address)) {
+		log.Info("skip pair ", pair.ForeignName, ", address is blacklisted")
+		return
+	}
+	if helpers.PoolIsBlacklisted(pairAddress) {
+		log.Info("skip blacklisted pool ", pairAddress)
+		return
+	}
+
+	log.Info(i, ": add pair scraper for: ", pair.ForeignName, " with address ", pairAddress.Hex())
+	sink, err := s.GetSwapsChannel(pairAddress)
+	if err != nil {
+		log.Error("error fetching swaps channel: ", err)
+	}
+
+	go func() {
+		for {
+			rawSwap, ok := <-sink
+			if ok {
+				swap, err := s.normalizeSwap(*rawSwap, pair)
+				if err != nil {
+					log.Error("error normalizing swap: ", err)
+				}
+				price, volume := s.getSwapData(swap)
+				token0 := dia.Asset{
+					Address:    pair.UnderlyingPair.BaseToken.Address,
+					Symbol:     pair.UnderlyingPair.BaseToken.Symbol,
+					Name:       pair.UnderlyingPair.BaseToken.Name,
+					Decimals:   pair.UnderlyingPair.BaseToken.Decimals,
+					Blockchain: Exchanges[s.exchangeName].BlockChain.Name,
+				}
+				token1 := dia.Asset{
+					Address:    pair.UnderlyingPair.QuoteToken.Address,
+					Symbol:     pair.UnderlyingPair.QuoteToken.Symbol,
+					Name:       pair.UnderlyingPair.QuoteToken.Name,
+					Decimals:   pair.UnderlyingPair.QuoteToken.Decimals,
+					Blockchain: Exchanges[s.exchangeName].BlockChain.Name,
+				}
+				t := &dia.Trade{
+					Symbol:         pair.UnderlyingPair.BaseToken.Symbol,
+					Pair:           pair.ForeignName,
+					Price:          price,
+					Volume:         volume,
+					BaseToken:      token1,
+					QuoteToken:     token0,
+					Time:           time.Unix(swap.Timestamp, 0),
+					PoolAddress:    rawSwap.Raw.Address.Hex(),
+					ForeignTradeID: swap.ID,
+					Source:         s.exchangeName,
+					VerifiedPair:   true,
+				}
+
+				if price > 0 {
+					log.Info("tx hash: ", swap.ID)
+					log.Infof("Got trade at time %v - symbol: %s, pair: %s, price: %v, volume:%v", t.Time, t.Symbol, t.Pair, t.Price, t.Volume)
+					// log.Infof("Base token info --- Symbol: %s - Address: %s - Blockchain: %s ", t.BaseToken.Symbol, t.BaseToken.Address, t.BaseToken.Blockchain)
+					// log.Info("----------------")
+					s.chanTrades <- t
+				}
+			}
+		}
+	}()
+}
+
+// GetSwapsChannel returns a channel for swaps of the pair with address @pairAddress
+func (s *VelodromeScraper) GetSwapsChannel(pairAddress common.Address) (chan *velodrome.IPoolSwap, error) {
+
+	sink := make(chan *velodrome.IPoolSwap)
+	var pairFiltererContract *velodrome.IPoolFilterer
+	pairFiltererContract, err := velodrome.NewIPoolFilterer(pairAddress, s.WsClient)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = pairFiltererContract.WatchSwap(&bind.WatchOpts{}, sink, []common.Address{}, []common.Address{})
+	if err != nil {
+		log.Error("error in get swaps channel: ", err)
+	}
+
+	return sink, nil
+
+}
+
+// normalizeSwap takes a swap as returned by the swap contract's channel and converts it to a VelodromeSwap type
+func (s *VelodromeScraper) normalizeSwap(swap velodrome.IPoolSwap, pair dia.ExchangePair) (normalizedSwap VelodromeSwap, err error) {
+
+	decimals0 := int(pair.UnderlyingPair.BaseToken.Decimals)
+	decimals1 := int(pair.UnderlyingPair.QuoteToken.Decimals)
+	amount0In, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount0In), new(big.Float).SetFloat64(math.Pow10(decimals0))).Float64()
+	amount0Out, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount0Out), new(big.Float).SetFloat64(math.Pow10(decimals0))).Float64()
+	amount1In, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount1In), new(big.Float).SetFloat64(math.Pow10(decimals1))).Float64()
+	amount1Out, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(swap.Amount1Out), new(big.Float).SetFloat64(math.Pow10(decimals1))).Float64()
+
+	normalizedSwap = VelodromeSwap{
+		ID:         swap.Raw.TxHash.Hex(),
+		Timestamp:  time.Now().Unix(),
+		Pair:       pair,
+		Amount0In:  amount0In,
+		Amount0Out: amount0Out,
+		Amount1In:  amount1In,
+		Amount1Out: amount1Out,
+	}
+	return
+}
+
+func (s *VelodromeScraper) getSwapData(swap VelodromeSwap) (price float64, volume float64) {
+	if swap.Amount0In == float64(0) {
+		volume = swap.Amount0Out
+		price = swap.Amount1In / swap.Amount0Out
+		return
+	}
+	volume = -swap.Amount0In
+	price = swap.Amount1Out / swap.Amount0In
+	return
+}
+
+// getNumPairs returns the number of available pairs on Velodrome
+func (s *VelodromeScraper) getNumPairs() (int, error) {
+
+	var contract *velodrome.IPoolFactoryCaller
+	contract, err := velodrome.NewIPoolFactoryCaller(common.HexToAddress(velodromeExchangeFactoryContractAddress), s.RestClient)
+	if err != nil {
+		log.Error(err)
+	}
+
+	// Getting pairs ---------------
+	numPairs, err := contract.AllPoolsLength(&bind.CallOpts{})
+	if err != nil {
+		return 0, err
+	}
+	return int(numPairs.Int64()), err
 }
 
 func (s *VelodromeScraper) Channel() chan *dia.Trade {
@@ -161,9 +320,7 @@ func (s *VelodromeScraper) GetAllPairs() ([]dia.ExchangePair, error) {
 	wg := sync.WaitGroup{}
 	defer wg.Wait()
 
-	// lenPairs := int(numPairs.Int64())
-	lenPairs := 10
-	log.Info(numPairs)
+	lenPairs := int(numPairs.Int64())
 	pairs := make([]dia.ExchangePair, lenPairs)
 
 	for i := 0; i < lenPairs; i++ {
@@ -173,7 +330,7 @@ func (s *VelodromeScraper) GetAllPairs() ([]dia.ExchangePair, error) {
 		go func(index int) {
 			defer wg.Done()
 			log.Info("fetching pair - ", int64(index))
-			pair, err := s.GetPairByID(int64(index))
+			_, pair, err := s.GetPairByID(int64(index))
 			if err != nil {
 				log.Error("error retrieving pair by ID: ", err)
 				return
@@ -184,7 +341,7 @@ func (s *VelodromeScraper) GetAllPairs() ([]dia.ExchangePair, error) {
 	return pairs, nil
 }
 
-func (s *VelodromeScraper) GetPairByID(num int64) (dia.ExchangePair, error) {
+func (s *VelodromeScraper) GetPairByID(num int64) (common.Address, dia.ExchangePair, error) {
 	connection := s.RestClient
 
 	var contract *velodrome.PoolFactoryCaller
@@ -192,7 +349,7 @@ func (s *VelodromeScraper) GetPairByID(num int64) (dia.ExchangePair, error) {
 
 	if err != nil {
 		log.Error(err)
-		return dia.ExchangePair{}, err
+		return common.Address{}, dia.ExchangePair{}, err
 	}
 
 	numToken := big.NewInt(num)
@@ -200,16 +357,16 @@ func (s *VelodromeScraper) GetPairByID(num int64) (dia.ExchangePair, error) {
 
 	if err != nil {
 		log.Error(err)
-		return dia.ExchangePair{}, err
+		return common.Address{}, dia.ExchangePair{}, err
 	}
 
 	pair, err := s.GetPairByAddress(pairAddress)
 	if err != nil {
 		log.Error(err)
-		return dia.ExchangePair{}, err
+		return common.Address{}, dia.ExchangePair{}, err
 	}
 
-	return pair, err
+	return pairAddress, pair, err
 }
 
 func (s *VelodromeScraper) GetPairByAddress(pairAddress common.Address) (pair dia.ExchangePair, err error) {
