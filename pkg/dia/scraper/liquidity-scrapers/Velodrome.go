@@ -109,7 +109,7 @@ func (us *VelodromePoolScraper) fetchPools() {
 func (us *VelodromePoolScraper) GetPoolByID(num int64) (dia.Pool, error) {
 	var contract *velodrome.PoolFactoryCaller
 
-	contract, err := velodrome.NewPoolFactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), us.RestClient)
+	contract, err := velodrome.NewPoolFactoryCaller(common.HexToAddress(us.exchange.Contract), us.RestClient)
 	if err != nil {
 		log.Error(err)
 		return dia.Pool{}, err
@@ -238,11 +238,14 @@ func (us *VelodromePoolScraper) Done() chan bool {
 
 func (us *VelodromePoolScraper) getNumPairs() (int, error) {
 	var contract *velodrome.IPoolFactoryCaller
-	contract, err := velodrome.NewIPoolFactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), us.RestClient)
+	contract, err := velodrome.NewIPoolFactoryCaller(common.HexToAddress(us.exchange.Contract), us.RestClient)
 	if err != nil {
 		log.Error(err)
 	}
 
 	numPairs, err := contract.AllPoolsLength(&bind.CallOpts{})
+	if err != nil {
+		return 0, err
+	}
 	return int(numPairs.Int64()), err
 }
