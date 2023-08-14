@@ -19,30 +19,27 @@ import (
 )
 
 type VelodromePoolScraper struct {
-	RestClient   *ethclient.Client
-	relDB        *models.RelDB
-	datastore    *models.DB
-	poolChannel  chan dia.Pool
-	doneChannel  chan bool
-	blockchain   string
-	waitTime     int
-	exchangeName string
+	RestClient  *ethclient.Client
+	relDB       *models.RelDB
+	datastore   *models.DB
+	poolChannel chan dia.Pool
+	doneChannel chan bool
+	blockchain  string
+	waitTime    int
+	exchange    dia.Exchange
 }
 
 var (
 	velodromeWaitMilliseconds = "500"
+	velodromeRestDial         = ""
 )
-
-var velodromeExchangeFactoryContractAddress string
 
 func NewVelodromePoolScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *models.DB) (us *VelodromePoolScraper) {
 
 	switch exchange.Name {
 	case dia.VelodromeExchange:
-		us = makeVelodromePoolScraper(exchange, relDB, datastore, velodromeWaitMilliseconds)
+		us = makeVelodromePoolScraper(exchange, relDB, datastore, velodromeRestDial, velodromeWaitMilliseconds)
 	}
-
-	exchangeFactoryContractAddress = exchange.Contract
 
 	go func() {
 		us.fetchPools()
@@ -51,7 +48,7 @@ func NewVelodromePoolScraper(exchange dia.Exchange, relDB *models.RelDB, datasto
 
 }
 
-func makeVelodromePoolScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *models.DB, waitMilliseconds string) *VelodromePoolScraper {
+func makeVelodromePoolScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *models.DB, restDial string, waitMilliseconds string) *VelodromePoolScraper {
 	var (
 		restClient  *ethclient.Client
 		err         error
@@ -62,7 +59,7 @@ func makeVelodromePoolScraper(exchange dia.Exchange, relDB *models.RelDB, datast
 	)
 
 	log.Infof("Init rest client for %s.", exchange.BlockChain.Name)
-	restClient, err = ethclient.Dial(exchange.RestAPI)
+	restClient, err = ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_REST", restDial))
 	if err != nil {
 		log.Fatal("init rest client: ", err)
 	}
@@ -75,14 +72,14 @@ func makeVelodromePoolScraper(exchange dia.Exchange, relDB *models.RelDB, datast
 	}
 
 	us = &VelodromePoolScraper{
-		RestClient:   restClient,
-		relDB:        relDB,
-		datastore:    datastore,
-		poolChannel:  poolChannel,
-		doneChannel:  doneChannel,
-		blockchain:   exchange.BlockChain.Name,
-		waitTime:     waitTime,
-		exchangeName: exchange.Name,
+		RestClient:  restClient,
+		relDB:       relDB,
+		datastore:   datastore,
+		poolChannel: poolChannel,
+		doneChannel: doneChannel,
+		blockchain:  exchange.BlockChain.Name,
+		waitTime:    waitTime,
+		exchange:    exchange,
 	}
 	return us
 }
@@ -199,7 +196,7 @@ func (us *VelodromePoolScraper) GetPoolByAddress(pairAddress common.Address) (po
 
 	pool.Address = pairAddress.Hex()
 	pool.Blockchain = dia.BlockChain{Name: us.blockchain}
-	pool.Exchange = dia.Exchange{Name: us.exchangeName}
+	pool.Exchange = dia.Exchange{Name: us.exchange.Name}
 
 	return pool, nil
 }
