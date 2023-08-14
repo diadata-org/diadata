@@ -80,6 +80,12 @@
     },
     {
       "Exchange": "CoinBase",
+      "ForeignName": "OP-USD",
+      "Ignore": false,
+      "Symbol": "OP"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "SPA-USD",
       "Ignore": false,
       "Symbol": "SPA"

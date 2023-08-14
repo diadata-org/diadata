@@ -128,6 +128,24 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "OP_USDT",
+      "Ignore": false,
+      "Symbol": "OP"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "OUSD_USDT",
+      "Ignore": false,
+      "Symbol": "OUSD"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "GRAIL_USDT",
+      "Ignore": false,
+      "Symbol": "GRAIL"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "RDNT_USDT",
       "Ignore": false,
       "Symbol": "RDNT"

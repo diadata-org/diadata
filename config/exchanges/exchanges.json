@@ -897,6 +897,20 @@
             "ScraperActive": false
         },
         {
+            "Name": "Velodrome",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0xF1046053aa5682b4F9a81b5481394DA16BE5FF5a",
+            "Blockchain": {
+                "Name": "Optimism"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200,
+            "ScraperActive": false
+        },
+        {
             "Name": "Wanswap",
             "Centralized": false,
             "Bridge": false,

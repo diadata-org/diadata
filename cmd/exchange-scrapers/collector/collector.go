@@ -35,6 +35,7 @@ var (
 		dia.NetswapExchange,
 		dia.OrcaExchange,
 		dia.OsmosisExchange,
+		dia.VelodromeExchange,
 		dia.ZenlinkswapExchange,
 		dia.ZenlinkswapExchangeBifrostPolkadot,
 	}

@@ -367,6 +367,12 @@
       "Address": "0x5774B2fc3e91aF89f89141EacF76545e74265982"
     },
     {
+      "Symbol": "OP",
+      "Exchange": "MEXC",
+      "Blockchain": "Optimism",
+      "Address": "0x4200000000000000000000000000000000000042"
+    },
+    {
       "Symbol": "PAXG",
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",
