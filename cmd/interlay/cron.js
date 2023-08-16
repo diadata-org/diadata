@@ -57,10 +57,17 @@ async function cronstart() {
           let saved = await getBiFrostValues(value.token);
           let btcprice = await getPrice(value.token);
 
+ 
+          let ratio = saved.total_backable/saved.total_issued;
+
+          let fairprice =  btcprice + (ratio /100 *btcprice)
+
+
           let decimal = 1e12;
           if(value.token=="DOT"){
             decimal = 1e10
           }
+         
 
           cache.set(
             tokenkey("bifrost", value.vtoken),
@@ -72,9 +79,7 @@ async function cronstart() {
                 // decimal: saved.decimal,
               },
               fair_price:
-              saved.total_backable / saved.total_issued > 1
-                ? btcprice
-                : (btcprice * saved.total_backable) / saved.total_issued,
+              fairprice
             })
           );
         }
