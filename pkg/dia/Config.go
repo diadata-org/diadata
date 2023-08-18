@@ -101,7 +101,9 @@ const (
 	OsmosisExchange                    = "Osmosis"
 	ZenlinkswapExchange                = "Zenlink"
 	ZenlinkswapExchangeBifrostPolkadot = "Zenlink-bifrost-polkadot"
-
+	MaverickExchange                   = "Maverick"
+	MaverickExchangeZKSync             = "Maverick-zksync"
+	MaverickExchangeBNB                = "Maverick-bnb"
 	// FinageForex        = "FinageForex"
 )
 
