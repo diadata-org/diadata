@@ -25,7 +25,11 @@ import (
 
 var maverickPoolMap = make(map[string]MaverickPair)
 
-const maverickWaitMilliseconds = "25"
+const (
+	factoryContractAddressEth                = "0xEb6625D65a0553c9dBc64449e56abFe519bd9c9B"
+	factoryContractAddressDeploymentBlockEth = uint64(17210221)
+	maverickWaitMilliseconds                 = "25"
+)
 
 type MaverickScraper struct {
 	WsClient   *ethclient.Client
@@ -204,7 +208,7 @@ func NewMaverickScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB)
 
 	switch exchange.Name {
 	case dia.MaverickExchange:
-		s = makeMaverickScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialEth, wsDialEth, maverickWaitMilliseconds)
+		s = makeMaverickScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialEth, wsDialEth, maverickWaitMilliseconds, factoryContractAddressEth, factoryContractAddressDeploymentBlockEth)
 		//case dia.MaverickExchangeBNB:
 		//	s = makeMaverickScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialEth, wsDialEth, maverickWaitMilliseconds)
 		//case dia.MaverickExchangeZKSync:
@@ -239,7 +243,7 @@ func NewMaverickScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB)
 }
 
 // makeMaverickScraper returns a maverick scraper as used in NewUniswapScraper.
-func makeMaverickScraper(exchange dia.Exchange, listenByAddress bool, fetchPoolsFromDB bool, restDial string, wsDial string, waitMilliseconds string) *MaverickScraper {
+func makeMaverickScraper(exchange dia.Exchange, listenByAddress bool, fetchPoolsFromDB bool, restDial string, wsDial string, waitMilliseconds string, factoryContractAddess string, factoryContractDeploymentBlock uint64) *MaverickScraper {
 	var (
 		restClient, wsClient *ethclient.Client
 		err                  error
@@ -264,19 +268,20 @@ func makeMaverickScraper(exchange dia.Exchange, listenByAddress bool, fetchPools
 	}
 
 	s = &MaverickScraper{
-		WsClient:                   wsClient,
-		RestClient:                 restClient,
-		shutdown:                   make(chan nothing),
-		shutdownDone:               make(chan nothing),
-		pairScrapers:               make(map[string]*MaverickPairScraper),
-		exchangeName:               exchange.Name,
-		error:                      nil,
-		chanTrades:                 make(chan *dia.Trade),
-		waitTime:                   waitTime,
-		listenByAddress:            listenByAddress,
-		fetchPoolsFromDB:           fetchPoolsFromDB,
-		blockchain:                 exchange.BlockChain.Name,
-		poolFactoryContractAddress: "0xEb6625D65a0553c9dBc64449e56abFe519bd9c9B",
+		WsClient:                         wsClient,
+		RestClient:                       restClient,
+		shutdown:                         make(chan nothing),
+		shutdownDone:                     make(chan nothing),
+		pairScrapers:                     make(map[string]*MaverickPairScraper),
+		exchangeName:                     exchange.Name,
+		error:                            nil,
+		chanTrades:                       make(chan *dia.Trade),
+		waitTime:                         waitTime,
+		listenByAddress:                  listenByAddress,
+		fetchPoolsFromDB:                 fetchPoolsFromDB,
+		blockchain:                       exchange.BlockChain.Name,
+		poolFactoryContractAddress:       factoryContractAddess,
+		poolFactoryContractCreationBlock: factoryContractDeploymentBlock,
 	}
 	return s
 }
@@ -656,7 +661,7 @@ func (s *MaverickScraper) getAllPairsAddress() ([]common.Address, error) {
 	}
 
 	var offset uint64 = 500
-	var startBlock uint64 = uint64(17210221)
+	startBlock := s.poolFactoryContractCreationBlock
 	var endBlock = startBlock + offset
 
 	for {
@@ -667,7 +672,7 @@ func (s *MaverickScraper) getAllPairsAddress() ([]common.Address, error) {
 
 		it, err := factoryContractInstance.FilterPoolCreated(
 			&bind.FilterOpts{
-				Start: 17210221,
+				Start: startBlock,
 				End:   &endBlock,
 			})
 		if err != nil {

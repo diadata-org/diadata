@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	pairfactorycontract "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/maverick/pairfactory"
 	poolcontract "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/maverick/pool"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -16,6 +17,12 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
+)
+
+const (
+	factoryContractAddressEth                = "0xEb6625D65a0553c9dBc64449e56abFe519bd9c9B"
+	factoryContractAddressDeploymentBlockEth = uint64(17210221)
+	defaultWaitMillis                        = "25"
 )
 
 type MaverickPool struct {
@@ -48,7 +55,7 @@ func NewMaverickScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *m
 
 	switch exchange.Name {
 	case dia.MaverickExchange:
-		s = makeMaverickPoolScraper(exchange, pathToPools, exchange.RestAPI, relDB, datastore, uniswapWaitMilliseconds)
+		s = makeMaverickPoolScraper(exchange, pathToPools, exchange.RestAPI, relDB, datastore, defaultWaitMillis, factoryContractAddressEth, factoryContractAddressDeploymentBlockEth)
 		//case dia.MaverickExchangeBNB:
 		//	s = makeMaverickScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialEth, wsDialEth, maverickWaitMilliseconds)
 		//case dia.MaverickExchangeZKSync:
@@ -64,7 +71,7 @@ func NewMaverickScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *m
 
 }
 
-func makeMaverickPoolScraper(exchange dia.Exchange, pathToPools string, restDial string, relDB *models.RelDB, datastore *models.DB, waitMilliseconds string) *MaverickScraper {
+func makeMaverickPoolScraper(exchange dia.Exchange, pathToPools string, restDial string, relDB *models.RelDB, datastore *models.DB, waitMilliseconds string, factoryContractAddess string, factoryContractDeploymentBlock uint64) *MaverickScraper {
 	var (
 		restClient  *ethclient.Client
 		err         error
@@ -88,16 +95,17 @@ func makeMaverickPoolScraper(exchange dia.Exchange, pathToPools string, restDial
 	}
 
 	s = &MaverickScraper{
-		RestClient:                 restClient,
-		poolFactoryContractAddress: "0xEb6625D65a0553c9dBc64449e56abFe519bd9c9B",
-		relDB:                      relDB,
-		datastore:                  datastore,
-		poolChannel:                poolChannel,
-		doneChannel:                doneChannel,
-		blockchain:                 exchange.BlockChain.Name,
-		waitTime:                   waitTime,
-		exchangeName:               exchange.Name,
-		pathToPools:                pathToPools,
+		RestClient:                       restClient,
+		poolFactoryContractAddress:       factoryContractAddess,
+		poolFactoryContractCreationBlock: factoryContractDeploymentBlock,
+		relDB:                            relDB,
+		datastore:                        datastore,
+		poolChannel:                      poolChannel,
+		doneChannel:                      doneChannel,
+		blockchain:                       exchange.BlockChain.Name,
+		waitTime:                         waitTime,
+		exchangeName:                     exchange.Name,
+		pathToPools:                      pathToPools,
 	}
 	return s
 }
@@ -158,23 +166,23 @@ func (s *MaverickScraper) getPoolByAddress(pairAddress common.Address) (pool dia
 	address0, _ := poolContractInstance.TokenA(&bind.CallOpts{})
 	address1, _ := poolContractInstance.TokenB(&bind.CallOpts{})
 
-	log.Info(address0)
-	log.Info(address1)
+	//log.Info(address0)
+	//log.Info(address1)
 	// Only fetch assets from on-chain in case they are not in our DB.
-	//token0, err = s.relDB.GetAsset(address0.Hex(), s.blockchain)
-	//if err != nil {
-	//	token0, err = ethhelper.ETHAddressToAsset(address0, s.RestClient, s.blockchain)
-	//	if err != nil {
-	//		return
-	//	}
-	//}
-	//token1, err = s.relDB.GetAsset(address1.Hex(), s.blockchain)
-	//if err != nil {
-	//	token1, err = ethhelper.ETHAddressToAsset(address1, s.RestClient, s.blockchain)
-	//	if err != nil {
-	//		return
-	//	}
-	//}
+	token0, err = s.relDB.GetAsset(address0.Hex(), s.blockchain)
+	if err != nil {
+		token0, err = ethhelper.ETHAddressToAsset(address0, s.RestClient, s.blockchain)
+		if err != nil {
+			return
+		}
+	}
+	token1, err = s.relDB.GetAsset(address1.Hex(), s.blockchain)
+	if err != nil {
+		token1, err = ethhelper.ETHAddressToAsset(address1, s.RestClient, s.blockchain)
+		if err != nil {
+			return
+		}
+	}
 
 	// Getting liquidity
 
@@ -230,7 +238,7 @@ func (s *MaverickScraper) getAllPools() ([]dia.Pool, error) {
 	}
 
 	var offset uint64 = 500
-	var startBlock uint64 = uint64(17210221)
+	startBlock := s.poolFactoryContractCreationBlock
 	var endBlock = startBlock + offset
 
 	for {
@@ -241,7 +249,7 @@ func (s *MaverickScraper) getAllPools() ([]dia.Pool, error) {
 
 		it, err := factoryContractInstance.FilterPoolCreated(
 			&bind.FilterOpts{
-				Start: 17210221,
+				Start: startBlock,
 				End:   &endBlock,
 			})
 		if err != nil {
@@ -255,10 +263,6 @@ func (s *MaverickScraper) getAllPools() ([]dia.Pool, error) {
 			endBlock = endBlock + offset
 			continue
 		}
-		//if err != nil {
-		//	log.Warn("filterpoolregistered: ", err)
-		//	continue
-		//}
 
 		for it.Next() {
 			pool, err := s.getPoolByAddress(it.Event.PoolAddress)
