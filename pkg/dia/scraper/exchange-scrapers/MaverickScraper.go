@@ -79,113 +79,6 @@ type MaverickPool struct {
 	lookback    *big.Int
 }
 
-//func main() {
-//	log.SetOutput(io.MultiWriter(os.Stdout))
-//	maverickPoolMap["0x012245DB1919BBb6d727b9cE787C3169f963a898"] = MaverickPool{
-//		Token0: Token{
-//			Address:  common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"),
-//			Symbol:   "WETH",
-//			Decimals: 18,
-//			Name:     "Wrapped Ether",
-//		},
-//		Token1: Token{
-//			Address:  common.HexToAddress("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"),
-//			Symbol:   "USDC",
-//			Decimals: 6,
-//			Name:     "USD Coin",
-//		},
-//		fee:         6.9,
-//		tickSpacing: 69,
-//		lookback:    nil,
-//		ForeignName: "",
-//		Address:     common.HexToAddress("0x012245DB1919BBb6d727b9cE787C3169f963a898"),
-//	}
-//
-//	maverickPoolMap["0x11A653DDFBb61E0Feff5484919F06d9d254bf65F"] = MaverickPool{
-//		Token0: Token{
-//			Address:  common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"),
-//			Symbol:   "WETH",
-//			Decimals: 18,
-//			Name:     "Wrapped Ether",
-//		},
-//		Token1: Token{
-//			Address:  common.HexToAddress("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"),
-//			Symbol:   "USDC",
-//			Decimals: 6,
-//			Name:     "USD Coin",
-//		},
-//		fee:         0.0004,
-//		tickSpacing: 198,
-//		lookback:    nil,
-//		ForeignName: "",
-//		Address:     common.HexToAddress("0x11A653DDFBb61E0Feff5484919F06d9d254bf65F"),
-//	}
-//
-//	maverickPoolMap["0xD0b2F5018B5D22759724af6d4281AC0B13266360"] = MaverickPool{
-//		Token0: Token{
-//			Address:  common.HexToAddress("0xdAC17F958D2ee523a2206206994597C13D831ec7"),
-//			Symbol:   "USDT",
-//			Decimals: 6,
-//			Name:     "Tether USD",
-//		},
-//		Token1: Token{
-//			Address:  common.HexToAddress("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"),
-//			Symbol:   "USDC",
-//			Decimals: 6,
-//			Name:     "USD Coin",
-//		},
-//		fee:         0.00002,
-//		tickSpacing: 2,
-//		lookback:    nil,
-//		ForeignName: "",
-//		Address:     common.HexToAddress("0xD0b2F5018B5D22759724af6d4281AC0B13266360"),
-//	}
-//
-//	maverickPoolMap["0x53dc703B78794b61281812f3a901918253BeeFee"] = MaverickPool{
-//		Token0: Token{
-//			Address:  common.HexToAddress("0x6B175474E89094C44Da98b954EedeAC495271d0F"),
-//			Symbol:   "DAI",
-//			Decimals: 6,
-//			Name:     "Tether USD",
-//		},
-//		Token1: Token{
-//			Address:  common.HexToAddress("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"),
-//			Symbol:   "WETH",
-//			Decimals: 6,
-//			Name:     "USD Coin",
-//		},
-//		fee:         0.00005,
-//		tickSpacing: 1,
-//		lookback:    nil,
-//		ForeignName: "",
-//		Address:     common.HexToAddress("0x53dc703B78794b61281812f3a901918253BeeFee"),
-//	}
-//
-//	maverickPoolMap["0x0eB1C92f9f5EC9D817968AfDdB4B46c564cdeDBe"] = MaverickPool{
-//		Token0: Token{
-//			Address:  common.HexToAddress("0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0"),
-//			Symbol:   "WSTETH",
-//			Decimals: 6,
-//			Name:     "Lido wstETH",
-//		},
-//		Token1: Token{
-//			Address:  common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"),
-//			Symbol:   "USDC",
-//			Decimals: 6,
-//			Name:     "Wrapped Ether",
-//		},
-//		fee:         0.0001,
-//		tickSpacing: 10,
-//		lookback:    nil,
-//		ForeignName: "",
-//		Address:     common.HexToAddress("0x0eb1c92f9f5ec9d817968afddb4b46c564cdedbe"),
-//	}
-//
-//	scraper := makeMaverickScraper(scrapers.Exchanges[dia.ETHEREUM], false, false, "https://rpc.ankr.com/eth", "wss://eth-mainnet.g.alchemy.com/v2/7X9hL_lpF-Utavuv1aT49SWkWu9oYZTq", "60")
-//	scraper.mainLoop()
-//	select {}
-//}
-
 // NewMaverickScraper returns a new MaverickScraper for the given pair
 func NewMaverickScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *MaverickScraper {
 	log.Info("NewMaverickScraper: ", exchange.Name)
@@ -287,19 +180,6 @@ func makeMaverickScraper(exchange dia.Exchange, listenByAddress bool, fetchPools
 }
 
 func (s *MaverickScraper) mainLoop() {
-
-	//var wg sync.WaitGroup
-	//for address := range maverickPoolMap {
-	//	time.Sleep(time.Duration(s.waitTime) * time.Millisecond)
-	//	wg.Add(1)
-	//	go func(address common.Address, w *sync.WaitGroup) {
-	//		defer w.Done()
-	//		s.ListenToPair(address)
-	//	}(common.HexToAddress(address), &wg)
-	//}
-	//wg.Wait()
-	//
-	//log.Warn("Loop end")
 
 	// Import tokens which appear as base token and we need a quotation for
 	var err error
@@ -626,8 +506,6 @@ func asset2MaverickAsset(asset dia.Asset) Token {
 
 // GetSwapsChannel returns a channel for swaps of the pair with address @pairAddress
 func (s *MaverickScraper) GetSwapsChannel(pairAddress common.Address) (chan *poolcontract.PoolSwap, error) {
-
-	println("subscribing: " + pairAddress.Hex())
 
 	sink := make(chan *poolcontract.PoolSwap)
 	var poolFiltererContract *poolcontract.PoolFilterer
