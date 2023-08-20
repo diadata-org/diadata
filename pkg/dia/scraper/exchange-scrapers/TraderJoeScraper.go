@@ -79,6 +79,7 @@ type TraderJoeScraper struct {
 	factoryContractAddress common.Address
 }
 
+// NewTraderJoeScraper returns a new TraderJoeScraper.
 func NewTraderJoeScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *TraderJoeScraper {
 	log.Info("NewTraderJoeScraper ", exchange.Name)
 	log.Info("NewTraderJoeScraper Address ", exchange.Contract)
@@ -94,10 +95,9 @@ func NewTraderJoeScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 		log.Fatal("parse LISTEN_BY_ADDRESS: ", err)
 	}
 
-	switch exchange.Name {
-	case dia.TraderJoeExchange:
+	if exchange.Name == dia.TraderJoeExchange {
 		tjs = makeTraderJoeScraper(exchange, listenByAddress, "", "", "200", uint64(12369621))
-		// TODO: Are these uint64 values to be the same?
+		// TODO: startBlock value will need revisiting.
 	}
 
 	tjs.relDB = relDB
@@ -167,30 +167,30 @@ func makeTraderJoeScraper(exchange dia.Exchange, listenByAddress bool, restDial 
 	return s
 }
 
-func (s *TraderJoeScraper) makeTraderJoePoolMap(liquidityThreshold, liquidityThresholdUSD float64) (map[string]TraderJoePair, error) {
+func (tjs *TraderJoeScraper) makeTraderJoePoolMap(liquidityThreshold, liquidityThresholdUSD float64) (map[string]TraderJoePair, error) {
 	poolMap := make(map[string]TraderJoePair)
 	var (
 		pools []dia.Pool
 		err   error
 	)
 
-	if s.listenByAddress {
+	if tjs.listenByAddress {
 		// Only load pool info for addresses from json file.
-		poolAddresses, errAddr := getTradeAddressesFromConfig("traderjoe/subscribe_pools/" + s.exchangeName)
+		poolAddresses, errAddr := getTradeAddressesFromConfig("traderjoe/subscribe_pools/" + tjs.exchangeName)
 		// TODO: is this address correct?
 		if errAddr != nil {
 			log.Error("fetch pool addresses from config file: ", errAddr)
 		}
 		for _, address := range poolAddresses {
-			pool, errPool := s.relDB.GetPoolByAddress(Exchanges[s.exchangeName].BlockChain.Name, address.Hex())
+			pool, errPool := tjs.relDB.GetPoolByAddress(Exchanges[tjs.exchangeName].BlockChain.Name, address.Hex())
 			if errPool != nil {
-				log.Fatalf("Get pool with address %s: %v", address.Hex(), errPool)
+				log.Fatalf("Get pool with address %tjs: %v", address.Hex(), errPool)
 			}
 			pools = append(pools, pool)
 		}
 	} else {
 		// Load all pools above liquidity threshold.
-		pools, err = s.relDB.GetAllPoolsExchange(s.exchangeName, liquidityThreshold)
+		pools, err = tjs.relDB.GetAllPoolsExchange(tjs.exchangeName, liquidityThreshold)
 		if err != nil {
 			return poolMap, err
 		}
@@ -232,8 +232,9 @@ func (s *TraderJoeScraper) makeTraderJoePoolMap(liquidityThreshold, liquidityThr
 	return poolMap, err
 }
 
-func (s *TraderJoeScraper) mainLoop() {
-
+func (tjs *TraderJoeScraper) mainLoop() {
+	var err error
+	reverseBasetokens, err = getReverseTokensFromConfig("traderjoe/reverse_tokens")
 }
 
 func asset2TraderJoeAsset(asset dia.Asset) TraderJoeTokens {
