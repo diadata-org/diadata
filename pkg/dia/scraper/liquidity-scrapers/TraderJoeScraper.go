@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// TraderJoeLiquidityScraper manages the scraping of liquidity data for the Trader Joe exchange.
 type TraderJoeLiquidityScraper struct {
 	RestClient      *ethclient.Client
 	WsClient        *ethclient.Client
@@ -23,7 +24,9 @@ type TraderJoeLiquidityScraper struct {
 	waitTime        int
 }
 
-// NewTraderJoeLiquidityScraper is a constructor for the TraderJoeLiquidityScraper struct type.
+// NewTraderJoeLiquidityScraper initializes a Trader Joe liquidity scraper, creating an instance of the
+// TraderJoeLiquidityScraper struct. It configures necessary parameters, initiates pool fetching, and returns
+// the initialized scraper.
 func NewTraderJoeLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *models.DB) *TraderJoeLiquidityScraper {
 	log.Info("NewTraderJoeLiquidityScraper ", exchange.Name)
 	log.Info("NewTraderJoeLiquidityScraper Address ", exchange.Contract)
@@ -41,6 +44,8 @@ func NewTraderJoeLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, da
 	return tjls
 }
 
+// makeTraderJoeScraper initializes a Trader Joe liquidity scraper, creating an instance of the
+// TraderJoeLiquidityScraper struct with the specified configuration and parameters.
 func makeTraderJoeScraper(exchange dia.Exchange, restDial string, websocketDial string, relDB *models.RelDB, datastore *models.DB, waitMilliSeconds string, startBlock uint64) *TraderJoeLiquidityScraper {
 	var (
 		restClient  *ethclient.Client
@@ -85,16 +90,18 @@ func makeTraderJoeScraper(exchange dia.Exchange, restDial string, websocketDial 
 	return tjls
 }
 
-// fetchPools fetches all registered pool data from on-chain and sends them to the pool channel.
+// fetchPools retrieves pool creation events from the Trader Joe factory contract address and processes them.
 func (tjls *TraderJoeLiquidityScraper) fetchPools() {
 	log.Info("Get pool creations from address: ", tjls.factoryContract)
 	// TODO: Write this function's logic
 }
 
+// Pool returns a channel for receiving dia.Pool instances scraped by the Trader Joe liquidity scraper.
 func (tjls *TraderJoeLiquidityScraper) Pool() chan dia.Pool {
 	return tjls.poolChannel
 }
 
+// Done returns a channel for signaling the completion of Trader Joe liquidity scraping.
 func (tjls *TraderJoeLiquidityScraper) Done() chan bool {
 	return tjls.doneChannel
 }
