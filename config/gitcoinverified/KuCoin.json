@@ -481,6 +481,12 @@
             "Address": "0x967da4048cD07aB37855c090aAF366e4ce1b9F48"
         },
         {
+            "Symbol": "OP",
+            "Exchange": "KuCoin",
+            "Blockchain": "Optimism",
+            "Address": "0x4200000000000000000000000000000000000042"
+        },
+        {
             "Symbol": "OPEN",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
@@ -503,6 +509,12 @@
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
             "Address": "0x0258F474786DdFd37ABCE6df6BBb1Dd5dfC4434a"
+        },
+        {
+            "Symbol": "OUSD",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x2A8e1E676Ec238d8A992307B495b45B3fEAa5e86"
         },
         {
             "Symbol": "PAXG",

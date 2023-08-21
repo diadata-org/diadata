@@ -230,8 +230,8 @@ func (datastore *DB) SaveFilterInflux(filter string, asset dia.Asset, exchange s
 	// Create a point and add to batch
 	tags := map[string]string{
 		"filter":     filter,
-		"symbol":     asset.Symbol,
-		"address":    asset.Address,
+		"symbol":     EscapeReplacer.Replace(asset.Symbol),
+		"address":    EscapeReplacer.Replace(asset.Address),
 		"blockchain": asset.Blockchain,
 		"exchange":   exchange,
 	}

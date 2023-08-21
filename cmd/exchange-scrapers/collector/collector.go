@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"sync"
 	"time"
 
@@ -36,6 +35,7 @@ var (
 		dia.NetswapExchange,
 		dia.OrcaExchange,
 		dia.OsmosisExchange,
+		dia.VelodromeExchange,
 		dia.ZenlinkswapExchange,
 		dia.ZenlinkswapExchangeBifrostPolkadot,
 	}
@@ -219,9 +219,7 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wTest 
 			}
 
 			if mode == "assetmap" {
-
-				fmt.Println("recieved trade", t)
-
+				log.Info("recieved trade", t)
 			}
 		}
 	}

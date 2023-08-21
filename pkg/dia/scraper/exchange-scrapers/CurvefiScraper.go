@@ -527,8 +527,22 @@ func (scraper *CurveFIScraper) loadPools(liquidityThreshold float64, liquidityTh
 		log.Fatal("fetch pools: ", err)
 	}
 	log.Infof("found %v pools to subscribe: ", len(pools))
+
+	blacklistedPools, err := getAddressesFromConfig("curve/blacklist_pools/" + scraper.exchangeName)
+	if err != nil {
+		log.Fatal("blacklisted pools: ", err)
+	}
+	var blacklistedPoolsString []string
+	for _, bp := range blacklistedPools {
+		blacklistedPoolsString = append(blacklistedPoolsString, bp.Hex())
+	}
+	log.Infof("remove %v blacklisted pools: %s", len(blacklistedPools), blacklistedPoolsString)
+
 	lowerBoundCount := 0
 	for _, pool := range pools {
+		if utils.Contains(&blacklistedPoolsString, pool.Address) {
+			continue
+		}
 
 		liquidity, lowerBound := pool.GetPoolLiquidityUSD()
 		// Discard pool if complete USD liquidity is below threshold.

@@ -206,12 +206,6 @@
     },
     {
       "Exchange": "Kraken",
-      "ForeignName": "XREPXETH",
-      "Ignore": false,
-      "Symbol": "REP"
-    },
-    {
-      "Exchange": "Kraken",
       "ForeignName": "XREPXXBT",
       "Ignore": false,
       "Symbol": "REP"

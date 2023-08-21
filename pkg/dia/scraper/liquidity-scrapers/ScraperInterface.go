@@ -123,6 +123,8 @@ func NewLiquidityScraper(source string, relDB *models.RelDB, datastore *models.D
 		return NewOsmosisScraper(exchanges[dia.OsmosisExchange], relDB, datastore)
 	case dia.PlatypusExchange:
 		return NewPlatypusScraper(exchanges[dia.PlatypusExchange], datastore)
+	case dia.VelodromeExchange:
+		return NewVelodromePoolScraper(exchanges[dia.VelodromeExchange], relDB, datastore)
 
 	case dia.MaverickExchange:
 		return NewMaverickScraper(exchanges[dia.MaverickExchange], relDB, datastore)

@@ -121,6 +121,12 @@
             "Address": "0x0000000000000000000000000000000000001010"
         },
         {
+            "Symbol": "OP",
+            "Exchange": "Binance2",
+            "Blockchain": "Optimism",
+            "Address": "0x4200000000000000000000000000000000000042"
+        },
+        {
             "Symbol": "PAXG",
             "Exchange": "Binance2",
             "Blockchain": "Ethereum",
