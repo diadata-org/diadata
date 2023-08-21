@@ -58,32 +58,41 @@ type TraderJoeData struct {
 }
 
 type TraderJoeScraper struct {
-	WsClient   *ethclient.Client
+	// Ethereum WebSocket client for real-time data.
+	WsClient *ethclient.Client
+	// Ethereum REST client for querying historical data.
 	RestClient *ethclient.Client
-	relDB      *models.RelDB
-	// signaling channels for session initialization and finishing
-	//initDone     chan nothing
+	// Relational database connection.
+	relDB *models.RelDB
+	// Signaling channels for managing session start and shutdown.
 	run          bool
 	shutdown     chan nothing
 	shutdownDone chan nothing
-	// error handling; to read error or closed, first acquire read lock
-	// only cleanup method should hold write lock
+	// Error handling; read lock for error or closed status.
 	errorLock sync.RWMutex
 	error     error
 	closed    bool
-	// used to keep track of trading pairs that we subscribed to
-	pairScrapers map[string]*TraderJoeScraper
+	// Map of active TraderJoeTradeScraper instances for trading pairs.
+	pairScrapers map[string]*TraderJoeTradeScraper
+	// Channel to receive new trading pairs for scraping.
 	pairReceived chan *TraderJoePair
-
-	exchangeName           string
-	startBlock             uint64
-	waitTime               int
-	listenByAddress        bool
-	chanTrades             chan *dia.Trade
+	// Name of the exchange.
+	exchangeName string
+	// Ethereum block number to start scraping from.
+	startBlock uint64
+	// Time interval for waiting between actions.
+	waitTime int
+	// Option to listen for trading pairs by address.
+	listenByAddress bool
+	// Channel for receiving trade data.
+	chanTrades chan *dia.Trade
+	// Address of the factory contract for the exchange.
 	factoryContractAddress common.Address
 }
 
-// NewTraderJoeScraper returns a new TraderJoeScraper.
+// NewTraderJoeScraper initializes a Trader Joe scraper instance with the provided exchange information,
+// scraping flag, and relational database connection. It configures parameters, sets up pool maps,
+// and starts the scraping process if requested.
 func NewTraderJoeScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *TraderJoeScraper {
 	log.Info("NewTraderJoeScraper ", exchange.Name)
 	log.Info("NewTraderJoeScraper Address ", exchange.Contract)
@@ -129,6 +138,9 @@ func NewTraderJoeScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 	return tjs
 }
 
+// makeTraderJoeScraper creates and initializes a Trader Joe scraper instance with the given exchange information,
+// connection details, and configuration parameters. It establishes REST and WebSocket clients for the blockchain,
+// determines wait time, and sets up various channels and data structures for scraping tasks.
 func makeTraderJoeScraper(exchange dia.Exchange, listenByAddress bool, restDial string, wsDial string, waitMilliseconds string, startBlock uint64) *TraderJoeScraper {
 	var restClient, wsClient *ethclient.Client
 	var err error
@@ -157,7 +169,7 @@ func makeTraderJoeScraper(exchange dia.Exchange, listenByAddress bool, restDial 
 		RestClient:             restClient,
 		shutdown:               make(chan nothing),
 		shutdownDone:           make(chan nothing),
-		pairScrapers:           make(map[string]*TraderJoeScraper),
+		pairScrapers:           make(map[string]*TraderJoeTradeScraper),
 		exchangeName:           exchange.Name,
 		pairReceived:           make(chan *TraderJoePair),
 		error:                  nil,
@@ -171,6 +183,10 @@ func makeTraderJoeScraper(exchange dia.Exchange, listenByAddress bool, restDial 
 	return s
 }
 
+// makeTraderJoePoolMap generates a map of Trader Joe pool pairs based on the provided liquidity thresholds and configuration.
+// It retrieves pool information either by specific addresses from a JSON file or by querying the database for all pools above
+// the liquidity threshold. The resulting pool map includes pairs with sufficient liquidity and handles lower-bound checks.
+// It returns the generated pool map and any error encountered during the process.
 func (tjs *TraderJoeScraper) makeTraderJoePoolMap(liquidityThreshold, liquidityThresholdUSD float64) (map[string]TraderJoePair, error) {
 	poolMap := make(map[string]TraderJoePair)
 	var (
@@ -236,6 +252,56 @@ func (tjs *TraderJoeScraper) makeTraderJoePoolMap(liquidityThreshold, liquidityT
 	return poolMap, err
 }
 
+// Error returns the error associated with the parent Trader Joe scraper. It retrieves the error from the parent scraper's state
+// using a read lock on the error lock. This function is useful for obtaining any error that occurred during scraping tasks.
+func (ps TraderJoeTradeScraper) Error() error {
+	tjs := ps.parent
+	tjs.errorLock.RLock()
+	defer tjs.errorLock.RUnlock()
+	return tjs.error
+}
+
+// Pair returns the dia.ExchangePair associated with the current Trader Joe trade scraper.
+// It simply retrieves and returns the ExchangePair stored within the scraper's state.
+func (ps TraderJoeTradeScraper) Pair() dia.ExchangePair {
+	return ps.pair
+}
+
+// ScrapePair initiates a new scraping process for the specified dia.ExchangePair within the Trader Joe scraper.
+// It checks for any previously encountered errors using a read lock on the error lock. If an error is present,
+// it returns that error. Additionally, if the Trader Joe scraper has been closed, it returns an error indicating
+// that ScrapePair cannot be called on a closed pair. Otherwise, it creates a new TraderJoeTradeScraper instance
+// associated with the provided ExchangePair, adds it to the list of active pair scrapers, and returns it along
+// with a nil error to indicate successful initiation.
+func (tjs *TraderJoeScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
+	tjs.errorLock.RLock()
+	defer tjs.errorLock.RUnlock()
+	if tjs.error != nil {
+		return nil, tjs.error
+	}
+
+	if tjs.closed {
+		return nil, errors.New("TraderJoeScraper: Call Scrape Pair on closed pair")
+	}
+
+	pairScraper := &TraderJoeTradeScraper{
+		parent: tjs,
+		pair:   pair,
+	}
+
+	tjs.pairScrapers[pair.ForeignName] = pairScraper
+
+	return pairScraper, nil
+}
+
+func (tjs *TraderJoeScraper) GetPairData() {}
+
+// mainLoop is the central loop of the Trader Joe scraper that manages the subscription and scraping of pairs.
+// It initializes the process by retrieving reverse base tokens and quote tokens from configuration. After a brief
+// initial delay, it sets the `run` flag to true and kicks off a goroutine to feed pools to subscriptions.
+// The function then listens for incoming pairs from the `pairReceived` channel and subscribes to and scrapes data
+// for each pair. It performs various checks to skip pairs that don't meet certain criteria, such as blacklisted
+// tokens or pools. It also logs relevant information about the progress of the loop.
 func (tjs *TraderJoeScraper) mainLoop() {
 	var err error
 	reverseBasetokens, err = getReverseTokensFromConfig("traderjoe/reverse_tokens/" + tjs.exchangeName + "Basetoken")
@@ -259,7 +325,7 @@ func (tjs *TraderJoeScraper) mainLoop() {
 	}()
 
 	if len(tjs.pairScrapers) == 0 {
-		tjs.error = errors.New("uniswap: No pairs to scrape provided")
+		tjs.error = errors.New("traderjoe scraper: No pairs to scrape provided")
 		log.Error(tjs.error.Error())
 	}
 
@@ -286,6 +352,8 @@ func (tjs *TraderJoeScraper) mainLoop() {
 	}
 }
 
+// sendTrade receives Trader Joe trade data and transforms it into a standardized dia.Trade
+// structure for further analysis and publication.
 func (tjs *TraderJoeScraper) sendTrade(tradeData TraderJoeData, pool *TraderJoePair) {
 	price, volume := tjs.getTradeData(tradeData)
 	token0 := dia.Asset{
@@ -340,6 +408,9 @@ func (tjs *TraderJoeScraper) sendTrade(tradeData TraderJoeData, pool *TraderJoeP
 
 // TODO: Is GetSwapChannel necessary here?
 
+// asset2TraderJoeAsset converts a dia.Asset into a TraderJoeTokens structure.
+// It takes the provided asset's address, decimals, symbol, and name,
+// and returns a TraderJoeTokens representation containing the same information.
 func asset2TraderJoeAsset(asset dia.Asset) TraderJoeTokens {
 	return TraderJoeTokens{
 		Address:  common.HexToAddress(asset.Address),
@@ -349,6 +420,9 @@ func asset2TraderJoeAsset(asset dia.Asset) TraderJoeTokens {
 	}
 }
 
+// getTradeAddressesFromConfig reads a JSON configuration file specified by the provided filename and retrieves
+// trading pair addresses. The function opens and reads the file, unmarshals the data to extract pairs' addresses
+// and foreign names, and returns a slice of common.Address containing the extracted addresses. In case of any
 func getTradeAddressesFromConfig(filename string) (pairAddresses []common.Address, err error) {
 
 	// Load file and read data
@@ -391,6 +465,7 @@ func getTradeAddressesFromConfig(filename string) (pairAddresses []common.Addres
 	return
 }
 
+// feedPoolsToSubscriptions sends a list of TraderJoePairs to subscription channels.
 func (tjs *TraderJoeScraper) feedPoolsToSubscriptions() (pairs []TraderJoePair) {
 	for i := range MapOfPools {
 		up := MapOfPools[i]
@@ -400,14 +475,26 @@ func (tjs *TraderJoeScraper) feedPoolsToSubscriptions() (pairs []TraderJoePair) 
 	return
 }
 
+// getTradeData extracts price and volume data from TraderJoe trade information.
 func (tjs *TraderJoeScraper) getTradeData(swap TraderJoeData) (price float64, volume float64) {
 	volume = swap.Amount0
 	price = math.Abs(swap.Amount1 / swap.Amount0)
 	return
 }
 
+// FetchAvailablePairs retrieves the list of available dia.ExchangePairs from the Trader Joe exchange.
 func (tjs *TraderJoeScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	return
 }
 
-func (tjs *TraderJoeScraper) GetPairData() {}
+// TraderJoeTradeScraper represents a scraper for collecting trade data associated with a specific dia.ExchangePair
+// within the Trader Joe exchange.
+type TraderJoeTradeScraper struct {
+	parent *TraderJoeScraper
+	pair   dia.ExchangePair
+}
+
+// Close closes the TraderJoeTradeScraper instance.
+func (ps TraderJoeTradeScraper) Close() error {
+	return nil
+}
