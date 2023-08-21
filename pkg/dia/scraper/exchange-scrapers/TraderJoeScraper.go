@@ -338,6 +338,8 @@ func (tjs *TraderJoeScraper) sendTrade(tradeData TraderJoeData, pool *TraderJoeP
 	}
 }
 
+// TODO: Is GetSwapChannel necessary here?
+
 func asset2TraderJoeAsset(asset dia.Asset) TraderJoeTokens {
 	return TraderJoeTokens{
 		Address:  common.HexToAddress(asset.Address),
@@ -403,3 +405,9 @@ func (tjs *TraderJoeScraper) getTradeData(swap TraderJoeData) (price float64, vo
 	price = math.Abs(swap.Amount1 / swap.Amount0)
 	return
 }
+
+func (tjs *TraderJoeScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
+	return
+}
+
+func (tjs *TraderJoeScraper) GetPairData() {}
