@@ -210,3 +210,18 @@ func (datastore *DB) GetExchangePairVolumes(asset dia.Asset, starttime time.Time
 	}
 	return volumeMap, nil
 }
+
+// GetVolumesMap returns a map mapping assets with recorded volume from @starttime until now.
+// The asset string is given by the asset's class identifier method.
+func (rdb *RelDB) GetVolumesMap(starttime time.Time) (map[string]float64, error) {
+	volumeCache := make(map[string]float64)
+	endtime := time.Now()
+	assets, err := rdb.GetAssetsWithVolByBlockchain(starttime, endtime, "")
+	if err != nil {
+		return volumeCache, err
+	}
+	for _, asset := range assets {
+		volumeCache[asset.Asset.Identifier()] = asset.Volume
+	}
+	return volumeCache, nil
+}

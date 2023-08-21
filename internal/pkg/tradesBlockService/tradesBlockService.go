@@ -52,6 +52,10 @@ func init() {
 		log.Error("Parse TRADE_VOLUME_THRESHOLD_USD_EXPONENT: ", err)
 	}
 	tradeVolumeThresholdUSD = math.Pow(10, -tradeVolumeThresholdUSDExponent)
+	volumeLiquidityRatio, err = strconv.ParseFloat(utils.Getenv("VOLUME_LIQUIDITY_RATIO", ""), 64)
+	if err != nil {
+		log.Error("Parse VOLUME_LIQUIDITY_RATIO: ", err)
+	}
 }
 
 var (
@@ -88,6 +92,7 @@ var (
 	blueChipThreshold       float64
 	smallX                  float64
 	normalX                 float64
+	volumeLiquidityRatio    float64
 	checkTradesDuplicate    = make(map[string]struct{})
 )
 
@@ -104,6 +109,7 @@ type TradesBlockService struct {
 	currentBlock     *dia.TradesBlock
 	priceCache       map[string]float64
 	volumeCache      map[string]float64
+	poolCache        map[string]dia.Pool
 	datastore        models.Datastore
 	relDB            models.RelDatastore
 	historical       bool
@@ -124,6 +130,7 @@ func NewTradesBlockService(datastore models.Datastore, relDB models.RelDatastore
 		BlockDuration:   blockDuration,
 		priceCache:      make(map[string]float64),
 		volumeCache:     make(map[string]float64),
+		poolCache:       make(map[string]dia.Pool),
 		datastore:       datastore,
 		relDB:           relDB,
 		historical:      historical,
@@ -143,7 +150,11 @@ func NewTradesBlockService(datastore models.Datastore, relDB models.RelDatastore
 	log.Info("tradeVolumeThreshold: ", tradeVolumeThreshold)
 	log.Info("tradeVolumeThresholdUSD: ", tradeVolumeThresholdUSD)
 
-	s.volumeCache = s.loadVolumes()
+	var err error
+	s.volumeCache, err = s.relDB.GetVolumesMap(time.Now().AddDate(0, 0, -7))
+	if err != nil {
+		log.Fatal("GetVolumesMap: ", err)
+	}
 	log.Info("...done loading volumes.")
 
 	go s.mainLoop()
@@ -241,11 +252,23 @@ func (s *TradesBlockService) checkTrade(t dia.Trade) bool {
 		}
 	}
 
-	if baseVolume, ok := s.volumeCache[basetoken.Identifier()]; ok {
+	// Get pool liquidity in order to compare to volume of quotetoken.
+	// Discard trade if pool liquidity is too small compared to the volume of the quote token.
+	baseVolume, baseVolumeOk := s.volumeCache[basetoken.Identifier()]
+	quoteVolume, quoteVolumeOk := s.volumeCache[t.QuoteToken.Identifier()]
+	pool, err := s.getPool(t)
+	if err == nil {
+		liquidity, lowerBound := pool.GetPoolLiquidityUSD()
+		if quoteVolumeOk && !lowerBound && quoteVolume > volumeLiquidityRatio*liquidity {
+			return false
+		}
+	}
+
+	if baseVolumeOk {
 		if baseVolume > blueChipThreshold {
 			return true
 		}
-		if quoteVolume, ok := s.volumeCache[t.QuoteToken.Identifier()]; ok {
+		if quoteVolumeOk {
 			if baseVolume < volumeThreshold {
 				// For small volume basetoken, quotetoken must be a small volume asset too.
 				return quoteVolume < smallX*baseVolume
@@ -390,24 +413,28 @@ func (s *TradesBlockService) process(t dia.Trade) {
 	}
 }
 
-func (s *TradesBlockService) loadVolumes() map[string]float64 {
-	// Clean asset volumes
-	volumeCache := make(map[string]float64)
-	endtime := time.Now()
-	assets, err := s.relDB.GetAssetsWithVolByBlockchain(endtime.AddDate(0, 0, -7), endtime, "")
-	if err != nil {
-		log.Error("could not load asset with volume: ", err)
+func (s *TradesBlockService) loadVolumesLoop() {
+	var err error
+	for range s.volumeTicker.C {
+		s.volumeCache, err = s.relDB.GetVolumesMap(time.Now().AddDate(0, 0, -7))
+		if err != nil {
+			log.Error("get volumes map: ", err)
+		}
 	}
-	for _, asset := range assets {
-		volumeCache[asset.Asset.Identifier()] = asset.Volume
-	}
-	return volumeCache
 }
 
-func (s *TradesBlockService) loadVolumesLoop() {
-	for range s.volumeTicker.C {
-		s.volumeCache = s.loadVolumes()
+func (s *TradesBlockService) getPool(trade dia.Trade) (pool dia.Pool, err error) {
+	var ok bool
+	if pool, ok = s.poolCache[trade.QuoteToken.Blockchain+"-"+trade.PoolAddress]; ok {
+		return
+	} else {
+		pool, err = s.relDB.GetPoolByAddress(trade.QuoteToken.Blockchain, trade.PoolAddress)
+		if err != nil {
+			return
+		}
+		s.poolCache[trade.QuoteToken.Blockchain+"-"+trade.PoolAddress] = pool
 	}
+	return
 }
 
 func (s *TradesBlockService) finaliseCurrentBlock() {
