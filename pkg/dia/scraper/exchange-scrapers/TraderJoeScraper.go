@@ -2,17 +2,21 @@ package scrapers
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"io"
+	"math"
 	"os"
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 var (
@@ -234,7 +238,104 @@ func (tjs *TraderJoeScraper) makeTraderJoePoolMap(liquidityThreshold, liquidityT
 
 func (tjs *TraderJoeScraper) mainLoop() {
 	var err error
-	reverseBasetokens, err = getReverseTokensFromConfig("traderjoe/reverse_tokens")
+	reverseBasetokens, err = getReverseTokensFromConfig("traderjoe/reverse_tokens/" + tjs.exchangeName + "Basetoken")
+	if err != nil {
+		log.Error("error getting base tokens for which pairs should be reversed: ", err)
+	}
+	log.Infof("reverse the following basetokens on %s: %v", tjs.exchangeName, reverseBasetokens)
+	reverseQuotetokens, err = getReverseTokensFromConfig("traderjoe/reverse_tokens/" + tjs.exchangeName + "Quotetoken")
+	if err != nil {
+		log.Error("error getting quote tokens for which pairs should be reversed: ", err)
+	}
+	log.Infof("reverse the following quotetokens on %s: %v", tjs.exchangeName, reverseQuotetokens)
+
+	time.Sleep(4 * time.Second)
+	tjs.run = true
+
+	go func() {
+		pools := tjs.feedPoolsToSubscriptions()
+		log.Info("Found ", len(pools), " pairs")
+		log.Info("Found ", len(tjs.pairScrapers), " pairScrapers")
+	}()
+
+	if len(tjs.pairScrapers) == 0 {
+		tjs.error = errors.New("uniswap: No pairs to scrape provided")
+		log.Error(tjs.error.Error())
+	}
+
+	count := 0
+	for {
+		pool := <-tjs.pairReceived
+		log.Infoln("Subscribing for pair: ", pool)
+
+		if len(pool.Token0.Symbol) < 2 || len(pool.Token1.Symbol) < 2 {
+			log.Info("skip pair: ", pool.ForeignName)
+			continue
+		}
+		if helpers.AddressIsBlacklisted(pool.Token0.Address) || helpers.AddressIsBlacklisted(pool.Token1.Address) {
+			log.Info("skip pair ", pool.ForeignName, ", address is blacklisted")
+			continue
+		}
+		if helpers.PoolIsBlacklisted(pool.Address) {
+			log.Info("skip blacklisted pool ", pool.Address)
+			continue
+		}
+		log.Infof("%v found pair scraper for: %s with address %s", count, pool.ForeignName, pool.Address.Hex())
+		count++
+		// TODO: Paused here.
+	}
+}
+
+func (tjs *TraderJoeScraper) sendTrade(tradeData TraderJoeData, pool *TraderJoePair) {
+	price, volume := tjs.getTradeData(tradeData)
+	token0 := dia.Asset{
+		Address:    pool.Token0.Address.Hex(),
+		Symbol:     pool.Token0.Symbol,
+		Name:       pool.Token0.Name,
+		Decimals:   pool.Token0.Decimals,
+		Blockchain: Exchanges[tjs.exchangeName].BlockChain.Name,
+	}
+	token1 := dia.Asset{
+		Address:    pool.Token1.Address.Hex(),
+		Symbol:     pool.Token1.Symbol,
+		Name:       pool.Token1.Name,
+		Decimals:   pool.Token1.Decimals,
+		Blockchain: Exchanges[tjs.exchangeName].BlockChain.Name,
+	}
+
+	t := &dia.Trade{
+		Symbol:         pool.Token0.Symbol,
+		Pair:           pool.ForeignName,
+		QuoteToken:     token1,
+		BaseToken:      token0,
+		Price:          price,
+		Volume:         volume,
+		Time:           time.Unix(tradeData.Timestamp, 0),
+		PoolAddress:    pool.Address.Hex(),
+		ForeignTradeID: tradeData.ID,
+		//EstimatedUSDPrice: 0,
+		Source:       tjs.exchangeName,
+		VerifiedPair: true,
+	}
+
+	switch {
+	case utils.Contains(reverseBasetokens, pool.Token1.Address.Hex()):
+		// If we need quotation of a base token, reverse pair
+		tSwapped, err := dia.SwapTrade(*t)
+		if err == nil {
+			t = &tSwapped
+		}
+	case utils.Contains(reverseQuotetokens, pool.Token0.Address.Hex()):
+		// If we need quotation of a base token, reverse pair
+		tSwapped, err := dia.SwapTrade(*t)
+		if err == nil {
+			t = &tSwapped
+		}
+	}
+	if price > 0 {
+		log.Infof("Got trade on pool %s: %v", pool.Address.Hex(), t)
+		tjs.chanTrades <- t
+	}
 }
 
 func asset2TraderJoeAsset(asset dia.Asset) TraderJoeTokens {
@@ -285,5 +386,20 @@ func getTradeAddressesFromConfig(filename string) (pairAddresses []common.Addres
 		pairAddresses = append(pairAddresses, common.HexToAddress(token.Address))
 	}
 
+	return
+}
+
+func (tjs *TraderJoeScraper) feedPoolsToSubscriptions() (pairs []TraderJoePair) {
+	for i := range MapOfPools {
+		up := MapOfPools[i]
+		pairs = append(pairs, up)
+		tjs.pairReceived <- &up
+	}
+	return
+}
+
+func (tjs *TraderJoeScraper) getTradeData(swap TraderJoeData) (price float64, volume float64) {
+	volume = swap.Amount0
+	price = math.Abs(swap.Amount1 / swap.Amount0)
 	return
 }
