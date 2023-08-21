@@ -149,6 +149,7 @@ func NewTradesBlockService(datastore models.Datastore, relDB models.RelDatastore
 	log.Info("normalX: ", normalX)
 	log.Info("tradeVolumeThreshold: ", tradeVolumeThreshold)
 	log.Info("tradeVolumeThresholdUSD: ", tradeVolumeThresholdUSD)
+	log.Info("volumeLiquidityRatio: ", volumeLiquidityRatio)
 
 	var err error
 	s.volumeCache, err = s.relDB.GetVolumesMap(time.Now().AddDate(0, 0, -7))
@@ -260,6 +261,7 @@ func (s *TradesBlockService) checkTrade(t dia.Trade) bool {
 	if err == nil {
 		liquidity, lowerBound := pool.GetPoolLiquidityUSD()
 		if quoteVolumeOk && !lowerBound && quoteVolume > volumeLiquidityRatio*liquidity {
+			log.Warn("discard trade due to volumeLiquidityRatio: ", t)
 			return false
 		}
 	}
