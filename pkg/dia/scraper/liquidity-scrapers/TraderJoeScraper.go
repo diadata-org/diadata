@@ -2,9 +2,13 @@ package liquidityscrapers
 
 import (
 	"github.com/diadata-org/diadata/pkg/dia"
+	traderjoe "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/traderjoe2.1"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"math/big"
 	"strconv"
 	"strings"
 )
@@ -92,8 +96,54 @@ func makeTraderJoeScraper(exchange dia.Exchange, restDial string, websocketDial 
 
 // fetchPools retrieves pool creation events from the Trader Joe factory contract address and processes them.
 func (tjls *TraderJoeLiquidityScraper) fetchPools() {
+	log.Info("Fetching Trader Joe LBPairCreated events...")
 	log.Info("Get pool creations from address: ", tjls.factoryContract)
 	// TODO: Write this function's logic
+
+	contractFilter, err := traderjoe.NewTraderjoeFilterer(common.HexToAddress(tjls.factoryContract), tjls.WsClient)
+	if err != nil {
+		log.Error(err)
+	}
+
+	// Define filter options
+	opts := &bind.FilterOpts{
+		Start: tjls.startBlock,
+	}
+
+	// Define empty arrays for filter parameters
+	var tokenXAddresses []common.Address
+	var tokenYAddresses []common.Address
+	var binSteps []*big.Int
+
+	// Filter LBPairCreated events.
+	iter, err := contractFilter.FilterLBPairCreated(opts, tokenXAddresses, tokenYAddresses, binSteps)
+	if err != nil {
+		log.Error("FilterLBPairCreated: ", err)
+		return
+	}
+	defer func(iter *traderjoe.TraderjoeLBPairCreatedIterator) {
+		err := iter.Close()
+		if err != nil {
+			log.Error("Failed to close LBPair iterator: ", err)
+		}
+	}(iter)
+
+	for iter.Next() {
+		var pool dia.Pool
+
+		// Parse event data from iter.Event()
+
+		// Fetch pool-specific data using Trader Joe functions
+
+		// Calculate liquidity and other metrics
+
+		// Append 'pool' to 'tjs.PoolChannel'
+
+		log.Info("Fetched pool data: ", pool)
+
+		tjls.poolChannel <- pool
+	}
+	tjls.doneChannel <- true
 }
 
 // Pool returns a channel for receiving dia.Pool instances scraped by the Trader Joe liquidity scraper.
