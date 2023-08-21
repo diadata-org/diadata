@@ -186,7 +186,7 @@ func (s *MaverickScraper) getPoolByAddress(pairAddress common.Address) (pool dia
 
 	// Getting liquidity
 
-	balanceA, err := poolContractInstance.BinBalanceB(&bind.CallOpts{})
+	balanceA, err := poolContractInstance.BinBalanceA(&bind.CallOpts{})
 	balanceB, err := poolContractInstance.BinBalanceB(&bind.CallOpts{})
 
 	if err != nil {
@@ -237,7 +237,7 @@ func (s *MaverickScraper) getAllPools() ([]dia.Pool, error) {
 		return nil, err
 	}
 
-	var offset uint64 = 500
+	var offset uint64 = 2500
 	startBlock := s.poolFactoryContractCreationBlock
 	var endBlock = startBlock + offset
 

@@ -89,12 +89,12 @@ func NewMaverickScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB)
 		err              error
 	)
 
-	listenByAddress, err = strconv.ParseBool(utils.Getenv("LISTEN_BY_ADDRESS", ""))
+	listenByAddress, err = strconv.ParseBool(utils.Getenv("LISTEN_BY_ADDRESS", "false"))
 	if err != nil {
 		log.Fatal("parse LISTEN_BY_ADDRESS: ", err)
 	}
 
-	fetchPoolsFromDB, err = strconv.ParseBool(utils.Getenv("FETCH_POOLS_FROM_DB", ""))
+	fetchPoolsFromDB, err = strconv.ParseBool(utils.Getenv("FETCH_POOLS_FROM_DB", "false"))
 	if err != nil {
 		log.Fatal("parse FETCH_POOLS_FROM_DB: ", err)
 	}
@@ -149,7 +149,7 @@ func makeMaverickScraper(exchange dia.Exchange, listenByAddress bool, fetchPools
 	if err != nil {
 		log.Fatal("init rest client: ", err)
 	}
-	wsClient, err = ethclient.Dial(wsDial)
+	wsClient, err = ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_WS", wsDial))
 	if err != nil {
 		log.Fatal("init ws client: ", err)
 	}
@@ -200,7 +200,7 @@ func (s *MaverickScraper) mainLoop() {
 
 	if s.listenByAddress || s.fetchPoolsFromDB {
 		var wg sync.WaitGroup
-		for address := range poolMap {
+		for address := range maverickPoolMap {
 			time.Sleep(time.Duration(s.waitTime) * time.Millisecond)
 			wg.Add(1)
 			go func(address common.Address, w *sync.WaitGroup) {
@@ -249,9 +249,8 @@ func (s *MaverickScraper) ListenToPair(address common.Address) {
 		pair, err = s.getPairByAddress(address)
 		if err != nil {
 			log.Error("error fetching pair: ", err)
+			return
 		}
-		log.Error("Not Supported yet")
-		return
 	} else {
 		// Relevant pool info is retrieved from @poolMap.
 		pair = maverickPoolMap[address.Hex()]
@@ -538,7 +537,7 @@ func (s *MaverickScraper) getAllPairsAddress() ([]common.Address, error) {
 		return nil, err
 	}
 
-	var offset uint64 = 500
+	var offset uint64 = 2500
 	startBlock := s.poolFactoryContractCreationBlock
 	var endBlock = startBlock + offset
 
@@ -564,10 +563,6 @@ func (s *MaverickScraper) getAllPairsAddress() ([]common.Address, error) {
 			endBlock = endBlock + offset
 			continue
 		}
-		//if err != nil {
-		//	log.Warn("filterpoolregistered: ", err)
-		//	continue
-		//}
 
 		for it.Next() {
 			pools = append(pools, it.Event.PoolAddress)

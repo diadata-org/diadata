@@ -1,0 +1,16 @@
+{
+  "Pools": [
+    {
+      "Address": "0xD0b2F5018B5D22759724af6d4281AC0B13266360",
+      "ForeignName": "USDC-USDT"
+    },
+    {
+      "Address": "0x53dc703b78794b61281812f3a901918253beefee",
+      "ForeignName": "DAI-USDC"
+    },
+    {
+      "Address": "0x0eb1c92f9f5ec9d817968afddb4b46c564cdedbe",
+      "ForeignName": "WSTETH-ETH"
+    }
+  ]
+}
