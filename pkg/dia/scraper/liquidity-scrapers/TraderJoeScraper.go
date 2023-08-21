@@ -86,8 +86,15 @@ func makeTraderJoeScraper(exchange dia.Exchange, restDial string, websocketDial 
 }
 
 // fetchPools fetches all registered pool data from on-chain and sends them to the pool channel.
-func (tjls TraderJoeLiquidityScraper) fetchPools() {
+func (tjls *TraderJoeLiquidityScraper) fetchPools() {
 	log.Info("Get pool creations from address: ", tjls.factoryContract)
-	poolsCount := 0
-	contract, err :- trad
+	// TODO: Write this function's logic
+}
+
+func (tjls *TraderJoeLiquidityScraper) Pool() chan dia.Pool {
+	return tjls.poolChannel
+}
+
+func (tjls *TraderJoeLiquidityScraper) Done() chan bool {
+	return tjls.doneChannel
 }
