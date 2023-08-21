@@ -157,13 +157,13 @@ func (tjls *TraderJoeLiquidityScraper) fetchPools() {
 		//liquidity, _ := CalculateLiquidity(lbPairInfo)
 		//metrics := CalculateMetrics(lbPairInfo)
 
-		// TODO: Append 'pool' to 'tjs.PoolChannel'
+		// TODO: Append 'pool' to 'tjs.PoolChannel' correctly.
 		pool = dia.Pool{
 			Exchange:     dia.Exchange{},
 			Blockchain:   dia.BlockChain{},
 			Address:      "",
 			Assetvolumes: nil,
-			Time:         time.Time{},
+			Time:         time.Now(),
 		}
 
 		log.Info("Fetched pool data: ", pool)
