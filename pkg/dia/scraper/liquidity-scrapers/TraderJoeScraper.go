@@ -11,6 +11,7 @@ import (
 	"math/big"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // TraderJoeLiquidityScraper manages the scraping of liquidity data for the Trader Joe exchange.
@@ -97,9 +98,9 @@ func makeTraderJoeScraper(exchange dia.Exchange, restDial string, websocketDial 
 // fetchPools retrieves pool creation events from the Trader Joe factory contract address and processes them.
 func (tjls *TraderJoeLiquidityScraper) fetchPools() {
 	log.Info("Fetching Trader Joe LBPairCreated events...")
-	log.Info("Get pool creations from address: ", tjls.factoryContract)
-	// TODO: Write this function's logic
+	log.Info("Getting pool creations from address: ", tjls.factoryContract)
 
+	// Filtering setup initialization.
 	contractFilter, err := traderjoe.NewTraderjoeFilterer(common.HexToAddress(tjls.factoryContract), tjls.WsClient)
 	if err != nil {
 		log.Error(err)
@@ -124,20 +125,46 @@ func (tjls *TraderJoeLiquidityScraper) fetchPools() {
 	defer func(iter *traderjoe.TraderjoeLBPairCreatedIterator) {
 		err := iter.Close()
 		if err != nil {
-			log.Error("Failed to close LBPair iterator: ", err)
+			log.Error(err)
 		}
 	}(iter)
 
 	for iter.Next() {
 		var pool dia.Pool
 
-		// Parse event data from iter.Event()
+		// Parse event data from iter.Event() .
+		event := iter.Event
+		tokenX := event.TokenX
+		tokenY := event.TokenY
+		//binStep := event.BinStep
 
-		// Fetch pool-specific data using Trader Joe functions
+		// Fetch pool-specific data using Trader Joe functions.
+		contractCaller, err := traderjoe.NewTraderjoeCaller(common.HexToAddress(tjls.factoryContract), tjls.WsClient)
+		if err != nil {
+			log.Error(err)
+			continue
+		}
 
-		// Calculate liquidity and other metrics
+		// lbPairInfo for getting all LB pairs. rename _ to lbPairInfo
+		_, err = contractCaller.GetAllLBPairs(nil, tokenX, tokenY)
+		if err != nil {
+			log.Error("GetAllLBPairs: ", err)
+			continue
+		}
 
-		// Append 'pool' to 'tjs.PoolChannel'
+		//// TODO: Calculate liquidity and other metrics
+		//// Calculate liquidity and other metrics.
+		//liquidity, _ := CalculateLiquidity(lbPairInfo)
+		//metrics := CalculateMetrics(lbPairInfo)
+
+		// TODO: Append 'pool' to 'tjs.PoolChannel'
+		pool = dia.Pool{
+			Exchange:     dia.Exchange{},
+			Blockchain:   dia.BlockChain{},
+			Address:      "",
+			Assetvolumes: nil,
+			Time:         time.Time{},
+		}
 
 		log.Info("Fetched pool data: ", pool)
 
@@ -155,3 +182,41 @@ func (tjls *TraderJoeLiquidityScraper) Pool() chan dia.Pool {
 func (tjls *TraderJoeLiquidityScraper) Done() chan bool {
 	return tjls.doneChannel
 }
+
+//func CalculateLiquidity(lbPairInfo traderjoe.ILBFactoryLBPairInformation) (float64, error) {
+//
+//	liquidity := float64(tokenXBalance.Int64()) + float64(tokenYBalance.Int64())
+//	return liquidity, nil
+//}
+//
+//func CalculateMetrics(lbPairInfo traderjoe.ILBFactoryLBPairInformation) map[string]interface{} {
+//	metrics := make(map[string]interface{})
+//	averagePrice := CalculateAveragePrice(lbPairInfo)
+//	metrics["AveragePrice"] = averagePrice
+//
+//	volatility := CalculateVolatility(lbPairInfo)
+//	metrics["Volatility"] = volatility
+//
+//	return metrics
+//}
+//
+//
+//func CalculateAveragePrice(lbPairInfo traderjoe.ILBFactoryLBPairInformation) float64 {
+//	// Replace with your calculation logic
+//	// Example: Calculate average price using token balances
+//	tokenXBalance := lbPairInfo.TokenXBalance
+//	tokenYBalance := lbPairInfo.TokenYBalance
+//
+//	// Calculate average price as the ratio of token balances
+//	averagePrice := float64(tokenYBalance.Int64()) / float64(tokenXBalance.Int64())
+//	return averagePrice
+//}
+//
+//func CalculateVolatility(lbPairInfo traderjoe.ILBFactoryLBPairInformation) float64 {
+//	// Replace with your calculation logic
+//	// Example: Calculate volatility based on historical data
+//	// You might need additional data or calculations here
+//	volatility := 0.05 // Example value
+//
+//	return volatility
+//}
