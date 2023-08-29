@@ -20,7 +20,7 @@ contract DIAOracleV2 {
         emit OracleUpdate(key, value, timestamp);
     }
 
-    function setMultipeValues(string[] memory keys, uint256[] memory compressedValues) public {
+    function setMultipleValues(string[] memory keys, uint256[] memory compressedValues) public {
         require(msg.sender == oracleUpdater);
         require(keys.length == compressedValues.length);
         

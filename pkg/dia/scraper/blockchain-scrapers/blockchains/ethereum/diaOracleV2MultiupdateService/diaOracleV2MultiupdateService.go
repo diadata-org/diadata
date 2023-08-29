@@ -31,7 +31,7 @@ var (
 
 // DiaOracleV2MultiupdateServiceMetaData contains all meta data concerning the DiaOracleV2MultiupdateService contract.
 var DiaOracleV2MultiupdateServiceMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"key\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint128\",\"name\":\"value\",\"type\":\"uint128\"},{\"indexed\":false,\"internalType\":\"uint128\",\"name\":\"timestamp\",\"type\":\"uint128\"}],\"name\":\"OracleUpdate\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newUpdater\",\"type\":\"address\"}],\"name\":\"UpdaterAddressChange\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"key\",\"type\":\"string\"}],\"name\":\"getValue\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string[]\",\"name\":\"keys\",\"type\":\"string[]\"},{\"internalType\":\"uint256[]\",\"name\":\"compressedValues\",\"type\":\"uint256[]\"}],\"name\":\"setMultipeValues\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"key\",\"type\":\"string\"},{\"internalType\":\"uint128\",\"name\":\"value\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"timestamp\",\"type\":\"uint128\"}],\"name\":\"setValue\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOracleUpdaterAddress\",\"type\":\"address\"}],\"name\":\"updateOracleUpdaterAddress\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"name\":\"values\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
+	ABI: "[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"key\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint128\",\"name\":\"value\",\"type\":\"uint128\"},{\"indexed\":false,\"internalType\":\"uint128\",\"name\":\"timestamp\",\"type\":\"uint128\"}],\"name\":\"OracleUpdate\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newUpdater\",\"type\":\"address\"}],\"name\":\"UpdaterAddressChange\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"key\",\"type\":\"string\"}],\"name\":\"getValue\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string[]\",\"name\":\"keys\",\"type\":\"string[]\"},{\"internalType\":\"uint256[]\",\"name\":\"compressedValues\",\"type\":\"uint256[]\"}],\"name\":\"setMultipleValues\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"key\",\"type\":\"string\"},{\"internalType\":\"uint128\",\"name\":\"value\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"timestamp\",\"type\":\"uint128\"}],\"name\":\"setValue\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOracleUpdaterAddress\",\"type\":\"address\"}],\"name\":\"updateOracleUpdaterAddress\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"name\":\"values\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
 }
 
 // DiaOracleV2MultiupdateServiceABI is the input ABI used to generate the binding from.
@@ -243,25 +243,25 @@ func (_DiaOracleV2MultiupdateService *DiaOracleV2MultiupdateServiceCallerSession
 	return _DiaOracleV2MultiupdateService.Contract.Values(&_DiaOracleV2MultiupdateService.CallOpts, arg0)
 }
 
-// SetMultipeValues is a paid mutator transaction binding the contract method 0xd2fe8cda.
+// SetMultipleValues is a paid mutator transaction binding the contract method 0x8d241526.
 //
-// Solidity: function setMultipeValues(string[] keys, uint256[] compressedValues) returns()
-func (_DiaOracleV2MultiupdateService *DiaOracleV2MultiupdateServiceTransactor) SetMultipeValues(opts *bind.TransactOpts, keys []string, compressedValues []*big.Int) (*types.Transaction, error) {
-	return _DiaOracleV2MultiupdateService.contract.Transact(opts, "setMultipeValues", keys, compressedValues)
+// Solidity: function setMultipleValues(string[] keys, uint256[] compressedValues) returns()
+func (_DiaOracleV2MultiupdateService *DiaOracleV2MultiupdateServiceTransactor) SetMultipleValues(opts *bind.TransactOpts, keys []string, compressedValues []*big.Int) (*types.Transaction, error) {
+	return _DiaOracleV2MultiupdateService.contract.Transact(opts, "setMultipleValues", keys, compressedValues)
 }
 
-// SetMultipeValues is a paid mutator transaction binding the contract method 0xd2fe8cda.
+// SetMultipleValues is a paid mutator transaction binding the contract method 0x8d241526.
 //
-// Solidity: function setMultipeValues(string[] keys, uint256[] compressedValues) returns()
-func (_DiaOracleV2MultiupdateService *DiaOracleV2MultiupdateServiceSession) SetMultipeValues(keys []string, compressedValues []*big.Int) (*types.Transaction, error) {
-	return _DiaOracleV2MultiupdateService.Contract.SetMultipeValues(&_DiaOracleV2MultiupdateService.TransactOpts, keys, compressedValues)
+// Solidity: function setMultipleValues(string[] keys, uint256[] compressedValues) returns()
+func (_DiaOracleV2MultiupdateService *DiaOracleV2MultiupdateServiceSession) SetMultipleValues(keys []string, compressedValues []*big.Int) (*types.Transaction, error) {
+	return _DiaOracleV2MultiupdateService.Contract.SetMultipleValues(&_DiaOracleV2MultiupdateService.TransactOpts, keys, compressedValues)
 }
 
-// SetMultipeValues is a paid mutator transaction binding the contract method 0xd2fe8cda.
+// SetMultipleValues is a paid mutator transaction binding the contract method 0x8d241526.
 //
-// Solidity: function setMultipeValues(string[] keys, uint256[] compressedValues) returns()
-func (_DiaOracleV2MultiupdateService *DiaOracleV2MultiupdateServiceTransactorSession) SetMultipeValues(keys []string, compressedValues []*big.Int) (*types.Transaction, error) {
-	return _DiaOracleV2MultiupdateService.Contract.SetMultipeValues(&_DiaOracleV2MultiupdateService.TransactOpts, keys, compressedValues)
+// Solidity: function setMultipleValues(string[] keys, uint256[] compressedValues) returns()
+func (_DiaOracleV2MultiupdateService *DiaOracleV2MultiupdateServiceTransactorSession) SetMultipleValues(keys []string, compressedValues []*big.Int) (*types.Transaction, error) {
+	return _DiaOracleV2MultiupdateService.Contract.SetMultipleValues(&_DiaOracleV2MultiupdateService.TransactOpts, keys, compressedValues)
 }
 
 // SetValue is a paid mutator transaction binding the contract method 0x7898e0c2.
