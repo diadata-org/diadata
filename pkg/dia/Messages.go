@@ -736,6 +736,7 @@ type OracleConfig struct {
 	CreatedDate        time.Time
 	LastUpdate         time.Time
 	Deleted            bool `json:"Deleted,omitempty"`
+	FeederSelection    string
 }
 
 type OracleUpdate struct {

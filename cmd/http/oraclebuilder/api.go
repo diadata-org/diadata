@@ -59,11 +59,13 @@ func (ob *Env) Create(context *gin.Context) {
 	deviationPermille := context.PostForm("deviationpermille")
 
 	blockchainnode := context.PostForm("blockchainnode")
+	feedSelection := context.PostForm("feedselection")
+
 	mandatoryFrequency := context.PostForm("mandatoryfrequency")
 
 	k := make(map[string]string)
 
-	log.Infof("Creating oracle: oracleAddress: %s, ChainID: %s, Creator: %s, Symbols: %s, frequency: %s, sleepSeconds: %s blockchainnode: %s,", oracleaddress, chainID, creator, symbols, frequency, sleepSeconds, blockchainnode)
+	log.Infof("Creating oracle: oracleAddress: %s, ChainID: %s, Creator: %s, Symbols: %s, frequency: %s, sleepSeconds: %s blockchainnode: %s, feedSelection %s", oracleaddress, chainID, creator, symbols, frequency, sleepSeconds, blockchainnode, feedSelection)
 
 	log.Infoln("Creating oracle: chainID", chainID)
 	log.Infoln("Creating oracle: creator", creator)
@@ -80,10 +82,10 @@ func (ob *Env) Create(context *gin.Context) {
 	}
 
 	// validations
-	// check for  symbols
+	// check for  symbols and feedSelection
 
-	if symbols == "" {
-		handleError(context, http.StatusBadRequest, "no symbols", "Creating oracle: no symbols", symbols)
+	if symbols == "" && feedSelection == "" {
+		handleError(context, http.StatusBadRequest, "no symbols", "Creating oracle: no symbols or feedSelection", symbols)
 
 	}
 	symbolsArray := strings.Split(symbols, ",")
@@ -108,7 +110,8 @@ func (ob *Env) Create(context *gin.Context) {
 
 	mandatoryFrequencyInt, err := strconv.Atoi(mandatoryFrequency)
 	if err != nil {
-		handleError(context, http.StatusBadRequest, "invalid mandatoryFrequencyInt", "Creating oracle: invalid mandatoryFrequencyInt", err)
+		mandatoryFrequencyInt = 0
+		// handleError(context, http.StatusBadRequest, "invalid mandatoryFrequencyInt", "Creating oracle: invalid mandatoryFrequencyInt", err)
 	}
 
 	if frequencyInt != 0 || mandatoryFrequencyInt == 0 {
@@ -200,7 +203,7 @@ func (ob *Env) Create(context *gin.Context) {
 	address = keypair.GetPublickey()
 
 	if !isUpdate {
-		err = ob.PodHelper.CreateOracleFeeder(context, feederID, address, oracleaddress, chainID, symbols, blockchainnode, frequency, sleepSeconds, deviationPermille, mandatoryFrequency)
+		err = ob.PodHelper.CreateOracleFeeder(context, feederID, address, oracleaddress, chainID, symbols, feedSelection, blockchainnode, frequency, sleepSeconds, deviationPermille, mandatoryFrequency)
 		if err != nil {
 			log.Errorln("error CreateOracleFeeder ", err)
 			context.JSON(http.StatusInternalServerError, errors.New("error creating oraclefeeder"))
@@ -209,7 +212,7 @@ func (ob *Env) Create(context *gin.Context) {
 
 	}
 
-	err = ob.RelDB.SetOracleConfig(oracleaddress, feederID, creator, address, symbols, chainID, frequency, sleepSeconds, deviationPermille, blockchainnode, mandatoryFrequency)
+	err = ob.RelDB.SetOracleConfig(oracleaddress, feederID, creator, address, symbols, feedSelection, chainID, frequency, sleepSeconds, deviationPermille, blockchainnode, mandatoryFrequency)
 	if err != nil {
 		log.Errorln("error SetOracleConfig ", err)
 		context.JSON(http.StatusInternalServerError, err)
