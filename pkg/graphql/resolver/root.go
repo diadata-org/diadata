@@ -550,7 +550,8 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 				endtimes = append(endtimes, bin.Endtime)
 			}
 		}
-		trades, err = r.DS.GetTradesByFeedSelection(feedselection, starttimes, endtimes)
+
+		trades, err = r.DS.GetTradesByFeedSelection(feedselection, starttimes, endtimes, 0)
 		if err != nil {
 			return sr, err
 		}
@@ -560,15 +561,9 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 		if len(trades) > 0 && len(bins) > 0 {
 			// In case the first bin is empty, look for the last trade before @starttime.
 			if !utils.IsInBin(trades[0].Time, bins[0]) {
-				var exchanges []string
-				for _, f := range feedselection {
-					for _, e := range f.Exchangepairs {
-						exchanges = append(exchanges, e.Exchange.Name)
-					}
-				}
-				previousTrade, baseAsseteErr := r.DS.GetTradesByExchangesAndBaseAssets(feedselection[0].Asset, []dia.Asset{}, exchanges, endtime.AddDate(0, 0, -10), starttime, 1)
-				if baseAsseteErr != nil || len(previousTrade) == 0 {
-					log.Error("get initial trade: ", err, baseAsseteErr)
+				previousTrade, err := r.DS.GetTradesByFeedSelection(feedselection, []time.Time{endtime.AddDate(0, 0, -10)}, []time.Time{starttime}, 1)
+				if len(previousTrade) == 0 {
+					log.Error("get initial trade: ", err)
 					// Fill with a zero trade so we can build blocks.
 					auxTrade := trades[0]
 					auxTrade.Volume = 0
