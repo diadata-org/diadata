@@ -22,12 +22,6 @@ import (
 var (
 	TraderJoeExchangeFactoryContractAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"
 
-	//reverseBasetokens              *[]string
-	//reverseQuotetokens             *[]string
-	//mainBaseAssets                 = []string{
-	//	"0xdAC17F958D2ee523a2206206994597C13D831ec7",
-	//}
-
 	MapOfPools = make(map[string]TraderJoePair)
 )
 
@@ -503,25 +497,3 @@ func (tjs *TraderJoeScraper) getTradeData(swap TraderJoeData) (price float64, vo
 	price = math.Abs(swap.Amount1 / swap.Amount0)
 	return
 }
-
-//func (tjs *TraderJoeScraper) GetPairByTokenAddress(address0, address1, pairAddress common.Address) (pair TraderJoePair, err error) {
-//	connection := tjs.RestClient
-//
-//	var token0Contract *traderjoe.TraderjoeCaller
-//	var token1Contract *traderjoe.TraderjoeCaller
-//
-//	token0Contract, err = traderjoe.NewTraderjoeCaller(address0, connection)
-//	if err != nil {
-//		log.Error(err)
-//	}
-//	token1Contract, err = traderjoe.NewTraderjoeCaller(address1, connection)
-//	if err != nil {
-//		log.Error(err)
-//	}
-//	token0 := TraderJoeTokens{
-//		Address:  common.Address{},
-//		Symbol:   "",
-//		Decimals: 0,
-//		Name:     "",
-//	}
-//}

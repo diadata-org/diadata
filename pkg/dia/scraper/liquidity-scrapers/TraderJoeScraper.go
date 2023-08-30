@@ -152,11 +152,6 @@ func (tjls *TraderJoeLiquidityScraper) fetchPools() {
 			continue
 		}
 
-		//// TODO: Calculate liquidity and other metrics
-		//// Calculate liquidity and other metrics.
-		//liquidity, _ := CalculateLiquidity(lbPairInfo)
-		//metrics := CalculateMetrics(lbPairInfo)
-
 		// TODO: Append 'pool' to 'tjs.PoolChannel' correctly.
 		pool = dia.Pool{
 			Exchange:     dia.Exchange{},
@@ -182,41 +177,3 @@ func (tjls *TraderJoeLiquidityScraper) Pool() chan dia.Pool {
 func (tjls *TraderJoeLiquidityScraper) Done() chan bool {
 	return tjls.doneChannel
 }
-
-//func CalculateLiquidity(lbPairInfo traderjoe.ILBFactoryLBPairInformation) (float64, error) {
-//
-//	liquidity := float64(tokenXBalance.Int64()) + float64(tokenYBalance.Int64())
-//	return liquidity, nil
-//}
-//
-//func CalculateMetrics(lbPairInfo traderjoe.ILBFactoryLBPairInformation) map[string]interface{} {
-//	metrics := make(map[string]interface{})
-//	averagePrice := CalculateAveragePrice(lbPairInfo)
-//	metrics["AveragePrice"] = averagePrice
-//
-//	volatility := CalculateVolatility(lbPairInfo)
-//	metrics["Volatility"] = volatility
-//
-//	return metrics
-//}
-//
-//
-//func CalculateAveragePrice(lbPairInfo traderjoe.ILBFactoryLBPairInformation) float64 {
-//	// Replace with your calculation logic
-//	// Example: Calculate average price using token balances
-//	tokenXBalance := lbPairInfo.TokenXBalance
-//	tokenYBalance := lbPairInfo.TokenYBalance
-//
-//	// Calculate average price as the ratio of token balances
-//	averagePrice := float64(tokenYBalance.Int64()) / float64(tokenXBalance.Int64())
-//	return averagePrice
-//}
-//
-//func CalculateVolatility(lbPairInfo traderjoe.ILBFactoryLBPairInformation) float64 {
-//	// Replace with your calculation logic
-//	// Example: Calculate volatility based on historical data
-//	// You might need additional data or calculations here
-//	volatility := 0.05 // Example value
-//
-//	return volatility
-//}

@@ -39,6 +39,7 @@ const (
 	HitBTCExchange                     = "HitBTC"
 	HuckleberryExchange                = "Huckleberry"
 	TraderJoeExchange                  = "TraderJoe"
+	TraderJoeExchangeV2                = "TraderJoeV2.1"
 	PangolinExchange                   = "Pangolin"
 	PlatypusExchange                   = "PlatypusFinance"
 	SimexExchange                      = "Simex"
