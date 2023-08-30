@@ -30,6 +30,10 @@ func FilterMAextended(tradeBlocks []Block, asset dia.Asset, blockSize int, volum
 
 			maFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
 			fp := maFilter.FilterPointForBlock()
+			// In case the volume filter above filters out all trades, set fp to the last one.
+			if fpe.TradesCount == 0 {
+				fp = lastfp
+			}
 
 			if len(block.Trades) > 0 {
 				fp.LastTrade = block.Trades[len(block.Trades)-1]
@@ -60,8 +64,7 @@ func FilterMAextended(tradeBlocks []Block, asset dia.Asset, blockSize int, volum
 func FilterMAIRextended(tradeBlocks []Block, asset dia.Asset, blockSize int, volumeThresholdUSD float64) (filterPointsExtended []dia.FilterPointExtended) {
 	lastfp := &dia.FilterPoint{}
 
-	for i, block := range tradeBlocks {
-		log.Infof("block number: %v", i)
+	for _, block := range tradeBlocks {
 		fpe := &dia.FilterPointExtended{}
 		pairs, pools := block.GetBlockSources()
 		fpe.Pairs = pairs
@@ -69,7 +72,6 @@ func FilterMAIRextended(tradeBlocks []Block, asset dia.Asset, blockSize int, vol
 
 		if len(block.Trades) > 0 {
 			mairFilter := filters.NewFilterMAIR(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
-			firstBlock := block.Trades[0]
 			for _, trade := range block.Trades {
 				if trade.VolumeUSD() > volumeThresholdUSD {
 					fpe.TradesCount++
@@ -79,8 +81,12 @@ func FilterMAIRextended(tradeBlocks []Block, asset dia.Asset, blockSize int, vol
 
 			mairFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
 			fp := mairFilter.FilterPointForBlock()
+			// In case the volume filter above filters out all trades, set fp to the last one.
+			if fpe.TradesCount == 0 {
+				fp = lastfp
+			}
 
-			fp.FirstTrade = firstBlock
+			fp.FirstTrade = block.Trades[0]
 			if len(block.Trades) > 0 {
 				fp.LastTrade = block.Trades[len(block.Trades)-1]
 			} else {
@@ -128,6 +134,10 @@ func FilterVWAPextended(tradeBlocks []Block, asset dia.Asset, blockSize int, vol
 
 			vwapFilter.FinalCompute(block.Trades[0].Time)
 			fp := vwapFilter.FilterPointForBlock()
+			// In case the volume filter above filters out all trades, set fp to the last one.
+			if fpe.TradesCount == 0 {
+				fp = lastfp
+			}
 
 			fp.FirstTrade = block.Trades[0]
 
@@ -172,6 +182,10 @@ func FilterVWAPIRextended(tradeBlocks []Block, asset dia.Asset, blockSize int, v
 			}
 			vwapirFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
 			fp := vwapirFilter.FilterPointForBlock()
+			// In case the volume filter above filters out all trades, set fp to the last one.
+			if fpe.TradesCount == 0 {
+				fp = lastfp
+			}
 
 			fp.FirstTrade = block.Trades[0]
 
@@ -223,9 +237,9 @@ func FilterMEDIRextended(tradeBlocks []Block, asset dia.Asset, blockSize int, vo
 			}
 			medirFilter.FinalCompute(time.Unix(block.TimeStamp/1e9, 0))
 			fp := medirFilter.FilterPointForBlock()
-			if fp == nil {
-				log.Error("failed getting FilterPointForBlock")
-				return
+			// In case the volume filter above filters out all trades, set fp to the last one.
+			if fpe.TradesCount == 0 {
+				fp = lastfp
 			}
 
 			fp.FirstTrade = block.Trades[0]

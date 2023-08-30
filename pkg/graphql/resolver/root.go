@@ -19,9 +19,10 @@ import (
 )
 
 var (
-	log         = logrus.New()
-	EXCHANGES   = scrapers.Exchanges
-	BLOCKCHAINS = scrapers.Blockchains
+	log                  = logrus.New()
+	EXCHANGES            = scrapers.Exchanges
+	BLOCKCHAINS          = scrapers.Blockchains
+	lookbackTradesNumber = 10
 )
 
 const (
@@ -550,7 +551,8 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 				endtimes = append(endtimes, bin.Endtime)
 			}
 		}
-		trades, err = r.DS.GetTradesByFeedSelection(feedselection, starttimes, endtimes)
+
+		trades, err = r.DS.GetTradesByFeedSelection(feedselection, starttimes, endtimes, 0)
 		if err != nil {
 			return sr, err
 		}
@@ -558,17 +560,12 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 		log.Info("generating bins. Total bins: ", len(bins))
 
 		if len(trades) > 0 && len(bins) > 0 {
-			// In case the first bin is empty, look for the last trade before @starttime.
+			// In case the first bin is empty, look for the last trades before @starttime
+			// in order to select the most recent one with sufficient volume.
 			if !utils.IsInBin(trades[0].Time, bins[0]) {
-				var exchanges []string
-				for _, f := range feedselection {
-					for _, e := range f.Exchangepairs {
-						exchanges = append(exchanges, e.Exchange.Name)
-					}
-				}
-				previousTrade, baseAsseteErr := r.DS.GetTradesByExchangesAndBaseAssets(feedselection[0].Asset, []dia.Asset{}, exchanges, endtime.AddDate(0, 0, -10), starttime, 1)
-				if baseAsseteErr != nil || len(previousTrade) == 0 {
-					log.Error("get initial trade: ", err, baseAsseteErr)
+				previousTrade, err := r.DS.GetTradesByFeedSelection(feedselection, []time.Time{endtime.AddDate(0, 0, -10)}, []time.Time{starttime}, lookbackTradesNumber)
+				if len(previousTrade) == 0 {
+					log.Error("get initial trade: ", err)
 					// Fill with a zero trade so we can build blocks.
 					auxTrade := trades[0]
 					auxTrade.Volume = 0
@@ -576,7 +573,12 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 					auxTrade.EstimatedUSDPrice = 0
 					trades = append([]dia.Trade{auxTrade}, trades...)
 				} else {
-					trades = append([]dia.Trade{previousTrade[0]}, trades...)
+					for _, t := range previousTrade {
+						if t.VolumeUSD() > tradeVolumeThreshold {
+							trades = append([]dia.Trade{t}, trades...)
+							break
+						}
+					}
 				}
 			}
 			tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateBlocks(blockSizeSeconds, blockShiftSeconds, bins)
