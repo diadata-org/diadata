@@ -60,7 +60,7 @@ async function cronstart() {
  
           let ratio = saved.total_backable/saved.total_issued;
 
-          let fairprice =  btcprice + (ratio /100 *btcprice)
+          let fairprice =  ratio  *btcprice
 
 
           let decimal = 1e12;
