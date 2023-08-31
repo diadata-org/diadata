@@ -279,7 +279,7 @@ CREATE TABLE oracleconfig (
     frequency text ,
     sleepseconds text,
     deviationpermille text,
-    blochchainnode text,
+    blockchainnode text,
     mandatory_frequency text,
     createddate TIMESTAMP NOT NULL DEFAULT NOW(),
     lastupdate TIMESTAMP NOT NULL,
@@ -288,6 +288,11 @@ CREATE TABLE oracleconfig (
 );
 
 ALTER TABLE oracleconfig  ADD COLUMN creation_block_time TIMESTAMP DEFAULT 'epoch'::timestamp;
+ALTER TABLE oracleconfig  ADD COLUMN feedSelection TEXT ;
+
+
+
+
          
 
 

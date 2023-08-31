@@ -211,7 +211,7 @@ async function getValues() {
   totalIssued = totalIssued/1e18
   totalBacked = totalBacked/1e18
  
-  let rethPrice =  ethPrice + (ratio /100 *ethPrice)
+  let rethPrice =  ratio  *ethPrice
 console.log("------------reth--------------",rethPrice)
   return createResponse(totalIssued,totalBacked,rethPrice, ratio)
 }
@@ -281,7 +281,7 @@ async function getActivePool() {
 
     let ratio = totalBacked/totalIssued;
 
-    let rethPrice =  ethPrice + (ratio /100 *ethPrice)
+    let rethPrice =   ratio  *ethPrice;
 
  
 

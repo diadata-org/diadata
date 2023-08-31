@@ -32,9 +32,11 @@ var (
 		dia.AnyswapExchange,
 		dia.HermesExchange,
 		dia.HuckleberryExchange,
+		dia.MaverickExchange,
 		dia.NetswapExchange,
 		dia.OrcaExchange,
 		dia.OsmosisExchange,
+		dia.VelodromeExchange,
 		dia.ZenlinkswapExchange,
 		dia.ZenlinkswapExchangeBifrostPolkadot,
 	}

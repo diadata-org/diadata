@@ -533,6 +533,20 @@
             "ScraperActive": true
         },
         {
+            "Name": "Maverick",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0xEb6625D65a0553c9dBc64449e56abFe519bd9c9B",
+            "Blockchain": {
+                "Name": "Ethereum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200,
+            "ScraperActive": true
+        },
+        {
             "Name": "Netswap",
             "Centralized": false,
             "Bridge": false,
@@ -894,6 +908,20 @@
             "WsAPI": "",
             "pairsAPI": "",
             "WatchdogDelay": 300,
+            "ScraperActive": false
+        },
+        {
+            "Name": "Velodrome",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0xF1046053aa5682b4F9a81b5481394DA16BE5FF5a",
+            "Blockchain": {
+                "Name": "Optimism"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200,
             "ScraperActive": false
         },
         {

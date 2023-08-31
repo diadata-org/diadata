@@ -1213,6 +1213,18 @@
             "Ignore": false
         },
         {
+            "Symbol": "OP",
+            "ForeignName": "OP-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OUSD",
+            "ForeignName": "OUSD-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "ORBS",
             "ForeignName": "ORBS-USDT",
             "Exchange": "KuCoin",
