@@ -3,7 +3,7 @@ module github.com/diadata-org/diadata/exchange-scrapers/collector
 go 1.17
 
 require (
-	github.com/diadata-org/diadata v1.4.329
+	github.com/diadata-org/diadata v1.4.336
 	github.com/segmentio/kafka-go v0.4.35
 	github.com/sirupsen/logrus v1.9.0
 )
@@ -192,5 +192,3 @@ require (
 )
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-
-replace github.com/diadata-org/diadata => /Users/macbobbychibuzor/go/src/github.com/theghostmac/org/diadata
