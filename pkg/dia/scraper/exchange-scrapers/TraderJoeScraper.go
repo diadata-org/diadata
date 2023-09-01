@@ -197,7 +197,7 @@ func (tjs *TraderJoeScraper) makeTraderJoePoolMap(liquidityThreshold, liquidityT
 		for _, address := range poolAddresses {
 			pool, errPool := tjs.relDB.GetPoolByAddress(Exchanges[tjs.exchangeName].BlockChain.Name, address.Hex())
 			if errPool != nil {
-				log.Fatalf("Get pool with address %tjs: %v", address.Hex(), errPool)
+				log.Fatalf("Get pool with address %s: %v", address.Hex(), errPool)
 			}
 			pools = append(pools, pool)
 		}
