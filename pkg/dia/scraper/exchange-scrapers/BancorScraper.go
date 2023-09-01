@@ -110,12 +110,12 @@ func NewBancorScraper(exchange dia.Exchange, scrape bool) *BancorScraper {
 
 	restClient, err = ethclient.Dial(utils.Getenv("ETH_URI_REST", restDialEth))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("init rest client: ", err)
 	}
 
 	wsClient, err = ethclient.Dial(utils.Getenv("ETH_URI_WS", wsDialEth))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("init ws client: ", err)
 	}
 
 	scraper := &BancorScraper{
