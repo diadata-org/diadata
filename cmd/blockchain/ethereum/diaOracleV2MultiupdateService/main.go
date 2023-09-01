@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -17,15 +18,27 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-//	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/ethclient"
 	gql "github.com/machinebox/graphql"
 )
 
 type Asset struct {
-	blockchain string
-	address    string
-	symbol     string
+	blockchain    string
+	address       string
+	symbol        string
+	gqlParams     GqlParameters
+}
+
+type GqlParameters struct {
+	FeedSelection []struct {
+		Address            string  `json:"Address"`
+		Blockchain         string  `json:"Blockchain"`
+		LiquidityThreshold float64 `json:"LiquidityThreshold"`
+		Exchangepairs      []struct {
+			Exchange string   `json:"Exchange"`
+			Pairs    []string `json:"Pairs"`
+		} `json:"Exchangepairs"`
+	} `json:"FeedSelection"`
 }
 
 func main() {
@@ -71,16 +84,30 @@ func main() {
 	} else {
 		log.Fatalf("Use either ASSETS or GQL_ASSETS env variable")
 	}
-	assetsParsed := strings.Split(assetsToParse, ",")
+	assetsParsed := strings.Split(assetsToParse, ";")
 
 	for _, asset := range assetsParsed {
 		var currAsset Asset
-		
+
 		// parse asset from env
 		entries := strings.Split(asset, "-")
 		currAsset.blockchain = strings.TrimSpace(entries[0])
 		currAsset.address = strings.TrimSpace(entries[1])
 		currAsset.symbol = strings.TrimSpace(entries[2])
+
+		// Find out is there are additional GQL parameters for this asset
+		if len(entries) > 3 {
+			// Join the rest of the line together, because the previous split might have affected substrings of the parameters
+			gqlFeedSelectionQuery := strings.Join(entries[3:], "-")
+			var currGqlParams GqlParameters
+			if useGql && gqlFeedSelectionQuery != "" {
+				err := json.Unmarshal([]byte(gqlFeedSelectionQuery), &currGqlParams)
+				if err != nil {
+					log.Println("Error while parsing GQL asset string:", err)
+				}
+			}
+			currAsset.gqlParams = currGqlParams
+		}
 
 		assets = append(assets, currAsset)
 	}
@@ -123,20 +150,21 @@ func main() {
 					// Get prices for all assets from the API
 					newAssetPrices := make(map[string]float64)
 					for _, asset := range assets {
-						newAssetPrice, err := retrieveAssetPrice(asset, useGql, gqlWindowSize, gqlMethodology)
+						newAssetPrice, err := retrieveAssetPrice(asset, useGql, gqlWindowSize, gqlMethodology, asset.gqlParams)
 						if err != nil {
 							log.Println(err)
 							continue
 						}
 						newAssetPrices[asset.symbol] = newAssetPrice
 					}
+					log.Println(newAssetPrices)
 					// update all prices
 					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, auth, contract, conn, chainId, assets)
 				case <-mandatoryticker.C:
 					// Get prices for all assets from the API
 					newAssetPrices := make(map[string]float64)
 					for _, asset := range assets {
-						newAssetPrice, err := retrieveAssetPrice(asset, useGql, gqlWindowSize, gqlMethodology)
+						newAssetPrice, err := retrieveAssetPrice(asset, useGql, gqlWindowSize, gqlMethodology, asset.gqlParams)
 						if err != nil {
 							log.Println(err)
 							continue
@@ -153,7 +181,7 @@ func main() {
 					// Get prices for all assets from the API
 					newAssetPrices := make(map[string]float64)
 					for _, asset := range assets {
-						newAssetPrice, err := retrieveAssetPrice(asset, useGql, gqlWindowSize, gqlMethodology)
+						newAssetPrice, err := retrieveAssetPrice(asset, useGql, gqlWindowSize, gqlMethodology, asset.gqlParams)
 						if err != nil {
 							log.Println(err)
 							continue
@@ -172,10 +200,10 @@ func main() {
 
 func oracleUpdateExecutor(
 	publishedPrices map[string]float64,
-	newPrices map[string]float64, 
-	deviationPermille int, 
-	auth *bind.TransactOpts, 
-	contract *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService, 
+	newPrices map[string]float64,
+	deviationPermille int,
+	auth *bind.TransactOpts,
+	contract *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService,
 	conn *ethclient.Client,
 	chainId int64,
 	assets []Asset) (map[string]float64, error) {
@@ -210,7 +238,7 @@ func oracleUpdateExecutor(
 		integerPrice := int64(price * 100000000)
 		prices = append(prices, integerPrice)
 	}
-	
+
 	// Update prices in one transaction
 	timestamp := time.Now().Unix()
 	err := updateOracleMultiValues(conn, contract, auth, chainId, keys, prices, timestamp)
@@ -222,13 +250,13 @@ func oracleUpdateExecutor(
 	return priceCollector, nil
 }
 
-func retrieveAssetPrice(asset Asset, useGql bool, gqlWindowSize int, gqlMethodology string) (float64, error) {
+func retrieveAssetPrice(asset Asset, useGql bool, gqlWindowSize int, gqlMethodology string, gqlLiquidityParameters GqlParameters) (float64, error) {
 	var err error
 	var price float64
 
 	// Get quotation for token and update Oracle
 	if useGql {
-		price, err = getGraphqlAssetQuotationFromDia(asset.blockchain, asset.address, gqlWindowSize, gqlMethodology)
+		price, err = getGraphqlAssetQuotationFromDia(asset.blockchain, asset.address, gqlWindowSize, gqlMethodology, gqlLiquidityParameters)
 		if err != nil {
 			log.Printf("Failed to retrieve %s (%s) quotation data from Graphql on DIA: %v", asset.address, asset.symbol, err)
 			return 0.0, err
@@ -334,33 +362,75 @@ func getAssetQuotationFromDia(blockchain, address string) (float64, error) {
 	return quotation.Price, nil
 }
 
-func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int, gqlMethodology string) (float64, error) {
+func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int, gqlMethodology string, gqlParameters GqlParameters) (float64, error) {
+	// Decide whether Feedselection or simple Address/blockchain logic is used
+	feedSelectionQuery := "FeedSelection: ["
+	if len(gqlParameters.FeedSelection) > 0 {
+		// Loop through all selected feeds (e.g. for crosschain feeds)
+		for _, selectedFeed := range gqlParameters.FeedSelection {
+			// generate strings for optional parameters for liquidity threshold/pool selection
+			var lqThresholdString string
+			if selectedFeed.LiquidityThreshold > 0 {
+				lqThresholdString = "LiquidityThreshold:" + fmt.Sprintf("%.2f", gqlParameters.FeedSelection[0].LiquidityThreshold) + ","
+			} else {
+				lqThresholdString = ""
+			}
+			var exchangePairsString string
+			if len(selectedFeed.Exchangepairs) > 0 {
+				exchangePairsString = "Exchangepairs:[\n"
+				for _, exchangePair := range selectedFeed.Exchangepairs {
+					exchangePairsString += `{
+					Exchange: "` + exchangePair.Exchange + `",
+					Pairs: [`
+					for _, pair := range exchangePair.Pairs {
+						exchangePairsString += `"` + pair + `",`
+					}
+					exchangePairsString += `]},`
+				}
+				exchangePairsString += "]"
+			} else {
+				exchangePairsString = ""
+			}
+			feedSelectionQuery += `{
+				Address:"` + selectedFeed.Address + `",
+				Blockchain:"` + selectedFeed.Blockchain + `",` +
+				lqThresholdString +
+				exchangePairsString +
+				`},`
+		}
+	}	else {
+			feedSelectionQuery += `{
+				Address: "` + address + `",
+				Blockchain: "` + blockchain + `",
+			}`
+	}
+	feedSelectionQuery += "]"
+
+	// Get times for start/end
 	currentTime := time.Now()
 	starttime := currentTime.Add(time.Duration(-windowSize*2) * time.Second)
+
 	type Response struct {
 		GetFeed []struct {
 			Name   string    `json:"Name"`
 			Time   time.Time `json:"Time"`
 			Value  float64   `json:"Value"`
+			Pools  string    `json:"Pools"`
+			Pairs  string    `json:"Pairs"`
 		} `json:"GetFeed"`
 	}
+
 	client := gql.NewClient("https://api.diadata.org/graphql/query")
 	req := gql.NewRequest(`
     query  {
 		 GetFeed(
-		 	Filter: "` + gqlMethodology + `", 
-			BlockSizeSeconds: ` + strconv.Itoa(windowSize) + `, 
+		 	Filter: "` + gqlMethodology + `",
+			BlockSizeSeconds: ` + strconv.Itoa(windowSize) + `,
 			BlockShiftSeconds: ` + strconv.Itoa(windowSize) + `,
-			StartTime: ` + strconv.FormatInt(starttime.Unix(), 10) + `, 
-			EndTime: ` + strconv.FormatInt(currentTime.Unix(), 10) + `, 
-			FeedSelection: [
-				{
-					Address: "` + address + `", 
-					Blockchain: "` + blockchain + `",
-					Exchangepairs:[],
-				}
-			]
-		 ) {
+			StartTime: ` + strconv.FormatInt(starttime.Unix(), 10) + `,
+			EndTime: ` + strconv.FormatInt(currentTime.Unix(), 10) + `,` +
+			feedSelectionQuery +
+		 `) {
 				Name
 				Time
 				Value
