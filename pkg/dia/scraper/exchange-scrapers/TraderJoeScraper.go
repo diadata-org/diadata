@@ -103,7 +103,6 @@ func NewTraderJoeScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 	if exchange.Name == dia.TraderJoeExchange {
 		tjs = makeTraderJoeScraper(exchange, listenByAddress, "", "", "200", uint64(
 			29537638))
-		// TODO: startBlock value will need revisiting.
 	}
 
 	tjs.relDB = relDB
@@ -342,6 +341,7 @@ func (tjs *TraderJoeScraper) mainLoop() {
 		log.Infof("%v found pair scraper for: %s with address %s", count, pool.ForeignName, pool.Address.Hex())
 		count++
 		// TODO: Paused here.
+		
 	}
 }
 
