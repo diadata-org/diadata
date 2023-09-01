@@ -1,17 +1,20 @@
 package liquidityscrapers
 
 import (
+	"math"
+	"math/big"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	traderjoe "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/traderjoe2.1"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"math/big"
-	"strconv"
-	"strings"
-	"time"
 )
 
 // TraderJoeLiquidityScraper manages the scraping of liquidity data for the Trader Joe exchange.
@@ -38,9 +41,15 @@ func NewTraderJoeLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, da
 
 	var tjls *TraderJoeLiquidityScraper
 
-	if exchange.Name == dia.TraderJoeExchange {
+	switch exchange.Name {
+	case dia.TraderJoeExchangeV2_1:
 		tjls = makeTraderJoeScraper(exchange, "", "", relDB, datastore, "200", uint64(12369621))
-		// TODO: startBlock value will need revisiting.
+	case dia.TraderJoeExchangeV2_1Avalanche:
+		tjls = makeTraderJoeScraper(exchange, "", "", relDB, datastore, "200", uint64(22757913))
+	case dia.TraderJoeExchangeV2_1BNB:
+		tjls = makeTraderJoeScraper(exchange, "", "", relDB, datastore, "200", uint64(165))
+	case dia.TraderJoeExchangeV2_1Arbitrum:
+		tjls = makeTraderJoeScraper(exchange, "", "", relDB, datastore, "200", uint64(26956207))
 	}
 
 	go func() {
@@ -97,73 +106,82 @@ func makeTraderJoeScraper(exchange dia.Exchange, restDial string, websocketDial 
 
 // fetchPools retrieves pool creation events from the Trader Joe factory contract address and processes them.
 func (tjls *TraderJoeLiquidityScraper) fetchPools() {
+
+	// filter from contract created at: https://etherscan.io/tx/0x8e42f2F4101563bF679975178e880FD87d3eFd4e
+
 	log.Info("Fetching Trader Joe LBPairCreated events...")
-	log.Info("Getting pool creations from address: ", tjls.factoryContract)
 
 	// Filtering setup initialization.
+	log.Info("Getting lb pairs creations from address: ", tjls.factoryContract)
+	pairCount := 0
 	contractFilter, err := traderjoe.NewTraderjoeFilterer(common.HexToAddress(tjls.factoryContract), tjls.WsClient)
 	if err != nil {
 		log.Error(err)
 	}
 
-	// Define filter options
-	opts := &bind.FilterOpts{
-		Start: tjls.startBlock,
-	}
-
-	// Define empty arrays for filter parameters
-	var tokenXAddresses []common.Address
-	var tokenYAddresses []common.Address
-	var binSteps []*big.Int
-
-	// Filter LBPairCreated events.
-	iter, err := contractFilter.FilterLBPairCreated(opts, tokenXAddresses, tokenYAddresses, binSteps)
+	lbPairCreated, err := contractFilter.FilterLBPairCreated(
+		&bind.FilterOpts{Start: tjls.startBlock},
+		[]common.Address{},
+		[]common.Address{},
+		[]*big.Int{},
+	)
 	if err != nil {
-		log.Error("FilterLBPairCreated: ", err)
-		return
+		log.Error("filter pool created: ", err)
 	}
-	defer func(iter *traderjoe.TraderjoeLBPairCreatedIterator) {
-		err := iter.Close()
+
+	for lbPairCreated.Next() {
+		pairCount++
+		var (
+			pool   dia.Pool
+			asset0 dia.Asset
+			asset1 dia.Asset
+		)
+		log.Info("pairs count: ", pairCount)
+
+		asset0, err = tjls.relDB.GetAsset(lbPairCreated.Event.TokenX.Hex(), tjls.blockchain)
 		if err != nil {
-			log.Error(err)
+			asset0, err = ethhelper.ETHAddressToAsset(lbPairCreated.Event.TokenX, tjls.RestClient, tjls.blockchain)
+			if err != nil {
+				log.Warn("cannot fetch asset from address ", lbPairCreated.Event.TokenX.Hex())
+				continue
+			}
 		}
-	}(iter)
-
-	for iter.Next() {
-		var pool dia.Pool
-
-		// Parse event data from iter.Event() .
-		event := iter.Event
-		tokenX := event.TokenX
-		tokenY := event.TokenY
-		//binStep := event.BinStep
-
-		// Fetch pool-specific data using Trader Joe functions.
-		contractCaller, err := traderjoe.NewTraderjoeCaller(common.HexToAddress(tjls.factoryContract), tjls.WsClient)
+		asset1, err = tjls.relDB.GetAsset(lbPairCreated.Event.TokenY.Hex(), tjls.blockchain)
 		if err != nil {
-			log.Error(err)
-			continue
+			asset1, err = ethhelper.ETHAddressToAsset(lbPairCreated.Event.TokenY, tjls.RestClient, tjls.blockchain)
+			if err != nil {
+				log.Warn("cannot fetch asset from address ", lbPairCreated.Event.TokenY.Hex())
+				continue
+			}
 		}
 
-		// lbPairInfo for getting all LB pairs. rename _ to lbPairInfo
-		_, err = contractCaller.GetAllLBPairs(nil, tokenX, tokenY)
+		pool.Exchange = dia.Exchange{Name: tjls.exchangeName}
+		pool.Blockchain = dia.BlockChain{Name: tjls.blockchain}
+		pool.Address = lbPairCreated.Event.LBPair.Hex()
+
+		balance0Big, err := ethhelper.GetBalanceOf(common.HexToAddress(asset0.Address), common.HexToAddress(pool.Address), tjls.RestClient)
 		if err != nil {
-			log.Error("GetAllLBPairs: ", err)
-			continue
+			log.Error("GetBalanceOf: ", err)
+		}
+		balance1Big, err := ethhelper.GetBalanceOf(common.HexToAddress(asset1.Address), common.HexToAddress(pool.Address), tjls.RestClient)
+		if err != nil {
+			log.Error("GetBalanceOf: ", err)
+		}
+		balance0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance0Big), new(big.Float).SetFloat64(math.Pow10(int(asset0.Decimals)))).Float64()
+		balance1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance1Big), new(big.Float).SetFloat64(math.Pow10(int(asset1.Decimals)))).Float64()
+
+		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset0, Volume: balance0, Index: uint8(0)})
+		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset1, Volume: balance1, Index: uint8(1)})
+
+		// Determine USD liquidity
+		if balance0 > GLOBAL_NATIVE_LIQUIDITY_THRESHOLD && balance1 > GLOBAL_NATIVE_LIQUIDITY_THRESHOLD {
+			tjls.datastore.GetPoolLiquiditiesUSD(&pool, priceCache)
 		}
 
-		// TODO: Append 'pool' to 'tjs.PoolChannel' correctly.
-		pool = dia.Pool{
-			Exchange:     dia.Exchange{},
-			Blockchain:   dia.BlockChain{},
-			Address:      "",
-			Assetvolumes: nil,
-			Time:         time.Now(),
-		}
-
-		log.Info("Fetched pool data: ", pool)
+		pool.Time = time.Now()
 
 		tjls.poolChannel <- pool
+
 	}
 	tjls.doneChannel <- true
 }

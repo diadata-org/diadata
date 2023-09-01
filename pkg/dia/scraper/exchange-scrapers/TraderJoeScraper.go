@@ -101,7 +101,8 @@ func NewTraderJoeScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 	}
 
 	if exchange.Name == dia.TraderJoeExchange {
-		tjs = makeTraderJoeScraper(exchange, listenByAddress, "", "", "200", uint64(12369621))
+		tjs = makeTraderJoeScraper(exchange, listenByAddress, "", "", "200", uint64(
+			29537638))
 		// TODO: startBlock value will need revisiting.
 	}
 
