@@ -15,6 +15,7 @@ import (
 	"github.com/onflow/flow-go-sdk"
 	"github.com/onflow/flow-go-sdk/client"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 const (
@@ -34,7 +35,7 @@ var (
 )
 
 func NewNBATopshotScraper(rdb *models.RelDB) *NBATopshotScraper {
-	flowClient, err := client.New(flowhelper.FlowAPICurrent, grpc.WithInsecure())
+	flowClient, err := client.New(flowhelper.FlowAPICurrent, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -394,7 +395,7 @@ func (scraper *NBATopshotScraper) Close() error {
 // Get Trade Event
 // ---------------------------------------------------------
 
-//  pub event Deposit(id: UInt64, to: Address?)
+// pub event Deposit(id: UInt64, to: Address?)
 type DepositEvent cadence.Event
 
 // Token Id

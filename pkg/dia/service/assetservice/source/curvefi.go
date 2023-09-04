@@ -241,6 +241,7 @@ func (cas *CurvefiAssetSource) loadPoolData(pool string, registry curveRegistry)
 			log.Error("loadPoolData - GetCoins: ", err)
 		}
 		// GetCoins on meta pools returns [4]common.Address instead of [8]common.Address for standard pools.
+		//nolint
 		for i, item := range aux {
 			poolCoins[i] = item
 		}
