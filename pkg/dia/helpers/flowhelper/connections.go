@@ -6,6 +6,7 @@ import (
 
 	"github.com/onflow/flow-go-sdk/client"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 const (
@@ -73,39 +74,39 @@ var (
 func GetFlowClient(startheight uint64) (*client.Client, error) {
 	if startheight >= RootHeightCurrent {
 		fmt.Printf("make flow client at current level with: %s\n", FlowAPICurrent)
-		return client.New(FlowAPICurrent, grpc.WithInsecure())
+		return client.New(FlowAPICurrent, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	} else if startheight >= RootHeight16 {
-		return client.New(FlowAPI16, grpc.WithInsecure())
+		return client.New(FlowAPI16, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	} else if startheight >= RootHeight15 {
-		return client.New(FlowAPI15, grpc.WithInsecure())
+		return client.New(FlowAPI15, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	} else if startheight >= RootHeight14 {
-		return client.New(FlowAPI14, grpc.WithInsecure())
+		return client.New(FlowAPI14, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	} else if startheight >= RootHeight13 {
-		return client.New(FlowAPI13, grpc.WithInsecure())
+		return client.New(FlowAPI13, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	} else if startheight >= RootHeight12 {
-		return client.New(FlowAPI12, grpc.WithInsecure())
+		return client.New(FlowAPI12, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	} else if startheight >= RootHeight11 {
-		return client.New(FlowAPI11, grpc.WithInsecure())
+		return client.New(FlowAPI11, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	} else if startheight >= RootHeight10 {
-		return client.New(FlowAPI10, grpc.WithInsecure())
+		return client.New(FlowAPI10, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	} else if startheight >= RootHeight9 {
-		return client.New(FlowAPI9, grpc.WithInsecure())
+		return client.New(FlowAPI9, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	} else if startheight >= RootHeight8 {
-		return client.New(FlowAPI8, grpc.WithInsecure())
+		return client.New(FlowAPI8, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	} else if startheight >= RootHeight7 {
-		return client.New(FlowAPI7, grpc.WithInsecure())
+		return client.New(FlowAPI7, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	} else if startheight >= RootHeight6 {
-		return client.New(FlowAPI6, grpc.WithInsecure())
+		return client.New(FlowAPI6, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	} else if startheight >= RootHeight5 {
-		return client.New(FlowAPI5, grpc.WithInsecure())
+		return client.New(FlowAPI5, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	} else if startheight >= RootHeight4 {
-		return client.New(FlowAPI4, grpc.WithInsecure())
+		return client.New(FlowAPI4, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	} else if startheight >= RootHeight3 {
-		return client.New(FlowAPI3, grpc.WithInsecure())
+		return client.New(FlowAPI3, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	} else if startheight >= RootHeight2 {
-		return client.New(FlowAPI2, grpc.WithInsecure())
+		return client.New(FlowAPI2, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	} else if startheight >= RootHeight1 {
-		return client.New(FlowAPI1, grpc.WithInsecure())
+		return client.New(FlowAPI1, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	}
 	return nil, errors.New("startheight too small. No client available.")
 }
