@@ -197,7 +197,7 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
 	)
 
 	query := fmt.Sprintf(`
-	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address, createddate,feedSelection, COALESCE(lastupdate, '0001-01-01 00:00:00'::timestamp)
+	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address, createddate,feedselection, COALESCE(lastupdate, '0001-01-01 00:00:00'::timestamp)
 	FROM %s 
 	WHERE owner=$1 and deleted=false`, oracleconfigTable)
 	rows, err = rdb.postgresClient.Query(context.Background(), query, owner)
@@ -208,12 +208,17 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
 
 	for rows.Next() {
 		var (
-			oracleconfig dia.OracleConfig
-			symbols      string
+			oracleconfig  dia.OracleConfig
+			symbols       string
+			feedSelection sql.NullString
 		)
-		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &oracleconfig.Frequency, &oracleconfig.SleepSeconds, &oracleconfig.DeviationPermille, &oracleconfig.BlockchainNode, &oracleconfig.Active, &oracleconfig.MandatoryFrequency, &oracleconfig.FeederAddress, &oracleconfig.CreatedDate, &oracleconfig.FeederSelection, &oracleconfig.LastUpdate)
+
+		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &oracleconfig.Frequency, &oracleconfig.SleepSeconds, &oracleconfig.DeviationPermille, &oracleconfig.BlockchainNode, &oracleconfig.Active, &oracleconfig.MandatoryFrequency, &oracleconfig.FeederAddress, &oracleconfig.CreatedDate, &feedSelection, &oracleconfig.LastUpdate)
 		if err != nil {
 			log.Error(err)
+		}
+		if feedSelection.Valid {
+			oracleconfig.FeederSelection = feedSelection.String
 		}
 
 		oracleconfig.Symbols = strings.Split(symbols, ",")
