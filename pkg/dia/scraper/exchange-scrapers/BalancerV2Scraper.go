@@ -111,14 +111,12 @@ func NewBalancerV2Scraper(exchange dia.Exchange, scrape bool, relDB *models.RelD
 
 	ws, err := ethclient.Dial(utils.Getenv("ETH_URI_WS", balancerV2WSDial))
 	if err != nil {
-		log.Error(err)
-		return nil
+		log.Fatal("init ws client: ", err)
 	}
 
 	rest, err := ethclient.Dial(utils.Getenv("ETH_URI_REST", balancerV2RestDial))
 	if err != nil {
-		log.Error(err)
-		return nil
+		log.Fatal("init rest client: ", err)
 	}
 
 	scraper.relDB = relDB
