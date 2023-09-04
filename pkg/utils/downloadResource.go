@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -17,7 +18,7 @@ var openseaKey string
 
 // DownloadResource is a simple utility that downloads a resource
 // from @url and stores it into @filepath.
-func DownloadResource(filepath, url string) (err error) {
+func DownloadResource(path, url string) (err error) {
 
 	fmt.Println("url: ", url)
 	resp, err := http.Get(url) //nolint:noctx,gosec
@@ -33,7 +34,7 @@ func DownloadResource(filepath, url string) (err error) {
 	}()
 
 	// Create the file
-	out, err := os.Create(filepath)
+	out, err := os.Create(filepath.Clean(path))
 	if err != nil {
 		return
 	}
@@ -88,7 +89,7 @@ func GetRequest(url string) ([]byte, int, error) {
 func GetRequestWithStatus(url string) ([]byte, int, error) {
 
 	// Get url
-	response, err := http.Get(url)
+	response, err := http.Get(url) //nolint:noctx,gosec
 
 	// Check, whether the request was successful
 	if err != nil {
@@ -221,7 +222,7 @@ func getOpenseaApiKey() string {
 		filename = "../../secrets/Opensea-API.key"
 	}
 
-	file, err := os.Open(filename)
+	file, err := os.Open(filepath.Clean(filename))
 	if err != nil {
 		log.Fatal(err)
 	}
