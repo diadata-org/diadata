@@ -234,7 +234,7 @@ func (kh *PodHelper) RestartOracleFeeder(ctx context.Context, feederID string, o
 		} else {
 			return err
 		}
-		err = kh.CreateOracleFeeder(ctx, feederID, oracleconfig.Owner, oracleconfig.Address, oracleconfig.ChainID, strings.Join(oracleconfig.Symbols[:], ","), oracleconfig.BlockchainNode, oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille, oracleconfig.MandatoryFrequency)
+		err = kh.CreateOracleFeeder(ctx, feederID, oracleconfig.Owner, oracleconfig.Address, oracleconfig.ChainID, strings.Join(oracleconfig.Symbols[:], ","), oracleconfig.FeederSelection, oracleconfig.BlockchainNode, oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille, oracleconfig.MandatoryFrequency)
 		if err != nil {
 			log.Errorf("Pod %s start err\n", err)
 			return
@@ -247,7 +247,7 @@ func (kh *PodHelper) RestartOracleFeeder(ctx context.Context, feederID string, o
 		//}
 		kh.waitPodDeleted(ctx, oracleconfig.Address, func() {
 			time.Sleep(1000 * time.Millisecond)
-			err = kh.CreateOracleFeeder(ctx, feederID, oracleconfig.Owner, oracleconfig.Address, oracleconfig.ChainID, strings.Join(oracleconfig.Symbols[:], ","), oracleconfig.BlockchainNode, oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille, oracleconfig.MandatoryFrequency)
+			err = kh.CreateOracleFeeder(ctx, feederID, oracleconfig.Owner, oracleconfig.Address, oracleconfig.ChainID, strings.Join(oracleconfig.Symbols[:], ","), oracleconfig.FeederSelection, oracleconfig.BlockchainNode, oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille, oracleconfig.MandatoryFrequency)
 			if err != nil {
 				log.Errorf("Pod %s start err\n", err)
 				return
