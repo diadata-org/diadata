@@ -291,8 +291,12 @@ func (s *BitMaxScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err err
 		log.Error("get symbols: ", err)
 	}
 
-	defer response.Body.Close()
-
+	defer func() {
+		if cerr := response.Body.Close(); cerr != nil {
+			// Handle the error from closing the response body
+			log.Println("Error closing response body:", cerr)
+		}
+	}()
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		log.Error("read symbols: ", err)

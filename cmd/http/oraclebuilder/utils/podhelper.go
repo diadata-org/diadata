@@ -245,7 +245,7 @@ func (kh *PodHelper) RestartOracleFeeder(ctx context.Context, feederID string, o
 		//if err != nil {
 		//	return err
 		//}
-		kh.waitPodDeleted(ctx, oracleconfig.Address, func() {
+		deleteerr := kh.waitPodDeleted(ctx, oracleconfig.Address, func() {
 			time.Sleep(1000 * time.Millisecond)
 			err = kh.CreateOracleFeeder(ctx, feederID, oracleconfig.Owner, oracleconfig.Address, oracleconfig.ChainID, strings.Join(oracleconfig.Symbols[:], ","), oracleconfig.FeederSelection, oracleconfig.BlockchainNode, oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille, oracleconfig.MandatoryFrequency)
 			if err != nil {
@@ -254,6 +254,9 @@ func (kh *PodHelper) RestartOracleFeeder(ctx context.Context, feederID string, o
 			}
 			log.Infof("Pod %s started\n", feederID)
 		})
+		if deleteerr != nil {
+			log.Infof("Pod %s delete err\n", deleteerr.Error())
+		}
 		log.Infof("Pod %s deleted\n", feederID)
 	}
 

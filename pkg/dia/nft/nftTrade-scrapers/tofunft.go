@@ -782,8 +782,12 @@ func (s *TofuNFTScraper) readNFTAttr(ctx context.Context, uri string) (map[strin
 		return nil, err
 	}
 
-	defer resp.Body.Close()
-
+	defer func() {
+		if cerr := resp.Body.Close(); cerr != nil {
+			// Handle the error from closing the response body
+			log.Println("Error closing response body:", cerr)
+		}
+	}()
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		return nil, errors.New("unable to read token attributes: " + resp.Status)
 	}
