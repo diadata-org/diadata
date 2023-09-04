@@ -158,7 +158,7 @@ type RelDatastore interface {
 	GetKeyPairID(publickey string) string
 	GetFeederAccessByID(id string) (owner string)
 	GetFeederByID(id string) (owner string)
-	SetOracleConfig(address, feederID, owner, feederAddress, symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency string) error
+	SetOracleConfig(address, feederID, owner, feederAddress, symbols, feedSelection, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency string) error
 	SetFeederConfig(feederid, oracleconfigid string) error
 	GetFeederID(address string) (feederId string)
 	GetFeederLimit(owner string) (limit int)
