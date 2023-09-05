@@ -372,6 +372,8 @@ github.com/diadata-org/diadata v1.4.331 h1:ZezFqi8woLzuX46fSOYdgFVIqmC5SZ8zW2RZ0
 github.com/diadata-org/diadata v1.4.331/go.mod h1:qrtMmpXAViwIlMzMFwYlZC+Rr/d8nUBpqtupg98hncw=
 github.com/diadata-org/diadata v1.4.332 h1:vJeXsuGf1G4yCQyqnMfMKhAJboH5i6k/lNFOqyP9Auw=
 github.com/diadata-org/diadata v1.4.332/go.mod h1:qrtMmpXAViwIlMzMFwYlZC+Rr/d8nUBpqtupg98hncw=
+github.com/diadata-org/diadata v1.4.339 h1:Y57dRAez6k3rTJLNnV+yY5hog65M4QdepMc1DUwth5M=
+github.com/diadata-org/diadata v1.4.339/go.mod h1:qrtMmpXAViwIlMzMFwYlZC+Rr/d8nUBpqtupg98hncw=
 github.com/dlclark/regexp2 v1.2.0/go.mod h1:2pZnwuY/m+8K6iRw6wQdMtk+rH5tNGR1i55kozfMjCc=
 github.com/dlclark/regexp2 v1.4.1-0.20201116162257-a2a8dda75c91/go.mod h1:2pZnwuY/m+8K6iRw6wQdMtk+rH5tNGR1i55kozfMjCc=
 github.com/docker/docker v1.4.2-0.20180625184442-8e610b2b55bf/go.mod h1:eEKB0N0r5NX/I1kEveEz05bcu8tLC/8azJZsviup8Sk=
