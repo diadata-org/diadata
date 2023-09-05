@@ -861,7 +861,7 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) (dfs []dia.Feed
 		if diaFeedSelection.LiquidityThreshold > 0 {
 			pools, errPools := r.RelDB.GetPoolsByAsset(diaFeedSelection.Asset, 0, diaFeedSelection.LiquidityThreshold)
 			if errPools != nil {
-				return dfs, err
+				return dfs, errPools
 			}
 			for _, pool := range pools {
 
@@ -883,8 +883,9 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) (dfs []dia.Feed
 				}
 
 			}
-			dfs = append(dfs, diaFeedSelection)
-			continue
+			if len(pools) > 0 {
+				dfs = append(dfs, diaFeedSelection)
+			}
 		}
 
 		// Parse exchanges.
@@ -938,11 +939,11 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) (dfs []dia.Feed
 
 					quotetoken, err := r.RelDB.GetExchangeSymbol(exchange.Name, strings.Split(*p.Value, PAIR_SEPARATOR)[0])
 					if err != nil {
-						return dfs, err
+						return dfs, fmt.Errorf("symbol %s not known on %s", strings.Split(*p.Value, PAIR_SEPARATOR)[0], exchange.Name)
 					}
 					basetoken, err := r.RelDB.GetExchangeSymbol(exchange.Name, strings.Split(*p.Value, PAIR_SEPARATOR)[1])
 					if err != nil {
-						return dfs, err
+						return dfs, fmt.Errorf("symbol %s not known on %s", strings.Split(*p.Value, PAIR_SEPARATOR)[1], exchange.Name)
 					}
 					pair := dia.Pair{
 						QuoteToken: quotetoken,

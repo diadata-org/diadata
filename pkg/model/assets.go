@@ -383,16 +383,24 @@ func (rdb *RelDB) SetExchangeSymbol(exchange string, symbol string) error {
 
 func (rdb *RelDB) GetExchangeSymbol(exchange string, symbol string) (asset dia.Asset, err error) {
 	var decimals sql.NullInt64
+	var secondExchangeQuery string
+	if exchange == dia.BinanceExchange {
+		secondExchangeQuery = fmt.Sprintf(" OR es.exchange='%s'", dia.Binance2Exchange)
+	}
+	if exchange == dia.BKEXExchange {
+		secondExchangeQuery = fmt.Sprintf(" OR es.exchange='%s'", dia.BKEX2Exchange)
+	}
 	query := fmt.Sprintf(`
 		SELECT a.symbol,a.name,a.address,a.blockchain,a.decimals
 		FROM %s es
 		INNER JOIN %s a
 		ON es.asset_id=a.asset_id
-		WHERE es.exchange=$1
+		WHERE (es.exchange=$1 %s)
 		AND es.symbol ILIKE $2
 		`,
 		exchangesymbolTable,
 		assetTable,
+		secondExchangeQuery,
 	)
 	err = rdb.postgresClient.QueryRow(context.Background(), query, exchange, symbol).Scan(
 		&asset.Symbol,
