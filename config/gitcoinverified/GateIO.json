@@ -91,6 +91,12 @@
             "Address": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"
         },
         {
+            "Symbol": "LMR",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x4b1D0b9F081468D780Ca1d5d79132b64301085d1"
+        },
+        {
             "Symbol": "MCRT",
             "Exchange": "GateIO",
             "Blockchain": "BinanceSmartChain",
