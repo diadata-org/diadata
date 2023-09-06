@@ -1,9 +1,9 @@
 package utils
 
 import (
+	"crypto/rand"
 	"fmt"
-	"math/rand"
-	"time"
+	"math/big"
 )
 
 var (
@@ -177,6 +177,27 @@ var (
 
 // Generate returns a random name from the list of adjectives, colors and surnames.
 func GenerateAutoname(delimiter string) string {
-	rand.Seed(time.Now().UnixNano())
-	return fmt.Sprintf("%s%s%s%s%s", adjectives[rand.Intn(len(adjectives))], delimiter, colors[rand.Intn(len(colors))], delimiter, people[rand.Intn(len(people))])
+
+	var (
+		err                      error
+		adjectiver_random_number *big.Int
+		color_random_number      *big.Int
+		people_random_number     *big.Int
+	)
+	adjectiver_random_number, err = rand.Int(rand.Reader, big.NewInt(462))
+	if err != nil {
+		adjectiver_random_number = big.NewInt(0)
+	}
+
+	color_random_number, err = rand.Int(rand.Reader, big.NewInt(75))
+	if err != nil {
+		color_random_number = big.NewInt(0)
+	}
+
+	people_random_number, err = rand.Int(rand.Reader, big.NewInt(51))
+	if err != nil {
+		people_random_number = big.NewInt(0)
+	}
+
+	return fmt.Sprintf("%s%s%s%s%s", adjectives[adjectiver_random_number.Int64()], delimiter, colors[color_random_number.Int64()], delimiter, people[people_random_number.Int64()])
 }

@@ -403,6 +403,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "OP",
+      "ForeignName": "OPUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "PAXG",
       "ForeignName": "PAXGUSDT",
       "Exchange": "MEXC",

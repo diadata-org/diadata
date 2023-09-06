@@ -599,7 +599,12 @@ func (datastore *DB) GetxcTradesByExchangesBatched(
 }
 
 // GetTradesByFeedSelection returns all trades with restrictions given by the struct @feedselection.
-func (datastore *DB) GetTradesByFeedSelection(feedselection []dia.FeedSelection, starttimes []time.Time, endtimes []time.Time) ([]dia.Trade, error) {
+func (datastore *DB) GetTradesByFeedSelection(
+	feedselection []dia.FeedSelection,
+	starttimes []time.Time,
+	endtimes []time.Time,
+	limit int,
+) ([]dia.Trade, error) {
 	var (
 		query string
 		r     []dia.Trade
@@ -610,7 +615,7 @@ func (datastore *DB) GetTradesByFeedSelection(feedselection []dia.FeedSelection,
 	}
 
 	for i := range starttimes {
-		query = fmt.Sprintf(`
+		query += fmt.Sprintf(`
 		SELECT time,estimatedUSDPrice,exchange,foreignTradeID,pair,price,symbol,volume,verified,basetokenblockchain,basetokenaddress,quotetokenblockchain,quotetokenaddress,pooladdress  
 		FROM %s 
 		WHERE ( `,
@@ -685,13 +690,18 @@ func (datastore *DB) GetTradesByFeedSelection(feedselection []dia.FeedSelection,
 		}
 
 		// The bracket closes the main statement from the first WHERE clause.
+		var limitQuery string
+		if len(starttimes) == 1 && limit > 0 {
+			limitQuery = fmt.Sprintf(" ORDER BY DESC LIMIT %v", limit)
+		}
 		query += fmt.Sprintf(`
 		 )	
 		AND estimatedUSDPrice > 0
 		AND time > %d
-		AND time < %d ;`,
+		AND time < %d %s;`,
 			starttimes[i].UnixNano(),
 			endtimes[i].UnixNano(),
+			limitQuery,
 		)
 	}
 

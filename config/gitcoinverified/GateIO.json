@@ -73,6 +73,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "GRAIL",
+            "Exchange": "GateIO",
+            "Blockchain": "Arbitrum",
+            "Address": "0x3d9907F9a368ad0a51Be60f7Da3b97cf940982D8"
+        },
+        {
             "Symbol": "INTR",
             "Exchange": "GateIO",
             "Blockchain": "Interlay",
@@ -85,6 +91,12 @@
             "Address": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"
         },
         {
+            "Symbol": "LMR",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x4b1D0b9F081468D780Ca1d5d79132b64301085d1"
+        },
+        {
             "Symbol": "MCRT",
             "Exchange": "GateIO",
             "Blockchain": "BinanceSmartChain",
@@ -95,6 +107,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Solana",
             "Address": "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"
+        },
+        {
+            "Symbol": "OP",
+            "Exchange": "GateIO",
+            "Blockchain": "Optimism",
+            "Address": "0x4200000000000000000000000000000000000042"
         },
         {
             "Symbol": "DUST",
@@ -137,6 +155,12 @@
             "Exchange": "GateIO",
             "Blockchain": "BinanceSmartChain",
             "Address": "0x5774B2fc3e91aF89f89141EacF76545e74265982"
+        },
+        {
+            "Symbol": "OUSD",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x2A8e1E676Ec238d8A992307B495b45B3fEAa5e86"
         },
         {
             "Symbol": "SHIB",

@@ -275,7 +275,9 @@ func (s *KuCoinScraper) mainLoop() {
 						lastTradeMap[pair] = tradeTime
 						countMap[pair] = 0
 					} else {
+						//nolint
 						tradeTime.Add(time.Duration(countMap[pair]+1) * time.Nanosecond)
+
 						countMap[pair] += 1
 					}
 				} else {
@@ -337,6 +339,7 @@ func (s *KuCoinScraper) mainLoop() {
 						lastTradeMap[pair] = tradeTime
 						countMap[pair] = 0
 					} else {
+						//nolint
 						tradeTime.Add(time.Duration(countMap[pair]+1) * time.Nanosecond)
 						countMap[pair] += 1
 					}

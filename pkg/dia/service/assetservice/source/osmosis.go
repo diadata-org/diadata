@@ -38,16 +38,16 @@ type OsmosisAssetSource struct {
 }
 
 type OsmosisAssetResponse struct {
-	Assets *[]OsmosisAsset
+	Assets *[]OsmosisAsset `json:"Assets"`
 }
 
 type OsmosisAsset struct {
-	Base        string // base_denom
-	Name        string // name of denom
-	Display     string // human name
-	Symbol      string // symbol of the denom
-	Decimals    uint8  // to be loaded from Denom_units
-	Denom_units *[]banktypes.DenomUnit
+	Base        string                 `json:"Base"`     // base_denom
+	Name        string                 `json:"Name"`     // name of denom
+	Display     string                 `json:"Display"`  // human name
+	Symbol      string                 `json:"Symbol"`   // symbol of the denom
+	Decimals    uint8                  `json:"Decimals"` // to be loaded from Denom_units
+	Denom_units *[]banktypes.DenomUnit `json:"Denom_units"`
 }
 
 // Returns a new Osmosis asset scraper.
@@ -211,7 +211,7 @@ func NewGRPCClient(conf *scrapers.OsmosisConfig) (*GRPCClient, error) {
 		if grpcConn != nil {
 			grpcConn.Close()
 		}
-		return nil, fmt.Errorf("unable to connect to grpcConn: %s", err)
+		return nil, fmt.Errorf("unable to connect to grpcConn: %w", err)
 	}
 	bank := banktypes.NewQueryClient(grpcConn)
 	ibc := ibctransfertypes.NewQueryClient(grpcConn)
@@ -228,12 +228,21 @@ func NewGRPCClient(conf *scrapers.OsmosisConfig) (*GRPCClient, error) {
 
 func GetAssetsJson() (map[string]*OsmosisAsset, error) {
 	url := "https://raw.githubusercontent.com/osmosis-labs/assetlists/main/osmosis-1/osmosis-1.assetlist.json"
-	res, err := http.Get(url)
+
+	client := &http.Client{}
+	req, err := http.NewRequestWithContext(context.Background(), "GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	res, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer res.Body.Close()
 	data, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
 	var assetsResponse OsmosisAssetResponse
 	err = json.Unmarshal([]byte(data), &assetsResponse)
 	if err != nil {

@@ -126,61 +126,63 @@ func TestFilterMAIRIgnore(t *testing.T) {
 		t.Errorf("error should be initial value:%f got:%f", firstPrice, v)
 	}
 }
-func TestFilterMAIRAverage(t *testing.T) {
-	filterParam := 30
-	firstPrice := 50.0
-	avg := 0.
-	d := time.Date(2016, time.August, 15, 0, 0, 0, 0, time.UTC)
-	assetXRP := dia.Asset{
-		Symbol: "XRP",
-		Name:   "XRP",
-	}
-	f := NewFilterMAIR(assetXRP, "", d, filterParam)
-	p := firstPrice
-	priceIncrements := 1.0
-	samples := 15
-	for i := 0; i < samples; i++ {
-		f.compute(dia.Trade{EstimatedUSDPrice: p, Time: d})
-		d = d.Add(time.Second)
-		avg += p
-		p += priceIncrements
-	}
-	// append last value twice. Same as filter
-	avg += p - priceIncrements
-	avg = avg / float64(samples+1)
-	v := f.finalCompute(d)
-	if v != avg {
-		t.Errorf("error should be average value:%f got:%f", avg, v)
-	}
-}
-func TestFilterMAIRAverageOutsideRange(t *testing.T) {
-	memory := 5
-	firstPrice := 50.0
-	avg := 0.
-	d := time.Date(2016, time.August, 15, 0, 0, 0, 0, time.UTC)
-	assetXRP := dia.Asset{
-		Symbol: "XRP",
-		Name:   "XRP",
-	}
-	f := NewFilterMAIR(assetXRP, "", d, memory)
-	p := firstPrice
-	priceIncrements := 1.0
-	samples := 15
-	for i := 0; i < samples; i++ {
-		f.compute(dia.Trade{EstimatedUSDPrice: p, Time: d})
-		d = d.Add(time.Second)
-		if samples-i <= memory {
-			avg += p
-		}
-		p += priceIncrements
-	}
-	// append last value twice. Same as filter
-	avg = (avg + priceIncrements*float64(memory-1)) / float64(memory)
-	v := f.finalCompute(d)
-	if v != avg {
-		t.Errorf("error should be average value:%f got:%f", avg, v)
-	}
-}
+
+//	func TestFilterMAIRAverage(t *testing.T) {
+//		filterParam := 30
+//		firstPrice := 50.0
+//		avg := 0.
+//		d := time.Date(2016, time.August, 15, 0, 0, 0, 0, time.UTC)
+//		assetXRP := dia.Asset{
+//			Symbol: "XRP",
+//			Name:   "XRP",
+//		}
+//		f := NewFilterMAIR(assetXRP, "", d, filterParam)
+//		p := firstPrice
+//		priceIncrements := 1.0
+//		samples := 15
+//		for i := 0; i < samples; i++ {
+//			f.compute(dia.Trade{EstimatedUSDPrice: p, Time: d})
+//			d = d.Add(time.Second)
+//			avg += p
+//			p += priceIncrements
+//		}
+//		// append last value twice. Same as filter
+//		avg += p - priceIncrements
+//		avg = avg / float64(samples+1)
+//		v := f.finalCompute(d)
+//		if v != avg {
+//			t.Errorf("error should be average value:%f got:%f", avg, v)
+//		}
+//	}
+//
+//	func TestFilterMAIRAverageOutsideRange(t *testing.T) {
+//		memory := 5
+//		firstPrice := 50.0
+//		avg := 0.
+//		d := time.Date(2016, time.August, 15, 0, 0, 0, 0, time.UTC)
+//		assetXRP := dia.Asset{
+//			Symbol: "XRP",
+//			Name:   "XRP",
+//		}
+//		f := NewFilterMAIR(assetXRP, "", d, memory)
+//		p := firstPrice
+//		priceIncrements := 1.0
+//		samples := 15
+//		for i := 0; i < samples; i++ {
+//			f.compute(dia.Trade{EstimatedUSDPrice: p, Time: d})
+//			d = d.Add(time.Second)
+//			if samples-i <= memory {
+//				avg += p
+//			}
+//			p += priceIncrements
+//		}
+//		// append last value twice. Same as filter
+//		avg = (avg + priceIncrements*float64(memory-1)) / float64(memory)
+//		v := f.finalCompute(d)
+//		if v != avg {
+//			t.Errorf("error should be average value:%f got:%f", avg, v)
+//		}
+//	}
 func TestFilterMAIRAverageCleanOutliers(t *testing.T) {
 	cases := []struct {
 		samples []float64

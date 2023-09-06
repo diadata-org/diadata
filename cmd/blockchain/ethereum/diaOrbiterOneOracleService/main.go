@@ -153,7 +153,7 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 			}
 			rawQ.Symbol = symbol
 			rawQ.Price = price
-	} else {
+	}  else {
 		// Do the "normal thing"
 		// Get quotation for token and update Oracle
 		if useGql {
@@ -171,6 +171,11 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 				return oldPrice, err
 			}
 		}
+		// Special case: rename MOVR -> WMOVR
+		if address == "0x0000000000000000000000000000000000000000" && blockchain == "Moonriver" {
+			log.Printf("Renaming MOVR -> WMOVR")
+			rawQ.Symbol = "WMOVR"
+		}
 	}
 	rawQ.Name = rawQ.Symbol
 
@@ -186,6 +191,7 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 				return oldPrice, nil
 			}
 		}
+
 		log.Println("Entering deviation based update zone")
 		err = updateQuotation(rawQ, auth, contract, conn)
 		if err != nil {

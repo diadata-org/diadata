@@ -25,8 +25,8 @@ import (
 )
 
 const (
-	curveRestDialEth      = ""
-	curveWsDialEth        = ""
+	curveRestDialEth      = "https://nd-475-370-970.p2pify.com/8658efa12b79ca9cd4b1c72b55a7f4fa"
+	curveWsDialEth        = "wss://ws-nd-475-370-970.p2pify.com/8658efa12b79ca9cd4b1c72b55a7f4fa"
 	curveRestDialFantom   = ""
 	curveWsDialFantom     = ""
 	curveRestDialMoonbeam = ""
@@ -183,9 +183,12 @@ func NewCurveFIScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 	switch exchange.Name {
 	case dia.CurveFIExchange:
 		scraper = makeCurvefiScraper(exchange, curveRestDialEth, curveWsDialEth, relDB)
-		basePoolRegistry := curveRegistry{Type: 1, Address: common.HexToAddress("0x90E00ACe148ca3b23Ac1bC8C240C2a7Dd9c2d7f5")}
+		basePoolRegistry := curveRegistry{Type: 1, Address: common.HexToAddress(exchange.Contract)}
+		cryptoswapPools := curveRegistry{Type: 1, Address: common.HexToAddress("0x8F942C20D02bEfc377D41445793068908E2250D0")}
 		metaPoolRegistry := curveRegistry{Type: 2, Address: common.HexToAddress("0xB9fC157394Af804a3578134A6585C0dc9cc990d4")}
-		scraper.registriesUnderlying = []curveRegistry{metaPoolRegistry, basePoolRegistry}
+		factoryPools := curveRegistry{Type: 3, Address: common.HexToAddress("0xF18056Bbd320E96A48e3Fbf8bC061322531aac99")}
+		factory2Pools := curveRegistry{Type: 3, Address: common.HexToAddress("0x4F8846Ae9380B90d2E71D5e3D042dff3E7ebb40d")}
+		scraper.registriesUnderlying = []curveRegistry{factoryPools, factory2Pools, metaPoolRegistry, basePoolRegistry, cryptoswapPools}
 		scraper.screenPools = true
 
 	case dia.CurveFIExchangeFantom:

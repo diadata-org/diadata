@@ -68,6 +68,12 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "OP-USDT",
+      "Ignore": false,
+      "Symbol": "OP"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "PEPE-USDT",
       "Ignore": false,
       "Symbol": "PEPE"

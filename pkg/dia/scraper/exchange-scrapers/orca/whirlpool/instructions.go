@@ -153,79 +153,79 @@ var InstructionImplDef = ag_binary.NewVariantDefinition(
 	ag_binary.AnchorTypeIDEncoding,
 	[]ag_binary.VariantType{
 		{
-			"initialize_config", (*InitializeConfig)(nil),
+			Name:"initialize_config", Type: (*InitializeConfig)(nil),
 		},
 		{
-			"initialize_pool", (*InitializePool)(nil),
+			Name:"initialize_pool", Type:(*InitializePool)(nil),
 		},
 		{
-			"initialize_tick_array", (*InitializeTickArray)(nil),
+			Name:"initialize_tick_array", Type:(*InitializeTickArray)(nil),
 		},
 		{
-			"initialize_fee_tier", (*InitializeFeeTier)(nil),
+			Name:"initialize_fee_tier", Type:(*InitializeFeeTier)(nil),
 		},
 		{
-			"initialize_reward", (*InitializeReward)(nil),
+			Name:"initialize_reward", Type:(*InitializeReward)(nil),
 		},
 		{
-			"set_reward_emissions", (*SetRewardEmissions)(nil),
+			Name:"set_reward_emissions", Type:(*SetRewardEmissions)(nil),
 		},
 		{
-			"open_position", (*OpenPosition)(nil),
+			Name:"open_position", Type:(*OpenPosition)(nil),
 		},
 		{
-			"open_position_with_metadata", (*OpenPositionWithMetadata)(nil),
+			Name:"open_position_with_metadata",Type: (*OpenPositionWithMetadata)(nil),
 		},
 		{
-			"increase_liquidity", (*IncreaseLiquidity)(nil),
+			Name:"increase_liquidity",Type: (*IncreaseLiquidity)(nil),
 		},
 		{
-			"decrease_liquidity", (*DecreaseLiquidity)(nil),
+			Name:"decrease_liquidity", Type:(*DecreaseLiquidity)(nil),
 		},
 		{
-			"update_fees_and_rewards", (*UpdateFeesAndRewards)(nil),
+			Name:"update_fees_and_rewards", Type:(*UpdateFeesAndRewards)(nil),
 		},
 		{
-			"collect_fees", (*CollectFees)(nil),
+			Name:"collect_fees",Type: (*CollectFees)(nil),
 		},
 		{
-			"collect_reward", (*CollectReward)(nil),
+			Name:"collect_reward",Type: (*CollectReward)(nil),
 		},
 		{
-			"collect_protocol_fees", (*CollectProtocolFees)(nil),
+			Name:"collect_protocol_fees", Type:(*CollectProtocolFees)(nil),
 		},
 		{
-			"swap", (*Swap)(nil),
+			Name:"swap", Type:(*Swap)(nil),
 		},
 		{
-			"close_position", (*ClosePosition)(nil),
+			Name:"close_position", Type:(*ClosePosition)(nil),
 		},
 		{
-			"set_default_fee_rate", (*SetDefaultFeeRate)(nil),
+			Name:"set_default_fee_rate", Type:(*SetDefaultFeeRate)(nil),
 		},
 		{
-			"set_default_protocol_fee_rate", (*SetDefaultProtocolFeeRate)(nil),
+			Name:"set_default_protocol_fee_rate",Type: (*SetDefaultProtocolFeeRate)(nil),
 		},
 		{
-			"set_fee_rate", (*SetFeeRate)(nil),
+			Name:"set_fee_rate", Type:(*SetFeeRate)(nil),
 		},
 		{
-			"set_protocol_fee_rate", (*SetProtocolFeeRate)(nil),
+			Name:"set_protocol_fee_rate", Type:(*SetProtocolFeeRate)(nil),
 		},
 		{
-			"set_fee_authority", (*SetFeeAuthority)(nil),
+			Name:"set_fee_authority", Type:(*SetFeeAuthority)(nil),
 		},
 		{
-			"set_collect_protocol_fees_authority", (*SetCollectProtocolFeesAuthority)(nil),
+			Name:"set_collect_protocol_fees_authority",Type: (*SetCollectProtocolFeesAuthority)(nil),
 		},
 		{
-			"set_reward_authority", (*SetRewardAuthority)(nil),
+			Name:"set_reward_authority", Type:(*SetRewardAuthority)(nil),
 		},
 		{
-			"set_reward_authority_by_super_authority", (*SetRewardAuthorityBySuperAuthority)(nil),
+			Name:"set_reward_authority_by_super_authority", Type:(*SetRewardAuthorityBySuperAuthority)(nil),
 		},
 		{
-			"set_reward_emissions_super_authority", (*SetRewardEmissionsSuperAuthority)(nil),
+			Name:"set_reward_emissions_super_authority", Type:(*SetRewardEmissionsSuperAuthority)(nil),
 		},
 	},
 )

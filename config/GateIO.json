@@ -116,6 +116,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "LMR_USDT",
+      "Ignore": false,
+      "Symbol": "LMR"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "MSOL_USDT",
       "Ignore": false,
       "Symbol": "MSOL"
@@ -125,6 +131,24 @@
       "ForeignName": "MSOL_ETH",
       "Ignore": false,
       "Symbol": "MSOL"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "OP_USDT",
+      "Ignore": false,
+      "Symbol": "OP"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "OUSD_USDT",
+      "Ignore": false,
+      "Symbol": "OUSD"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "GRAIL_USDT",
+      "Ignore": false,
+      "Symbol": "GRAIL"
     },
     {
       "Exchange": "GateIO",
