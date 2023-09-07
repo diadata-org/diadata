@@ -239,15 +239,20 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
 
 func (rdb *RelDB) GetOracleConfig(address string) (oracleconfig dia.OracleConfig, err error) {
 	var (
-		symbols string
+		symbols       string
+		feedSelection sql.NullString
 	)
 	query := fmt.Sprintf(`
-	SELECT address, feeder_id, owner,symbols, chainid, deviationpermille, sleepseconds,frequency, blockchainnode, mandatory_frequency
+	SELECT address, feeder_id, owner,symbols, chainid, feedSelection,deviationpermille, sleepseconds,frequency, blockchainnode, mandatory_frequency
 	FROM %s 
 	WHERE address=$1`, oracleconfigTable)
-	err = rdb.postgresClient.QueryRow(context.Background(), query, address).Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &oracleconfig.DeviationPermille, &oracleconfig.SleepSeconds, &oracleconfig.Frequency, &oracleconfig.BlockchainNode, &oracleconfig.MandatoryFrequency)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, address).Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &feedSelection, &oracleconfig.DeviationPermille, &oracleconfig.SleepSeconds, &oracleconfig.Frequency, &oracleconfig.BlockchainNode, &oracleconfig.MandatoryFrequency)
 	if err != nil {
 		return
+	}
+
+	if feedSelection.Valid {
+		oracleconfig.FeederSelection = feedSelection.String
 	}
 
 	oracleconfig.Symbols = strings.Split(symbols, " ")
