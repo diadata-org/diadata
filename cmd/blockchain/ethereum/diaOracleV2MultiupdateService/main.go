@@ -18,6 +18,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	gql "github.com/machinebox/graphql"
 )
@@ -44,7 +45,7 @@ type GqlParameters struct {
 func main() {
 	key := utils.Getenv("PRIVATE_KEY", "")
 	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
-	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "0x0000000000000000000000000000000000000000")
+	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
 	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "120"))
 	if err != nil {
@@ -115,7 +116,7 @@ func main() {
 	publishedPrices := make(map[string]float64)
 
 	/*
-	 * Setup connection to contract
+	 * Setup connection to contract, deploy if necessary
 	 */
 
 	conn, err := ethclient.Dial(blockchainNode)
@@ -129,7 +130,7 @@ func main() {
 	}
 
 	var contract *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService
-	err = bindContract(deployedContract, conn, auth, &contract)
+	err = deployOrBindContract(deployedContract, conn, auth, &contract)
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
@@ -213,9 +214,10 @@ func oracleUpdateExecutor(
 	priceCollector := make(map[string]float64)
 	for _, asset := range assets {
 		newPrice := newPrices[asset.symbol]
+		fmt.Println("new price", newPrice)
 		oldPrice := publishedPrices[asset.symbol]
 
-		if newPrice > 0.0 && (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
+		if newPrice > 1e-8 && ((newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000)))) {
 			log.Printf("Entering deviation based update zone for old price %.2f of asset %s. New price: %.2f", oldPrice, asset.symbol, newPrice)
 			updateCollector[asset.symbol] = newPrice
 			priceCollector[asset.symbol] = newPrice
@@ -271,15 +273,29 @@ func retrieveAssetPrice(asset Asset, useGql bool, gqlWindowSize int, gqlMethodol
 	return price, nil
 }
 
-func bindContract(
+func deployOrBindContract(
 	deployedContract string,
 	conn *ethclient.Client,
 	auth *bind.TransactOpts,
 	contract **diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService) error {
 	var err error
-	*contract, err = diaOracleV2MultiupdateService.NewDiaOracleV2MultiupdateService(common.HexToAddress(deployedContract), conn)
-	if err != nil {
-		return err
+	if deployedContract != "" {
+		*contract, err = diaOracleV2MultiupdateService.NewDiaOracleV2MultiupdateService(common.HexToAddress(deployedContract), conn)
+		if err != nil {
+			return err
+		}
+	} else {
+		// deploy contract
+		var addr common.Address
+		var tx *types.Transaction
+		addr, tx, *contract, err = diaOracleV2MultiupdateService.DeployDiaOracleV2MultiupdateService(auth, conn)
+		if err != nil {
+			log.Fatalf("could not deploy contract: %v", err)
+			return err
+		}
+		log.Printf("Contract pending deploy: 0x%x\n", addr)
+		log.Printf("Transaction waiting to be mined: 0x%x\n\n", tx.Hash())
+		time.Sleep(180000 * time.Millisecond)
 	}
 	return nil
 }
@@ -380,12 +396,15 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int,
 				exchangePairsString = "Exchangepairs:[\n"
 				for _, exchangePair := range selectedFeed.Exchangepairs {
 					exchangePairsString += `{
-					Exchange: "` + exchangePair.Exchange + `",
-					Pairs: [`
-					for _, pair := range exchangePair.Pairs {
-						exchangePairsString += `"` + pair + `",`
+					Exchange: "` + exchangePair.Exchange + `",`
+					if len(exchangePair.Pairs) > 0 {
+						exchangePairsString += `Pairs: [`
+						for _, pair := range exchangePair.Pairs {
+							exchangePairsString += `"` + pair + `",`
+						}
+						exchangePairsString += `]`
 					}
-					exchangePairsString += `]},`
+					exchangePairsString += `},`
 				}
 				exchangePairsString += "]"
 			} else {

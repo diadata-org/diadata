@@ -116,6 +116,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "LMR_USDT",
+      "Ignore": false,
+      "Symbol": "LMR"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "MSOL_USDT",
       "Ignore": false,
       "Symbol": "MSOL"

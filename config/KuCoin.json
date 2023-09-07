@@ -943,6 +943,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "LMR",
+            "ForeignName": "LMR-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "LRC",
             "ForeignName": "LRC-USDT",
             "Exchange": "KuCoin",

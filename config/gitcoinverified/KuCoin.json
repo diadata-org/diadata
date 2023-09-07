@@ -379,6 +379,12 @@
             "Address": "0x0fF6ffcFDa92c53F615a4A75D982f399C989366b"
         },
         {
+            "Symbol": "LMR",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x4b1D0b9F081468D780Ca1d5d79132b64301085d1"
+        },
+        {
             "Symbol": "LON",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
