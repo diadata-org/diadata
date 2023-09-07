@@ -15,7 +15,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
-	traderjoe "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/traderjoe2.1"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/traderjoe2.1/traderjoeILBPair"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -44,13 +44,12 @@ type TraderJoePair struct {
 }
 
 type TraderJoeSwap struct {
-    ID        string
-    Timestamp int64
-    Pair      TraderJoePair
-    Amount0   float64
-    Amount1   float64
+	ID        string
+	Timestamp int64
+	Pair      TraderJoePair
+	Amount0   float64
+	Amount1   float64
 }
-
 
 type TraderJoeScraper struct {
 	// Ethereum WebSocket client for real-time data.
@@ -79,7 +78,6 @@ type TraderJoeScraper struct {
 	waitTime int
 	// Option to listen for trading pairs by address.
 	listenByAddress bool
-	fetchPoolsFromDB bool
 	// Channel for receiving trade data.
 	chanTrades chan *dia.Trade
 	// Address of the factory contract for the exchange.
@@ -103,7 +101,6 @@ func NewTraderJoeScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 	if err != nil {
 		log.Fatal("parse LISTEN_BY_ADDRESS: ", err)
 	}
-
 
 	// TODO: revisit block numbers
 	switch exchange.Name {
@@ -148,8 +145,8 @@ func NewTraderJoeScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 func makeTraderJoeScraper(exchange dia.Exchange, listenByAddress bool, restDial string, wsDial string, waitMilliseconds string, startBlock uint64) *TraderJoeScraper {
 	var (
 		restClient, wsClient *ethclient.Client
-		s *TraderJoeScraper
-		err error
+		s                    *TraderJoeScraper
+		err                  error
 	)
 
 	log.Infof("Initialize rest and ws client for %s.", exchange.BlockChain.Name)
@@ -190,15 +187,14 @@ func makeTraderJoeScraper(exchange dia.Exchange, listenByAddress bool, restDial 
 }
 
 // GetSwapsChannel returns a channel for swaps of the pair with pair address.
-func (tjs *TraderJoeScraper) GetSwapsChannel(pairAddress common.Address) (chan *traderjoe.TraderjoeLBPairCreated, error) {
-	sink := make(chan *traderjoe.TraderjoeLBPairCreated)
-	var pairFiltererContract *traderjoe.TraderjoeFilterer
+func (tjs *TraderJoeScraper) GetSwapsChannel(pairAddress common.Address) (chan *traderjoeILBPair.ILBPairSwap, error) {
+	sink := make(chan *traderjoeILBPair.ILBPairSwap)
 
-	pairFiltererContract, err := traderjoe.NewTraderjoeFilterer(pairAddress, tjs.WsClient)
+	pairFiltererContract, err := traderjoeILBPair.NewILBPairFilterer(pairAddress, tjs.WsClient)
 	if err != nil {
 		log.Fatal(err)
 	}
-	_, err = pairFiltererContract.WatchOwnershipTransferred(&bind.WatchOpts{}, sink, []common.Address{}, []common.Address{})
+	_, err = pairFiltererContract.WatchSwap(&bind.WatchOpts{}, sink, []common.Address{}, []common.Address{})
 	if err != nil {
 		log.Error("error in get swaps channel: ", err)
 	}
@@ -207,22 +203,23 @@ func (tjs *TraderJoeScraper) GetSwapsChannel(pairAddress common.Address) (chan *
 }
 
 // TODO: Return here.
-func (tjs *TraderJoeScraper) normalizeTraderJoeSwap(swapI interface{}) (normalizedSwap TraderJoeSwap, err error) {
-	switch swap := swapI.(type) {
-	case traderjoe.TraderjoeLBPairCreated:
-		pair := MapOfPools[swap.Raw.Address.Hex()]
-		decimals0 := int(pair.Token0.Decimals)
-		decimals1 := int(pair.Token1.Decimals)
-		amount0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(), new(big.Float).SetFloat64(math.Pow10(decimals0))).Float64()
-		amount1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(), new(big.Float).SetFloat64(math.Pow10(decimals1))).Float64()
+func (tjs *TraderJoeScraper) normalizeTraderJoeSwap(swap traderjoeILBPair.ILBPairSwap) (normalizedSwap TraderJoeSwap) {
+	pair := MapOfPools[swap.Raw.Address.Hex()]
+	decimals0 := int(pair.Token0.Decimals)
+	decimals1 := int(pair.Token1.Decimals)
 
-		normalizedSwap = TraderJoeSwap{
-			ID:        swap.Raw.TxHash.Hex(),
-			Timestamp: time.Now().Unix(),
-			Pair:      pair,
-			Amount0:   amount0,
-			Amount1:   amount1,
-		}
+	amountIn := new(big.Int).SetBytes(swap.AmountsIn[:])
+	amountOut := new(big.Int).SetBytes(swap.AmountsOut[:])
+
+	amount0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(amountIn), new(big.Float).SetFloat64(math.Pow10(decimals0))).Float64()
+	amount1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(amountOut), new(big.Float).SetFloat64(math.Pow10(decimals1))).Float64()
+
+	normalizedSwap = TraderJoeSwap{
+		ID:        swap.Raw.TxHash.Hex(),
+		Timestamp: time.Now().Unix(),
+		Pair:      pair,
+		Amount0:   amount0,
+		Amount1:   amount1,
 	}
 	return
 }
@@ -279,7 +276,7 @@ func (tjs *TraderJoeScraper) mainLoop() {
 		}
 		log.Infof("%v found pair scraper for: %s with address %s", count, pool.ForeignName, pool.Address.Hex())
 		count++
-		
+
 		sink, err := tjs.GetSwapsChannel(pool.Address)
 		if err != nil {
 			log.Error("error fetching swaps channel: ", err)
@@ -293,7 +290,7 @@ func (tjs *TraderJoeScraper) mainLoop() {
 				}
 			}
 		}()
-		
+
 	}
 }
 
@@ -366,8 +363,6 @@ func (tjs *TraderJoeScraper) makeTraderJoePoolMap(liquidityThreshold, liquidityT
 	return poolMap, err
 }
 
-func (tjs *TraderJoeScraper) subscribeToSwapEvents(pair TraderJoePair) {}
-
 // sendTrade receives Trader Joe trade data and transforms it into a standardized dia.Trade
 // structure for further analysis and publication.
 func (tjs *TraderJoeScraper) sendTrade(traderjoeswap TraderJoeSwap, pool *TraderJoePair) {
@@ -422,118 +417,6 @@ func (tjs *TraderJoeScraper) sendTrade(traderjoeswap TraderJoeSwap, pool *Trader
 	}
 }
 
-func (tjs *TraderJoeScraper) getSwapData(swap TraderJoeSwap) (price, volume float64) {
-	volume = swap.Amount0
-	price = math.Abs(swap.Amount1 / swap.Amount0)
-	return
-}
-
-// pairHealthCheck returns true if the involved tokens are not blacklisted and do not have zero entries
-func (tp *TraderJoePair) pairHealthCheck() bool {
-	if tp.Token0.Symbol == "" || tp.Token1.Symbol == "" || tp.Token0.Address.Hex() == "" || tp.Token1.Address.Hex() == "" {
-		return false
-	}
-	if helpers.SymbolIsBlackListed(tp.Token0.Symbol) || helpers.SymbolIsBlackListed(tp.Token1.Symbol) {
-		if helpers.SymbolIsBlackListed(tp.Token0.Symbol) {
-			log.Infof("skip pair %s. symbol %s is blacklisted", tp.ForeignName, tp.Token0.Symbol)
-		} else {
-			log.Infof("skip pair %s. symbol %s is blacklisted", tp.ForeignName, tp.Token1.Symbol)
-		}
-		return false
-	}
-	if helpers.AddressIsBlacklisted(tp.Token0.Address) || helpers.AddressIsBlacklisted(tp.Token1.Address) {
-		log.Info("skip pair ", tp.ForeignName, ", address is blacklisted")
-		return false
-	}
-	return true
-}
-
-// FetchAvailablePairs retrieves the list of available dia.ExchangePairs from the Trader Joe exchange.
-func (tjs *TraderJoeScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
-	time.Sleep(100 * time.Millisecond)
-	
-	traderjoePair, err := tjs.GetAllPairs()
-	if err != nil {
-		return
-	}
-	for _, pair := range traderjoePair {
-		if !pair.pairHealthCheck() {
-			continue
-		}
-		quotetoken := dia.Asset{
-			Symbol:     pair.Token0.Symbol,
-			Name:       pair.Token0.Name,
-			Address:    pair.Token0.Address.Hex(),
-			Decimals:   pair.Token0.Decimals,
-			Blockchain: Exchanges[tjs.exchangeName].BlockChain.Name,
-		}
-		basetoken := dia.Asset{
-			Symbol:     pair.Token1.Symbol,
-			Name:       pair.Token1.Name,
-			Address:    pair.Token1.Address.Hex(),
-			Decimals:   pair.Token1.Decimals,
-			Blockchain: Exchanges[tjs.exchangeName].BlockChain.Name,
-		}
-		pairToNormalise := dia.ExchangePair{
-			Symbol:         pair.Token0.Symbol,
-			ForeignName:    pair.ForeignName,
-			Exchange:       "TraderJoeExchange",
-			Verified:       true,
-			UnderlyingPair: dia.Pair{BaseToken: basetoken, QuoteToken: quotetoken},
-		}
-		normalizedPair, _ := tjs.NormalizePair(pairToNormalise)
-		pairs = append(pairs, normalizedPair)
-	}
-
-	return
-}
-
-// GetAllPairs is similar to FetchAvailablePairs. But instead of dia.ExchangePairs it returns all pairs as TraderJoePairs,
-// i.e. including the pair's address
-func (tjs *TraderJoeScraper) GetAllPairs() ([]TraderJoePair, error) {
-	time.Sleep(20 * time.Millisecond)
-	connection := tjs.RestClient
-	var contract *traderjoe.TraderjoeCaller
-	contract, err := traderjoe.NewTraderjoeCaller(common.HexToAddress(exchangeFactoryContractAddress), connection)
-	if err != nil {
-		log.Error(err)
-	}
-
-	numPairs, err := contract.GetAllLBPairs(&bind.CallOpts{}, common.Address{}, common.Address{})
-	if err != nil {
-		return []TraderJoePair{}, err
-	}
-	wg := sync.WaitGroup{}
-	defer wg.Wait()
-	pairs := make([]TraderJoePair, int(numPairs.Int64()))
-	for i := 0; i < int(numPairs.Int64()); i++ {
-		// Sleep in order not to run into rate limits.
-		time.Sleep(time.Duration(tjs.waitTime) * time.Millisecond)
-		wg.Add(1)
-		go func(index int) {
-			defer wg.Done()
-			traderJoePair, err := tjs.GetPairByID(int64(index))
-			if err != nil {
-				log.Error("error retrieving pair by ID: ", err)
-				return
-			}
-			pairs[index] = traderJoePair
-		}(i)
-	}
-	return pairs, nil
-}
-
-func (tjs *TraderJoeScraper) FillSymbolData(symbol string) (dia.Asset, error) {
-	return dia.Asset{Symbol: symbol}, nil
-}
-
-func (tjs *TraderJoeScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
-	return pair, nil
-}
-
-// TODO
-func (tjs *TraderJoeScraper) GetPairData() {}
-
 // TraderJoeTradeScraper represents a scraper for collecting trade data associated with a specific dia.ExchangePair
 // within the Trader Joe exchange.
 type TraderJoeTradeScraper struct {
@@ -553,151 +436,6 @@ func (tjs *TraderJoeScraper) Close() error {
 	tjs.errorLock.RLock()
 	defer tjs.errorLock.RUnlock()
 	return tjs.error
-}
-
-// TODO
-func (tjs *TraderJoeScraper) ListenToPair(i int, address common.Address) {
-	var (
-		pair TraderJoePair
-		err error
-	)
-	if !tjs.listenByAddress && !tjs.fetchPoolsFromDB {
-		// Get pool info from on-chain, when MapOfPools is empty.
-		pair, err = tjs.GetPairByID(int64(i))
-		if err != nil {
-			log.Error("error fetching pair: ", err)
-		} else {
-			// relevant pool is retrieved from MapOfPools.
-		}
-	}
-
-	if len(pair.Token0.Symbol) < 2 || len(pair.Token1.Symbol) < 2 {
-		log.Info("skip pair: ", pair.ForeignName)
-		return
-	}
-
-	if helpers.AddressIsBlacklisted(pair.Token0.Address) || helpers.AddressIsBlacklisted(pair.Token1.Address) {
-		log.Info("skip pair ", pair.ForeignName, ", address is blacklisted")
-		return
-	}
-
-	if helpers.PoolIsBlacklisted(pair.Address) {
-		log.Info("skip blacklisted pool ", pair.Address)
-		return
-	}
-
-	log.Info(i, ": add pair scraper for: ", pair.ForeignName, " with address ", pair.Address.Hex())
-	sink, err := tjs.GetSwapsChannel(pair.Address)
-	if err != nil {
-		log.Error("error fetching swaps channel: ", err)
-	}
-
-	go func() {
-		for {
-			rawSwap, ok := <-sink
-			if ok {
-				swap, err := tjs.normalizeTraderJoeSwap(*rawSwap, pair)
-				if err != nil {
-					log.Error("error normalizing swap: ", err)
-				}
-				price, volume := getSwapData(swap)
-				token0 := dia.Asset{
-					Address:    pair.Token0.Address.Hex(),
-					Symbol:     pair.Token0.Symbol,
-					Name:       pair.Token0.Name,
-					Decimals:   pair.Token0.Decimals,
-					Blockchain: Exchanges[tjs.exchangeName].BlockChain.Name,
-				}
-				token1 := dia.Asset{
-					Address:    pair.Token1.Address.Hex(),
-					Symbol:     pair.Token1.Symbol,
-					Name:       pair.Token1.Name,
-					Decimals:   pair.Token1.Decimals,
-					Blockchain: Exchanges[tjs.exchangeName].BlockChain.Name,
-				}
-				t := &dia.Trade{
-					Symbol:         pair.Token0.Symbol,
-					Pair:           pair.ForeignName,
-					Price:          price,
-					Volume:         volume,
-					BaseToken:      token1,
-					QuoteToken:     token0,
-					Time:           time.Unix(swap.Timestamp, 0),
-					PoolAddress:    rawSwap.Raw.Address.Hex(),
-					ForeignTradeID: swap.ID,
-					Source:         tjs.exchangeName,
-					VerifiedPair:   true,
-				}
-
-				// // TO DO: Refactor approach for reversing pairs.
-				// switch {
-				// case utils.Contains(reverseBasetokens, pair.Token1.Address.Hex()):
-				// 	// If we need quotation of a base token, reverse pair
-				// 	tSwapped, err := dia.SwapTrade(*t)
-				// 	if err == nil {
-				// 		t = &tSwapped
-				// 	}
-				// case utils.Contains(reverseQuotetokens, pair.Token0.Address.Hex()):
-				// 	// If we don't need quotation of quote token, reverse pair.
-				// 	tSwapped, err := dia.SwapTrade(*t)
-				// 	if err == nil {
-				// 		t = &tSwapped
-				// 	}
-				// case token0.Address == "0x...REPLACE" && !utils.Contains(&mainBaseAssets, token1.Address):
-				// 	// Reverse almost all pairs WETH-XXX ...
-				// 	if tjs.exchangeName == dia.TraderJoeExchangeV2_1 {
-				// 		tSwapped, err := dia.SwapTrade(*t)
-				// 		if err == nil {
-				// 			t = &tSwapped
-				// 		}
-				// 	}
-				// // ...and USDT-XXX on Ethereum,
-				// case token0.Address == mainBaseAssets[0] && token0.Blockchain == dia.ETHEREUM:
-				// 	tSwapped, err := dia.SwapTrade(*t)
-				// 	if err == nil {
-				// 		t = &tSwapped
-				// 	}
-				// // Reverse USDC-XXX pairs on Fantom
-				// case token0.Address == "0x..REPLACE" && token0.Blockchain == dia.FANTOM:
-				// 	tSwapped, err := dia.SwapTrade(*t)
-				// 	if err == nil {
-				// 		t = &tSwapped
-				// 	}
-				// }
-				if price > 0 {
-					log.Info("tx hash: ", swap.ID)
-					log.Infof("Got trade at time %v - symbol: %s, pair: %s, price: %v, volume:%v", t.Time, t.Symbol, t.Pair, t.Price, t.Volume)
-					// log.Infof("Base token info --- Symbol: %s - Address: %s - Blockchain: %s ", t.BaseToken.Symbol, t.BaseToken.Address, t.BaseToken.Blockchain)
-					// log.Info("----------------")
-					tjs.chanTrades <- t
-				}
-			}
-		}
-	}()
-}
-
-// TODO
-// GetPairByID returns the UniswapPair with the integer id @num
-func (tjs *TraderJoeScraper) GetPairByID(num int64) (TraderJoePair, error) {
-	var contract *traderjoe.TraderjoeCaller
-	contract, err := traderjoe.NewTraderjoeCaller(common.HexToAddress(exchangeFactoryContractAddress), tjs.RestClient)
-	if err != nil {
-		log.Error(err)
-		return TraderJoePair{}, err
-	}
-
-	pairAddress, err := contract.GetAllLBPairs(&bind.CallOpts{}, common.Address{}, common.Address{})
-	if err != nil {
-		log.Error(err)
-		return TraderJoePair{}, err
-	}
-
-	pair, err := tjs.GetPairByAddress(pairAddress)
-	if err != nil {
-		log.Error(err)
-		return TraderJoePair{}, err
-	}
-	return pair, err
 }
 
 // getTradeData extracts price and volume data from TraderJoe trade information.
