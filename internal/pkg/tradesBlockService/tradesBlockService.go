@@ -166,10 +166,11 @@ func NewTradesBlockService(datastore models.Datastore, relDB models.RelDatastore
 // runs in a goroutine until s is closed
 func (s *TradesBlockService) mainLoop() {
 	var (
-		acceptCountDEX int
-		// acceptCountSwapDEX int
-		totalCount int
-		logTicker  = *time.NewTicker(120 * time.Second)
+		acceptCount        int
+		acceptCountDEX     int
+		acceptCountSwapDEX int
+		totalCount         int
+		logTicker          = *time.NewTicker(120 * time.Second)
 	)
 	for {
 		select {
@@ -192,16 +193,16 @@ func (s *TradesBlockService) mainLoop() {
 				// Collect booleans for stats.
 				tradeOk := s.checkTrade(*t)
 				// swapppedTradeOk := s.checkTrade(tSwapped)
-				if tradeOk {
-					acceptCountDEX++
-				}
+				// if tradeOk {
+				// 	acceptCountDEX++
+				// }
 				// if swapppedTradeOk {
 				// 	acceptCountSwapDEX++
 				// }
 				// if tradeOk || swapppedTradeOk {
 				// 	acceptCount++
 				// }
-				totalCount++
+				// totalCount++
 
 				// Process (possibly) both trades.
 				if tradeOk {
@@ -217,10 +218,11 @@ func (s *TradesBlockService) mainLoop() {
 			}
 		case <-logTicker.C:
 			log.Info("accepted trades DEX: ", acceptCountDEX)
-			// log.Info("accepted swapped trades DEX: ", acceptCountSwapDEX)
-			log.Info("discarded trades: ", totalCount-acceptCountDEX)
+			log.Info("accepted swapped trades DEX: ", acceptCountSwapDEX)
+			log.Info("discarded trades: ", totalCount-acceptCount)
+			acceptCount = 0
 			acceptCountDEX = 0
-			// acceptCountSwapDEX = 0
+			acceptCountSwapDEX = 0
 			totalCount = 0
 		}
 	}
