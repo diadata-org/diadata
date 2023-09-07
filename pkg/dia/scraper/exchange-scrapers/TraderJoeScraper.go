@@ -825,6 +825,3 @@ func (tjs *TraderJoeScraper) feedPoolsToSubscriptions() (pairs []TraderJoePair) 
 	}
 	return
 }
-
-
-
