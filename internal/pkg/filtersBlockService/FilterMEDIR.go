@@ -24,7 +24,7 @@ type FilterMEDIR struct {
 	modified    bool
 }
 
-//NewFilterMEDIR creates a FilterMEDIR
+// NewFilterMEDIR creates a FilterMEDIR
 func NewFilterMEDIR(asset dia.Asset, exchange string, currentTime time.Time, memory int) *FilterMEDIR {
 	filter := &FilterMEDIR{
 		asset:       asset,
@@ -96,6 +96,7 @@ func (filter *FilterMEDIR) FilterPointForBlock() *dia.FilterPoint {
 		Time:  filter.currentTime,
 	}
 }
+
 func (filter *FilterMEDIR) save(ds models.Datastore) error {
 	if filter.modified {
 		filter.modified = false
