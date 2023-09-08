@@ -103,6 +103,10 @@ func (s *FilterVWAPIR) finalCompute(t time.Time) float64 {
 
 	s.value = total / totalVolume
 
+	// Reset filters
+	s.prices = []float64{}
+	s.volumes = []float64{}
+
 	return s.value
 }
 
