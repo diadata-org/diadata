@@ -202,7 +202,6 @@ func (tjs *TraderJoeScraper) GetSwapsChannel(pairAddress common.Address) (chan *
 	return sink, nil
 }
 
-// TODO: Return here.
 func (tjs *TraderJoeScraper) normalizeTraderJoeSwap(swap traderjoeILBPair.ILBPairSwap) (normalizedSwap TraderJoeSwap) {
 	pair := MapOfPools[swap.Raw.Address.Hex()]
 	decimals0 := int(pair.Token0.Decimals)
@@ -308,7 +307,6 @@ func (tjs *TraderJoeScraper) makeTraderJoePoolMap(liquidityThreshold, liquidityT
 	if tjs.listenByAddress {
 		// Only load pool info for addresses from json file.
 		poolAddresses, errAddr := getTradeAddressesFromConfig("traderjoe/subscribe_pools/" + tjs.exchangeName)
-		// TODO: is this address correct?
 		if errAddr != nil {
 			log.Error("fetch pool addresses from config file: ", errAddr)
 		}
