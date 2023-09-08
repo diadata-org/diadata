@@ -74,6 +74,10 @@ func (s *FilterVWAPIR) finalCompute(t time.Time) float64 {
 		return 0.0
 	}
 
+	if len(s.prices) == 0 {
+		return 0.0
+	}
+
 	if len(s.prices) < 2 {
 		s.value = s.prices[0]
 		return s.prices[0]
