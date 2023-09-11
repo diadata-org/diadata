@@ -369,7 +369,7 @@ func (ob *Env) Pause(context *gin.Context) {
 		err error
 	)
 	oracleaddress := context.Query("oracleaddress")
-	chainid := context.Query("chainID")
+	chainid := context.Query("oracleChainID")
 
 	creator := context.Query("creator")
 
@@ -405,7 +405,7 @@ func (ob *Env) Delete(context *gin.Context) {
 		err error
 	)
 	oracleaddress := context.Query("oracleaddress")
-	chainID := context.Query("chainID")
+	chainID := context.Query("oracleChainID")
 
 	oracleaddress = common.HexToAddress(oracleaddress).Hex()
 
@@ -448,7 +448,7 @@ func (ob *Env) Restart(context *gin.Context) {
 		err error
 	)
 	oracleaddress := context.Query("oracleaddress")
-	chainid := context.Query("chainID")
+	chainid := context.Query("oracleChainID")
 
 	oracleaddress = common.HexToAddress(oracleaddress).Hex()
 
