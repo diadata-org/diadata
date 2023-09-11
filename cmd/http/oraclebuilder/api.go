@@ -404,6 +404,7 @@ func (ob *Env) Delete(context *gin.Context) {
 		err error
 	)
 	oracleaddress := context.Query("oracleaddress")
+	oracleaddress = common.HexToAddress(oracleaddress).Hex()
 
 	creator := context.Query("creator")
 
@@ -444,6 +445,7 @@ func (ob *Env) Restart(context *gin.Context) {
 		err error
 	)
 	oracleaddress := context.Query("oracleaddress")
+	oracleaddress = common.HexToAddress(oracleaddress).Hex()
 
 	creator := context.Query("creator")
 
@@ -490,6 +492,7 @@ func (ob *Env) Auth(context *gin.Context) {
 	chainID := context.Query("chainID")
 	creator := context.Query("creator")
 	oracleaddress := context.Query("oracleaddress")
+	oracleaddress = common.HexToAddress(oracleaddress).Hex()
 
 	if oracleaddress == "" {
 		oracleaddress = creator
