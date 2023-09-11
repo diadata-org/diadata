@@ -224,7 +224,7 @@ func (ob *Env) Create(context *gin.Context) {
 	}
 
 	if isUpdate {
-		oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress)
+		oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress, chainID)
 		if err != nil {
 			log.Errorln("error GetOracleConfig ", err)
 			context.JSON(http.StatusInternalServerError, err)
@@ -354,7 +354,7 @@ func (ob *Env) View(context *gin.Context) {
 	}
 	// creator := context.PostForm("creator")
 
-	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress)
+	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress, chainID)
 	if err != nil {
 		log.Errorln("error GetOracleConfig ", err)
 		context.JSON(http.StatusInternalServerError, err)
@@ -369,10 +369,11 @@ func (ob *Env) Pause(context *gin.Context) {
 		err error
 	)
 	oracleaddress := context.Query("oracleaddress")
+	chainid := context.Query("chainID")
 
 	creator := context.Query("creator")
 
-	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress)
+	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress, chainid)
 	if err != nil {
 		log.Errorln("error GetOracleConfig ", err)
 		context.JSON(http.StatusInternalServerError, err)
@@ -404,11 +405,13 @@ func (ob *Env) Delete(context *gin.Context) {
 		err error
 	)
 	oracleaddress := context.Query("oracleaddress")
+	chainID := context.Query("chainID")
+
 	oracleaddress = common.HexToAddress(oracleaddress).Hex()
 
 	creator := context.Query("creator")
 
-	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress)
+	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress, chainID)
 	if err != nil {
 		log.Errorln("error GetOracleConfig ", err)
 		context.JSON(http.StatusInternalServerError, err)
@@ -445,11 +448,13 @@ func (ob *Env) Restart(context *gin.Context) {
 		err error
 	)
 	oracleaddress := context.Query("oracleaddress")
+	chainid := context.Query("chainID")
+
 	oracleaddress = common.HexToAddress(oracleaddress).Hex()
 
 	creator := context.Query("creator")
 
-	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress)
+	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress, chainid)
 	if err != nil {
 		log.Errorln("error GetOracleConfig ", err)
 		context.JSON(http.StatusInternalServerError, err)
