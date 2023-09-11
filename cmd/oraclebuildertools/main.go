@@ -57,6 +57,24 @@ func main() {
 		},
 	}
 
+	var updateAddressChecksum = &cobra.Command{
+		Use: "updateaddresschecksum",
+		Run: func(cmd *cobra.Command, args []string) {
+			oracleconfigs, err := relStore.GetAllFeeders()
+			if err != nil {
+				log.Errorln("error getting feeders", err)
+				return
+			}
+			for _, oracleconfig := range oracleconfigs {
+				log.Infoln("updating oracle config for ", oracleconfig.Address)
+				err = relStore.UpdateFeederAddressCheckSum(oracleconfig.Address)
+				if err != nil {
+					log.Errorln("error UpdateFeederAddressCheckSum ", err, oracleconfig.Address)
+				}
+			}
+		},
+	}
+
 	var rootCmd = &cobra.Command{
 		Use: "oraclebuildertool",
 		Run: func(cmd *cobra.Command, args []string) {
@@ -64,7 +82,7 @@ func main() {
 		},
 	}
 
-	rootCmd.AddCommand(restartFeeder, deleteFeeder)
+	rootCmd.AddCommand(restartFeeder, deleteFeeder, updateAddressChecksum)
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)

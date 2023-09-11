@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	builderUtils "github.com/diadata-org/diadata/http/oraclebuilder/utils"
+	"github.com/ethereum/go-ethereum/common"
 
 	kr "github.com/99designs/keyring"
 	"github.com/99designs/keyring/cmd/k8sbridge"
@@ -49,8 +50,11 @@ func (ob *Env) Create(context *gin.Context) {
 	isUpdate = false
 
 	oracleaddress := context.PostForm("oracleaddress")
+	oracleaddress = common.HexToAddress(oracleaddress).Hex()
 	chainID := context.PostForm("chainID")
 	creator := context.PostForm("creator")
+	creator = common.HexToAddress(creator).Hex()
+
 	symbols := context.PostForm("symbols")
 	signedData := context.PostForm("signeddata")
 	feederID := context.PostForm("feederID")
