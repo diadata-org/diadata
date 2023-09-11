@@ -130,6 +130,7 @@ func (rdb *RelDB) UpdateFeederAddressCheckSum(oracleaddress string) (err error) 
 	UPDATE %s 
 	SET address=$1
 	WHERE address=$2`, oracleconfigTable)
+
 	_, err = rdb.postgresClient.Exec(context.Background(), query, common.HexToAddress(oracleaddress).Hex(), oracleaddress)
 	if err != nil {
 		return
@@ -146,7 +147,7 @@ func (rdb *RelDB) GetAllFeeders() (oracleconfigs []dia.OracleConfig, err error) 
 
 	query := fmt.Sprintf(`
 	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address, createddate, COALESCE(lastupdate, '0001-01-01 00:00:00'::timestamp),deleted
-	FROM %s 
+	FROM %s  WHERE mandatory_frequency  IS NOT NULL 
 	`, oracleconfigTable)
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
@@ -156,12 +157,25 @@ func (rdb *RelDB) GetAllFeeders() (oracleconfigs []dia.OracleConfig, err error) 
 
 	for rows.Next() {
 		var (
-			oracleconfig dia.OracleConfig
-			symbols      string
+			oracleconfig     dia.OracleConfig
+			symbols          string
+			frequencynull    sql.NullString
+			sleepsecondsnull sql.NullString
 		)
-		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &oracleconfig.Frequency, &oracleconfig.SleepSeconds, &oracleconfig.DeviationPermille, &oracleconfig.BlockchainNode, &oracleconfig.Active, &oracleconfig.MandatoryFrequency, &oracleconfig.FeederAddress, &oracleconfig.CreatedDate, &oracleconfig.LastUpdate, &oracleconfig.Deleted)
+		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &frequencynull, &sleepsecondsnull, &oracleconfig.DeviationPermille, &oracleconfig.BlockchainNode, &oracleconfig.Active, &oracleconfig.MandatoryFrequency, &oracleconfig.FeederAddress, &oracleconfig.CreatedDate, &oracleconfig.LastUpdate, &oracleconfig.Deleted)
 		if err != nil {
-			log.Error(err)
+
+			log.Error("GetAllFeeders scan", err, oracleconfig.FeederID)
+		}
+
+		if frequencynull.Valid {
+			oracleconfig.Frequency = frequencynull.String
+
+		}
+
+		if sleepsecondsnull.Valid {
+			oracleconfig.SleepSeconds = sleepsecondsnull.String
+
 		}
 
 		oracleconfig.Symbols = strings.Split(symbols, ",")
@@ -252,7 +266,7 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
 	return
 }
 
-func (rdb *RelDB) GetOracleConfig(address string) (oracleconfig dia.OracleConfig, err error) {
+func (rdb *RelDB) GetOracleConfig(address, chainid string) (oracleconfig dia.OracleConfig, err error) {
 	var (
 		symbols       string
 		feedSelection sql.NullString
@@ -260,8 +274,8 @@ func (rdb *RelDB) GetOracleConfig(address string) (oracleconfig dia.OracleConfig
 	query := fmt.Sprintf(`
 	SELECT address, feeder_id, owner,symbols, chainid, feedSelection,deviationpermille, sleepseconds,frequency, blockchainnode, mandatory_frequency
 	FROM %s 
-	WHERE address=$1`, oracleconfigTable)
-	err = rdb.postgresClient.QueryRow(context.Background(), query, address).Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &feedSelection, &oracleconfig.DeviationPermille, &oracleconfig.SleepSeconds, &oracleconfig.Frequency, &oracleconfig.BlockchainNode, &oracleconfig.MandatoryFrequency)
+	WHERE address=$1 and chainid=$2`, oracleconfigTable)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, address, chainid).Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &feedSelection, &oracleconfig.DeviationPermille, &oracleconfig.SleepSeconds, &oracleconfig.Frequency, &oracleconfig.BlockchainNode, &oracleconfig.MandatoryFrequency)
 	if err != nil {
 		return
 	}
