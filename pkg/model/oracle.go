@@ -304,6 +304,7 @@ func (rdb *RelDB) GetOracleUpdateCount(address string, chainid string) (int64, e
 }
 
 func (rdb *RelDB) GetOracleUpdates(address string, chainid string, offset int) ([]dia.OracleUpdate, error) {
+	//TODO: update checksum address instad of using lower
 	query := fmt.Sprintf(`
 	SELECT fu.oracle_address,
 		fu.transaction_hash,
@@ -322,7 +323,7 @@ func (rdb *RelDB) GetOracleUpdates(address string, chainid string, offset int) (
 
 
 	FROM %s fu
-	JOIN %s oc ON fu.oracle_address = oc.address AND fu.chain_id = oc.chainID
+	JOIN %s oc ON lower(fu.oracle_address = oc.address) AND fu.chain_id = oc.chainID 
 	WHERE fu.oracle_address = $1 AND fu.chain_id = $2 order by fu.update_block desc LIMIT 20 OFFSET %d
 	`, feederupdatesTable, oracleconfigTable, offset)
 
