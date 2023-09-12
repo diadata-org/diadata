@@ -391,8 +391,8 @@ func (tjs *TraderJoeScraper) sendTrade(traderjoeswap TraderJoeSwap, pool *Trader
 	t := &dia.Trade{
 		Symbol:         pool.Token0.Symbol,
 		Pair:           pool.ForeignName,
-		QuoteToken:     token1,
-		BaseToken:      token0,
+		QuoteToken:     token0,
+		BaseToken:      token1,
 		Price:          price,
 		Volume:         volume,
 		Time:           time.Unix(0, traderjoeswap.Timestamp),
