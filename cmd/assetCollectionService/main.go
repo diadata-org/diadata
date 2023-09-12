@@ -132,6 +132,14 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 		return source.NewOsmosisScraper(exchanges[dia.OsmosisExchange])
 	case dia.VelodromeExchange:
 		return source.NewVelodromeAssetSource(exchanges[dia.VelodromeExchange])
+	case dia.TraderJoeExchangeV2_1:
+		return source.NewTraderJoeAssetSource(exchanges[dia.TraderJoeExchangeV2_1])
+	case dia.TraderJoeExchangeV2_1Arbitrum:
+		return source.NewTraderJoeAssetSource(exchanges[dia.TraderJoeExchangeV2_1Arbitrum])
+	case dia.TraderJoeExchangeV2_1Avalanche:
+		return source.NewTraderJoeAssetSource(exchanges[dia.TraderJoeExchangeV2_1Avalanche])
+	case dia.TraderJoeExchangeV2_1BNB:
+		return source.NewTraderJoeAssetSource(exchanges[dia.TraderJoeExchangeV2_1BNB])
 	case "assetlists":
 		return source.NewJSONReader(exchange, secret)
 	default:
