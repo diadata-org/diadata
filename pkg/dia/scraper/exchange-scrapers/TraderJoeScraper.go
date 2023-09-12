@@ -201,7 +201,6 @@ func (tjs *TraderJoeScraper) GetSwapsChannel(pairAddress common.Address) (chan *
 func (tjs *TraderJoeScraper) normalizeTraderJoeSwap(swap traderjoeILBPair.ILBPairSwap) (normalizedSwap TraderJoeSwap) {
 
 	pair := MapOfPools[swap.Raw.Address.Hex()]
-	log.Infof("pair: %s - %s", pair.Token0.Symbol, pair.Token1.Symbol)
 	decimals0 := int(pair.Token0.Decimals)
 	decimals1 := int(pair.Token1.Decimals)
 
@@ -210,7 +209,7 @@ func (tjs *TraderJoeScraper) normalizeTraderJoeSwap(swap traderjoeILBPair.ILBPai
 	amount1Out := new(big.Int).SetBytes(swap.AmountsOut[:16])
 	amount0Out := new(big.Int).SetBytes(swap.AmountsOut[16:])
 	var amount0, amount1 float64
-	log.Infof("amount0In -- amount1In -- amount0Out -- amount1Out: %v -- %v -- %v -- %v", amount0In, amount1In, amount0Out, amount1Out)
+
 	if amount0In.Cmp(big.NewInt(0)) == 1 {
 		amount0, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(amount0In), new(big.Float).SetFloat64(math.Pow10(decimals0))).Float64()
 	} else {
@@ -221,8 +220,6 @@ func (tjs *TraderJoeScraper) normalizeTraderJoeSwap(swap traderjoeILBPair.ILBPai
 	} else {
 		amount1, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(amount1Out), new(big.Float).SetFloat64(math.Pow10(decimals1))).Float64()
 	}
-
-	log.Infof("amount0 -- amount1: %v -- %v", amount0, amount1)
 
 	normalizedSwap = TraderJoeSwap{
 		ID:        swap.Raw.TxHash.Hex(),
