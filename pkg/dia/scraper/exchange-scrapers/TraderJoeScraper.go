@@ -72,8 +72,6 @@ type TraderJoeScraper struct {
 	pairReceived chan *TraderJoePair
 	// Name of the exchange.
 	exchangeName string
-	// Ethereum block number to start scraping from.
-	startBlock uint64
 	// Time interval for waiting between actions.
 	waitTime int
 	// Option to listen for trading pairs by address.
@@ -102,16 +100,15 @@ func NewTraderJoeScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 		log.Fatal("parse LISTEN_BY_ADDRESS: ", err)
 	}
 
-	// TODO: revisit block numbers
 	switch exchange.Name {
 	case dia.TraderJoeExchangeV2_1:
-		tjs = makeTraderJoeScraper(exchange, listenByAddress, "", "", "200", uint64(22757913))
+		tjs = makeTraderJoeScraper(exchange, listenByAddress, "", "", "200")
 	case dia.TraderJoeExchangeV2_1Arbitrum:
-		tjs = makeTraderJoeScraper(exchange, listenByAddress, "", "", "200", uint64(107808631)) // startBlock pulled from: https://arbiscan.io/tx/0x7e1d7980bdbfb09b0a64d35e660cee300accaf017674db7a3ac9f655ca72ac35
+		tjs = makeTraderJoeScraper(exchange, listenByAddress, "", "", "200")
 	case dia.TraderJoeExchangeV2_1Avalanche:
-		tjs = makeTraderJoeScraper(exchange, listenByAddress, "", "", "200", uint64(165))
+		tjs = makeTraderJoeScraper(exchange, listenByAddress, "", "", "200")
 	case dia.TraderJoeExchangeV2_1BNB:
-		tjs = makeTraderJoeScraper(exchange, listenByAddress, "", "", "200", uint64(27099340)) // startBlock pulled from: https://bscscan.com/tx/0x4c8a1f2f3d1a92281a3067aaea799536118e02a072380ccd3df642e8adecba6d
+		tjs = makeTraderJoeScraper(exchange, listenByAddress, "", "", "200")
 	}
 
 	tjs.relDB = relDB
@@ -142,7 +139,7 @@ func NewTraderJoeScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 // makeTraderJoeScraper creates and initializes a Trader Joe scraper instance with the given exchange information,
 // connection details, and configuration parameters. It establishes REST and WebSocket clients for the blockchain,
 // determines wait time, and sets up various channels and data structures for scraping tasks.
-func makeTraderJoeScraper(exchange dia.Exchange, listenByAddress bool, restDial string, wsDial string, waitMilliseconds string, startBlock uint64) *TraderJoeScraper {
+func makeTraderJoeScraper(exchange dia.Exchange, listenByAddress bool, restDial string, wsDial string, waitMilliseconds string) *TraderJoeScraper {
 	var (
 		restClient, wsClient *ethclient.Client
 		s                    *TraderJoeScraper
@@ -179,7 +176,6 @@ func makeTraderJoeScraper(exchange dia.Exchange, listenByAddress bool, restDial 
 		chanTrades:             make(chan *dia.Trade),
 		waitTime:               waitTime,
 		listenByAddress:        listenByAddress,
-		startBlock:             startBlock,
 		factoryContractAddress: common.HexToAddress(exchange.Contract),
 	}
 
@@ -203,19 +199,31 @@ func (tjs *TraderJoeScraper) GetSwapsChannel(pairAddress common.Address) (chan *
 }
 
 func (tjs *TraderJoeScraper) normalizeTraderJoeSwap(swap traderjoeILBPair.ILBPairSwap) (normalizedSwap TraderJoeSwap) {
+
 	pair := MapOfPools[swap.Raw.Address.Hex()]
 	decimals0 := int(pair.Token0.Decimals)
 	decimals1 := int(pair.Token1.Decimals)
 
-	amountIn := new(big.Int).SetBytes(swap.AmountsIn[:])
-	amountOut := new(big.Int).SetBytes(swap.AmountsOut[:])
+	amount1In := new(big.Int).SetBytes(swap.AmountsIn[:16])
+	amount0In := new(big.Int).SetBytes(swap.AmountsIn[16:])
+	amount1Out := new(big.Int).SetBytes(swap.AmountsOut[:16])
+	amount0Out := new(big.Int).SetBytes(swap.AmountsOut[16:])
+	var amount0, amount1 float64
 
-	amount0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(amountIn), new(big.Float).SetFloat64(math.Pow10(decimals0))).Float64()
-	amount1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(amountOut), new(big.Float).SetFloat64(math.Pow10(decimals1))).Float64()
+	if amount0In.Cmp(big.NewInt(0)) == 1 {
+		amount0, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(amount0In), new(big.Float).SetFloat64(math.Pow10(decimals0))).Float64()
+	} else {
+		amount0, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(amount0Out), new(big.Float).SetFloat64(math.Pow10(decimals0))).Float64()
+	}
+	if amount1In.Cmp(big.NewInt(0)) == 1 {
+		amount1, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(amount1In), new(big.Float).SetFloat64(math.Pow10(decimals1))).Float64()
+	} else {
+		amount1, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(amount1Out), new(big.Float).SetFloat64(math.Pow10(decimals1))).Float64()
+	}
 
 	normalizedSwap = TraderJoeSwap{
 		ID:        swap.Raw.TxHash.Hex(),
-		Timestamp: time.Now().Unix(),
+		Timestamp: time.Now().UnixNano(),
 		Pair:      pair,
 		Amount0:   amount0,
 		Amount1:   amount1,
@@ -383,11 +391,11 @@ func (tjs *TraderJoeScraper) sendTrade(traderjoeswap TraderJoeSwap, pool *Trader
 	t := &dia.Trade{
 		Symbol:         pool.Token0.Symbol,
 		Pair:           pool.ForeignName,
-		QuoteToken:     token1,
-		BaseToken:      token0,
+		QuoteToken:     token0,
+		BaseToken:      token1,
 		Price:          price,
 		Volume:         volume,
-		Time:           time.Unix(traderjoeswap.Timestamp, 0),
+		Time:           time.Unix(0, traderjoeswap.Timestamp),
 		PoolAddress:    pool.Address.Hex(),
 		ForeignTradeID: traderjoeswap.ID,
 		//EstimatedUSDPrice: 0,
@@ -420,6 +428,18 @@ func (tjs *TraderJoeScraper) sendTrade(traderjoeswap TraderJoeSwap, pool *Trader
 type TraderJoeTradeScraper struct {
 	parent *TraderJoeScraper
 	pair   dia.ExchangePair
+}
+
+func (tjs *TraderJoeScraper) FetchAvailablePairs() ([]dia.ExchangePair, error) {
+	return []dia.ExchangePair{}, nil
+}
+
+func (tjs *TraderJoeScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+	return dia.Asset{Symbol: symbol}, nil
+}
+
+func (tjs *TraderJoeScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+	return pair, nil
 }
 
 // Close closes any existing API connections, as well as channels of PairScrapers from calls to ScrapePair

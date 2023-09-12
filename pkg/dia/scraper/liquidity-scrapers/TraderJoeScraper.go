@@ -10,6 +10,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	traderjoe "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/traderjoe2.1"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/traderjoe2.1/traderjoeILBPair"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -43,13 +44,13 @@ func NewTraderJoeLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, da
 
 	switch exchange.Name {
 	case dia.TraderJoeExchangeV2_1:
-		tjls = makeTraderJoeScraper(exchange, "", "", relDB, datastore, "200", uint64(12369621))
-	case dia.TraderJoeExchangeV2_1Avalanche:
-		tjls = makeTraderJoeScraper(exchange, "", "", relDB, datastore, "200", uint64(22757913))
-	case dia.TraderJoeExchangeV2_1BNB:
-		tjls = makeTraderJoeScraper(exchange, "", "", relDB, datastore, "200", uint64(165))
+		tjls = makeTraderJoeScraper(exchange, "", "", relDB, datastore, "200", uint64(17821282))
 	case dia.TraderJoeExchangeV2_1Arbitrum:
-		tjls = makeTraderJoeScraper(exchange, "", "", relDB, datastore, "200", uint64(26956207))
+		tjls = makeTraderJoeScraper(exchange, "", "", relDB, datastore, "200", uint64(77473199))
+	case dia.TraderJoeExchangeV2_1Avalanche:
+		tjls = makeTraderJoeScraper(exchange, "", "", relDB, datastore, "200", uint64(28371397))
+	case dia.TraderJoeExchangeV2_1BNB:
+		tjls = makeTraderJoeScraper(exchange, "", "", relDB, datastore, "200", uint64(27099340))
 	}
 
 	go func() {
@@ -60,7 +61,7 @@ func NewTraderJoeLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, da
 
 // makeTraderJoeScraper initializes a Trader Joe liquidity scraper, creating an instance of the
 // TraderJoeLiquidityScraper struct with the specified configuration and parameters.
-func makeTraderJoeScraper(exchange dia.Exchange, restDial string, websocketDial string, relDB *models.RelDB, datastore *models.DB, waitMilliSeconds string, startBlock uint64) *TraderJoeLiquidityScraper {
+func makeTraderJoeScraper(exchange dia.Exchange, restDial string, wsDial string, relDB *models.RelDB, datastore *models.DB, waitMilliSeconds string, startBlock uint64) *TraderJoeLiquidityScraper {
 	var (
 		restClient  *ethclient.Client
 		wsClient    *ethclient.Client
@@ -75,7 +76,7 @@ func makeTraderJoeScraper(exchange dia.Exchange, restDial string, websocketDial 
 	if err != nil {
 		log.Fatal("init rest client: ", err)
 	}
-	wsClient, err = ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_WS", websocketDial))
+	wsClient, err = ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_WS", wsDial))
 	if err != nil {
 		log.Fatal("init ws client: ", err)
 	}
@@ -107,12 +108,7 @@ func makeTraderJoeScraper(exchange dia.Exchange, restDial string, websocketDial 
 // fetchPools retrieves pool creation events from the Trader Joe factory contract address and processes them.
 func (tjls *TraderJoeLiquidityScraper) fetchPools() {
 
-	// filter from contract created at: https://etherscan.io/tx/0x8e42f2F4101563bF679975178e880FD87d3eFd4e
-
-	// Log a message to indicate the start of pool creation event retrieval.
 	log.Info("Fetching Trader Joe LBPairCreated events...")
-
-	// Log the factory contract address being used for filtering.
 	log.Info("Getting lb pairs creations from address: ", tjls.factoryContract)
 
 	// Initialize a count for the number of pairs processed.
@@ -172,35 +168,18 @@ func (tjls *TraderJoeLiquidityScraper) fetchPools() {
 		pool.Blockchain = dia.BlockChain{Name: tjls.blockchain}
 		pool.Address = lbPairCreated.Event.LBPair.Hex()
 
-		var (
-			balance0Big *big.Int
-			balance1Big *big.Int
-		)
-
-		// Create a token caller to interact with the liquidity pool's contract.
-		tokenCaller, err := ethhelper.NewTokenCaller(common.HexToAddress(lbPairCreated.Event.LBPair.Hex()), tjls.RestClient)
+		pairFiltererContract, err := traderjoeILBPair.NewILBPairCaller(lbPairCreated.Event.LBPair, tjls.RestClient)
 		if err != nil {
-			log.Warn("unable to create token caller", err)
-			balance0Big, balance1Big = big.NewInt(0), big.NewInt(0)
+			log.Fatal(err)
 		}
-
-		// Retrieve the token reserves from the liquidity pool contract.
-		if tokenCaller != nil {
-			var reserves []interface{}
-			if err = tokenCaller.Contract.Call(&bind.CallOpts{}, &reserves, "getReserves"); err != nil {
-				log.Warn("unable to get reserves", err)
-			}
-	
-			if len(reserves) == 2 {
-				balance0Big, balance1Big = reserves[0].(*big.Int), reserves[1].(*big.Int)
-			} else {
-				balance0Big, balance1Big = big.NewInt(0), big.NewInt(0)
-			}
+		reserves, err := pairFiltererContract.GetReserves(&bind.CallOpts{})
+		if err != nil {
+			log.Fatal("get reserves on pool ", lbPairCreated.Event.LBPair.Hex())
 		}
 
 		// Calculate token balances in floating-point format.
-		balance0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance0Big), new(big.Float).SetFloat64(math.Pow10(int(asset0.Decimals)))).Float64()
-		balance1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance1Big), new(big.Float).SetFloat64(math.Pow10(int(asset1.Decimals)))).Float64()
+		balance0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(reserves.ReserveX), new(big.Float).SetFloat64(math.Pow10(int(asset0.Decimals)))).Float64()
+		balance1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(reserves.ReserveY), new(big.Float).SetFloat64(math.Pow10(int(asset1.Decimals)))).Float64()
 
 		// Append asset volumes to the pool.
 		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset0, Volume: balance0, Index: uint8(0)})

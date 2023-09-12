@@ -3133,7 +3133,11 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 	}
 
 	if sizeBinSeconds < 20 || sizeBinSeconds > 21600 {
-		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("sizeBinSeconds out of range. Must be between %v and %v.", 20*time.Second, 6*time.Hour))
+		restApi.SendError(
+			c,
+			http.StatusInternalServerError,
+			fmt.Errorf("sizeBinSeconds out of range. Must be between %v and %v.", 20*time.Second, 6*time.Hour),
+		)
 		return
 	}
 

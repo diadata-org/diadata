@@ -166,6 +166,7 @@ func (datastore *DB) GetExchangePairVolumes(asset dia.Asset, starttime time.Time
 			FROM %s
 			WHERE quotetokenaddress='%s'
 			AND quotetokenblockchain='%s'
+			AND basetokenaddress!=''
 			AND time>%d
 			AND time<=%d
 			)
