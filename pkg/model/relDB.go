@@ -171,7 +171,7 @@ type RelDatastore interface {
 	GetFeederResources() (addresses []string, err error)
 	GetOracleUpdates(address string, chainid string, offset int) ([]dia.OracleUpdate, error)
 	GetOracleUpdateCount(address string, chainid string) (int64, error)
-	UpdateFeederAddressCheckSum(oracleaddress string)
+	UpdateFeederAddressCheckSum(oracleaddress string) error
 }
 
 const (
