@@ -258,6 +258,7 @@ type PairVolume struct {
 	Pair        Pair    `json:"Pair"`
 	PoolAddress string  `json:"Pooladdress"`
 	Volume      float64 `json:"Volume"`
+	TradesCount int64   `json:"TradesCount"`
 }
 
 type EthereumBlockData struct {
