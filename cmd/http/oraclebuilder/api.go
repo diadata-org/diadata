@@ -315,7 +315,7 @@ func (ob *Env) Stats(context *gin.Context) {
 
 // List: list All feeders
 func (ob *Env) ListAll(context *gin.Context) {
-	oracles, err := ob.RelDB.GetAllFeeders()
+	oracles, err := ob.RelDB.GetAllFeeders(true)
 	if err != nil {
 		log.Errorln("List All Oracles: error on GetAllFeeders ", err)
 		context.JSON(http.StatusInternalServerError, err)
