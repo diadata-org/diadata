@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	models "github.com/diadata-org/diadata/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -23,7 +24,6 @@ type FilterVWAPIR struct {
 	asset       dia.Asset
 }
 
-// NewFilterVWAP ...
 func NewFilterVWAPIR(asset dia.Asset, exchange string, currentTime time.Time, param int) *FilterVWAPIR {
 	s := &FilterVWAPIR{
 		asset:       asset,
@@ -37,7 +37,6 @@ func NewFilterVWAPIR(asset dia.Asset, exchange string, currentTime time.Time, pa
 	return s
 }
 
-// Compute ...
 func (s *FilterVWAPIR) Compute(trade dia.Trade) {
 	s.compute(trade)
 }
@@ -46,7 +45,7 @@ func (filter *FilterVWAPIR) compute(trade dia.Trade) {
 	filter.modified = true
 	if filter.lastTrade != (dia.Trade{}) {
 		if trade.Time.Before(filter.currentTime) {
-			log.Errorln("FilterVWAP: Ignoring Trade out of order ", filter.currentTime, trade.Time)
+			log.Errorln("FilterVWAPIR: Ignoring Trade out of order ", filter.currentTime, trade.Time)
 			return
 		}
 	}
@@ -66,14 +65,17 @@ func (filter *FilterVWAPIR) processDataPoint(trade dia.Trade) {
 	filter.volumes = append([]float64{trade.Volume}, filter.volumes...)
 }
 
-// FinalCompute ...
 func (s *FilterVWAPIR) FinalCompute(t time.Time) float64 {
 	log.Info("final compute of time ", t)
-	return s.finalCompute()
+	return s.finalCompute(t)
 }
 
-func (s *FilterVWAPIR) finalCompute() float64 {
+func (s *FilterVWAPIR) finalCompute(t time.Time) float64 {
 	if s.lastTrade == (dia.Trade{}) {
+		return 0.0
+	}
+
+	if len(s.prices) == 0 {
 		return 0.0
 	}
 
@@ -106,13 +108,17 @@ func (s *FilterVWAPIR) finalCompute() float64 {
 
 	s.value = total / totalVolume
 
+	// Reset filters
+	s.prices = []float64{}
+	s.volumes = []float64{}
+
 	return s.value
 }
 
-// FilterPointForBlock ...
 func (s *FilterVWAPIR) FilterPointForBlock() *dia.FilterPoint {
 	return s.filterPointForBlock()
 }
+
 func (s *FilterVWAPIR) filterPointForBlock() *dia.FilterPoint {
 	if s.exchange != "" {
 		return &dia.FilterPoint{
@@ -128,5 +134,18 @@ func (s *FilterVWAPIR) filterPointForBlock() *dia.FilterPoint {
 			Time:  s.currentTime,
 			Asset: s.asset,
 		}
+	}
+}
+
+func (filter *FilterVWAPIR) save(ds models.Datastore) error {
+	if filter.modified {
+		filter.modified = false
+		err := ds.SetFilter(filter.filterName, filter.asset, filter.exchange, filter.value, filter.currentTime)
+		if err != nil {
+			log.Errorln("FilterVWAPIR: Error:", err)
+		}
+		return err
+	} else {
+		return nil
 	}
 }
