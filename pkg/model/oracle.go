@@ -146,7 +146,7 @@ func (rdb *RelDB) GetAllFeeders(isDeleted bool) (oracleconfigs []dia.OracleConfi
 	)
 
 	query := fmt.Sprintf(`
-	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address, createddate, COALESCE(lastupdate, '0001-01-01 00:00:00'::timestamp),deleted
+	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address, createddate, COALESCE(lastupdate, '0001-01-01 00:00:00'::timestamp),deleted,feedselection,expired,expired_time
 	FROM %s  WHERE mandatory_frequency  IS NOT NULL  and deleted=$1
 	`, oracleconfigTable)
 	rows, err = rdb.postgresClient.Query(context.Background(), query, isDeleted)
@@ -161,8 +161,9 @@ func (rdb *RelDB) GetAllFeeders(isDeleted bool) (oracleconfigs []dia.OracleConfi
 			symbols          string
 			frequencynull    sql.NullString
 			sleepsecondsnull sql.NullString
+			feedSelection    sql.NullString
 		)
-		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &frequencynull, &sleepsecondsnull, &oracleconfig.DeviationPermille, &oracleconfig.BlockchainNode, &oracleconfig.Active, &oracleconfig.MandatoryFrequency, &oracleconfig.FeederAddress, &oracleconfig.CreatedDate, &oracleconfig.LastUpdate, &oracleconfig.Deleted)
+		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &frequencynull, &sleepsecondsnull, &oracleconfig.DeviationPermille, &oracleconfig.BlockchainNode, &oracleconfig.Active, &oracleconfig.MandatoryFrequency, &oracleconfig.FeederAddress, &oracleconfig.CreatedDate, &oracleconfig.LastUpdate, &oracleconfig.Deleted, &feedSelection, &oracleconfig.Expired, &oracleconfig.ExpiredDate)
 		if err != nil {
 
 			log.Error("GetAllFeeders scan", err, oracleconfig.FeederID)
@@ -171,6 +172,10 @@ func (rdb *RelDB) GetAllFeeders(isDeleted bool) (oracleconfigs []dia.OracleConfi
 		if frequencynull.Valid {
 			oracleconfig.Frequency = frequencynull.String
 
+		}
+
+		if feedSelection.Valid {
+			oracleconfig.FeederSelection = feedSelection.String
 		}
 
 		if sleepsecondsnull.Valid {

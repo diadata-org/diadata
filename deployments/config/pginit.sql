@@ -289,6 +289,10 @@ CREATE TABLE oracleconfig (
 
 ALTER TABLE oracleconfig  ADD COLUMN creation_block_time TIMESTAMP DEFAULT 'epoch'::timestamp;
 ALTER TABLE oracleconfig  ADD COLUMN feedSelection TEXT ;
+ALTER TABLE oracleconfig  ADD COLUMN expired boolean default false ;
+ALTER TABLE oracleconfig  ADD COLUMN expired_time TIMESTAMP DEFAULT 'epoch'::timestamp;
+
+
 
 
 
