@@ -230,10 +230,32 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
 		deviationFloat float64
 	)
 
+	/*
+	 `SELECT address, chainid,  COALESCE(latest.scraped_block, 0) AS latest_scraped_block FROM oracleconfig
+	  LEFT JOIN (SELECT oracle_address, chain_id, MAX(update_block) AS scraped_block FROM feederupdates GROUP BY oracle_address,chain_id) latest ON (oracleconfig.address = latest.oracle_address and oracleconfig.chainid = latest.chain_id) WHERE  oracleconfig.chainid = '%s'`
+
+
+	*/
+
 	query := fmt.Sprintf(`
-	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address, createddate,feedselection, COALESCE(lastupdate, '0001-01-01 00:00:00'::timestamp)
-	FROM %s 
-	WHERE owner=$1 and deleted=false`, oracleconfigTable)
+	SELECT 
+    	t1.address,  t1.feeder_id,  t1.owner,  t1.symbols,  t1.chainID, 
+    	t1.frequency,  t1.sleepseconds,  t1.deviationpermille,  t1.blockchainnode,   t1.active, 
+    	t1.mandatory_frequency,  t1.feeder_address,  t1.createddate,  t1.feedselection, 
+    	COALESCE(t1.lastupdate, '0001-01-01 00:00:00'::timestamp) AS lastupdate, 
+		t1.expired, t1.expired_time,
+    	COALESCE(MAX(fu.update_time), '0001-01-01 00:00:00'::timestamp) AS max_update_time
+	FROM %s AS t1
+	LEFT JOIN %s AS fu 
+    ON t1.address = fu.oracle_address 
+    AND t1.chainID = fu.chain_id
+	WHERE t1.owner = $1 
+    AND t1.deleted = false
+	GROUP BY  
+		t1.address,  t1.feeder_id,  t1.owner,  t1.symbols,  t1.chainID, 
+   		t1.frequency,  t1.sleepseconds,  t1.deviationpermille,  t1.blockchainnode,  t1.active, 
+		t1.mandatory_frequency,  t1.feeder_address, t1.createddate, t1.feedselection, 
+     	t1.lastupdate, t1.expired,t1.expired_time;`, oracleconfigTable, feederupdatesTable)
 	rows, err = rdb.postgresClient.Query(context.Background(), query, owner)
 	if err != nil {
 		return
@@ -247,7 +269,10 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
 			feedSelection sql.NullString
 		)
 
-		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &oracleconfig.Frequency, &oracleconfig.SleepSeconds, &oracleconfig.DeviationPermille, &oracleconfig.BlockchainNode, &oracleconfig.Active, &oracleconfig.MandatoryFrequency, &oracleconfig.FeederAddress, &oracleconfig.CreatedDate, &feedSelection, &oracleconfig.LastUpdate)
+		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols,
+			&oracleconfig.ChainID, &oracleconfig.Frequency, &oracleconfig.SleepSeconds, &oracleconfig.DeviationPermille,
+			&oracleconfig.BlockchainNode, &oracleconfig.Active, &oracleconfig.MandatoryFrequency, &oracleconfig.FeederAddress,
+			&oracleconfig.CreatedDate, &feedSelection, &oracleconfig.LastUpdate, &oracleconfig.Expired, &oracleconfig.ExpiredDate, &oracleconfig.LastOracleUpdate)
 		if err != nil {
 			log.Error(err)
 		}
