@@ -54,7 +54,7 @@ func TestFilterMEDIRMedianCleanOutliers(t *testing.T) {
 			Symbol: "XRP",
 			Name:   "XRP",
 		}
-		f := NewFilterMEDIR(assetXRP, "", d, memory)
+		f := NewFilterMEDIR(assetXRP, "", d, memory, false)
 		for _, p := range c.samples {
 			f.compute(dia.Trade{EstimatedUSDPrice: p, Time: d})
 			d = d.Add(time.Second)

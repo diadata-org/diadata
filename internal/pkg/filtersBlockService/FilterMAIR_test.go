@@ -113,7 +113,7 @@ func TestFilterMAIRIgnore(t *testing.T) {
 		Symbol: "XRP",
 		Name:   "XRP",
 	}
-	f := NewFilterMAIR(assetXRP, "", d, filterParam)
+	f := NewFilterMAIR(assetXRP, "", d, filterParam, false)
 	p := firstPrice
 	priceIncrements := 1.0
 	for i := 0; i <= steps; i++ {
@@ -205,7 +205,7 @@ func TestFilterMAIRAverageCleanOutliers(t *testing.T) {
 			Symbol: "XRP",
 			Name:   "XRP",
 		}
-		f := NewFilterMAIR(assetXRP, "", d, memory)
+		f := NewFilterMAIR(assetXRP, "", d, memory, false)
 		for _, p := range c.samples {
 			f.compute(dia.Trade{EstimatedUSDPrice: p, Time: d})
 			d = d.Add(time.Second)
