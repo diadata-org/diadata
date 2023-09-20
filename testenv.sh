@@ -184,7 +184,8 @@ function main() {
         esac
     done
 
-
+    # We should update the command variable after the shift operations!
+    command=("$@")
     # Check dependencies
     if ! hash git 2> /dev/null; then echo "Git not found" >&2; return 1; fi
     if ! hash docker 2> /dev/null; then echo "Docker not found" >&2; return 1; fi
@@ -226,7 +227,7 @@ function main() {
     local version_detected
     version_detected=$(git describe --tags --abbrev=0)
     declare -a demos_scraper_cex=("bitfinex" "bittrex" "coinbase" "mexc")
-    declare -a demos_scraper_dex=("platypus" "orca")
+    declare -a demos_scraper_dex=("platypus" "orca", "curve")
     declare -a demos_scraper_liquidity=("platypus" "orca")
     declare -a demos_scraper_foreign=("yahoofinance")
 
@@ -290,8 +291,9 @@ function main() {
             _build_ifnotexist Dockerfile-tradesBlockService-Dev dia.tradesblockservice.dev
             _build_ifnotexist Dockerfile-pairDiscoveryService-Dev dia.pairdiscoveryservice.dev
             _build_ifnotexist Dockerfile-genericCollector-Dev dia.genericcollector.dev
-            _build_ifnotexist Dockerfile-genericForeignScraper-Dev dia.genericforeignscraper.dev
-            _build_ifnotexist Dockerfile-liquidityScraper-Dev dia.liquidityscraper.dev
+            # FIXME: missing docker files!
+            # _build_ifnotexist Dockerfile-genericForeignScraper-Dev dia.genericforeignscraper.dev
+            # _build_ifnotexist Dockerfile-liquidityScraper-Dev dia.liquidityscraper.dev
             _build_ifnotexist Dockerfile-assetCollectionService-Dev dia.assetcollectionservice.dev
             if [ "$arg_full_mode" = true ]; then
                 _build_ifnotexist Dockerfile-blockchainservice-Dev dia.blockchainservice.dev
@@ -311,8 +313,9 @@ function main() {
             _image_exist dia.tradesblockservice.dev || exit 1
             _image_exist dia.pairdiscoveryservice.dev || exit 1
             _image_exist dia.genericcollector.dev || exit 1
-            _image_exist dia.genericforeignscraper.dev || exit 1
-            _image_exist dia.liquidityscraper.dev || exit 1
+            # FIXME: missing docker files!
+            # _image_exist dia.genericforeignscraper.dev || exit 1
+            # _image_exist dia.liquidityscraper.dev || exit 1
             _image_exist dia.assetcollectionservice.dev || exit 1
             if [ "$arg_full_mode" = true ]; then
                 _image_exist dia.blockchainservice.dev || exit 1
@@ -399,15 +402,25 @@ function main() {
         unzip -o snapshot.zip
 
         # Run the psql commands
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} --file output-blockchain.sql
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} --file output-exchange.sql
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} --file output-asset.sql
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} --file output-pool.sql
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} --file output-poolasset.sql
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} --file output-exchangepair.sql
+        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "truncate table blockchain cascade"
+        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "truncate table asset cascade"
+        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "truncate table exchange cascade"
+        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "truncate table exchangepair cascade"
+        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "truncate table pool cascade"
+        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "truncate table poolasset cascade"
+        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "\copy asset FROM 'output_assets.csv' DELIMITER ';' CSV"
+        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "\copy blockchain FROM 'output_blockchain.csv' DELIMITER ';' CSV"
+        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "\copy exchangepair FROM 'output_exchangepair.csv' DELIMITER ';' CSV"
+        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "\copy exchange FROM 'output_cex.csv' DELIMITER ';' CSV"
+        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "\copy exchange FROM 'output_dex.csv' DELIMITER ';' CSV"
+        # FIXME: this will raise: ERROR:  invalid input syntax for type numeric: "2023-09-07 09:05:45.012443"
+        # psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "\copy poolasset FROM 'output_poolasset.csv' DELIMITER ';' CSV"
+        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "\copy pool FROM 'output_pool.csv' DELIMITER ';' CSV"
 
-        # Delete the output-*.sql files
-        rm output-blockchain.sql
+
+        # Delete the output-*.sql and snapshot.zip files
+        rm output_*.csv
+        rm snapshot.zip
 
         echo "Data import and processing completed successfully."
       fi

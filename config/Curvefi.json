@@ -1,0 +1,10 @@
+{
+  "Coins": [
+    {
+      "Symbol": "Curve Coin",
+      "ForeignName": "CRV",
+      "Exchange": "Curvefi",
+      "Ignore": false
+    }
+  ]
+}
