@@ -224,7 +224,7 @@ func (rdb *RelDB) GetFeederResources() (addresses []string, err error) {
 
 }
 
-func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleConfig, err error) {
+func (rdb *RelDB) GetOraclesByOwner(owner string, deleted, expired bool) (oracleconfigs []dia.OracleConfig, err error) {
 	var (
 		rows           pgx.Rows
 		deviationFloat float64
@@ -250,13 +250,13 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
     ON t1.address = fu.oracle_address 
     AND t1.chainID = fu.chain_id
 	WHERE t1.owner = $1 
-    AND t1.deleted = false
+    AND t1.deleted = $2
 	GROUP BY  
 		t1.address,  t1.feeder_id,  t1.owner,  t1.symbols,  t1.chainID, 
    		t1.frequency,  t1.sleepseconds,  t1.deviationpermille,  t1.blockchainnode,  t1.active, 
 		t1.mandatory_frequency,  t1.feeder_address, t1.createddate, t1.feedselection, 
      	t1.lastupdate, t1.expired,t1.expired_time;`, oracleconfigTable, feederupdatesTable)
-	rows, err = rdb.postgresClient.Query(context.Background(), query, owner)
+	rows, err = rdb.postgresClient.Query(context.Background(), query, owner, deleted)
 	if err != nil {
 		return
 	}
@@ -291,7 +291,12 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
 			oracleconfig.DeviationPermille = fmt.Sprintf("%.2f", deviationFloat/10)
 		}
 
-		oracleconfig.ExpiringDate = oracleconfig.LastOracleUpdate.Add(time.Duration(60 * time.Hour * 24))
+		lastupdate := oracleconfig.LastOracleUpdate
+
+		if oracleconfig.LastOracleUpdate.IsZero() {
+			lastupdate = oracleconfig.CreatedDate
+		}
+		oracleconfig.ExpiringDate = lastupdate.Add(time.Duration(60 * time.Hour * 24))
 		if oracleconfig.ExpiringDate.Before(time.Now()) {
 			oracleconfig.Expired = true
 		}

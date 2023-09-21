@@ -253,7 +253,19 @@ func (ob *Env) Create(context *gin.Context) {
 // List: list owner oracles
 func (ob *Env) List(context *gin.Context) {
 	creator := context.Query("creator")
-	oracles, err := ob.RelDB.GetOraclesByOwner(creator)
+	deleted := context.Query("deleted")
+	expired := context.Query("expired")
+
+	isDeleted, err := strconv.ParseBool(deleted)
+	if err != nil {
+		isDeleted = true
+	}
+	isExpired, err := strconv.ParseBool(expired)
+	if err != nil {
+		isExpired = true
+	}
+
+	oracles, err := ob.RelDB.GetOraclesByOwner(creator, isDeleted, isExpired)
 	if err != nil {
 		log.Errorln("List Oracles: error on getOraclesByOwner ", err)
 		context.JSON(http.StatusInternalServerError, err)
