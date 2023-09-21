@@ -292,6 +292,9 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
 		}
 
 		oracleconfig.ExpiringDate = oracleconfig.LastOracleUpdate.Add(time.Duration(60 * time.Hour * 24))
+		if oracleconfig.ExpiringDate.Before(time.Now()) {
+			oracleconfig.Expired = true
+		}
 
 		oracleconfigs = append(oracleconfigs, oracleconfig)
 	}
