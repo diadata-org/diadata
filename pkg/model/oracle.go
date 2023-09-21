@@ -291,6 +291,8 @@ func (rdb *RelDB) GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleCon
 			oracleconfig.DeviationPermille = fmt.Sprintf("%.2f", deviationFloat/10)
 		}
 
+		oracleconfig.ExpiringDate = oracleconfig.LastOracleUpdate.Add(time.Duration(60 * time.Hour * 24))
+
 		oracleconfigs = append(oracleconfigs, oracleconfig)
 	}
 	return

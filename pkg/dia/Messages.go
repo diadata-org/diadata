@@ -740,6 +740,7 @@ type OracleConfig struct {
 	FeederSelection    string
 	Expired            bool
 	ExpiredDate        time.Time
+	ExpiringDate       time.Time
 	LastOracleUpdate   time.Time
 }
 
