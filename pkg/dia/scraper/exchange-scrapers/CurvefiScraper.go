@@ -27,8 +27,8 @@ import (
 )
 
 const (
-	curveRestDialEth      = "https://nd-475-370-970.p2pify.com/8658efa12b79ca9cd4b1c72b55a7f4fa"
-	curveWsDialEth        = "wss://ws-nd-475-370-970.p2pify.com/8658efa12b79ca9cd4b1c72b55a7f4fa"
+	curveRestDialEth      = ""
+	curveWsDialEth        = ""
 	curveRestDialFantom   = ""
 	curveWsDialFantom     = ""
 	curveRestDialMoonbeam = ""
