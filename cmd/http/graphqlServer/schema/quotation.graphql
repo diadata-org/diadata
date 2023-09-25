@@ -45,6 +45,7 @@ type Query {
     StartTime: Time
     EndTime: Time
     TradeVolumeThreshold: Float
+    NativeDenomination: Boolean
     FeedSelection: [FeedSelection!]
   ): [FilterPointExtended]
 

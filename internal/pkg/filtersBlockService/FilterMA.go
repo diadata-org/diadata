@@ -13,32 +13,34 @@ import (
 // FilterMA is the struct for a moving average filter implementing
 // the Filter interface.
 type FilterMA struct {
-	asset       dia.Asset
-	exchange    string
-	currentTime time.Time
-	prices      []float64
-	volumes     []float64
-	lastTrade   dia.Trade
-	memory      int
-	value       float64
-	modified    bool
-	filterName  string
+	asset              dia.Asset
+	exchange           string
+	currentTime        time.Time
+	prices             []float64
+	volumes            []float64
+	lastTrade          dia.Trade
+	memory             int
+	value              float64
+	modified           bool
+	filterName         string
+	nativeDenomination bool
 	//max         float64
 	min float64
 }
 
 // NewFilterMA returns a moving average filter.
 // @currentTime is the begin time of the filtersBlock.
-func NewFilterMA(asset dia.Asset, exchange string, currentTime time.Time, memory int) *FilterMA {
+func NewFilterMA(asset dia.Asset, exchange string, currentTime time.Time, memory int, nativeDenomination bool) *FilterMA {
 	filter := &FilterMA{
-		asset:       asset,
-		exchange:    exchange,
-		prices:      []float64{},
-		volumes:     []float64{},
-		currentTime: currentTime,
-		memory:      memory,
-		filterName:  "MA" + strconv.Itoa(memory),
-		min:         -1,
+		asset:              asset,
+		exchange:           exchange,
+		prices:             []float64{},
+		volumes:            []float64{},
+		currentTime:        currentTime,
+		memory:             memory,
+		filterName:         "MA" + strconv.Itoa(memory),
+		min:                -1,
+		nativeDenomination: nativeDenomination,
 	}
 	return filter
 }
@@ -88,7 +90,12 @@ func (filter *FilterMA) processDataPoint(trade dia.Trade) {
 		filter.prices = filter.prices[0 : filter.memory-1]
 		filter.volumes = filter.volumes[0 : filter.memory-1]
 	}
-	filter.prices = append([]float64{trade.EstimatedUSDPrice}, filter.prices...)
+	if !filter.nativeDenomination {
+		filter.prices = append([]float64{trade.EstimatedUSDPrice}, filter.prices...)
+	} else {
+		filter.prices = append([]float64{trade.Price}, filter.prices...)
+	}
+
 	filter.volumes = append([]float64{trade.Volume}, filter.volumes...)
 }
 
@@ -118,7 +125,11 @@ func (filter *FilterMA) finalCompute(t time.Time) float64 {
 
 	}
 	if len(filter.prices) > 0 && len(filter.volumes) > 0 {
-		filter.prices = []float64{filter.lastTrade.EstimatedUSDPrice}
+		if !filter.nativeDenomination {
+			filter.prices = []float64{filter.lastTrade.EstimatedUSDPrice}
+		} else {
+			filter.prices = []float64{filter.lastTrade.Price}
+		}
 		filter.volumes = []float64{filter.lastTrade.Volume}
 	}
 	return filter.value

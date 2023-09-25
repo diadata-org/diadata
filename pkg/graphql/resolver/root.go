@@ -451,6 +451,7 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 	StartTime            graphql.NullTime
 	EndTime              graphql.NullTime
 	TradeVolumeThreshold graphql.NullFloat
+	NativeDenomination   graphql.NullBool
 	FeedSelection        *[]FeedSelection
 }) (*[]*FilterPointExtendedResolver, error) {
 	var (
@@ -461,6 +462,7 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 		blockShiftSeconds    int64
 		tradeVolumeThreshold float64
 		err                  error
+		nativeDenomination   bool
 	)
 
 	// Parsing input parameters.
@@ -513,6 +515,12 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 		tradeVolumeThreshold = *args.TradeVolumeThreshold.Value
 	} else {
 		tradeVolumeThreshold = TRADE_VOLUME_THRESHOLD_DEFAULT
+	}
+
+	// If nativeDenomination is true, price is returned in terms of the respective base asset.
+	// Default is false, i.e. price is returned in USD denomination.
+	if args.NativeDenomination.Value != nil {
+		nativeDenomination = *args.NativeDenomination.Value
 	}
 
 	if args.FeedSelection == nil {
@@ -599,23 +607,23 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 	// 	}
 	case "mair":
 		{
-			filterPoints = queryhelper.FilterMAIRextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold)
+			filterPoints = queryhelper.FilterMAIRextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold, nativeDenomination)
 		}
 	case "ma":
 		{
-			filterPoints = queryhelper.FilterMAextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold)
+			filterPoints = queryhelper.FilterMAextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold, nativeDenomination)
 		}
 	case "vwap":
 		{
-			filterPoints = queryhelper.FilterVWAPextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold)
+			filterPoints = queryhelper.FilterVWAPextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold, nativeDenomination)
 		}
 	case "vwapir":
 		{
-			filterPoints = queryhelper.FilterVWAPIRextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold)
+			filterPoints = queryhelper.FilterVWAPIRextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold, nativeDenomination)
 		}
 	case "medir":
 		{
-			filterPoints = queryhelper.FilterMEDIRextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold)
+			filterPoints = queryhelper.FilterMEDIRextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold, nativeDenomination)
 		}
 	case "vol":
 		{

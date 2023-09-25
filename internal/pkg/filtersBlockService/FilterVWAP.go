@@ -11,28 +11,30 @@ import (
 
 // FilterVWAP ...
 type FilterVWAP struct {
-	asset       dia.Asset
-	exchange    string
-	currentTime time.Time
-	prices      []float64
-	volumes     []float64
-	lastTrade   dia.Trade
-	param       int
-	value       float64
-	filterName  string
-	modified    bool
+	asset              dia.Asset
+	exchange           string
+	currentTime        time.Time
+	prices             []float64
+	volumes            []float64
+	lastTrade          dia.Trade
+	param              int
+	value              float64
+	filterName         string
+	nativeDenomination bool
+	modified           bool
 }
 
 // NewFilterVWAP ...
-func NewFilterVWAP(asset dia.Asset, exchange string, currentTime time.Time, param int) *FilterVWAP {
+func NewFilterVWAP(asset dia.Asset, exchange string, currentTime time.Time, param int, nativeDenomination bool) *FilterVWAP {
 	s := &FilterVWAP{
-		asset:       asset,
-		exchange:    exchange,
-		prices:      []float64{},
-		volumes:     []float64{},
-		currentTime: currentTime,
-		param:       param,
-		filterName:  "VWAP" + strconv.Itoa(param),
+		asset:              asset,
+		exchange:           exchange,
+		prices:             []float64{},
+		volumes:            []float64{},
+		currentTime:        currentTime,
+		param:              param,
+		filterName:         "VWAP" + strconv.Itoa(param),
+		nativeDenomination: nativeDenomination,
 	}
 	return s
 }
@@ -62,7 +64,11 @@ func (filter *FilterVWAP) fill(trade dia.Trade) {
 }
 
 func (filter *FilterVWAP) processDataPoint(trade dia.Trade) {
-	filter.prices = append([]float64{trade.EstimatedUSDPrice}, filter.prices...)
+	if !filter.nativeDenomination {
+		filter.prices = append([]float64{trade.EstimatedUSDPrice}, filter.prices...)
+	} else {
+		filter.prices = append([]float64{trade.Price}, filter.prices...)
+	}
 	filter.volumes = append([]float64{trade.Volume}, filter.volumes...)
 }
 
