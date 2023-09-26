@@ -51,7 +51,7 @@ app.get("/customer/bifrost/state/:token", async function (req, res) {
 
 let values = {
   Token: "",
-  FairPrice: 0,
+  FairPrice: null,
   Collateralratio: {
     IssuedToken: "",
     LockedToken: "",
