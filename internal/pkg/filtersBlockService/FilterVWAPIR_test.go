@@ -9,7 +9,7 @@ import (
 func TestVWAPIR(t *testing.T) {
 	var filterPoints []dia.FilterPoint
 	trades := getTrades()
-	maFilter := NewFilterVWAPIR(dia.Asset{}, "Binance", trades[len(trades)-1].Time, dia.BlockSizeSeconds)
+	maFilter := NewFilterVWAPIR(dia.Asset{}, "Binance", trades[len(trades)-1].Time, dia.BlockSizeSeconds, false)
 
 	for _, trade := range trades {
 
@@ -32,7 +32,7 @@ func BenchmarkVWAPIR(b *testing.B) {
 
 	trades := getTrades()
 	for n := 0; n < b.N; n++ {
-		maFilter := NewFilterVWAPIR(dia.Asset{}, "Binance", trades[len(trades)-1].Time, dia.BlockSizeSeconds)
+		maFilter := NewFilterVWAPIR(dia.Asset{}, "Binance", trades[len(trades)-1].Time, dia.BlockSizeSeconds, false)
 
 		for _, trade := range trades {
 

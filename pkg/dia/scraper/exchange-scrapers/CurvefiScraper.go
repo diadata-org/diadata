@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"math/big"
+	"reflect"
 	"strconv"
 	"strings"
 	"sync"
@@ -19,14 +20,15 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 const (
-	curveRestDialEth      = "https://nd-475-370-970.p2pify.com/8658efa12b79ca9cd4b1c72b55a7f4fa"
-	curveWsDialEth        = "wss://ws-nd-475-370-970.p2pify.com/8658efa12b79ca9cd4b1c72b55a7f4fa"
+	curveRestDialEth      = ""
+	curveWsDialEth        = ""
 	curveRestDialFantom   = ""
 	curveWsDialFantom     = ""
 	curveRestDialMoonbeam = ""
@@ -328,7 +330,7 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 				log.Warn("got underlying swap: ", swpUnderlying)
 				// Only fetch trades from USDR pool until we have parsing TokenExchangeUnderlying resolved.
 				// if pool == common.HexToAddress("0xa138341185a9d0429b0021a11fb717b225e13e1f").Hex() && Exchanges[scraper.exchangeName].BlockChain.Name == dia.POLYGON {
-				// 	scraper.processSwap(pool, swpUnderlying)
+				scraper.processSwap(pool, swpUnderlying)
 				// }
 			}
 		}
@@ -441,9 +443,17 @@ func (scraper *CurveFIScraper) getSwapDataCurve(pool string, swp interface{}) (
 	case *curvepool.CurvepoolTokenExchangeUnderlying:
 		log.Info("Got TokenExchangeUnderlying in pool: ", pool)
 		var (
-			underlyingCoins [8]common.Address
-			errCoins        error
+			isMetaPool          bool
+			underlyingCoins     [8]common.Address
+			underlyingCoinCount *big.Int
+			metaCoinCount       *big.Int
+			errNCoin            error
+			errCoins            error
 		)
+		soldID := int(s.SoldId.Int64())
+		boughtId := int(s.BoughtId.Int64())
+		tokenSold := s.TokensSold
+		tokenBought := s.TokensBought
 
 		for _, registry := range scraper.registriesUnderlying {
 			if registry.Type == 2 {
@@ -453,14 +463,23 @@ func (scraper *CurveFIScraper) getSwapDataCurve(pool string, swp interface{}) (
 				}
 				// Get underlying coins from on-chain. soldID and boughtID are referring to these.
 				underlyingCoins, errCoins = metaRegistryContract.GetUnderlyingCoins(&bind.CallOpts{}, common.HexToAddress(pool))
-				if errCoins != nil || (underlyingCoins[int(s.SoldId.Int64())] == (common.Address{}) && underlyingCoins[int(s.BoughtId.Int64())] == (common.Address{})) {
+				if errCoins != nil || (underlyingCoins[soldID] == (common.Address{}) && underlyingCoins[boughtId] == (common.Address{})) {
+					log.Warnf("Failed to call GetUnderlyingCoins: %v", errCoins)
 					continue
 				} else {
 					log.Warn("TokenExchangeUnderlying from meta type pool")
-					log.Warnf("bought id and sold id: %v -- %v", s.BoughtId.Int64(), s.SoldId.Int64())
-					log.Warnf("tokens bought and tokens sold: %v -- %v ", s.TokensBought, s.TokensSold)
+					log.Warnf("bought id and sold id: %v -- %v", boughtId, soldID)
+					log.Warnf("tokens bought and tokens sold: %v -- %v ", tokenBought, tokenSold)
+					metaCoinCount, underlyingCoinCount, errNCoin = metaRegistryContract.GetMetaNCoins(&bind.CallOpts{}, common.HexToAddress(pool))
+					if errNCoin != nil {
+						log.Errorf("calling GetMetaNCoins: %v", errCoins)
+						continue
+					}
+					log.Warnf("metaCoinCount: %v, underlyingCoinCount: %v", metaCoinCount, underlyingCoinCount)
+					isMetaPool = true
 					break
 				}
+
 			}
 			if registry.Type == 1 {
 				basepoolRegistryContract, errBase := curvefi.NewCurvefiCaller(registry.Address, scraper.RestClient)
@@ -469,19 +488,36 @@ func (scraper *CurveFIScraper) getSwapDataCurve(pool string, swp interface{}) (
 				}
 				// Get underlying coins from on-chain. soldID and boughtID are referring to these.
 				underlyingCoins, errCoins = basepoolRegistryContract.GetUnderlyingCoins(&bind.CallOpts{}, common.HexToAddress(pool))
-				if errCoins != nil || (underlyingCoins[int(s.SoldId.Int64())] == (common.Address{}) && underlyingCoins[int(s.BoughtId.Int64())] == (common.Address{})) {
+				if errCoins != nil || (underlyingCoins[soldID] == (common.Address{}) && underlyingCoins[boughtId] == (common.Address{})) {
 					continue
 				} else {
 					log.Warn("TokenExchangeUnderlying from base type pool")
-					log.Warnf("bought id and sold id: %v -- %v", s.BoughtId.Int64(), s.SoldId.Int64())
-					log.Warnf("tokens bought and tokens sold: %v -- %v ", s.TokensBought, s.TokensSold)
+					log.Warnf("bought id and sold id: %v -- %v", boughtId, soldID)
+					log.Warnf("tokens bought and tokens sold: %v -- %v ", tokenBought, tokenSold)
 					break
 				}
+
 			}
 		}
+		log.Warnf("meta pool : %v, soldID: %v", isMetaPool, soldID)
+		if isMetaPool && soldID > 0 && boughtId == 0 {
+			// This is the only case we need to look into the AddLiquidity event for finding the actual amount of sold token
+			// as this event contains the meta pool token amount in this case!
 
-		fromTokenAddress := underlyingCoins[int(s.SoldId.Int64())]
-		toTokenAddress := underlyingCoins[int(s.BoughtId.Int64())]
+			tokenAmount, errTokenAmounts := scraper.getTokenAmount(s.Raw.TxHash, common.HexToAddress(pool), soldID, metaCoinCount, underlyingCoinCount)
+			if err != nil {
+				log.Error("getting AddLiquidity event for tx: ", s.Raw.TxHash.Hex())
+				err = errTokenAmounts
+				return
+			}
+			log.Warnf("token Amount %v", tokenAmount)
+			// Again we need to subtract MAX_COIN index from this value, (which is metaCoinCount minus one)
+			tokenSold = tokenAmount
+		}
+		log.Infof("token sold: %v", tokenSold)
+
+		fromTokenAddress := underlyingCoins[int(soldID)]
+		toTokenAddress := underlyingCoins[int(boughtId)]
 
 		fromTokenAsset, errToken := scraper.relDB.GetAsset(fromTokenAddress.Hex(), Exchanges[scraper.exchangeName].BlockChain.Name)
 		if errToken != nil {
@@ -498,8 +534,8 @@ func (scraper *CurveFIScraper) getSwapDataCurve(pool string, swp interface{}) (
 		fromToken = assetToCoin(fromTokenAsset)
 		toToken = assetToCoin(toTokenAsset)
 
-		amountIn, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(s.TokensSold), new(big.Float).SetFloat64(math.Pow10(int(fromToken.Decimals)))).Float64()
-		amountOut, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(s.TokensBought), new(big.Float).SetFloat64(math.Pow10(int(toToken.Decimals)))).Float64()
+		amountIn, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(tokenSold), new(big.Float).SetFloat64(math.Pow10(int(fromToken.Decimals)))).Float64()
+		amountOut, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(tokenBought), new(big.Float).SetFloat64(math.Pow10(int(toToken.Decimals)))).Float64()
 	}
 
 	baseToken = dia.Asset{
@@ -521,6 +557,42 @@ func (scraper *CurveFIScraper) getSwapDataCurve(pool string, swp interface{}) (
 	foreignName = toToken.Symbol + "-" + fromToken.Symbol
 
 	return
+}
+
+func (scraper *CurveFIScraper) getTokenAmount(txHash common.Hash, poolAddress common.Address, soldID int, metaCoinCount, underlyingCoinCount *big.Int) (*big.Int, error) {
+	// Here we need to get the event log manually as the len of the token_amounts array is unknown!
+	// (fixed to 2 in the current curvepool contract, but there are cases when it's 3 like this pool:
+	// https://etherscan.io/address/0xbebc44782c7db0a1a60cb6fe97d0b483032ff1c7)
+	// We get the value using reflection.
+	receipt, err := scraper.RestClient.TransactionReceipt(context.Background(), txHash)
+	if err != nil {
+		return nil, err
+	}
+	basePoolCoinCount := underlyingCoinCount.Int64() - 1 // We need to subtract that one meta pool coin here!
+	abiAddLiquidityJson := `[{"name":"AddLiquidity","inputs":[{"type":"address","name":"provider","indexed":true},{"type":"uint256[%d]","name":"token_amounts","indexed":false},{"type":"uint256[%d]","name":"fees","indexed":false},{"type":"uint256","name":"invariant","indexed":false},{"type":"uint256","name":"token_supply","indexed":false}],"anonymous":false,"type":"event"}]`
+	abiAddLiquidity, err := abi.JSON(strings.NewReader(fmt.Sprintf(abiAddLiquidityJson, basePoolCoinCount, basePoolCoinCount)))
+	if err != nil {
+		return nil, err
+	}
+	for _, log := range receipt.Logs {
+		if len(log.Topics) < 2 || log.Topics[1] != poolAddress.Hash() {
+			continue
+		}
+		valueMap := make(map[string]interface{})
+		err := abiAddLiquidity.UnpackIntoMap(valueMap, "AddLiquidity", log.Data)
+		if err != nil {
+			continue
+		}
+		// Again we need to subtract MAX_COIN index from this value, (which is metaCoinCount minus one)
+		tokenBoughtIdx := soldID - (int(metaCoinCount.Int64()) - 1)
+		tokenAmount, ok := reflect.ValueOf(valueMap["token_amounts"]).Index(tokenBoughtIdx).Interface().(*big.Int)
+		if !ok {
+			return nil, errors.New("couldn't parse the AddLiquidity event")
+		}
+		return tokenAmount, nil
+	}
+	return nil, errors.New("AddLiquidity log couldn't be found")
+
 }
 
 func (scraper *CurveFIScraper) loadPools(liquidityThreshold float64, liquidityThresholdUSD float64) {

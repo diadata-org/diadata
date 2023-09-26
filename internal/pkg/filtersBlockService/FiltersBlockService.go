@@ -184,10 +184,10 @@ func (s *FiltersBlockService) createFilters(asset dia.Asset, exchange string, Be
 	_, ok := s.filters[fa]
 	if !ok {
 		s.filters[fa] = []Filter{
-			NewFilterMA(asset, exchange, BeginTime, dia.BlockSizeSeconds),
-			NewFilterMAIR(asset, exchange, BeginTime, dia.BlockSizeSeconds),
-			NewFilterMEDIR(asset, exchange, BeginTime, dia.BlockSizeSeconds),
-			NewFilterVWAPIR(asset, exchange, BeginTime, dia.BlockSizeSeconds),
+			NewFilterMA(asset, exchange, BeginTime, dia.BlockSizeSeconds, false),
+			NewFilterMAIR(asset, exchange, BeginTime, dia.BlockSizeSeconds, false),
+			NewFilterMEDIR(asset, exchange, BeginTime, dia.BlockSizeSeconds, false),
+			NewFilterVWAPIR(asset, exchange, BeginTime, dia.BlockSizeSeconds, false),
 			NewFilterVOL(asset, exchange, dia.BlockSizeSeconds),
 			NewFilterCOUNT(asset, exchange, dia.BlockSizeSeconds),
 			NewFilterTLT(asset, exchange),
