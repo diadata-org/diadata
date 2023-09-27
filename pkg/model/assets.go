@@ -396,7 +396,7 @@ func (rdb *RelDB) GetExchangeSymbol(exchange string, symbol string) (asset dia.A
 		INNER JOIN %s a
 		ON es.asset_id=a.asset_id
 		WHERE (es.exchange=$1 %s)
-		AND es.symbol ILIKE $2
+		AND a.symbol ILIKE $2
 		`,
 		exchangesymbolTable,
 		assetTable,
