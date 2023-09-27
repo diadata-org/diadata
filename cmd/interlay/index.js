@@ -27,7 +27,11 @@ app.get("/customer/interlay/state/:token", async function (req, res) {
   token = token.toUpperCase();
 
   if (allowedTokens.includes(token)) {
-    let values = await getInterlayValues(token);
+    // let values = await getInterlayValues(token);
+    let values = JSON.parse(
+      await cache.get("interlayraw"+token)
+    );
+
     res.send(values);
   } else {
     res.send({ err: "invalid token use, IBTC or KBTC" });

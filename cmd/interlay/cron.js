@@ -30,6 +30,7 @@ async function cronstart() {
           let saved
           try{
             saved = await getInterlayValues(value.vtoken);
+            cache.set("interlayraw"+ value.vtoken,JSON.stringify(saved))
           }catch(e){
             saved = 0
           }
@@ -132,11 +133,7 @@ async function cronstart() {
     await cache.set(pricekey(value.token), baseAssetPrice);
   }
 
-  for (const value of allowedTokens) {
-    let val = await cache.get(tokenkey(value.source, value.vtoken));
-    console.log("------", val);
-    console.log("----value--", value);
-  }
+   
 }
 
 module.exports = {
