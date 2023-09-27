@@ -599,6 +599,7 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 	// 		log.Errorln("Error getting filter", err)
 	// 	}
 	// }
+	log.Info("go into filters.------------------------------------------------------------")
 
 	switch filter {
 	// case "ema":
@@ -894,6 +895,8 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) (dfs []dia.Feed
 			if len(pools) > 0 {
 				dfs = append(dfs, diaFeedSelection)
 			}
+			// Continue, i.e. ignore (possibly) given exchangepairs.
+			continue
 		}
 
 		// Parse exchanges.
