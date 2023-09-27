@@ -147,7 +147,7 @@ func (rdb *RelDB) GetAllFeeders(isDeleted bool) (oracleconfigs []dia.OracleConfi
 
 	query := fmt.Sprintf(`
 	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address, createddate, COALESCE(lastupdate, '0001-01-01 00:00:00'::timestamp),deleted,feedselection,expired,expired_time
-	FROM %s  WHERE mandatory_frequency  IS NOT NULL  and deleted=$1
+	FROM %s  WHERE mandatory_frequency  IS NOT NULL 
 	`, oracleconfigTable)
 	rows, err = rdb.postgresClient.Query(context.Background(), query, isDeleted)
 	if err != nil {
