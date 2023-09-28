@@ -599,7 +599,6 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 	// 		log.Errorln("Error getting filter", err)
 	// 	}
 	// }
-	log.Info("go into filters.------------------------------------------------------------")
 
 	switch filter {
 	// case "ema":
