@@ -159,15 +159,15 @@ func (ob *Env) Create(context *gin.Context) {
 
 	if feederID == "" {
 		// check if creator has resources to create new oracle feeder
-		limit := ob.RelDB.GetFeederLimit(creator)
-		total := ob.RelDB.GetTotalFeeder(creator)
+		// limit := ob.RelDB.GetFeederLimit(creator)
+		// total := ob.RelDB.GetTotalFeeder(creator)
 
-		log.Infof("Creating oracle: Feeders Limit %d, Total Feeders:%d, Creator: %s", limit, total, creator)
-		if total >= limit {
-			log.Errorln("not enought resource left ", creator)
-			context.JSON(http.StatusUnauthorized, errors.New("limit over"))
-			return
-		}
+		// log.Infof("Creating oracle: Feeders Limit %d, Total Feeders:%d, Creator: %s", limit, total, creator)
+		// if total >= limit {
+		// 	log.Errorln("not enought resource left ", creator)
+		// 	context.JSON(http.StatusUnauthorized, errors.New("limit over"))
+		// 	return
+		// }
 
 		feederID = "feeder-" + utils.GenerateAutoname("-")
 
