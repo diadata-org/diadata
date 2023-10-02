@@ -151,7 +151,7 @@ func (rdb *RelDB) GetExpiredFeeders() (oracleconfigs []dia.OracleConfig, err err
 	SELECT 
     t1.address,  t1.feeder_id, t1.deleted, t1.owner, t1.symbols, t1.chainID, 
     t1.frequency, t1.sleepseconds, t1.deviationpermille, t1.blockchainnode, t1.active, 
-    t1.mandatory_frequency, t1.feeder_address, t1.createddate, t1.feedselection, 
+    t1.mandatory_frequency, t1.feeder_address, t1.createddate, 
     COALESCE(t1.lastupdate, '0001-01-01 00:00:00'::timestamp) AS lastupdate, 
     t1.expired, t1.expired_time,
     COALESCE(MAX(fu.update_time), '0001-01-01 00:00:00'::timestamp) AS max_update_time
@@ -159,10 +159,10 @@ FROM %s AS t1
 LEFT JOIN %s AS fu 
 ON t1.address = fu.oracle_address
 GROUP BY  
-    t1.address, t1.feeder_id,  t1.owner, t1.symbols, t1.chainID, 
+    t1.address, t1.feeder_id, t1.deleted, t1.owner, t1.symbols, t1.chainID, 
     t1.frequency, t1.sleepseconds, t1.deviationpermille, t1.blockchainnode, t1.active, 
-    t1.mandatory_frequency, t1.feeder_address, t1.createddate, t1.feedselection,
-    t1.lastupdate,t1.deleted, t1.expired, t1.expired_time
+    t1.mandatory_frequency, t1.feeder_address, t1.createddate, 
+    t1.lastupdate, t1.expired, t1.expired_time
 HAVING 
     EXTRACT(EPOCH FROM (NOW() - lastupdate)) / 86400 > 60
     AND t1.deleted = false
@@ -183,10 +183,10 @@ HAVING
 			sleepsecondsnull sql.NullString
 			feedSelection    sql.NullString
 		)
-		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID,
+		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Deleted, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID,
 			&frequencynull, &sleepsecondsnull, &oracleconfig.DeviationPermille, &oracleconfig.BlockchainNode, &oracleconfig.Active,
 			&oracleconfig.MandatoryFrequency, &oracleconfig.FeederAddress, &oracleconfig.CreatedDate,
-			&oracleconfig.LastUpdate, &oracleconfig.Deleted, &oracleconfig.Expired, &oracleconfig.ExpiredDate)
+			&oracleconfig.LastUpdate, &oracleconfig.Expired, &oracleconfig.ExpiredDate, &oracleconfig.LastOracleUpdate)
 		if err != nil {
 
 			log.Error("GetExpiredFeeders scan", err, oracleconfig.FeederID)

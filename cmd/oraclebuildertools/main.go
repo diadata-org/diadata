@@ -6,6 +6,7 @@ import (
 	"math/big"
 	"os"
 	"strconv"
+	"time"
 
 	builderUtils "github.com/diadata-org/diadata/cmd/oraclebuildertool/utils"
 	signer "github.com/diadata-org/diadata/pkg/dia/helpers/signer/protoc"
@@ -84,26 +85,35 @@ func main() {
 			}
 			ph := builderUtils.NewPodHelper(oraclebaseimage, oraclenamespace)
 
+			sixtyDaysAgo := time.Now().Add(-60 * 24 * time.Hour) // 60 days = 60 * 24 hours
+
 			for _, oracleconfig := range oracleconfigs {
-				err = ph.DeleteOracleFeeder(cmd.Context(), oracleconfig.FeederID)
-				if err != nil {
-					log.Errorln("error DeleteOracleFeeder ", err)
-					continue
-				}
-				err = relStore.ChangeOracleState(oracleconfig.FeederID, false)
-				if err != nil {
-					log.Errorln("error ChangeOracleState ", err)
-					continue
-				}
-				err = relStore.ExpireOracle(oracleconfig.FeederID)
-				if err != nil {
-					log.Errorln("error DeleteOracle ", err)
-					continue
+				//double check if created date is greater than 60 days
+				if oracleconfig.CreatedDate.Before(sixtyDaysAgo) {
+
+					log.Println("oracleconfig.FeederID", oracleconfig.FeederID)
+
+					err = ph.DeleteOracleFeeder(cmd.Context(), oracleconfig.FeederID)
+					if err != nil {
+						log.Errorln("error DeleteOracleFeeder ", err)
+						continue
+					}
+					err = relStore.ChangeOracleState(oracleconfig.FeederID, false)
+					if err != nil {
+						log.Errorln("error ChangeOracleState ", err)
+						continue
+					}
+					err = relStore.ExpireOracle(oracleconfig.FeederID)
+					if err != nil {
+						log.Errorln("error DeleteOracle ", err)
+						continue
+					}
 				}
 
 			}
 
 			log.Println("Total oracle expired:", len(oracleconfigs))
+
 		},
 	}
 
