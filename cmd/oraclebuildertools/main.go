@@ -52,11 +52,32 @@ func main() {
 
 	signerclient := signer.NewSignerClient(conn)
 
-	var restartFeeder = &cobra.Command{
-		Use:   "restart",
-		Short: "restart all feeders",
+	// var restartFeeder = &cobra.Command{
+	// 	Use:   "restart",
+	// 	Short: "restart all feeders",
+	// 	Run: func(cmd *cobra.Command, args []string) {
+	// 		oracleconfigs, err := relStore.GetAllFeeders(false)
+	// 		if err != nil {
+	// 			log.Errorln("error getting feeders", err)
+	// 			return
+	// 		}
+	// 		ph := builderUtils.NewPodHelper(oraclebaseimage, oraclenamespace)
+
+	// 		for _, oracleconfig := range oracleconfigs {
+	// 			err = ph.RestartOracleFeeder(cmd.Context(), oracleconfig.FeederID, oracleconfig)
+	// 			if err != nil {
+	// 				log.Errorln("error RestartOracleFeeder ", err)
+	// 			}
+
+	// 		}
+	// 	},
+	// }
+
+	var expireFeeder = &cobra.Command{
+		Use:   "expire",
+		Short: "expire stale feeder",
 		Run: func(cmd *cobra.Command, args []string) {
-			oracleconfigs, err := relStore.GetAllFeeders(false)
+			oracleconfigs, err := relStore.GetExpiredFeeders()
 			if err != nil {
 				log.Errorln("error getting feeders", err)
 				return
@@ -64,9 +85,20 @@ func main() {
 			ph := builderUtils.NewPodHelper(oraclebaseimage, oraclenamespace)
 
 			for _, oracleconfig := range oracleconfigs {
-				err = ph.RestartOracleFeeder(cmd.Context(), oracleconfig.FeederID, oracleconfig)
+				err = ph.DeleteOracleFeeder(cmd.Context(), oracleconfig.FeederID)
 				if err != nil {
-					log.Errorln("error RestartOracleFeeder ", err)
+					log.Errorln("error DeleteOracleFeeder ", err)
+					continue
+				}
+				err = relStore.ChangeOracleState(oracleconfig.FeederID, false)
+				if err != nil {
+					log.Errorln("error ChangeOracleState ", err)
+					continue
+				}
+				err = relStore.ExpireOracle(oracleconfig.FeederID)
+				if err != nil {
+					log.Errorln("error DeleteOracle ", err)
+					continue
 				}
 
 			}
@@ -93,7 +125,7 @@ func main() {
 				rpcurls[cc.ChainID] = cc.RestURL
 
 			}
-			oracleconfigs, err := relStore.GetAllFeeders(true)
+			oracleconfigs, err := relStore.GetAllFeeders(false, false)
 			if err != nil {
 				log.Errorln("error getting feeders", err)
 				return
@@ -201,7 +233,7 @@ func main() {
 	var updateAddressChecksum = &cobra.Command{
 		Use: "updateaddresschecksum",
 		Run: func(cmd *cobra.Command, args []string) {
-			oracleconfigs, err := relStore.GetAllFeeders(false)
+			oracleconfigs, err := relStore.GetAllFeeders(false, false)
 			fmt.Println(len(oracleconfigs))
 			if err != nil {
 				log.Errorln("error getting feeders", err)
@@ -224,7 +256,7 @@ func main() {
 		},
 	}
 
-	rootCmd.AddCommand(restartFeeder, updateAddressChecksum, refund)
+	rootCmd.AddCommand(expireFeeder, updateAddressChecksum, refund)
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)

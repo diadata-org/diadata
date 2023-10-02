@@ -316,7 +316,7 @@ func (ob *Env) Stats(context *gin.Context) {
 
 // List: list All feeders
 func (ob *Env) ListAll(context *gin.Context) {
-	oracles, err := ob.RelDB.GetAllFeeders(true)
+	oracles, err := ob.RelDB.GetAllFeeders(false, false)
 	if err != nil {
 		log.Errorln("List All Oracles: error on GetAllFeeders ", err)
 		context.JSON(http.StatusInternalServerError, err)
@@ -437,7 +437,7 @@ func (ob *Env) Delete(context *gin.Context) {
 	}
 	err = ob.RelDB.DeleteOracle(oracleconfig.FeederID)
 	if err != nil {
-		log.Errorln("error ChangeOracleState ", err)
+		log.Errorln("error DeleteOracle ", err)
 		context.JSON(http.StatusInternalServerError, err)
 		return
 	}

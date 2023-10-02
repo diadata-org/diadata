@@ -139,17 +139,137 @@ func (rdb *RelDB) UpdateFeederAddressCheckSum(oracleaddress string) (err error) 
 	return
 }
 
-func (rdb *RelDB) GetAllFeeders(isDeleted bool) (oracleconfigs []dia.OracleConfig, err error) {
+func (rdb *RelDB) GetExpiredFeeders() (oracleconfigs []dia.OracleConfig, err error) {
+
 	var (
 		rows           pgx.Rows
 		deviationFloat float64
+		query          string
 	)
 
-	query := fmt.Sprintf(`
-	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address, createddate, COALESCE(lastupdate, '0001-01-01 00:00:00'::timestamp),deleted,feedselection,expired,expired_time
-	FROM %s  WHERE mandatory_frequency  IS NOT NULL  
-	`, oracleconfigTable)
+	query = fmt.Sprintf(`
+	SELECT 
+    t1.address,  t1.feeder_id, t1.deleted, t1.owner, t1.symbols, t1.chainID, 
+    t1.frequency, t1.sleepseconds, t1.deviationpermille, t1.blockchainnode, t1.active, 
+    t1.mandatory_frequency, t1.feeder_address, t1.createddate, t1.feedselection, 
+    COALESCE(t1.lastupdate, '0001-01-01 00:00:00'::timestamp) AS lastupdate, 
+    t1.expired, t1.expired_time,
+    COALESCE(MAX(fu.update_time), '0001-01-01 00:00:00'::timestamp) AS max_update_time
+FROM %s AS t1
+LEFT JOIN %s AS fu 
+ON t1.address = fu.oracle_address
+GROUP BY  
+    t1.address, t1.feeder_id,  t1.owner, t1.symbols, t1.chainID, 
+    t1.frequency, t1.sleepseconds, t1.deviationpermille, t1.blockchainnode, t1.active, 
+    t1.mandatory_frequency, t1.feeder_address, t1.createddate, t1.feedselection,
+    t1.lastupdate,t1.deleted, t1.expired, t1.expired_time
+HAVING 
+    EXTRACT(EPOCH FROM (NOW() - lastupdate)) / 86400 > 60
+    AND t1.deleted = false
+    AND t1.expired = false
+	`, oracleconfigTable, feederupdatesTable)
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
+
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			oracleconfig     dia.OracleConfig
+			symbols          string
+			frequencynull    sql.NullString
+			sleepsecondsnull sql.NullString
+			feedSelection    sql.NullString
+		)
+		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID,
+			&frequencynull, &sleepsecondsnull, &oracleconfig.DeviationPermille, &oracleconfig.BlockchainNode, &oracleconfig.Active,
+			&oracleconfig.MandatoryFrequency, &oracleconfig.FeederAddress, &oracleconfig.CreatedDate,
+			&oracleconfig.LastUpdate, &oracleconfig.Deleted, &oracleconfig.Expired, &oracleconfig.ExpiredDate)
+		if err != nil {
+
+			log.Error("GetExpiredFeeders scan", err, oracleconfig.FeederID)
+		}
+
+		if frequencynull.Valid {
+			oracleconfig.Frequency = frequencynull.String
+
+		}
+
+		if feedSelection.Valid {
+			oracleconfig.FeederSelection = feedSelection.String
+		}
+
+		if sleepsecondsnull.Valid {
+			oracleconfig.SleepSeconds = sleepsecondsnull.String
+
+		}
+
+		oracleconfig.Symbols = strings.Split(symbols, ",")
+		if oracleconfig.DeviationPermille != "" {
+			deviationFloat, err = strconv.ParseFloat(oracleconfig.DeviationPermille, 64)
+			if err != nil {
+				log.Error(err)
+
+			}
+			oracleconfig.DeviationPermille = fmt.Sprintf("%.2f", deviationFloat/10)
+		}
+
+		oracleconfigs = append(oracleconfigs, oracleconfig)
+	}
+	return
+
+}
+
+func (rdb *RelDB) GetAllFeeders(isDeleted bool, isExpired bool) (oracleconfigs []dia.OracleConfig, err error) {
+	var (
+		rows           pgx.Rows
+		deviationFloat float64
+		query          string
+	)
+
+	switch {
+
+	case isDeleted:
+		{
+			query = fmt.Sprintf(`
+	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address, createddate, COALESCE(lastupdate, '0001-01-01 00:00:00'::timestamp),deleted,feedselection,expired,expired_time
+	FROM %s  WHERE mandatory_frequency  IS NOT NULL   and deleted=$1
+	`, oracleconfigTable)
+			rows, err = rdb.postgresClient.Query(context.Background(), query, isDeleted)
+
+		}
+
+	case isExpired:
+		{
+			query = fmt.Sprintf(`
+	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address, createddate, COALESCE(lastupdate, '0001-01-01 00:00:00'::timestamp),deleted,feedselection,expired,expired_time
+	FROM %s  WHERE mandatory_frequency  IS NOT NULL   and expired=$1
+	`, oracleconfigTable)
+			rows, err = rdb.postgresClient.Query(context.Background(), query, isExpired)
+		}
+
+	case isExpired && isDeleted:
+		{
+			query = fmt.Sprintf(`
+	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address, createddate, COALESCE(lastupdate, '0001-01-01 00:00:00'::timestamp),deleted,feedselection,expired,expired_time
+	FROM %s  WHERE mandatory_frequency  IS NOT NULL   and expired=$1 and deleted=$2
+	`, oracleconfigTable)
+			rows, err = rdb.postgresClient.Query(context.Background(), query, isExpired, isDeleted)
+		}
+	case !isExpired && !isDeleted:
+		{
+			query = fmt.Sprintf(`
+	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address, createddate, COALESCE(lastupdate, '0001-01-01 00:00:00'::timestamp),deleted,feedselection,expired,expired_time
+	FROM %s  WHERE mandatory_frequency  IS NOT NULL 
+	`, oracleconfigTable)
+			rows, err = rdb.postgresClient.Query(context.Background(), query)
+
+		}
+
+	}
+
 	if err != nil {
 		return
 	}
@@ -351,6 +471,20 @@ func (rdb *RelDB) DeleteOracle(feederID string) (err error) {
 	SET deleted=$1,lastupdate=$3
 	WHERE feeder_id=$2`, oracleconfigTable)
 	_, err = rdb.postgresClient.Exec(context.Background(), query, true, feederID, currentTime)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (rdb *RelDB) ExpireOracle(feederID string) (err error) {
+	currentTime := time.Now()
+	query := fmt.Sprintf(`
+	UPDATE %s 
+	SET expired=$1, deleted=$2,lastupdate=$4
+	WHERE feeder_id=$4`, oracleconfigTable)
+	_, err = rdb.postgresClient.Exec(context.Background(), query, true, true, feederID, currentTime)
 	if err != nil {
 		return
 	}
