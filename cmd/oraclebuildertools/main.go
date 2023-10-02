@@ -102,6 +102,8 @@ func main() {
 				}
 
 			}
+
+			log.Println("Total oracle expired:", len(oracleconfigs))
 		},
 	}
 
