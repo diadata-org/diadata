@@ -36,12 +36,14 @@ func main() {
 		log.Errorln("NewRelDataStore", err)
 	}
 	k8bridgeurl := utils.Getenv("K8SBRIDGE_URL", "127.0.0.1:50051")
+	signerurl := utils.Getenv("SIGNER_URL", "signer.dia-oracle-feeder:50052")
 	oraclebaseimage := utils.Getenv("ORACLE_BASE_IMAGE", "us.icr.io/dia-registry/oracles/oracle-baseimage:latest")
 	oraclenamespace := utils.Getenv("ORACLE_NAMESPACE", "dia-oracle-feeder")
 	oracleMonitoringUser := utils.Getenv("ORACLE_MONITORING_USER", "user")
 	oracleMonitoringPassword := utils.Getenv("ORACLE_MONITORING_PASSWORD", "password")
+	affinity := utils.Getenv("ORACLE_FEEDER_AFFINITY", "default")
 
-	ph := builderUtils.NewPodHelper(oraclebaseimage, oraclenamespace)
+	ph := builderUtils.NewPodHelper(oraclebaseimage, oraclenamespace, affinity, signerurl)
 
 	ring, _ := keyring.Open(keyring.Config{
 		ServiceName:     "oraclebuilder",
