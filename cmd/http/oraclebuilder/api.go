@@ -71,14 +71,10 @@ func (ob *Env) Create(context *gin.Context) {
 
 	log.Infof("Creating oracle: oracleAddress: %s, ChainID: %s, Creator: %s, Symbols: %s, frequency: %s, sleepSeconds: %s blockchainnode: %s, feedSelection %s", oracleaddress, chainID, creator, symbols, frequency, sleepSeconds, blockchainnode, feedSelection)
 
-	log.Infoln("Creating oracle: chainID", chainID)
-	log.Infoln("Creating oracle: creator", creator)
-	log.Infoln("Creating oracle: oracleaddress", oracleaddress)
-	log.Infoln("Creating oracle: feederID", feederID)
-	log.Infoln("Creating oracle: deviationPermille", deviationPermille)
-
-	signer, _ := utils.GetSigner(chainID, creator, oracleaddress, "Verify its your address to call oracle builder", signedData)
-
+	signer, err := utils.GetSigner(chainID, creator, oracleaddress, "Verify its your address to call oracle builder", signedData)
+	if err != nil {
+		handleError(context, http.StatusUnauthorized, "sign err", "Creating oracle: invalid signer")
+	}
 	log.Infoln("Creating oracle: signer", signer)
 
 	if signer.Hex() != creator {
