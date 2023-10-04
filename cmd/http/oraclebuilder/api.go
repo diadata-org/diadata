@@ -149,7 +149,6 @@ func (ob *Env) Create(context *gin.Context) {
 	deviationPermilleFloat, err := strconv.ParseFloat(deviationPermille, 64)
 	if err != nil {
 		deviationPermilleFloat = 0.0
-		log.Errorln("Creating oracle:  deviationPermille is empty set to zero", err)
 
 	}
 
