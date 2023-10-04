@@ -38,6 +38,8 @@ func main() {
 	oracleMonitoringPassword := utils.Getenv("ORACLE_MONITORING_PASSWORD", "password")
 	affinity := utils.Getenv("ORACLE_FEEDER_AFFINITY", "default")
 
+	routerPath := utils.Getenv("ROUTER_PATH", "/oraclebuilder")
+
 	ph := builderUtils.NewPodHelper(oraclebaseimage, oraclenamespace, affinity, signerurl, diaRestURL, diaGraphqlURL)
 
 	ring, _ := keyring.Open(keyring.Config{
@@ -53,7 +55,7 @@ func main() {
 		AllowMethods: []string{"POST", "PUT", "PATCH", "DELETE"},
 		AllowHeaders: []string{"Content-Type,access-control-allow-origin, access-control-allow-headers, Authorization"},
 	}))
-	routerGroup := r.Group("/oraclebuilder")
+	routerGroup := r.Group(routerPath)
 
 	routerGroup.POST("create", oracle.Create)
 	routerGroup.GET("/list", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to List your oracles") }, oracle.Auth, oracle.List)
