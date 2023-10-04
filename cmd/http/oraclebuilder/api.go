@@ -159,6 +159,7 @@ func (ob *Env) Create(context *gin.Context) {
 		//Oracle Creation Action
 
 		if !ob.createOracleFeederLimiter().Allow() {
+			log.Errorln("Rate limit exceeded for createOracleFeeder", err)
 			context.JSON(http.StatusTooManyRequests, "Rate limit exceeded for createOracleFeeder")
 			return
 		}
