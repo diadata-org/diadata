@@ -11,6 +11,7 @@ import (
 
 	builderUtils "github.com/diadata-org/diadata/http/oraclebuilder/utils"
 	"github.com/ethereum/go-ethereum/common"
+	"golang.org/x/time/rate"
 
 	kr "github.com/99designs/keyring"
 	"github.com/99designs/keyring/cmd/k8sbridge"
@@ -25,10 +26,11 @@ Auth using EIP712 spec
 
 //goland:noinspection ALL
 type Env struct {
-	DataStore models.Datastore
-	RelDB     *models.RelDB
-	PodHelper *builderUtils.PodHelper
-	Keyring   kr.Keyring
+	DataStore               models.Datastore
+	RelDB                   *models.RelDB
+	PodHelper               *builderUtils.PodHelper
+	Keyring                 kr.Keyring
+	RateLimitOracleCreation int
 }
 
 func handleError(context *gin.Context, status int, errorMsg, logMsg string, logArgs ...interface{}) {
@@ -154,6 +156,12 @@ func (ob *Env) Create(context *gin.Context) {
 	log.Infoln("feederId from creator", feederID)
 
 	if feederID == "" {
+		//Oracle Creation Action
+
+		if !ob.createOracleFeederLimiter().Allow() {
+			context.JSON(http.StatusTooManyRequests, "Rate limit exceeded for createOracleFeeder")
+			return
+		}
 		// check if creator has resources to create new oracle feeder
 		// limit := ob.RelDB.GetFeederLimit(creator)
 		// total := ob.RelDB.GetTotalFeeder(creator)
@@ -203,7 +211,7 @@ func (ob *Env) Create(context *gin.Context) {
 	address = keypair.GetPublickey()
 
 	if !isUpdate {
-		err = ob.PodHelper.CreateOracleFeeder(context, feederID, creator, oracleaddress, chainID, symbols, feedSelection, blockchainnode, frequency, sleepSeconds, deviationPermille, mandatoryFrequency)
+		err = ob.PodHelper.CreateOracleFeeder(context, feederID, creator, oracleaddress, address, chainID, symbols, feedSelection, blockchainnode, frequency, sleepSeconds, deviationPermille, mandatoryFrequency)
 		if err != nil {
 			log.Errorln("error CreateOracleFeeder ", err)
 			context.JSON(http.StatusInternalServerError, errors.New("error creating oraclefeeder"))
@@ -244,6 +252,10 @@ func (ob *Env) Create(context *gin.Context) {
 	k["publicKey"] = address
 
 	context.JSON(http.StatusCreated, k)
+}
+
+func (ob *Env) createOracleFeederLimiter() *rate.Limiter {
+	return rate.NewLimiter(rate.Limit(ob.RateLimitOracleCreation), 60*10)
 }
 
 // List: list owner oracles
