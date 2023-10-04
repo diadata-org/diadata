@@ -217,8 +217,6 @@ github.com/dfuse-io/logging v0.0.0-20210109005628-b97a57253f70/go.mod h1:EoK/8RF
 github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZmtrrCbhqsmaPHjLKYnJCaQ=
 github.com/dgryski/go-bitstream v0.0.0-20180413035011-3522498ce2c8/go.mod h1:VMaSuZ+SZcx/wljOQKvp5srsbCiKDEb6K2wC4+PiBmQ=
 github.com/dgryski/go-sip13 v0.0.0-20181026042036-e10d5fee7954/go.mod h1:vAd38F8PWV+bWy6jNmig1y/TA+kYO4g3RSRF0IAv0no=
-github.com/diadata-org/diadata v1.4.207 h1:ssuoN+rgyFBwO20/K7cA19ETu1c6rOxf7VFIo5k6zKo=
-github.com/diadata-org/diadata v1.4.207/go.mod h1:ikGdMNjV36ZcpxGa/bmjsiWDNuNY8oB29nH3Tm6A9y0=
 github.com/diadata-org/diadata v1.4.209 h1:xXLjR17OfPZ07dKRojmltHp+Pxyoi631a09p8VQ/ptI=
 github.com/diadata-org/diadata v1.4.209/go.mod h1:ikGdMNjV36ZcpxGa/bmjsiWDNuNY8oB29nH3Tm6A9y0=
 github.com/dlclark/regexp2 v1.4.1-0.20201116162257-a2a8dda75c91/go.mod h1:2pZnwuY/m+8K6iRw6wQdMtk+rH5tNGR1i55kozfMjCc=
