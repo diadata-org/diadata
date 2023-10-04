@@ -61,9 +61,9 @@ func NewPodHelper(image, namespace, affinity, signerURL, diaRestURL, diaGraphqlU
 }
 
 // CreateOracleFeeder creates a new Oracle Feeder Pod in Kubernetes.
-func (kh *PodHelper) CreateOracleFeeder(ctx context.Context, feederID string, owner string, oracle string, chainID string, symbols, feedSelection, blockchainnode string, frequency, sleepSeconds, deviationPermille, mandatoryFrequency string) error {
+func (kh *PodHelper) CreateOracleFeeder(ctx context.Context, feederID string, creator, feederAddress string, oracle string, chainID string, symbols, feedSelection, blockchainnode string, frequency, sleepSeconds, deviationPermille, mandatoryFrequency string) error {
 
-	envvars := kh.PodEnvironmentVariables(feederID, owner, oracle, chainID, symbols, feedSelection, blockchainnode, frequency, sleepSeconds, deviationPermille, mandatoryFrequency)
+	envvars := kh.PodEnvironmentVariables(feederID, creator, oracle, chainID, symbols, feedSelection, blockchainnode, frequency, sleepSeconds, deviationPermille, mandatoryFrequency)
 
 	// Define an image pull request
 	imagepullrequest := corev1.LocalObjectReference{Name: "all-icr-io"}
@@ -73,9 +73,10 @@ func (kh *PodHelper) CreateOracleFeeder(ctx context.Context, feederID string, ow
 		ObjectMeta: metav1.ObjectMeta{
 			Name: feederID,
 			Labels: map[string]string{
-				"oracle":  oracle,
-				"chainID": chainID,
-				"owner":   owner,
+				"oracle":        oracle,
+				"chainID":       chainID,
+				"owner":         creator,
+				"feederAddress": feederAddress,
 			},
 		},
 		Spec: corev1.PodSpec{
@@ -258,7 +259,7 @@ func (kh *PodHelper) RestartOracleFeeder(ctx context.Context, feederID string, o
 		} else {
 			return err
 		}
-		err = kh.CreateOracleFeeder(ctx, feederID, oracleconfig.Owner, oracleconfig.Address, oracleconfig.ChainID, strings.Join(oracleconfig.Symbols[:], ","), oracleconfig.FeederSelection, oracleconfig.BlockchainNode, oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille, oracleconfig.MandatoryFrequency)
+		err = kh.CreateOracleFeeder(ctx, feederID, oracleconfig.Owner, oracleconfig.FeederAddress, oracleconfig.Address, oracleconfig.ChainID, strings.Join(oracleconfig.Symbols[:], ","), oracleconfig.FeederSelection, oracleconfig.BlockchainNode, oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille, oracleconfig.MandatoryFrequency)
 		if err != nil {
 			log.Errorf("Pod %s start err\n", err)
 			return
@@ -271,7 +272,7 @@ func (kh *PodHelper) RestartOracleFeeder(ctx context.Context, feederID string, o
 		//}
 		deleteerr := kh.waitPodDeleted(ctx, oracleconfig.Address, func() {
 			time.Sleep(1000 * time.Millisecond)
-			err = kh.CreateOracleFeeder(ctx, feederID, oracleconfig.Owner, oracleconfig.Address, oracleconfig.ChainID, strings.Join(oracleconfig.Symbols[:], ","), oracleconfig.FeederSelection, oracleconfig.BlockchainNode, oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille, oracleconfig.MandatoryFrequency)
+			err = kh.CreateOracleFeeder(ctx, feederID, oracleconfig.Owner, oracleconfig.FeederAddress, oracleconfig.Address, oracleconfig.ChainID, strings.Join(oracleconfig.Symbols[:], ","), oracleconfig.FeederSelection, oracleconfig.BlockchainNode, oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille, oracleconfig.MandatoryFrequency)
 			if err != nil {
 				log.Errorf("Pod %s start err\n", err)
 				return
