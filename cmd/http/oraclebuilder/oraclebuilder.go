@@ -2,7 +2,7 @@ package main
 
 import (
 	"net/http"
-	"time"
+	"strconv"
 
 	"github.com/99designs/keyring"
 	builderUtils "github.com/diadata-org/diadata/http/oraclebuilder/utils"
@@ -16,16 +16,6 @@ import (
 
 var log = logrus.New()
 
-const (
-	cachingTime1Sec   = 1 * time.Second
-	cachingTime20Secs = 20 * time.Second
-	cachingTimeShort  = time.Minute * 2
-	// cachingTimeMedium = time.Minute * 10
-	cachingTimeLong = time.Minute * 100
-)
-
-var identityKey = "id"
-
 func main() {
 
 	r := gin.New()
@@ -37,13 +27,18 @@ func main() {
 	}
 	k8bridgeurl := utils.Getenv("K8SBRIDGE_URL", "127.0.0.1:50051")
 	signerurl := utils.Getenv("SIGNER_URL", "signer.dia-oracle-feeder:50052")
+	diaRestURL := utils.Getenv("DIA_REST_URL", "https://api.diadata.org")
+	diaGraphqlURL := utils.Getenv("DIA_GRAPHQL_URL", "https://api.diadata.org/graphql/query")
+	rateLimitOracleCreationString := utils.Getenv("RATE_LIMIT_ORACLE_CREATIOn", "1")
+	rateLimitOracleCreation, _ := strconv.ParseInt(rateLimitOracleCreationString, 10, 64)
+
 	oraclebaseimage := utils.Getenv("ORACLE_BASE_IMAGE", "us.icr.io/dia-registry/oracles/oracle-baseimage:latest")
 	oraclenamespace := utils.Getenv("ORACLE_NAMESPACE", "dia-oracle-feeder")
 	oracleMonitoringUser := utils.Getenv("ORACLE_MONITORING_USER", "user")
 	oracleMonitoringPassword := utils.Getenv("ORACLE_MONITORING_PASSWORD", "password")
 	affinity := utils.Getenv("ORACLE_FEEDER_AFFINITY", "default")
 
-	ph := builderUtils.NewPodHelper(oraclebaseimage, oraclenamespace, affinity, signerurl)
+	ph := builderUtils.NewPodHelper(oraclebaseimage, oraclenamespace, affinity, signerurl, diaRestURL, diaGraphqlURL)
 
 	ring, _ := keyring.Open(keyring.Config{
 		ServiceName:     "oraclebuilder",
@@ -51,7 +46,7 @@ func main() {
 		AllowedBackends: []keyring.BackendType{keyring.K8Secret},
 	})
 
-	oracle := &Env{RelDB: relStore, PodHelper: ph, Keyring: ring}
+	oracle := &Env{RelDB: relStore, PodHelper: ph, Keyring: ring, RateLimitOracleCreation: int(rateLimitOracleCreation)}
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{"*"},
