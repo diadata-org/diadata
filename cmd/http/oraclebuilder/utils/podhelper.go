@@ -25,15 +25,17 @@ var log = logrus.New()
 
 // PodHelper is a utility struct for working with Kubernetes Pods.
 type PodHelper struct {
-	k8sclient *kubernetes.Clientset
-	Image     string
-	NameSpace string
-	Affinity  string
-	SignerURL string
+	k8sclient     *kubernetes.Clientset
+	Image         string
+	NameSpace     string
+	Affinity      string
+	SignerURL     string
+	DiaRestURL    string
+	DiaGraphqlURL string
 }
 
 // NewPodHelper creates a new instance of PodHelper.
-func NewPodHelper(image, namespace, affinity, signerURL string) *PodHelper {
+func NewPodHelper(image, namespace, affinity, signerURL, diaRestURL, diaGraphqlURL string) *PodHelper {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		// try using kube config
@@ -55,7 +57,7 @@ func NewPodHelper(image, namespace, affinity, signerURL string) *PodHelper {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return &PodHelper{k8sclient: client, Image: image, NameSpace: namespace, Affinity: affinity, SignerURL: signerURL}
+	return &PodHelper{k8sclient: client, Image: image, NameSpace: namespace, Affinity: affinity, SignerURL: signerURL, DiaRestURL: diaRestURL, DiaGraphqlURL: diaGraphqlURL}
 }
 
 // CreateOracleFeeder creates a new Oracle Feeder Pod in Kubernetes.
@@ -137,8 +139,12 @@ func (kh *PodHelper) PodEnvironmentVariables(feederID string, owner string, orac
 	mandatoryfrequencyenv := corev1.EnvVar{Name: "ORACLE_MANDATORYFREQUENCY", Value: mandatoryFrequency}
 	feedSelectionenv := corev1.EnvVar{Name: "ORACLE_FEEDSELECTION", Value: feedSelection}
 
+	diaRestAPIenv := corev1.EnvVar{Name: "DIA_REST_URL", Value: kh.DiaRestURL}
+
+	diaGraphqlenv := corev1.EnvVar{Name: "DIA_GRAPHQL_URL", Value: kh.DiaGraphqlURL}
+
 	// Append all corev1.EnvVar instances to vars
-	vars = append(vars, publickeyenv, deployedcontractenv, chainidenv, signerservice, sleepsecondenv, deviationenv, frequencyseconds, oracletype, oraclesymbols, oraclefeederid, blockchainnodeenv, mandatoryfrequencyenv, feedSelectionenv)
+	vars = append(vars, diaRestAPIenv, diaGraphqlenv, publickeyenv, deployedcontractenv, chainidenv, signerservice, sleepsecondenv, deviationenv, frequencyseconds, oracletype, oraclesymbols, oraclefeederid, blockchainnodeenv, mandatoryfrequencyenv, feedSelectionenv)
 
 	// ---
 	postgreshost := corev1.EnvVar{Name: "POSTGRES_HOST", Value: "dia-postgresql.dia-db"}

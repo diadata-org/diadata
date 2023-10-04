@@ -252,9 +252,9 @@ func (ob *Env) List(context *gin.Context) {
 
 	oracles, err := ob.RelDB.GetOraclesByOwner(creator)
 	if err != nil {
-		log.Errorln("List Oracles: error on getOraclesByOwner ", err)
-		context.JSON(http.StatusInternalServerError, err)
-		return
+		errorMsg := "Error fetching oracles by owner"
+		logMsg := "List Oracles: error on getOraclesByOwner"
+		handleError(context, http.StatusInternalServerError, errorMsg, logMsg, err)
 	}
 	context.JSON(http.StatusOK, oracles)
 }
@@ -272,12 +272,11 @@ func (ob *Env) Whitelist(context *gin.Context) {
 
 // list whitelisted addresses
 func (ob *Env) Stats(context *gin.Context) {
-	var err error
 	address := context.Query("address")
 	chainID := context.Query("chainID")
 	page := context.Query("page")
 
-	var offset int
+	offset := 0
 	if page != "" {
 		pageInt, err := strconv.Atoi(page)
 		if err != nil || pageInt < 1 {
@@ -291,15 +290,17 @@ func (ob *Env) Stats(context *gin.Context) {
 
 	totalUpdates, err := ob.RelDB.GetOracleUpdateCount(address, chainID)
 	if err != nil {
-		log.Errorln("Oracle Stats error GetOracleUpdateCount ", err)
-		context.JSON(http.StatusInternalServerError, err)
+		errorMsg := "Error fetching oracle update count"
+		logMsg := "Oracle Stats error GetOracleUpdateCount"
+		handleError(context, http.StatusInternalServerError, errorMsg, logMsg, err)
 		return
 	}
 
 	updates, err := ob.RelDB.GetOracleUpdates(address, chainID, offset)
 	if err != nil {
-		log.Errorln("Oracle Stats error ", err)
-		context.JSON(http.StatusInternalServerError, err)
+		errorMsg := "Error fetching oracle updates"
+		logMsg := "Oracle Stats error"
+		handleError(context, http.StatusInternalServerError, errorMsg, logMsg, err)
 		return
 	}
 
