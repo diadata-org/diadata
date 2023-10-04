@@ -6,12 +6,13 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"sync"
+	"time"
 
 	"strings"
 
 	builderUtils "github.com/diadata-org/diadata/http/oraclebuilder/utils"
 	"github.com/ethereum/go-ethereum/common"
-	"golang.org/x/time/rate"
 
 	kr "github.com/99designs/keyring"
 	"github.com/99designs/keyring/cmd/k8sbridge"
@@ -31,6 +32,20 @@ type Env struct {
 	PodHelper               *builderUtils.PodHelper
 	Keyring                 kr.Keyring
 	RateLimitOracleCreation int
+	apiStats                APIStats
+}
+
+func NewEnv(relStore *models.RelDB, ph *builderUtils.PodHelper, ring kr.Keyring, rateLimitOracleCreation int) *Env {
+	apistats := *NewAPIStats()
+	go apistats.ClearCachePeriodically(10 * time.Minute)
+
+	return &Env{
+		RelDB:                   relStore,
+		PodHelper:               ph,
+		Keyring:                 ring,
+		RateLimitOracleCreation: rateLimitOracleCreation,
+		apiStats:                apistats,
+	}
 }
 
 func handleError(context *gin.Context, status int, errorMsg, logMsg string, logArgs ...interface{}) {
@@ -157,9 +172,9 @@ func (ob *Env) Create(context *gin.Context) {
 
 	if feederID == "" {
 		//Oracle Creation Action
-		log.Infoln("Rate limit check", ob.createOracleFeederLimiter().Limit())
+		log.Infoln("Rate limit check", ob.createOracleFeederLimiter(false))
 
-		if !ob.createOracleFeederLimiter().Allow() {
+		if !ob.createOracleFeederLimiter(true) {
 			log.Errorln("Rate limit exceeded for createOracleFeeder", err)
 			context.JSON(http.StatusTooManyRequests, "Rate limit exceeded for createOracleFeeder")
 			return
@@ -256,8 +271,24 @@ func (ob *Env) Create(context *gin.Context) {
 	context.JSON(http.StatusCreated, k)
 }
 
-func (ob *Env) createOracleFeederLimiter() *rate.Limiter {
-	return rate.NewLimiter(rate.Limit(ob.RateLimitOracleCreation), 60*10)
+func (ob *Env) createOracleFeederLimiter(isCheck bool) (int, bool) {
+
+	count, exist := ob.apiStats.Get("createOracleFeeder")
+
+	if !exist {
+		ob.apiStats.Set("createOracleFeeder", 1)
+		return count, true
+	}
+	if count >= ob.RateLimitOracleCreation {
+		return count, false
+	}
+	if !isCheck {
+		count++
+		ob.apiStats.Set("createOracleFeeder", count)
+	}
+
+	return count, true
+
 }
 
 // List: list owner oracles
@@ -412,7 +443,13 @@ func (ob *Env) Pause(context *gin.Context) {
 }
 
 func (ob *Env) ViewLimit(context *gin.Context) {
-	context.JSON(http.StatusOK, ob.createOracleFeederLimiter().Allow())
+
+	response := make(map[string]interface{})
+	count, isExhausted := ob.createOracleFeederLimiter(true)
+	response["Count"] = count
+	response["IsAllowed"] = isExhausted
+
+	context.JSON(http.StatusOK, response)
 }
 
 func (ob *Env) Delete(context *gin.Context) {
@@ -551,4 +588,44 @@ func (ob *Env) Auth(context *gin.Context) {
 
 	}
 
+}
+
+type APIStats struct {
+	data map[string]int
+	mu   sync.RWMutex
+}
+
+func NewAPIStats() *APIStats {
+	return &APIStats{
+		data: make(map[string]int),
+	}
+}
+
+func (c *APIStats) Set(key string, value int) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.data[key] = value
+}
+
+func (c *APIStats) Get(key string) (int, bool) {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	value, exists := c.data[key]
+	return value, exists
+}
+
+func (c *APIStats) ClearCachePeriodically(interval time.Duration) {
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			c.mu.Lock()
+			for k := range c.data {
+				delete(c.data, k)
+			}
+			c.mu.Unlock()
+		}
+	}
 }

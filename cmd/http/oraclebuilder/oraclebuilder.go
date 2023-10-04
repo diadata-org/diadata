@@ -21,7 +21,7 @@ func main() {
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
-	relStore, err := models.NewRelDataStore()
+	relStore, err := models.NewPostgresDataStore()
 	if err != nil {
 		log.Errorln("NewRelDataStore", err)
 	}
@@ -29,7 +29,7 @@ func main() {
 	signerurl := utils.Getenv("SIGNER_URL", "signer.dia-oracle-feeder:50052")
 	diaRestURL := utils.Getenv("DIA_REST_URL", "https://api.diadata.org")
 	diaGraphqlURL := utils.Getenv("DIA_GRAPHQL_URL", "https://api.diadata.org/graphql/query")
-	rateLimitOracleCreationString := utils.Getenv("RATE_LIMIT_ORACLE_CREATIOn", "1")
+	rateLimitOracleCreationString := utils.Getenv("RATE_LIMIT_ORACLE_CREATION", "4")
 	rateLimitOracleCreation, _ := strconv.ParseInt(rateLimitOracleCreationString, 10, 64)
 
 	oraclebaseimage := utils.Getenv("ORACLE_BASE_IMAGE", "us.icr.io/dia-registry/oracles/oracle-baseimage:latest")
@@ -46,7 +46,7 @@ func main() {
 		AllowedBackends: []keyring.BackendType{keyring.K8Secret},
 	})
 
-	oracle := &Env{RelDB: relStore, PodHelper: ph, Keyring: ring, RateLimitOracleCreation: int(rateLimitOracleCreation)}
+	oracle := NewEnv(relStore, ph, ring, int(rateLimitOracleCreation))
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{"*"},
