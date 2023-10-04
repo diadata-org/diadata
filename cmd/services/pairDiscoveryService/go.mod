@@ -13,7 +13,6 @@ require (
 	filippo.io/edwards25519 v1.0.0-rc.1 // indirect
 	github.com/Kucoin/kucoin-go-sdk v1.2.7 // indirect
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
-	github.com/adshao/go-binance v0.0.0-20200724005944-6a0c3995d85c // indirect
 	github.com/adshao/go-binance/v2 v2.3.6 // indirect
 	github.com/alexjorgef/go-bittrex v0.6.3 // indirect
 	github.com/alexjorgef/signalr v0.1.0 // indirect
@@ -23,7 +22,6 @@ require (
 	github.com/bitfinexcom/bitfinex-api-go v0.0.0-20200709134622-b8be40b33f25 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/blendle/zapdriver v1.3.1 // indirect
-	github.com/btcsuite/btcd v0.21.0-beta // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/cryptwire/go-binance/v2 v2.2.3 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
