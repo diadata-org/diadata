@@ -431,11 +431,11 @@ func (rdb *RelDB) GetOracleConfig(address, chainid string) (oracleconfig dia.Ora
 		feedSelection sql.NullString
 	)
 	query := fmt.Sprintf(`
-	SELECT address, feeder_id, owner,symbols, chainid, feedSelection,deviationpermille, sleepseconds,frequency, blockchainnode, mandatory_frequency
+	SELECT address, feeder_id, owner,feeder_address,symbols, chainid, feedSelection,deviationpermille, sleepseconds,frequency, blockchainnode, mandatory_frequency
 	FROM %s 
 	WHERE address=$1 and chainid=$2`, oracleconfigTable)
 	fmt.Println(query)
-	err = rdb.postgresClient.QueryRow(context.Background(), query, address, chainid).Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &feedSelection, &oracleconfig.DeviationPermille, &oracleconfig.SleepSeconds, &oracleconfig.Frequency, &oracleconfig.BlockchainNode, &oracleconfig.MandatoryFrequency)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, address, chainid).Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &oracleconfig.FeederAddress, &symbols, &oracleconfig.ChainID, &feedSelection, &oracleconfig.DeviationPermille, &oracleconfig.SleepSeconds, &oracleconfig.Frequency, &oracleconfig.BlockchainNode, &oracleconfig.MandatoryFrequency)
 	if err != nil {
 		return
 	}

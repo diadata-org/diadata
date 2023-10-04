@@ -29,6 +29,8 @@ func main() {
 	signerurl := utils.Getenv("SIGNER_URL", "signer.dia-oracle-feeder:50052")
 	diaRestURL := utils.Getenv("DIA_REST_URL", "https://api.diadata.org")
 	diaGraphqlURL := utils.Getenv("DIA_GRAPHQL_URL", "https://api.diadata.org/graphql/query")
+	postgresqlHost := utils.Getenv("DIA_GRAPHQL_URL", "dia-postgresql.dia-db")
+
 	rateLimitOracleCreationString := utils.Getenv("RATE_LIMIT_ORACLE_CREATION", "4")
 	rateLimitOracleCreation, _ := strconv.ParseInt(rateLimitOracleCreationString, 10, 64)
 
@@ -48,7 +50,7 @@ func main() {
 		AllowedBackends: []keyring.BackendType{keyring.K8Secret},
 	})
 
-	oracle := NewEnv(relStore, ph, ring, int(rateLimitOracleCreation))
+	oracle := NewEnv(relStore, ph, ring, int(rateLimitOracleCreation), postgresqlHost)
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{"*"},

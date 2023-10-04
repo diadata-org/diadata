@@ -32,10 +32,11 @@ type PodHelper struct {
 	SignerURL     string
 	DiaRestURL    string
 	DiaGraphqlURL string
+	PostgresHost  string
 }
 
 // NewPodHelper creates a new instance of PodHelper.
-func NewPodHelper(image, namespace, affinity, signerURL, diaRestURL, diaGraphqlURL string) *PodHelper {
+func NewPodHelper(image, namespace, affinity, signerURL, diaRestURL, diaGraphqlURL, postgresHost string) *PodHelper {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		// try using kube config
@@ -57,11 +58,11 @@ func NewPodHelper(image, namespace, affinity, signerURL, diaRestURL, diaGraphqlU
 	if err != nil {
 		log.Fatal(err)
 	}
-	return &PodHelper{k8sclient: client, Image: image, NameSpace: namespace, Affinity: affinity, SignerURL: signerURL, DiaRestURL: diaRestURL, DiaGraphqlURL: diaGraphqlURL}
+	return &PodHelper{k8sclient: client, Image: image, NameSpace: namespace, Affinity: affinity, SignerURL: signerURL, DiaRestURL: diaRestURL, DiaGraphqlURL: diaGraphqlURL, PostgresHost: postgresHost}
 }
 
 // CreateOracleFeeder creates a new Oracle Feeder Pod in Kubernetes.
-func (kh *PodHelper) CreateOracleFeeder(ctx context.Context, feederID string, creator, feederAddress string, oracle string, chainID string, symbols, feedSelection, blockchainnode string, frequency, sleepSeconds, deviationPermille, mandatoryFrequency string) error {
+func (kh *PodHelper) CreateOracleFeeder(ctx context.Context, feederID, creator, feederAddress, oracle string, chainID string, symbols, feedSelection, blockchainnode string, frequency, sleepSeconds, deviationPermille, mandatoryFrequency string) error {
 
 	envvars := kh.PodEnvironmentVariables(feederID, creator, oracle, chainID, symbols, feedSelection, blockchainnode, frequency, sleepSeconds, deviationPermille, mandatoryFrequency)
 
@@ -148,7 +149,7 @@ func (kh *PodHelper) PodEnvironmentVariables(feederID string, owner string, orac
 	vars = append(vars, diaRestAPIenv, diaGraphqlenv, publickeyenv, deployedcontractenv, chainidenv, signerservice, sleepsecondenv, deviationenv, frequencyseconds, oracletype, oraclesymbols, oraclefeederid, blockchainnodeenv, mandatoryfrequencyenv, feedSelectionenv)
 
 	// ---
-	postgreshost := corev1.EnvVar{Name: "POSTGRES_HOST", Value: "dia-postgresql.dia-db"}
+	postgreshost := corev1.EnvVar{Name: "POSTGRES_HOST", Value: kh.PostgresHost}
 	postgresuser := corev1.EnvVar{Name: "POSTGRES_USER", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: "user", LocalObjectReference: corev1.LocalObjectReference{Name: "user.graphqlserver"}}}}
 	postgrespassword := corev1.EnvVar{Name: "POSTGRES_PASSWORD", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{Key: "password", LocalObjectReference: corev1.LocalObjectReference{Name: "user.graphqlserver"}}}}
 	postgresdb := corev1.EnvVar{Name: "POSTGRES_DB", Value: "postgres"}
