@@ -66,7 +66,7 @@ func main() {
 	}
 
 	s := grpc.NewServer()
-	kb := k8util.New(clientset)
+	kb := k8util.New(clientset, namespace)
 
 	pb.RegisterK8SHelperServer(s, &server{kb: kb})
 
