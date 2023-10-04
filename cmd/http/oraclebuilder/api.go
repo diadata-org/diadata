@@ -446,9 +446,9 @@ func (ob *Env) Pause(context *gin.Context) {
 func (ob *Env) ViewLimit(context *gin.Context) {
 
 	response := make(map[string]interface{})
-	count, isExhausted := ob.createOracleFeederLimiter(true)
+	count, isAllowed := ob.createOracleFeederLimiter(true)
 	response["Count"] = count
-	response["IsAllowed"] = isExhausted
+	response["IsAllowed"] = isAllowed
 
 	context.JSON(http.StatusOK, response)
 }

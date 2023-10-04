@@ -58,6 +58,7 @@ func main() {
 	routerGroup := r.Group(routerPath)
 
 	routerGroup.POST("create", oracle.Create)
+	routerGroup.GET("/create", oracle.ViewLimit)
 	routerGroup.GET("/list", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to List your oracles") }, oracle.Auth, oracle.List)
 	routerGroup.GET("/view", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to List your oracles") }, oracle.Auth, oracle.View)
 	routerGroup.DELETE("/delete", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to delete oracle") }, oracle.Auth, oracle.Delete)
@@ -65,7 +66,6 @@ func main() {
 	routerGroup.PATCH("/pause", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to pause oracle feeder") }, oracle.Auth, oracle.Pause)
 	routerGroup.GET("/whitelist", oracle.Whitelist)
 	routerGroup.GET("/stats", oracle.Stats)
-	routerGroup.GET("/create", oracle.ViewLimit)
 
 	authMiddleware := basicAuth(oracleMonitoringUser, oracleMonitoringPassword)
 

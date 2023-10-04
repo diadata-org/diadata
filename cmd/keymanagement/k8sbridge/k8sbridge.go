@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"net"
+	"os"
 	"path/filepath"
 
 	"k8sbridge/k8util"
@@ -35,6 +36,11 @@ type server struct {
 }
 
 func main() {
+
+	namespace := os.Getenv("NAMESPACE")
+	if namespace == "" {
+		namespace = "dia-oracle-feeder"
+	}
 
 	// creates the in-cluster config
 	config, err := rest.InClusterConfig()
