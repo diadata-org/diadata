@@ -157,6 +157,7 @@ func (ob *Env) Create(context *gin.Context) {
 
 	if feederID == "" {
 		//Oracle Creation Action
+		log.Infoln("Rate limit check", ob.createOracleFeederLimiter().Limit())
 
 		if !ob.createOracleFeederLimiter().Allow() {
 			log.Errorln("Rate limit exceeded for createOracleFeeder", err)
@@ -408,6 +409,10 @@ func (ob *Env) Pause(context *gin.Context) {
 		return
 	}
 	context.JSON(http.StatusOK, oracleconfig)
+}
+
+func (ob *Env) ViewLimit(context *gin.Context) {
+	context.JSON(http.StatusOK, ob.createOracleFeederLimiter().Allow())
 }
 
 func (ob *Env) Delete(context *gin.Context) {

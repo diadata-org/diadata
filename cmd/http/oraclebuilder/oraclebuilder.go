@@ -63,6 +63,7 @@ func main() {
 	routerGroup.PATCH("/pause", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to pause oracle feeder") }, oracle.Auth, oracle.Pause)
 	routerGroup.GET("/whitelist", oracle.Whitelist)
 	routerGroup.GET("/stats", oracle.Stats)
+	routerGroup.GET("/create", oracle.ViewLimit)
 
 	authMiddleware := basicAuth(oracleMonitoringUser, oracleMonitoringPassword)
 
