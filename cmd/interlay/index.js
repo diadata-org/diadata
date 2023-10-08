@@ -40,7 +40,7 @@ app.get("/customer/interlay/state/:token", async function (req, res) {
 
 app.get("/customer/bifrost/state/:token", async function (req, res) {
   // kbtc, ibtc
-  const allowedTokens = ["KSM","DOT"];
+  const allowedTokens = ["KSM","DOT","MOVR","BNC","GLMR","ASTR","FIL"];
 
   let token = req.params.token;
   token = token.toUpperCase();
