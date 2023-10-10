@@ -58,15 +58,14 @@ async function cronstart() {
           let saved = await getBiFrostValues(value.token);
           let btcprice = await getPrice(value.token);
 
-          let decimal = saved.decimal
  
           let ratio = saved.total_backable/saved.total_issued;
 
           let fairprice =  ratio  *btcprice
 
-
-          // let decimal = 1e12;
-          if(value.token=="DOT"){
+          let decimal = Math.pow(10, saved.decimal);
+ 
+           if(value.token=="DOT"){
             decimal = 1e10
           }
 
