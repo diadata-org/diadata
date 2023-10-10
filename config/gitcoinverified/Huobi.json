@@ -91,6 +91,12 @@
       "Address": "0xD533a949740bb3306d119CC777fa900bA034cd52"
     },
     {
+      "Symbol": "CUSD",
+      "Exchange": "Huobi",
+      "Blockchain": "Celo",
+      "Address": "0x765de816845861e75a25fca122bb6898b8b1282a"
+    },
+    {
       "Symbol": "CVX",
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",
@@ -161,6 +167,12 @@
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",
       "Address": "0x7DD9c5Cba05E151C895FDe1CF355C9A1D5DA6429"
+    },
+    {
+      "Symbol": "KAVA",
+      "Exchange": "Huobi",
+      "Blockchain": "Osmosis",
+      "Address": "ibc/57AA1A70A4BC9769C525EBF6386F7A21536E04A79D62E1981EFCEF9428EBB205"
     },
     {
       "Symbol": "KNC",

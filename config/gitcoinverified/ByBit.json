@@ -55,6 +55,12 @@
             "Address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
         },
         {
+            "Symbol": "CUSD",
+            "Exchange": "ByBit",
+            "Blockchain": "Celo",
+            "Address": "0x765de816845861e75a25fca122bb6898b8b1282a"
+        },
+        {
             "Symbol": "DOT",
             "Exchange": "ByBit",
             "Blockchain": "Polkadot",

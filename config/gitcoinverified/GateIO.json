@@ -71,6 +71,11 @@
             "Exchange": "GateIO",
             "Blockchain": "Nervos",
             "Address": "0x0000000000000000000000000000000000000000"
+        },        {
+            "Symbol": "CUSD",
+            "Exchange": "GateIO",
+            "Blockchain": "Celo",
+            "Address": "0x765de816845861e75a25fca122bb6898b8b1282a"
         },
         {
             "Symbol": "GRAIL",
@@ -89,6 +94,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Arbitrum",
             "Address": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"
+        },
+        {
+            "Symbol": "KAVA",
+            "Exchange": "GateIO",
+            "Blockchain": "Osmosis",
+            "Address": "ibc/57AA1A70A4BC9769C525EBF6386F7A21536E04A79D62E1981EFCEF9428EBB205"
         },
         {
             "Symbol": "LMR",

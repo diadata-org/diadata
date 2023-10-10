@@ -68,6 +68,18 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "CUSD_USDT",
+      "Ignore": false,
+      "Symbol": "CUSD"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "KAVA_USDT",
+      "Ignore": false,
+      "Symbol": "KAVA"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "KINT_USDT",
       "Ignore": false,
       "Symbol": "KINT"

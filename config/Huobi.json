@@ -68,6 +68,18 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "CUSDUSDT",
+      "Ignore": false,
+      "Symbol": "CUSD"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "KAVAUSDT",
+      "Ignore": false,
+      "Symbol": "KAVA"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "EUROCUSDT",
       "Ignore": false,
       "Symbol": "EUROC"

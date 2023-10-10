@@ -1,6 +1,12 @@
 {
     "Coins": [
         {
+            "Symbol": "KAVA",
+            "ForeignName": "KAVA/BTC",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
             "Symbol": "GNS",
             "ForeignName": "GNS/USDT",
             "Exchange": "Bitmax",
