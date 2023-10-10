@@ -221,6 +221,61 @@ HAVING
 	return
 
 }
+func (rdb *RelDB) GetFeeder(feederID string) (oracleconfig dia.OracleConfig, err error) {
+	var (
+		row            pgx.Row
+		deviationFloat float64
+		query          string
+	)
+
+	query = fmt.Sprintf(`
+	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address, createddate, COALESCE(lastupdate, '0001-01-01 00:00:00'::timestamp),deleted,feedselection,expired,expired_time
+	FROM %s  WHERE feederID=feeder_id
+	`, oracleconfigTable)
+	row = rdb.postgresClient.QueryRow(context.Background(), query)
+
+	if err != nil {
+		return
+	}
+
+	var (
+		symbols          string
+		frequencynull    sql.NullString
+		sleepsecondsnull sql.NullString
+		feedSelection    sql.NullString
+	)
+	err = row.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &frequencynull, &sleepsecondsnull, &oracleconfig.DeviationPermille, &oracleconfig.BlockchainNode, &oracleconfig.Active, &oracleconfig.MandatoryFrequency, &oracleconfig.FeederAddress, &oracleconfig.CreatedDate, &oracleconfig.LastUpdate, &oracleconfig.Deleted, &feedSelection, &oracleconfig.Expired, &oracleconfig.ExpiredDate)
+	if err != nil {
+
+		log.Error("GetFeeder scan", err, oracleconfig.FeederID)
+	}
+
+	if frequencynull.Valid {
+		oracleconfig.Frequency = frequencynull.String
+
+	}
+
+	if feedSelection.Valid {
+		oracleconfig.FeederSelection = feedSelection.String
+	}
+
+	if sleepsecondsnull.Valid {
+		oracleconfig.SleepSeconds = sleepsecondsnull.String
+
+	}
+
+	oracleconfig.Symbols = strings.Split(symbols, ",")
+	if oracleconfig.DeviationPermille != "" {
+		deviationFloat, err = strconv.ParseFloat(oracleconfig.DeviationPermille, 64)
+		if err != nil {
+			log.Error(err)
+
+		}
+		oracleconfig.DeviationPermille = fmt.Sprintf("%.2f", deviationFloat/10)
+	}
+
+	return
+}
 
 func (rdb *RelDB) GetAllFeeders(isDeleted bool, isExpired bool) (oracleconfigs []dia.OracleConfig, err error) {
 	var (
