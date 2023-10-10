@@ -230,9 +230,9 @@ func (rdb *RelDB) GetFeeder(feederID string) (oracleconfig dia.OracleConfig, err
 
 	query = fmt.Sprintf(`
 	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address, createddate, COALESCE(lastupdate, '0001-01-01 00:00:00'::timestamp),deleted,feedselection,expired,expired_time
-	FROM %s  WHERE feederID=feeder_id
+	FROM %s  WHERE feeder_id=$1
 	`, oracleconfigTable)
-	row = rdb.postgresClient.QueryRow(context.Background(), query)
+	row = rdb.postgresClient.QueryRow(context.Background(), query, feederID)
 
 	if err != nil {
 		return
