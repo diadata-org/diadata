@@ -62,6 +62,7 @@ const (
 	UniswapExchangeV3Arbitrum          = "UniswapV3-Arbitrum"
 	LoopringExchange                   = "Loopring"
 	CamelotExchange                    = "Camelot"
+	CamelotExchangeV3                  = "CamelotV3"
 	CurveFIExchange                    = "Curvefi"
 	CurveFIExchangeFantom              = "Curvefi-Fantom"
 	CurveFIExchangeMoonbeam            = "Curvefi-Moonbeam"
