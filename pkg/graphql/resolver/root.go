@@ -451,6 +451,7 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 	StartTime            graphql.NullTime
 	EndTime              graphql.NullTime
 	TradeVolumeThreshold graphql.NullFloat
+	NativeDenomination   graphql.NullBool
 	FeedSelection        *[]FeedSelection
 }) (*[]*FilterPointExtendedResolver, error) {
 	var (
@@ -461,6 +462,7 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 		blockShiftSeconds    int64
 		tradeVolumeThreshold float64
 		err                  error
+		nativeDenomination   bool
 	)
 
 	// Parsing input parameters.
@@ -515,6 +517,12 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 		tradeVolumeThreshold = TRADE_VOLUME_THRESHOLD_DEFAULT
 	}
 
+	// If nativeDenomination is true, price is returned in terms of the respective base asset.
+	// Default is false, i.e. price is returned in USD denomination.
+	if args.NativeDenomination.Value != nil {
+		nativeDenomination = *args.NativeDenomination.Value
+	}
+
 	if args.FeedSelection == nil {
 		return sr, errors.New("At least 1 asset must be selected.")
 	}
@@ -559,10 +567,10 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 		log.Println("Generating blocks, Total Trades", len(trades))
 		log.Info("generating bins. Total bins: ", len(bins))
 
-		if len(trades) > 0 && len(bins) > 0 {
+		if len(bins) > 0 {
 			// In case the first bin is empty, look for the last trades before @starttime
 			// in order to select the most recent one with sufficient volume.
-			if !utils.IsInBin(trades[0].Time, bins[0]) {
+			if len(trades) == 0 || !utils.IsInBin(trades[0].Time, bins[0]) {
 				previousTrade, err := r.DS.GetTradesByFeedSelection(feedselection, []time.Time{endtime.AddDate(0, 0, -10)}, []time.Time{starttime}, lookbackTradesNumber)
 				if len(previousTrade) == 0 {
 					log.Error("get initial trade: ", err)
@@ -599,23 +607,23 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 	// 	}
 	case "mair":
 		{
-			filterPoints = queryhelper.FilterMAIRextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold)
+			filterPoints = queryhelper.FilterMAIRextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold, nativeDenomination)
 		}
 	case "ma":
 		{
-			filterPoints = queryhelper.FilterMAextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold)
+			filterPoints = queryhelper.FilterMAextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold, nativeDenomination)
 		}
 	case "vwap":
 		{
-			filterPoints = queryhelper.FilterVWAPextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold)
+			filterPoints = queryhelper.FilterVWAPextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold, nativeDenomination)
 		}
 	case "vwapir":
 		{
-			filterPoints = queryhelper.FilterVWAPIRextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold)
+			filterPoints = queryhelper.FilterVWAPIRextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold, nativeDenomination)
 		}
 	case "medir":
 		{
-			filterPoints = queryhelper.FilterMEDIRextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold)
+			filterPoints = queryhelper.FilterMEDIRextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold, nativeDenomination)
 		}
 	case "vol":
 		{
@@ -886,6 +894,8 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) (dfs []dia.Feed
 			if len(pools) > 0 {
 				dfs = append(dfs, diaFeedSelection)
 			}
+			// Continue, i.e. ignore (possibly) given exchangepairs.
+			continue
 		}
 
 		// Parse exchanges.

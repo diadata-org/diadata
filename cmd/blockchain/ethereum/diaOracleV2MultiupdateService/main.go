@@ -30,6 +30,12 @@ type Asset struct {
 	gqlParams     GqlParameters
 }
 
+// Update asset1 only if asset0 is updated
+type ConditionalPair struct {
+	asset0   int
+	asset1   int
+}
+
 type GqlParameters struct {
 	FeedSelection []struct {
 		Address            string  `json:"Address"`
@@ -67,11 +73,13 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse gqlWindowSize: %v")
 	}
+	conditionalAssets := utils.Getenv("CONDITIONAL_ASSETS", "")
 	gqlMethodology := utils.Getenv("GQL_METHODOLOGY", "vwap")
 	assetsStr := utils.Getenv("ASSETS", "")
 	gqlAssetsStr := utils.Getenv("GQL_ASSETS", "")
 
 	assets := []Asset{}
+	conditionalPairs := []ConditionalPair{}
 	useGql := false
 	var assetsToParse string
 
@@ -111,6 +119,27 @@ func main() {
 		}
 
 		assets = append(assets, currAsset)
+	}
+
+	// Get conditional pairs for assets where an asset should only be updated if an update for the other asset is available
+	if conditionalAssets != "" {
+		conditionalPairsToParse := strings.Split(conditionalAssets, ";")
+		for _, conditionalPair := range conditionalPairsToParse {
+			var currPair ConditionalPair
+			var err error
+
+			entries := strings.Split(conditionalPair, "-")
+			currPair.asset0, err = strconv.Atoi(entries[0])
+			if err != nil {
+				log.Fatalf("Failed to parse conditional assets: %v", err)
+			}
+			currPair.asset1, err = strconv.Atoi(entries[1])
+			if err != nil {
+				log.Fatalf("Failed to parse conditional assets: %v", err)
+			}
+
+			conditionalPairs = append(conditionalPairs, currPair)
+		}
 	}
 
 	publishedPrices := make(map[string]float64)
@@ -160,11 +189,18 @@ func main() {
 					}
 					log.Println(newAssetPrices)
 					// update all prices
-					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, auth, contract, conn, chainId, assets)
+					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, auth, contract, conn, chainId, assets, conditionalPairs)
 				case <-mandatoryticker.C:
 					// Get prices for all assets from the API
 					newAssetPrices := make(map[string]float64)
-					for _, asset := range assets {
+					OUTER:
+					for i, asset := range assets {
+						// Check if we need to skip any assets due to being in a conditional pair
+						for _, conditionalPair := range conditionalPairs {
+							if i == conditionalPair.asset0 || i == conditionalPair.asset1 {
+								continue OUTER
+							}
+						}
 						newAssetPrice, err := retrieveAssetPrice(asset, useGql, gqlWindowSize, gqlMethodology, asset.gqlParams)
 						if err != nil {
 							log.Println(err)
@@ -174,7 +210,7 @@ func main() {
 					}
 					// update all prices, regardless of deviation
 					emptyMap := make(map[string]float64)
-					publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, deviationPermille, auth, contract, conn, chainId, assets)
+					publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, deviationPermille, auth, contract, conn, chainId, assets, conditionalPairs)
 				}
 			} else {
 				select {
@@ -190,7 +226,7 @@ func main() {
 						newAssetPrices[asset.symbol] = newAssetPrice
 					}
 					// update all prices
-					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, auth, contract, conn, chainId, assets)
+					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, auth, contract, conn, chainId, assets, conditionalPairs)
 				}
 			}
 		}
@@ -207,17 +243,40 @@ func oracleUpdateExecutor(
 	contract *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService,
 	conn *ethclient.Client,
 	chainId int64,
-	assets []Asset) (map[string]float64, error) {
+	assets []Asset,
+  conditionalAssets []ConditionalPair) (map[string]float64, error) {
 	// Check for deviation and collect all new prices in a map
 	// If a published price is 0, update in any case
 	updateCollector := make(map[string]float64)
 	priceCollector := make(map[string]float64)
-	for _, asset := range assets {
+	for i, asset := range assets {
+		updateAssetConditional := false
+
+		// check if this asset is conditional
+		for j := range conditionalAssets {
+			// find out if the asset which decides on the condition needs to be updated
+			if conditionalAssets[j].asset1 == i {
+				// Compare asset0 if it will receive an update
+				asset0 := assets[conditionalAssets[j].asset0]
+				asset0NewPrice := newPrices[asset0.symbol]
+				asset0OldPrice := publishedPrices[asset0.symbol]
+				
+				// Flag asset for update if it is conditional
+				if asset0NewPrice > 1e-8 && ((asset0NewPrice > (asset0OldPrice * (1 + float64(deviationPermille)/1000))) || (asset0NewPrice < (asset0OldPrice * (1 - float64(deviationPermille)/1000)))) {
+					updateAssetConditional = true
+					log.Printf("Asset %s flagged for update because conditional asset %s is updated as well.", asset.symbol, asset0.symbol)
+				} else {
+					updateAssetConditional = false
+					log.Printf("Asset %s is not updated because the conditional asset %s is not deviating." , asset.symbol, asset0.symbol)
+				}
+			}
+		}
+
 		newPrice := newPrices[asset.symbol]
 		fmt.Println("new price", newPrice)
 		oldPrice := publishedPrices[asset.symbol]
 
-		if newPrice > 1e-8 && ((newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000)))) {
+		if updateAssetConditional || (newPrice > 1e-8 && ((newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))))) {
 			log.Printf("Entering deviation based update zone for old price %.2f of asset %s. New price: %.2f", oldPrice, asset.symbol, newPrice)
 			updateCollector[asset.symbol] = newPrice
 			priceCollector[asset.symbol] = newPrice

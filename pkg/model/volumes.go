@@ -159,13 +159,14 @@ func (datastore *DB) GetExchangePairVolumes(asset dia.Asset, starttime time.Time
 
 	query := fmt.Sprintf(
 		`
-		SELECT SUM(multiplication)
+		SELECT SUM(multiplication),COUNT(*)
 		FROM (
 			SELECT ABS(estimatedUSDPrice*volume)
 			AS multiplication
 			FROM %s
 			WHERE quotetokenaddress='%s'
 			AND quotetokenblockchain='%s'
+			AND basetokenaddress!=''
 			AND time>%d
 			AND time<=%d
 			)
@@ -198,6 +199,10 @@ func (datastore *DB) GetExchangePairVolumes(asset dia.Asset, starttime time.Time
 				}
 				if !(pairvolume.Volume >= threshold) {
 					continue
+				}
+				pairvolume.TradesCount, err = row.Values[0][2].(json.Number).Int64()
+				if err != nil {
+					log.Warn("parse trades count: ", err)
 				}
 				pairvolume.Pair = dia.Pair{
 					QuoteToken: dia.Asset{Blockchain: asset.Blockchain, Address: asset.Address},

@@ -355,6 +355,12 @@
             "Address": "0x14da230d6726C50F759Bc1838717F8CE6373509C"
         },
         {
+            "Symbol": "KAVA",
+            "Exchange": "KuCoin",
+            "Blockchain": "Osmosis",
+            "Address": "ibc/57AA1A70A4BC9769C525EBF6386F7A21536E04A79D62E1981EFCEF9428EBB205"
+        },
+        {
             "Symbol": "KEY",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

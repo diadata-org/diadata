@@ -379,6 +379,12 @@
       "Address": "0x45804880De22913dAFE09f4980848ECE6EcbAf78"
     },
     {
+      "Symbol": "PENDULUM",
+      "Exchange": "MEXC",
+      "Blockchain": "Pendulum",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "PEPE",
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",

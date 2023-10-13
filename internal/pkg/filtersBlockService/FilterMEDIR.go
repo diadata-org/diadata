@@ -13,26 +13,28 @@ import (
 // It implements a trimmed median. Outliers are eliminated using interquartile range
 // see: https://en.wikipedia.org/wiki/Interquartile_range
 type FilterMEDIR struct {
-	asset       dia.Asset
-	exchange    string
-	currentTime time.Time
-	prices      []float64
-	lastTrade   dia.Trade
-	memory      int
-	value       float64
-	filterName  string
-	modified    bool
+	asset              dia.Asset
+	exchange           string
+	currentTime        time.Time
+	prices             []float64
+	lastTrade          dia.Trade
+	memory             int
+	value              float64
+	filterName         string
+	modified           bool
+	nativeDenomination bool
 }
 
 // NewFilterMEDIR creates a FilterMEDIR
-func NewFilterMEDIR(asset dia.Asset, exchange string, currentTime time.Time, memory int) *FilterMEDIR {
+func NewFilterMEDIR(asset dia.Asset, exchange string, currentTime time.Time, memory int, nativeDenomination bool) *FilterMEDIR {
 	filter := &FilterMEDIR{
-		asset:       asset,
-		exchange:    exchange,
-		prices:      []float64{},
-		currentTime: currentTime,
-		memory:      memory,
-		filterName:  "MEDIR" + strconv.Itoa(memory),
+		asset:              asset,
+		exchange:           exchange,
+		prices:             []float64{},
+		currentTime:        currentTime,
+		memory:             memory,
+		filterName:         "MEDIR" + strconv.Itoa(memory),
+		nativeDenomination: nativeDenomination,
 	}
 	return filter
 }
@@ -62,7 +64,11 @@ func (filter *FilterMEDIR) processDataPoint(trade dia.Trade) {
 	if len(filter.prices) >= filter.memory {
 		filter.prices = filter.prices[0 : filter.memory-1]
 	}
-	filter.prices = append([]float64{trade.EstimatedUSDPrice}, filter.prices...)
+	if !filter.nativeDenomination {
+		filter.prices = append([]float64{trade.EstimatedUSDPrice}, filter.prices...)
+	} else {
+		filter.prices = append([]float64{trade.Price}, filter.prices...)
+	}
 }
 
 func (filter *FilterMEDIR) finalCompute(t time.Time) float64 {

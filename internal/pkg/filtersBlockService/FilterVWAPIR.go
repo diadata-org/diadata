@@ -11,27 +11,29 @@ import (
 )
 
 type FilterVWAPIR struct {
-	exchange    string
-	currentTime time.Time
-	prices      []float64
-	volumes     []float64
-	lastTrade   dia.Trade
-	param       int
-	value       float64
-	modified    bool
-	filterName  string
-	asset       dia.Asset
+	exchange           string
+	currentTime        time.Time
+	prices             []float64
+	volumes            []float64
+	lastTrade          dia.Trade
+	param              int
+	value              float64
+	modified           bool
+	filterName         string
+	asset              dia.Asset
+	nativeDenomination bool
 }
 
-func NewFilterVWAPIR(asset dia.Asset, exchange string, currentTime time.Time, param int) *FilterVWAPIR {
+func NewFilterVWAPIR(asset dia.Asset, exchange string, currentTime time.Time, param int, nativeDenomination bool) *FilterVWAPIR {
 	s := &FilterVWAPIR{
-		asset:       asset,
-		exchange:    exchange,
-		prices:      []float64{},
-		volumes:     []float64{},
-		currentTime: currentTime,
-		param:       param,
-		filterName:  "VWAPIR" + strconv.Itoa(param),
+		asset:              asset,
+		exchange:           exchange,
+		prices:             []float64{},
+		volumes:            []float64{},
+		currentTime:        currentTime,
+		param:              param,
+		filterName:         "VWAPIR" + strconv.Itoa(param),
+		nativeDenomination: nativeDenomination,
 	}
 	return s
 }
@@ -60,12 +62,19 @@ func (filter *FilterVWAPIR) fill(trade dia.Trade) {
 }
 
 func (filter *FilterVWAPIR) processDataPoint(trade dia.Trade) {
-	filter.prices = append([]float64{trade.EstimatedUSDPrice}, filter.prices...)
+	if !filter.nativeDenomination {
+		filter.prices = append([]float64{trade.EstimatedUSDPrice}, filter.prices...)
+	} else {
+		filter.prices = append([]float64{trade.Price}, filter.prices...)
+	}
 	filter.volumes = append([]float64{trade.Volume}, filter.volumes...)
 }
 
-// FinalCompute ...
 func (s *FilterVWAPIR) FinalCompute(t time.Time) float64 {
+<<<<<<< HEAD
+=======
+	log.Info("final compute of time ", t)
+>>>>>>> master
 	return s.finalCompute(t)
 }
 

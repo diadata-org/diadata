@@ -157,6 +157,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapScraper(Exchanges[dia.SushiSwapExchangeFantom], scrape, relDB)
 	case dia.CamelotExchange:
 		return NewUniswapScraper(Exchanges[dia.CamelotExchange], scrape, relDB)
+	case dia.CamelotExchangeV3:
+		return NewUniswapV3Scraper(Exchanges[dia.CamelotExchangeV3], scrape, relDB)
 	case dia.CurveFIExchange:
 		return NewCurveFIScraper(Exchanges[dia.CurveFIExchange], scrape, relDB)
 	case dia.CurveFIExchangeFantom:
@@ -243,6 +245,14 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapScraper(Exchanges[dia.StellaswapExchange], scrape, relDB)
 	case dia.WanswapExchange:
 		return NewUniswapScraper(Exchanges[dia.WanswapExchange], scrape, relDB)
+	case dia.TraderJoeExchangeV2_1:
+		return NewTraderJoeScraper(Exchanges[dia.TraderJoeExchangeV2_1], scrape, relDB)
+	case dia.TraderJoeExchangeV2_1Arbitrum:
+		return NewTraderJoeScraper(Exchanges[dia.TraderJoeExchangeV2_1Arbitrum], scrape, relDB)
+	case dia.TraderJoeExchangeV2_1Avalanche:
+		return NewTraderJoeScraper(Exchanges[dia.TraderJoeExchangeV2_1Avalanche], scrape, relDB)
+	case dia.TraderJoeExchangeV2_1BNB:
+		return NewTraderJoeScraper(Exchanges[dia.TraderJoeExchangeV2_1BNB], scrape, relDB)
 	case dia.OsmosisExchange:
 		return NewOsmosisScraper(Exchanges[dia.OsmosisExchange], scrape, relDB)
 	case dia.ZenlinkswapExchange:

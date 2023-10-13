@@ -6,10 +6,13 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"sync"
+	"time"
 
 	"strings"
 
 	builderUtils "github.com/diadata-org/diadata/http/oraclebuilder/utils"
+	"github.com/ethereum/go-ethereum/common"
 
 	kr "github.com/99designs/keyring"
 	"github.com/99designs/keyring/cmd/k8sbridge"
@@ -24,10 +27,25 @@ Auth using EIP712 spec
 
 //goland:noinspection ALL
 type Env struct {
-	DataStore models.Datastore
-	RelDB     *models.RelDB
-	PodHelper *builderUtils.PodHelper
-	Keyring   kr.Keyring
+	DataStore               models.Datastore
+	RelDB                   *models.RelDB
+	PodHelper               *builderUtils.PodHelper
+	Keyring                 kr.Keyring
+	RateLimitOracleCreation int
+	apiStats                APIStats
+}
+
+func NewEnv(relStore *models.RelDB, ph *builderUtils.PodHelper, ring kr.Keyring, rateLimitOracleCreation int) *Env {
+	apistats := *NewAPIStats()
+	go apistats.ClearCachePeriodically(10 * time.Minute)
+
+	return &Env{
+		RelDB:                   relStore,
+		PodHelper:               ph,
+		Keyring:                 ring,
+		RateLimitOracleCreation: rateLimitOracleCreation,
+		apiStats:                apistats,
+	}
 }
 
 func handleError(context *gin.Context, status int, errorMsg, logMsg string, logArgs ...interface{}) {
@@ -49,8 +67,11 @@ func (ob *Env) Create(context *gin.Context) {
 	isUpdate = false
 
 	oracleaddress := context.PostForm("oracleaddress")
+	oracleaddress = common.HexToAddress(oracleaddress).Hex()
 	chainID := context.PostForm("chainID")
 	creator := context.PostForm("creator")
+	creator = common.HexToAddress(creator).Hex()
+
 	symbols := context.PostForm("symbols")
 	signedData := context.PostForm("signeddata")
 	feederID := context.PostForm("feederID")
@@ -67,14 +88,10 @@ func (ob *Env) Create(context *gin.Context) {
 
 	log.Infof("Creating oracle: oracleAddress: %s, ChainID: %s, Creator: %s, Symbols: %s, frequency: %s, sleepSeconds: %s blockchainnode: %s, feedSelection %s", oracleaddress, chainID, creator, symbols, frequency, sleepSeconds, blockchainnode, feedSelection)
 
-	log.Infoln("Creating oracle: chainID", chainID)
-	log.Infoln("Creating oracle: creator", creator)
-	log.Infoln("Creating oracle: oracleaddress", oracleaddress)
-	log.Infoln("Creating oracle: feederID", feederID)
-	log.Infoln("Creating oracle: deviationPermille", deviationPermille)
-
-	signer, _ := utils.GetSigner(chainID, creator, oracleaddress, "Verify its your address to call oracle builder", signedData)
-
+	signer, err := utils.GetSigner(chainID, creator, oracleaddress, "Verify its your address to call oracle builder", signedData)
+	if err != nil {
+		handleError(context, http.StatusUnauthorized, "sign err", "Creating oracle: invalid signer")
+	}
 	log.Infoln("Creating oracle: signer", signer)
 
 	if signer.Hex() != creator {
@@ -132,7 +149,6 @@ func (ob *Env) Create(context *gin.Context) {
 	deviationPermilleFloat, err := strconv.ParseFloat(deviationPermille, 64)
 	if err != nil {
 		deviationPermilleFloat = 0.0
-		log.Errorln("Creating oracle:  deviationPermille is empty set to zero", err)
 
 	}
 
@@ -154,16 +170,25 @@ func (ob *Env) Create(context *gin.Context) {
 	log.Infoln("feederId from creator", feederID)
 
 	if feederID == "" {
-		// check if creator has resources to create new oracle feeder
-		limit := ob.RelDB.GetFeederLimit(creator)
-		total := ob.RelDB.GetTotalFeeder(creator)
+		//Oracle Creation Action
+		count, isAllowed := ob.createOracleFeederLimiter(false)
+		log.Infoln("Rate limit check, isAllowed", count, isAllowed)
 
-		log.Infof("Creating oracle: Feeders Limit %d, Total Feeders:%d, Creator: %s", limit, total, creator)
-		if total >= limit {
-			log.Errorln("not enought resource left ", creator)
-			context.JSON(http.StatusUnauthorized, errors.New("limit over"))
+		if !isAllowed {
+			log.Errorln("Rate limit exceeded for createOracleFeeder", err)
+			context.JSON(http.StatusTooManyRequests, "Rate limit exceeded for createOracleFeeder")
 			return
 		}
+		// check if creator has resources to create new oracle feeder
+		// limit := ob.RelDB.GetFeederLimit(creator)
+		// total := ob.RelDB.GetTotalFeeder(creator)
+
+		// log.Infof("Creating oracle: Feeders Limit %d, Total Feeders:%d, Creator: %s", limit, total, creator)
+		// if total >= limit {
+		// 	log.Errorln("not enought resource left ", creator)
+		// 	context.JSON(http.StatusUnauthorized, errors.New("limit over"))
+		// 	return
+		// }
 
 		feederID = "feeder-" + utils.GenerateAutoname("-")
 
@@ -203,7 +228,7 @@ func (ob *Env) Create(context *gin.Context) {
 	address = keypair.GetPublickey()
 
 	if !isUpdate {
-		err = ob.PodHelper.CreateOracleFeeder(context, feederID, address, oracleaddress, chainID, symbols, feedSelection, blockchainnode, frequency, sleepSeconds, deviationPermille, mandatoryFrequency)
+		err = ob.PodHelper.CreateOracleFeeder(context, feederID, creator, address, oracleaddress, chainID, symbols, feedSelection, blockchainnode, frequency, sleepSeconds, deviationPermille, mandatoryFrequency)
 		if err != nil {
 			log.Errorln("error CreateOracleFeeder ", err)
 			context.JSON(http.StatusInternalServerError, errors.New("error creating oraclefeeder"))
@@ -220,7 +245,7 @@ func (ob *Env) Create(context *gin.Context) {
 	}
 
 	if isUpdate {
-		oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress)
+		oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress, chainID)
 		if err != nil {
 			log.Errorln("error GetOracleConfig ", err)
 			context.JSON(http.StatusInternalServerError, err)
@@ -246,14 +271,35 @@ func (ob *Env) Create(context *gin.Context) {
 	context.JSON(http.StatusCreated, k)
 }
 
+func (ob *Env) createOracleFeederLimiter(isCheck bool) (int, bool) {
+
+	count, exist := ob.apiStats.Get("createOracleFeeder")
+
+	if !exist {
+		ob.apiStats.Set("createOracleFeeder", 0)
+		return count, true
+	}
+	if count >= ob.RateLimitOracleCreation {
+		return count, false
+	}
+	if !isCheck {
+		count++
+		ob.apiStats.Set("createOracleFeeder", count)
+	}
+
+	return count, true
+
+}
+
 // List: list owner oracles
 func (ob *Env) List(context *gin.Context) {
 	creator := context.Query("creator")
+
 	oracles, err := ob.RelDB.GetOraclesByOwner(creator)
 	if err != nil {
-		log.Errorln("List Oracles: error on getOraclesByOwner ", err)
-		context.JSON(http.StatusInternalServerError, err)
-		return
+		errorMsg := "Error fetching oracles by owner"
+		logMsg := "List Oracles: error on getOraclesByOwner"
+		handleError(context, http.StatusInternalServerError, errorMsg, logMsg, err)
 	}
 	context.JSON(http.StatusOK, oracles)
 }
@@ -271,12 +317,11 @@ func (ob *Env) Whitelist(context *gin.Context) {
 
 // list whitelisted addresses
 func (ob *Env) Stats(context *gin.Context) {
-	var err error
 	address := context.Query("address")
 	chainID := context.Query("chainID")
 	page := context.Query("page")
 
-	var offset int
+	offset := 0
 	if page != "" {
 		pageInt, err := strconv.Atoi(page)
 		if err != nil || pageInt < 1 {
@@ -290,15 +335,17 @@ func (ob *Env) Stats(context *gin.Context) {
 
 	totalUpdates, err := ob.RelDB.GetOracleUpdateCount(address, chainID)
 	if err != nil {
-		log.Errorln("Oracle Stats error GetOracleUpdateCount ", err)
-		context.JSON(http.StatusInternalServerError, err)
+		errorMsg := "Error fetching oracle update count"
+		logMsg := "Oracle Stats error GetOracleUpdateCount"
+		handleError(context, http.StatusInternalServerError, errorMsg, logMsg, err)
 		return
 	}
 
 	updates, err := ob.RelDB.GetOracleUpdates(address, chainID, offset)
 	if err != nil {
-		log.Errorln("Oracle Stats error ", err)
-		context.JSON(http.StatusInternalServerError, err)
+		errorMsg := "Error fetching oracle updates"
+		logMsg := "Oracle Stats error"
+		handleError(context, http.StatusInternalServerError, errorMsg, logMsg, err)
 		return
 	}
 
@@ -311,7 +358,7 @@ func (ob *Env) Stats(context *gin.Context) {
 
 // List: list All feeders
 func (ob *Env) ListAll(context *gin.Context) {
-	oracles, err := ob.RelDB.GetAllFeeders()
+	oracles, err := ob.RelDB.GetAllFeeders(false, false)
 	if err != nil {
 		log.Errorln("List All Oracles: error on GetAllFeeders ", err)
 		context.JSON(http.StatusInternalServerError, err)
@@ -350,7 +397,7 @@ func (ob *Env) View(context *gin.Context) {
 	}
 	// creator := context.PostForm("creator")
 
-	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress)
+	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress, chainID)
 	if err != nil {
 		log.Errorln("error GetOracleConfig ", err)
 		context.JSON(http.StatusInternalServerError, err)
@@ -365,10 +412,11 @@ func (ob *Env) Pause(context *gin.Context) {
 		err error
 	)
 	oracleaddress := context.Query("oracleaddress")
+	chainid := context.Query("oracleChainID")
 
 	creator := context.Query("creator")
 
-	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress)
+	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress, chainid)
 	if err != nil {
 		log.Errorln("error GetOracleConfig ", err)
 		context.JSON(http.StatusInternalServerError, err)
@@ -394,16 +442,29 @@ func (ob *Env) Pause(context *gin.Context) {
 	context.JSON(http.StatusOK, oracleconfig)
 }
 
+func (ob *Env) ViewLimit(context *gin.Context) {
+
+	response := make(map[string]interface{})
+	count, isAllowed := ob.createOracleFeederLimiter(true)
+	response["Count"] = count
+	response["IsAllowed"] = isAllowed
+
+	context.JSON(http.StatusOK, response)
+}
+
 func (ob *Env) Delete(context *gin.Context) {
 	var (
 		// address string
 		err error
 	)
 	oracleaddress := context.Query("oracleaddress")
+	chainID := context.Query("oracleChainID")
+
+	oracleaddress = common.HexToAddress(oracleaddress).Hex()
 
 	creator := context.Query("creator")
 
-	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress)
+	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress, chainID)
 	if err != nil {
 		log.Errorln("error GetOracleConfig ", err)
 		context.JSON(http.StatusInternalServerError, err)
@@ -428,7 +489,7 @@ func (ob *Env) Delete(context *gin.Context) {
 	}
 	err = ob.RelDB.DeleteOracle(oracleconfig.FeederID)
 	if err != nil {
-		log.Errorln("error ChangeOracleState ", err)
+		log.Errorln("error DeleteOracle ", err)
 		context.JSON(http.StatusInternalServerError, err)
 		return
 	}
@@ -440,10 +501,13 @@ func (ob *Env) Restart(context *gin.Context) {
 		err error
 	)
 	oracleaddress := context.Query("oracleaddress")
+	chainid := context.Query("oracleChainID")
+
+	oracleaddress = common.HexToAddress(oracleaddress).Hex()
 
 	creator := context.Query("creator")
 
-	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress)
+	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress, chainid)
 	if err != nil {
 		log.Errorln("error GetOracleConfig ", err)
 		context.JSON(http.StatusInternalServerError, err)
@@ -489,6 +553,8 @@ func (ob *Env) Auth(context *gin.Context) {
 
 	if oracleaddress == "" {
 		oracleaddress = creator
+	} else {
+		oracleaddress = common.HexToAddress(oracleaddress).Hex()
 	}
 
 	signedData, err := getAuthToken(context.Request)
@@ -522,4 +588,44 @@ func (ob *Env) Auth(context *gin.Context) {
 
 	}
 
+}
+
+type APIStats struct {
+	data map[string]int
+	mu   sync.RWMutex
+}
+
+func NewAPIStats() *APIStats {
+	return &APIStats{
+		data: make(map[string]int),
+	}
+}
+
+func (c *APIStats) Set(key string, value int) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.data[key] = value
+}
+
+func (c *APIStats) Get(key string) (int, bool) {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	value, exists := c.data[key]
+	return value, exists
+}
+
+func (c *APIStats) ClearCachePeriodically(interval time.Duration) {
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			c.mu.Lock()
+			for k := range c.data {
+				delete(c.data, k)
+			}
+			c.mu.Unlock()
+		}
+	}
 }

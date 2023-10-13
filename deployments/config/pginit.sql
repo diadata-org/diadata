@@ -265,30 +265,59 @@ CREATE TABLE nftexchange (
     UNIQUE (name)
 );
 
-
 CREATE TABLE oracleconfig (
-    id UUID DEFAULT gen_random_uuid(),
+    id uuid DEFAULT gen_random_uuid(),
     address text NOT NULL,
     feeder_id text NOT NULL,
     owner text NOT NULL,
     symbols text NOT NULL,
-    feeder_address text NOT NULL,
-    chainID text NOT NULL,
-    active  boolean default true,
-    deleted  boolean default false,
-    frequency text ,
+    chainid text NOT NULL,
+    active boolean DEFAULT true,
+    frequency text,
     sleepseconds text,
     deviationpermille text,
-    blockchainnode text,
+    blockchainnode text DEFAULT ''::text,
+    feeder_address text,
     mandatory_frequency text,
-    createddate TIMESTAMP NOT NULL DEFAULT NOW(),
-    lastupdate TIMESTAMP NOT NULL,
-    UNIQUE (id),
-    UNIQUE (feeder_id)
+    deleted boolean DEFAULT false,
+    createddate timestamp without time zone DEFAULT now() NOT NULL,
+    lastupdate timestamp without time zone,
+    creation_block bigint,
+    creation_block_time timestamp without time zone DEFAULT '1970-01-01 00:00:00'::timestamp without time zone,
+    feedselection text,
+    expired boolean DEFAULT false,
+    expired_time timestamp without time zone DEFAULT '1970-01-01 00:00:00'::timestamp without time zone
 );
 
-ALTER TABLE oracleconfig  ADD COLUMN creation_block_time TIMESTAMP DEFAULT 'epoch'::timestamp;
-ALTER TABLE oracleconfig  ADD COLUMN feedSelection TEXT ;
+
+
+-- CREATE TABLE oracleconfig (
+--     id UUID DEFAULT gen_random_uuid(),
+--     address text NOT NULL,
+--     feeder_id text NOT NULL,
+--     owner text NOT NULL,
+--     symbols text NOT NULL,
+--     feeder_address text NOT NULL,
+--     chainID text NOT NULL,
+--     active  boolean default true,
+--     deleted  boolean default false,
+--     frequency text ,
+--     sleepseconds text,
+--     deviationpermille text,
+--     blockchainnode text,
+--     mandatory_frequency text,
+--     createddate TIMESTAMP NOT NULL DEFAULT NOW(),
+--     lastupdate TIMESTAMP NOT NULL,
+--     UNIQUE (id),
+--     UNIQUE (feeder_id)
+-- );
+
+-- ALTER TABLE oracleconfig  ADD COLUMN creation_block_time TIMESTAMP DEFAULT 'epoch'::timestamp;
+-- ALTER TABLE oracleconfig  ADD COLUMN feedSelection TEXT ;
+-- ALTER TABLE oracleconfig  ADD COLUMN expired boolean default false ;
+-- ALTER TABLE oracleconfig  ADD COLUMN expired_time TIMESTAMP DEFAULT 'epoch'::timestamp;
+
+
 
 
 

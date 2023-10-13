@@ -110,6 +110,12 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "KAVAUSDT",
+            "Ignore": false,
+            "Symbol": "KAVA"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "KNCUSDT",
             "Ignore": false,
             "Symbol": "KNC"

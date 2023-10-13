@@ -92,6 +92,12 @@
     },
     {
       "Exchange": "CoinBase",
+      "ForeignName": "KAVA-USD",
+      "Ignore": false,
+      "Symbol": "KAVA"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "YFI-USD",
       "Ignore": false,
       "Symbol": "YFI"

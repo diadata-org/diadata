@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "Bittrex",
+      "ForeignName": "CUSD-USDT",
+      "Ignore": false,
+      "Symbol": "CUSD"
+    },
+    {
+      "Exchange": "Bittrex",
       "ForeignName": "XTP-BTC",
       "Ignore": false,
       "Symbol": "XTP"

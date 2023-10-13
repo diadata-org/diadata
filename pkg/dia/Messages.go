@@ -258,6 +258,7 @@ type PairVolume struct {
 	Pair        Pair    `json:"Pair"`
 	PoolAddress string  `json:"Pooladdress"`
 	Volume      float64 `json:"Volume"`
+	TradesCount int64   `json:"TradesCount"`
 }
 
 type EthereumBlockData struct {
@@ -735,8 +736,12 @@ type OracleConfig struct {
 	MandatoryFrequency string
 	CreatedDate        time.Time
 	LastUpdate         time.Time
-	Deleted            bool `json:"Deleted,omitempty"`
+	Deleted            bool
 	FeederSelection    string
+	Expired            bool
+	ExpiredDate        time.Time
+	ExpiringDate       time.Time
+	LastOracleUpdate   time.Time
 }
 
 type OracleUpdate struct {

@@ -47,8 +47,6 @@ async function collateralCurrencies(api) {
       let value = oracleaggregrate[1].toHuman();
   
       if (key[0].ExchangeRate) {
-        console.log("key,", key);
-        console.log("value,", value);
         oracleaggregratemap.set(key[0].ExchangeRate.Token, value);
       }
     });
@@ -63,9 +61,6 @@ async function collateralCurrencies(api) {
       let key = totalIssuance[0].toHuman();
   
       let value = totalIssuance[1].toHuman();
-  
-      console.log("key", key);
-      console.log("value", value);
       totalIssuancesemap.set(key[0].Token, value);
     });
     return totalIssuancesemap;
@@ -128,10 +123,18 @@ async function collateralCurrencies(api) {
         );
       }
   
-        
-      let oracleaggregatecurrency = bignumber.from(
+     let oac = oracleaggregatormap.get(collateralCurrency)
+     let oracleaggregatecurrency;
+     if(oac){
+      oracleaggregatecurrency = bignumber.from(
         oracleaggregatormap.get(collateralCurrency).replaceAll(",", "")
       );
+     }else{
+      return
+     }
+     
+        
+     
       // console.log(
       //   "totalUserVaultCollateralcurrenct",
       //   totalUserVaultCollateralcurrency.toString()

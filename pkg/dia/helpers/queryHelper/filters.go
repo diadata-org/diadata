@@ -16,7 +16,7 @@ func FilterMA(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoints
 	metadata = dia.NewFilterPointMetadata()
 	for _, block := range tradeBlocks {
 		if len(block.Trades) > 0 {
-			maFilter := filters.NewFilterMA(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
+			maFilter := filters.NewFilterMA(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize, false)
 
 			for _, trade := range block.Trades {
 				maFilter.Compute(trade)
@@ -59,7 +59,7 @@ func FilterMAIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoin
 		log.Infof("block number: %v", i)
 
 		if len(block.Trades) > 0 {
-			mairFilter := filters.NewFilterMAIR(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
+			mairFilter := filters.NewFilterMAIR(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize, false)
 			firstBlock := block.Trades[0]
 			for _, trade := range block.Trades {
 				mairFilter.Compute(trade)
@@ -99,7 +99,7 @@ func FilterVWAP(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoin
 	metadata = dia.NewFilterPointMetadata()
 	for _, block := range tradeBlocks {
 		if len(block.Trades) > 0 {
-			vwapFilter := filters.NewFilterVWAP(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
+			vwapFilter := filters.NewFilterVWAP(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize, false)
 
 			for _, trade := range block.Trades {
 				vwapFilter.Compute(trade)
@@ -135,7 +135,7 @@ func FilterVWAPIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPo
 	for _, block := range tradeBlocks {
 		if len(block.Trades) > 0 {
 
-			vwapirFilter := filters.NewFilterVWAPIR(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
+			vwapirFilter := filters.NewFilterVWAPIR(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize, false)
 			for _, trade := range block.Trades {
 				vwapirFilter.Compute(trade)
 			}
@@ -177,7 +177,7 @@ func FilterMEDIR(tradeBlocks []Block, asset dia.Asset, blockSize int) (filterPoi
 
 	for _, block := range tradeBlocks {
 		if len(block.Trades) > 0 {
-			medirFilter := filters.NewFilterMEDIR(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize)
+			medirFilter := filters.NewFilterMEDIR(asset, "", time.Unix(block.TimeStamp/1e9, 0), blockSize, false)
 
 			for _, trade := range block.Trades {
 

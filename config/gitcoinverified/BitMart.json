@@ -217,6 +217,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "KAVA",
+      "Exchange": "BitMart",
+      "Blockchain": "Osmosis",
+      "Address": "ibc/57AA1A70A4BC9769C525EBF6386F7A21536E04A79D62E1981EFCEF9428EBB205"
+    },
+    {
       "Symbol": "KSM",
       "Exchange": "BitMart",
       "Blockchain": "Kusama",
@@ -304,7 +310,7 @@
       "Symbol": "QUICK",
       "Exchange": "BitMart",
       "Blockchain": "Polygon",
-      "Address": "0x831753DD7087CaC61aB5644b308642cc1c33Dc13"
+      "Address": "0xB5C064F955D8e7F38fE0460C556a72987494eE17"
     },
     {
       "Symbol": "RAY",

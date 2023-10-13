@@ -187,6 +187,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "CUSD",
+            "ForeignName": "CUSDUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "CVC",
             "ForeignName": "CVCUSDT",
             "Exchange": "ByBit",

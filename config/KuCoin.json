@@ -865,6 +865,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "KAVA",
+            "ForeignName": "KAVA-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "KCS",
             "ForeignName": "KCS-USDT",
             "Exchange": "KuCoin",

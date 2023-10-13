@@ -109,6 +109,12 @@
             "Address": "0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd"
         },
         {
+            "Symbol": "KAVA",
+            "Exchange": "Binance2",
+            "Blockchain": "Osmosis",
+            "Address": "ibc/57AA1A70A4BC9769C525EBF6386F7A21536E04A79D62E1981EFCEF9428EBB205"
+        },
+        {
             "Symbol": "KNC",
             "Exchange": "Binance2",
             "Blockchain": "Ethereum",

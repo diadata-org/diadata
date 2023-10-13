@@ -12,14 +12,15 @@ import (
 type K8Bridge struct {
 	clientset *kubernetes.Clientset
 	context   context.Context
+	namespace string
 }
 
-func New(clientset *kubernetes.Clientset) *K8Bridge {
-	return &K8Bridge{clientset: clientset, context: context.TODO()}
+func New(clientset *kubernetes.Clientset, namespace string) *K8Bridge {
+	return &K8Bridge{clientset: clientset, context: context.TODO(), namespace: namespace}
 }
 
 func (k *K8Bridge) GetKeys(keyname string) (*v1.Secret, error) {
-	return k.clientset.CoreV1().Secrets("dia-oracle-feeder").Get(k.context, keyname, metav1.GetOptions{})
+	return k.clientset.CoreV1().Secrets(k.namespace).Get(k.context, keyname, metav1.GetOptions{})
 }
 
 func (k *K8Bridge) GenerateKey(keyname string) (publickey string, err error) {
@@ -36,7 +37,7 @@ func (k *K8Bridge) GenerateKey(keyname string) (publickey string, err error) {
 		secret.Data = data
 		secret.Type = "Opaque"
 		secret.Kind = "Secret"
-		_, err = k.clientset.CoreV1().Secrets("dia-oracle-feeder").Create(context.TODO(), secret, metav1.CreateOptions{})
+		_, err = k.clientset.CoreV1().Secrets(k.namespace).Create(context.TODO(), secret, metav1.CreateOptions{})
 		return
 	}
 

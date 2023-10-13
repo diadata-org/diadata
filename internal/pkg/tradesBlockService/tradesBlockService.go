@@ -612,7 +612,7 @@ func buildBridge(t dia.Trade) dia.Asset {
 			}
 		}
 	}
-	if basetoken.Blockchain == dia.ARBITRUM && (t.Source == dia.UniswapExchangeV3Arbitrum || t.Source == dia.SushiSwapExchangeArbitrum || t.Source == dia.CamelotExchange) {
+	if basetoken.Blockchain == dia.ARBITRUM && (t.Source == dia.UniswapExchangeV3Arbitrum || t.Source == dia.SushiSwapExchangeArbitrum || t.Source == dia.CamelotExchange || t.Source == dia.TraderJoeExchangeV2_1Arbitrum) {
 		if basetoken.Address == common.HexToAddress("0x82aF49447D8a07e3bd95BD0d56f35241523fBab1").Hex() {
 			basetoken = dia.Asset{
 				Symbol:     "ETH",

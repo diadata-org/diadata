@@ -195,6 +195,7 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 		INNER JOIN %s av
 		ON av.asset_id=a.asset_id
 		WHERE av.volume>0
+		AND a.blockchain!='Osmosis'
 		AND av.time_stamp IS NOT NULL
 		AND symbol ILIKE '%s%%'
 		ORDER BY av.volume DESC`,
@@ -209,6 +210,7 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 		INNER JOIN %s av
 		ON av.asset_id=a.asset_id
 		WHERE av.volume>0
+		AND a.blockchain!='Osmosis'
 		AND av.time_stamp IS NOT NULL
 		AND name ILIKE '%s%%'
 		ORDER BY av.volume DESC`,
@@ -223,6 +225,7 @@ func (rdb *RelDB) GetAssetsBySymbolName(symbol, name string) (assets []dia.Asset
 		INNER JOIN %s av 
 		ON av.asset_id=a.asset_id 
 		WHERE av.volume>0
+		AND a.blockchain!='Osmosis'
 		AND av.time_stamp IS NOT NULL
 		AND (symbol ILIKE '%s%%' OR name ILIKE '%s%%')
 		ORDER BY av.volume DESC`,
@@ -396,7 +399,7 @@ func (rdb *RelDB) GetExchangeSymbol(exchange string, symbol string) (asset dia.A
 		INNER JOIN %s a
 		ON es.asset_id=a.asset_id
 		WHERE (es.exchange=$1 %s)
-		AND es.symbol ILIKE $2
+		AND a.symbol ILIKE $2
 		`,
 		exchangesymbolTable,
 		assetTable,

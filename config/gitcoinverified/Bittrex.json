@@ -1,6 +1,12 @@
 {
     "Tokens": [
         {
+            "Symbol": "CUSD",
+            "Exchange": "Bittrex",
+            "Blockchain": "Celo",
+            "Address": "0x765de816845861e75a25fca122bb6898b8b1282a"
+        },
+        {
             "Symbol": "XTP",
             "Exchange": "Bittrex",
             "Blockchain": "Ethereum",

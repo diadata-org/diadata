@@ -144,6 +144,20 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 		}
 		rawQ.Price = rawQ.Price * collateralRatio
 		rawQ.Symbol = "kBTC"
+	} else if address == "iBTC" && blockchain == "Kintsugi" {
+		rawQ, err = getAssetQuotationFromDia("Bitcoin", "0x0000000000000000000000000000000000000000")
+		if err != nil {
+			log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
+			return oldPrice, err
+		}
+
+		collateralRatio, err := getCollateralRatioFromDia("IBTC")
+		if err != nil {
+			log.Fatalf("Failed to retrieve %s collateral ratio data from DIA: %v", address, err)
+			return oldPrice, err
+		}
+		rawQ.Price = rawQ.Price * collateralRatio
+		rawQ.Symbol = "iBTC"
 	} else if address == "0x853d955aCEf822Db058eb8505911ED77F175b99e" && blockchain == "Ethereum" {
 		// Second special case: for FRAX use GQL with a selection of markets
 			price, symbol, err := getFraxGraphqlAssetQuotationFromDia(blockchain, address, 120, "vwap")
