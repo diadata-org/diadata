@@ -140,6 +140,31 @@ func (rdb *RelDB) SetPool(pool dia.Pool) error {
 	return nil
 }
 
+// GetAllDEXPoolsCount returns a map which maps a DEX onto the number of pools on the DEX.
+func (rdb *RelDB) GetAllDEXPoolsCount() (map[string]int, error) {
+	poolsCount := make(map[string]int)
+
+	query := fmt.Sprintf("SELECT exchange,COUNT(address) FROM %s GROUP BY exchange", poolTable)
+	rows, err := rdb.postgresClient.Query(context.Background(), query)
+	if err != nil {
+		return poolsCount, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var exchange string
+		var numPools int
+		err = rows.Scan(
+			&exchange,
+			&numPools,
+		)
+		if err != nil {
+			return poolsCount, err
+		}
+		poolsCount[exchange] = numPools
+	}
+	return poolsCount, nil
+}
+
 // GetPoolByAddress returns the most recent pool data, i.e. liquidity.
 func (rdb *RelDB) GetPoolByAddress(blockchain string, address string) (pool dia.Pool, err error) {
 

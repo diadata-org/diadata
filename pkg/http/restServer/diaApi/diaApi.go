@@ -490,22 +490,34 @@ func (env *Env) GetExchanges(c *gin.Context) {
 	if len(exchanges) == 0 || err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
 	}
+
+	dexPoolCountMap, err := env.RelDB.GetAllDEXPoolsCount()
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+
 	for _, exchange := range exchanges {
+		var numPairs int
 
 		vol, err := env.DataStore.Get24HoursExchangeVolume(exchange.Name)
 		if err != nil {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 			return
 		}
+
 		numTrades, err := env.DataStore.GetNumTradesExchange24H(exchange.Name)
 		if err != nil {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 			return
 		}
-		numPairs, err := env.RelDB.GetNumPairs(exchange)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
+
+		if models.GetExchangeType(exchange) == "DEX" {
+			numPairs = dexPoolCountMap[exchange.Name]
+		} else {
+			numPairs, err = env.RelDB.GetNumPairs(exchange)
+			if err != nil {
+				restApi.SendError(c, http.StatusInternalServerError, nil)
+			}
 		}
 
 		exchangereturn := exchangeReturn{
