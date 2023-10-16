@@ -90,7 +90,7 @@ func (rdb *RelDB) SetPool(pool dia.Pool) error {
 	}
 
 	query0 := fmt.Sprintf(
-		`INSERT INTO %s (exchange,blockchain,address) VALUES ($1,$2,$3)`,
+		`INSERT INTO %s (exchange,blockchain,address) VALUES ($1,$2,$3) ON CONFLICT (blockchain,address) DO NOTHING`,
 		poolTable,
 	)
 	_, err := rdb.postgresClient.Exec(
