@@ -272,7 +272,7 @@ func (rdb *RelDB) SetNFTTradeToTable(trade dia.NFTTrade, table string) error {
 	}
 	price := trade.Price.String()
 	tradeVars := "nftclass_id,nft_id,price,price_usd,transfer_from,transfer_to,currency_id,bundle_sale,block_number,trade_time,tx_hash,marketplace"
-	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)", table, tradeVars)
+	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) ON CONFLICT (nft_id,trade_time) DO NOTHING", table, tradeVars)
 	_, err = rdb.postgresClient.Exec(context.Background(), query, nftclassID, nftID, price, trade.PriceUSD, trade.FromAddress, trade.ToAddress, currencyID, trade.BundleSale, trade.BlockNumber, trade.Timestamp, trade.TxHash, trade.Exchange)
 	if err != nil {
 		return err
