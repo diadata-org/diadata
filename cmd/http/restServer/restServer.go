@@ -225,10 +225,10 @@ func main() {
 		diaGroup.GET("/supplies/:symbol", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetSupplies))
 
 		// Asset endpoints.
-		diaGroup.GET("/topAssets/:numAssets", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetTopAssets))
-		diaGroup.GET("/symbols", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetAllSymbols))
-		diaGroup.GET("/symbols/:substring", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetAllSymbols))
-		diaGroup.GET("/quotedAssets", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetQuotedAssets))
+		diaGroup.GET("/topAssets/:numAssets", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetTopAssets))
+		diaGroup.GET("/symbols", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetAllSymbols))
+		diaGroup.GET("/symbols/:substring", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetAllSymbols))
+		diaGroup.GET("/quotedAssets", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetQuotedAssets))
 
 		// (DEX) pools/liquidity endpoints.
 		diaGroup.GET("/poolLiquidity/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetPoolLiquidityByAddress))
