@@ -3,7 +3,7 @@ module github.com/diadata-org/diadata/exchange-scrapers/collector
 go 1.17
 
 require (
-	github.com/diadata-org/diadata v1.4.401
+	github.com/diadata-org/diadata v1.4.406
 	github.com/segmentio/kafka-go v0.4.35
 	github.com/sirupsen/logrus v1.9.0
 )
@@ -15,7 +15,7 @@ require (
 	github.com/99designs/keyring v1.2.2 // indirect
 	github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d // indirect
 	github.com/DataDog/zstd v1.4.5 // indirect
-	github.com/Kucoin/kucoin-go-sdk v1.2.7 // indirect
+	github.com/Kucoin/kucoin-go-sdk v1.2.13 // indirect
 	github.com/OneOfOne/xxhash v1.2.5 // indirect
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/adshao/go-binance/v2 v2.3.6 // indirect
