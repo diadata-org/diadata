@@ -63,11 +63,13 @@ async function cronstart() {
 
           let fairprice =  ratio  *btcprice
 
-
-          let decimal = 1e12;
-          if(value.token=="DOT"){
+          let decimal = Math.pow(10, saved.decimal);
+ 
+           if(value.token=="DOT"){
             decimal = 1e10
           }
+
+
          
 
           cache.set(
