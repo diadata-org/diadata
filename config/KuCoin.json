@@ -25,12 +25,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "ACA",
-            "ForeignName": "ACA-USDT",
-            "Exchange": "KuCoin",
-            "Ignore": false
-        },
-        {
             "Symbol": "ADA",
             "ForeignName": "ADA-BTC",
             "Exchange": "KuCoin",
