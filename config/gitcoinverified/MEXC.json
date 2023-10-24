@@ -463,6 +463,12 @@
       "Address": "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84"
     },
     {
+      "Symbol": "STORJ",
+      "Exchange": "MEXC",
+      "Blockchain": "Ethereum",
+      "Address": "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC"
+    },
+    {
       "Symbol": "TKB",
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",

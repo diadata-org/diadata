@@ -97,6 +97,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "STORJ",
+      "Exchange": "Kraken",
+      "Blockchain": "Ethereum",
+      "Address": "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC"
+    },
+    {
       "Symbol": "SYN",
       "Exchange": "Kraken",
       "Blockchain": "Ethereum",
