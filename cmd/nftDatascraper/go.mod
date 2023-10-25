@@ -9,6 +9,7 @@ require (
 )
 
 require (
+	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/btcsuite/btcd v0.21.0-beta // indirect
 	github.com/cheekybits/genny v1.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -17,11 +18,12 @@ require (
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.2.1-0.20201006223149-25f67fca9803 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
+	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-redis/redis v6.15.9+incompatible // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/go-test/deep v1.0.5 // indirect
-	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/google/uuid v1.2.0 // indirect
+	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
@@ -49,12 +51,13 @@ require (
 	github.com/tklauser/numcpus v0.2.2 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	golang.org/x/crypto v0.0.0-20211117183948-ae814b36b871 // indirect
-	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2 // indirect
-	golang.org/x/sys v0.0.0-20211117180635-dee7805ff2e1 // indirect
-	golang.org/x/text v0.3.6 // indirect
-	google.golang.org/genproto v0.0.0-20211018162055-cf77aa76bad2 // indirect
-	google.golang.org/grpc v1.40.0 // indirect
-	google.golang.org/protobuf v1.27.1 // indirect
+	golang.org/x/net v0.9.0 // indirect
+	golang.org/x/sys v0.7.0 // indirect
+	golang.org/x/text v0.9.0 // indirect
+	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1 // indirect
+	google.golang.org/grpc v1.56.3 // indirect
+	google.golang.org/protobuf v1.30.0 // indirect
+	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
