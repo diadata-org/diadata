@@ -499,6 +499,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "STORJ",
+      "ForeignName": "STORJUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "SYN",
       "ForeignName": "SYNUSDT",
       "Exchange": "MEXC",

@@ -140,6 +140,12 @@
     },
     {
       "Exchange": "Kraken",
+      "ForeignName": "STORJUSD",
+      "Ignore": false,
+      "Symbol": "STORJ"
+    },
+    {
+      "Exchange": "Kraken",
       "ForeignName": "SYNUSD",
       "Ignore": false,
       "Symbol": "SYN"

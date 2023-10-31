@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "BitMart",
+      "ForeignName": "STORJ_USDT",
+      "Ignore": false,
+      "Symbol": "STORJ"
+    },
+    {
+      "Exchange": "BitMart",
       "ForeignName": "KAVA_USDT",
       "Ignore": false,
       "Symbol": "KAVA"

@@ -361,6 +361,12 @@
       "Address": "0x090185f2135308BaD17527004364eBcC2D37e5F6"
     },
     {
+      "Symbol": "STORJ",
+      "Exchange": "BitMart",
+      "Blockchain": "Ethereum",
+      "Address": "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC"
+    },
+    {
       "Symbol": "SYN",
       "Exchange": "BitMart",
       "Blockchain": "Ethereum",

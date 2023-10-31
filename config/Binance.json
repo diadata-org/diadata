@@ -986,7 +986,7 @@
         },
         {
             "Exchange": "Binance",
-            "ForeignName": "STORJETH",
+            "ForeignName": "STORJUSDT",
             "Ignore": false,
             "Symbol": "STORJ"
         },

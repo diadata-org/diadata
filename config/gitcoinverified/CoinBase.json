@@ -97,6 +97,12 @@
             "Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
         },
         {
+            "Symbol": "STORJ",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC"
+        },
+        {
             "Symbol": "QUICK",
             "Exchange": "CoinBase",
             "Blockchain": "Polygon",
