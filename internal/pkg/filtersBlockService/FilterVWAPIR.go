@@ -71,10 +71,7 @@ func (filter *FilterVWAPIR) processDataPoint(trade dia.Trade) {
 }
 
 func (s *FilterVWAPIR) FinalCompute(t time.Time) float64 {
-<<<<<<< HEAD
-=======
 	log.Info("final compute of time ", t)
->>>>>>> master
 	return s.finalCompute(t)
 }
 

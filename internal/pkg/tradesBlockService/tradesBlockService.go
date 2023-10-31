@@ -520,11 +520,11 @@ func buildBridge(t dia.Trade) dia.Asset {
 		}
 	}
 	if basetoken.Blockchain == dia.FANTOM && (t.Source == dia.SpookyswapExchange || t.Source == dia.SpiritswapExchange || t.Source == dia.BeetsExchange || t.Source == dia.SushiSwapExchangeFantom) {
-		if basetoken.Address == "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75" {
+		if basetoken.Address == "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83" {
 			basetoken = dia.Asset{
-				Symbol:     "USDC",
-				Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-				Blockchain: dia.ETHEREUM,
+				Symbol:     "FTM",
+				Address:    "0x0000000000000000000000000000000000000000",
+				Blockchain: dia.FANTOM,
 			}
 		}
 	}
