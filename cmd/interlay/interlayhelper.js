@@ -71,10 +71,10 @@ async function collateralCurrencies(api) {
   
     switch (token) {
       case "IBTC":
-        providerurl = "wss://interlay.api.onfinality.io/public-ws";
+        providerurl = "wss://interlay-rpc.dwellir.com";
         break;
       case "KBTC":
-        providerurl = "wss://kintsugi.api.onfinality.io/public-ws";
+        providerurl = "wss://kintsugi-rpc.dwellir.com";
         break;
     }
     const wsProvider = new WsProvider(
