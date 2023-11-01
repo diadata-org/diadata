@@ -9,6 +9,18 @@ const { tokenkey, redis, allowedTokens, pricekey } = require("./utils");
 
 let cache = redis();
 
+
+/*
+
+Env variables
+BIFROST_PARACHAIN_NODE_URL
+BIFROST_POLKADOT_NODE_URL
+INTERLAY_NODE_URL
+KITSUNGI_NODE_URL
+ETHEREUM_NODE_URL
+
+
+*/
 cronstart();
 
 cron.schedule("* * * * *", () => {
