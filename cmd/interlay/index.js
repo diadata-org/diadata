@@ -11,7 +11,7 @@ let cache = redis();
 
 cronstart();
 
-cron.schedule("10 * * * *", () => {
+cron.schedule("* * * * *", () => {
   console.log("running a task every minute");
   cronstart();
 });
@@ -62,6 +62,8 @@ let values = {
   BaseAssetSymbol: "",
   BaseAssetPrice: "",
   Issuer: "",
+  TimeStamp: "",
+
 };
 
 function findTokenByVTokenAndIssuer(vtoken, issuer) {
@@ -89,6 +91,7 @@ app.get("/xlsd/:issuer/:vtoken", async function (req, res) {
       await cache.get(tokenkey(token.source, token.vtoken))
     );
 
+
     let tokenvalues = await createXResponse(cacheddata, token);
     res.send(tokenvalues);
   } else {
@@ -111,6 +114,10 @@ async function createXResponse(cacheddata, token) {
   if (cacheddata && cacheddata.fair_price) {
     tokenvalues.FairPrice = cacheddata.fair_price;
   }
+
+  if (cacheddata && cacheddata.timestamp) {
+    tokenvalues.TimeStamp = cacheddata.timestamp;
+  }
   if (cacheddata && cacheddata.decimal) {
     tokenvalues.decimal = cacheddata.decimal;
   }
@@ -121,6 +128,7 @@ async function createXResponse(cacheddata, token) {
   tokenvalues.Token = token.vtoken;
   tokenvalues.BaseAssetSymbol = token.token;
   tokenvalues.Issuer = token.issuer;
+ 
 
   return tokenvalues;
 }
@@ -134,6 +142,7 @@ app.get("/xlsd", async function (req, res) {
     let cacheddata = JSON.parse(
       await cache.get(tokenkey(token.source, token.vtoken))
     );
+
 
     let tokenvalues = await createXResponse(cacheddata, token);
 

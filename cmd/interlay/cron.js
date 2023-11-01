@@ -29,9 +29,10 @@ async function cronstart() {
         {
           let saved
           try{
-            saved = await getInterlayValues(value.vtoken);
+             saved = await getInterlayValues(value.vtoken);
             cache.set("interlayraw"+ value.vtoken,JSON.stringify(saved))
           }catch(e){
+ 
             saved = 0
           }
           let btcprice = await getPrice("BTC");
@@ -44,6 +45,7 @@ async function cronstart() {
                 // decimal: saved.decimal,
                 ratio: saved.total_backable / saved.total_issued,
               },
+              timestamp: Date.now(),
               fair_price:
                 (saved.total_backable/1e8) / (saved.total_issued/1e8) > 1
                   ? btcprice
@@ -81,8 +83,8 @@ async function cronstart() {
                 ratio: saved.total_backable / saved.total_issued,
                 // decimal: saved.decimal,
               },
-              fair_price:
-              fairprice
+              fair_price:fairprice,
+              timestamp: Date.now()
             })
           );
         }

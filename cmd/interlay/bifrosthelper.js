@@ -81,22 +81,31 @@ async function tokenIssuance(api, token) {
       case "KSM".toLowerCase():
       case "MOVR".toLowerCase():
       case "BNC".toLowerCase():
-        providerurl = "wss://bifrost-parachain.api.onfinality.io/public-ws";
+        providerurl = process.env.BIFROST_PARACHAIN_NODE_URL || "wss://bifrost-parachain.api.onfinality.io/public-ws";
         break;
       case "DOT".toLowerCase():
       case "GLMR".toLowerCase():
       case "ASTR".toLowerCase():
       case "FIL".toLowerCase():
-        providerurl = "wss://bifrost-polkadot.api.onfinality.io/public-ws"
+        providerurl = process.env.BIFROST_POLKADOT_NODE_URL ||"wss://bifrost-polkadot.api.onfinality.io/public-ws"
     }
   
     const wsProvider = new WsProvider(
-      // "wss://interlay.api.onfinality.io/public-ws"
       providerurl
     );
-    const api = await ApiPromise.create({
+    let api;
+    try{
+      api = await ApiPromise.create({
       provider: wsProvider,
+      throwOnConnect: true,
+      throwOnUnknown:true
     });
+  }catch(e){
+    console.log("throw bifrost api")
+
+    throw e
+
+  }
     let tokeninpool;
     let vtokenIssuance;
     let decimal;

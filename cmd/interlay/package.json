@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@polkadot/api": "^9.9.1",
+    "@polkadot/api": "10.10.1",
     "@rocketpool/api": "^0.0.15",
     "body-parser": "^1.20.1",
     "ethers": "^5.7.2",

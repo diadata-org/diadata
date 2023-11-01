@@ -10,6 +10,8 @@ function createResponse(issuedtoken, lockedtoken, fairPrice, ratio) {
       ratio: ratio,
     },
     fair_price: fairPrice,
+    timestamp: Date.now(),
+
   };
 }
 
