@@ -1684,6 +1684,9 @@ func (env *Env) GetRates(c *gin.Context) {
 
 // GetFiatQuotations returns several quotations vs USD as published by the ECB
 func (env *Env) GetFiatQuotations(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
 	q, err := env.DataStore.GetCurrencyChange()
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
@@ -1701,6 +1704,9 @@ func (env *Env) GetFiatQuotations(c *gin.Context) {
 // -----------------------------------------------------------------------------
 
 func (env *Env) GetStockSymbols(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
 	type sourcedStock struct {
 		Stock  models.Stock
 		Source string
@@ -1730,6 +1736,9 @@ func (env *Env) GetStockSymbols(c *gin.Context) {
 // quotations of asset with @symbol from @source.
 // Last value is retrieved. Otional query parameters allow to obtain data in a time range.
 func (env *Env) GetStockQuotation(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
 	source := c.Param("source")
 	symbol := c.Param("symbol")
 	date := c.Param("time")
@@ -2291,6 +2300,9 @@ func (env *Env) GetNFTFloor(c *gin.Context) {
 
 // GetNFTFloorMA returns the moving average floor price of the nft class over the last 30 days.
 func (env *Env) GetNFTFloorMA(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
 
 	// NFT collection.
 	blockchain := c.Param("blockchain")
@@ -2844,6 +2856,9 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 }
 
 func (env *Env) GetNFTVolume(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
 
 	type localReturn struct {
 		Collection   string
