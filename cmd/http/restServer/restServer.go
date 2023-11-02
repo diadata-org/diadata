@@ -262,17 +262,6 @@ func main() {
 
 		diaGroup.GET("/blockchains", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetAllBlockchains))
 
-		// Endpoints for interestrates
-		// diaGroup.GET("/interestrates", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetRates))
-		// diaGroup.GET("/interestrate/:symbol", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetInterestRate))
-		// diaGroup.GET("/interestrate/:symbol/:time", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetInterestRate))
-		// diaGroup.GET("/compoundedRate/:symbol/:dpy", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetCompoundedRate))
-		// diaGroup.GET("/compoundedRate/:symbol/:dpy/:time", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetCompoundedRate))
-		// diaGroup.GET("/compoundedAvg/:symbol/:days/:dpy", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetCompoundedAvg))
-		// diaGroup.GET("/compoundedAvg/:symbol/:days/:dpy/:time", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetCompoundedAvg))
-		// diaGroup.GET("/compoundedAvgDIA/:symbol/:days/:dpy", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetCompoundedAvgDIA))
-		// diaGroup.GET("/compoundedAvgDIA/:symbol/:days/:dpy/:time", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetCompoundedAvgDIA))
-
 		// Endpoints for fiat currencies
 		diaGroup.GET("/fiatQuotations", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetFiatQuotations))
 
