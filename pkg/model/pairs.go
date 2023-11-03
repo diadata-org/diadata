@@ -85,7 +85,13 @@ func (rdb *RelDB) GetExchangePair(exchange string, foreignname string, caseSensi
 // If cache==true, it is also cached into redis
 func (rdb *RelDB) SetExchangePair(exchange string, pair dia.ExchangePair, cache bool) error {
 	var query string
-	query = fmt.Sprintf("INSERT INTO %s (symbol,foreignname,exchange) SELECT $1,$2,$3 WHERE NOT EXISTS (SELECT 1 FROM %s WHERE symbol=$1 AND foreignname=$2 AND exchange=$3)", exchangepairTable, exchangepairTable)
+	query = fmt.Sprintf(`
+		INSERT INTO %s (symbol,foreignname,exchange) 
+		SELECT $1,$2,$3 
+		WHERE NOT EXISTS (SELECT 1 FROM %s WHERE symbol=$1 AND foreignname=$2 AND exchange=$3)`,
+		exchangepairTable,
+		exchangepairTable,
+	)
 	_, err := rdb.postgresClient.Exec(context.Background(), query, pair.Symbol, pair.ForeignName, exchange)
 	if err != nil {
 		return err
@@ -181,10 +187,14 @@ func (rdb *RelDB) GetExchangePairSymbols(exchange string) (pairs []dia.ExchangeP
 
 // GetExchangePairs returns all pairs on a (centralized) @exchange.
 func (rdb *RelDB) GetPairsForExchange(exchange dia.Exchange, filterVerified bool, verified bool) ([]dia.ExchangePair, error) {
-	var pairs []dia.ExchangePair
+	var (
+		pairs []dia.ExchangePair
+		rows  pgx.Rows
+		err   error
+	)
 	exchangeType := GetExchangeType(exchange)
 	if exchangeType != "CEX" {
-		err := errors.New("query only feasible for centralized exchanges.")
+		err = errors.New("query only feasible for centralized exchanges.")
 		return pairs, err
 	}
 
@@ -195,17 +205,20 @@ func (rdb *RelDB) GetPairsForExchange(exchange dia.Exchange, filterVerified bool
 		ON e.id_quotetoken=a.asset_id 
 		INNER JOIN %s b 
 		ON e.id_basetoken=b.asset_id 
-		WHERE e.exchange='%s'`,
+		WHERE e.exchange=$1`,
 		exchangepairTable,
 		assetTable,
 		assetTable,
-		exchange.Name,
 	)
 	if filterVerified {
-		query += fmt.Sprintf(" AND e.verified='%v'", verified)
+		query += " AND e.verified=$2"
 	}
 
-	rows, err := rdb.postgresClient.Query(context.Background(), query)
+	if filterVerified {
+		rows, err = rdb.postgresClient.Query(context.Background(), query, exchange.Name, verified)
+	} else {
+		rows, err = rdb.postgresClient.Query(context.Background(), query, exchange.Name)
+	}
 	if err != nil {
 		return pairs, err
 	}
@@ -251,7 +264,11 @@ func (rdb *RelDB) GetPairsForExchange(exchange dia.Exchange, filterVerified bool
 }
 
 func (rdb *RelDB) GetPairsForAsset(asset dia.Asset, filterVerified bool, verified bool) ([]dia.ExchangePair, error) {
-	var pairs []dia.ExchangePair
+	var (
+		pairs []dia.ExchangePair
+		rows  pgx.Rows
+		err   error
+	)
 
 	query := fmt.Sprintf(`
 		SELECT  a.symbol,a.name,a.address,a.blockchain,a.decimals,b.symbol,b.name,b.address,b.blockchain,b.decimals,e.verified,e.foreignname,e.exchange
@@ -260,20 +277,19 @@ func (rdb *RelDB) GetPairsForAsset(asset dia.Asset, filterVerified bool, verifie
 		ON e.id_quotetoken=a.asset_id 
 		INNER JOIN %s b 
 		ON e.id_basetoken=b.asset_id 
-		WHERE ((a.address='%s' and a.blockchain='%s') OR (b.address='%s' and b.blockchain='%s'))`,
+		WHERE ((a.address=$1 and a.blockchain=$2) OR (b.address=$3 and b.blockchain=$4))`,
 		exchangepairTable,
 		assetTable,
 		assetTable,
-		asset.Address,
-		asset.Blockchain,
-		asset.Address,
-		asset.Blockchain,
 	)
 	if filterVerified {
-		query += fmt.Sprintf(" AND e.verified='%v'", verified)
+		query += " AND e.verified=$5"
 	}
-
-	rows, err := rdb.postgresClient.Query(context.Background(), query)
+	if filterVerified {
+		rows, err = rdb.postgresClient.Query(context.Background(), query, asset.Address, asset.Blockchain, asset.Address, asset.Blockchain, verified)
+	} else {
+		rows, err = rdb.postgresClient.Query(context.Background(), query, asset.Address, asset.Blockchain, asset.Address, asset.Blockchain)
+	}
 	if err != nil {
 		return pairs, err
 	}
@@ -346,10 +362,13 @@ func (rdb *RelDB) GetAllExchangeAssets(verified bool) (assets []dia.Asset, err e
 		SELECT DISTINCT (a.address,a.blockchain), a.symbol,a.name,a.decimals FROM %s a
 		INNER JOIN %s ep
 		ON a.asset_id=ep.id_quotetoken
-		WHERE ep.verified=%v
-		`, assetTable, exchangepairTable, verified)
+		WHERE ep.verified=$1
+		`,
+		assetTable,
+		exchangepairTable,
+	)
 	var rows pgx.Rows
-	rows, err = rdb.postgresClient.Query(context.Background(), query)
+	rows, err = rdb.postgresClient.Query(context.Background(), query, verified)
 	if err != nil {
 		return
 	}

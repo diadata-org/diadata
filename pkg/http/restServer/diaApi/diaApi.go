@@ -1,10 +1,8 @@
 package diaApi
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"math"
 	"math/big"
 	"net/http"
@@ -55,84 +53,6 @@ func init() {
 
 func NewEnv(ds models.Datastore, rdb models.RelDB, signer *utils.AssetQuotationSigner) *Env {
 	return &Env{DataStore: ds, RelDB: rdb, signer: signer}
-}
-
-// PostSupply deprecated? TO DO
-func (env *Env) PostSupply(c *gin.Context) {
-
-	body, err := ioutil.ReadAll(c.Request.Body)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("ReadAll"))
-	} else {
-		var t dia.Supply
-		err = json.Unmarshal(body, &t)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		} else {
-			if t.Asset.Symbol == "" || t.CirculatingSupply == 0.0 {
-				log.Errorln("received supply:", t)
-				restApi.SendError(c, http.StatusInternalServerError, errors.New("missing symbol or circulating supply value"))
-			} else {
-				log.Println("received supply:", t)
-				source := dia.Diadata
-				if t.Source != "" {
-					source = t.Source
-				}
-				s := &dia.Supply{
-					Time:              t.Time,
-					Asset:             t.Asset,
-					Source:            source,
-					CirculatingSupply: t.CirculatingSupply}
-
-				err := env.DataStore.SetSupply(s)
-
-				if err == nil {
-					c.JSON(http.StatusOK, s)
-				} else {
-					restApi.SendError(c, http.StatusInternalServerError, err)
-				}
-			}
-		}
-	}
-}
-
-// SetQuotation sets a quotation to redis cache. Input must be of the format:
-// '["blockchain","address","value"]'
-func (env *Env) SetQuotation(c *gin.Context) {
-
-	var quotation models.AssetQuotation
-	var input []string
-	body, err := ioutil.ReadAll(c.Request.Body)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("ReadAll"))
-		return
-	}
-	err = json.Unmarshal(body, &input)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("unmarshal body"))
-		return
-	}
-	if len(input) != 3 {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("wrong number of inputs"))
-		return
-	}
-
-	quotation.Asset.Blockchain = input[0]
-	quotation.Asset.Address = input[1]
-	price, err := strconv.ParseFloat(input[2], 64)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-		return
-	}
-	quotation.Price = price
-	quotation.Source = "diadata.org"
-	quotation.Time = time.Now()
-
-	_, err = env.DataStore.SetAssetQuotationCache(&quotation, true)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-		return
-	}
 }
 
 // GetAssetQuotation returns quotation of asset with highest market cap among

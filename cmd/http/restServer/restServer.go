@@ -163,8 +163,6 @@ func main() {
 		log.Error("creating middleware: ", err)
 	}
 
-	r.POST(urlFolderPrefix+"/login", authMiddleware.LoginHandler)
-
 	auth := r.Group(urlFolderPrefix + "/auth")
 	auth.Use(authMiddleware.MiddlewareFunc())
 	{
@@ -198,13 +196,6 @@ func main() {
 	// 	RelDB:     *relStore,
 	// 	signer:    aqs,
 	// }
-
-	diaAuth := r.Group(urlFolderPrefix + "/v1")
-	diaAuth.Use(authMiddleware.MiddlewareFunc())
-	{
-		diaAuth.POST("/supply", diaApiEnv.PostSupply)
-		diaAuth.POST("/quotation", diaApiEnv.SetQuotation)
-	}
 
 	diaGroup := r.Group(urlFolderPrefix + "/v1")
 	{

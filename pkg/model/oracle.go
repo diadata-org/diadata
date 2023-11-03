@@ -29,8 +29,7 @@ func (rdb *RelDB) SetKeyPair(publickey string, privatekey string) error {
 }
 
 func (rdb *RelDB) GetKeyPairID(publicKey string) string {
-	query := fmt.Sprintf(`SELECT id from   %s 
-	WHERE publickey=$1`, keypairTable)
+	query := fmt.Sprintf(`SELECT id from %s WHERE publickey=$1`, keypairTable)
 	rows := rdb.postgresClient.QueryRow(context.Background(), query, publicKey)
 	var keypairId string
 
@@ -44,11 +43,13 @@ func (rdb *RelDB) GetKeyPairID(publicKey string) string {
 
 func (rdb *RelDB) SetOracleConfig(address, feederID, owner, feederAddress, symbols, feedSelection, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency string) error {
 	currentTime := time.Now()
-	query := fmt.Sprintf(`INSERT INTO %s 
-	(address,feeder_id,owner,symbols,chainID,frequency,sleepseconds, deviationpermille,blockchainnode, mandatory_frequency,feeder_address,createddate, lastupdate,feedSelection) 
-	VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
-	on CONFLICT(feeder_id)  
-	DO UPDATE SET symbols=$4,frequency=$6,sleepseconds=$7, deviationpermille=$8, blockchainnode=$9, mandatory_frequency=$10, feeder_address=$11, lastupdate=$13, feedSelection=$14`, oracleconfigTable)
+	query := fmt.Sprintf(`
+		INSERT INTO %s (address,feeder_id,owner,symbols,chainID,frequency,sleepseconds,deviationpermille,blockchainnode,mandatory_frequency,feeder_address,createddate,lastupdate,feedSelection) 
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+		ON CONFLICT(feeder_id)  
+		DO UPDATE SET symbols=$4,frequency=$6,sleepseconds=$7,deviationpermille=$8,blockchainnode=$9,mandatory_frequency=$10,feeder_address=$11,lastupdate=$13,feedSelection=$14`,
+		oracleconfigTable,
+	)
 
 	log.Infoln("SetOracleConfig Query", query)
 	_, err := rdb.postgresClient.Exec(context.Background(), query, address, feederID, owner, symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency, feederAddress, currentTime, currentTime, feedSelection)
@@ -59,8 +60,7 @@ func (rdb *RelDB) SetOracleConfig(address, feederID, owner, feederAddress, symbo
 }
 
 func (rdb *RelDB) GetFeederID(address string) (feederId string) {
-	query := fmt.Sprintf(`SELECT id FROM %s 
-	WHERE owner=$1`, feederaccessTable)
+	query := fmt.Sprintf(`SELECT id FROM %s WHERE owner=$1`, feederaccessTable)
 	log.Infoln("GetFeederID query", query)
 	log.Infoln("address", address)
 	var feederidint int
@@ -74,10 +74,13 @@ func (rdb *RelDB) GetFeederID(address string) (feederId string) {
 }
 
 func (rdb *RelDB) SetFeederConfig(feederid, oracleconfigid string) error {
-	query := fmt.Sprintf(`INSERT INTO %s 
-	(id, oracleconfig_id) VALUES ($1,$2) on conflict(id)  
-	do
-	update set oracleconfig_id=EXCLUDED.oracleconfig_id`, feederconfigTable)
+	query := fmt.Sprintf(`
+		INSERT INTO %s (id, oracleconfig_id) 
+		VALUES ($1,$2) 
+		ON CONFLICT(id)  
+		DO UPDATE SET oracleconfig_id=EXCLUDED.oracleconfig_id`,
+		feederconfigTable,
+	)
 	_, err := rdb.postgresClient.Exec(context.Background(), query, feederid, oracleconfigid)
 	if err != nil {
 		return err
@@ -86,8 +89,7 @@ func (rdb *RelDB) SetFeederConfig(feederid, oracleconfigid string) error {
 }
 
 func (rdb *RelDB) GetFeederAccessByID(id string) (owner string) {
-	query := fmt.Sprintf(`SELECT owner from   %s 
-	WHERE feeder_id=$1`, oracleconfigTable)
+	query := fmt.Sprintf(`SELECT owner FROM %s WHERE feeder_id=$1`, oracleconfigTable)
 	err := rdb.postgresClient.QueryRow(context.Background(), query, id).Scan(&owner)
 	if err != nil {
 		log.Error("Error getting results from db ", err)
@@ -96,8 +98,7 @@ func (rdb *RelDB) GetFeederAccessByID(id string) (owner string) {
 }
 
 func (rdb *RelDB) GetFeederByID(id string) (owner string) {
-	query := fmt.Sprintf(`SELECT owner from   %s 
-	WHERE feeder_id=$1`, oracleconfigTable)
+	query := fmt.Sprintf(`SELECT owner from %s WHERE feeder_id=$1`, oracleconfigTable)
 	err := rdb.postgresClient.QueryRow(context.Background(), query, id).Scan(&owner)
 	if err != nil {
 		log.Error("Error getting results from db ", err)
@@ -105,8 +106,7 @@ func (rdb *RelDB) GetFeederByID(id string) (owner string) {
 	return
 }
 func (rdb *RelDB) GetFeederLimit(owner string) (limit int) {
-	query := fmt.Sprintf(`SELECT total from  %s 
-	WHERE owner=$1`, feederResourceTable)
+	query := fmt.Sprintf(`SELECT total FROM %s WHERE owner=$1`, feederResourceTable)
 	err := rdb.postgresClient.QueryRow(context.Background(), query, owner).Scan(&limit)
 	if err != nil {
 		log.Error("Error getting results from db ", err)
@@ -115,8 +115,7 @@ func (rdb *RelDB) GetFeederLimit(owner string) (limit int) {
 }
 
 func (rdb *RelDB) GetTotalFeeder(owner string) (total int) {
-	query := fmt.Sprintf(`SELECT count(*) from  %s 
-	WHERE owner=$1 and active=true`, oracleconfigTable)
+	query := fmt.Sprintf(`SELECT count(*) FROM %s WHERE owner=$1 AND active=true`, oracleconfigTable)
 	err := rdb.postgresClient.QueryRow(context.Background(), query, owner).Scan(&total)
 	if err != nil {
 		log.Error("Error getting results from db ", err)

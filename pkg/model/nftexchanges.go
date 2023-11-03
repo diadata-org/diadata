@@ -117,13 +117,12 @@ func (rdb *RelDB) Get24HoursNFTExchangeTrades(exchange dia.NFTExchange) (int64, 
 	FROM %s  
 	WHERE trade_time>now()- INTERVAL '1 days' 
 	AND trade_time<=now()
-	AND marketplace='%s'`,
+	AND marketplace=$1`,
 		NfttradeCurrTable,
-		exchange.Name,
 	)
 
 	var numTrades sql.NullInt64
-	err := rdb.postgresClient.QueryRow(context.Background(), query).Scan(&numTrades)
+	err := rdb.postgresClient.QueryRow(context.Background(), query, exchange.Name).Scan(&numTrades)
 	if numTrades.Valid {
 		return numTrades.Int64, nil
 	}
@@ -153,10 +152,9 @@ func (rdb *RelDB) Get24HoursNFTExchangeVolume(exchange dia.NFTExchange) (float64
 		ON nt.currency_id=a.asset_id
 		WHERE trade_time>now()- INTERVAL '1 days' 
 		AND trade_time<=now()
-        AND marketplace='%s' `,
+        AND marketplace=$1 `,
 		NfttradeCurrTable,
 		assetTable,
-		exchange.Name,
 	)
 	for i, paymentCurrency := range paymentCurrencies {
 		if i == 0 {
@@ -171,7 +169,7 @@ func (rdb *RelDB) Get24HoursNFTExchangeVolume(exchange dia.NFTExchange) (float64
 	}
 
 	var volume sql.NullFloat64
-	err := rdb.postgresClient.QueryRow(context.Background(), query).Scan(&volume)
+	err := rdb.postgresClient.QueryRow(context.Background(), query, exchange.Name).Scan(&volume)
 	if volume.Valid {
 		return volume.Float64 / 1e18, nil
 	}
@@ -183,13 +181,12 @@ func (rdb *RelDB) GetCollectionCountByExchange(exchange string) (int64, error) {
 	query := fmt.Sprintf(`
 		SELECT COUNT (DISTINCT nftclass_id) 
 		FROM %s  
-        WHERE marketplace='%s'`,
+        WHERE marketplace=$1`,
 		NfttradeCurrTable,
-		exchange,
 	)
 
 	var collections sql.NullInt64
-	err := rdb.postgresClient.QueryRow(context.Background(), query).Scan(&collections)
+	err := rdb.postgresClient.QueryRow(context.Background(), query, exchange).Scan(&collections)
 	if collections.Valid {
 		return collections.Int64, nil
 	}
