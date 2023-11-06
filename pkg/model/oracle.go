@@ -537,7 +537,7 @@ func (rdb *RelDB) ExpireOracle(feederID string) (err error) {
 	query := fmt.Sprintf(`
 	UPDATE %s 
 	SET expired=$1, deleted=$2,lastupdate=$4
-	WHERE feeder_id=$4`, oracleconfigTable)
+	WHERE feeder_id=$3`, oracleconfigTable)
 	_, err = rdb.postgresClient.Exec(context.Background(), query, true, true, feederID, currentTime)
 	if err != nil {
 		return
