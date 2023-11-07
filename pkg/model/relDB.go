@@ -24,7 +24,6 @@ type RelDatastore interface {
 	GetAssetsBySymbolName(symbol, name string) ([]dia.Asset, error)
 	GetAllAssets(blockchain string) ([]dia.Asset, error)
 	GetFiatAssetBySymbol(symbol string) (asset dia.Asset, err error)
-	IdentifyAsset(asset dia.Asset) ([]dia.Asset, error)
 	GetAssetID(asset dia.Asset) (string, error)
 	GetPage(pageNumber uint32) ([]dia.Asset, bool, error)
 	Count() (uint32, error)
