@@ -30,12 +30,18 @@ async function cronstart() {
           let saved
           try{
              saved = await getInterlayValues(value.vtoken);
-            cache.set("interlayraw"+ value.vtoken,JSON.stringify(saved))
+              if (saved){
+              cache.set("interlayraw"+ value.vtoken,JSON.stringify(saved))
+             }else{
+              continue
+             }
           }catch(e){
- 
-            saved = 0
+             saved = 0
+            return
           }
           let btcprice = await getPrice("BTC");
+ 
+ 
           cache.set(
             tokenkey("interlay", value.vtoken),
             JSON.stringify({
@@ -56,8 +62,12 @@ async function cronstart() {
         break;
       case "bifrost":
         {
-          
-          let saved = await getBiFrostValues(value.token);
+          let saved;
+          try{
+             saved = await getBiFrostValues(value.token);
+         }catch(e){
+          return
+         }
           let btcprice = await getPrice(value.token);
 
  

@@ -56,8 +56,13 @@ app.get("/customer/bifrost/state/:token", async function (req, res) {
   token = token.toUpperCase();
 
   if (allowedTokens.includes(token)) {
-    let values = await getBiFrostValues(token);
-    res.send(values);
+    try{
+      let values = await getBiFrostValues(token);
+      res.send(values);
+    }catch(e){
+      res.send({ err: "err getting value from bifrost" });
+    }
+   
   } else {
     res.send({ err: "invalid token use, KSM or DOT" });
   }

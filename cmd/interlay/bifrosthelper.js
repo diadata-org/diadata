@@ -101,7 +101,7 @@ async function tokenIssuance(api, token) {
       throwOnUnknown:true
     });
   }catch(e){
-    console.log("throw bifrost api")
+    console.log("throw bifrost api token",token.toLowerCase())
 
     throw e
 
@@ -136,6 +136,7 @@ async function tokenIssuance(api, token) {
 
     } else if (token.toLowerCase() == "MOVR".toLowerCase()){
        tokeninpool = await tokenPool(api, token);
+
        vtokenIssuance = await vTokenIssuance(api, token);
        decimal =  18
 
