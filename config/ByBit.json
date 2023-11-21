@@ -469,6 +469,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "PSP",
+            "ForeignName": "PSPUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "QTUM",
             "ForeignName": "QTUMUSDT",
             "Exchange": "ByBit",

@@ -44,6 +44,18 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "PSP_USDT",
+      "Ignore": false,
+      "Symbol": "PSP"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "PSP_ETH",
+      "Ignore": false,
+      "Symbol": "PSP"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "ATOM_USDT",
       "Ignore": false,
       "Symbol": "ATOM"

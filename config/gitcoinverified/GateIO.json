@@ -684,6 +684,12 @@
             "Address": "0x595832F8FC6BF59c85C527fEC3740A1b7a361269"
         },
         {
+            "Symbol": "PSP",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0xcAfE001067cDEF266AfB7Eb5A286dCFD277f3dE5"
+        },
+        {
             "Symbol": "PST",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",

@@ -439,6 +439,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "PSP",
+      "ForeignName": "PSPUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "RAY",
       "ForeignName": "RAYUSDC",
       "Exchange": "MEXC",

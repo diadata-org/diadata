@@ -25,6 +25,12 @@
             "Address": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD"
         },
         {
+            "Symbol": "PSP",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0xcAfE001067cDEF266AfB7Eb5A286dCFD277f3dE5"
+        },
+        {
             "Symbol": "BTC",
             "Exchange": "ByBit",
             "Blockchain": "Bitcoin",

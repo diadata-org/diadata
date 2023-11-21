@@ -403,6 +403,12 @@
       "Address": "0xF17c59bF0f6326dA7A8cC2CE417e4F53a26707bd"
     },
     {
+      "Symbol": "PSP",
+      "Exchange": "MEXC",
+      "Blockchain": "Ethereum",
+      "Address": "0xcAfE001067cDEF266AfB7Eb5A286dCFD277f3dE5"
+    },
+    {
       "Symbol": "RAY",
       "Exchange": "MEXC",
       "Blockchain": "Solana",
