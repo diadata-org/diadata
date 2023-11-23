@@ -3,12 +3,10 @@ module github.com/diadata-org/diadata/exchange-scrapers/collector
 go 1.17
 
 require (
-	github.com/diadata-org/diadata v1.4.406
+	github.com/diadata-org/diadata v1.4.414
 	github.com/segmentio/kafka-go v0.4.35
 	github.com/sirupsen/logrus v1.9.0
 )
-
-replace github.com/diadata-org/diadata => /home/philipp/go/src/github.com/diadata-org/diadata
 
 require (
 	filippo.io/edwards25519 v1.0.0 // indirect
@@ -158,6 +156,9 @@ require (
 	github.com/tendermint/liquidity v1.5.0 // indirect
 	github.com/tendermint/tendermint v0.34.15 // indirect
 	github.com/tendermint/tm-db v0.6.6 // indirect
+	github.com/tidwall/gjson v1.14.3 // indirect
+	github.com/tidwall/match v1.1.1 // indirect
+	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf // indirect
 	github.com/tklauser/go-sysconf v0.3.10 // indirect
 	github.com/tklauser/numcpus v0.4.0 // indirect

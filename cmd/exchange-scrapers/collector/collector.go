@@ -86,14 +86,6 @@ func main() {
 		log.Fatal("datastore: ", err)
 	}
 
-	returnValue, err := relDB.GetLastNFTOffer("0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB", dia.ETHEREUM, "8409", uint64(18492515), uint(100))
-	if err != nil {
-		log.Error("herror: ", err)
-	} else {
-		log.Info("returnValue. ", returnValue)
-	}
-
-	time.Sleep(10 * time.Minute)
 	// Fetch exchange pairs from database or json file in config folder.
 	var pairsExchange []dia.ExchangePair
 	if !*pairsfile {
