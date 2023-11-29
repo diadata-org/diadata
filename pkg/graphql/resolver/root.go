@@ -570,7 +570,7 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 		if len(bins) > 0 {
 			// In case the first bin is empty, look for the last trades before @starttime
 			// in order to select the most recent one with sufficient volume.
-			if len(trades) == 0 || !utils.IsInBin(trades[0].Time, bins[0]) {
+			if len(trades) == 0 || !utils.IsInBin(trades[0].Time, bins[0]) || trades[0].VolumeUSD() < tradeVolumeThreshold {
 				previousTrade, err := r.DS.GetTradesByFeedSelection(feedselection, []time.Time{endtime.AddDate(0, 0, -10)}, []time.Time{starttime}, lookbackTradesNumber)
 				if len(previousTrade) == 0 {
 					log.Error("get initial trade: ", err)
