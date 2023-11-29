@@ -34,7 +34,6 @@ const (
 	Opyn                               = "OPYN"
 	Premia                             = "Premia"
 	BitBayExchange                     = "BitBay"
-	BittrexExchange                    = "Bittrex"
 	CoinBaseExchange                   = "CoinBase"
 	HitBTCExchange                     = "HitBTC"
 	HuckleberryExchange                = "Huckleberry"

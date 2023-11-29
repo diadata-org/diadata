@@ -253,20 +253,6 @@
             "ScraperActive": true
         },
         {
-            "Name": "Bittrex",
-            "Centralized": true,
-            "Bridge": false,
-            "Contract": "",
-            "Blockchain": {
-                "Name": ""
-            },
-            "RestAPI": "",
-            "WsAPI": "",
-            "pairsAPI": "",
-            "WatchdogDelay": 1200,
-            "ScraperActive": true
-        },
-        {
             "Name": "ByBit",
             "Centralized": true,
             "Bridge": false,

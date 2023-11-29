@@ -125,8 +125,6 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewBinanceScraperUS(key, secret, Exchanges[dia.BinanceExchangeUS], scrape, relDB)
 	case dia.BitfinexExchange:
 		return NewBitfinexScraper(key, secret, Exchanges[dia.BitfinexExchange], scrape, relDB)
-	case dia.BittrexExchange:
-		return NewBittrexScraper(Exchanges[dia.BittrexExchange], scrape, relDB)
 	case dia.CoinBaseExchange:
 		return NewCoinBaseScraper(Exchanges[dia.CoinBaseExchange], scrape, relDB)
 	case dia.KrakenExchange:
