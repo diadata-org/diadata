@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	gql "github.com/machinebox/graphql"
+	"github.com/tidwall/gjson"
 )
 
 type Asset struct {
@@ -374,8 +375,25 @@ func updateOracleMultiValues(
 
 	// Get proper gas price depending on chainId
 	switch chainId {
-	case 288:
-		gasPrice = big.NewInt(1000000000)
+	/*case 288: //Boba
+		gasPrice = big.NewInt(1000000000)*/
+	case 592: //Astar
+		response, err := http.Get("https://gas.astar.network/api/gasnow?network=astar")
+	  if err != nil {
+  	  return err
+	  }
+
+  	defer response.Body.Close()
+  	if 200 != response.StatusCode {
+    	return err
+  	}
+  	contents, err := ioutil.ReadAll(response.Body)
+  	if err != nil {
+    	return err
+  	}
+
+  	gasSuggestion := gjson.Get(string(contents), "data.fast")
+  	gasPrice = big.NewInt(gasSuggestion.Int())
 	default:
 		// Get gas price suggestion
 		gasPrice, err = client.SuggestGasPrice(context.Background())
@@ -416,6 +434,12 @@ func updateOracleMultiValues(
 }
 
 func getAssetQuotationFromDia(blockchain, address string) (float64, error) {
+	// ibc special case: convert / to - in the query string
+	if strings.Split(address, "/")[0] == "ibc" {
+		address = strings.Split(address, "/")[0] + "-" + strings.Split(address, "/")[1]
+	}
+
+	// Execute the query
 	response, err := http.Get("https://api.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
 	if err != nil {
 		return 0.0, err

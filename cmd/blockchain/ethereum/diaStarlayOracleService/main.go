@@ -60,6 +60,7 @@ func main() {
 		"0x0000000000000000000000000000000000001010", //MATIC
 		"0x0000000000000000000000000000000000000000", //DOT
 		"Token:AUSD",                                 //aUSD
+		"0xE511ED88575C57767BAfb72BfD10775413E3F2b0", //nASTR
 	}
 	blockchains := []string{
 		"Ethereum", //USDT
@@ -74,6 +75,7 @@ func main() {
 		"Polygon", //MATIC
 		"Polkadot", //DOT
 		"Acala", //aUSD
+		"Astar", //nASTR
 	}
 	cgNames := []string{
 		"tether",
@@ -88,6 +90,7 @@ func main() {
 		"matic-network",
 		"polkadot",
 		"acala-dollar-acala",
+		"liquid-astr",
 	}
 	oldPrices := make(map[int]float64)
 

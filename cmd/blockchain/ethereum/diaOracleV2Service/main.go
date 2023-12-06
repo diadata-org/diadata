@@ -149,6 +149,7 @@ func main() {
 }
 
 func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string, useGql bool, gqlWindowSize int, gqlMethodology string) (float64, error) {
+	log.Printf("Executing periodic update for asset %s-%s", blockchain, address)
 	// Empty quotation for our request
 	var rawQ *models.Quotation
 	rawQ = new(models.Quotation)
@@ -298,6 +299,12 @@ func updateOracle(
 }
 
 func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, error) {
+	// ibc special case: convert / to - in the query string
+	if strings.Split(address, "/")[0] == "ibc" {
+		address = strings.Split(address, "/")[0] + "-" + strings.Split(address, "/")[1]
+	}
+
+	// Execute the query
 	response, err := http.Get("https://api.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
 	if err != nil {
 		return nil, err

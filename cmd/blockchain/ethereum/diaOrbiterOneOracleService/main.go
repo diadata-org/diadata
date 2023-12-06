@@ -201,7 +201,7 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 		if address == "0x853d955aCEf822Db058eb8505911ED77F175b99e" {
 			log.Printf("brake check new price: %d\n", newPrice)
 			if newPrice < 0.99 || newPrice > 1.01 {
-				log.Printf("Error! Price read from API for asset %s is: %d", address, newPrice)
+				log.Printf("ERROR: Price read from API for asset %s is: %d", address, newPrice)
 				return oldPrice, nil
 			}
 		}
@@ -276,7 +276,6 @@ func updateOracle(
 	tx, err := contract.SetValue(&bind.TransactOpts{
 		From:     auth.From,
 		Signer:   auth.Signer,
-		//GasLimit: 1000725,
 		GasPrice: gasPrice,
 	}, key, big.NewInt(value), big.NewInt(timestamp))
 	if err != nil {
@@ -397,7 +396,7 @@ func getFraxGraphqlAssetQuotationFromDia(blockchain, address string, windowSize 
 }
 
 func getCollateralRatioFromDia(symbol string) (float64, error) {
-	response, err := http.Get("https://api.diadata.org/customer/interlay/state/" + symbol)
+	response, err := http.Get("https://api.diadata.org/xlsd/interlay/" + symbol)
 	if err != nil {
 		return 0.0, err
 	}
@@ -410,17 +409,9 @@ func getCollateralRatioFromDia(symbol string) (float64, error) {
 	if err != nil {
 		return 0.0, err
 	}
-	sTotalBackable := gjson.Get(string(contents), "total_backable").String()
-	sTotalIssued := gjson.Get(string(contents), "total_issued").String()
+	totalBackable := gjson.Get(string(contents), "Collateralratio.LockedToken").Float()
+	totalIssued := gjson.Get(string(contents), "Collateralratio.IssuedToken").Float()
 
-	totalBackable, err := strconv.ParseUint(sTotalBackable, 10, 64)
-	if err != nil {
-		return 0.0, err
-	}
-	totalIssued, err := strconv.ParseUint(sTotalIssued, 10, 64)
-	if err != nil {
-		return 0.0, err
-	}
 	if totalBackable >= totalIssued {
 		return 1.0, nil
 	}

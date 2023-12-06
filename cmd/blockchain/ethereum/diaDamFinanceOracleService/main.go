@@ -242,14 +242,17 @@ func updateOracle(
 	tx, err := contract.Transact(&bind.TransactOpts{
 		From:     auth.From,
 		Signer:   auth.Signer,
-		GasLimit: 1000725,
+		//GasLimit: 1000725,
 		GasPrice: gasPrice,
 	}, "setValues", key, big.NewInt(value), big.NewInt(timestamp), totalsupply, usdcbalance)
 
+	if err != nil {
+		log.Println(err)
+	}
 	log.Printf("from: %s\n", auth.From.Hex())
-
 	log.Printf("key: %s\n", key)
-
+	log.Printf("totalsupply: %s\n", totalsupply)
+	log.Printf("value: %s\n", value)
 	log.Printf("Tx To: %s\n", tx.To().String())
 	log.Printf("Tx Hash: 0x%x\n", tx.Hash())
 	return nil
