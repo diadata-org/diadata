@@ -17,4 +17,4 @@ name = "go"
 
   [analyzers.meta]
   import_root = "github.com/diadata-org/diadata"
-  dependencies_vendored = true
+  
