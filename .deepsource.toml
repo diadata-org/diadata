@@ -1,5 +1,16 @@
 version = 1
 
+exclude_patterns = [
+  "vendor/**/*",            # Exclude third-party libraries or vendor directories
+  "**/*.gen.go",            # Exclude generated files like .gen.go
+  "**/*.pb.go",             # Exclude protobuf generated files
+  "**/*_test.go",           # Exclude test files ending with _test.go
+  "tests/**/*",             # Exclude test directories
+  "examples/**/*",          # Exclude example directories
+  "**/*.tmp",               # Exclude temporary files with .tmp extension
+  "**/*.cache",             # Exclude cache files or directories
+]
+
 [[analyzers]]
 name = "secrets"
 
