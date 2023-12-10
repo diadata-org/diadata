@@ -9,6 +9,7 @@ exclude_patterns = [
   "examples/**/*",          # Exclude example directories
   "**/*.tmp",               # Exclude temporary files with .tmp extension
   "**/*.cache",             # Exclude cache files or directories
+  "pkg/**/*",
 ]
 
 [[analyzers]]
