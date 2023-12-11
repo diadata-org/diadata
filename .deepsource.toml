@@ -10,6 +10,7 @@ exclude_patterns = [
   "**/*.tmp",               # Exclude temporary files with .tmp extension
   "**/*.cache",             # Exclude cache files or directories
   "pkg/**/*",
+  "cmd/**/*",
 ]
 
 [[analyzers]]
