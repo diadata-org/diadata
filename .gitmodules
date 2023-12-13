@@ -1,3 +1,0 @@
-[submodule "util/external/astar-gas-station"]
-	path = util/external/astar-gas-station
-	url = git@github.com:AstarNetwork/gas-station.git
