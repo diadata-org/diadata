@@ -39,7 +39,7 @@ require (
 	github.com/preichenberger/go-coinbasepro/v2 v2.0.5
 	github.com/segmentio/kafka-go v0.4.35
 	github.com/shopspring/decimal v1.3.1
-	github.com/sirupsen/logrus v1.8.1
+	github.com/sirupsen/logrus v1.9.3
 	github.com/status-im/keycard-go v0.0.0-20200402102358-957c09536969
 	github.com/streamingfast/solana-go v0.5.1-0.20220502224452-432fbe84aee8
 	github.com/stretchr/testify v1.8.1
