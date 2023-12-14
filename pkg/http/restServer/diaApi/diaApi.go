@@ -146,6 +146,10 @@ func (env *Env) GetQuotation(c *gin.Context) {
 		restApi.SendError(c, http.StatusNotFound, errors.New("no quotation available"))
 		return
 	}
+	log.Info("Print top assets for ", symbol)
+	for _, asset := range assets {
+		log.Info(asset)
+	}
 	topAsset := assets[0]
 	quotation, err := env.DataStore.GetAssetQuotation(topAsset, timestamp)
 	if err != nil {
