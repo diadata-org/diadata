@@ -242,7 +242,6 @@ func updateOracle(
 	tx, err := contract.Transact(&bind.TransactOpts{
 		From:     auth.From,
 		Signer:   auth.Signer,
-		//GasLimit: 1000725,
 		GasPrice: gasPrice,
 	}, "setValues", key, big.NewInt(value), big.NewInt(timestamp), totalsupply, usdcbalance)
 
