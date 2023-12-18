@@ -5,7 +5,6 @@ go 1.19
 require (
 	github.com/diadata-org/diadata v1.4.1-rc-192
 	github.com/ethereum/go-ethereum v1.10.10
-	github.com/sirupsen/logrus v1.7.0
 )
 
 require (
@@ -21,10 +20,11 @@ require (
 	github.com/prometheus/common v0.7.0 // indirect
 	github.com/rjeczalik/notify v0.9.2 // indirect
 	github.com/shirou/gopsutil v3.21.4-0.20210419000835-c7a38de76ee5+incompatible // indirect
+	github.com/sirupsen/logrus v1.7.0 // indirect
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
 	github.com/tklauser/numcpus v0.2.2 // indirect
-	golang.org/x/crypto v0.0.0-20211117183948-ae814b36b871 // indirect
-	golang.org/x/sys v0.0.0-20211117180635-dee7805ff2e1 // indirect
+	golang.org/x/crypto v0.17.0 // indirect
+	golang.org/x/sys v0.15.0 // indirect
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6 // indirect
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 )
