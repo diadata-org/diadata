@@ -26,6 +26,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "FDUSD_USDT",
+      "Ignore": false,
+      "Symbol": "FDUSD"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "GNS_USDT",
       "Ignore": false,
       "Symbol": "GNS"

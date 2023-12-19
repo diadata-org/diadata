@@ -7,6 +7,12 @@
             "Address": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9"
         },
         {
+            "Symbol": "ADA",
+            "Exchange": "Binance2",
+            "Blockchain": "Cardano",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "APE",
             "Exchange": "Binance2",
             "Blockchain": "Ethereum",
@@ -43,6 +49,12 @@
             "Address": "0xBA11D00c5f74255f56a5E366F4F77f5A186d7f55"
         },
         {
+            "Symbol": "BNB",
+            "Exchange": "Binance2",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "BTC",
             "Exchange": "Binance2",
             "Blockchain": "Bitcoin",
@@ -64,6 +76,18 @@
             "Symbol": "DASH",
             "Exchange": "Binance2",
             "Blockchain": "Dash",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "DOGE",
+            "Exchange": "Binance2",
+            "Blockchain": "Dogechain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "DOT",
+            "Exchange": "Binance2",
+            "Blockchain": "Polkadot",
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
@@ -89,6 +113,12 @@
             "Exchange": "Binance2",
             "Blockchain": "Fiat",
             "Address": "978"
+        },
+        {
+            "Symbol": "FDUSD",
+            "Exchange": "Binance2",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409"
         },
         {
             "Symbol": "GMX",
@@ -151,6 +181,18 @@
             "Address": "0x3082CC23568eA640225c2467653dB90e9250AaA0"
         },
         {
+            "Symbol": "SHIB",
+            "Exchange": "Binance2",
+            "Blockchain": "Ethereum",
+            "Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
+        },
+        {
+            "Symbol": "SOL",
+            "Exchange": "Binance2",
+            "Blockchain": "Solana",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "SPELL",
             "Exchange": "Binance2",
             "Blockchain": "Ethereum",
@@ -203,6 +245,12 @@
             "Exchange": "Binance2",
             "Blockchain": "BinanceSmartChain",
             "Address": "0xa2E3356610840701BDf5611a53974510Ae27E2e1"
+        },
+        {
+            "Symbol": "XRP",
+            "Exchange": "Binance2",
+            "Blockchain": "Ripple",
+            "Address": "0x0000000000000000000000000000000000000000"
         }
     ]
 }

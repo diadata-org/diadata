@@ -71,11 +71,18 @@
             "Exchange": "GateIO",
             "Blockchain": "Nervos",
             "Address": "0x0000000000000000000000000000000000000000"
-        },        {
+        },
+        {
             "Symbol": "CUSD",
             "Exchange": "GateIO",
             "Blockchain": "Celo",
             "Address": "0x765DE816845861e75A25fCA122bb6898B8B1282a"
+        },
+        {
+            "Symbol": "FDUSD",
+            "Exchange": "GateIO",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409"
         },
         {
             "Symbol": "GRAIL",
