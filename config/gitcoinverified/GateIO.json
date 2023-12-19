@@ -685,6 +685,12 @@
             "Address": "0xbC396689893D065F41bc2C6EcbeE5e0085233447"
         },
         {
+            "Symbol": "PNG",
+            "Exchange": "GateIO",
+            "Blockchain": "Avalanche",
+            "Address": "0x60781C2586D68229fde47564546784ab3fACA982"
+        },
+        {
             "Symbol": "POWR",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",

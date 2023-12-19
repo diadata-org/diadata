@@ -403,6 +403,12 @@
       "Address": "0xF17c59bF0f6326dA7A8cC2CE417e4F53a26707bd"
     },
     {
+      "Symbol": "PNG",
+      "Exchange": "MEXC",
+      "Blockchain": "Avalanche",
+      "Address": "0x60781C2586D68229fde47564546784ab3fACA982"
+    },
+    {
       "Symbol": "PSP",
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",

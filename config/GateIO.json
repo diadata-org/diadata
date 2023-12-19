@@ -50,6 +50,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "PNG_USDT",
+      "Ignore": false,
+      "Symbol": "PNG"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "PSP_USDT",
       "Ignore": false,
       "Symbol": "PSP"

@@ -194,6 +194,12 @@
     },
     {
       "Exchange": "CoinBase",
+      "ForeignName": "PNG-USD",
+      "Ignore": false,
+      "Symbol": "PNG"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "RARI-USD",
       "Ignore": false,
       "Symbol": "RARI"
