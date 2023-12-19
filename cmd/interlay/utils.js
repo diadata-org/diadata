@@ -33,13 +33,12 @@ function redis() {
 
   const redispassword = process.env.REDISPASSWORD;
 
-  let redisurl = "redis://:" + "@" + redishost + ":" + redisport;
+  let redisurl = "redis://:" + redispassword + "@" + redishost + ":" + redisport;
 
   if (!isRedisStarted) {
     (async () => {
       cache = redis.createClient({
-        password: redispassword,
-        socket: { host: redishost, port: redisport },
+        url: redisurl,
       });
 
       // cache =  redis.createClient();
