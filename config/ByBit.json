@@ -223,6 +223,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "DPX",
+            "ForeignName": "DPXUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "DUSK",
             "ForeignName": "DUSKUSDT",
             "Exchange": "ByBit",

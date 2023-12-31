@@ -181,6 +181,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "DPX",
+      "ForeignName": "DPXUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "DUST",
       "ForeignName": "DUSTUSDT",
       "Exchange": "MEXC",

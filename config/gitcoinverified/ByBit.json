@@ -13,6 +13,12 @@
             "Address": "0x4b8285aB433D8f69CB48d5Ad62b415ed1a221e4f"
         },
         {
+            "Symbol": "DPX",
+            "Exchange": "ByBit",
+            "Blockchain": "Arbitrum",
+            "Address": "0x6C2C06790b3E3E3c38e12Ee22F8183b37a13EE55"
+        },
+        {
             "Symbol": "USD",
             "Exchange": "ByBit",
             "Blockchain": "Fiat",

@@ -11,6 +11,10 @@
     {
       "Address": "0xE9C803F48dFFE50180Bd5B01dC04DA939E3445Fc",
       "Symbol": "VLX"
+    },
+    {
+      "Address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+      "Symbol": "BUSD"
     }
   ]
 }
