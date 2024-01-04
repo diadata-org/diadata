@@ -309,6 +309,20 @@
             "ScraperActive": false
         },
         {
+            "Name": "CamelotV3",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x1a3c9B1d2F0529D97f2afC5136Cc23e58f1FD35B",
+            "Blockchain": {
+                "Name": "Arbitrum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 7200,
+            "ScraperActive": false
+        },
+        {
             "Name": "Curvefi",
             "Centralized": false,
             "Bridge": false,
@@ -589,6 +603,20 @@
             "ScraperActive": true
         },
         {
+            "Name": "PanCakeSwapV3",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865",
+            "Blockchain": {
+                "Name": "BinanceSmartChain"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 1200,
+            "ScraperActive": true
+        },
+        {
             "Name": "Pangolin",
             "Centralized": false,
             "Bridge": false,
@@ -797,6 +825,36 @@
             "pairsAPI": "",
             "WatchdogDelay": 1200,
             "ScraperActive": true
+        },
+        {
+            "Name": "TraderJoeV2.1-Avalanche",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x8e42f2F4101563bF679975178e880FD87d3eFd4e",
+            "Blockchain": {
+                "Name": "Avalanche"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 1200,
+            "ScraperActive": true
+            
+        },
+        {
+            "Name": "TraderJoeV2.1-Arbitrum",
+            "Centralized": false,
+            "Bridge": false,
+            "Contract": "0x8e42f2F4101563bF679975178e880FD87d3eFd4e",
+            "Blockchain": {
+                "Name": "Arbitrum"
+            },
+            "RestAPI": "",
+            "WsAPI": "",
+            "pairsAPI": "",
+            "WatchdogDelay": 1200,
+            "ScraperActive": true
+            
         },
         {
             "Name": "Trisolaris",

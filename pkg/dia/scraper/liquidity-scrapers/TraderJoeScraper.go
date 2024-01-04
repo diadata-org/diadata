@@ -140,6 +140,7 @@ func (tjls *TraderJoeLiquidityScraper) fetchPools() {
 			asset1 dia.Asset
 		)
 		log.Info("pairs count: ", pairCount)
+		time.Sleep(time.Duration(tjls.waitTime) * time.Millisecond)
 
 		// Retrieve information about the first token of the liquidity pool.
 		asset0, err = tjls.relDB.GetAsset(lbPairCreated.Event.TokenX.Hex(), tjls.blockchain)
