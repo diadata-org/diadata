@@ -25,16 +25,16 @@ import (
 )
 
 type Asset struct {
-	blockchain    string
-	address       string
-	symbol        string
-	gqlParams     GqlParameters
+	blockchain string
+	address    string
+	symbol     string
+	gqlParams  GqlParameters
 }
 
 // Update asset1 only if asset0 is updated
 type ConditionalPair struct {
-	asset0   int
-	asset1   int
+	asset0 int
+	asset1 int
 }
 
 type GqlParameters struct {
@@ -54,6 +54,7 @@ func main() {
 	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
 	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
+	backupNode := utils.Getenv("BACKUP_NODE", "")
 	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "120"))
 	if err != nil {
 		log.Fatalf("Failed to parse frequencySeconds: %v")
@@ -154,15 +155,26 @@ func main() {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
 	}
 
+	connBackup, err := ethclient.Dial(backupNode)
+	if err != nil {
+		log.Fatalf("Failed to connect to the backup Ethereum client: %v", err)
+	}
+
 	auth, err := bind.NewTransactorWithChainID(strings.NewReader(key), key_password, big.NewInt(chainId))
 	if err != nil {
 		log.Fatalf("Failed to create authorized transactor: %v", err)
 	}
 
-	var contract *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService
+	var contract, contractBackup *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService
+
 	err = deployOrBindContract(deployedContract, conn, auth, &contract)
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
+	}
+
+	err = deployOrBindContract(deployedContract, connBackup, auth, &contractBackup)
+	if err != nil {
+		log.Fatalf("Failed to Deploy or Bind backup contract: %v", err)
 	}
 
 	/*
@@ -191,10 +203,19 @@ func main() {
 					log.Println(newAssetPrices)
 					// update all prices
 					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, auth, contract, conn, chainId, assets, conditionalPairs)
+					if err != nil {
+						log.Printf("Failed to execute oracle update using primary connection: %v. Retrying with backup connection...", err)
+
+						// Attempt using the backup connection
+						publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, auth, contractBackup, connBackup, chainId, assets, conditionalPairs)
+						if err != nil {
+							log.Fatalf("Failed to execute oracle update using backup connection: %v", err)
+						}
+					}
 				case <-mandatoryticker.C:
 					// Get prices for all assets from the API
 					newAssetPrices := make(map[string]float64)
-					OUTER:
+				OUTER:
 					for i, asset := range assets {
 						// Check if we need to skip any assets due to being in a conditional pair
 						for _, conditionalPair := range conditionalPairs {
@@ -212,6 +233,15 @@ func main() {
 					// update all prices, regardless of deviation
 					emptyMap := make(map[string]float64)
 					publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, deviationPermille, auth, contract, conn, chainId, assets, conditionalPairs)
+					if err != nil {
+						log.Printf("Failed to execute oracle update using primary connection: %v. Retrying with backup connection...", err)
+
+						// Attempt using the backup connection
+						publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, deviationPermille, auth, contractBackup, connBackup, chainId, assets, conditionalPairs)
+						if err != nil {
+							log.Fatalf("Failed to execute oracle update using backup connection: %v", err)
+						}
+					}
 				}
 			} else {
 				select {
@@ -228,6 +258,15 @@ func main() {
 					}
 					// update all prices
 					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, auth, contract, conn, chainId, assets, conditionalPairs)
+					if err != nil {
+						log.Printf("Failed to execute oracle update using primary connection: %v. Retrying with backup connection...", err)
+
+						// Attempt using the backup connection
+						publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, auth, contractBackup, connBackup, chainId, assets, conditionalPairs)
+						if err != nil {
+							log.Fatalf("Failed to execute oracle update using backup connection: %v", err)
+						}
+					}
 				}
 			}
 		}
@@ -245,7 +284,7 @@ func oracleUpdateExecutor(
 	conn *ethclient.Client,
 	chainId int64,
 	assets []Asset,
-  conditionalAssets []ConditionalPair) (map[string]float64, error) {
+	conditionalAssets []ConditionalPair) (map[string]float64, error) {
 	// Check for deviation and collect all new prices in a map
 	// If a published price is 0, update in any case
 	updateCollector := make(map[string]float64)
@@ -261,14 +300,14 @@ func oracleUpdateExecutor(
 				asset0 := assets[conditionalAssets[j].asset0]
 				asset0NewPrice := newPrices[asset0.symbol]
 				asset0OldPrice := publishedPrices[asset0.symbol]
-				
+
 				// Flag asset for update if it is conditional
 				if asset0NewPrice > 1e-8 && ((asset0NewPrice > (asset0OldPrice * (1 + float64(deviationPermille)/1000))) || (asset0NewPrice < (asset0OldPrice * (1 - float64(deviationPermille)/1000)))) {
 					updateAssetConditional = true
 					log.Printf("Asset %s flagged for update because conditional asset %s is updated as well.", asset.symbol, asset0.symbol)
 				} else {
 					updateAssetConditional = false
-					log.Printf("Asset %s is not updated because the conditional asset %s is not deviating." , asset.symbol, asset0.symbol)
+					log.Printf("Asset %s is not updated because the conditional asset %s is not deviating.", asset.symbol, asset0.symbol)
 				}
 			}
 		}
@@ -305,7 +344,7 @@ func oracleUpdateExecutor(
 	timestamp := time.Now().Unix()
 	err := updateOracleMultiValues(conn, contract, auth, chainId, keys, prices, timestamp)
 	if err != nil {
-		log.Fatalf("Failed to update Oracle: %v", err)
+		log.Printf("Failed to update Oracle: %v", err)
 		return nil, err
 	}
 
@@ -346,8 +385,10 @@ func deployOrBindContract(
 		}
 	} else {
 		// deploy contract
+		// copy for bind backup contract
 		var addr common.Address
 		var tx *types.Transaction
+		// get_con() -> conn or conn_backup
 		addr, tx, *contract, err = diaOracleV2MultiupdateService.DeployDiaOracleV2MultiupdateService(auth, conn)
 		if err != nil {
 			log.Fatalf("could not deploy contract: %v", err)
@@ -376,29 +417,30 @@ func updateOracleMultiValues(
 	// Get proper gas price depending on chainId
 	switch chainId {
 	/*case 288: //Boba
-		gasPrice = big.NewInt(1000000000)*/
+	gasPrice = big.NewInt(1000000000)*/
 	case 592: //Astar
 		response, err := http.Get("https://gas.astar.network/api/gasnow?network=astar")
-	  if err != nil {
-  	  return err
-	  }
+		if err != nil {
+			return err
+		}
 
-  	defer response.Body.Close()
-  	if 200 != response.StatusCode {
-    	return err
-  	}
-  	contents, err := ioutil.ReadAll(response.Body)
-  	if err != nil {
-    	return err
-  	}
+		defer response.Body.Close()
+		if 200 != response.StatusCode {
+			return err
+		}
+		contents, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			return err
+		}
 
-  	gasSuggestion := gjson.Get(string(contents), "data.fast")
-  	gasPrice = big.NewInt(gasSuggestion.Int())
+		gasSuggestion := gjson.Get(string(contents), "data.fast")
+		gasPrice = big.NewInt(gasSuggestion.Int())
 	default:
 		// Get gas price suggestion
 		gasPrice, err = client.SuggestGasPrice(context.Background())
 		if err != nil {
-			log.Fatal(err)
+			log.Print(err)
+			return err
 		}
 
 		// Get 110% of the gas price
@@ -417,11 +459,13 @@ func updateOracleMultiValues(
 
 	// Write values to smart contract
 	tx, err := contract.SetMultipleValues(&bind.TransactOpts{
-		From:   auth.From,
-		Signer: auth.Signer,
+		From:     auth.From,
+		Signer:   auth.Signer,
 		GasPrice: gasPrice,
 	}, keys, cValues)
+	// check if tx is sendable then fgo backup
 	if err != nil {
+		// backup in here
 		return err
 	}
 
@@ -500,8 +544,8 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int,
 				exchangePairsString +
 				`},`
 		}
-	}	else {
-			feedSelectionQuery += `{
+	} else {
+		feedSelectionQuery += `{
 				Address: "` + address + `",
 				Blockchain: "` + blockchain + `",
 			}`
@@ -514,11 +558,11 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int,
 
 	type Response struct {
 		GetFeed []struct {
-			Name   string    `json:"Name"`
-			Time   time.Time `json:"Time"`
-			Value  float64   `json:"Value"`
-			Pools  string    `json:"Pools"`
-			Pairs  string    `json:"Pairs"`
+			Name  string    `json:"Name"`
+			Time  time.Time `json:"Time"`
+			Value float64   `json:"Value"`
+			Pools string    `json:"Pools"`
+			Pairs string    `json:"Pairs"`
 		} `json:"GetFeed"`
 	}
 
@@ -531,8 +575,8 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int,
 			BlockShiftSeconds: ` + strconv.Itoa(windowSize) + `,
 			StartTime: ` + strconv.FormatInt(starttime.Unix(), 10) + `,
 			EndTime: ` + strconv.FormatInt(currentTime.Unix(), 10) + `,` +
-			feedSelectionQuery +
-		 `) {
+		feedSelectionQuery +
+		`) {
 				Name
 				Time
 				Value
