@@ -385,10 +385,8 @@ func deployOrBindContract(
 		}
 	} else {
 		// deploy contract
-		// copy for bind backup contract
 		var addr common.Address
 		var tx *types.Transaction
-		// get_con() -> conn or conn_backup
 		addr, tx, *contract, err = diaOracleV2MultiupdateService.DeployDiaOracleV2MultiupdateService(auth, conn)
 		if err != nil {
 			log.Fatalf("could not deploy contract: %v", err)
