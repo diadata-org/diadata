@@ -166,15 +166,9 @@ func main() {
 	}
 
 	var contract, contractBackup *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService
-
-	err = deployOrBindContract(deployedContract, conn, auth, &contract)
+	err = deployOrBindContract(deployedContract, conn, connBackup, auth, &contract, &contractBackup)
 	if err != nil {
-		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
-	}
-
-	err = deployOrBindContract(deployedContract, connBackup, auth, &contractBackup)
-	if err != nil {
-		log.Fatalf("Failed to Deploy or Bind backup contract: %v", err)
+		log.Fatalf("Failed to Deploy or Bind primary and backup contract: %v", err)
 	}
 
 	/*
@@ -375,11 +369,18 @@ func retrieveAssetPrice(asset Asset, useGql bool, gqlWindowSize int, gqlMethodol
 func deployOrBindContract(
 	deployedContract string,
 	conn *ethclient.Client,
+	connBackup *ethclient.Client,
 	auth *bind.TransactOpts,
-	contract **diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService) error {
+	contract **diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService,
+	contractBackup **diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService) error {
 	var err error
 	if deployedContract != "" {
+		// bind primary and backup
 		*contract, err = diaOracleV2MultiupdateService.NewDiaOracleV2MultiupdateService(common.HexToAddress(deployedContract), conn)
+		if err != nil {
+			return err
+		}
+		*contractBackup, err = diaOracleV2MultiupdateService.NewDiaOracleV2MultiupdateService(common.HexToAddress(deployedContract), connBackup)
 		if err != nil {
 			return err
 		}
@@ -395,6 +396,11 @@ func deployOrBindContract(
 		log.Printf("Contract pending deploy: 0x%x\n", addr)
 		log.Printf("Transaction waiting to be mined: 0x%x\n\n", tx.Hash())
 		time.Sleep(180000 * time.Millisecond)
+		// bind backup
+		*contractBackup, err = diaOracleV2MultiupdateService.NewDiaOracleV2MultiupdateService(addr, connBackup)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
