@@ -149,9 +149,10 @@ func ReadOffsetWithRetryOnError(topic int) (offset int64) {
 }
 
 func NewWriter(topic int) *kafka.Writer {
+	kafkaTopic := getTopic(topic)
 	return kafka.NewWriter(kafka.WriterConfig{
 		Brokers:  KafkaConfig.KafkaUrl,
-		Topic:    getTopic(topic),
+		Topic:    kafkaTopic,
 		Balancer: &kafka.LeastBytes{},
 		Async:    true,
 	})

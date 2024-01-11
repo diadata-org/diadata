@@ -40,6 +40,7 @@ var (
 		dia.VelodromeExchange,
 		dia.ZenlinkswapExchange,
 		dia.ZenlinkswapExchangeBifrostPolkadot,
+		dia.StellarExchange,
 	}
 
 	exchange = flag.String("exchange", "", "which exchange")
@@ -191,7 +192,7 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wTest 
 				// Write trade to productive Kafka.
 				err := writeTradeToKafka(w, t)
 				if err != nil {
-					log.Error(err)
+					log.WithError(err).Error("failed 'writeTradeToKafka''")
 				}
 
 				if scrapers.Exchanges[t.Source].Centralized {
@@ -203,7 +204,6 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wTest 
 						}
 					}
 				}
-
 				if replicaKafkaTopic == "true" {
 					err := writeTradeToKafka(wReplica, t)
 					if err != nil {

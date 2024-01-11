@@ -109,7 +109,7 @@ const (
 	MaverickExchange                   = "Maverick"
 	MaverickExchangeZKSync             = "Maverick-zksync"
 	MaverickExchangeBNB                = "Maverick-bnb"
-
+	StellarExchange                    = "StellarExchange"
 	// FinageForex        = "FinageForex"
 )
 
