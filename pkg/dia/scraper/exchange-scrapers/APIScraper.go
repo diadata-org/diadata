@@ -275,7 +275,7 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapHistoryScraper(Exchanges[dia.UniswapExchange], scrape, relDB)
 
 	case dia.StellarExchange:
-		return NewStellarScraper(Exchanges[dia.StellarExchange], scrape, relDB, nil)
+		return NewStellarScraper(Exchanges[dia.StellarExchange], scrape, relDB)
 	default:
 		return nil
 	}

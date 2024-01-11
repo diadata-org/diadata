@@ -131,6 +131,7 @@ const (
 type ConfigApi struct {
 	ApiKey    string
 	SecretKey string
+	Cursor    string
 }
 
 type ConfigConnector struct {

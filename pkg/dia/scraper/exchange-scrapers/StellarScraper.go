@@ -15,6 +15,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/kr/pretty"
 	"github.com/sirupsen/logrus"
 	"github.com/stellar/go/clients/horizonclient"
@@ -26,6 +27,7 @@ const (
 	stellarRefreshDelay  = time.Second * 20 * 60
 	stellarBaseAssetType = "native"
 	stellarBaseAssetName = "XLM"
+	stellarDecimals      = 7
 )
 
 var stellarDefaultTradeCursor = "" // get data from now()
@@ -34,6 +36,7 @@ var stellarDefaultTradeCursor = "" // get data from now()
 	Helpful tools
 https://laboratory.stellar.org/#explorer?resource=trades&endpoint=all&network=test
 https://stellar.expert/explorer
+https://developers.stellar.org/api/horizon/resources/trades/object
 https://developers.stellar.org/api/horizon
 
 GET https://horizon-testnet.stellar.org/trades
@@ -50,7 +53,7 @@ type StellarScraper struct {
 	errorLock     sync.RWMutex
 	error         error
 	closed        bool
-	pairScrapers  map[string]*HorizonPairScraper // pc.ExchangePair -> pairScraperSet
+	pairScrapers  map[string]*StellarPairScraper // pc.ExchangePair -> pairScraperSet
 	horizonClient *horizonclient.Client
 	exchangeName  string
 	cursor        *string
@@ -80,22 +83,24 @@ type StellarExpertAssets struct {
 	} `json:"_embedded"`
 }
 
-// NewHorizonScraper returns a new NewHorizonScraper initialized with default values.
+// NewStellarScraper returns a new NewStellarScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
-func NewStellarScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB, cursor *string) *StellarScraper {
-	if cursor == nil {
-		cursor = &stellarDefaultTradeCursor
+func NewStellarScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *StellarScraper {
+	cursor := utils.Getenv(strings.ToUpper(exchange.Name)+"_CURSOR", "")
+	if cursor == "" {
+		cursor = stellarDefaultTradeCursor
 	}
 	s := &StellarScraper{
 		logger: log.WithFields(logrus.Fields{
-			"context": "HorizonScraper",
+			"context": "StellarScraper",
+			"cursor":  cursor,
 		}),
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
-		pairScrapers: make(map[string]*HorizonPairScraper),
+		pairScrapers: make(map[string]*StellarPairScraper),
 		exchangeName: exchange.Name,
 		error:        nil,
-		cursor:       cursor,
+		cursor:       &cursor,
 		// can be DefaultTestNetClient too
 		horizonClient: horizonclient.DefaultPublicNetClient,
 		chanTrades:    make(chan *dia.Trade),
@@ -128,27 +133,33 @@ func (s *StellarScraper) mainLoop() {
 }
 
 func (s *StellarScraper) tradeHandler(stellarTrade hProtocol.Trade) {
-	symbol := stellarTrade.BaseAssetCode
+	baseSymbol := stellarTrade.BaseAssetCode
 	if stellarTrade.BaseAssetType == stellarBaseAssetType {
-		symbol = stellarBaseAssetName
+		baseSymbol = stellarBaseAssetName
 	}
+	targetSymbol := stellarTrade.CounterAssetCode
+	if stellarTrade.CounterAssetType == stellarBaseAssetType {
+		targetSymbol = stellarBaseAssetName
+	}
+
 	// TODO get asset info from stellar
 	token0 := dia.Asset{
-		Address: stellarTrade.BaseAccount, // TODO check me
-		Symbol:  symbol,
-		// Name:       pair.Token0.Name, // TODO
-		// Decimals:   pair.Token0.Decimals, // TODO
+		Address:  stellarTrade.BaseAccount, // TODO check me
+		Symbol:   baseSymbol,
+		Name:     baseSymbol, // TODO
+		Decimals: stellarDecimals,
 		// Blockchain: Exchanges[s.exchangeName].BlockChain.Name, // TODO
 	}
 	token1 := dia.Asset{
 		Address: stellarTrade.CounterAccount, // TODO check me
-		Symbol:  stellarTrade.CounterAssetCode,
+		Symbol:  targetSymbol,
+		Name:    targetSymbol,
 		//Name:       pair.Token1.Name, // TODO
-		//Decimals:   pair.Token1.Decimals, // TODO
+		Decimals: stellarDecimals,
 		// Blockchain: Exchanges[s.exchangeName].BlockChain.Name, // TODO
 	}
 	volume, _ := strconv.ParseFloat(stellarTrade.CounterAmount, 64)
-	symbolPair := getSymbolPairs(symbol, stellarTrade.CounterAssetCode)
+	symbolPair := getSymbolPairs(baseSymbol, targetSymbol)
 	diaTrade := &dia.Trade{
 		Symbol:         symbolPair,
 		Pair:           symbolPair,
@@ -183,9 +194,9 @@ func (s *StellarScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) 
 		return nil, s.error
 	}
 	if s.closed {
-		return nil, errors.New("HorizonScraper: Call ScrapePair on closed scraper")
+		return nil, errors.New("StellarScraper: Call ScrapePair on closed scraper")
 	}
-	ps := &HorizonPairScraper{
+	ps := &StellarPairScraper{
 		logger: log.WithFields(logrus.Fields{
 			"context": "HorizonPairScraper",
 		}),
@@ -268,12 +279,12 @@ func (s *StellarScraper) FetchAvailablePairs() ([]dia.ExchangePair, error) {
 }
 
 func (s *StellarScraper) FillSymbolData(symbol string) (dia.Asset, error) {
-	// s.logger.Infof("FillSymbolData %# v", pretty.Formatter(symbol))
+	// s.logger.Infof("StellarScraper.FillSymbolData %# v", pretty.Formatter(symbol))
 	return dia.Asset{Symbol: symbol}, nil
 }
 
 func (s *StellarScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
-	// s.logger.Infof("NormalizePair %# v", pretty.Formatter(pair))
+	// s.logger.Infof("StellarScraper.NormalizePair %# v", pretty.Formatter(pair))
 	return pair, nil
 }
 
@@ -282,7 +293,7 @@ func (s *StellarScraper) Channel() chan *dia.Trade {
 	return s.chanTrades
 }
 
-type HorizonPairScraper struct {
+type StellarPairScraper struct {
 	logger     *logrus.Entry
 	parent     *StellarScraper
 	pair       dia.ExchangePair
@@ -290,19 +301,19 @@ type HorizonPairScraper struct {
 	lastRecord int64
 }
 
-func (ps *HorizonPairScraper) Pair() dia.ExchangePair {
-	// ps.logger.Infof("HorizonPairScraper.Pair %# v", pretty.Formatter(ps.pair))
+func (ps *StellarPairScraper) Pair() dia.ExchangePair {
+	// ps.logger.Infof("StellarPairScraper.Pair %# v", pretty.Formatter(ps.pair))
 	return ps.pair
 }
 
-func (ps *HorizonPairScraper) Close() error {
+func (ps *StellarPairScraper) Close() error {
 	ps.closed = true
 	return nil
 }
 
 // Error returns an error when the channel Channel() is closed
 // and nil otherwise
-func (ps *HorizonPairScraper) Error() error {
+func (ps *StellarPairScraper) Error() error {
 	s := ps.parent
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
