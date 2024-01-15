@@ -349,7 +349,8 @@ func (s *StellarScraper) getTokenInfoAndCache(assetCode, assetIssuer string) (as
 				"context": "StellarTomlReader",
 			}),
 		}
-		asset, err := assetInfoReader.GetStellarAssetInfo(s.horizonClient, assetCode, assetIssuer, s.chainName)
+
+		asset, err := assetInfoReader.GetStellarAssetInfo(s.horizonClient, assetCode, assetIssuer, s.exchangeName)
 		if err != nil {
 			return dia.Asset{}, err
 		}
@@ -386,24 +387,6 @@ func (s *StellarScraper) calculatePriceAndVolumeFromStellarTradeData(stellarTrad
 	//// else
 	////		price = stellarTrade.Price.N / stellarTrade.Price.D
 
-	// TODO check the commented code
-	//decimalsInt := big.NewInt(stellarDecimals)
-	//decimalsDivisorInt := decimalsInt.Exp(big.NewInt(10), decimalsInt, nil)
-	//decimalsDivisorFloat := big.NewFloat(0).SetInt(decimalsDivisorInt)
-	//
-	//priceNFloat := big.NewFloat(0).SetInt64(stellarTrade.Price.N)
-	//priceDFloat := big.NewFloat(0).SetInt64(stellarTrade.Price.D)
-	//amount0In := new(big.Float).Quo(priceNFloat, decimalsDivisorFloat)
-	//amount1Out := new(big.Float).Quo(priceDFloat, decimalsDivisorFloat)
-	//if stellarTrade.BaseIsSeller {
-	//	amount0In = new(big.Float).Quo(priceDFloat, decimalsDivisorFloat)
-	//	amount1Out = new(big.Float).Quo(priceNFloat, decimalsDivisorFloat)
-	//}
-	//// _resultVolume := amount1Out.Quo(amount0In, decimalsDivisorFloat)
-	//resultVolume, _ := amount1Out.Float64()
-	//resultPrice, _ := amount0In.Float64()
-
-	//return resultPrice, resultVolume
 	amount0In := stellarTrade.Price.N
 	amount1Out := stellarTrade.Price.D
 	if stellarTrade.BaseIsSeller {

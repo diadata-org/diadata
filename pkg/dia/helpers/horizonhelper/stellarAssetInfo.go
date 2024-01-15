@@ -4,12 +4,15 @@ import (
 	"crypto/tls"
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/BurntSushi/toml"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/sirupsen/logrus"
 	"github.com/stellar/go/clients/horizonclient"
 )
+
+const tomlReaderTimeout = 5
 
 // StellarToml represents the structure of a Stellar.toml file
 type StellarToml struct {
@@ -30,9 +33,11 @@ func (s *StellarAssetInfo) GetStellarAssetInfo(client *horizonclient.Client, ass
 		ForAssetIssuer: issuer,
 		ForAssetCode:   assetCode,
 	}
+	// for log messages only
 	assetUrl, _ := assetRequest.BuildURL()
 
-	s.Logger.WithField("assetUrl", assetUrl).
+	s.Logger.
+		WithField("assetUrl", assetUrl).
 		Infof("input assetCode: %v issuer:%v", assetCode, issuer)
 
 	asset, err := client.Assets(assetRequest)
@@ -51,7 +56,10 @@ func (s *StellarAssetInfo) GetStellarAssetInfo(client *horizonclient.Client, ass
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
-	tomlClient := &http.Client{Transport: tr}
+	tomlClient := &http.Client{
+		Transport: tr,
+		Timeout:   tomlReaderTimeout * time.Second,
+	}
 	resp, err := tomlClient.Get(tomlURL)
 	if err != nil {
 		s.Logger.
@@ -83,7 +91,7 @@ func (s *StellarAssetInfo) GetStellarAssetInfo(client *horizonclient.Client, ass
 		}
 	}
 
-	err = errors.New("empty data for toml")
+	err = errors.New("empty data from toml")
 	s.Logger.
 		WithError(err).
 		WithFields(logrus.Fields{
