@@ -1,6 +1,7 @@
 package ethhelper
 
 import (
+	"crypto/tls"
 	"errors"
 	"net/http"
 
@@ -47,7 +48,11 @@ func (s *StellarAssetInfo) GetStellarAssetInfo(client *horizonclient.Client, ass
 		return dia.Asset{}, err
 	}
 	tomlURL := asset.Embedded.Records[0].Links.Toml.Href
-	resp, err := http.Get(tomlURL)
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	tomlClient := &http.Client{Transport: tr}
+	resp, err := tomlClient.Get(tomlURL)
 	if err != nil {
 		s.Logger.
 			WithField("tomlURL", tomlURL).

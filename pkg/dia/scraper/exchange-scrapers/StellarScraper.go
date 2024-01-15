@@ -167,21 +167,33 @@ func (s *StellarScraper) tradeHandler(stellarTrade hProtocol.Trade) {
 	}
 
 	if skipBase {
-		s.logger.Warn("empty stellarTrade.BaseAssetIssuer.Impossible to get asset address.Skip")
+		s.logger.
+			WithField("BaseAssetCode", stellarTrade.BaseAssetCode).
+			WithField("BaseAssetIssuer", stellarTrade.BaseAssetIssuer).
+			WithField("ID", stellarTrade.ID).
+			Warn("BaseAssetIssuer.Impossible to get base asset address.Skip")
 		return
 	}
 	if skipCounter {
-		s.logger.Warn("empty stellarTrade.CounterAssetIssuer.Impossible to get asset address.Skip")
+		s.logger.
+			WithField("CounterAssetCode", stellarTrade.CounterAssetCode).
+			WithField("CounterAssetIssuer", stellarTrade.CounterAssetIssuer).
+			WithField("ID", stellarTrade.ID).
+			Warn("CounterAssetIssuer.Impossible to get counter asset address.Skip")
 		return
 	}
 
 	if cachedErr1 != nil {
-		s.logger.WithError(cachedErr1).
+		s.logger.
+			WithField("ID", stellarTrade.ID).
+			WithError(cachedErr1).
 			Error("failed to get and cache baseToken.")
 		return
 	}
 	if cachedErr2 != nil {
-		s.logger.WithError(cachedErr2).
+		s.logger.
+			WithField("ID", stellarTrade.ID).
+			WithError(cachedErr2).
 			Error("failed to get and cache counterToken.")
 		return
 	}
@@ -336,14 +348,18 @@ func (s *StellarScraper) getTokenInfoAndCache(assetCode, assetIssuer string) (as
 
 		s.cachedAssets.Store(assetAddress, asset)
 
-		s.logger.Infof("assetFromToken.asset %v", pretty.Formatter(asset))
+		s.logger.
+			WithField("action", "cached").
+			Infof("assetFromToken.asset.cached %v", pretty.Formatter(asset))
 
 		return asset, nil
 	}
 
 	asset := cached.(dia.Asset)
 
-	s.logger.Infof("assetFromToken.asset.cached %v", pretty.Formatter(asset))
+	s.logger.
+		WithField("action", "fromCache").
+		Infof("assetFromToken.asset.fromCache %v", pretty.Formatter(asset))
 
 	return asset, nil
 }
