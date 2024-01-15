@@ -12,7 +12,7 @@ import (
 	"sync"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/horizonhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/kr/pretty"
@@ -33,6 +33,11 @@ https://laboratory.stellar.org/#explorer?resource=trades&endpoint=all&network=te
 https://stellar.expert/explorer
 https://developers.stellar.org/api/horizon/resources/trades/object
 https://developers.stellar.org/api/horizon
+https://developers.stellar.org/docs/issuing-assets/anatomy-of-an-asset
+https://developers.stellar.org/docs/issuing-assets/control-asset-access
+https://developers.stellar.org/docs/issuing-assets/publishing-asset-info
+
+https://soroban.stellar.org/docs/tokens/token-interface
 
 https://horizon-testnet.stellar.org/trades
 https://horizon-testnet.stellar.org/assets
@@ -144,6 +149,7 @@ func (s *StellarScraper) mainLoop() {
 }
 
 func (s *StellarScraper) tradeHandler(stellarTrade hProtocol.Trade) {
+	s.logger.Infof("StellarScraper.tradeHandler.stellarTrade %# v", pretty.Formatter(stellarTrade))
 	token1 := dia.Asset{}
 	token2 := dia.Asset{}
 
@@ -159,13 +165,15 @@ func (s *StellarScraper) tradeHandler(stellarTrade hProtocol.Trade) {
 	if stellarTrade.CounterAssetIssuer == "" || stellarTrade.CounterAssetCode == "" {
 		skipCounter = true
 	}
+	// cache available token info
 	if !skipBase {
 		token1, cachedErr1 = s.getTokenInfoAndCache(stellarTrade.BaseAssetCode, stellarTrade.BaseAssetIssuer)
 	}
+	// cache available token info
 	if !skipCounter {
 		token2, cachedErr2 = s.getTokenInfoAndCache(stellarTrade.CounterAssetCode, stellarTrade.CounterAssetIssuer)
 	}
-
+	// skip trade - if system couldnot fetch token info from .stellar.toml file
 	if skipBase {
 		s.logger.
 			WithField("BaseAssetCode", stellarTrade.BaseAssetCode).
@@ -199,7 +207,7 @@ func (s *StellarScraper) tradeHandler(stellarTrade hProtocol.Trade) {
 	}
 	baseToken, quoteToken := s.getAssetPair(stellarTrade, token1, token2)
 
-	price, volume := s.getPriceAndVolumeFromStellarTradeData(stellarTrade)
+	price, volume := s.calculatePriceAndVolumeFromStellarTradeData(stellarTrade)
 	symbolPair := s.getSymbolPairs(baseToken.Symbol, quoteToken.Symbol)
 
 	diaTrade := &dia.Trade{
@@ -214,7 +222,7 @@ func (s *StellarScraper) tradeHandler(stellarTrade hProtocol.Trade) {
 		BaseToken:      baseToken,
 		QuoteToken:     quoteToken,
 	}
-	s.logger.Infof("StellarScraper.tradeHandler.stellarTrade %# v", pretty.Formatter(stellarTrade))
+
 	s.logger.Infof("StellarScraper.tradeHandler.diaTrade %# v", pretty.Formatter(diaTrade))
 	s.chanTrades <- diaTrade
 }
@@ -336,7 +344,7 @@ func (s *StellarScraper) getTokenInfoAndCache(assetCode, assetIssuer string) (as
 	assetAddress := s.getSymbolPairs(assetCode, assetIssuer)
 	cached, ok := s.cachedAssets.Load(assetAddress)
 	if !ok {
-		assetInfoReader := &ethhelper.StellarAssetInfo{
+		assetInfoReader := &horizonhelper.StellarAssetInfo{
 			Logger: log.WithFields(logrus.Fields{
 				"context": "StellarTomlReader",
 			}),
@@ -372,7 +380,7 @@ func (s *StellarScraper) getAssetPair(stellarTrade hProtocol.Trade, token1, toke
 }
 
 // getPriceAndVolumeFromStellarData returns price, volume
-func (s *StellarScraper) getPriceAndVolumeFromStellarTradeData(stellarTrade hProtocol.Trade) (price, volume float64) {
+func (s *StellarScraper) calculatePriceAndVolumeFromStellarTradeData(stellarTrade hProtocol.Trade) (price, volume float64) {
 	//// if baseIsSeller=true
 	////		price = stellarTrade.Price.D / stellarTrade.Price.N
 	//// else

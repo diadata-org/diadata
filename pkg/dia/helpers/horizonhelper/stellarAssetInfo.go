@@ -1,4 +1,4 @@
-package ethhelper
+package horizonhelper
 
 import (
 	"crypto/tls"
