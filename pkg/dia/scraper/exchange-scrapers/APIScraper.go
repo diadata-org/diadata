@@ -114,7 +114,6 @@ type PairScraper interface {
 // NewAPIScraper returns an API scraper for @exchange. If scrape==true it actually does
 // scraping. Otherwise can be used for pairdiscovery.
 func NewAPIScraper(exchange string, scrape bool, key string, secret string, relDB *models.RelDB) APIScraper {
-	log.Printf("NewAPIScraper---- %v \n", Exchanges[dia.BitstampExchange].Name)
 	switch exchange {
 	case dia.BitstampExchange:
 		return NewBitstampScraper(Exchanges[dia.BitstampExchange], scrape, relDB)

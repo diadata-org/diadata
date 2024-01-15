@@ -19,12 +19,6 @@
       "Ignore": false
     },
     {
-      "Symbol": "SSLX",
-      "ForeignName": "SSLX-USD",
-      "Exchange": "StellarExchange",
-      "Ignore": false
-    },
-    {
       "Symbol": "XRP",
       "ForeignName": "XRP-USD",
       "Exchange": "StellarExchange",
@@ -43,6 +37,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "SSLX",
+      "ForeignName": "SSLX-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
       "Symbol": "FIDR",
       "ForeignName": "FIDR-USD",
       "Exchange": "StellarExchange",
@@ -51,6 +51,12 @@
     {
       "Symbol": "BTCLN",
       "ForeignName": "BTCLN-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XRP",
+      "ForeignName": "XRP-USD",
       "Exchange": "StellarExchange",
       "Ignore": false
     },
@@ -73,26 +79,14 @@
       "Ignore": false
     },
     {
-      "Symbol": "BRL",
-      "ForeignName": "BRL-USD",
-      "Exchange": "StellarExchange",
-      "Ignore": false
-    },
-    {
-      "Symbol": "XCHF",
-      "ForeignName": "XCHF-USD",
-      "Exchange": "StellarExchange",
-      "Ignore": false
-    },
-    {
       "Symbol": "ETH",
       "ForeignName": "ETH-USD",
       "Exchange": "StellarExchange",
       "Ignore": false
     },
     {
-      "Symbol": "XRP",
-      "ForeignName": "XRP-USD",
+      "Symbol": "BRL",
+      "ForeignName": "BRL-USD",
       "Exchange": "StellarExchange",
       "Ignore": false
     },
@@ -109,14 +103,8 @@
       "Ignore": false
     },
     {
-      "Symbol": "LSP",
-      "ForeignName": "LSP-USD",
-      "Exchange": "StellarExchange",
-      "Ignore": false
-    },
-    {
-      "Symbol": "USD",
-      "ForeignName": "USD-USD",
+      "Symbol": "XCHF",
+      "ForeignName": "XCHF-USD",
       "Exchange": "StellarExchange",
       "Ignore": false
     },
@@ -133,8 +121,8 @@
       "Ignore": false
     },
     {
-      "Symbol": "EURMTL",
-      "ForeignName": "EURMTL-USD",
+      "Symbol": "LSP",
+      "ForeignName": "LSP-USD",
       "Exchange": "StellarExchange",
       "Ignore": false
     },
@@ -147,6 +135,18 @@
     {
       "Symbol": "XRP",
       "ForeignName": "XRP-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "USD",
+      "ForeignName": "USD-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EURMTL",
+      "ForeignName": "EURMTL-USD",
       "Exchange": "StellarExchange",
       "Ignore": false
     },
@@ -165,12 +165,6 @@
     {
       "Symbol": "ARS",
       "ForeignName": "ARS-USD",
-      "Exchange": "StellarExchange",
-      "Ignore": false
-    },
-    {
-      "Symbol": "AFR",
-      "ForeignName": "AFR-USD",
       "Exchange": "StellarExchange",
       "Ignore": false
     },
@@ -223,6 +217,18 @@
       "Ignore": false
     },
     {
+      "Symbol": "AFR",
+      "ForeignName": "AFR-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BRAVE",
+      "ForeignName": "BRAVE-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
       "Symbol": "iFIDR",
       "ForeignName": "iFIDR-USD",
       "Exchange": "StellarExchange",
@@ -247,14 +253,14 @@
       "Ignore": false
     },
     {
-      "Symbol": "BRAVE",
-      "ForeignName": "BRAVE-USD",
+      "Symbol": "StellarNFT",
+      "ForeignName": "StellarNFT-USD",
       "Exchange": "StellarExchange",
       "Ignore": false
     },
     {
-      "Symbol": "StellarNFT",
-      "ForeignName": "StellarNFT-USD",
+      "Symbol": "NUNA",
+      "ForeignName": "NUNA-USD",
       "Exchange": "StellarExchange",
       "Ignore": false
     },
@@ -279,12 +285,6 @@
     {
       "Symbol": "PYBC",
       "ForeignName": "PYBC-USD",
-      "Exchange": "StellarExchange",
-      "Ignore": false
-    },
-    {
-      "Symbol": "KES",
-      "ForeignName": "KES-USD",
       "Exchange": "StellarExchange",
       "Ignore": false
     },

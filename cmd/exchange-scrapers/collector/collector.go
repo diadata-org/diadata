@@ -192,7 +192,7 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wTest 
 				// Write trade to productive Kafka.
 				err := writeTradeToKafka(w, t)
 				if err != nil {
-					log.WithError(err).Error("failed 'writeTradeToKafka''")
+					log.WithError(err).Error("failed 'writeTradeToKafka'")
 				}
 
 				if scrapers.Exchanges[t.Source].Centralized {

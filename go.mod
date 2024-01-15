@@ -3,6 +3,7 @@ module github.com/diadata-org/diadata
 go 1.17
 
 require (
+	github.com/BurntSushi/toml v1.3.2
 	github.com/Kucoin/kucoin-go-sdk v1.2.7
 	github.com/anaskhan96/soup v1.1.1
 	github.com/beldur/kraken-go-api-client v0.0.0-20200330152217-ed78f31b987e

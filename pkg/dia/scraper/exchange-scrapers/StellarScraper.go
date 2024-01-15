@@ -8,12 +8,11 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/kr/pretty"
@@ -23,24 +22,27 @@ import (
 )
 
 const (
-	// TODO check me
-	stellarRefreshDelay  = time.Second * 20 * 60
-	stellarBaseAssetType = "native"
-	stellarBaseAssetName = "XLM"
-	stellarDecimals      = 7
+	stellarTestChainName   = "test"
+	stellarPublicChainName = "public"
+	stellarExpertUrl       = "https://api.stellar.expert/explorer/public/asset/?order=desc&sort=rating"
 )
 
-var stellarDefaultTradeCursor = "" // get data from now()
-
 /*
-	Helpful tools
+	Helpful urls
 https://laboratory.stellar.org/#explorer?resource=trades&endpoint=all&network=test
 https://stellar.expert/explorer
 https://developers.stellar.org/api/horizon/resources/trades/object
 https://developers.stellar.org/api/horizon
 
-GET https://horizon-testnet.stellar.org/trades
+https://horizon-testnet.stellar.org/trades
+https://horizon-testnet.stellar.org/assets
 
+https://horizon.stellar.org/trades
+https://horizon.stellar.org/assets
+
+ENV variables:
+	STELLAREXCHANGE_CURSOR - number, pagination, default "" - means - stream latest trades from now
+	STELLAREXCHANGE_CHAIN - string, enum(public, test), default public
 */
 
 type StellarScraper struct {
@@ -56,9 +58,11 @@ type StellarScraper struct {
 	pairScrapers  map[string]*StellarPairScraper // pc.ExchangePair -> pairScraperSet
 	horizonClient *horizonclient.Client
 	exchangeName  string
+	chainName     string
 	cursor        *string
 	chanTrades    chan *dia.Trade
 	db            *models.RelDB
+	cachedAssets  sync.Map // map[string]dia.Asset
 }
 
 type StellarExpertAsset struct {
@@ -83,26 +87,33 @@ type StellarExpertAssets struct {
 	} `json:"_embedded"`
 }
 
-// NewStellarScraper returns a new NewStellarScraper initialized with default values.
+// NewStellarScraper returns a new StellarScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
 func NewStellarScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *StellarScraper {
 	cursor := utils.Getenv(strings.ToUpper(exchange.Name)+"_CURSOR", "")
-	if cursor == "" {
-		cursor = stellarDefaultTradeCursor
+	chainName := utils.Getenv(strings.ToUpper(exchange.Name)+"_CHAIN", "")
+
+	horizonClient := horizonclient.DefaultPublicNetClient
+	if chainName == "" {
+		chainName = stellarPublicChainName
+	}
+	if chainName == stellarTestChainName {
+		horizonClient = horizonclient.DefaultTestNetClient
 	}
 	s := &StellarScraper{
 		logger: log.WithFields(logrus.Fields{
 			"context": "StellarScraper",
+			"chain":   chainName,
 			"cursor":  cursor,
 		}),
-		shutdown:     make(chan nothing),
-		shutdownDone: make(chan nothing),
-		pairScrapers: make(map[string]*StellarPairScraper),
-		exchangeName: exchange.Name,
-		error:        nil,
-		cursor:       &cursor,
-		// can be DefaultTestNetClient too
-		horizonClient: horizonclient.DefaultPublicNetClient,
+		shutdown:      make(chan nothing),
+		shutdownDone:  make(chan nothing),
+		pairScrapers:  make(map[string]*StellarPairScraper),
+		exchangeName:  exchange.Name,
+		chainName:     chainName,
+		error:         nil,
+		cursor:        &cursor,
+		horizonClient: horizonClient,
 		chanTrades:    make(chan *dia.Trade),
 		db:            relDB,
 	}
@@ -133,44 +144,63 @@ func (s *StellarScraper) mainLoop() {
 }
 
 func (s *StellarScraper) tradeHandler(stellarTrade hProtocol.Trade) {
-	baseSymbol := stellarTrade.BaseAssetCode
-	if stellarTrade.BaseAssetType == stellarBaseAssetType {
-		baseSymbol = stellarBaseAssetName
+	token1 := dia.Asset{}
+	token2 := dia.Asset{}
+
+	skipBase := false
+	skipCounter := false
+
+	var cachedErr1 error
+	var cachedErr2 error
+
+	if stellarTrade.BaseAssetIssuer == "" || stellarTrade.BaseAssetCode == "" {
+		skipBase = true
 	}
-	targetSymbol := stellarTrade.CounterAssetCode
-	if stellarTrade.CounterAssetType == stellarBaseAssetType {
-		targetSymbol = stellarBaseAssetName
+	if stellarTrade.CounterAssetIssuer == "" || stellarTrade.CounterAssetCode == "" {
+		skipCounter = true
+	}
+	if !skipBase {
+		token1, cachedErr1 = s.getTokenInfoAndCache(stellarTrade.BaseAssetCode, stellarTrade.BaseAssetIssuer)
+	}
+	if !skipCounter {
+		token2, cachedErr2 = s.getTokenInfoAndCache(stellarTrade.CounterAssetCode, stellarTrade.CounterAssetIssuer)
 	}
 
-	// TODO get asset info from stellar
-	token0 := dia.Asset{
-		Address:  stellarTrade.BaseAccount, // TODO check me
-		Symbol:   baseSymbol,
-		Name:     baseSymbol, // TODO
-		Decimals: stellarDecimals,
-		// Blockchain: Exchanges[s.exchangeName].BlockChain.Name, // TODO
+	if skipBase {
+		s.logger.Warn("empty stellarTrade.BaseAssetIssuer.Impossible to get asset address.Skip")
+		return
 	}
-	token1 := dia.Asset{
-		Address: stellarTrade.CounterAccount, // TODO check me
-		Symbol:  targetSymbol,
-		Name:    targetSymbol,
-		//Name:       pair.Token1.Name, // TODO
-		Decimals: stellarDecimals,
-		// Blockchain: Exchanges[s.exchangeName].BlockChain.Name, // TODO
+	if skipCounter {
+		s.logger.Warn("empty stellarTrade.CounterAssetIssuer.Impossible to get asset address.Skip")
+		return
 	}
-	volume, _ := strconv.ParseFloat(stellarTrade.CounterAmount, 64)
-	symbolPair := getSymbolPairs(baseSymbol, targetSymbol)
+
+	if cachedErr1 != nil {
+		s.logger.WithError(cachedErr1).
+			Error("failed to get and cache baseToken.")
+		return
+	}
+	if cachedErr2 != nil {
+		s.logger.WithError(cachedErr2).
+			Error("failed to get and cache counterToken.")
+		return
+	}
+	baseToken, quoteToken := s.getAssetPair(stellarTrade, token1, token2)
+
+	price, volume := s.getPriceAndVolumeFromStellarTradeData(stellarTrade)
+	symbolPair := s.getSymbolPairs(baseToken.Symbol, quoteToken.Symbol)
+
 	diaTrade := &dia.Trade{
 		Symbol:         symbolPair,
 		Pair:           symbolPair,
 		ForeignTradeID: stellarTrade.ID,
 		Source:         s.exchangeName,
 		Time:           stellarTrade.LedgerCloseTime,
-		Price:          float64(stellarTrade.Price.N),
+		Price:          price,
 		Volume:         volume,
 		VerifiedPair:   true,
-		BaseToken:      token0,
-		QuoteToken:     token1,
+		BaseToken:      baseToken,
+		QuoteToken:     quoteToken,
 	}
 	s.logger.Infof("StellarScraper.tradeHandler.stellarTrade %# v", pretty.Formatter(stellarTrade))
 	s.logger.Infof("StellarScraper.tradeHandler.diaTrade %# v", pretty.Formatter(diaTrade))
@@ -197,9 +227,6 @@ func (s *StellarScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) 
 		return nil, errors.New("StellarScraper: Call ScrapePair on closed scraper")
 	}
 	ps := &StellarPairScraper{
-		logger: log.WithFields(logrus.Fields{
-			"context": "HorizonPairScraper",
-		}),
 		parent:     s,
 		pair:       pair,
 		lastRecord: 0, //TODO FIX to figure out the last we got...
@@ -230,7 +257,7 @@ func (s *StellarScraper) Close() error {
 
 func (s *StellarScraper) FetchAvailablePairs() ([]dia.ExchangePair, error) {
 	var stellarExpertAssets StellarExpertAssets
-	response, err := http.Get("https://api.stellar.expert/explorer/public/asset/?order=desc&sort=rating")
+	response, err := http.Get(stellarExpertUrl)
 	if err != nil {
 		s.logger.WithError(err).Error("failed to get symbols: ")
 		return nil, err
@@ -293,8 +320,83 @@ func (s *StellarScraper) Channel() chan *dia.Trade {
 	return s.chanTrades
 }
 
+func (s *StellarScraper) getTokenInfoAndCache(assetCode, assetIssuer string) (assetToken dia.Asset, err error) {
+	assetAddress := s.getSymbolPairs(assetCode, assetIssuer)
+	cached, ok := s.cachedAssets.Load(assetAddress)
+	if !ok {
+		assetInfoReader := &ethhelper.StellarAssetInfo{
+			Logger: log.WithFields(logrus.Fields{
+				"context": "StellarTomlReader",
+			}),
+		}
+		asset, err := assetInfoReader.GetStellarAssetInfo(s.horizonClient, assetCode, assetIssuer, s.chainName)
+		if err != nil {
+			return dia.Asset{}, err
+		}
+
+		s.cachedAssets.Store(assetAddress, asset)
+
+		s.logger.Infof("assetFromToken.asset %v", pretty.Formatter(asset))
+
+		return asset, nil
+	}
+
+	asset := cached.(dia.Asset)
+
+	s.logger.Infof("assetFromToken.asset.cached %v", pretty.Formatter(asset))
+
+	return asset, nil
+}
+
+func (s *StellarScraper) getAssetPair(stellarTrade hProtocol.Trade, token1, token2 dia.Asset) (bToken, qToken dia.Asset) {
+	if stellarTrade.BaseIsSeller {
+		return token2, token1
+	}
+	return token1, token2
+}
+
+// getPriceAndVolumeFromStellarData returns price, volume
+func (s *StellarScraper) getPriceAndVolumeFromStellarTradeData(stellarTrade hProtocol.Trade) (price, volume float64) {
+	//// if baseIsSeller=true
+	////		price = stellarTrade.Price.D / stellarTrade.Price.N
+	//// else
+	////		price = stellarTrade.Price.N / stellarTrade.Price.D
+
+	// TODO check the commented code
+	//decimalsInt := big.NewInt(stellarDecimals)
+	//decimalsDivisorInt := decimalsInt.Exp(big.NewInt(10), decimalsInt, nil)
+	//decimalsDivisorFloat := big.NewFloat(0).SetInt(decimalsDivisorInt)
+	//
+	//priceNFloat := big.NewFloat(0).SetInt64(stellarTrade.Price.N)
+	//priceDFloat := big.NewFloat(0).SetInt64(stellarTrade.Price.D)
+	//amount0In := new(big.Float).Quo(priceNFloat, decimalsDivisorFloat)
+	//amount1Out := new(big.Float).Quo(priceDFloat, decimalsDivisorFloat)
+	//if stellarTrade.BaseIsSeller {
+	//	amount0In = new(big.Float).Quo(priceDFloat, decimalsDivisorFloat)
+	//	amount1Out = new(big.Float).Quo(priceNFloat, decimalsDivisorFloat)
+	//}
+	//// _resultVolume := amount1Out.Quo(amount0In, decimalsDivisorFloat)
+	//resultVolume, _ := amount1Out.Float64()
+	//resultPrice, _ := amount0In.Float64()
+
+	//return resultPrice, resultVolume
+	amount0In := stellarTrade.Price.N
+	amount1Out := stellarTrade.Price.D
+	if stellarTrade.BaseIsSeller {
+		amount0In = stellarTrade.Price.D
+		amount1Out = stellarTrade.Price.N
+	}
+	resultPrice := float64(amount1Out) / float64(amount0In)
+	resultVolume := float64(amount1Out)
+	return resultPrice, resultVolume
+}
+
+func (s *StellarScraper) getSymbolPairs(bs, cs string) string {
+	result := fmt.Sprintf("%s-%s", bs, cs)
+	return result
+}
+
 type StellarPairScraper struct {
-	logger     *logrus.Entry
 	parent     *StellarScraper
 	pair       dia.ExchangePair
 	closed     bool
@@ -302,7 +404,6 @@ type StellarPairScraper struct {
 }
 
 func (ps *StellarPairScraper) Pair() dia.ExchangePair {
-	// ps.logger.Infof("StellarPairScraper.Pair %# v", pretty.Formatter(ps.pair))
 	return ps.pair
 }
 
@@ -318,9 +419,4 @@ func (ps *StellarPairScraper) Error() error {
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 	return s.error
-}
-
-func getSymbolPairs(baseSymbol, quotedSymbol string) string {
-	result := fmt.Sprintf("%s-%s", baseSymbol, quotedSymbol)
-	return result
 }
