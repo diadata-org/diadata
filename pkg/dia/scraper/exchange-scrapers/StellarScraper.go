@@ -214,7 +214,7 @@ func (s *StellarScraper) tradeHandler(stellarTrade hProtocol.Trade) {
 	baseToken, quoteToken := s.getAssetPair(stellarTrade, token1, token2)
 
 	price, volume := s.calculatePriceAndVolumeFromStellarTradeData(stellarTrade)
-	symbolPair := s.assetInfoReader.GetAddress(baseToken.Symbol, quoteToken.Symbol)
+	symbolPair := s.assetInfoReader.ConcatStrings(baseToken.Symbol, quoteToken.Symbol)
 
 	diaTrade := &dia.Trade{
 		Symbol:         symbolPair,
@@ -228,8 +228,8 @@ func (s *StellarScraper) tradeHandler(stellarTrade hProtocol.Trade) {
 		BaseToken:      baseToken,
 		QuoteToken:     quoteToken,
 	}
-	s.logger.Debugf("StellarScraper.tradeHandler.stellarTrade %# v", pretty.Formatter(stellarTrade))
-	s.logger.Debugf("StellarScraper.tradeHandler.diaTrade %# v", pretty.Formatter(diaTrade))
+	s.logger.Infof("StellarScraper.tradeHandler.stellarTrade %# v", pretty.Formatter(stellarTrade))
+	s.logger.Infof("StellarScraper.tradeHandler.diaTrade %# v", pretty.Formatter(diaTrade))
 	s.chanTrades <- diaTrade
 }
 
@@ -378,11 +378,6 @@ func (s *StellarScraper) calculatePriceAndVolumeFromStellarTradeData(stellarTrad
 	resultVolume := float64(amount1Out)
 	return resultPrice, resultVolume
 }
-
-//func (s *StellarScraper) getSymbolPairs(bs, cs string) string {
-//	result := fmt.Sprintf("%s-%s", bs, cs)
-//	return result
-//}
 
 type StellarPairScraper struct {
 	parent     *StellarScraper

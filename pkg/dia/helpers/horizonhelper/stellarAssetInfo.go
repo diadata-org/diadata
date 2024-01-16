@@ -161,7 +161,11 @@ func (s *StellarAssetInfo) GetAssetAndUpdateCache(client *horizonclient.Client, 
 	return asset, nil
 }
 
-func (s *StellarAssetInfo) GetAddress(bs, cs string) string {
+func (s *StellarAssetInfo) ConcatStrings(bs, cs string) string {
 	result := fmt.Sprintf("%s-%s", bs, cs)
 	return result
+}
+
+func (s *StellarAssetInfo) GetAddress(bs, cs string) string {
+	return s.ConcatStrings(bs, cs)
 }
