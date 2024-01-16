@@ -1,18 +1,20 @@
 package liquidityscrapers
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/horizonhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
+	"github.com/sirupsen/logrus"
 	"github.com/stellar/go/clients/horizonclient"
 	hProtocol "github.com/stellar/go/protocols/horizon"
 )
 
-const stellarDecimals = 7
 const stellarDefaultTradeCursor = ""
 
 type StellarScraper struct {
@@ -58,6 +60,7 @@ func NewStellarScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *mo
 
 	return scraper
 }
+
 func (scraper *StellarScraper) fetchPools() {
 	page, err := scraper.horizonClient.LiquidityPools(horizonclient.LiquidityPoolsRequest{
 		Cursor: *scraper.cursor,
@@ -72,7 +75,11 @@ func (scraper *StellarScraper) fetchPools() {
 		for _, stellarPool := range page.Embedded.Records {
 			log.Infof("pool: %s", stellarPool.ID)
 
-			pool := scraper.getDIAPool(stellarPool)
+			pool, err := scraper.getDIAPool(stellarPool)
+			if err != nil {
+				log.Error(err)
+				continue
+			}
 
 			// Determine USD liquidity.
 			if pool.SufficientNativeBalance(GLOBAL_NATIVE_LIQUIDITY_THRESHOLD) {
@@ -95,23 +102,29 @@ func (scraper *StellarScraper) fetchPools() {
 	scraper.doneChannel <- true
 }
 
-func (scraper *StellarScraper) getDIAPool(stellarPool hProtocol.LiquidityPool) dia.Pool {
-	assetvolumes := make([]dia.AssetVolume, 0)
-	for i, asset := range stellarPool.Reserves {
-		amount, _ := strconv.ParseFloat(asset.Amount, 64)
-		s := strings.Split(asset.Asset, ":")
-		assetVolume := dia.AssetVolume{
-			Asset: dia.Asset{
-				Address:    s[1],
-				Symbol:     s[0],
-				Decimals:   stellarDecimals,
-				Name:       asset.Asset,
-				Blockchain: scraper.blockchain,
-			},
-			Volume: amount,
+func (scraper *StellarScraper) getDIAPool(stellarPool hProtocol.LiquidityPool) (dia.Pool, error) {
+	assetvolumes := make([]dia.AssetVolume, len(stellarPool.Reserves))
+	for i, stellarAsset := range stellarPool.Reserves {
+		s := strings.SplitN(stellarAsset.Asset, ":", 2)
+		if len(s) != 2 {
+			return dia.Pool{}, fmt.Errorf("invalid asset format: %s", stellarAsset.Asset)
+		}
+
+		asset, err := getDIAAsset(scraper, s[0], s[1])
+		if err != nil {
+			return dia.Pool{}, fmt.Errorf("error getting DIA asset for %s: %v", stellarAsset.Asset, err)
+		}
+
+		volume, err := strconv.ParseFloat(stellarAsset.Amount, 64)
+		if err != nil {
+			return dia.Pool{}, fmt.Errorf("error parsing volume: %v", err)
+		}
+
+		assetvolumes[i] = dia.AssetVolume{
+			Asset:  asset,
+			Volume: volume,
 			Index:  uint8(i),
 		}
-		assetvolumes = append(assetvolumes, assetVolume)
 	}
 	pool := dia.Pool{
 		Exchange:     dia.Exchange{Name: scraper.exchangeName},
@@ -120,7 +133,25 @@ func (scraper *StellarScraper) getDIAPool(stellarPool hProtocol.LiquidityPool) d
 		Assetvolumes: assetvolumes,
 		Time:         time.Now(),
 	}
-	return pool
+	return pool, nil
+}
+
+func getDIAAsset(scraper *StellarScraper, assetCode string, assetIssuer string) (asset dia.Asset, err error) {
+	assetID := fmt.Sprintf("%s-%s", assetCode, assetIssuer)
+	asset, err = scraper.relDB.GetAsset(assetID, scraper.blockchain)
+	if err == nil {
+		return
+	}
+
+	logContext := logrus.Fields{"context": "StellarTomlReader"}
+	assetInfoReader := &horizonhelper.StellarAssetInfo{
+		Logger: log.WithFields(logContext),
+	}
+	asset, err = assetInfoReader.GetStellarAssetInfo(scraper.horizonClient, assetCode, assetIssuer, scraper.blockchain)
+	if err != nil {
+		log.WithFields(logContext).Warn("cannot fetch asset with ID ", assetID)
+	}
+	return
 }
 
 func (scraper *StellarScraper) Pool() chan dia.Pool {
