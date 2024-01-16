@@ -57,17 +57,17 @@ type StellarScraper struct {
 	shutdownDone chan nothing
 	// error handling; to read error or closed, first acquire read lock
 	// only cleanup method should hold write lock
-	errorLock     sync.RWMutex
-	error         error
-	closed        bool
-	pairScrapers  map[string]*StellarPairScraper // pc.ExchangePair -> pairScraperSet
-	horizonClient *horizonclient.Client
-	exchangeName  string
-	chainName     string
-	cursor        *string
-	chanTrades    chan *dia.Trade
-	db            *models.RelDB
-	cachedAssets  sync.Map // map[string]dia.Asset
+	errorLock       sync.RWMutex
+	error           error
+	closed          bool
+	pairScrapers    map[string]*StellarPairScraper // pc.ExchangePair -> pairScraperSet
+	horizonClient   *horizonclient.Client
+	exchangeName    string
+	chainName       string
+	cursor          *string
+	chanTrades      chan *dia.Trade
+	db              *models.RelDB
+	assetInfoReader *horizonhelper.StellarAssetInfo
 }
 
 type StellarExpertAsset struct {
@@ -121,6 +121,12 @@ func NewStellarScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		horizonClient: horizonClient,
 		chanTrades:    make(chan *dia.Trade),
 		db:            relDB,
+		assetInfoReader: &horizonhelper.StellarAssetInfo{
+			Logger: log.WithFields(logrus.Fields{
+				"context": "StellarAssetInfo",
+			}),
+			Db: relDB,
+		},
 	}
 
 	if scrape {
@@ -149,7 +155,7 @@ func (s *StellarScraper) mainLoop() {
 }
 
 func (s *StellarScraper) tradeHandler(stellarTrade hProtocol.Trade) {
-	s.logger.Infof("StellarScraper.tradeHandler.stellarTrade %# v", pretty.Formatter(stellarTrade))
+	// s.logger.Infof("StellarScraper.tradeHandler.stellarTrade %# v", pretty.Formatter(stellarTrade))
 	token1 := dia.Asset{}
 	token2 := dia.Asset{}
 
@@ -208,7 +214,7 @@ func (s *StellarScraper) tradeHandler(stellarTrade hProtocol.Trade) {
 	baseToken, quoteToken := s.getAssetPair(stellarTrade, token1, token2)
 
 	price, volume := s.calculatePriceAndVolumeFromStellarTradeData(stellarTrade)
-	symbolPair := s.getSymbolPairs(baseToken.Symbol, quoteToken.Symbol)
+	symbolPair := s.assetInfoReader.GetAddress(baseToken.Symbol, quoteToken.Symbol)
 
 	diaTrade := &dia.Trade{
 		Symbol:         symbolPair,
@@ -222,8 +228,8 @@ func (s *StellarScraper) tradeHandler(stellarTrade hProtocol.Trade) {
 		BaseToken:      baseToken,
 		QuoteToken:     quoteToken,
 	}
-
-	s.logger.Infof("StellarScraper.tradeHandler.diaTrade %# v", pretty.Formatter(diaTrade))
+	s.logger.Debugf("StellarScraper.tradeHandler.stellarTrade %# v", pretty.Formatter(stellarTrade))
+	s.logger.Debugf("StellarScraper.tradeHandler.diaTrade %# v", pretty.Formatter(diaTrade))
 	s.chanTrades <- diaTrade
 }
 
@@ -341,35 +347,10 @@ func (s *StellarScraper) Channel() chan *dia.Trade {
 }
 
 func (s *StellarScraper) getTokenInfoAndCache(assetCode, assetIssuer string) (assetToken dia.Asset, err error) {
-	assetAddress := s.getSymbolPairs(assetCode, assetIssuer)
-	cached, ok := s.cachedAssets.Load(assetAddress)
-	if !ok {
-		assetInfoReader := &horizonhelper.StellarAssetInfo{
-			Logger: log.WithFields(logrus.Fields{
-				"context": "StellarTomlReader",
-			}),
-		}
-
-		asset, err := assetInfoReader.GetStellarAssetInfo(s.horizonClient, assetCode, assetIssuer, s.exchangeName)
-		if err != nil {
-			return dia.Asset{}, err
-		}
-
-		s.cachedAssets.Store(assetAddress, asset)
-
-		s.logger.
-			WithField("action", "cached").
-			Infof("assetFromToken.asset.cached %v", pretty.Formatter(asset))
-
-		return asset, nil
+	asset, err := s.assetInfoReader.GetAssetAndUpdateCache(s.horizonClient, assetCode, assetIssuer, s.exchangeName)
+	if err != nil {
+		return dia.Asset{}, err
 	}
-
-	asset := cached.(dia.Asset)
-
-	s.logger.
-		WithField("action", "fromCache").
-		Infof("assetFromToken.asset.fromCache %v", pretty.Formatter(asset))
-
 	return asset, nil
 }
 
@@ -398,10 +379,10 @@ func (s *StellarScraper) calculatePriceAndVolumeFromStellarTradeData(stellarTrad
 	return resultPrice, resultVolume
 }
 
-func (s *StellarScraper) getSymbolPairs(bs, cs string) string {
-	result := fmt.Sprintf("%s-%s", bs, cs)
-	return result
-}
+//func (s *StellarScraper) getSymbolPairs(bs, cs string) string {
+//	result := fmt.Sprintf("%s-%s", bs, cs)
+//	return result
+//}
 
 type StellarPairScraper struct {
 	parent     *StellarScraper
