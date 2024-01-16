@@ -2334,11 +2334,17 @@
       "Ignore": false,
       "Symbol": "USDT"
     },
-     {
+    {
       "Exchange": "GateIO",
       "ForeignName": "VLX_USDT",
       "Ignore": false,
       "Symbol": "VLX"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "VELA_USDT",
+      "Ignore": false,
+      "Symbol": "VELA"
     },
     {
       "Exchange": "GateIO",

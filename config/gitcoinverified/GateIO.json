@@ -901,6 +901,12 @@
             "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
         },
         {
+            "Symbol": "VELA",
+            "Exchange": "GateIO",
+            "Blockchain": "Arbitrum",
+            "Address": "0x088cd8f5eF3652623c22D48b1605DCfE860Cd704"
+        },
+        {
             "Symbol": "VLX",
             "Exchange": "GateIO",
             "Blockchain": "Velas",

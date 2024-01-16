@@ -355,6 +355,12 @@
             "Address": "0x2C974B2d0BA1716E644c1FC59982a89DDD2fF724"
         },
         {
+            "Symbol": "VELA",
+            "Exchange": "OKEx",
+            "Blockchain": "Arbitrum",
+            "Address": "0x088cd8f5eF3652623c22D48b1605DCfE860Cd704"
+        },
+        {
             "Symbol": "WBTC",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",

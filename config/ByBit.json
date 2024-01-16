@@ -625,6 +625,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "VELA",
+            "ForeignName": "VELAUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "VET",
             "ForeignName": "VETUSDT",
             "Exchange": "ByBit",
