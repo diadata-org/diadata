@@ -35,7 +35,7 @@ func NewStellarScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *mo
 		scraper       *StellarScraper
 	)
 
-	cursor := utils.Getenv(strings.ToUpper(exchange.Name)+"_CURSOR", "")
+	cursor := utils.Getenv(strings.ToUpper(exchange.Name)+"_LPS_CURSOR", "")
 
 	horizonClient = horizonclient.DefaultPublicNetClient
 

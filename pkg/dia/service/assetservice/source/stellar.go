@@ -27,7 +27,7 @@ func NewStellarAssetSource(exchange dia.Exchange) *StellarAssetSource {
 		doneChannel   = make(chan bool)
 	)
 
-	cursor := utils.Getenv(strings.ToUpper(exchange.Name)+"_CURSOR", "")
+	cursor := utils.Getenv(strings.ToUpper(exchange.Name)+"_ASSETS_CURSOR", "")
 
 	switch exchange.Name {
 	case dia.StellarExchange:
@@ -57,6 +57,7 @@ func NewStellarAssetSource(exchange dia.Exchange) *StellarAssetSource {
 func (scraper *StellarAssetSource) fetchAssets() {
 	page, err := scraper.horizonClient.Assets(horizonclient.AssetRequest{
 		Cursor: *scraper.cursor,
+		Limit:  200,
 	})
 	if err != nil {
 		log.Error(err)
