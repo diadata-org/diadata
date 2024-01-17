@@ -102,7 +102,16 @@ func (s *StellarAssetInfo) GetStellarAssetInfo(client *horizonclient.Client, ass
 			resultAsset.Name = currency.Name
 			resultAsset.Symbol = assetCode
 			resultAsset.Decimals = uint8(currency.DisplayDecimals)
-
+			if resultAsset.Name == "" {
+				resultAsset.Name = assetCode
+			}
+			s.Logger.
+				WithFields(logrus.Fields{
+					"assetCode": assetCode,
+					"issuer":    issuer,
+					"tomlURL":   tomlURL,
+				}).
+				Info("asset found")
 			return resultAsset, nil
 		}
 	}
