@@ -15,16 +15,21 @@ import (
 	hProtocol "github.com/stellar/go/protocols/horizon"
 )
 
+const (
+	defaultLPRequestCursor = ""
+	defaultLPRequestLimit  = 200
+)
+
 type StellarScraper struct {
 	horizonClient *horizonclient.Client
-	relDB         *models.RelDB
-	datastore     *models.DB
 	poolChannel   chan dia.Pool
 	doneChannel   chan bool
 	blockchain    string
 	exchangeName  string
+	relDB         *models.RelDB
+	datastore     *models.DB
 	cursor        *string
-	cachedAssets  map[string]dia.Asset
+	limit         uint
 }
 
 func NewStellarScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *models.DB) *StellarScraper {
@@ -35,19 +40,24 @@ func NewStellarScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *mo
 		scraper       *StellarScraper
 	)
 
-	cursor := utils.Getenv(strings.ToUpper(exchange.Name)+"_LPS_CURSOR", "")
+	cursor := utils.Getenv(strings.ToUpper(exchange.Name)+"_LPS_CURSOR", defaultLPRequestCursor)
+	limit := utils.GetenvUint(strings.ToUpper(exchange.Name)+"_LPS_LIMIT", defaultLPRequestLimit)
 
-	horizonClient = horizonclient.DefaultPublicNetClient
+	switch exchange.Name {
+	case dia.StellarExchange:
+		horizonClient = horizonclient.DefaultPublicNetClient
+	}
 
 	scraper = &StellarScraper{
 		horizonClient: horizonClient,
-		relDB:         relDB,
-		datastore:     datastore,
 		poolChannel:   poolChannel,
 		doneChannel:   doneChannel,
 		exchangeName:  exchange.Name,
 		blockchain:    exchange.BlockChain.Name,
+		relDB:         relDB,
+		datastore:     datastore,
 		cursor:        &cursor,
+		limit:         limit,
 	}
 
 	go func() {
@@ -60,6 +70,7 @@ func NewStellarScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *mo
 func (scraper *StellarScraper) fetchPools() {
 	page, err := scraper.horizonClient.LiquidityPools(horizonclient.LiquidityPoolsRequest{
 		Cursor: *scraper.cursor,
+		Limit:  scraper.limit,
 	})
 	if err != nil {
 		log.Error(err)
