@@ -197,7 +197,7 @@ func (s *StellarScraper) tradeHandler(stellarTrade hProtocol.Trade) {
 			Warn("CounterAssetIssuer.Impossible to get counter asset address.Skip")
 		return
 	}
-	// TODO убрать в StellarAssetInfo db
+
 	if cachedErr1 != nil {
 		s.logger.
 			WithField("ID", stellarTrade.ID).
