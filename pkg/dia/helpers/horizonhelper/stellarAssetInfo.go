@@ -26,58 +26,41 @@ type StellarToml struct {
 	} `toml:"CURRENCIES"`
 }
 
-type StellarAssetInfo struct {
-	Logger *logrus.Entry
-}
-
-func (s *StellarAssetInfo) GetStellarAssetInfo(client *horizonclient.Client, assetCode, issuer, chainName string) (dia.Asset, error) {
+func GetStellarAssetInfo(client *horizonclient.Client, assetCode, assetIssuer, blockchain string) (dia.Asset, error) {
 	assetRequest := horizonclient.AssetRequest{
-		ForAssetIssuer: issuer,
+		ForAssetIssuer: assetIssuer,
 		ForAssetCode:   assetCode,
 	}
-	// for log messages only
+
 	assetUrl, _ := assetRequest.BuildURL()
-
-	s.Logger.
-		WithField("assetUrl", assetUrl).
+	log := logrus.New().
+		WithField("context", "StellarTomlReader").
 		WithField("assetCode", assetCode).
-		WithField("issuer", issuer).
-		Info("input assetCode")
+		WithField("assetIssuer", assetIssuer)
 
-	asset, err := client.Assets(assetRequest)
+	log.WithField("assetUrl", assetUrl).Info("input assetCode")
+
+	page, err := client.Assets(assetRequest)
 	if err != nil {
-		s.Logger.
-			WithError(err).
-			WithFields(logrus.Fields{
-				"assetCode": assetCode,
-				"issuer":    issuer,
-			}).Error("failed to fetch stellar assets from horizon")
+		log.WithError(err).Error("failed to fetch asset info from horizon")
 		return dia.Asset{}, err
 	}
 
-	// s.Logger.Infof("asset.Embedded.Records %# v", pretty.Formatter(asset.Embedded.Records))
-	if len(asset.Embedded.Records) == 0 {
+	if len(page.Embedded.Records) == 0 {
 		err = errors.New("no toml file")
-		s.Logger.
-			WithError(err).
-			WithFields(logrus.Fields{
-				"assetCode": assetCode,
-				"issuer":    issuer,
-			}).
-			Error("failed to fetch stellar assets from horizon")
+		log.WithError(err).Error("failed to fetch asset info from horizon")
 		return dia.Asset{}, err
 	}
-	tomlURL := asset.Embedded.Records[0].Links.Toml.Href
+
+	tomlURL := page.Embedded.Records[0].Links.Toml.Href
 	if tomlURL == "" {
-		err = errors.New("empty toml url from stellar")
-		s.Logger.WithError(err).
-			WithFields(logrus.Fields{
-				"assetCode": assetCode,
-				"issuer":    issuer,
-			}).
-			Error("failed to fetch stellar assets with empty toml url")
+		err = errors.New("empty asset toml url from horizon")
+		log.WithError(err).Error("failed to fetch asset info with empty toml url")
 		return dia.Asset{}, err
 	}
+
+	log = log.WithField("tomlURL", tomlURL)
+
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
@@ -88,89 +71,62 @@ func (s *StellarAssetInfo) GetStellarAssetInfo(client *horizonclient.Client, ass
 
 	resp, err := tomlClient.Get(tomlURL)
 	if err != nil {
-		s.Logger.
-			WithError(err).
-			WithFields(logrus.Fields{
-				"assetCode": assetCode,
-				"issuer":    issuer,
-				"tomlURL":   tomlURL,
-			}).
-			Error("failed to fetch stellar tomlURL")
+		log.WithError(err).Error("failed to fetch asset toml:" + tomlURL)
 		return dia.Asset{}, err
 	}
 
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			s.Logger.Error(err)
+			log.Error(err)
 		}
 	}(resp.Body)
 
 	if resp.StatusCode != http.StatusOK {
 		err = errors.New("not 200 http response code from toml")
-		s.Logger.
-			WithError(err).
-			WithFields(logrus.Fields{
-				"assetCode": assetCode,
-				"issuer":    issuer,
-				"tomlURL":   tomlURL,
-			}).
-			Error("failed to fetch stellar tomlURL:" + tomlURL)
+		log.WithError(err).Error("failed to fetch asset toml:" + tomlURL)
 		return dia.Asset{}, err
 	}
 	var stellarToml StellarToml
+
 	if _, err := toml.NewDecoder(resp.Body).Decode(&stellarToml); err != nil {
-		s.Logger.
-			WithError(err).
-			WithFields(logrus.Fields{
-				"assetCode": assetCode,
-				"issuer":    issuer,
-				"tomlURL":   tomlURL,
-			}).
-			Error("failed to decode data from tomlURL")
+		log.WithError(err).Error("failed to decode asset toml")
 		return dia.Asset{}, err
 	}
-	resultAsset := dia.Asset{
-		Blockchain: chainName,
+
+	asset := dia.Asset{
+		Address:    GetAssetAddress(assetCode, assetIssuer),
+		Blockchain: blockchain,
+		Symbol:     assetCode,
 	}
+
 	for _, currency := range stellarToml.CURRENCIES {
-		if currency.Code == assetCode && currency.Issuer == issuer {
-			resultAsset.Address = assetCode + "-" + issuer
-			resultAsset.Name = currency.Name
-			resultAsset.Symbol = assetCode
-			resultAsset.Decimals = uint8(currency.DisplayDecimals)
-			if resultAsset.Name == "" {
-				resultAsset.Name = assetCode
+		if currency.Code == assetCode && currency.Issuer == assetIssuer {
+			asset.Name = currency.Name
+			asset.Decimals = uint8(currency.DisplayDecimals)
+			if asset.Name == "" {
+				asset.Name = assetCode
 			}
-			s.Logger.
-				WithFields(logrus.Fields{
-					"assetCode": assetCode,
-					"issuer":    issuer,
-					"tomlURL":   tomlURL,
-				}).
-				Info("asset found")
-			return resultAsset, nil
+			log.Info("asset found")
+			return asset, nil
 		}
 	}
 
-	err = errors.New("empty data from toml")
-	s.Logger.
-		WithError(err).
-		WithFields(logrus.Fields{
-			"assetCode": assetCode,
-			"issuer":    issuer,
-			"tomlURL":   tomlURL,
-		}).
-		Error("failed to find data for tomlURL")
+	err = errors.New("asset info not found")
+	log.WithError(err).Error("failed to find asset info in asset toml")
 
 	return dia.Asset{}, err
 }
 
-func (s *StellarAssetInfo) ConcatStrings(bs, cs string) string {
+func concatStrings(bs, cs string) string {
 	result := fmt.Sprintf("%s-%s", bs, cs)
 	return result
 }
 
-func (s *StellarAssetInfo) GetAddress(bs, cs string) string {
-	return s.ConcatStrings(bs, cs)
+func GetAssetAddress(assetCode, assetIssuer string) string {
+	return concatStrings(assetCode, assetIssuer)
+}
+
+func GetAssetSymbolPair(baseSymbol, quoteSymbol string) string {
+	return concatStrings(baseSymbol, quoteSymbol)
 }

@@ -7,7 +7,6 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia/helpers/horizonhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
-	"github.com/sirupsen/logrus"
 	"github.com/stellar/go/clients/horizonclient"
 )
 
@@ -100,11 +99,7 @@ func (scraper *StellarAssetSource) fetchAssets() {
 }
 
 func getDIAAsset(scraper *StellarAssetSource, assetCode string, assetIssuer string) (asset dia.Asset, err error) {
-	logContext := logrus.Fields{"context": "StellarTomlReader"}
-	assetInfoReader := &horizonhelper.StellarAssetInfo{
-		Logger: log.WithFields(logContext),
-	}
-	asset, err = assetInfoReader.GetStellarAssetInfo(scraper.horizonClient, assetCode, assetIssuer, scraper.blockchain)
+	asset, err = horizonhelper.GetStellarAssetInfo(scraper.horizonClient, assetCode, assetIssuer, scraper.blockchain)
 	if err != nil {
 		log.Error("cannot fetch asset info: ", err)
 	}

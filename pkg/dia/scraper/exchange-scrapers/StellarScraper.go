@@ -57,18 +57,17 @@ type StellarScraper struct {
 	shutdownDone chan nothing
 	// error handling; to read error or closed, first acquire read lock
 	// only cleanup method should hold write lock
-	errorLock       sync.RWMutex
-	error           error
-	closed          bool
-	pairScrapers    map[string]*StellarPairScraper // pc.ExchangePair -> pairScraperSet
-	horizonClient   *horizonclient.Client
-	exchangeName    string
-	blockchain      string
-	chainName       string
-	cursor          *string
-	chanTrades      chan *dia.Trade
-	relDB           *models.RelDB
-	assetInfoReader *horizonhelper.StellarAssetInfo
+	errorLock     sync.RWMutex
+	error         error
+	closed        bool
+	pairScrapers  map[string]*StellarPairScraper // pc.ExchangePair -> pairScraperSet
+	horizonClient *horizonclient.Client
+	exchangeName  string
+	blockchain    string
+	chainName     string
+	cursor        *string
+	chanTrades    chan *dia.Trade
+	relDB         *models.RelDB
 }
 
 type StellarExpertAsset struct {
@@ -123,11 +122,6 @@ func NewStellarScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		horizonClient: horizonClient,
 		chanTrades:    make(chan *dia.Trade),
 		relDB:         relDB,
-		assetInfoReader: &horizonhelper.StellarAssetInfo{
-			Logger: log.WithFields(logrus.Fields{
-				"context": "StellarAssetInfo",
-			}),
-		},
 	}
 
 	if scrape {
@@ -215,7 +209,7 @@ func (s *StellarScraper) tradeHandler(stellarTrade hProtocol.Trade) {
 	baseToken, quoteToken := s.getAssetPair(stellarTrade, token1, token2)
 
 	price, volume := s.calculatePriceAndVolumeFromStellarTradeData(stellarTrade)
-	symbolPair := s.assetInfoReader.ConcatStrings(baseToken.Symbol, quoteToken.Symbol)
+	symbolPair := horizonhelper.GetAssetSymbolPair(baseToken.Symbol, quoteToken.Symbol)
 
 	diaTrade := &dia.Trade{
 		Symbol:         symbolPair,
@@ -348,18 +342,14 @@ func (s *StellarScraper) Channel() chan *dia.Trade {
 }
 
 func (s *StellarScraper) getDIAAsset(assetCode string, assetIssuer string) (asset dia.Asset, err error) {
-	assetInfoReader := &horizonhelper.StellarAssetInfo{
-		Logger: log.WithFields(logrus.Fields{"context": "StellarTomlReader"}),
-	}
-
-	assetID := assetInfoReader.GetAddress(assetCode, assetIssuer)
+	assetID := horizonhelper.GetAssetAddress(assetCode, assetIssuer)
 	asset, err = s.relDB.GetAsset(assetID, s.blockchain)
 	if err == nil {
 		return asset, nil
 	}
 	err = nil
 
-	asset, err = assetInfoReader.GetStellarAssetInfo(s.horizonClient, assetCode, assetIssuer, s.blockchain)
+	asset, err = horizonhelper.GetStellarAssetInfo(s.horizonClient, assetCode, assetIssuer, s.blockchain)
 	if err != nil {
 		s.logger.
 			WithError(err).
