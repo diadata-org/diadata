@@ -47,17 +47,38 @@ func (s *StellarAssetInfo) GetStellarAssetInfo(client *horizonclient.Client, ass
 
 	asset, err := client.Assets(assetRequest)
 	if err != nil {
-		s.Logger.WithError(err).Error("failed to fetch stellar assets from horizon")
+		s.Logger.
+			WithError(err).
+			WithFields(logrus.Fields{
+				"assetCode": assetCode,
+				"issuer":    issuer,
+			}).Error("failed to fetch stellar assets from horizon")
 		return dia.Asset{}, err
 	}
 
 	// s.Logger.Infof("asset.Embedded.Records %# v", pretty.Formatter(asset.Embedded.Records))
 	if len(asset.Embedded.Records) == 0 {
 		err = errors.New("no toml file")
-		s.Logger.WithError(err).Error("failed to fetch stellar assets from horizon")
+		s.Logger.
+			WithError(err).
+			WithFields(logrus.Fields{
+				"assetCode": assetCode,
+				"issuer":    issuer,
+			}).
+			Error("failed to fetch stellar assets from horizon")
 		return dia.Asset{}, err
 	}
 	tomlURL := asset.Embedded.Records[0].Links.Toml.Href
+	if tomlURL == "" {
+		err = errors.New("empty toml url from stellar")
+		s.Logger.WithError(err).
+			WithFields(logrus.Fields{
+				"assetCode": assetCode,
+				"issuer":    issuer,
+			}).
+			Error("failed to fetch stellar assets with empty toml url")
+		return dia.Asset{}, err
+	}
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
@@ -69,8 +90,12 @@ func (s *StellarAssetInfo) GetStellarAssetInfo(client *horizonclient.Client, ass
 	resp, err := tomlClient.Get(tomlURL)
 	if err != nil {
 		s.Logger.
-			WithField("tomlURL", tomlURL).
 			WithError(err).
+			WithFields(logrus.Fields{
+				"assetCode": assetCode,
+				"issuer":    issuer,
+				"tomlURL":   tomlURL,
+			}).
 			Error("failed to fetch stellar tomlURL")
 		return dia.Asset{}, err
 	}
@@ -81,7 +106,11 @@ func (s *StellarAssetInfo) GetStellarAssetInfo(client *horizonclient.Client, ass
 		err = errors.New("not 200 http response code from toml")
 		s.Logger.
 			WithError(err).
-			WithField("tomlURL", tomlURL).
+			WithFields(logrus.Fields{
+				"assetCode": assetCode,
+				"issuer":    issuer,
+				"tomlURL":   tomlURL,
+			}).
 			Error("failed to fetch stellar tomlURL:" + tomlURL)
 		return dia.Asset{}, err
 	}
@@ -89,7 +118,11 @@ func (s *StellarAssetInfo) GetStellarAssetInfo(client *horizonclient.Client, ass
 	if _, err := toml.DecodeReader(resp.Body, &stellarToml); err != nil {
 		s.Logger.
 			WithError(err).
-			WithField("tomlURL", tomlURL).
+			WithFields(logrus.Fields{
+				"assetCode": assetCode,
+				"issuer":    issuer,
+				"tomlURL":   tomlURL,
+			}).
 			Error("failed to decode data from tomlURL")
 		return dia.Asset{}, err
 	}
