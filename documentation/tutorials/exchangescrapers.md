@@ -53,6 +53,7 @@ export POSTGRES_DB=dia
 export REDISURL=localhost:6379
 # for local development
 export DIA_CONFIG_DIR=/path/to/diadata-project/config
+export KAFKA_TOPIC_SUFFIX=dia
 ```
 
 Or simple by sourcing the `local.env` inside the `deployments/local/exchange-scraper` directory.

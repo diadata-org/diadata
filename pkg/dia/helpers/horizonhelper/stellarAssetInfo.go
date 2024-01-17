@@ -9,7 +9,6 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/diadata-org/diadata/pkg/dia"
-	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/sirupsen/logrus"
 	"github.com/stellar/go/clients/horizonclient"
 )
@@ -28,7 +27,6 @@ type StellarToml struct {
 
 type StellarAssetInfo struct {
 	Logger *logrus.Entry
-	Db     *models.RelDB
 }
 
 func (s *StellarAssetInfo) GetStellarAssetInfo(client *horizonclient.Client, assetCode, issuer, chainName string) (dia.Asset, error) {
@@ -160,47 +158,6 @@ func (s *StellarAssetInfo) GetStellarAssetInfo(client *horizonclient.Client, ass
 		Error("failed to find data for tomlURL")
 
 	return dia.Asset{}, err
-}
-
-func (s *StellarAssetInfo) GetAssetAndUpdateCache(client *horizonclient.Client, assetCode, issuer, blockchain string) (dia.Asset, error) {
-	assetAddress := s.GetAddress(assetCode, issuer)
-
-	asset, err := s.Db.GetAsset(assetAddress, blockchain)
-
-	if err != nil && err.Error() != "no rows in result set" {
-		s.Logger.
-			WithError(err).
-			WithField("assetAddress", asset.Address).
-			Error("failed to GetAsset")
-		return asset, err
-	}
-	if asset.Address != "" {
-		s.Logger.
-			WithField("assetAddress", asset.Address).
-			Debug("asset from cache")
-		return asset, nil
-	}
-	asset, err = s.GetStellarAssetInfo(client, assetCode, issuer, blockchain)
-	if err != nil {
-		return asset, err
-	}
-	err = s.Db.SetAsset(asset)
-	if err != nil {
-		s.Logger.
-			WithError(err).
-			WithField("assetAddress", asset.Address).
-			Error("failed to SetAsset")
-		return asset, err
-	}
-	err = s.Db.SetAssetCache(asset)
-	if err != nil {
-		s.Logger.
-			WithError(err).
-			WithField("assetAddress", asset.Address).
-			Error("failed to SetAssetCache")
-		return asset, err
-	}
-	return asset, nil
 }
 
 func (s *StellarAssetInfo) ConcatStrings(bs, cs string) string {

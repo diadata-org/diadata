@@ -46,7 +46,7 @@ https://horizon.stellar.org/trades
 https://horizon.stellar.org/assets
 
 ENV variables:
-	STELLAREXCHANGE_CURSOR - number, pagination, default "" - means - stream latest trades from now
+	STELLAREXCHANGE_TRADES_CURSOR - number, pagination, default "" - means - stream latest trades from now
 	STELLAREXCHANGE_CHAIN - string, enum(public, test), default public
 */
 
@@ -63,10 +63,11 @@ type StellarScraper struct {
 	pairScrapers    map[string]*StellarPairScraper // pc.ExchangePair -> pairScraperSet
 	horizonClient   *horizonclient.Client
 	exchangeName    string
+	blockchain      string
 	chainName       string
 	cursor          *string
 	chanTrades      chan *dia.Trade
-	db              *models.RelDB
+	relDB           *models.RelDB
 	assetInfoReader *horizonhelper.StellarAssetInfo
 }
 
@@ -95,7 +96,7 @@ type StellarExpertAssets struct {
 // NewStellarScraper returns a new StellarScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
 func NewStellarScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *StellarScraper {
-	cursor := utils.Getenv(strings.ToUpper(exchange.Name)+"_CURSOR", "")
+	cursor := utils.Getenv(strings.ToUpper(exchange.Name)+"_TRADES_CURSOR", "")
 	chainName := utils.Getenv(strings.ToUpper(exchange.Name)+"_CHAIN", "")
 
 	horizonClient := horizonclient.DefaultPublicNetClient
@@ -116,16 +117,16 @@ func NewStellarScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		pairScrapers:  make(map[string]*StellarPairScraper),
 		exchangeName:  exchange.Name,
 		chainName:     chainName,
+		blockchain:    exchange.BlockChain.Name,
 		error:         nil,
 		cursor:        &cursor,
 		horizonClient: horizonClient,
 		chanTrades:    make(chan *dia.Trade),
-		db:            relDB,
+		relDB:         relDB,
 		assetInfoReader: &horizonhelper.StellarAssetInfo{
 			Logger: log.WithFields(logrus.Fields{
 				"context": "StellarAssetInfo",
 			}),
-			Db: relDB,
 		},
 	}
 
@@ -173,11 +174,11 @@ func (s *StellarScraper) tradeHandler(stellarTrade hProtocol.Trade) {
 	}
 	// cache available token info
 	if !skipBase {
-		token1, cachedErr1 = s.getTokenInfoAndCache(stellarTrade.BaseAssetCode, stellarTrade.BaseAssetIssuer)
+		token1, cachedErr1 = s.getDIAAsset(stellarTrade.BaseAssetCode, stellarTrade.BaseAssetIssuer)
 	}
 	// cache available token info
 	if !skipCounter {
-		token2, cachedErr2 = s.getTokenInfoAndCache(stellarTrade.CounterAssetCode, stellarTrade.CounterAssetIssuer)
+		token2, cachedErr2 = s.getDIAAsset(stellarTrade.CounterAssetCode, stellarTrade.CounterAssetIssuer)
 	}
 	// skip trade - if system couldnot fetch token info from .stellar.toml file
 	if skipBase {
@@ -196,7 +197,7 @@ func (s *StellarScraper) tradeHandler(stellarTrade hProtocol.Trade) {
 			Warn("CounterAssetIssuer.Impossible to get counter asset address.Skip")
 		return
 	}
-
+	// TODO убрать в StellarAssetInfo db
 	if cachedErr1 != nil {
 		s.logger.
 			WithField("ID", stellarTrade.ID).
@@ -346,12 +347,29 @@ func (s *StellarScraper) Channel() chan *dia.Trade {
 	return s.chanTrades
 }
 
-func (s *StellarScraper) getTokenInfoAndCache(assetCode, assetIssuer string) (assetToken dia.Asset, err error) {
-	asset, err := s.assetInfoReader.GetAssetAndUpdateCache(s.horizonClient, assetCode, assetIssuer, s.exchangeName)
-	if err != nil {
-		return dia.Asset{}, err
+func (s *StellarScraper) getDIAAsset(assetCode string, assetIssuer string) (asset dia.Asset, err error) {
+	assetInfoReader := &horizonhelper.StellarAssetInfo{
+		Logger: log.WithFields(logrus.Fields{"context": "StellarTomlReader"}),
 	}
-	return asset, nil
+
+	assetID := assetInfoReader.GetAddress(assetCode, assetIssuer)
+	asset, err = s.relDB.GetAsset(assetID, s.blockchain)
+	if err == nil {
+		return asset, nil
+	}
+	err = nil
+
+	asset, err = assetInfoReader.GetStellarAssetInfo(s.horizonClient, assetCode, assetIssuer, s.blockchain)
+	if err != nil {
+		s.logger.
+			WithError(err).
+			WithFields(logrus.Fields{
+				"assetCode":   assetCode,
+				"assetIssuer": assetIssuer,
+			}).
+			Error("failed to fetch asset info: ", err)
+	}
+	return asset, err
 }
 
 func (s *StellarScraper) getAssetPair(stellarTrade hProtocol.Trade, token1, token2 dia.Asset) (bToken, qToken dia.Asset) {
