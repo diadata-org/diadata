@@ -15,8 +15,6 @@ import (
 	hProtocol "github.com/stellar/go/protocols/horizon"
 )
 
-const stellarDefaultTradeCursor = ""
-
 type StellarScraper struct {
 	horizonClient *horizonclient.Client
 	relDB         *models.RelDB
@@ -38,9 +36,6 @@ func NewStellarScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *mo
 	)
 
 	cursor := utils.Getenv(strings.ToUpper(exchange.Name)+"_CURSOR", "")
-	if cursor == "" {
-		cursor = stellarDefaultTradeCursor
-	}
 
 	horizonClient = horizonclient.DefaultPublicNetClient
 
@@ -51,6 +46,7 @@ func NewStellarScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *mo
 		poolChannel:   poolChannel,
 		doneChannel:   doneChannel,
 		exchangeName:  exchange.Name,
+		blockchain:    exchange.BlockChain.Name,
 		cursor:        &cursor,
 	}
 
@@ -137,19 +133,21 @@ func (scraper *StellarScraper) getDIAPool(stellarPool hProtocol.LiquidityPool) (
 }
 
 func getDIAAsset(scraper *StellarScraper, assetCode string, assetIssuer string) (asset dia.Asset, err error) {
-	assetID := fmt.Sprintf("%s-%s", assetCode, assetIssuer)
-	asset, err = scraper.relDB.GetAsset(assetID, scraper.blockchain)
-	if err == nil {
-		return
-	}
-
 	logContext := logrus.Fields{"context": "StellarTomlReader"}
 	assetInfoReader := &horizonhelper.StellarAssetInfo{
 		Logger: log.WithFields(logContext),
 	}
+
+	assetID := assetInfoReader.GetAddress(assetCode, assetIssuer)
+	asset, err = scraper.relDB.GetAsset(assetID, scraper.blockchain)
+	if err == nil {
+		return
+	}
+	err = nil
+
 	asset, err = assetInfoReader.GetStellarAssetInfo(scraper.horizonClient, assetCode, assetIssuer, scraper.blockchain)
 	if err != nil {
-		log.WithFields(logContext).Warn("cannot fetch asset with ID ", assetID)
+		log.Error("cannot fetch asset info: ", err)
 	}
 	return
 }
