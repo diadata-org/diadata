@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
@@ -98,7 +99,12 @@ func (s *StellarAssetInfo) GetStellarAssetInfo(client *horizonclient.Client, ass
 		return dia.Asset{}, err
 	}
 
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			s.Logger.Error(err)
+		}
+	}(resp.Body)
 
 	if resp.StatusCode != http.StatusOK {
 		err = errors.New("not 200 http response code from toml")
@@ -113,7 +119,7 @@ func (s *StellarAssetInfo) GetStellarAssetInfo(client *horizonclient.Client, ass
 		return dia.Asset{}, err
 	}
 	var stellarToml StellarToml
-	if _, err := toml.DecodeReader(resp.Body, &stellarToml); err != nil {
+	if _, err := toml.NewDecoder(resp.Body).Decode(&stellarToml); err != nil {
 		s.Logger.
 			WithError(err).
 			WithFields(logrus.Fields{
