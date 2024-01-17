@@ -11,6 +11,11 @@ import (
 	"github.com/stellar/go/clients/horizonclient"
 )
 
+const (
+	defaultAssetRequestCursor = ""
+	defaultAssetRequestLimit  = 200
+)
+
 type StellarAssetSource struct {
 	horizonClient *horizonclient.Client
 	assetChannel  chan dia.Asset
@@ -18,6 +23,7 @@ type StellarAssetSource struct {
 	blockchain    string
 	relDB         *models.RelDB
 	cursor        *string
+	limit         uint
 }
 
 func NewStellarAssetSource(exchange dia.Exchange) *StellarAssetSource {
@@ -27,7 +33,8 @@ func NewStellarAssetSource(exchange dia.Exchange) *StellarAssetSource {
 		doneChannel   = make(chan bool)
 	)
 
-	cursor := utils.Getenv(strings.ToUpper(exchange.Name)+"_ASSETS_CURSOR", "")
+	cursor := utils.Getenv(strings.ToUpper(exchange.Name)+"_ASSETS_CURSOR", defaultAssetRequestCursor)
+	limit := utils.GetenvUint(strings.ToUpper(exchange.Name)+"_ASSETS_LIMIT", defaultAssetRequestLimit)
 
 	switch exchange.Name {
 	case dia.StellarExchange:
@@ -46,6 +53,7 @@ func NewStellarAssetSource(exchange dia.Exchange) *StellarAssetSource {
 		blockchain:    exchange.BlockChain.Name,
 		relDB:         relDB,
 		cursor:        &cursor,
+		limit:         limit,
 	}
 
 	go func() {
@@ -57,7 +65,7 @@ func NewStellarAssetSource(exchange dia.Exchange) *StellarAssetSource {
 func (scraper *StellarAssetSource) fetchAssets() {
 	page, err := scraper.horizonClient.Assets(horizonclient.AssetRequest{
 		Cursor: *scraper.cursor,
-		Limit:  200,
+		Limit:  scraper.limit,
 	})
 	if err != nil {
 		log.Error(err)
