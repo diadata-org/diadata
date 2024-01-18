@@ -78,6 +78,15 @@ CREATE TABLE poolasset (
     UNIQUE(pool_id,asset_id)
 );
 
+CREATE TABLE scraper_cronjob_state (
+    scraper_cronjob_state_id UUID DEFAULT gen_random_uuid(),
+    scraper text NOT NULL,
+    index_type text NOT NULL,
+    index_value numeric,
+    UNIQUE(scraper_cronjob_state_id),
+    UNIQUE(scraper,index_type)
+);
+
 CREATE TABLE chainconfig (
     chain_config_id UUID DEFAULT gen_random_uuid(),
     rpcurl text NOT NULL,

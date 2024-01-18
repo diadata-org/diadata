@@ -8,6 +8,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/ethhelper"
 	traderjoe "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/traderjoe2.1"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -18,9 +19,10 @@ import (
 type TraderJoeAssetSource struct {
 	RestClient             *ethclient.Client
 	WsClient               *ethclient.Client
+	relDB                  *models.RelDB
 	assetChannel           chan dia.Asset
 	doneChannel            chan bool
-	blockchain             string
+	exchange               dia.Exchange
 	startBlock             uint64
 	factoryContractAddress common.Address
 	waitTime               int
@@ -29,7 +31,7 @@ type TraderJoeAssetSource struct {
 // NewTraderJoeAssetSource initializes a Trader Joe asset sourcer, creating an instance of the
 // NewTraderJoeAssetSource struct. It configures necessary parameters, initiates asset fetching, and returns
 // the initialized scraper.
-func NewTraderJoeAssetSource(exchange dia.Exchange) *TraderJoeAssetSource {
+func NewTraderJoeAssetSource(exchange dia.Exchange, relDB *models.RelDB) *TraderJoeAssetSource {
 	log.Info("NewTraderJoeLiquidityScraper ", exchange.Name)
 	log.Info("NewTraderJoeLiquidityScraper Address ", exchange.Contract)
 
@@ -37,13 +39,13 @@ func NewTraderJoeAssetSource(exchange dia.Exchange) *TraderJoeAssetSource {
 
 	switch exchange.Name {
 	case dia.TraderJoeExchangeV2_1:
-		tjas = makeTraderJoeAssetSource(exchange, "", "", "200", uint64(17821282))
+		tjas = makeTraderJoeAssetSource(exchange, "", "", relDB, "200", uint64(17821282))
 	case dia.TraderJoeExchangeV2_1Arbitrum:
-		tjas = makeTraderJoeAssetSource(exchange, "", "", "200", uint64(77473199))
+		tjas = makeTraderJoeAssetSource(exchange, "", "", relDB, "200", uint64(77473199))
 	case dia.TraderJoeExchangeV2_1Avalanche:
-		tjas = makeTraderJoeAssetSource(exchange, "", "", "200", uint64(28371397))
+		tjas = makeTraderJoeAssetSource(exchange, "", "", relDB, "200", uint64(28371397))
 	case dia.TraderJoeExchangeV2_1BNB:
-		tjas = makeTraderJoeAssetSource(exchange, "", "", "200", uint64(27099340))
+		tjas = makeTraderJoeAssetSource(exchange, "", "", relDB, "200", uint64(27099340))
 	}
 
 	go func() {
@@ -54,7 +56,7 @@ func NewTraderJoeAssetSource(exchange dia.Exchange) *TraderJoeAssetSource {
 
 // makeTraderJoeAssetSource initializes a Trader Joe asset source, creating an instance of the
 // TraderJoeAssetSource struct with the specified configuration and parameters.
-func makeTraderJoeAssetSource(exchange dia.Exchange, restDial string, wsDial string, waitMilliSeconds string, startBlock uint64) *TraderJoeAssetSource {
+func makeTraderJoeAssetSource(exchange dia.Exchange, restDial string, wsDial string, relDB *models.RelDB, waitMilliSeconds string, startBlock uint64) *TraderJoeAssetSource {
 	var (
 		restClient   *ethclient.Client
 		wsClient     *ethclient.Client
@@ -85,9 +87,10 @@ func makeTraderJoeAssetSource(exchange dia.Exchange, restDial string, wsDial str
 	tjas = &TraderJoeAssetSource{
 		RestClient:             restClient,
 		WsClient:               wsClient,
+		relDB:                  relDB,
 		assetChannel:           assetChannel,
 		doneChannel:            doneChannel,
-		blockchain:             exchange.BlockChain.Name,
+		exchange:               exchange,
 		waitTime:               waitTime,
 		startBlock:             startBlock,
 		factoryContractAddress: common.HexToAddress(exchange.Contract),
@@ -100,6 +103,14 @@ func (tjas *TraderJoeAssetSource) fetchAssets() {
 
 	log.Info("Fetching Trader Joe LBPairCreated events...")
 	log.Info("Getting lb pairs creations from address: ", tjas.factoryContractAddress.Hex())
+
+	var blocknumber int64
+	_, startblock, err := tjas.relDB.GetScraperIndex(tjas.exchange.Name, dia.SCRAPER_TYPE_ASSETCOLLECTOR)
+	if err != nil {
+		log.Error("GetScraperIndex: ", err)
+	} else {
+		tjas.startBlock = uint64(startblock)
+	}
 
 	// Initialize an Ethereum event filter for the Trader Joe factory contract.
 	contractFilter, err := traderjoe.NewTraderjoeFilterer(tjas.factoryContractAddress, tjas.WsClient)
@@ -123,12 +134,13 @@ func (tjas *TraderJoeAssetSource) fetchAssets() {
 
 	// Iterate through the LBPairCreated events.
 	for lbPairCreated.Next() {
+		blocknumber = int64(lbPairCreated.Event.Raw.BlockNumber)
 
-		asset0, err := ethhelper.ETHAddressToAsset(lbPairCreated.Event.TokenX, tjas.RestClient, tjas.blockchain)
+		asset0, err := ethhelper.ETHAddressToAsset(lbPairCreated.Event.TokenX, tjas.RestClient, tjas.exchange.BlockChain.Name)
 		if err != nil {
 			log.Errorf("ETHAddressToAsset for address %s: %v", lbPairCreated.Event.TokenX.Hex(), err)
 		}
-		asset1, err := ethhelper.ETHAddressToAsset(lbPairCreated.Event.TokenY, tjas.RestClient, tjas.blockchain)
+		asset1, err := ethhelper.ETHAddressToAsset(lbPairCreated.Event.TokenY, tjas.RestClient, tjas.exchange.BlockChain.Name)
 		if err != nil {
 			log.Errorf("ETHAddressToAsset for address %s: %v", lbPairCreated.Event.TokenX.Hex(), err)
 		}
@@ -147,7 +159,10 @@ func (tjas *TraderJoeAssetSource) fetchAssets() {
 		}
 
 	}
-
+	err = tjas.relDB.SetScraperIndex(tjas.exchange.Name, dia.SCRAPER_TYPE_ASSETCOLLECTOR, dia.INDEX_TYPE_BLOCKNUMBER, blocknumber)
+	if err != nil {
+		log.Error("SetScraperIndex: ", err)
+	}
 	// Signal that pool retrieval and processing is complete.
 	tjas.doneChannel <- true
 }
