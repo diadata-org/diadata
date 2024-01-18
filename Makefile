@@ -27,36 +27,24 @@ install: go-get
 
 ## run-exchange-collector-service: Runs exchange collector scraper
 run-exchange-collector-service:
-	go run ./cmd/exchange-scrapers/collector/collector.go -exchange $(Arguments)
+	@go run ./cmd/exchange-scrapers/collector/collector.go -exchange $(Arguments)
+
+## build: Build the binary for cmd/exchange-scrapers/collector/collector.
+build-ex-collector:
+	@cd ./cmd/exchange-scrapers/collector && go build
 
 ## run-asset-collector-service: Runs asset collector
 run-asset-collector-service:
 	@go run ./cmd/assetCollectionService/main.go -source $(Arguments)
 
-## build: Build the binary.
-build:
-	@-touch $(STDERR)
-	@-rm $(STDERR)
-	@-$(MAKE) -s go-build 2> $(STDERR)
-	@cat $(STDERR) | sed -e '1s/.*/\nError:\n/'  | sed 's/make\[.*/ /' | sed "/^/s/^/     /" 1>&2
-
 ## exec: Run given command, wrapped with custom GOPATH. e.g; make exec run="go test ./..."
 exec:
 	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) $(run)
-
-## Vendoring: Go vendor
-vendor:
-	@echo "  >  Vendoring..."
-	@go mod vendor
 
 ## clean: Clean build files. Runs `go clean` internally.
 clean: go-clean
 
 go-compile: go-clean go-get go-build
-
-go-build:
-	@echo "  >  Building binary..."
-	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go build -o $(GOBIN)/$(PROJECTNAME) $(GOFILES)
 
 go-get:
 	@echo "  >  Checking if there is any missing dependencies..."
