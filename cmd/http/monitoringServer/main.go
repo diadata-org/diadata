@@ -164,6 +164,8 @@ func getMonitoringGroupConfigStates(conn *pgxpool.Pool, groupParentId uuid.UUID)
 						if condition.Status == "True" && (condition.Type == "Progressing" || condition.Type == "Available") {
 							itemState.State = enums.HealthStateOperational
 						} else {
+							log.Warning("Condition could not be checked for deployment: " + monitoringItem.k8sServiceName + " output of conditions was: ")
+							log.Warning(condition)
 							itemState.State = enums.HealthStateMajor
 							break
 						}

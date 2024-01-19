@@ -2696,6 +2696,12 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "VELA-USDT",
+      "Ignore": false,
+      "Symbol": "VELA"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "VIB-BTC",
       "Ignore": false,
       "Symbol": "VIB"

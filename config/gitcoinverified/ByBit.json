@@ -13,6 +13,12 @@
             "Address": "0x4b8285aB433D8f69CB48d5Ad62b415ed1a221e4f"
         },
         {
+            "Symbol": "VELA",
+            "Exchange": "ByBit",
+            "Blockchain": "Arbitrum",
+            "Address": "0x088cd8f5eF3652623c22D48b1605DCfE860Cd704"
+        },
+        {
             "Symbol": "DPX",
             "Exchange": "ByBit",
             "Blockchain": "Arbitrum",

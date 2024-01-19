@@ -2,6 +2,8 @@ package models
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 )
 
@@ -35,4 +37,39 @@ func (rdb *RelDB) SetScraperConfig(ctx context.Context, scraperName string, conf
 	)
 
 	return err
+}
+
+func (rdb *RelDB) SetScraperIndex(exchange string, scraperType string, indexType string, index int64) error {
+	query := fmt.Sprintf(
+		`INSERT INTO %s (scraper,index_type,index_value) VALUES ($1,$2,$3) 
+		ON CONFLICT (scraper,index_type)
+		DO UPDATE SET index_value=EXCLUDED.index_value`,
+		scraperCronjobStateTable,
+	)
+	_, err := rdb.postgresClient.Exec(
+		context.Background(),
+		query,
+		exchange+"_"+scraperType,
+		indexType,
+		index,
+	)
+	return err
+}
+
+func (rdb *RelDB) GetScraperIndex(exchange string, scraperType string) (string, int64, error) {
+	query := fmt.Sprintf(
+		"SELECT index_type,index_value FROM %s WHERE scraper=$1",
+		scraperCronjobStateTable,
+	)
+
+	var indexType sql.NullString
+	var index sql.NullFloat64
+	err := rdb.postgresClient.QueryRow(context.Background(), query, exchange+"_"+scraperType).Scan(&indexType, &index)
+	if err != nil {
+		return "", 0, err
+	}
+	if index.Valid {
+		return indexType.String, int64(index.Float64), nil
+	}
+	return "", 0, errors.New("blocknumber not valid")
 }

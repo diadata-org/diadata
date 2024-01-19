@@ -5,7 +5,7 @@ go 1.21
 toolchain go1.21.4
 
 require (
-	github.com/diadata-org/diadata v1.4.401
+	github.com/diadata-org/diadata v1.4.424
 	github.com/sirupsen/logrus v1.9.3
 )
 
@@ -149,6 +149,7 @@ require (
 	github.com/spf13/afero v1.10.0 // indirect
 	github.com/spf13/cast v1.5.1 // indirect
 	github.com/spf13/cobra v1.7.0 // indirect
+	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.17.0 // indirect
 	github.com/stellar/go v0.0.0-20240103174627-38f67b9ee0c9 // indirect
