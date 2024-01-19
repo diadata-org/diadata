@@ -5,7 +5,6 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/horizonhelper"
-	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/stellar/go/clients/horizonclient"
 )
@@ -20,37 +19,26 @@ type StellarAssetSource struct {
 	assetChannel  chan dia.Asset
 	doneChannel   chan bool
 	blockchain    string
-	relDB         *models.RelDB
 	cursor        *string
 	limit         uint
 }
 
 func NewStellarAssetSource(exchange dia.Exchange) *StellarAssetSource {
-	var (
-		horizonClient *horizonclient.Client
-		assetChannel  = make(chan dia.Asset)
-		doneChannel   = make(chan bool)
-	)
-
 	cursor := utils.Getenv(strings.ToUpper(exchange.Name)+"_ASSETS_CURSOR", defaultAssetRequestCursor)
 	limit := utils.GetenvUint(strings.ToUpper(exchange.Name)+"_ASSETS_LIMIT", defaultAssetRequestLimit)
 
-	switch exchange.Name {
-	case dia.StellarExchange:
-		horizonClient = horizonclient.DefaultPublicNetClient
-	}
+	var (
+		assetChannel = make(chan dia.Asset)
+		doneChannel  = make(chan bool)
+	)
 
-	relDB, err := models.NewRelDataStore()
-	if err != nil {
-		log.Fatal("make new relational datastore: ", err)
-	}
+	horizonClient := horizonclient.DefaultPublicNetClient
 
 	scraper := &StellarAssetSource{
 		horizonClient: horizonClient,
 		assetChannel:  assetChannel,
 		doneChannel:   doneChannel,
 		blockchain:    exchange.BlockChain.Name,
-		relDB:         relDB,
 		cursor:        &cursor,
 		limit:         limit,
 	}

@@ -62,7 +62,10 @@ func GetStellarAssetInfo(client *horizonclient.Client, assetCode, assetIssuer, b
 	log = log.WithField("tomlURL", tomlURL)
 
 	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		TLSClientConfig: &tls.Config{
+			MinVersion: tls.VersionTLS12,
+			MaxVersion: 0,
+		},
 	}
 	tomlClient := &http.Client{
 		Transport: tr,

@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
@@ -81,8 +80,8 @@ func NewStellarScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		shutdownDone = make(chan nothing)
 		pairScrapers = make(map[string]*StellarPairScraper)
 		chanTrades   = make(chan *dia.Trade)
-		logger       = logrus.WithFields(logrus.Fields{
-			"context": "StellarScraper",
+		logger       = logrus.New().WithFields(logrus.Fields{
+			"context": "StellarExchangeScraper",
 			"cursor":  cursor,
 		})
 	)
@@ -126,7 +125,7 @@ func (s *StellarScraper) mainLoop() {
 
 func (s *StellarScraper) tradeHandler(stellarTrade hProtocol.Trade) {
 	log := s.logger.WithFields(logrus.Fields{
-		"context": "StellarScraper.tradeHandler",
+		"context": "StellarExchangeScraper.tradeHandler",
 		"tradeID": stellarTrade.ID,
 	})
 
@@ -175,15 +174,14 @@ func (s *StellarScraper) tradeHandler(stellarTrade hProtocol.Trade) {
 		QuoteToken:     quoteToken,
 	}
 
-	s.logger.Infof("StellarScraper.tradeHandler.stellarTrade %# v", pretty.Formatter(stellarTrade))
-	s.logger.Infof("StellarScraper.tradeHandler.diaTrade %# v", pretty.Formatter(diaTrade))
+	log.Infof("stellarTrade %# v", pretty.Formatter(stellarTrade))
+	log.Infof("diaTrade %# v", pretty.Formatter(diaTrade))
 
 	s.chanTrades <- diaTrade
 }
 
 func (s *StellarScraper) getDIAAsset(assetType, assetCode, assetIssuer string) (asset dia.Asset, err error) {
 	s.logger.
-		WithError(err).
 		WithFields(logrus.Fields{
 			"assetType":   assetType,
 			"assetCode":   assetCode,
@@ -231,7 +229,7 @@ func (s *StellarScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) 
 		return nil, s.error
 	}
 	if s.closed {
-		return nil, errors.New("StellarScraper: Call ScrapePair on closed scraper")
+		return nil, errors.New("StellarExchangeScraper: Call ScrapePair on closed scraper")
 	}
 	ps := &StellarPairScraper{
 		parent:     s,
@@ -270,7 +268,7 @@ func (s *StellarScraper) FetchAvailablePairs() ([]dia.ExchangePair, error) {
 		}
 	}(response.Body)
 
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := io.ReadAll(response.Body)
 
 	if err != nil {
 		s.logger.WithError(err).Error("failed to read symbols")

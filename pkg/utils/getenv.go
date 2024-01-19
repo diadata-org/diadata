@@ -7,7 +7,7 @@ import (
 
 func Getenv(key, fallback string) string {
 	value := os.Getenv(key)
-	if len(value) == 0 {
+	if value == "" {
 		return fallback
 	}
 	return value
@@ -15,7 +15,7 @@ func Getenv(key, fallback string) string {
 
 func GetenvUint(key string, fallback uint) uint {
 	value := os.Getenv(key)
-	if len(value) == 0 {
+	if value == "" {
 		return fallback
 	}
 

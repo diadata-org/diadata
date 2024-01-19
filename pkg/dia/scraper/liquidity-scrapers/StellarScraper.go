@@ -41,8 +41,8 @@ func NewStellarScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *mo
 		poolChannel = make(chan dia.Pool)
 		doneChannel = make(chan bool)
 		scraper     *StellarScraper
-		logger      = log.WithFields(logrus.Fields{
-			"context": "StellarScraper",
+		logger      = logrus.New().WithFields(logrus.Fields{
+			"context": "StellarLiquidityScraper",
 			"cursor":  cursor,
 		})
 	)
@@ -112,6 +112,11 @@ func (scraper *StellarScraper) fetchPools() {
 }
 
 func (scraper *StellarScraper) getDIAPool(stellarPool hProtocol.LiquidityPool) (dia.Pool, error) {
+	scraper.logger.
+		WithFields(logrus.Fields{
+			"poolId": stellarPool.ID,
+		}).Info("fetching pool info")
+
 	assetvolumes := make([]dia.AssetVolume, len(stellarPool.Reserves))
 	for i, stellarAsset := range stellarPool.Reserves {
 		asset, err := scraper.getDIAAsset(stellarAsset.Asset)
@@ -142,7 +147,6 @@ func (scraper *StellarScraper) getDIAPool(stellarPool hProtocol.LiquidityPool) (
 
 func (scraper *StellarScraper) getDIAAsset(stellarAsset string) (asset dia.Asset, err error) {
 	scraper.logger.
-		WithError(err).
 		WithFields(logrus.Fields{
 			"asset": stellarAsset,
 		}).Info("fetching asset info")
