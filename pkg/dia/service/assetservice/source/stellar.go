@@ -62,6 +62,8 @@ func NewStellarAssetSource(exchange dia.Exchange) *StellarAssetSource {
 }
 
 func (scraper *StellarAssetSource) fetchAssets() {
+	scraper.assetChannel <- horizonhelper.GetStellarNativeAssetInfo(scraper.blockchain)
+
 	page, err := scraper.horizonClient.Assets(horizonclient.AssetRequest{
 		Cursor: *scraper.cursor,
 		Limit:  scraper.limit,
@@ -76,7 +78,7 @@ func (scraper *StellarAssetSource) fetchAssets() {
 		for _, stellarAsset := range page.Embedded.Records {
 			log.Infof("asset: %s", stellarAsset.PT)
 
-			asset, err := getDIAAsset(scraper, stellarAsset.Code, stellarAsset.Issuer)
+			asset, err := scraper.getDIAAsset(stellarAsset.Code, stellarAsset.Issuer)
 			if err != nil {
 				log.Error(err)
 				continue
@@ -98,7 +100,7 @@ func (scraper *StellarAssetSource) fetchAssets() {
 	scraper.doneChannel <- true
 }
 
-func getDIAAsset(scraper *StellarAssetSource, assetCode string, assetIssuer string) (asset dia.Asset, err error) {
+func (scraper *StellarAssetSource) getDIAAsset(assetCode string, assetIssuer string) (asset dia.Asset, err error) {
 	asset, err = horizonhelper.GetStellarAssetInfo(scraper.horizonClient, assetCode, assetIssuer, scraper.blockchain)
 	if err != nil {
 		log.Error("cannot fetch asset info: ", err)
