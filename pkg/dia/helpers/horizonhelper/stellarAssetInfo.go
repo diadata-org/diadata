@@ -118,6 +118,16 @@ func GetStellarAssetInfo(client *horizonclient.Client, assetCode, assetIssuer, b
 	return dia.Asset{}, err
 }
 
+func GetStellarNativeAssetInfo(blockchain string) dia.Asset {
+	return dia.Asset{
+		Address:    "native",
+		Blockchain: blockchain,
+		Symbol:     "XLM",
+		Name:       "Stellar Lumens",
+		Decimals:   7,
+	}
+}
+
 func concatStrings(bs, cs string) string {
 	result := fmt.Sprintf("%s-%s", bs, cs)
 	return result
