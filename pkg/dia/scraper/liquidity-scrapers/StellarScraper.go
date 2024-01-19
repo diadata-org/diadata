@@ -10,6 +10,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia/helpers/horizonhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
+	"github.com/sirupsen/logrus"
 	"github.com/stellar/go/clients/horizonclient"
 	hProtocol "github.com/stellar/go/protocols/horizon"
 )
@@ -20,6 +21,7 @@ const (
 )
 
 type StellarScraper struct {
+	logger        *logrus.Entry
 	horizonClient *horizonclient.Client
 	poolChannel   chan dia.Pool
 	doneChannel   chan bool
@@ -32,22 +34,23 @@ type StellarScraper struct {
 }
 
 func NewStellarScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *models.DB) *StellarScraper {
-	var (
-		horizonClient *horizonclient.Client
-		poolChannel   = make(chan dia.Pool)
-		doneChannel   = make(chan bool)
-		scraper       *StellarScraper
-	)
-
 	cursor := utils.Getenv(strings.ToUpper(exchange.Name)+"_LPS_CURSOR", defaultLPRequestCursor)
 	limit := utils.GetenvUint(strings.ToUpper(exchange.Name)+"_LPS_LIMIT", defaultLPRequestLimit)
 
-	switch exchange.Name {
-	case dia.StellarExchange:
-		horizonClient = horizonclient.DefaultPublicNetClient
-	}
+	var (
+		poolChannel = make(chan dia.Pool)
+		doneChannel = make(chan bool)
+		scraper     *StellarScraper
+		logger      = log.WithFields(logrus.Fields{
+			"context": "StellarScraper",
+			"cursor":  cursor,
+		})
+	)
+
+	horizonClient := horizonclient.DefaultPublicNetClient
 
 	scraper = &StellarScraper{
+		logger:        logger,
 		horizonClient: horizonClient,
 		poolChannel:   poolChannel,
 		doneChannel:   doneChannel,
@@ -111,12 +114,7 @@ func (scraper *StellarScraper) fetchPools() {
 func (scraper *StellarScraper) getDIAPool(stellarPool hProtocol.LiquidityPool) (dia.Pool, error) {
 	assetvolumes := make([]dia.AssetVolume, len(stellarPool.Reserves))
 	for i, stellarAsset := range stellarPool.Reserves {
-		s := strings.SplitN(stellarAsset.Asset, ":", 2)
-		if len(s) != 2 {
-			return dia.Pool{}, fmt.Errorf("invalid asset format: %s", stellarAsset.Asset)
-		}
-
-		asset, err := getDIAAsset(scraper, s[0], s[1])
+		asset, err := scraper.getDIAAsset(stellarAsset.Asset)
 		if err != nil {
 			return dia.Pool{}, fmt.Errorf("error getting DIA asset for %s: %v", stellarAsset.Asset, err)
 		}
@@ -142,7 +140,25 @@ func (scraper *StellarScraper) getDIAPool(stellarPool hProtocol.LiquidityPool) (
 	return pool, nil
 }
 
-func getDIAAsset(scraper *StellarScraper, assetCode string, assetIssuer string) (asset dia.Asset, err error) {
+func (scraper *StellarScraper) getDIAAsset(stellarAsset string) (asset dia.Asset, err error) {
+	scraper.logger.
+		WithError(err).
+		WithFields(logrus.Fields{
+			"asset": stellarAsset,
+		}).Info("fetching asset info")
+
+	if stellarAsset == "native" {
+		asset = horizonhelper.GetStellarNativeAssetInfo(scraper.blockchain)
+		return
+	}
+
+	s := strings.SplitN(stellarAsset, ":", 2)
+	if len(s) != 2 {
+		err = fmt.Errorf("invalid asset format: %s", stellarAsset)
+		return
+	}
+
+	assetCode, assetIssuer := s[0], s[1]
 	assetID := horizonhelper.GetAssetAddress(assetCode, assetIssuer)
 	asset, err = scraper.relDB.GetAsset(assetID, scraper.blockchain)
 	if err == nil {
