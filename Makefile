@@ -25,15 +25,27 @@ MAKEFLAGS += --silent
 ## install: Install missing dependencies. Runs `go get` internally. e.g; make install get=github.com/foo/bar
 install: go-get
 
-## run-exchange-collector-service: Runs exchange collector scraper
+## build-exchange-collector: Build the binary for cmd/exchange-scrapers/collector/collector
+build-exchange-collector:
+	@cd ./cmd/exchange-scrapers/collector && go build
+
+## build-liquidity-scraper: Build the binary for cmd/liquidityScraper
+build-liquidity-scraper:
+	@cd ./cmd/liquidityScraper && go build
+
+## build-asset-collector: Build the binary for cmd/assetCollectionService
+build-asset-collector:
+	@cd ./cmd/assetCollectionService && go build
+
+## run-exchange-collector-service: Run exchange collector scraper
 run-exchange-collector-service:
 	@go run ./cmd/exchange-scrapers/collector/collector.go -exchange $(Arguments)
 
-## build: Build the binary for cmd/exchange-scrapers/collector/collector.
-build-ex-collector:
-	@cd ./cmd/exchange-scrapers/collector && go build
+## run-liquidity-scraper-service: Run liquidity pools scraper
+run-liquidity-scraper-service:
+	@go run ./cmd/liquidityScraper/main.go -exchange $(Arguments)
 
-## run-asset-collector-service: Runs asset collector
+## run-asset-collector-service: Run asset collector
 run-asset-collector-service:
 	@go run ./cmd/assetCollectionService/main.go -source $(Arguments)
 
