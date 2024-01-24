@@ -235,7 +235,7 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 				log.Printf("Error! Coingecko API returned price 0.0.")
 				return oldPrice, nil
 			}
-			if (math.Abs(cgPrice - rawQ.Price) / cgPrice) > 0.05 {
+			if (math.Abs(cgPrice - rawQ.Price) / cgPrice) > 0.1 {
 				// Error case, stop transaction from happening
 				log.Printf("Error! Price %f for asset %s-%s out of coingecko range %f.", rawQ.Price, blockchain, address, cgPrice)
 				return oldPrice, nil

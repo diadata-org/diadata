@@ -395,12 +395,12 @@ func deployOrBindContract(
 		}
 		log.Printf("Contract pending deploy: 0x%x\n", addr)
 		log.Printf("Transaction waiting to be mined: 0x%x\n\n", tx.Hash())
-		time.Sleep(180000 * time.Millisecond)
 		// bind backup
 		*contractBackup, err = diaOracleV2MultiupdateService.NewDiaOracleV2MultiupdateService(addr, connBackup)
 		if err != nil {
 			return err
 		}
+		time.Sleep(180000 * time.Millisecond)
 	}
 	return nil
 }
