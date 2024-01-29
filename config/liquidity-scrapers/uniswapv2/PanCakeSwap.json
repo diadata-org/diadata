@@ -1,0 +1,120 @@
+{
+    "Pools": [
+        {
+            "Address": "0xf8209291B074dc74d39C906386f0037718A15072",
+            "ForeignName": "MCRT-WBNB"
+        },
+        {
+            "Address": "0x58F876857a02D6762E0101bb5C46A8c1ED44Dc16",
+            "ForeignName": "WBNB-BUSD"
+        },
+        {
+            "Address": "0x16b9a82891338f9bA80E2D6970FddA79D1eb0daE",
+            "ForeignName": "USDT-WBNB"
+        },
+        {
+            "Address": "0xED2eC734193626282e105A4A44bf39C1F6B44d78",
+            "ForeignName": "FGD-WBNB"
+        },
+        {
+            "Address": "0x7EFaEf62fDdCCa950418312c6C91Aef321375A00",
+            "ForeignName": "USDT-BUSD"
+        },
+        {
+            "Address": "0x0eD7e52944161450477ee417DE9Cd3a859b14fD0",
+            "ForeignName": "CAKE-WBNB"
+        },
+        {
+            "Address": "0xB72723e36a83FB5Fe1793f06b436F4720F5DE4F9",
+            "ForeignName": "BNX-BUSD"
+        },
+        {
+            "Address": "0xEdeec0ED10Abee9b5616bE220540CAb40C9d991E",
+            "ForeignName": "GMM-BUSD"
+        },
+        {
+            "Address": "0x007EC643C7Cc33a70C083fC305c283dd009C8b94",
+            "ForeignName": "GMT-USDC"
+        },
+        {
+            "Address": "0x804678fa97d91B974ec2af3c843270886528a9E6",
+            "ForeignName": "CAKE-BUSD"
+        },
+        {
+            "Address": "0x8e744Ec2795c8B836689d1b4EBE1489204357dAC",
+            "ForeignName": "RACA-BUSD"
+        },
+        {
+            "Address": "0x74E4716E431f45807DCF19f284c7aA99F18a4fbc",
+            "ForeignName": "ETH-WBNB"
+        },
+        {
+            "Address": "0x737046EF759691fBc778CD59fDeC77B1534C39A5",
+            "ForeignName": "SEA-WBNB"
+        },
+        {
+            "Address": "0xd99c7F6C65857AC913a8f880A4cb84032AB2FC5b",
+            "ForeignName": "USDC-WBNB"
+        },
+        {
+            "Address": "0x2354ef4DF11afacb85a5C7f98B624072ECcddbB1",
+            "ForeignName": "USDC-BUSD"
+        },
+        {
+            "Address": "0xA39Af17CE4a8eb807E076805Da1e2B8EA7D0755b",
+            "ForeignName": "CAKE-USDT"
+        },
+        {
+            "Address": "0xBCEA09e9e882eC2Bb6dCE07c4e6669968846CaBD",
+            "ForeignName": "STG-BUSD"
+        },
+        {
+            "Address": "0xF45cd219aEF8618A92BAa7aD848364a158a24F33",
+            "ForeignName": "BTCB-BUSD"
+        },
+        {
+            "Address": "0x4eF5C01c4ceCD87CfdC604edA447e5890a0c1b9E",
+            "ForeignName": "D100-WBNB"
+        },
+        {
+            "Address": "0x1Cb2Ec921f84EBCA394fedADc8EBdDc6071099D7",
+            "ForeignName": "DIA-BUSD"
+        },
+        {
+            "Address": "0x66FDB2eCCfB58cF098eaa419e5EfDe841368e489",
+            "ForeignName": "DAI-BUSD"
+        },
+        {
+            "Address": "0xc7c3cCCE4FA25700fD5574DA7E200ae28BBd36A3",
+            "ForeignName": "DAI-WBNB"
+        },
+        {
+            "Address": "0xf6f5CE9a91Dd4FAe2d2eD92E25F2A4dc8564F174",
+            "ForeignName": "DAI-USDT"
+        },
+        {
+            "Address": "0xA99b9bCC6a196397DA87FA811aEd293B1b488f44",
+            "ForeignName": "WOW-BUSD"
+        },
+        {
+            "Address": "0x73cAbBe6E05290A09B9432eb765521941C870E4D",
+            "ForeignName": "WOW-WBNB"
+        },
+        {
+            "Address": "0x8b2E483216fbA34F0080d3cA1123C811775c80eD",
+            "ForeignName": "NFTY-WBNB"
+        },
+        {
+            "Address": "0x3147F98B8f9C53Acdf8F16332eaD12B592a1a4ae",
+            "ForeignName": "WBNB-ANKR"
+        },
+        {
+            "Address": "0x272c2CF847A49215A3A1D4bFf8760E503A06f880",
+            "ForeignName": "WBNB-aBNBc"
+        },
+        {
+            "Address": "0x48d807E5Cb92617953A88ccE78dCf31012f4D6B6",
+            "ForeignName": "WBNB-VLX"
+        }
+    ]
+}
