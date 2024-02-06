@@ -26,13 +26,14 @@ type StellarAssetSource struct {
 func NewStellarAssetSource(exchange dia.Exchange) *StellarAssetSource {
 	cursor := utils.Getenv(strings.ToUpper(exchange.Name)+"_ASSETS_CURSOR", defaultAssetRequestCursor)
 	limit := utils.GetenvUint(strings.ToUpper(exchange.Name)+"_ASSETS_LIMIT", defaultAssetRequestLimit)
+	chain := utils.Getenv(strings.ToUpper(exchange.Name)+"_CHAIN", horizonhelper.PublicChain)
 
 	var (
 		assetChannel = make(chan dia.Asset)
 		doneChannel  = make(chan bool)
 	)
 
-	horizonClient := horizonclient.DefaultPublicNetClient
+	horizonClient := horizonhelper.HorizonClient(chain)
 
 	scraper := &StellarAssetSource{
 		horizonClient: horizonClient,
@@ -44,6 +45,9 @@ func NewStellarAssetSource(exchange dia.Exchange) *StellarAssetSource {
 	}
 
 	go func() {
+		log.WithField("context", exchange.BlockChain.Name).
+			WithField("horizonUrl", horizonClient.HorizonURL).
+			Info("Started")
 		scraper.fetchAssets()
 	}()
 	return scraper

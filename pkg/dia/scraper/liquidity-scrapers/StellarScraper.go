@@ -36,6 +36,7 @@ type StellarScraper struct {
 func NewStellarScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *models.DB) *StellarScraper {
 	cursor := utils.Getenv(strings.ToUpper(exchange.Name)+"_LPS_CURSOR", defaultLPRequestCursor)
 	limit := utils.GetenvUint(strings.ToUpper(exchange.Name)+"_LPS_LIMIT", defaultLPRequestLimit)
+	chain := utils.Getenv(strings.ToUpper(exchange.Name)+"_CHAIN", horizonhelper.PublicChain)
 
 	var (
 		poolChannel = make(chan dia.Pool)
@@ -47,7 +48,7 @@ func NewStellarScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *mo
 		})
 	)
 
-	horizonClient := horizonclient.DefaultPublicNetClient
+	horizonClient := horizonhelper.HorizonClient(chain)
 
 	scraper = &StellarScraper{
 		logger:        logger,
@@ -63,6 +64,7 @@ func NewStellarScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *mo
 	}
 
 	go func() {
+		logger.WithField("horizonUrl", horizonClient.HorizonURL).Info("Started")
 		scraper.fetchPools()
 	}()
 

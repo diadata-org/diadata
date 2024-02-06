@@ -74,6 +74,7 @@ type StellarExpertAssets struct {
 func NewStellarScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *StellarScraper {
 	cursor := utils.Getenv(strings.ToUpper(exchange.Name)+"_TRADES_CURSOR", defaultTradesRequestCursor)
 	limit := utils.GetenvUint(strings.ToUpper(exchange.Name)+"_TRADES_LIMIT", defaultTradesRequestLimit)
+	chain := utils.Getenv(strings.ToUpper(exchange.Name)+"_CHAIN", horizonhelper.PublicChain)
 
 	var (
 		shutdown     = make(chan nothing)
@@ -86,7 +87,7 @@ func NewStellarScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		})
 	)
 
-	horizonClient := horizonclient.DefaultPublicNetClient
+	horizonClient := horizonhelper.HorizonClient(chain)
 
 	s := &StellarScraper{
 		logger:        logger,
@@ -104,6 +105,7 @@ func NewStellarScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 	}
 
 	if scrape {
+		logger.WithField("horizonUrl", horizonClient.HorizonURL).Info("Started")
 		go s.mainLoop()
 	}
 	return s
