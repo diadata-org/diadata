@@ -56,7 +56,8 @@ func NewCurvefiAssetSource(exchange dia.Exchange) *CurvefiAssetSource {
 		metaPools := curveRegistry{Type: 2, Address: common.HexToAddress("0xB9fC157394Af804a3578134A6585C0dc9cc990d4")}
 		factoryPools := curveRegistry{Type: 3, Address: common.HexToAddress("0xF18056Bbd320E96A48e3Fbf8bC061322531aac99")}
 		factory2Pools := curveRegistry{Type: 3, Address: common.HexToAddress("0x4F8846Ae9380B90d2E71D5e3D042dff3E7ebb40d")}
-		registries := []curveRegistry{factoryPools, factory2Pools, basePools, cryptoswapPools, metaPools}
+		stableSwapRegistry := curveRegistry{Type: 3, Address: common.HexToAddress("0x6A8cbed756804B16E05E741eDaBd5cB544AE21bf")}
+		registries := []curveRegistry{factoryPools, factory2Pools, basePools, cryptoswapPools, metaPools, stableSwapRegistry}
 		cas = makeCurvefiAssetSource(exchange, registries, curveRestDialEth, uniswapWaitMilliseconds)
 	case dia.CurveFIExchangeFantom:
 		exchange.Contract = ""
