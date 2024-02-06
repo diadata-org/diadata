@@ -163,8 +163,6 @@ func main() {
 		log.Error("creating middleware: ", err)
 	}
 
-	r.POST(urlFolderPrefix+"/login", authMiddleware.LoginHandler)
-
 	auth := r.Group(urlFolderPrefix + "/auth")
 	auth.Use(authMiddleware.MiddlewareFunc())
 	{
@@ -199,13 +197,6 @@ func main() {
 	// 	signer:    aqs,
 	// }
 
-	diaAuth := r.Group(urlFolderPrefix + "/v1")
-	diaAuth.Use(authMiddleware.MiddlewareFunc())
-	{
-		diaAuth.POST("/supply", diaApiEnv.PostSupply)
-		diaAuth.POST("/quotation", diaApiEnv.SetQuotation)
-	}
-
 	diaGroup := r.Group(urlFolderPrefix + "/v1")
 	{
 		// Trades and prices endpoints.
@@ -225,10 +216,10 @@ func main() {
 		diaGroup.GET("/supplies/:symbol", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetSupplies))
 
 		// Asset endpoints.
-		diaGroup.GET("/topAssets/:numAssets", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetTopAssets))
-		diaGroup.GET("/symbols", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetAllSymbols))
-		diaGroup.GET("/symbols/:substring", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetAllSymbols))
-		diaGroup.GET("/quotedAssets", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetQuotedAssets))
+		diaGroup.GET("/topAssets/:numAssets", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetTopAssets))
+		diaGroup.GET("/symbols", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetAllSymbols))
+		diaGroup.GET("/symbols/:substring", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetAllSymbols))
+		diaGroup.GET("/quotedAssets", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetQuotedAssets))
 
 		// (DEX) pools/liquidity endpoints.
 		diaGroup.GET("/poolLiquidity/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetPoolLiquidityByAddress))
@@ -261,17 +252,6 @@ func main() {
 		diaGroup.GET("/NFT/exchanges", cache.CachePageAtomic(memoryStore, cacheTime.CachingTime1Sec, diaApiEnv.GetNFTExchanges))
 
 		diaGroup.GET("/blockchains", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetAllBlockchains))
-
-		// Endpoints for interestrates
-		// diaGroup.GET("/interestrates", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetRates))
-		// diaGroup.GET("/interestrate/:symbol", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetInterestRate))
-		// diaGroup.GET("/interestrate/:symbol/:time", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetInterestRate))
-		// diaGroup.GET("/compoundedRate/:symbol/:dpy", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetCompoundedRate))
-		// diaGroup.GET("/compoundedRate/:symbol/:dpy/:time", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetCompoundedRate))
-		// diaGroup.GET("/compoundedAvg/:symbol/:days/:dpy", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetCompoundedAvg))
-		// diaGroup.GET("/compoundedAvg/:symbol/:days/:dpy/:time", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetCompoundedAvg))
-		// diaGroup.GET("/compoundedAvgDIA/:symbol/:days/:dpy", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetCompoundedAvgDIA))
-		// diaGroup.GET("/compoundedAvgDIA/:symbol/:days/:dpy/:time", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetCompoundedAvgDIA))
 
 		// Endpoints for fiat currencies
 		diaGroup.GET("/fiatQuotations", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetFiatQuotations))

@@ -26,6 +26,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "FDUSD_USDT",
+      "Ignore": false,
+      "Symbol": "FDUSD"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "GNS_USDT",
       "Ignore": false,
       "Symbol": "GNS"
@@ -41,6 +47,24 @@
       "ForeignName": "PEPE_USDT",
       "Ignore": false,
       "Symbol": "PEPE"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "PNG_USDT",
+      "Ignore": false,
+      "Symbol": "PNG"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "PSP_USDT",
+      "Ignore": false,
+      "Symbol": "PSP"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "PSP_ETH",
+      "Ignore": false,
+      "Symbol": "PSP"
     },
     {
       "Exchange": "GateIO",
@@ -2310,11 +2334,17 @@
       "Ignore": false,
       "Symbol": "USDT"
     },
-     {
+    {
       "Exchange": "GateIO",
       "ForeignName": "VLX_USDT",
       "Ignore": false,
       "Symbol": "VLX"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "VELA_USDT",
+      "Ignore": false,
+      "Symbol": "VELA"
     },
     {
       "Exchange": "GateIO",

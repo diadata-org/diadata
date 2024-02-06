@@ -42,46 +42,46 @@ func init() {
 
 // NewAssetScraper returns a scraper for assets on @exchange.
 // For NewJSONReader @exchange is the folder in the config folder and @secret the filename.
-func NewAssetScraper(exchange string, secret string) source.AssetSource {
+func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source.AssetSource {
 	switch exchange {
 	case dia.UniswapExchange:
-		return source.NewUniswapAssetSource(exchanges[dia.UniswapExchange])
+		return source.NewUniswapAssetSource(exchanges[dia.UniswapExchange], relDB)
 	case dia.PanCakeSwap:
-		return source.NewUniswapAssetSource(exchanges[dia.PanCakeSwap])
+		return source.NewUniswapAssetSource(exchanges[dia.PanCakeSwap], relDB)
 	case dia.PanCakeSwapExchangeV3:
-		return source.NewUniswapV3AssetSource(exchanges[dia.PanCakeSwapExchangeV3])
+		return source.NewUniswapV3AssetSource(exchanges[dia.PanCakeSwapExchangeV3], relDB)
 	case dia.ApeswapExchange:
-		return source.NewUniswapAssetSource(exchanges[dia.ApeswapExchange])
+		return source.NewUniswapAssetSource(exchanges[dia.ApeswapExchange], relDB)
 	case dia.SushiSwapExchange:
-		return source.NewUniswapAssetSource(exchanges[dia.SushiSwapExchange])
+		return source.NewUniswapAssetSource(exchanges[dia.SushiSwapExchange], relDB)
 	case dia.SushiSwapExchangeArbitrum:
-		return source.NewUniswapAssetSource(exchanges[dia.SushiSwapExchangeArbitrum])
+		return source.NewUniswapAssetSource(exchanges[dia.SushiSwapExchangeArbitrum], relDB)
 	case dia.SushiSwapExchangeFantom:
-		return source.NewUniswapAssetSource(exchanges[dia.SushiSwapExchangeFantom])
+		return source.NewUniswapAssetSource(exchanges[dia.SushiSwapExchangeFantom], relDB)
 	case dia.CamelotExchange:
-		return source.NewUniswapAssetSource(exchanges[dia.CamelotExchange])
+		return source.NewUniswapAssetSource(exchanges[dia.CamelotExchange], relDB)
 	case dia.CamelotExchangeV3:
 		return source.NewCamelotV3AssetSource(exchanges[dia.CamelotExchangeV3])
 	case dia.DfynNetwork:
-		return source.NewUniswapAssetSource(exchanges[dia.DfynNetwork])
+		return source.NewUniswapAssetSource(exchanges[dia.DfynNetwork], relDB)
 	case dia.QuickswapExchange:
-		return source.NewUniswapAssetSource(exchanges[dia.QuickswapExchange])
+		return source.NewUniswapAssetSource(exchanges[dia.QuickswapExchange], relDB)
 	case dia.UbeswapExchange:
-		return source.NewUniswapAssetSource(exchanges[dia.UbeswapExchange])
+		return source.NewUniswapAssetSource(exchanges[dia.UbeswapExchange], relDB)
 	case dia.SpookyswapExchange:
-		return source.NewUniswapAssetSource(exchanges[dia.SpookyswapExchange])
+		return source.NewUniswapAssetSource(exchanges[dia.SpookyswapExchange], relDB)
 	case dia.SpiritswapExchange:
-		return source.NewUniswapAssetSource(exchanges[dia.SpiritswapExchange])
+		return source.NewUniswapAssetSource(exchanges[dia.SpiritswapExchange], relDB)
 	case dia.SolarbeamExchange:
-		return source.NewUniswapAssetSource(exchanges[dia.SolarbeamExchange])
+		return source.NewUniswapAssetSource(exchanges[dia.SolarbeamExchange], relDB)
 	case dia.SerumExchange:
 		return source.NewSerumAssetSource(exchanges[dia.SerumExchange])
 	case dia.TrisolarisExchange:
-		return source.NewUniswapAssetSource(exchanges[dia.TrisolarisExchange])
+		return source.NewUniswapAssetSource(exchanges[dia.TrisolarisExchange], relDB)
 	case dia.AnyswapExchange:
 		return source.NewAnyswapAssetSource(exchanges[dia.AnyswapExchange])
 	case dia.NetswapExchange:
-		return source.NewUniswapAssetSource(exchanges[dia.NetswapExchange])
+		return source.NewUniswapAssetSource(exchanges[dia.NetswapExchange], relDB)
 	case dia.BalancerV2Exchange:
 		return source.NewBalancerV2AssetSource(exchanges[dia.BalancerV2Exchange])
 	case dia.BalancerV2ExchangeArbitrum:
@@ -91,31 +91,31 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 	case dia.BalancerV2ExchangePolygon:
 		return source.NewBalancerV2AssetSource(exchanges[dia.BalancerV2ExchangePolygon])
 	case dia.HuckleberryExchange:
-		return source.NewUniswapAssetSource(exchanges[dia.HuckleberryExchange])
+		return source.NewUniswapAssetSource(exchanges[dia.HuckleberryExchange], relDB)
 	case dia.TraderJoeExchange:
-		return source.NewUniswapAssetSource(exchanges[dia.TraderJoeExchange])
+		return source.NewUniswapAssetSource(exchanges[dia.TraderJoeExchange], relDB)
 	case dia.PangolinExchange:
-		return source.NewUniswapAssetSource(exchanges[dia.PangolinExchange])
+		return source.NewUniswapAssetSource(exchanges[dia.PangolinExchange], relDB)
 	case dia.TethysExchange:
-		return source.NewUniswapAssetSource(exchanges[dia.TethysExchange])
+		return source.NewUniswapAssetSource(exchanges[dia.TethysExchange], relDB)
 	case dia.HermesExchange:
-		return source.NewUniswapAssetSource(exchanges[dia.HermesExchange])
+		return source.NewUniswapAssetSource(exchanges[dia.HermesExchange], relDB)
 	case dia.OmniDexExchange:
-		return source.NewUniswapAssetSource(exchanges[dia.OmniDexExchange])
+		return source.NewUniswapAssetSource(exchanges[dia.OmniDexExchange], relDB)
 	case dia.DiffusionExchange:
-		return source.NewUniswapAssetSource(exchanges[dia.DiffusionExchange])
+		return source.NewUniswapAssetSource(exchanges[dia.DiffusionExchange], relDB)
 	case dia.ArthswapExchange:
-		return source.NewUniswapAssetSource(exchanges[dia.ArthswapExchange])
+		return source.NewUniswapAssetSource(exchanges[dia.ArthswapExchange], relDB)
 	case dia.UniswapExchangeV3:
-		return source.NewUniswapV3AssetSource(exchanges[dia.UniswapExchangeV3])
+		return source.NewUniswapV3AssetSource(exchanges[dia.UniswapExchangeV3], relDB)
 	case dia.UniswapExchangeV3Polygon:
-		return source.NewUniswapV3AssetSource(exchanges[dia.UniswapExchangeV3Polygon])
+		return source.NewUniswapV3AssetSource(exchanges[dia.UniswapExchangeV3Polygon], relDB)
 	case dia.UniswapExchangeV3Arbitrum:
-		return source.NewUniswapV3AssetSource(exchanges[dia.UniswapExchangeV3Arbitrum])
+		return source.NewUniswapV3AssetSource(exchanges[dia.UniswapExchangeV3Arbitrum], relDB)
 	case dia.StellaswapExchange:
-		return source.NewUniswapAssetSource(exchanges[dia.StellaswapExchange])
+		return source.NewUniswapAssetSource(exchanges[dia.StellaswapExchange], relDB)
 	case dia.WanswapExchange:
-		return source.NewUniswapAssetSource(exchanges[dia.WanswapExchange])
+		return source.NewUniswapAssetSource(exchanges[dia.WanswapExchange], relDB)
 	case dia.CurveFIExchange:
 		return source.NewCurvefiAssetSource(exchanges[dia.CurveFIExchange])
 	case dia.CurveFIExchangeFantom:
@@ -135,13 +135,13 @@ func NewAssetScraper(exchange string, secret string) source.AssetSource {
 	case dia.VelodromeExchange:
 		return source.NewVelodromeAssetSource(exchanges[dia.VelodromeExchange])
 	case dia.TraderJoeExchangeV2_1:
-		return source.NewTraderJoeAssetSource(exchanges[dia.TraderJoeExchangeV2_1])
+		return source.NewTraderJoeAssetSource(exchanges[dia.TraderJoeExchangeV2_1], relDB)
 	case dia.TraderJoeExchangeV2_1Arbitrum:
-		return source.NewTraderJoeAssetSource(exchanges[dia.TraderJoeExchangeV2_1Arbitrum])
+		return source.NewTraderJoeAssetSource(exchanges[dia.TraderJoeExchangeV2_1Arbitrum], relDB)
 	case dia.TraderJoeExchangeV2_1Avalanche:
-		return source.NewTraderJoeAssetSource(exchanges[dia.TraderJoeExchangeV2_1Avalanche])
+		return source.NewTraderJoeAssetSource(exchanges[dia.TraderJoeExchangeV2_1Avalanche], relDB)
 	case dia.TraderJoeExchangeV2_1BNB:
-		return source.NewTraderJoeAssetSource(exchanges[dia.TraderJoeExchangeV2_1BNB])
+		return source.NewTraderJoeAssetSource(exchanges[dia.TraderJoeExchangeV2_1BNB], relDB)
 	case "assetlists":
 		return source.NewJSONReader(exchange, secret)
 	default:
@@ -162,7 +162,7 @@ func main() {
 
 func runAssetSource(relDB *models.RelDB, source string, caching bool, secret string) {
 	log.Println("Fetching asset from ", source)
-	asset := NewAssetScraper(source, secret)
+	asset := NewAssetScraper(source, secret, relDB)
 
 	for {
 		select {

@@ -3,7 +3,7 @@ module github.com/diadata-org/diadata/cmd/nftTradescrapers
 go 1.17
 
 require (
-	github.com/diadata-org/diadata v1.4.210
+	github.com/diadata-org/diadata v1.4.405
 	github.com/jackc/pgconn v1.10.0
 	github.com/segmentio/kafka-go v0.4.35
 	github.com/sirupsen/logrus v1.8.1

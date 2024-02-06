@@ -56,6 +56,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse chainId: %v")
 	}
+	deviationPermille, err := strconv.Atoi(utils.Getenv("DEVIATION_PERMILLE", "10"))
+	if err != nil {
+		log.Fatalf("Failed to parse deviationPermille: %v")
+	}
 
 	baseaddress := "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
 	baseblockchain := "Ethereum"
@@ -123,7 +127,7 @@ func main() {
 				log.Println("old price", oldPrice)
 				log.Println("old balance", oldBalance)
 				log.Println("old totalSupply", oldTotalSupply)
-				oldPrice, oldBalance, oldTotalSupply, err = periodicOracleUpdateHelper(oldPrice, oldBalance, oldTotalSupply, auth, damfinancecontract, usdcconn, d20tokenconn, conn, baseblockchain, baseaddress)
+				oldPrice, oldBalance, oldTotalSupply, err = periodicOracleUpdateHelper(oldPrice, oldBalance, oldTotalSupply, deviationPermille, auth, damfinancecontract, usdcconn, d20tokenconn, conn, baseblockchain, baseaddress)
 				if err != nil {
 					log.Println(err)
 				}
@@ -135,7 +139,7 @@ func main() {
 	select {}
 }
 
-func periodicOracleUpdateHelper(oldPrice float64, oldBalance, oldTotalSupply *big.Int, auth *bind.TransactOpts, contract *bind.BoundContract, usdcconn, d20tokenconn *erc20.ERC20, conn *ethclient.Client, baseblockchain string, baseaddress string) (float64, *big.Int, *big.Int, error) {
+func periodicOracleUpdateHelper(oldPrice float64, oldBalance, oldTotalSupply *big.Int, deviationPermille int, auth *bind.TransactOpts, contract *bind.BoundContract, usdcconn, d20tokenconn *erc20.ERC20, conn *ethclient.Client, baseblockchain string, baseaddress string) (float64, *big.Int, *big.Int, error) {
 	var usdcbalance, totalSupply *big.Int
 
 	// Get asset quotation
@@ -165,7 +169,8 @@ func periodicOracleUpdateHelper(oldPrice float64, oldBalance, oldTotalSupply *bi
 	newTotalSupply := totalSupply
 
 	// Check for deviation
-	if newPrice != oldPrice ||
+	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) ||
+	  (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) ||
 		newBalance.Cmp(oldBalance) != 0 ||
 		newTotalSupply.Cmp(oldTotalSupply) != 0 {
 		log.Println("Entering deviation based update zone")
@@ -242,14 +247,16 @@ func updateOracle(
 	tx, err := contract.Transact(&bind.TransactOpts{
 		From:     auth.From,
 		Signer:   auth.Signer,
-		GasLimit: 1000725,
 		GasPrice: gasPrice,
 	}, "setValues", key, big.NewInt(value), big.NewInt(timestamp), totalsupply, usdcbalance)
 
+	if err != nil {
+		log.Println(err)
+	}
 	log.Printf("from: %s\n", auth.From.Hex())
-
 	log.Printf("key: %s\n", key)
-
+	log.Printf("totalsupply: %s\n", totalsupply)
+	log.Printf("value: %s\n", value)
 	log.Printf("Tx To: %s\n", tx.To().String())
 	log.Printf("Tx Hash: 0x%x\n", tx.Hash())
 	return nil

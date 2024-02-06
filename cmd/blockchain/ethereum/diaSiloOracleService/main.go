@@ -208,10 +208,21 @@ func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *dia
 		rawQ.Symbol = symbol
 		rawQ.Price = price
 	} else {
-		rawQ, err = getAssetQuotationFromDia(blockchain, address)
-		if err != nil {
-			log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
-			return oldPrice, err
+		// Special case: RDPX
+		if address == "0x32Eb7902D4134bf98A28b963D26de779AF92A212" && blockchain == "Arbitrum" {
+			price, symbol, err := getRdpxGraphqlAssetQuotationFromDia(blockchain, address)
+			if err != nil {
+				log.Printf("Failed to retrieve %s (RDPX) quotation data from Graphql on DIA: %v", address, err)
+				return oldPrice, err
+			}
+			rawQ.Symbol = symbol
+			rawQ.Price = price
+		} else {
+			rawQ, err = getAssetQuotationFromDia(blockchain, address)
+			if err != nil {
+				log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
+				return oldPrice, err
+			}
 		}
 	}
 	rawQ.Name = rawQ.Symbol
@@ -219,6 +230,11 @@ func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *dia
 	newPrice := rawQ.Price
 
 	// check coingecko before sending out an update transaction
+	allowedCoingeckoDeviation := 0.075
+	// Exception for RDPX: CG data is not super reliable, high deviations expected
+	if address == "0x32Eb7902D4134bf98A28b963D26de779AF92A212" && blockchain == "Arbitrum" {
+		allowedCoingeckoDeviation = 0.2
+	}
 	cgPrice, err := getCoingeckoPrice(coingeckoName, coingeckoApiKey)
 	if err != nil {
 		return oldPrice, err
@@ -227,7 +243,8 @@ func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *dia
 		log.Printf("Error! Coingecko API returned price 0.0.")
 		return oldPrice, nil
 	}
-	if (math.Abs(cgPrice - rawQ.Price) / cgPrice) > 0.2 {
+	log.Printf("Deviation from coingecko: %f\n", math.Abs(cgPrice - rawQ.Price) / cgPrice)
+	if (math.Abs(cgPrice - rawQ.Price) / cgPrice) > allowedCoingeckoDeviation {
 		// Error case, stop transaction from happening
 		log.Printf("Error! Price %f for asset %s-%s out of coingecko range %f.", rawQ.Price, blockchain, address, cgPrice)
 		return oldPrice, nil
@@ -264,6 +281,7 @@ func xcOracleUpdateHelper(oldPrice float64, xcAssetSymbol string, auth *bind.Tra
 	newPrice := rawQ.Price
 
 	// check coingecko before sending out an update transaction
+	allowedCoingeckoDeviation := 0.075
 	cgPrice, err := getCoingeckoPrice(coingeckoName, coingeckoApiKey)
 	if err != nil {
 		return oldPrice, err
@@ -272,7 +290,8 @@ func xcOracleUpdateHelper(oldPrice float64, xcAssetSymbol string, auth *bind.Tra
 		log.Printf("Error! Coingecko API returned price 0.0.")
 		return oldPrice, nil
 	}
-	if (math.Abs(cgPrice - rawQ.Price) / cgPrice) > 0.2 {
+	log.Printf("Deviation from coingecko: %f\n", math.Abs(cgPrice - rawQ.Price) / cgPrice)
+	if (math.Abs(cgPrice - rawQ.Price) / cgPrice) > allowedCoingeckoDeviation {
 		// Error case, stop transaction from happening
 		log.Printf("Error! Price %f for asset %s out of coingecko range %f.", rawQ.Price, xcAssetSymbol, cgPrice)
 		return oldPrice, nil
@@ -304,10 +323,21 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 		rawQ.Symbol = symbol
 		rawQ.Price = price
 	} else {
-		rawQ, err = getAssetQuotationFromDia(blockchain, address)
-		if err != nil {
-			log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
-			return oldPrice, err
+		// Special case: RDPX
+		if address == "0x32Eb7902D4134bf98A28b963D26de779AF92A212" && blockchain == "Arbitrum" {
+			price, symbol, err := getRdpxGraphqlAssetQuotationFromDia(blockchain, address)
+			if err != nil {
+				log.Printf("Failed to retrieve %s (RDPX) quotation data from Graphql on DIA: %v", address, err)
+				return oldPrice, err
+			}
+			rawQ.Symbol = symbol
+			rawQ.Price = price
+		} else {
+			rawQ, err = getAssetQuotationFromDia(blockchain, address)
+			if err != nil {
+				log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
+				return oldPrice, err
+			}
 		}
 	}
 	rawQ.Name = rawQ.Symbol
@@ -324,6 +354,11 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 		log.Println("Entering deviation based update zone")
 		
 		// check coingecko before sending out an update transaction
+		allowedCoingeckoDeviation := 0.075
+		// Exception for RDPX: CG data is not super reliable, high deviations expected
+		if address == "0x32Eb7902D4134bf98A28b963D26de779AF92A212" && blockchain == "Arbitrum" {
+			allowedCoingeckoDeviation = 0.2
+		}
 		cgPrice, err := getCoingeckoPrice(coingeckoName, coingeckoApiKey)
 		if err != nil {
 			return oldPrice, err
@@ -332,7 +367,8 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 			log.Printf("Error! Coingecko API returned price 0.0.")
 			return oldPrice, nil
 		}
-		if (math.Abs(cgPrice - rawQ.Price) / cgPrice) > 0.2 {
+		log.Printf("Deviation from coingecko: %f\n", math.Abs(cgPrice - rawQ.Price) / cgPrice)
+		if (math.Abs(cgPrice - rawQ.Price) / cgPrice) > allowedCoingeckoDeviation {
 			// Error case, stop transaction from happening
 			log.Printf("Error! Price %f for asset %s-%s out of coingecko range %f.", rawQ.Price, blockchain, address, cgPrice)
 			return oldPrice, nil
@@ -374,6 +410,7 @@ func periodicXcOracleUpdateHelper(oldPrice float64, deviationPermille int, xcAss
 		log.Println("Entering deviation based update zone")
 
 		// check coingecko before sending out an update transaction
+		allowedCoingeckoDeviation := 0.075
 		cgPrice, err := getCoingeckoPrice(coingeckoName, coingeckoApiKey)
 		if err != nil {
 			return oldPrice, err
@@ -382,7 +419,8 @@ func periodicXcOracleUpdateHelper(oldPrice float64, deviationPermille int, xcAss
 			log.Printf("Error! Coingecko API returned price 0.0.")
 			return oldPrice, nil
 		}
-		if (math.Abs(cgPrice - rawQ.Price) / cgPrice) > 0.2 {
+		log.Printf("Deviation from coingecko: %f\n", math.Abs(cgPrice - rawQ.Price) / cgPrice)
+		if (math.Abs(cgPrice - rawQ.Price) / cgPrice) > allowedCoingeckoDeviation {
 			// Error case, stop transaction from happening
 			log.Printf("Error! Price %f for asset %s out of coingecko range %f.", rawQ.Price, xcAssetSymbol, cgPrice)
 			return oldPrice, nil
@@ -493,6 +531,54 @@ func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, er
 		return nil, err
 	}
 	return &quotation, nil
+}
+
+// Special case for RDPX: Only query with liquidity >500k
+func getRdpxGraphqlAssetQuotationFromDia(blockchain, address string) (float64, string, error) {
+	log.Println("Entering Rdpx special case: Get price with minimum liquidity of 500k")
+	windowSize := 120
+	currentTime := time.Now()
+	starttime := currentTime.Add(time.Duration(-windowSize*2) * time.Second)
+	type Response struct {
+		GetFeed []struct {
+			Name   string    `json:"Name"`
+			Time   time.Time `json:"Time"`
+			Value  float64   `json:"Value"`
+		} `json:"GetFeed"`
+	}
+	client := gql.NewClient("https://api.diadata.org/graphql/query")
+	req := gql.NewRequest(`
+    query  {
+		 GetFeed(
+		 	Filter: "vwapir", 
+			BlockSizeSeconds: ` + strconv.Itoa(windowSize) + `, 
+			BlockShiftSeconds: ` + strconv.Itoa(windowSize) + `,
+			StartTime: ` + strconv.FormatInt(starttime.Unix(), 10) + `, 
+			EndTime: ` + strconv.FormatInt(currentTime.Unix(), 10) + `, 
+			FeedSelection: [
+				{
+					Address: "` + address + `", 
+					Blockchain: "` + blockchain + `",
+					LiquidityThreshold: 500000.0
+				}
+			]
+		)
+		{
+			Name
+			Time
+			Value
+  	}
+	}`)
+
+	ctx := context.Background()
+	var r Response
+	if err := client.Run(ctx, req, &r); err != nil {
+		return 0.0, "", err
+	}
+	if len(r.GetFeed) == 0 {
+		return 0.0, "", errors.New("no results")
+	}
+	return r.GetFeed[len(r.GetFeed)-1].Value, "RDPX", nil
 }
 
 func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int, gqlMethodology string) (float64, string, error) {

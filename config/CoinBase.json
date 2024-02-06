@@ -182,9 +182,21 @@
     },
     {
       "Exchange": "CoinBase",
+      "ForeignName": "STORJ-USD",
+      "Ignore": false,
+      "Symbol": "STORJ"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "UST-USD",
       "Ignore": false,
       "Symbol": "UST"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "PNG-USD",
+      "Ignore": false,
+      "Symbol": "PNG"
     },
     {
       "Exchange": "CoinBase",

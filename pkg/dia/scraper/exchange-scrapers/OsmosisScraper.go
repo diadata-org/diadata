@@ -57,6 +57,7 @@ type OsmosisConfig struct {
 	Bech32PkPrefix    string
 	Bech32PkValPrefix string
 	RpcURL            string
+	WsURL             string
 	Encoding          *OsmosisEncodingConfig
 }
 
@@ -113,15 +114,17 @@ func NewOsmosisScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		Bech32PkValPrefix: "osmovalpub",
 		Encoding:          encoding,
 		RpcURL:            utils.Getenv("OSMOSIS_RPC_URL", ""),
-	}
-	wsClient, err := NewWsClient(*cfg)
-	if err != nil {
-		panic("failed to create ws client")
+		WsURL:             utils.Getenv("OSMOSIS_WS_URL", ""),
 	}
 	rpcClient, err := NewRpcClient(*cfg)
 	if err != nil {
 		panic("failed to create rpc client")
 	}
+	wsClient, err := NewWsClient(*cfg)
+	if err != nil {
+		panic("failed to create ws client")
+	}
+
 	s := &OsmosisScraper{
 		shutdown:             make(chan nothing),
 		shutdownDone:         make(chan nothing),
@@ -260,7 +263,7 @@ func NewWsClient(conf OsmosisConfig) (*tendermint.WSClient, error) {
 	sdk.GetConfig().SetBech32PrefixForAccount(conf.Bech32AddrPrefix, conf.Bech32PkPrefix)
 	sdk.GetConfig().SetBech32PrefixForValidator(conf.Bech32ValPrefix, conf.Bech32PkValPrefix)
 
-	client, err := tendermint.NewWS(conf.RpcURL, "/websocket")
+	client, err := tendermint.NewWS(conf.WsURL, "/websocket")
 	if err != nil {
 		log.Fatal("failed to create websocket client: ", err)
 	}

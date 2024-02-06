@@ -181,6 +181,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "DPX",
+      "ForeignName": "DPXUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "DUST",
       "ForeignName": "DUSTUSDT",
       "Exchange": "MEXC",
@@ -439,6 +445,18 @@
       "Ignore": false
     },
     {
+      "Symbol": "PNG",
+      "ForeignName": "PNGUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PSP",
+      "ForeignName": "PSPUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "RAY",
       "ForeignName": "RAYUSDC",
       "Exchange": "MEXC",
@@ -495,6 +513,12 @@
     {
       "Symbol": "SPELL",
       "ForeignName": "SPELLUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "STORJ",
+      "ForeignName": "STORJUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     },

@@ -19,10 +19,11 @@ import (
 )
 
 var (
-	log                  = logrus.New()
-	EXCHANGES            = scrapers.Exchanges
-	BLOCKCHAINS          = scrapers.Blockchains
-	lookbackTradesNumber = 10
+	log                   = logrus.New()
+	EXCHANGES             = scrapers.Exchanges
+	BLOCKCHAINS           = scrapers.Blockchains
+	lookbackTradesNumber  = 10
+	errInvalidInputParams = errors.New("invalid input params")
 )
 
 const (
@@ -39,6 +40,9 @@ type DiaResolver struct {
 }
 
 func (r *DiaResolver) GetSupply(ctx context.Context, args struct{ Symbol graphql.NullString }) (*SupplyResolver, error) {
+	if containsSpecialChars(*args.Symbol.Value) {
+		return nil, errInvalidInputParams
+	}
 	q, err := r.DS.GetLatestSupply(*args.Symbol.Value, &r.RelDB)
 	if err != nil {
 		return nil, err
@@ -49,6 +53,10 @@ func (r *DiaResolver) GetSupply(ctx context.Context, args struct{ Symbol graphql
 func (r *DiaResolver) GetSupplies(ctx context.Context, args struct{ Symbol graphql.NullString }) (*[]*SupplyResolver, error) {
 	starttime := time.Unix(1, 0)
 	endtime := time.Now()
+	if containsSpecialChars(*args.Symbol.Value) {
+		return nil, errInvalidInputParams
+	}
+
 	q, err := r.DS.GetSupply(*args.Symbol.Value, starttime, endtime, &r.RelDB)
 	if err != nil {
 		return nil, err
@@ -114,6 +122,10 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 	BlockChain           graphql.NullString
 	BaseAsset            *[]Asset
 }) (*FilterPointMetaResolver, error) {
+
+	if containsSpecialChars(*args.Symbol.Value) || containsSpecialChars(*args.Address.Value) || containsSpecialChars(*args.BlockChain.Value) {
+		return nil, errInvalidInputParams
+	}
 	var (
 		blockShiftSeconds int64
 		tradeBlocks       []queryhelper.Block
@@ -127,14 +139,25 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 
 	// Parsing input parameters.
 	filter := args.Filter.Value
+	if containsSpecialChars(*filter) {
+		return nil, errInvalidInputParams
+	}
+
 	blockSizeSeconds := int64(*args.BlockDurationSeconds.Value)
 	if args.BlockShiftSeconds.Value != nil {
 		blockShiftSeconds = int64(*args.BlockShiftSeconds.Value)
 	}
 	if args.Address.Value != nil {
+		if containsSpecialChars(*args.Address.Value) {
+			return nil, errInvalidInputParams
+		}
 		address = *args.Address.Value
+
 	}
 	if args.BlockChain.Value != nil {
+		if containsSpecialChars(*args.BlockChain.Value) {
+			return nil, errInvalidInputParams
+		}
 		blockchain = *args.BlockChain.Value
 	}
 	symbol := *args.Symbol.Value
@@ -142,10 +165,17 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 	endtime := args.EndTime.Value.Time
 	starttimeimmutable := args.StartTime.Value.Time
 	endtimeimmutable := args.EndTime.Value.Time
+
+	if containsSpecialChars(symbol) {
+		return nil, errInvalidInputParams
+	}
 	exchanges := args.Exchanges
 	var exchangesString []string
 	if exchanges != nil {
 		for _, v := range *exchanges {
+			if containsSpecialChars(*v.Value) {
+				continue
+			}
 			exchangesString = append(exchangesString, *v.Value)
 		}
 	}
@@ -154,6 +184,9 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 	argsbaseasset := args.BaseAsset
 	if argsbaseasset != nil {
 		for _, baseasset := range *argsbaseasset {
+			if containsSpecialChars(*baseasset.Address.Value) || containsSpecialChars(*baseasset.BlockChain.Value) {
+				continue
+			}
 			asset, err = r.RelDB.GetAsset(*baseasset.Address.Value, *baseasset.BlockChain.Value)
 			if err != nil {
 				log.Errorf("Asset not found with address %s and blockchain %s ", address, blockchain)
@@ -328,6 +361,9 @@ func (r *DiaResolver) GetxcFeed(ctx context.Context, args struct {
 	)
 
 	filter := args.Filter.Value
+	if containsSpecialChars(*filter) {
+		return nil, errInvalidInputParams
+	}
 
 	var quoteAssets []dia.Asset
 	if len(*args.QuoteAssets) > 0 {
@@ -339,6 +375,9 @@ func (r *DiaResolver) GetxcFeed(ctx context.Context, args struct {
 	var exchanges []string
 	if len(*args.Exchanges) > 0 {
 		for i := range *args.Exchanges {
+			if containsSpecialChars(*(*args.Exchanges)[i].Value) {
+				continue
+			}
 			exchanges = append(exchanges, *(*args.Exchanges)[i].Value)
 		}
 	}
@@ -467,9 +506,12 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 
 	// Parsing input parameters.
 	if args.Filter.Value == nil {
-		return sr, errors.New("Filter must be set.")
+		return sr, errors.New("filter must be set")
 	}
 	filter := *args.Filter.Value
+	if containsSpecialChars(filter) {
+		return nil, errInvalidInputParams
+	}
 	blockSizeSeconds := int64(*args.BlockSizeSeconds.Value)
 	if args.BlockShiftSeconds.Value != nil {
 		blockShiftSeconds = int64(*args.BlockShiftSeconds.Value)
@@ -491,7 +533,7 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 		starttime = endtime.Add(-time.Duration(1 * time.Hour))
 	}
 	if endtime.Before(starttime) {
-		return sr, errors.New("StartTime must be before EndTime.")
+		return sr, errors.New("startTime must be before EndTime")
 	}
 	if endtime.After(time.Now()) {
 		endtime = time.Now()
@@ -524,7 +566,7 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 	}
 
 	if args.FeedSelection == nil {
-		return sr, errors.New("At least 1 asset must be selected.")
+		return sr, errors.New("at least 1 asset must be selected")
 	}
 	feedselection, err := r.castLocalFeedSelection(*args.FeedSelection)
 	if err != nil {
@@ -570,7 +612,7 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 		if len(bins) > 0 {
 			// In case the first bin is empty, look for the last trades before @starttime
 			// in order to select the most recent one with sufficient volume.
-			if len(trades) == 0 || !utils.IsInBin(trades[0].Time, bins[0]) {
+			if len(trades) == 0 || !utils.IsInBin(trades[0].Time, bins[0]) || trades[0].VolumeUSD() < tradeVolumeThreshold {
 				previousTrade, err := r.DS.GetTradesByFeedSelection(feedselection, []time.Time{endtime.AddDate(0, 0, -10)}, []time.Time{starttime}, lookbackTradesNumber)
 				if len(previousTrade) == 0 {
 					log.Error("get initial trade: ", err)
@@ -653,6 +695,9 @@ func (r *DiaResolver) GetVWALP(ctx context.Context, args struct {
 
 	// --- Parse input data ---
 	var vr *VWALPResolver
+	if containsSpecialChars(*args.Quotetokenaddress.Value) || containsSpecialChars(*args.Quotetokenblockchain.Value) {
+		return nil, errInvalidInputParams
+	}
 
 	quoteAsset, err := r.RelDB.GetAsset(*args.Quotetokenaddress.Value, *args.Quotetokenblockchain.Value)
 	if err != nil {
@@ -662,6 +707,9 @@ func (r *DiaResolver) GetVWALP(ctx context.Context, args struct {
 	var baseAssets []dia.Asset
 	if len(*args.BaseAssets) > 0 {
 		for i := range *args.BaseAssets {
+			if containsSpecialChars(*(*args.BaseAssets)[i].Address.Value) || containsSpecialChars(*(*args.BaseAssets)[i].BlockChain.Value) {
+				continue
+			}
 			baseAssets = append(baseAssets, dia.Asset{Address: *(*args.BaseAssets)[i].Address.Value, Blockchain: *(*args.BaseAssets)[i].BlockChain.Value})
 		}
 	}
@@ -669,6 +717,9 @@ func (r *DiaResolver) GetVWALP(ctx context.Context, args struct {
 	var exchanges []string
 	if len(*args.Exchanges) > 0 {
 		for i := range *args.Exchanges {
+			if containsSpecialChars(*(*args.Exchanges)[i].Value) {
+				continue
+			}
 			exchanges = append(exchanges, *(*args.Exchanges)[i].Value)
 		}
 	}
@@ -743,6 +794,10 @@ func (r *DiaResolver) GetNFT(ctx context.Context, args struct {
 	TokenID    graphql.NullString
 }) (*NFTResolver, error) {
 
+	if containsSpecialChars(*args.Address.Value) || containsSpecialChars(*args.Blockchain.Value) || containsSpecialChars(*args.TokenID.Value) {
+		return nil, errInvalidInputParams
+	}
+
 	n, err := r.RelDB.GetNFT(*args.Address.Value, *args.Blockchain.Value, *args.TokenID.Value)
 	if err != nil {
 		return nil, err
@@ -757,6 +812,10 @@ func (r *DiaResolver) GetNFTTrades(ctx context.Context, args struct {
 	Blockchain graphql.NullString
 	TokenID    graphql.NullString
 }) (*[]*NFTTradeResolver, error) {
+
+	if containsSpecialChars(*args.Address.Value) || containsSpecialChars(*args.Blockchain.Value) || containsSpecialChars(*args.TokenID.Value) {
+		return nil, errInvalidInputParams
+	}
 
 	var tr []*NFTTradeResolver
 	trades, err := r.RelDB.GetNFTTrades(*args.Address.Value, *args.Blockchain.Value, *args.TokenID.Value, time.Time{}, time.Now())
@@ -781,6 +840,10 @@ func (r *DiaResolver) GetNFTOffers(ctx context.Context, args struct {
 	TokenID    graphql.NullString
 }) (*[]*NFTOfferResolver, error) {
 
+	if containsSpecialChars(*args.Address.Value) || containsSpecialChars(*args.Blockchain.Value) || containsSpecialChars(*args.TokenID.Value) {
+		return nil, errInvalidInputParams
+	}
+
 	var or []*NFTOfferResolver
 	offers, err := r.RelDB.GetNFTOffers(*args.Address.Value, *args.Blockchain.Value, *args.TokenID.Value)
 	if err != nil {
@@ -803,6 +866,10 @@ func (r *DiaResolver) GetNFTBids(ctx context.Context, args struct {
 	Blockchain graphql.NullString
 	TokenID    graphql.NullString
 }) (*[]*NFTBidResolver, error) {
+
+	if containsSpecialChars(*args.Address.Value) || containsSpecialChars(*args.Blockchain.Value) || containsSpecialChars(*args.TokenID.Value) {
+		return nil, errInvalidInputParams
+	}
 
 	var br []*NFTBidResolver
 	bids, err := r.RelDB.GetNFTBids(*args.Address.Value, *args.Blockchain.Value, *args.TokenID.Value)
@@ -846,7 +913,7 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) (dfs []dia.Feed
 
 		// Parse asset.
 		if localFeedSelection.Address.Value == nil || localFeedSelection.Blockchain.Value == nil {
-			err = errors.New("Missing asset's address and blockchain.")
+			err = errors.New("missing asset's address and blockchain")
 			return
 		}
 		diaFeedSelection.Asset = dia.Asset{
@@ -902,7 +969,7 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) (dfs []dia.Feed
 		for _, ep := range *localFeedSelection.Exchangepairs {
 			var diaExchangepairselection dia.ExchangepairSelection
 			if ep.Exchange.Value == nil {
-				err = errors.New("Missing exchange name.")
+				err = errors.New("missing exchange name")
 				return
 			}
 			exchange, ok := EXCHANGES[*ep.Exchange.Value]
@@ -911,7 +978,7 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) (dfs []dia.Feed
 				for e := range EXCHANGES {
 					exchangeString += (e + "; ")
 				}
-				err = fmt.Errorf("Exchange name %s not valid. Available exchanges: %v", *ep.Exchange.Value, exchangeString)
+				err = fmt.Errorf("exchange name %s not valid. Available exchanges: %v", *ep.Exchange.Value, exchangeString)
 				return
 			}
 			diaExchangepairselection.Exchange = exchange
@@ -927,7 +994,7 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) (dfs []dia.Feed
 			var pairsCount int
 			for _, p := range *ep.Pairs {
 				if p.Value == nil {
-					return dfs, errors.New("Missing pair identifier.")
+					return dfs, errors.New("missing pair identifier")
 				}
 				if len(strings.Split(*p.Value, PAIR_SEPARATOR)) == 2 {
 					pairs = true
@@ -935,16 +1002,16 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) (dfs []dia.Feed
 				}
 			}
 			if !(pairsCount == len(*ep.Pairs) || pairsCount == 0) {
-				return dfs, errors.New("Pair/pool notation not consistent.")
+				return dfs, errors.New("pair/pool notation not consistent")
 			}
 
 			if exchange.Name != "" && exchange.Centralized {
 				if !pairs {
-					return dfs, errors.New("Wrong notation for pairs.")
+					return dfs, errors.New("wrong notation for pairs")
 				}
 				for _, p := range *ep.Pairs {
 					if len(strings.Split(*p.Value, PAIR_SEPARATOR)) < 2 {
-						return dfs, errors.New("Pair not in requested format TokenA-TokenB")
+						return dfs, errors.New("pair not in requested format TokenA-TokenB")
 					}
 
 					quotetoken, err := r.RelDB.GetExchangeSymbol(exchange.Name, strings.Split(*p.Value, PAIR_SEPARATOR)[0])
@@ -968,12 +1035,12 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) (dfs []dia.Feed
 					// Check admissibility of input.
 					pairString := strings.Split(*p.Value, LIST_SEPARATOR)
 					if len(pairString) < 2 {
-						return dfs, errors.New("Exactly 2 assets must be given for each pair.")
+						return dfs, errors.New("exactly 2 assets must be given for each pair")
 					}
 					var pair dia.Pair
 
 					if len(strings.Split(pairString[0], PAIR_SEPARATOR)) < 2 {
-						return dfs, errors.New("Asset not in requested format Blockchain-Address")
+						return dfs, errors.New("asset not in requested format Blockchain-Address")
 					}
 					blockchainQuotetoken := strings.Title(strings.ToLower(strings.Split(pairString[0], PAIR_SEPARATOR)[0]))
 					pair.QuoteToken.Address = normalizeAddress(strings.Split(pairString[0], PAIR_SEPARATOR)[1], blockchainQuotetoken)
@@ -1025,4 +1092,8 @@ func normalizeAddress(address string, blockchain string) string {
 		}
 	}
 	return address
+}
+
+func containsSpecialChars(s string) bool {
+	return strings.ContainsAny(s, "!@#$%^&*()'\"|{}[];><?/`~,")
 }

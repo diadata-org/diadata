@@ -70,6 +70,7 @@ var (
 
 	// These should be loaded from postgres once we have a list.
 	USDT             = dia.Asset{Address: "0xdAC17F958D2ee523a2206206994597C13D831ec7", Blockchain: dia.ETHEREUM}
+	USDT_BNB_CHAIN   = dia.Asset{Address: "0x55d398326f99059fF775485246999027B3197955", Blockchain: dia.BINANCESMARTCHAIN}
 	USDC             = dia.Asset{Address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", Blockchain: dia.ETHEREUM}
 	BUSD             = dia.Asset{Address: "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", Blockchain: dia.BINANCESMARTCHAIN}
 	DAI              = dia.Asset{Address: "0x6B175474E89094C44Da98b954EedeAC495271d0F", Blockchain: dia.ETHEREUM}
@@ -77,7 +78,6 @@ var (
 	stablecoinAssets = map[string]interface{}{
 		USDT.Identifier(): "",
 		USDC.Identifier(): "",
-		BUSD.Identifier(): "",
 		DAI.Identifier():  "",
 		TUSD.Identifier(): "",
 	}

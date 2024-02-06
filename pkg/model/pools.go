@@ -90,7 +90,7 @@ func (rdb *RelDB) SetPool(pool dia.Pool) error {
 	}
 
 	query0 := fmt.Sprintf(
-		`INSERT INTO %s (exchange,blockchain,address) VALUES ($1,$2,$3)`,
+		`INSERT INTO %s (exchange,blockchain,address) VALUES ($1,$2,$3) ON CONFLICT (blockchain,address) DO NOTHING`,
 		poolTable,
 	)
 	_, err := rdb.postgresClient.Exec(
@@ -140,6 +140,31 @@ func (rdb *RelDB) SetPool(pool dia.Pool) error {
 	return nil
 }
 
+// GetAllDEXPoolsCount returns a map which maps a DEX onto the number of pools on the DEX.
+func (rdb *RelDB) GetAllDEXPoolsCount() (map[string]int, error) {
+	poolsCount := make(map[string]int)
+
+	query := fmt.Sprintf("SELECT exchange,COUNT(address) FROM %s GROUP BY exchange", poolTable)
+	rows, err := rdb.postgresClient.Query(context.Background(), query)
+	if err != nil {
+		return poolsCount, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var exchange string
+		var numPools int
+		err = rows.Scan(
+			&exchange,
+			&numPools,
+		)
+		if err != nil {
+			return poolsCount, err
+		}
+		poolsCount[exchange] = numPools
+	}
+	return poolsCount, nil
+}
+
 // GetPoolByAddress returns the most recent pool data, i.e. liquidity.
 func (rdb *RelDB) GetPoolByAddress(blockchain string, address string) (pool dia.Pool, err error) {
 
@@ -151,16 +176,14 @@ func (rdb *RelDB) GetPoolByAddress(blockchain string, address string) (pool dia.
 		ON p.pool_id=pa.pool_id 
 		INNER JOIN %s a
 		ON pa.asset_id=a.asset_id 
-		WHERE p.blockchain='%s'
-		AND p.address='%s'`,
+		WHERE p.blockchain=$1
+		AND p.address=$2`,
 		poolassetTable,
 		poolTable,
 		assetTable,
-		blockchain,
-		address,
 	)
 
-	rows, err = rdb.postgresClient.Query(context.Background(), query)
+	rows, err = rdb.postgresClient.Query(context.Background(), query, blockchain, address)
 	if err != nil {
 		return
 	}
@@ -221,19 +244,19 @@ func (rdb *RelDB) GetAllPoolAddrsExchange(exchange string, liquiThreshold float6
 		query string
 	)
 	if liquiThreshold == float64(0) {
-		query = fmt.Sprintf("SELECT address FROM %s WHERE exchange='%s'", poolTable, exchange)
+		query = fmt.Sprintf("SELECT address FROM %s WHERE exchange=$1", poolTable)
+		rows, err = rdb.postgresClient.Query(context.Background(), query, exchange)
 	} else {
 		query = fmt.Sprintf(`
 		SELECT DISTINCT p.address 
 		FROM %s p 
 		INNER JOIN %s pa 
 		ON p.pool_id=pa.pool_id 
-		WHERE p.exchange='%s' 
-		AND pa.liquidity>=%v
-		`, poolTable, poolassetTable, exchange, liquiThreshold)
+		WHERE p.exchange=$1 
+		AND pa.liquidity>=$2
+		`, poolTable, poolassetTable)
+		rows, err = rdb.postgresClient.Query(context.Background(), query, exchange, liquiThreshold)
 	}
-
-	rows, err = rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return
 	}
@@ -261,11 +284,11 @@ func (rdb *RelDB) GetAllPoolsExchange(exchange string, liquiThreshold float64) (
 	query = fmt.Sprintf(`
 		SELECT exch_pools.address,a.address,a.blockchain,a.decimals,a.symbol,a.name,pa.token_index,pa.liquidity,pa.liquidity_usd
 		FROM (
-			SELECT p.pool_id,p.address, SUM(CASE WHEN pa.liquidity<%v THEN 1 ELSE 0 END) AS no_liqui 
+			SELECT p.pool_id,p.address, SUM(CASE WHEN pa.liquidity<$1 THEN 1 ELSE 0 END) AS no_liqui 
 			FROM %s p 
 			INNER JOIN %s pa 
 			ON p.pool_id=pa.pool_id 
-			WHERE p.exchange='%s' 
+			WHERE p.exchange=$2 
 			GROUP BY p.pool_id,p.address
 			) exch_pools 
 		INNER JOIN %s pa 
@@ -273,8 +296,13 @@ func (rdb *RelDB) GetAllPoolsExchange(exchange string, liquiThreshold float64) (
 		INNER JOIN %s a 
 		ON pa.asset_id=a.asset_id 
 		WHERE exch_pools.no_liqui=0;
-	`, liquiThreshold, poolTable, poolassetTable, exchange, poolassetTable, assetTable)
-	rows, err = rdb.postgresClient.Query(context.Background(), query)
+	`,
+		poolTable,
+		poolassetTable,
+		poolassetTable,
+		assetTable,
+	)
+	rows, err = rdb.postgresClient.Query(context.Background(), query, liquiThreshold, exchange)
 	if err != nil {
 		return
 	}
@@ -346,13 +374,13 @@ func (rdb *RelDB) GetPoolsByAsset(asset dia.Asset, liquidityThreshold float64, l
 	query = fmt.Sprintf(`
 		SELECT exch_pools.exchange,exch_pools.address,a.address,a.blockchain,a.decimals,a.symbol,a.name,pa.token_index,pa.liquidity,pa.liquidity_usd,pa.time_stamp
 		FROM (
-			SELECT p.exchange,p.pool_id,p.address, SUM(CASE WHEN pa.liquidity>=%v THEN 0 ELSE 1 END) AS no_liqui, SUM(CASE WHEN a.address='%s' THEN 1 ELSE 0 END) AS correct_asset 
+			SELECT p.exchange,p.pool_id,p.address, SUM(CASE WHEN pa.liquidity>=$1 THEN 0 ELSE 1 END) AS no_liqui, SUM(CASE WHEN a.address=$2 THEN 1 ELSE 0 END) AS correct_asset 
 			FROM %s p 
 			INNER JOIN %s pa 
 			ON p.pool_id=pa.pool_id 
 			INNER JOIN %s a 
 			ON pa.asset_id=a.asset_id 
-			WHERE p.blockchain='%s' 
+			WHERE p.blockchain=$3 
 			GROUP BY p.exchange,p.pool_id,p.address
 			) exch_pools 
 		INNER JOIN %s pa 
@@ -361,8 +389,14 @@ func (rdb *RelDB) GetPoolsByAsset(asset dia.Asset, liquidityThreshold float64, l
 		WHERE exch_pools.no_liqui=0 
 		AND exch_pools.correct_asset=1
 		AND pa.time_stamp IS NOT NULL;
-	`, liquidityThreshold, asset.Address, poolTable, poolassetTable, assetTable, asset.Blockchain, poolassetTable, assetTable)
-	rows, err := rdb.postgresClient.Query(context.Background(), query)
+	`,
+		poolTable,
+		poolassetTable,
+		assetTable,
+		poolassetTable,
+		assetTable,
+	)
+	rows, err := rdb.postgresClient.Query(context.Background(), query, liquidityThreshold, asset.Address, asset.Blockchain)
 	if err != nil {
 		return pools, err
 	}

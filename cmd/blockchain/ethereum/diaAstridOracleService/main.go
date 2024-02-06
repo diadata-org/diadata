@@ -55,7 +55,7 @@ func main() {
 		"0x0000000000000000000000000000000000000000",//BTC
 		"0x0000000000000000000000000000000000000000",//ETH
 		"0x6B175474E89094C44Da98b954EedeAC495271d0F",//DAI
-		"0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",//BUSD
+		//"0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",//BUSD
 		"0xdAC17F958D2ee523a2206206994597C13D831ec7",//USDT
 	}
 	blockchains := []string{
@@ -66,7 +66,7 @@ func main() {
 		"Bitcoin",           //BTC
 		"Ethereum",          //ETH
 		"Ethereum",					 //DAI
-		"BinanceSmartChain", //BUSD
+		//"BinanceSmartChain", //BUSD
 		"Ethereum",          //USDT
 	}
 	cgNames := []string{
@@ -77,7 +77,6 @@ func main() {
 		"bitcoin",
 		"ethereum",
 		"dai",
-		"binance-usd",
 		"tether",
 	}
 	oldPrices := make(map[int]float64)

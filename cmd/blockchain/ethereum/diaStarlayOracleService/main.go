@@ -60,6 +60,9 @@ func main() {
 		"0x0000000000000000000000000000000000001010", //MATIC
 		"0x0000000000000000000000000000000000000000", //DOT
 		"Token:AUSD",                                 //aUSD
+		"0xE511ED88575C57767BAfb72BfD10775413E3F2b0", //nASTR
+		"vDOT",                                       //vDOT
+		"vASTR",                                      //vASTR
 	}
 	blockchains := []string{
 		"Ethereum", //USDT
@@ -74,6 +77,9 @@ func main() {
 		"Polygon", //MATIC
 		"Polkadot", //DOT
 		"Acala", //aUSD
+		"Astar", //nASTR
+		"Bifrost", //vDOT
+		"Bifrost", //vASTR
 	}
 	cgNames := []string{
 		"tether",
@@ -88,6 +94,9 @@ func main() {
 		"matic-network",
 		"polkadot",
 		"acala-dollar-acala",
+		"liquid-astr",
+		"polkadot",
+		"astar",
 	}
 	oldPrices := make(map[int]float64)
 
@@ -139,11 +148,26 @@ func main() {
 
 func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, blockchain string, address string, chainId int64, coingeckoName, coingeckoApiKey string) (float64, error) {
 
+	// Empty quotation for our request
+	var rawQ *models.Quotation
+	rawQ = new(models.Quotation)
+	var err error
+	// special case: vDOT and vASTR: get fair price
+	if (address == "vASTR" || address == "vDOT") && blockchain == "Bifrost" {
+		fairPrice, err := getFairPriceFromDia(address)
+		if err != nil {
+			log.Fatalf("Failed to retrieve %s fair price data from DIA: %v", address, err)
+			return oldPrice, err
+		}
+		rawQ.Price = fairPrice
+		rawQ.Symbol = address
+	} else {
 	// Get quotation for token and update Oracle
-	rawQ, err := getAssetQuotationFromDia(blockchain, address)
-	if err != nil {
-		log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
-		return oldPrice, err
+		rawQ, err = getAssetQuotationFromDia(blockchain, address)
+		if err != nil {
+			log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
+			return oldPrice, err
+		}
 	}
 	rawQ.Name = rawQ.Symbol
 
@@ -161,12 +185,13 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 		newPrice = rawPrice
 	}
 
+
 	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
 		log.Println("Entering deviation based update zone")
 		rawQ.Price = newPrice
 		
 		// only perform CG check for asset that is not AUSD
-		if address != "Token:AUSD" {
+		if address != "Token:AUSD" && address != "vDOT" && address != "vASTR" {
 			// check coingecko before sending out an update transaction
 			cgPrice, err := getCoingeckoPrice(coingeckoName, coingeckoApiKey)
 			if err != nil {
@@ -379,4 +404,23 @@ func getCoingeckoPrice(assetName, coingeckoApiKey string) (float64, error) {
 	}
 	price := gjson.Get(string(contents), assetName + ".usd").Float()
 	return price, nil
+}
+
+func getFairPriceFromDia(symbol string) (float64, error) {
+	response, err := http.Get("https://api.diadata.org/xlsd/bifrost/" + symbol)
+	if err != nil {
+		return 0.0, err
+	}
+
+	defer response.Body.Close()
+	if 200 != response.StatusCode {
+		return 0.0, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	}
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return 0.0, err
+	}
+	fairPrice := gjson.Get(string(contents), "FairPrice").Float()
+
+	return fairPrice, nil
 }

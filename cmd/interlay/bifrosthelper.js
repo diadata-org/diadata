@@ -15,6 +15,8 @@ async function tokenPool(api, token) {
       let value = tokenPool[1].toHuman();
       if (key[0].Token) {
         tokenPoolMap.set(key[0].Token, value);
+      } else if (key[0].Native) {
+        tokenPoolMap.set(key[0].Native, value);
       }
     });
 
@@ -53,6 +55,8 @@ async function tokenIssuance(api, token) {
   
       if (key[0].Token) {
         tokenIssuanceMap.set(key[0].Token, value);
+      } else if (key[0].Native) {
+        tokenIssuanceMap.set(key[0].Native, value);
       }
     });
   
@@ -75,19 +79,33 @@ async function tokenIssuance(api, token) {
   
     switch (token.toLowerCase()) {
       case "KSM".toLowerCase():
-        providerurl = "wss://bifrost-parachain.api.onfinality.io/public-ws";
+      case "MOVR".toLowerCase():
+      case "BNC".toLowerCase():
+        providerurl = process.env.BIFROST_PARACHAIN_NODE_URL || "wss://bifrost-parachain.api.onfinality.io/public-ws";
         break;
       case "DOT".toLowerCase():
-        providerurl = "wss://bifrost-polkadot.api.onfinality.io/public-ws"
+      case "GLMR".toLowerCase():
+      case "ASTR".toLowerCase():
+      case "FIL".toLowerCase():
+        providerurl = process.env.BIFROST_POLKADOT_NODE_URL ||"wss://bifrost-polkadot.api.onfinality.io/public-ws"
     }
   
     const wsProvider = new WsProvider(
-      // "wss://interlay.api.onfinality.io/public-ws"
       providerurl
     );
-    const api = await ApiPromise.create({
+    let api;
+    try{
+      api = await ApiPromise.create({
       provider: wsProvider,
+      throwOnConnect: true,
+      throwOnUnknown:true
     });
+  }catch(e){
+    console.log("throw bifrost api token",token.toLowerCase())
+
+    throw e
+
+  }
     let tokeninpool;
     let vtokenIssuance;
     let decimal;
@@ -97,6 +115,30 @@ async function tokenIssuance(api, token) {
       tokeninpool = await token2Pool(api, "0");
       vtokenIssuance = await vToken2Issuance(api, "0");
       decimal =  10
+
+    } else if (token.toLowerCase() == "GLMR".toLowerCase()){
+      // 1 represents glmr token in bifrost polkadot
+       tokeninpool = await token2Pool(api, "1");
+       vtokenIssuance = await vToken2Issuance(api, "1");
+       decimal =  18
+
+    } else if (token.toLowerCase() == "ASTR".toLowerCase()){
+      // 3 represents astr token in bifrost polkadot
+       tokeninpool = await token2Pool(api, "3");
+       vtokenIssuance = await vToken2Issuance(api, "3");
+       decimal =  18
+
+    } else if (token.toLowerCase() == "FIL".toLowerCase()){
+      // 4 represents fil token in bifrost polkadot
+       tokeninpool = await token2Pool(api, "4");
+       vtokenIssuance = await vToken2Issuance(api, "4");
+       decimal =  18
+
+    } else if (token.toLowerCase() == "MOVR".toLowerCase()){
+       tokeninpool = await tokenPool(api, token);
+
+       vtokenIssuance = await vTokenIssuance(api, token);
+       decimal =  18
 
     }else{
       tokeninpool = await tokenPool(api, token);

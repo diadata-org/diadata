@@ -199,7 +199,7 @@ func (us *UniswapScraper) fetchPools() {
 			log.Error("fetch pool addresses from config file: ", err)
 		}
 		numPairs := len(poolAddresses)
-		log.Infof("listening to %d pools: %v", numPairs, poolAddresses)
+		log.Infof("fetch %d pools: %v", numPairs, poolAddresses)
 
 		for _, pool := range poolAddresses {
 			time.Sleep(time.Duration(us.waitTime) * time.Millisecond)

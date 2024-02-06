@@ -13,6 +13,18 @@
             "Address": "0x4b8285aB433D8f69CB48d5Ad62b415ed1a221e4f"
         },
         {
+            "Symbol": "VELA",
+            "Exchange": "ByBit",
+            "Blockchain": "Arbitrum",
+            "Address": "0x088cd8f5eF3652623c22D48b1605DCfE860Cd704"
+        },
+        {
+            "Symbol": "DPX",
+            "Exchange": "ByBit",
+            "Blockchain": "Arbitrum",
+            "Address": "0x6C2C06790b3E3E3c38e12Ee22F8183b37a13EE55"
+        },
+        {
             "Symbol": "USD",
             "Exchange": "ByBit",
             "Blockchain": "Fiat",
@@ -23,6 +35,12 @@
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
             "Address": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD"
+        },
+        {
+            "Symbol": "PSP",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0xcAfE001067cDEF266AfB7Eb5A286dCFD277f3dE5"
         },
         {
             "Symbol": "BTC",

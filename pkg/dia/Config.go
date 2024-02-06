@@ -34,7 +34,6 @@ const (
 	Opyn                               = "OPYN"
 	Premia                             = "Premia"
 	BitBayExchange                     = "BitBay"
-	BittrexExchange                    = "Bittrex"
 	CoinBaseExchange                   = "CoinBase"
 	HitBTCExchange                     = "HitBTC"
 	HuckleberryExchange                = "Huckleberry"
@@ -127,6 +126,13 @@ const (
 	TofuNFTAstar             = "TofuNFT-Astar"
 	TofuNFTBinanceSmartChain = "TofuNFT-BinanceSmartChain"
 	MagicEden                = "MagicEden"
+)
+
+const (
+	SCRAPER_TYPE_ASSETCOLLECTOR   = "assetcollector"
+	SCRAPER_TYPE_LIQUIDITYSCRAPER = "liquidityscraper"
+	INDEX_TYPE_BLOCKNUMBER        = "blocknumber"
+	INDEX_TYPE_INDEX              = "index"
 )
 
 type ConfigApi struct {

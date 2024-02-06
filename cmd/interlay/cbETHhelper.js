@@ -2,7 +2,7 @@ const {collaterlaratio} = require("./utils")
 const Web3 = require("web3");
 const web3 = new Web3(
   new Web3.providers.HttpProvider(
-    "https://mainnet.infura.io/v3/2883d1b22e0e4d62b535592dd8075fee"
+    process.env.ETHEREUM_NODE_URL ||"https://mainnet.infura.io/v3/2883d1b22e0e4d62b535592dd8075fee"
   )
 );
 

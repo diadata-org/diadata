@@ -71,11 +71,18 @@
             "Exchange": "GateIO",
             "Blockchain": "Nervos",
             "Address": "0x0000000000000000000000000000000000000000"
-        },        {
+        },
+        {
             "Symbol": "CUSD",
             "Exchange": "GateIO",
             "Blockchain": "Celo",
             "Address": "0x765DE816845861e75A25fCA122bb6898B8B1282a"
+        },
+        {
+            "Symbol": "FDUSD",
+            "Exchange": "GateIO",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409"
         },
         {
             "Symbol": "GRAIL",
@@ -678,10 +685,22 @@
             "Address": "0xbC396689893D065F41bc2C6EcbeE5e0085233447"
         },
         {
+            "Symbol": "PNG",
+            "Exchange": "GateIO",
+            "Blockchain": "Avalanche",
+            "Address": "0x60781C2586D68229fde47564546784ab3fACA982"
+        },
+        {
             "Symbol": "POWR",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x595832F8FC6BF59c85C527fEC3740A1b7a361269"
+        },
+        {
+            "Symbol": "PSP",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0xcAfE001067cDEF266AfB7Eb5A286dCFD277f3dE5"
         },
         {
             "Symbol": "PST",
@@ -880,6 +899,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+        },
+        {
+            "Symbol": "VELA",
+            "Exchange": "GateIO",
+            "Blockchain": "Arbitrum",
+            "Address": "0x088cd8f5eF3652623c22D48b1605DCfE860Cd704"
         },
         {
             "Symbol": "VLX",

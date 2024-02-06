@@ -361,6 +361,12 @@
       "Address": "0x090185f2135308BaD17527004364eBcC2D37e5F6"
     },
     {
+      "Symbol": "STORJ",
+      "Exchange": "BitMart",
+      "Blockchain": "Ethereum",
+      "Address": "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC"
+    },
+    {
       "Symbol": "SYN",
       "Exchange": "BitMart",
       "Blockchain": "Ethereum",
@@ -407,6 +413,12 @@
       "Exchange": "BitMart",
       "Blockchain": "Ethereum",
       "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+    },
+    {
+      "Symbol": "VELA",
+      "Exchange": "BitMart",
+      "Blockchain": "Arbitrum",
+      "Address": "0x088cd8f5eF3652623c22D48b1605DCfE860Cd704"
     },
     {
       "Symbol": "VET",

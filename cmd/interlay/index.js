@@ -9,9 +9,21 @@ const { tokenkey, redis, allowedTokens, pricekey } = require("./utils");
 
 let cache = redis();
 
+
+/*
+
+Env variables
+BIFROST_PARACHAIN_NODE_URL
+BIFROST_POLKADOT_NODE_URL
+INTERLAY_NODE_URL
+KITSUNGI_NODE_URL
+ETHEREUM_NODE_URL
+
+
+*/
 cronstart();
 
-cron.schedule("10 * * * *", () => {
+cron.schedule("* * * * *", () => {
   console.log("running a task every minute");
   cronstart();
 });
@@ -21,16 +33,14 @@ let app = express();
 
 app.get("/customer/interlay/state/:token", async function (req, res) {
   // kbtc, ibtc
-  const allowedTokens = ["IBTC", "KBTC","DOT"];
+  const allowedTokens = ["IBTC", "KBTC", "DOT"];
 
   let token = req.params.token;
   token = token.toUpperCase();
 
   if (allowedTokens.includes(token)) {
     // let values = await getInterlayValues(token);
-    let values = JSON.parse(
-      await cache.get("interlayraw"+token)
-    );
+    let values = JSON.parse(await cache.get("interlayraw" + token));
 
     res.send(values);
   } else {
@@ -40,14 +50,19 @@ app.get("/customer/interlay/state/:token", async function (req, res) {
 
 app.get("/customer/bifrost/state/:token", async function (req, res) {
   // kbtc, ibtc
-  const allowedTokens = ["KSM","DOT"];
+  const allowedTokens = ["KSM","DOT","MOVR","BNC","GLMR","ASTR","FIL"];
 
   let token = req.params.token;
   token = token.toUpperCase();
 
   if (allowedTokens.includes(token)) {
-    let values = await getBiFrostValues(token);
-    res.send(values);
+    try{
+      let values = await getBiFrostValues(token);
+      res.send(values);
+    }catch(e){
+      res.send({ err: "err getting value from bifrost" });
+    }
+   
   } else {
     res.send({ err: "invalid token use, KSM or DOT" });
   }
@@ -64,7 +79,76 @@ let values = {
   BaseAssetSymbol: "",
   BaseAssetPrice: "",
   Issuer: "",
+  TimeStamp: "",
+
 };
+
+function findTokenByVTokenAndIssuer(vtoken, issuer) {
+  const lowerCaseIssuer = issuer.toLowerCase();  
+  const lowerCaseVtoken = vtoken.toLowerCase();
+
+  for (let i = 0; i < allowedTokens.length; i++) {
+    if (
+      allowedTokens[i].vtoken.toLowerCase() === lowerCaseVtoken &&
+      allowedTokens[i].issuer.toLowerCase() === lowerCaseIssuer
+    ) {
+      return allowedTokens[i];
+    }
+  }
+  return null;
+}
+app.get("/xlsd/:issuer/:vtoken", async function (req, res) {
+  let issuer = req.params.issuer;
+  let vtoken = req.params.vtoken;
+
+  let token = findTokenByVTokenAndIssuer(vtoken, issuer);
+
+  if (token) {
+    let cacheddata = JSON.parse(
+      await cache.get(tokenkey(token.source, token.vtoken))
+    );
+
+
+    let tokenvalues = await createXResponse(cacheddata, token);
+    res.send(tokenvalues);
+  } else {
+    res.send({ err: "invalid token and issuer" });
+  }
+});
+
+async function createXResponse(cacheddata, token) {
+  let tokenvalues = JSON.parse(JSON.stringify(values));
+  let baseassetprice;
+  baseassetprice = await cache.get(pricekey(token.token));
+
+  if (cacheddata && cacheddata.collateral_ratio) {
+    tokenvalues.Collateralratio = {
+      IssuedToken: cacheddata.collateral_ratio.issued_token,
+      LockedToken: cacheddata.collateral_ratio.locked_token,
+      Ratio: cacheddata.collateral_ratio.ratio,
+    };
+  }
+  if (cacheddata && cacheddata.fair_price) {
+    tokenvalues.FairPrice = cacheddata.fair_price;
+  }
+
+  if (cacheddata && cacheddata.timestamp) {
+    tokenvalues.TimeStamp = cacheddata.timestamp;
+  }
+  if (cacheddata && cacheddata.decimal) {
+    tokenvalues.decimal = cacheddata.decimal;
+  }
+  // if (cacheddata && cacheddata.ratio) {
+  //   tokenvalues.ratio = cacheddata.ratio;
+  // }
+  tokenvalues.BaseAssetPrice = parseFloat(baseassetprice);
+  tokenvalues.Token = token.vtoken;
+  tokenvalues.BaseAssetSymbol = token.token;
+  tokenvalues.Issuer = token.issuer;
+ 
+
+  return tokenvalues;
+}
 
 app.get("/xlsd", async function (req, res) {
   // kbtc, ibtc
@@ -72,33 +156,12 @@ app.get("/xlsd", async function (req, res) {
   let response = [];
 
   for (const token of allowedTokens) {
-    let tokenvalues = JSON.parse(JSON.stringify(values));
-    let baseassetprice;
     let cacheddata = JSON.parse(
       await cache.get(tokenkey(token.source, token.vtoken))
     );
-    baseassetprice = await cache.get(pricekey(token.token));
 
-    if (cacheddata && cacheddata.collateral_ratio) {
-      tokenvalues.Collateralratio = {
-        IssuedToken: cacheddata.collateral_ratio.issued_token,
-        LockedToken: cacheddata.collateral_ratio.locked_token,
-        Ratio: cacheddata.collateral_ratio.ratio,
-      };
-    }
-    if (cacheddata && cacheddata.fair_price) {
-      tokenvalues.FairPrice = cacheddata.fair_price;
-    }
-    if (cacheddata && cacheddata.decimal) {
-      tokenvalues.decimal = cacheddata.decimal;
-    }
-    // if (cacheddata && cacheddata.ratio) {
-    //   tokenvalues.ratio = cacheddata.ratio;
-    // }
-    tokenvalues.BaseAssetPrice = parseFloat(baseassetprice);
-    tokenvalues.Token = token.vtoken;
-    tokenvalues.BaseAssetSymbol = token.token;
-    tokenvalues.Issuer = token.issuer;
+
+    let tokenvalues = await createXResponse(cacheddata, token);
 
     response.push(tokenvalues);
   }

@@ -24,7 +24,6 @@ type RelDatastore interface {
 	GetAssetsBySymbolName(symbol, name string) ([]dia.Asset, error)
 	GetAllAssets(blockchain string) ([]dia.Asset, error)
 	GetFiatAssetBySymbol(symbol string) (asset dia.Asset, err error)
-	IdentifyAsset(asset dia.Asset) ([]dia.Asset, error)
 	GetAssetID(asset dia.Asset) (string, error)
 	GetPage(pageNumber uint32) ([]dia.Asset, bool, error)
 	Count() (uint32, error)
@@ -64,6 +63,9 @@ type RelDatastore interface {
 
 	// ----------------- pool methods -------------------
 	SetPool(pool dia.Pool) error
+	SetScraperIndex(exchange string, scraperType string, indexType string, index int64) error
+	GetScraperIndex(exchange string, scraperType string) (string, int64, error)
+	GetAllDEXPoolsCount() (map[string]int, error)
 	GetPoolByAddress(blockchain string, address string) (pool dia.Pool, err error)
 	GetAllPoolAddrsExchange(exchange string, liquiThreshold float64) ([]string, error)
 	GetAllPoolsExchange(exchange string, liquiThreshold float64) ([]dia.Pool, error)
@@ -186,6 +188,7 @@ const (
 	exchangesymbolTable      = "exchangesymbol"
 	poolTable                = "pool"
 	poolassetTable           = "poolasset"
+	scraperCronjobStateTable = "scraper_cronjob_state"
 	exchangeTable            = "exchange"
 	nftExchangeTable         = "nftexchange"
 	chainconfigTable         = "chainconfig"

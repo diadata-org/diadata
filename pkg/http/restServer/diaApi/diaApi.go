@@ -1,10 +1,8 @@
 package diaApi
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"math"
 	"math/big"
 	"net/http"
@@ -55,84 +53,6 @@ func init() {
 
 func NewEnv(ds models.Datastore, rdb models.RelDB, signer *utils.AssetQuotationSigner) *Env {
 	return &Env{DataStore: ds, RelDB: rdb, signer: signer}
-}
-
-// PostSupply deprecated? TO DO
-func (env *Env) PostSupply(c *gin.Context) {
-
-	body, err := ioutil.ReadAll(c.Request.Body)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("ReadAll"))
-	} else {
-		var t dia.Supply
-		err = json.Unmarshal(body, &t)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		} else {
-			if t.Asset.Symbol == "" || t.CirculatingSupply == 0.0 {
-				log.Errorln("received supply:", t)
-				restApi.SendError(c, http.StatusInternalServerError, errors.New("missing symbol or circulating supply value"))
-			} else {
-				log.Println("received supply:", t)
-				source := dia.Diadata
-				if t.Source != "" {
-					source = t.Source
-				}
-				s := &dia.Supply{
-					Time:              t.Time,
-					Asset:             t.Asset,
-					Source:            source,
-					CirculatingSupply: t.CirculatingSupply}
-
-				err := env.DataStore.SetSupply(s)
-
-				if err == nil {
-					c.JSON(http.StatusOK, s)
-				} else {
-					restApi.SendError(c, http.StatusInternalServerError, err)
-				}
-			}
-		}
-	}
-}
-
-// SetQuotation sets a quotation to redis cache. Input must be of the format:
-// '["blockchain","address","value"]'
-func (env *Env) SetQuotation(c *gin.Context) {
-
-	var quotation models.AssetQuotation
-	var input []string
-	body, err := ioutil.ReadAll(c.Request.Body)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("ReadAll"))
-		return
-	}
-	err = json.Unmarshal(body, &input)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("unmarshal body"))
-		return
-	}
-	if len(input) != 3 {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("wrong number of inputs"))
-		return
-	}
-
-	quotation.Asset.Blockchain = input[0]
-	quotation.Asset.Address = input[1]
-	price, err := strconv.ParseFloat(input[2], 64)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-		return
-	}
-	quotation.Price = price
-	quotation.Source = "diadata.org"
-	quotation.Time = time.Now()
-
-	_, err = env.DataStore.SetAssetQuotationCache(&quotation, true)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-		return
-	}
 }
 
 // GetAssetQuotation returns quotation of asset with highest market cap among
@@ -490,22 +410,34 @@ func (env *Env) GetExchanges(c *gin.Context) {
 	if len(exchanges) == 0 || err != nil {
 		restApi.SendError(c, http.StatusInternalServerError, nil)
 	}
+
+	dexPoolCountMap, err := env.RelDB.GetAllDEXPoolsCount()
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, nil)
+	}
+
 	for _, exchange := range exchanges {
+		var numPairs int
 
 		vol, err := env.DataStore.Get24HoursExchangeVolume(exchange.Name)
 		if err != nil {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 			return
 		}
+
 		numTrades, err := env.DataStore.GetNumTradesExchange24H(exchange.Name)
 		if err != nil {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 			return
 		}
-		numPairs, err := env.RelDB.GetNumPairs(exchange)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-			return
+
+		if models.GetExchangeType(exchange) == "DEX" {
+			numPairs = dexPoolCountMap[exchange.Name]
+		} else {
+			numPairs, err = env.RelDB.GetNumPairs(exchange)
+			if err != nil {
+				restApi.SendError(c, http.StatusInternalServerError, nil)
+			}
 		}
 
 		exchangereturn := exchangeReturn{
@@ -1408,270 +1340,14 @@ func (env *Env) GetQuotedAssets(c *gin.Context) {
 }
 
 // -----------------------------------------------------------------------------
-// INTEREST RATES
-// -----------------------------------------------------------------------------
-
-// GetInterestRate is the delegate method to fetch the value of
-// the interest rate with symbol @symbol at the date @time.
-// Optional query parameters allow to obtain data in a time range.
-func (env *Env) GetInterestRate(c *gin.Context) {
-	symbol := c.Param("symbol")
-	date := c.Param("time")
-	// Add optional query parameters for requesting a range of values
-	dateInit := c.DefaultQuery("dateInit", "noRange")
-	dateFinal := c.Query("dateFinal")
-
-	if dateInit == "noRange" {
-		q, err := env.DataStore.GetInterestRate(symbol, date)
-		if err != nil {
-			if errors.Is(err, redis.Nil) {
-				restApi.SendError(c, http.StatusNotFound, err)
-			} else {
-				restApi.SendError(c, http.StatusInternalServerError, err)
-			}
-		} else {
-			c.JSON(http.StatusOK, q)
-		}
-	} else {
-		q, err := env.DataStore.GetInterestRateRange(symbol, dateInit, dateFinal)
-		if err != nil {
-			if errors.Is(err, redis.Nil) {
-				restApi.SendError(c, http.StatusNotFound, err)
-			} else {
-				restApi.SendError(c, http.StatusInternalServerError, err)
-			}
-		} else {
-			c.JSON(http.StatusOK, q)
-		}
-	}
-}
-
-// GetCompoundedRate is the delegate method to fetch compounded rate values for interest rates
-func (env *Env) GetCompoundedRate(c *gin.Context) {
-
-	// Import and cast input from API call
-	symbol := c.Param("symbol")
-	dpy := c.Param("dpy")
-	daysPerYear, err := strconv.Atoi(dpy)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-	}
-	datestring := c.Param("time")
-
-	// Add optional query parameters for requesting a range of values
-	dateInitstring := c.DefaultQuery("dateInit", "noRange")
-	dateFinalstring := c.Query("dateFinal")
-
-	// Retrieve rounding convention for @symbol
-	rounding := 0
-
-	if dateInitstring == "noRange" {
-
-		var date time.Time
-		if datestring == "" {
-			// If date is omitted in API call, take most recent date
-			date = time.Now()
-		} else {
-			date, err = time.Parse("2006-01-02", datestring)
-		}
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		}
-
-		q, err := env.DataStore.GetCompoundedIndex(symbol, date, daysPerYear, rounding)
-		if err != nil {
-			if errors.Is(err, redis.Nil) {
-				restApi.SendError(c, http.StatusNotFound, err)
-			} else {
-				restApi.SendError(c, http.StatusInternalServerError, err)
-			}
-		} else {
-			c.JSON(http.StatusOK, q)
-		}
-
-	} else {
-
-		dateInit, err := time.Parse("2006-01-02", dateInitstring)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		}
-		dateFinal, err := time.Parse("2006-01-02", dateFinalstring)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		}
-
-		q, err := env.DataStore.GetCompoundedIndexRange(symbol, dateInit, dateFinal, daysPerYear, rounding)
-		if err != nil {
-			if errors.Is(err, redis.Nil) {
-				restApi.SendError(c, http.StatusNotFound, err)
-			} else {
-				restApi.SendError(c, http.StatusInternalServerError, err)
-			}
-		} else {
-			c.JSON(http.StatusOK, q)
-		}
-
-	}
-}
-
-// GetCompoundedAvg is the delegate method to fetch averaged compounded rate values for interest rates
-func (env *Env) GetCompoundedAvg(c *gin.Context) {
-
-	tInit := time.Now()
-
-	// Import and cast input from API call
-	symbol := c.Param("symbol")
-	datestring := c.Param("time")
-	date, _ := time.Parse("2006-01-02", datestring)
-	days := c.Param("days")
-	calDays, err := strconv.Atoi(days)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-	}
-	dpy := c.Param("dpy")
-	daysPerYear, err := strconv.Atoi(dpy)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-	}
-
-	// Add optional query parameters for requesting a range of values
-	dateInitstring := c.DefaultQuery("dateInit", "noRange")
-	dateFinalstring := c.Query("dateFinal")
-
-	rounding := 0
-
-	if dateInitstring == "noRange" {
-
-		// Compute compunded rate and return if no error
-		q, err := env.DataStore.GetCompoundedAvg(symbol, date, calDays, daysPerYear, rounding)
-		if err != nil {
-			if errors.Is(err, redis.Nil) {
-				restApi.SendError(c, http.StatusNotFound, err)
-			} else {
-				restApi.SendError(c, http.StatusInternalServerError, err)
-			}
-		} else {
-			c.JSON(http.StatusOK, q)
-		}
-
-	} else {
-
-		dateInit, err := time.Parse("2006-01-02", dateInitstring)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		}
-		dateFinal, err := time.Parse("2006-01-02", dateFinalstring)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		}
-
-		q, err := env.DataStore.GetCompoundedAvgRange(symbol, dateInit, dateFinal, calDays, daysPerYear, rounding)
-		if err != nil {
-			if errors.Is(err, redis.Nil) {
-				restApi.SendError(c, http.StatusNotFound, err)
-			} else {
-				restApi.SendError(c, http.StatusInternalServerError, err)
-			}
-		} else {
-			c.JSON(http.StatusOK, q)
-		}
-
-	}
-
-	tFinal := time.Now()
-	fmt.Println("time elapsed in API call: ", tFinal.Sub(tInit))
-}
-
-// GetCompoundedAvgDIA is the delegate method to fetch averaged compounded rate values for interest rates
-func (env *Env) GetCompoundedAvgDIA(c *gin.Context) {
-
-	tInit := time.Now()
-
-	// Import and cast input from API call
-	symbol := c.Param("symbol")
-	datestring := c.Param("time")
-	date, _ := time.Parse("2006-01-02", datestring)
-	days := c.Param("days")
-	calDays, err := strconv.Atoi(days)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-	}
-	dpy := c.Param("dpy")
-	daysPerYear, err := strconv.Atoi(dpy)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-	}
-
-	// Add optional query parameters for requesting a range of values
-	dateInitstring := c.DefaultQuery("dateInit", "noRange")
-	dateFinalstring := c.Query("dateFinal")
-
-	rounding := 0
-
-	if dateInitstring == "noRange" {
-
-		// In this method, there is a rate for every calendar day. Hence, the compounded rate
-		// for a particular day can be retrieved by the range method easily.
-		dateFinal := date.AddDate(0, 0, 1)
-		q, err := env.DataStore.GetCompoundedAvgDIARange(symbol, date, dateFinal, calDays, daysPerYear, rounding)
-
-		if err != nil {
-			if errors.Is(err, redis.Nil) {
-				restApi.SendError(c, http.StatusNotFound, err)
-			} else {
-				restApi.SendError(c, http.StatusInternalServerError, err)
-			}
-		} else {
-			c.JSON(http.StatusOK, q)
-		}
-
-	} else {
-
-		dateInit, err := time.Parse("2006-01-02", dateInitstring)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		}
-		dateFinal, err := time.Parse("2006-01-02", dateFinalstring)
-		if err != nil {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		}
-
-		q, err := env.DataStore.GetCompoundedAvgDIARange(symbol, dateInit, dateFinal, calDays, daysPerYear, rounding)
-		if err != nil {
-			if errors.Is(err, redis.Nil) {
-				restApi.SendError(c, http.StatusNotFound, err)
-			} else {
-				restApi.SendError(c, http.StatusInternalServerError, err)
-			}
-		} else {
-			c.JSON(http.StatusOK, q)
-		}
-
-	}
-
-	tFinal := time.Now()
-	fmt.Println("time elapsed in API call: ", tFinal.Sub(tInit))
-}
-
-// GetRates is the delegate method for fetching all rate types
-// present in the (redis) database.
-func (env *Env) GetRates(c *gin.Context) {
-	q, err := env.DataStore.GetRatesMeta()
-	if len(q) == 0 {
-		restApi.SendError(c, http.StatusInternalServerError, nil)
-	}
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
-	}
-	c.JSON(http.StatusOK, q)
-}
-
-// -----------------------------------------------------------------------------
 // FIAT CURRENCIES
 // -----------------------------------------------------------------------------
 
 // GetFiatQuotations returns several quotations vs USD as published by the ECB
 func (env *Env) GetFiatQuotations(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
 	q, err := env.DataStore.GetCurrencyChange()
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
@@ -1689,6 +1365,9 @@ func (env *Env) GetFiatQuotations(c *gin.Context) {
 // -----------------------------------------------------------------------------
 
 func (env *Env) GetStockSymbols(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
 	type sourcedStock struct {
 		Stock  models.Stock
 		Source string
@@ -1718,6 +1397,9 @@ func (env *Env) GetStockSymbols(c *gin.Context) {
 // quotations of asset with @symbol from @source.
 // Last value is retrieved. Otional query parameters allow to obtain data in a time range.
 func (env *Env) GetStockQuotation(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
 	source := c.Param("source")
 	symbol := c.Param("symbol")
 	date := c.Param("time")
@@ -2279,6 +1961,9 @@ func (env *Env) GetNFTFloor(c *gin.Context) {
 
 // GetNFTFloorMA returns the moving average floor price of the nft class over the last 30 days.
 func (env *Env) GetNFTFloorMA(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
 
 	// NFT collection.
 	blockchain := c.Param("blockchain")
@@ -2832,6 +2517,9 @@ func (env *Env) GetTopNFTClasses(c *gin.Context) {
 }
 
 func (env *Env) GetNFTVolume(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
 
 	type localReturn struct {
 		Collection   string

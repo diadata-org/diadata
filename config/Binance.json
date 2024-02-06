@@ -8,19 +8,7 @@
         },
         {
             "Exchange": "Binance",
-            "ForeignName": "ANKRBUSD",
-            "Ignore": false,
-            "Symbol": "ANKR"
-        },
-        {
-            "Exchange": "Binance",
             "ForeignName": "ACAUSDT",
-            "Ignore": false,
-            "Symbol": "ACA"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "ACABUSD",
             "Ignore": false,
             "Symbol": "ACA"
         },
@@ -33,12 +21,6 @@
         {
             "Exchange": "Binance",
             "ForeignName": "SHIBUSDT",
-            "Ignore": false,
-            "Symbol": "SHIB"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "SHIBBUSD",
             "Ignore": false,
             "Symbol": "SHIB"
         },
@@ -68,12 +50,6 @@
         },
         {
             "Exchange": "Binance",
-            "ForeignName": "DOTBUSD",
-            "Ignore": false,
-            "Symbol": "DOT"
-        },
-        {
-            "Exchange": "Binance",
             "ForeignName": "DOTBTC",
             "Ignore": false,
             "Symbol": "DOT"
@@ -83,24 +59,6 @@
             "ForeignName": "DOGEUSDT",
             "Ignore": false,
             "Symbol": "DOGE"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "DOGEBUSD",
-            "Ignore": false,
-            "Symbol": "DOGE"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "GMTBUSD",
-            "Ignore": false,
-            "Symbol": "GMT"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "LDOBUSD",
-            "Ignore": false,
-            "Symbol": "LDO"
         },
         {
             "Exchange": "Binance",
@@ -254,19 +212,7 @@
         },
         {
             "Exchange": "Binance",
-            "ForeignName": "ATABUSD",
-            "Ignore": false,
-            "Symbol": "ATA"
-        },
-        {
-            "Exchange": "Binance",
             "ForeignName": "GTCUSDT",
-            "Ignore": false,
-            "Symbol": "GTC"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "GTCBUSD",
             "Ignore": false,
             "Symbol": "GTC"
         },
@@ -452,12 +398,6 @@
         },
         {
             "Exchange": "Binance",
-            "ForeignName": "CVCBUSD",
-            "Ignore": false,
-            "Symbol": "CVC"
-        },
-        {
-            "Exchange": "Binance",
             "ForeignName": "DASHBTC",
             "Ignore": false,
             "Symbol": "DASH"
@@ -575,12 +515,6 @@
             "ForeignName": "EOSUSDT",
             "Ignore": false,
             "Symbol": "EOS"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "ETCBUSD",
-            "Ignore": false,
-            "Symbol": "ETC"
         },
         {
             "Exchange": "Binance",
@@ -890,12 +824,6 @@
         },
         {
             "Exchange": "Binance",
-            "ForeignName": "RAYBUSD",
-            "Ignore": false,
-            "Symbol": "RAY"
-        },
-        {
-            "Exchange": "Binance",
             "ForeignName": "RAYUSDT",
             "Ignore": false,
             "Symbol": "RAY"
@@ -950,12 +878,6 @@
         },
         {
             "Exchange": "Binance",
-            "ForeignName": "SNMBUSD",
-            "Ignore": false,
-            "Symbol": "SNM"
-        },
-        {
-            "Exchange": "Binance",
             "ForeignName": "SNTBTC",
             "Ignore": false,
             "Symbol": "SNT"
@@ -986,7 +908,7 @@
         },
         {
             "Exchange": "Binance",
-            "ForeignName": "STORJETH",
+            "ForeignName": "STORJUSDT",
             "Ignore": false,
             "Symbol": "STORJ"
         },
@@ -1167,12 +1089,6 @@
         {
             "Exchange": "Binance",
             "ForeignName": "YFIUSDT",
-            "Ignore": false,
-            "Symbol": "YFI"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "YFIBUSD",
             "Ignore": false,
             "Symbol": "YFI"
         },

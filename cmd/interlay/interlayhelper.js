@@ -71,19 +71,31 @@ async function collateralCurrencies(api) {
   
     switch (token) {
       case "IBTC":
-        providerurl = "wss://interlay.api.onfinality.io/public-ws";
+        providerurl = process.env.INTERLAY_NODE_URL || "wss://interlay-rpc.dwellir.com";
         break;
       case "KBTC":
-        providerurl = "wss://kintsugi.api.onfinality.io/public-ws";
+        providerurl = process.env.KITSUNGI_NODE_URL || "wss://kintsugi-rpc.dwellir.com";
         break;
     }
     const wsProvider = new WsProvider(
-      // "wss://interlay.api.onfinality.io/public-ws"
-      providerurl
+       providerurl
     );
-    const api = await ApiPromise.create({
+
+    console.log("getinterlay api")
+    let api;
+    try{
+       api = await ApiPromise.create({
       provider: wsProvider,
+      throwOnConnect: true,
+      throwOnUnknown:true
     });
+  }catch(e){
+    console.log("throw getinterlay api")
+
+throw e
+  }
+
+ 
   
     let collateralCurrenciesmap = new Map();
     let totalUserVaultCollateralmap = new Map();

@@ -223,6 +223,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "DPX",
+            "ForeignName": "DPXUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "DUSK",
             "ForeignName": "DUSKUSDT",
             "Exchange": "ByBit",
@@ -469,6 +475,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "PSP",
+            "ForeignName": "PSPUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "QTUM",
             "ForeignName": "QTUMUSDT",
             "Exchange": "ByBit",
@@ -609,6 +621,12 @@
         {
             "Symbol": "UST",
             "ForeignName": "USTUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "VELA",
+            "ForeignName": "VELAUSDT",
             "Exchange": "ByBit",
             "Ignore": false
         },
