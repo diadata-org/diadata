@@ -142,6 +142,8 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 		return source.NewTraderJoeAssetSource(exchanges[dia.TraderJoeExchangeV2_1Avalanche], relDB)
 	case dia.TraderJoeExchangeV2_1BNB:
 		return source.NewTraderJoeAssetSource(exchanges[dia.TraderJoeExchangeV2_1BNB], relDB)
+	case dia.StellarExchange:
+		return source.NewStellarAssetSource(exchanges[dia.StellarExchange])
 	case "assetlists":
 		return source.NewJSONReader(exchange, secret)
 	default:

@@ -109,7 +109,7 @@ const (
 	MaverickExchange                   = "Maverick"
 	MaverickExchangeZKSync             = "Maverick-zksync"
 	MaverickExchangeBNB                = "Maverick-bnb"
-
+	StellarExchange                    = "StellarExchange"
 	// FinageForex        = "FinageForex"
 )
 
@@ -138,6 +138,7 @@ const (
 type ConfigApi struct {
 	ApiKey    string
 	SecretKey string
+	Cursor    string
 }
 
 type ConfigConnector struct {

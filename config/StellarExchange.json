@@ -1,0 +1,304 @@
+{
+  "Coins": [
+    {
+      "Symbol": "XLM",
+      "ForeignName": "XLM-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "yXLM",
+      "ForeignName": "yXLM-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "USDC",
+      "ForeignName": "USDC-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XRP",
+      "ForeignName": "XRP-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "yUSDC",
+      "ForeignName": "yUSDC-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "AQUA",
+      "ForeignName": "AQUA-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SSLX",
+      "ForeignName": "SSLX-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FIDR",
+      "ForeignName": "FIDR-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTCLN",
+      "ForeignName": "BTCLN-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XRP",
+      "ForeignName": "XRP-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SHX",
+      "ForeignName": "SHX-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ARST",
+      "ForeignName": "ARST-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTC-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETH-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BRL",
+      "ForeignName": "BRL-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "IDRT",
+      "ForeignName": "IDRT-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SCOP",
+      "ForeignName": "SCOP-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XCHF",
+      "ForeignName": "XCHF-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XXA",
+      "ForeignName": "XXA-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "yBTC",
+      "ForeignName": "yBTC-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LSP",
+      "ForeignName": "LSP-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EURC",
+      "ForeignName": "EURC-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "XRP",
+      "ForeignName": "XRP-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "USD",
+      "ForeignName": "USD-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EURMTL",
+      "ForeignName": "EURMTL-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTC-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LTC",
+      "ForeignName": "LTC-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ARS",
+      "ForeignName": "ARS-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "yETH",
+      "ForeignName": "yETH-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "CLPX",
+      "ForeignName": "CLPX-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MOBI",
+      "ForeignName": "MOBI-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NGNT",
+      "ForeignName": "NGNT-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTC-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "RIO",
+      "ForeignName": "RIO-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MXN",
+      "ForeignName": "MXN-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TFT",
+      "ForeignName": "TFT-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "AFR",
+      "ForeignName": "AFR-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BRAVE",
+      "ForeignName": "BRAVE-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "iFIDR",
+      "ForeignName": "iFIDR-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ETH",
+      "ForeignName": "ETH-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TZS",
+      "ForeignName": "TZS-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "FRED",
+      "ForeignName": "FRED-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "StellarNFT",
+      "ForeignName": "StellarNFT-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "NUNA",
+      "ForeignName": "NUNA-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "UAF",
+      "ForeignName": "UAF-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "BTC",
+      "ForeignName": "BTC-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SLT",
+      "ForeignName": "SLT-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "PYBC",
+      "ForeignName": "PYBC-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SDEXEX",
+      "ForeignName": "SDEXEX-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    },
+    {
+      "Symbol": "YBX",
+      "ForeignName": "YBX-USD",
+      "Exchange": "StellarExchange",
+      "Ignore": false
+    }
+  ]
+}

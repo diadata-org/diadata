@@ -261,18 +261,16 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewVelodromeScraper(Exchanges[dia.VelodromeExchange], scrape, relDB)
 	case dia.MaverickExchange:
 		return NewMaverickScraper(Exchanges[dia.MaverickExchange], scrape, relDB)
-		// case dia.FinageForex:
-		// 	return NewFinageForexScraper(Exchanges[dia.FinageForex], scrape, relDB, key, secret)
-
+	//case dia.FinageForex:
+	//	return NewFinageForexScraper(Exchanges[dia.FinageForex], scrape, relDB, key, secret)
 	case dia.MultiChain:
 		return NewBridgeSwapScraper(Exchanges[dia.MultiChain], scrape, relDB)
-
 	case "Influx":
 		return NewInfluxScraper(scrape)
-
 	case "UniswapHistory":
 		return NewUniswapHistoryScraper(Exchanges[dia.UniswapExchange], scrape, relDB)
-
+	case dia.StellarExchange:
+		return NewStellarScraper(Exchanges[dia.StellarExchange], scrape, relDB)
 	default:
 		return nil
 	}

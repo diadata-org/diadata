@@ -287,6 +287,7 @@ function main() {
             _build_ifnotexist build/Dockerfile-DiadataBuild-117-Dev dia.build-117.dev
             _build_ifnotexist build/Dockerfile-DiadataBuild-119-Dev dia.build-119.dev
             _build_ifnotexist build/Dockerfile-DiadataBuild-120-Dev dia.build-120.dev
+            _build_ifnotexist build/Dockerfile-DiadataBuild-121-Dev dia.build-121.dev
             _build_ifnotexist Dockerfile-filtersBlockService-Dev dia.filtersblockservice.dev
             _build_ifnotexist Dockerfile-tradesBlockService-Dev dia.tradesblockservice.dev
             _build_ifnotexist Dockerfile-pairDiscoveryService-Dev dia.pairdiscoveryservice.dev
@@ -309,6 +310,7 @@ function main() {
             _image_exist dia.build-117.dev || exit 1
             _image_exist dia.build-119.dev || exit 1
             _image_exist dia.build-120.dev || exit 1
+            _image_exist dia.build-121.dev || exit 1
             _image_exist dia.filtersblockservice.dev || exit 1
             _image_exist dia.tradesblockservice.dev || exit 1
             _image_exist dia.pairdiscoveryservice.dev || exit 1

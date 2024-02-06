@@ -152,7 +152,7 @@ func GetSymbolsList(url string) ([]string, error) {
 
 func GetConfigApi() *ConfigApi {
 	var c ConfigApi
-	if utils.Getenv("USE_ENV","false") == "true" {
+	if utils.Getenv("USE_ENV", "false") == "true" {
 		c = ConfigApi{
 			ApiKey:    utils.Getenv("DIADATA_API_KEY", ""),
 			SecretKey: utils.Getenv("DIADATA_SECRET_KEY", ""),

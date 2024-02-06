@@ -7,10 +7,9 @@ import (
 	"os"
 	"strings"
 
-	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
-
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
+	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/sirupsen/logrus"
 	"github.com/tkanos/gonfig"
@@ -39,8 +38,8 @@ func init() {
 }
 
 func main() {
-
 	relDB, err := models.NewRelDataStore()
+
 	if err != nil {
 		log.Fatal("Unable to initialize relDB: " + err.Error())
 	}
@@ -53,6 +52,7 @@ func main() {
 		}
 	case "remoteFetch":
 		err = fetchFromExchangeAndStore(relDB)
+
 		if err != nil {
 			log.Fatalf("update exchange pairs for %s: %v", exchange, err)
 		}
@@ -70,7 +70,7 @@ func updateExchangePairs(relDB *models.RelDB) (err error) {
 	// Fetch pairs from postgres.
 	pairs, err = relDB.GetExchangePairSymbols(exchange)
 	if err != nil {
-		return
+		return err
 	}
 
 	// Add pairs from config file.
@@ -217,6 +217,7 @@ func getPairsFromConfig(exchange string) ([]dia.ExchangePair, error) {
 	}
 	var coins Pairs
 	err := gonfig.GetConf(configFileAPI, &coins)
+
 	return coins.Coins, err
 }
 

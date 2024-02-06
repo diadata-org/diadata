@@ -46,11 +46,14 @@ export USE_ENV=true
 export INFLUXURL=http://localhost:8086
 export INFLUXUSER=test
 export INFLUXPASSWORD=test
-export POSTGRES_USER=postgres
-export POSTGRES_PASSWORD=password
-export POSTGRES_HOST=localhost
-export POSTGRES_DB=postgres
+export POSTGRES_USER=rider
+export POSTGRES_PASSWORD=123test
+export POSTGRES_HOST=localhost:5434
+export POSTGRES_DB=dia
 export REDISURL=localhost:6379
+# for local development
+export DIA_CONFIG_DIR=/path/to/diadata-project/config
+export KAFKA_TOPIC_SUFFIX=dia
 ```
 
 Or simple by sourcing the `local.env` inside the `deployments/local/exchange-scraper` directory.
@@ -70,3 +73,27 @@ go run collector.go -exchange MySource
 ```
 
 For an illustration you can have a look at the `KrakenScraper.go`.
+
+
+### kafka tips
+
+Sometimes kafka docker container cant create topics, required for writing
+Kafka needs to write results of exchange scrapper from command
+
+```
+go run /cmd/exchange-scrapers/collector/collector.go -exchange StellarExchange
+```
+
+It can be resolved it by ssh login to kafka container and run kafka scripts
+```
+your-console> docker exec -it <kafka-docker-container-id> bash
+...
+root@ad1f7deb4762:/# kafka-topics.sh --zookeeper zookeeper --topic trades --create --partitions 2 --replication-factor 1
+Created topic trades.
+root@ad1f7deb4762:/# kafka-topics.sh --zookeeper zookeeper --topic tradesReplicadia --create --partitions 2 --replication-factor 1
+Created topic tradesReplicadia.
+root@ad1f7deb4762:/# kafka-topics.sh --zookeeper zookeeper --topic tradestest --create --partitions 2 --replication-factor 1
+Created topic tradestest.
+```
+
+

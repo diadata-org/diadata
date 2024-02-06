@@ -13,7 +13,7 @@ type Source struct {
 	Exchanges []dia.Exchange `json:"exchanges"`
 }
 
-//InitSource Read exchange.json file and put exchange metadata in Source struct
+// InitSource Read exchange.json file and put exchange metadata in Source struct
 func InitSource() (source *Source, err error) {
 
 	var (
@@ -53,7 +53,7 @@ func InitSource() (source *Source, err error) {
 	return
 }
 
-//GetExchanges Get map of exchane name and exchange metadata
+// GetExchanges Get map of exchange name and exchange metadata
 func (s *Source) GetExchanges() (exchanges map[string]dia.Exchange) {
 	exchanges = make(map[string]dia.Exchange)
 	for _, exchange := range s.Exchanges {

@@ -1,28 +1,89 @@
 version: "3.3"
 services:
-  redis:
-    image: redis
+  zookeeper:
+    image: wurstmeister/zookeeper
     ports:
-      - "6379:6379"
+      - "2181:2181"
+    volumes:
+      # TODO figure out how to have this without version number
+      - /home/srv/zoo:/opt/zookeeper-3.4.9/data
+    networks:
+      - kafka-network
+    deploy:
+      mode: global
+      restart_policy:
+        delay: 2s
+        window: 20s
+  kafka0:
+    image: wurstmeister/kafka:latest
+    ports:
+      - "9094:9094"
+    networks:
+      - kafka-network
+    environment:
+      HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
+      ALLOW_PLAINTEXT_LISTENER: 'yes'
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      #   KAFKA_ADVERTISED_LISTENERS: INSIDE://:9092,OUTSIDE://_{HOSTNAME_COMMAND}:9094
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://:9092,OUTSIDE://kafka0:9094
+      KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9094
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_LOG_DIRS: /kafka/kafka-logs-1
+      #   KAFKA_LOG_RETENTION_BYTES: -1
+      #   KAFKA_LOG_RETENTION_HOURS: -1
+      KAFKA_DELETE_TOPIC_ENABLE: "true"
+      KAFKA_MESSAGE_MAX_BYTES: 500000000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/srv/kafka:/kafka
+    deploy:
+      mode: global
+      restart_policy:
+        delay: 2s
+        window: 20s
+    depends_on:
+      - zookeeper
+#  kafka-ui:
+#    container_name: kafka-ui
+#    image: provectuslabs/kafka-ui:latest
+#    ports:
+#      - 8082:8080
+#    environment:
+#      DYNAMIC_CONFIG_ENABLED: "true"
+#    depends_on:
+#      - kafka0
+#  redis:
+#    image: redis
+#    ports:
+#      - "6379:6379"
   influxdb:
     image: influxdb:1.8.3
     ports:
       - "8086:8086"
-  # influxdb_cli:
-  #   links:
-  #     - influxdb
-  #   image: influxdb:2.0
-  #   entrypoint: influx setup --bucket test_bucket -t test_token -o test_org --username test --password testtest --host http://127.0.0.1:8086 -f
-  #   restart: on-failure:20
-  #   depends_on:
-  #     - influxdb
-  postgres:
-    image: postgres
-    restart: always
-    ports:
-      - "27017:27017"
-      - "5432:5432"
-    environment:
-      POSTGRES_PASSWORD: password
-    volumes:
-      - ../../config/pginit.sql:/docker-entrypoint-initdb.d/init.sql
+#  influxdb_cli:
+#    links:
+#      - influxdb
+#    image: influxdb:1.8.3
+#    entrypoint: influx setup --bucket test_bucket -t test_token -o test_org --username test --password testtest --host http://127.0.0.1:8086 -f
+#    # restart: on-failure:20
+#    depends_on:
+#      - influxdb
+#  postgres:
+#    image: postgres
+#    restart: always
+#    ports:
+#      - "27017:27017"
+#      - "5432:5432"
+#    environment:
+#      POSTGRES_PASSWORD: password
+#    volumes:
+#      - ../../config/pginit.sql:/docker-entrypoint-initdb.d/init.sql
+networks:
+  kafka-network:
+    driver: overlay
+    attachable: true
+volumes:
+  kafka_data:
+    driver: local
+
