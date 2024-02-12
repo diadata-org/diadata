@@ -1808,6 +1808,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "ORDI_USDT",
+      "Ignore": false,
+      "Symbol": "ORDI"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "OST_ETH",
       "Ignore": false,
       "Symbol": "OST"
@@ -2051,6 +2057,12 @@
       "ForeignName": "SALT_ETH",
       "Ignore": false,
       "Symbol": "SALT"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "SATS_USDT",
+      "Ignore": false,
+      "Symbol": "SATS"
     },
     {
       "Exchange": "GateIO",

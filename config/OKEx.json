@@ -74,6 +74,12 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "ORDI-USDT",
+      "Ignore": false,
+      "Symbol": "ORDI"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "PEPE-USDT",
       "Ignore": false,
       "Symbol": "PEPE"
@@ -89,6 +95,12 @@
       "ForeignName": "SAMO-USDT",
       "Ignore": false,
       "Symbol": "SAMO"
+    },
+    {
+      "Symbol": "SATS",
+      "ForeignName": "SATS-USDT",
+      "Exchange": "OKEx",
+      "Ignore": false
     },
     {
       "Exchange": "OKEx",
@@ -2567,24 +2579,6 @@
       "ForeignName": "TRIO-USDT",
       "Ignore": false,
       "Symbol": "TRIO"
-    },
-    {
-      "Exchange": "OKEx",
-      "ForeignName": "false-BTC",
-      "Ignore": false,
-      "Symbol": "false"
-    },
-    {
-      "Exchange": "OKEx",
-      "ForeignName": "false-ETH",
-      "Ignore": false,
-      "Symbol": "false"
-    },
-    {
-      "Exchange": "OKEx",
-      "ForeignName": "false-USDT",
-      "Ignore": false,
-      "Symbol": "false"
     },
     {
       "Exchange": "OKEx",

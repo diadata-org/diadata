@@ -295,6 +295,12 @@
       "Address": "0x75231F58b43240C9718Dd58B4967c5114342a86c"
     },
     {
+      "Symbol": "ORDI",
+      "Exchange": "BitMart",
+      "Blockchain": "Bitcoin",
+      "Address": "b61b0172d95e266c18aea0c624db987e971a5d6d4ebc2aaed85da4642d635735i0"
+    },
+    {
       "Symbol": "PEPE",
       "Exchange": "BitMart",
       "Blockchain": "Ethereum",
@@ -329,6 +335,12 @@
       "Exchange": "BitMart",
       "Blockchain": "Ethereum",
       "Address": "0x3845badAde8e6dFF049820680d1F14bD3903a5d0"
+    },
+    {
+      "Symbol": "SATS",
+      "Exchange": "BitMart",
+      "Blockchain": "Bitcoin",
+      "Address": "9b664bdd6f5ed80d8d88957b63364c41f3ad4efb8eee11366aa16435974d9333i0"
     },
     {
       "Symbol": "SHIB",

@@ -164,6 +164,30 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "ORDIUSDT",
+            "Ignore": false,
+            "Symbol": "ORDI"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "ORDIUSDC",
+            "Ignore": false,
+            "Symbol": "ORDI"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "ORDIFDUSD",
+            "Ignore": false,
+            "Symbol": "ORDI"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "ORDIBTC",
+            "Ignore": false,
+            "Symbol": "ORDI"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "PAXGBTC",
             "Ignore": false,
             "Symbol": "PAXG"

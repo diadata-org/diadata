@@ -517,6 +517,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "ORDI",
+            "ForeignName": "ORDI_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
             "Symbol": "QTUM",
             "ForeignName": "QTUM_USDT",
             "Exchange": "Crypto.com",

@@ -428,6 +428,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "ORDIUSDT",
+      "Ignore": false,
+      "Symbol": "ORDI"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "PEPEUSDT",
       "Ignore": false,
       "Symbol": "PEPE"
@@ -461,6 +467,12 @@
       "ForeignName": "SANDUSDT",
       "Ignore": false,
       "Symbol": "SAND"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "SATSUSDT",
+      "Ignore": false,
+      "Symbol": "SATS"
     },
     {
       "Exchange": "Huobi",
