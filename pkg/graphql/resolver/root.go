@@ -578,75 +578,61 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 		filterPoints []dia.FilterPointExtended
 	)
 
-	if filter != "ema" {
+	// Make time bins according to block size and block shift parameters.
+	bins := utils.MakeBins(starttime, endtime, blockSizeSeconds, blockShiftSeconds)
 
-		// Make time bins according to block size and block shift parameters.
-		bins := utils.MakeBins(starttime, endtime, blockSizeSeconds, blockShiftSeconds)
+	// Fetch trades.
+	var (
+		trades     []dia.Trade
+		starttimes []time.Time
+		endtimes   []time.Time
+	)
 
-		// Fetch trades.
-		var (
-			trades     []dia.Trade
-			starttimes []time.Time
-			endtimes   []time.Time
-		)
-
-		if blockShiftSeconds <= blockSizeSeconds {
-			// Fetch all trades in time range.
-			starttimes = []time.Time{starttime}
-			endtimes = []time.Time{endtime}
-		} else {
-			// Fetch trades batched for disjoint bins.
-			for _, bin := range bins {
-				starttimes = append(starttimes, bin.Starttime)
-				endtimes = append(endtimes, bin.Endtime)
-			}
+	if blockShiftSeconds <= blockSizeSeconds {
+		// Fetch all trades in time range.
+		starttimes = []time.Time{starttime}
+		endtimes = []time.Time{endtime}
+	} else {
+		// Fetch trades batched for disjoint bins.
+		for _, bin := range bins {
+			starttimes = append(starttimes, bin.Starttime)
+			endtimes = append(endtimes, bin.Endtime)
 		}
+	}
+	trades, err = r.DS.GetTradesByFeedSelection(feedselection, starttimes, endtimes, 0)
+	if err != nil {
+		return sr, err
+	}
+	log.Println("Generating blocks, Total Trades", len(trades))
+	log.Info("generating bins. Total bins: ", len(bins))
 
-		trades, err = r.DS.GetTradesByFeedSelection(feedselection, starttimes, endtimes, 0)
-		if err != nil {
-			return sr, err
-		}
-		log.Println("Generating blocks, Total Trades", len(trades))
-		log.Info("generating bins. Total bins: ", len(bins))
-
-		if len(bins) > 0 {
-			// In case the first bin is empty, look for the last trades before @starttime
-			// in order to select the most recent one with sufficient volume.
-			if len(trades) == 0 || !utils.IsInBin(trades[0].Time, bins[0]) || trades[0].VolumeUSD() < tradeVolumeThreshold {
-				previousTrade, err := r.DS.GetTradesByFeedSelection(feedselection, []time.Time{endtime.AddDate(0, 0, -10)}, []time.Time{starttime}, lookbackTradesNumber)
-				if len(previousTrade) == 0 {
-					log.Error("get initial trade: ", err)
-					// Fill with a zero trade so we can build blocks.
-					auxTrade := trades[0]
-					auxTrade.Volume = 0
-					auxTrade.Price = 0
-					auxTrade.EstimatedUSDPrice = 0
-					trades = append([]dia.Trade{auxTrade}, trades...)
-				} else {
-					for _, t := range previousTrade {
-						if t.VolumeUSD() > tradeVolumeThreshold {
-							trades = append([]dia.Trade{t}, trades...)
-							break
-						}
+	if len(bins) > 0 {
+		// In case the first bin is empty, look for the last trades before @starttime
+		// in order to select the most recent one with sufficient volume.
+		if len(trades) == 0 || !utils.IsInBin(trades[0].Time, bins[0]) || trades[0].VolumeUSD() < tradeVolumeThreshold {
+			previousTrade, err := r.DS.GetTradesByFeedSelection(feedselection, []time.Time{endtime.AddDate(0, 0, -10)}, []time.Time{starttime}, lookbackTradesNumber)
+			if len(previousTrade) == 0 {
+				log.Error("get initial trade: ", err)
+				// Fill with a zero trade so we can build blocks.
+				auxTrade := trades[0]
+				auxTrade.Volume = 0
+				auxTrade.Price = 0
+				auxTrade.EstimatedUSDPrice = 0
+				trades = append([]dia.Trade{auxTrade}, trades...)
+			} else {
+				for _, t := range previousTrade {
+					if t.VolumeUSD() > tradeVolumeThreshold {
+						trades = append([]dia.Trade{t}, trades...)
+						break
 					}
 				}
 			}
-			tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateBlocks(blockSizeSeconds, blockShiftSeconds, bins)
-			log.Println("Total TradeBlocks", len(tradeBlocks))
 		}
+		tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateBlocks(blockSizeSeconds, blockShiftSeconds, bins)
+		log.Println("Total TradeBlocks", len(tradeBlocks))
 	}
-	// } else if filter == "ema" {
-	// 	emaFilterPoints, err = r.DS.GetFilter("MA120", feedselection[0].Asset, "", starttimeimmutable, endtimeimmutable)
-	// 	if err != nil {
-	// 		log.Errorln("Error getting filter", err)
-	// 	}
-	// }
 
 	switch filter {
-	// case "ema":
-	// 	{
-	// 		filterPoints, _ = queryhelper.FilterEMA(emaFilterPoints, feedselection[0].Asset, int(blockSizeSeconds))
-	// 	}
 	case "mair":
 		{
 			filterPoints = queryhelper.FilterMAIRextended(tradeBlocks, feedselection[0].Asset, int(blockSizeSeconds), tradeVolumeThreshold, nativeDenomination)
@@ -681,6 +667,83 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 	}
 
 	return &fper, nil
+}
+
+// GetFeedAggregation computes stats such as volume and number of trades fo a given FeedSelection.
+func (r *DiaResolver) GetFeedAggregation(ctx context.Context, args struct {
+	StartTime            graphql.NullTime
+	EndTime              graphql.NullTime
+	TradeVolumeThreshold graphql.NullFloat
+	FeedSelection        *[]FeedSelection
+}) (*[]*FeedSelectionAggregatedResolver, error) {
+	var (
+		sr                   *[]*FeedSelectionAggregatedResolver
+		starttime            time.Time
+		endtime              time.Time
+		tradeVolumeThreshold float64
+		err                  error
+	)
+
+	// Handle timestamps.
+	if args.EndTime.Value != nil {
+		endtime = args.EndTime.Value.Time
+	} else {
+		endtime = time.Now()
+	}
+	if args.StartTime.Value != nil {
+		starttime = args.StartTime.Value.Time
+	} else {
+		starttime = endtime.Add(-time.Duration(1 * time.Hour))
+	}
+	if endtime.Before(starttime) {
+		return sr, errors.New("startTime must be before EndTime")
+	}
+	if endtime.After(time.Now()) {
+		endtime = time.Now()
+	}
+	// --- Limit the (time-)range of the query to 24 hours ---
+	maxStartTime := endtime.Add(-time.Duration(7*24*60) * time.Minute)
+	if starttime.Before(maxStartTime) {
+		starttime = maxStartTime
+	}
+
+	if args.TradeVolumeThreshold.Value != nil {
+		tradeVolumeThreshold = *args.TradeVolumeThreshold.Value
+	} else {
+		tradeVolumeThreshold = TRADE_VOLUME_THRESHOLD_DEFAULT
+	}
+
+	if args.FeedSelection == nil {
+		return sr, errors.New("at least 1 asset must be selected")
+	}
+	feedselection, err := r.castLocalFeedSelection(*args.FeedSelection)
+	if err != nil {
+		return sr, err
+	}
+
+	// Get aggregated data in given time-range.
+	fsa, err := r.DS.GetAggregatedFeedSelection(feedselection, starttime, endtime, tradeVolumeThreshold)
+	if err != nil {
+		log.Error("GetAggregatedFeedSelection: ", err)
+		return sr, err
+	}
+
+	// Fill response slice.
+	var fsar []*FeedSelectionAggregatedResolver
+	for _, fs := range fsa {
+		if fs.Pooladdress != "" {
+			pool, err := r.RelDB.GetPoolByAddress(fs.Basetokenblockchain, fs.Pooladdress)
+			if err != nil {
+				log.Error("GetPoolByAddress: ", err)
+			}
+			if pool.Time.After(time.Now().AddDate(0, 0, -7)) {
+				fs.PoolLiquidityUSD, _ = pool.GetPoolLiquidityUSD()
+			}
+		}
+		fsar = append(fsar, &FeedSelectionAggregatedResolver{q: fs})
+	}
+
+	return &fsar, nil
 }
 
 func (r *DiaResolver) GetVWALP(ctx context.Context, args struct {

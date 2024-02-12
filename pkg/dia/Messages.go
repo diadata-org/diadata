@@ -453,6 +453,19 @@ type FeedSelection struct {
 	LiquidityThreshold float64
 }
 
+type FeedSelectionAggregated struct {
+	Exchange            string
+	Basetokenaddress    string
+	Basetokenblockchain string
+	Pooladdress         string
+	PoolLiquidityUSD    float64
+	TradesCount         int32
+	Volume              float64
+	LastPrice           float64
+	Starttime           time.Time
+	Endtime             time.Time
+}
+
 type ExchangepairSelection struct {
 	Exchange           Exchange
 	Pairs              []Pair

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -729,6 +730,153 @@ func (datastore *DB) GetTradesByFeedSelection(
 	}
 
 	return r, nil
+}
+
+// GetAggregatedFeedSelection returns aggregated quantities with restrictions given by the struct @feedselection.
+func (datastore *DB) GetAggregatedFeedSelection(
+	feedselection []dia.FeedSelection,
+	starttime time.Time,
+	endtime time.Time,
+	tradeVolumeThreshold float64,
+) ([]dia.FeedSelectionAggregated, error) {
+	var (
+		query                   string
+		feedSelectionAggregated []dia.FeedSelectionAggregated
+	)
+
+	if starttime.After(endtime) {
+		return feedSelectionAggregated, errors.New("starttime is after endtime.")
+	}
+
+	query += fmt.Sprintf(`
+		SELECT SUM(abs),COUNT(multiplication),LAST(multiplication)
+		FROM (
+			SELECT ABS(estimatedUSDPrice*volume),estimatedUSDPrice AS multiplication
+			FROM %s 
+			WHERE ( `,
+		influxDbTradesTable,
+	)
+
+	// --------------------- Iterate over assets. ---------------------
+	for i, item := range feedselection {
+		if i > 0 {
+			query += " OR "
+		}
+		//  ---------------------Iterate over exchanges. ---------------------
+		var exchangeQuery string
+		for j, exchangepairs := range item.Exchangepairs {
+			if j == 0 {
+				exchangeQuery += " AND ("
+			} else {
+				exchangeQuery += " OR  "
+			}
+
+			// --------------------- Iterate over pairs/pools. ---------------------
+			var pairsQuery string
+			if exchangepairs.Exchange.Centralized {
+				for k, pair := range exchangepairs.Pairs {
+					if k == 0 {
+						pairsQuery += " AND ("
+					} else {
+						pairsQuery += " OR "
+					}
+					pairsQuery += fmt.Sprintf(`
+							( quotetokenaddress='%s' AND quotetokenblockchain='%s' AND basetokenaddress='%s' and basetokenblockchain='%s')
+							`,
+						pair.QuoteToken.Address,
+						pair.QuoteToken.Blockchain,
+						pair.BaseToken.Address,
+						pair.BaseToken.Blockchain,
+					)
+				}
+			} else {
+				for k, pool := range exchangepairs.Pools {
+					if k == 0 {
+						pairsQuery += " AND ("
+					} else {
+						pairsQuery += " OR "
+					}
+					pairsQuery += fmt.Sprintf(" pooladdress='%s' ", pool.Address)
+				}
+			}
+			if len(exchangepairs.Pairs) > 0 || len(exchangepairs.Pools) > 0 {
+				pairsQuery += " ) "
+			}
+
+			if exchangepairs.Exchange.Name != "" {
+				exchangeQuery += fmt.Sprintf(`(exchange='%s' %s)`, exchangepairs.Exchange.Name, pairsQuery)
+			} else {
+				// Take into account trades on all exchanges.
+				exchangeQuery += fmt.Sprintf(`exchange=~/./ %s`, pairsQuery)
+			}
+		}
+		if len(item.Exchangepairs) > 0 {
+			exchangeQuery += " ) "
+		}
+
+		// Main query for trades by asset.
+		query += fmt.Sprintf(`
+			( (quotetokenaddress='%s' AND quotetokenblockchain='%s') %s ) 
+			`,
+			item.Asset.Address,
+			item.Asset.Blockchain,
+			exchangeQuery,
+		)
+	}
+
+	query += fmt.Sprintf(`	
+		)
+		AND estimatedUSDPrice > 0
+		AND time >= %d
+		AND time < %d)
+		WHERE multiplication>%v `,
+		starttime.UnixNano(),
+		endtime.UnixNano(),
+		tradeVolumeThreshold,
+	)
+	query += ` GROUP BY "exchange","basetokenaddress","basetokenblockchain","pooladdress"`
+
+	res, err := queryInfluxDB(datastore.influxClient, query)
+	if err != nil {
+		return feedSelectionAggregated, err
+	}
+
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		for _, row := range res[0].Series {
+			if len(row.Values[0]) > 1 {
+				var fsa dia.FeedSelectionAggregated
+				fsa.Exchange = row.Tags["exchange"]
+				fsa.Basetokenaddress = row.Tags["basetokenaddress"]
+				fsa.Basetokenblockchain = row.Tags["basetokenblockchain"]
+				fsa.Pooladdress = row.Tags["pooladdress"]
+				fsa.Volume, err = row.Values[0][1].(json.Number).Float64()
+				if err != nil {
+					log.Error("cast float64: ", err)
+				}
+				tradescount, err := row.Values[0][2].(json.Number).Int64()
+				if err != nil {
+					log.Error("cast int64: ", err)
+				}
+				fsa.TradesCount = int32(tradescount)
+				fsa.LastPrice, err = row.Values[0][3].(json.Number).Float64()
+				if err != nil {
+					log.Error("cast float64: ", err)
+				}
+				fsa.Starttime = starttime
+				fsa.Endtime = endtime
+				feedSelectionAggregated = append(feedSelectionAggregated, fsa)
+			}
+		}
+	} else {
+		return feedSelectionAggregated, fmt.Errorf("No trades found.")
+	}
+
+	// Sort response by volume.
+	sort.Slice(feedSelectionAggregated, func(m, n int) bool {
+		return feedSelectionAggregated[m].Volume > feedSelectionAggregated[n].Volume
+	})
+
+	return feedSelectionAggregated, nil
 }
 
 // GetTradesByExchangepairs returns all trades where either of the following is fulfilled.
