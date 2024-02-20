@@ -113,7 +113,7 @@ func (s CoingeckoScraper) FetchQuotations() {
 	}
 	// ... otherwise fetch quotations from DIA DB.
 	for currentDate.Before(endDate) {
-		quotation, err := s.datastore.GetAssetQuotation(ethAsset, currentDate)
+		quotation, err := s.datastore.GetAssetQuotation(ethAsset, time.Time{}, currentDate)
 		if err != nil {
 			log.Fatal("Get asset quotation: ", err)
 		}

@@ -455,6 +455,7 @@ type FeedSelection struct {
 
 type FeedSelectionAggregated struct {
 	Exchange            string
+	Basetokensymbol     string
 	Basetokenaddress    string
 	Basetokenblockchain string
 	Pooladdress         string

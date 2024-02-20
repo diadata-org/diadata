@@ -85,12 +85,12 @@ type Datastore interface {
 
 	// New Asset pricing methods: 23/02/2021
 	SetAssetPriceUSD(asset dia.Asset, price float64, timestamp time.Time) error
-	GetAssetPriceUSD(asset dia.Asset, timestamp time.Time) (float64, error)
+	GetAssetPriceUSD(asset dia.Asset, starttime time.Time, endtime time.Time) (float64, error)
 	GetAssetPriceUSDLatest(asset dia.Asset) (price float64, err error)
 	SetAssetQuotation(quotation *AssetQuotation) error
-	GetAssetQuotation(asset dia.Asset, timestamp time.Time) (*AssetQuotation, error)
+	GetAssetQuotation(asset dia.Asset, starttime time.Time, endtime time.Time) (*AssetQuotation, error)
 	GetAssetQuotations(asset dia.Asset, starttime time.Time, endtime time.Time) ([]AssetQuotation, error)
-	GetAssetQuotationLatest(asset dia.Asset) (*AssetQuotation, error)
+	GetAssetQuotationLatest(asset dia.Asset, starttime time.Time) (*AssetQuotation, error)
 	GetSortedAssetQuotations(assets []dia.Asset) ([]AssetQuotation, error)
 	AddAssetQuotationsToBatch(quotations []*AssetQuotation) error
 	SetAssetQuotationCache(quotation *AssetQuotation, check bool) (bool, error)
