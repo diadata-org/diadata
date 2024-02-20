@@ -315,7 +315,65 @@ func (ob *Env) Whitelist(context *gin.Context) {
 	context.JSON(http.StatusOK, addresses)
 }
 
-// list whitelisted addresses
+func (ob *Env) Dashboard(context *gin.Context) {
+	address := context.Query("address")
+	chainID := context.Query("chainID")
+	page := context.Query("page")
+
+	offset := 0
+	if page != "" {
+		pageInt, err := strconv.Atoi(page)
+		if err != nil || pageInt < 1 {
+			offset = 0
+		} else {
+			offset = (pageInt - 1) * 20
+		}
+	} else {
+		offset = 0
+	}
+
+	totalUpdates, err := ob.RelDB.GetOracleUpdateCount(address, chainID)
+	if err != nil {
+		errorMsg := "Error fetching oracle update count"
+		logMsg := "Oracle Stats error GetOracleUpdateCount"
+		handleError(context, http.StatusInternalServerError, errorMsg, logMsg, err)
+		return
+	}
+
+	updates, err := ob.RelDB.GetOracleUpdates(address, chainID, offset)
+	if err != nil {
+		errorMsg := "Error fetching oracle updates"
+		logMsg := "Oracle Stats error"
+		handleError(context, http.StatusInternalServerError, errorMsg, logMsg, err)
+		return
+	}
+
+	type localAssetConfig struct {
+		Address           string
+		Blockchain        string
+		Deviation         uint
+		HeartBeat         uint
+		GQLQuery          string
+		Volume24h         uint
+		LastReportedPrice uint
+		LastReportedTime  time.Time
+	}
+
+	asset1 := localAssetConfig{Address: "0x", Blockchain: "2", Deviation: 2, HeartBeat: 4, GQLQuery: "", Volume24h: 88, LastReportedPrice: 0, LastReportedTime: time.Now()}
+	asset2 := localAssetConfig{Address: "0x2", Blockchain: "1", Deviation: 2, HeartBeat: 4, GQLQuery: "", Volume24h: 82, LastReportedPrice: 1, LastReportedTime: time.Now()}
+
+	response := make(map[string]interface{})
+	response["OracleAddress"] = totalUpdates
+	response["Chain"] = chainID
+	response["OracleType"] = chainID
+	response["GasRemaining"] = chainID
+	response["GasSpend"] = chainID
+	response["Transactions"] = updates
+	response["Assets"] = []localAssetConfig{asset1, asset2}
+	response["Count"] = totalUpdates
+	context.JSON(http.StatusOK, response)
+}
+
 func (ob *Env) Stats(context *gin.Context) {
 	address := context.Query("address")
 	chainID := context.Query("chainID")
