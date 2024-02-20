@@ -217,6 +217,15 @@ func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *dia
 			}
 			rawQ.Symbol = symbol
 			rawQ.Price = price
+		} else if address == "0x6C2C06790b3E3E3c38e12Ee22F8183b37a13EE55" && blockchain == "Arbitrum" {
+			// Special case: DPX - only ByBit as source
+			price, symbol, err := getDpxGraphqlAssetQuotationFromDia(blockchain, address)
+			if err != nil {
+				log.Printf("Failed to retrieve %s (DPX) quotation data from Graphql on DIA: %v", address, err)
+				return oldPrice, err
+			}
+			rawQ.Symbol = symbol
+			rawQ.Price = price
 		} else {
 			rawQ, err = getAssetQuotationFromDia(blockchain, address)
 			if err != nil {
@@ -328,6 +337,15 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 			price, symbol, err := getRdpxGraphqlAssetQuotationFromDia(blockchain, address)
 			if err != nil {
 				log.Printf("Failed to retrieve %s (RDPX) quotation data from Graphql on DIA: %v", address, err)
+				return oldPrice, err
+			}
+			rawQ.Symbol = symbol
+			rawQ.Price = price
+		} else if address == "0x6C2C06790b3E3E3c38e12Ee22F8183b37a13EE55" && blockchain == "Arbitrum" {
+			// Special case: DPX - only ByBit as source
+			price, symbol, err := getDpxGraphqlAssetQuotationFromDia(blockchain, address)
+			if err != nil {
+				log.Printf("Failed to retrieve %s (DPX) quotation data from Graphql on DIA: %v", address, err)
 				return oldPrice, err
 			}
 			rawQ.Symbol = symbol
@@ -579,6 +597,61 @@ func getRdpxGraphqlAssetQuotationFromDia(blockchain, address string) (float64, s
 		return 0.0, "", errors.New("no results")
 	}
 	return r.GetFeed[len(r.GetFeed)-1].Value, "RDPX", nil
+}
+
+// Special case for DPX: Only query for ByBit or DEXes with >500k liquidity
+func getDpxGraphqlAssetQuotationFromDia(blockchain, address string) (float64, string, error) {
+	log.Println("Entering Dpx special case: Get price with minimum liquidity of 500k, or ByBit")
+	windowSize := 120
+	currentTime := time.Now()
+	starttime := currentTime.Add(time.Duration(-windowSize*2) * time.Second)
+	type Response struct {
+		GetFeed []struct {
+			Name   string    `json:"Name"`
+			Time   time.Time `json:"Time"`
+			Value  float64   `json:"Value"`
+		} `json:"GetFeed"`
+	}
+	client := gql.NewClient("https://api.diadata.org/graphql/query")
+	req := gql.NewRequest(`
+    query  {
+		 GetFeed(
+		 	Filter: "vwapir", 
+			BlockSizeSeconds: ` + strconv.Itoa(windowSize) + `, 
+			BlockShiftSeconds: ` + strconv.Itoa(windowSize) + `,
+			StartTime: ` + strconv.FormatInt(starttime.Unix(), 10) + `, 
+			EndTime: ` + strconv.FormatInt(currentTime.Unix(), 10) + `, 
+			FeedSelection: [
+				{
+					Address: "` + address + `", 
+					Blockchain: "` + blockchain + `",
+					LiquidityThreshold: 500000.0
+				},
+				{
+					Address: "` + address + `",
+					Blockchain: "` + blockchain + `",
+					Exchangepairs: [
+						{Exchange: "ByBit"}
+					],
+				}
+			]
+		)
+		{
+			Name
+			Time
+			Value
+  	}
+	}`)
+
+	ctx := context.Background()
+	var r Response
+	if err := client.Run(ctx, req, &r); err != nil {
+		return 0.0, "", err
+	}
+	if len(r.GetFeed) == 0 {
+		return 0.0, "", errors.New("no results")
+	}
+	return r.GetFeed[len(r.GetFeed)-1].Value, "DPX", nil
 }
 
 func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int, gqlMethodology string) (float64, string, error) {

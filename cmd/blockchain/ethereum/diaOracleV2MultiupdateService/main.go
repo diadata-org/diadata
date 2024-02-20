@@ -102,6 +102,7 @@ func main() {
 
 		// parse asset from env
 		entries := strings.Split(asset, "-")
+		//TODO: check if len(array) > 0
 		currAsset.blockchain = strings.TrimSpace(entries[0])
 		currAsset.address = strings.TrimSpace(entries[1])
 		currAsset.symbol = strings.TrimSpace(entries[2])
