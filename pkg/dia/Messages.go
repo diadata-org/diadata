@@ -454,17 +454,16 @@ type FeedSelection struct {
 }
 
 type FeedSelectionAggregated struct {
-	Exchange            string
-	Basetokensymbol     string
-	Basetokenaddress    string
-	Basetokenblockchain string
-	Pooladdress         string
-	PoolLiquidityUSD    float64
-	TradesCount         int32
-	Volume              float64
-	LastPrice           float64
-	Starttime           time.Time
-	Endtime             time.Time
+	Exchange         string
+	Quotetoken       Asset
+	Basetoken        Asset
+	Pooladdress      string
+	PoolLiquidityUSD float64
+	TradesCount      int32
+	Volume           float64
+	LastPrice        float64
+	Starttime        time.Time
+	Endtime          time.Time
 }
 
 type ExchangepairSelection struct {

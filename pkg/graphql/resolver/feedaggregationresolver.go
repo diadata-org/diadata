@@ -15,12 +15,28 @@ func (qr *FeedSelectionAggregatedResolver) Exchange(ctx context.Context) (*strin
 	return &qr.q.Exchange, nil
 }
 
+func (qr *FeedSelectionAggregatedResolver) Quotetokenaddress(ctx context.Context) (*string, error) {
+	return &qr.q.Quotetoken.Address, nil
+}
+
+func (qr *FeedSelectionAggregatedResolver) Quotetokenblockchain(ctx context.Context) (*string, error) {
+	return &qr.q.Quotetoken.Blockchain, nil
+}
+
+func (qr *FeedSelectionAggregatedResolver) Quotetokensymbol(ctx context.Context) (*string, error) {
+	return &qr.q.Quotetoken.Symbol, nil
+}
+
 func (qr *FeedSelectionAggregatedResolver) Basetokenaddress(ctx context.Context) (*string, error) {
-	return &qr.q.Basetokenaddress, nil
+	return &qr.q.Basetoken.Address, nil
 }
 
 func (qr *FeedSelectionAggregatedResolver) Basetokenblockchain(ctx context.Context) (*string, error) {
-	return &qr.q.Basetokenblockchain, nil
+	return &qr.q.Basetoken.Blockchain, nil
+}
+
+func (qr *FeedSelectionAggregatedResolver) Basetokensymbol(ctx context.Context) (*string, error) {
+	return &qr.q.Basetoken.Symbol, nil
 }
 
 func (qr *FeedSelectionAggregatedResolver) Pooladdress(ctx context.Context) (*string, error) {

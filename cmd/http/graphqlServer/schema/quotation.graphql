@@ -158,6 +158,10 @@ type FilterPointExtended {
 
 type FeedSelectionAggregated {
   Exchange: String
+  Quotetokensymbol: String
+  Quotetokenaddress: String
+  Quotetokenblockchain: String
+  Basetokensymbol: String
   Basetokenaddress: String
   Basetokenblockchain: String
   Pooladdress: String
