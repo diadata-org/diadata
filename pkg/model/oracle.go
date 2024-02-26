@@ -167,9 +167,13 @@ HAVING
     AND t1.deleted = false
     AND t1.expired = false
 	`, oracleconfigTable, feederupdatesTable)
+
+	fmt.Println(query)
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
 
 	if err != nil {
+		fmt.Println(err)
+
 		return
 	}
 	defer rows.Close()
@@ -640,4 +644,178 @@ func (rdb *RelDB) GetOracleUpdates(address string, chainid string, offset int) (
 	}
 
 	return updates, nil
+}
+func (rdb *RelDB) GetLastOracleUpdate(address string, chainid string, offset int) ([]dia.OracleUpdate, error) {
+	query := fmt.Sprintf(`
+	SELECT fu.oracle_address,
+		fu.transaction_hash,
+		fu.transaction_cost,
+		fu.asset_key,
+		fu.asset_price,
+		fu.update_block,
+		fu.update_from,
+		fu.from_balance,
+		fu.gas_cost,
+		fu.gas_used,
+		fu.chain_id,
+		fu.update_time,
+		oc.creation_block,
+		oc.creation_block_time
+
+
+	FROM %s fu
+	JOIN %s oc ON fu.oracle_address = oc.address AND fu.chain_id = oc.chainID 
+	WHERE fu.oracle_address = $1 AND fu.chain_id = $2 order by fu.update_time desc LIMIT 1 OFFSET %d
+	`, feederupdatesTable, oracleconfigTable, offset)
+
+	rows, err := rdb.postgresClient.Query(context.Background(), query, address, chainid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var (
+		updates []dia.OracleUpdate
+	)
+
+	for rows.Next() {
+
+		var (
+			update            dia.OracleUpdate
+			updateTime        sql.NullTime
+			creationBlock     sql.NullInt64
+			creationBlockTime sql.NullTime
+		)
+		err := rows.Scan(
+			&update.OracleAddress,
+			&update.TransactionHash,
+			&update.TransactionCost,
+			&update.AssetKey,
+			&update.AssetPrice,
+			&update.UpdateBlock,
+			&update.UpdateFrom,
+			&update.FromBalance,
+			&update.GasCost,
+			&update.GasUsed,
+			&update.ChainID,
+			&updateTime,
+			&creationBlock,
+			&creationBlockTime,
+		)
+
+		if updateTime.Valid {
+			update.UpdateTime = updateTime.Time
+		}
+		if creationBlockTime.Valid {
+			update.CreationBlockTime = creationBlockTime.Time
+		}
+		if creationBlock.Valid {
+			update.CreationBlock = uint64(creationBlock.Int64)
+		}
+
+		if err != nil {
+			return nil, err
+		}
+
+		updates = append(updates, update)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return updates, nil
+}
+func (rdb *RelDB) GetTotalGasSpend(address string, chainid string, offset int) (float64, error) {
+	query := fmt.Sprintf(`
+	SELECT 
+		SUM(fu.gas_used) AS total_gas_used
+	FROM %s fu
+	WHERE fu.oracle_address = $1 AND fu.chain_id = $2
+	`, feederupdatesTable)
+
+	rows, err := rdb.postgresClient.Query(context.Background(), query, address, chainid)
+	if err != nil {
+		fmt.Println("err", err)
+		return 0.0, err
+	}
+	defer rows.Close()
+
+	var (
+		gasUsed sql.NullFloat64
+	)
+
+	for rows.Next() {
+
+		rows.Scan(
+
+			&gasUsed,
+		)
+
+	}
+
+	if gasUsed.Valid {
+		return gasUsed.Float64, nil
+
+	}
+	return 0.0, nil
+
+}
+func (rdb *RelDB) GetDayWiseUpdates(address string, chainid string, offset int) ([]dia.FeedUpdates, float64, error) {
+	query := fmt.Sprintf(`
+	WITH DailyUpdates AS (
+		SELECT 
+			DATE(fu.update_time) AS day, 
+			AVG(fu.gas_used) AS average_gas_used,
+			SUM(fu.gas_used) AS total_gas_used,
+			COUNT(*) AS total_updates
+		FROM %s fu
+		WHERE fu.oracle_address = $1 AND fu.chain_id = $2
+
+		GROUP BY DATE(fu.update_time)
+	)
+	SELECT 
+		day, 
+		average_gas_used, 
+		total_gas_used,
+		total_updates,
+		(SELECT AVG(total_updates) FROM DailyUpdates) AS average_total_updates_per_day
+	FROM DailyUpdates
+	ORDER BY day DESC LIMIT 30
+	`, feederupdatesTable)
+	fmt.Println("---", query)
+
+	rows, err := rdb.postgresClient.Query(context.Background(), query, address, chainid)
+	if err != nil {
+		fmt.Println("err", err)
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	var (
+		avgGasUsed sql.NullFloat64
+		count      sql.NullFloat64
+		stats      []dia.FeedUpdates
+		updateTime sql.NullTime
+	)
+
+	for rows.Next() {
+		du := dia.FeedUpdates{}
+		rows.Scan(
+			&updateTime,
+			&avgGasUsed,
+			&du.GasUsed,
+			&du.UpdateCount,
+			&count,
+		)
+		if updateTime.Valid {
+			du.Day = updateTime.Time
+		}
+
+		stats = append(stats, du)
+
+	}
+
+	return stats, avgGasUsed.Float64, nil
+
 }
