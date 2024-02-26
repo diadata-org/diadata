@@ -768,9 +768,15 @@ type OracleUpdate struct {
 	UpdateFrom        string
 	FromBalance       string
 	GasCost           string
-	GasUsed           string
+	GasUsed           float64
 	ChainID           string
 	UpdateTime        time.Time
 	CreationBlock     uint64
 	CreationBlockTime time.Time
+}
+
+type FeedUpdates struct {
+	Day         time.Time `json:"Day"`
+	UpdateCount int32     `json:"UpdateCount"`
+	GasUsed     float64   `json:"GasUsed"`
 }

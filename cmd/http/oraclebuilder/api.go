@@ -16,6 +16,7 @@ import (
 
 	kr "github.com/99designs/keyring"
 	"github.com/99designs/keyring/cmd/k8sbridge"
+	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gin-gonic/gin"
@@ -315,6 +316,70 @@ func (ob *Env) Whitelist(context *gin.Context) {
 	context.JSON(http.StatusOK, addresses)
 }
 
+func convertExchangePairs(exchangePairs []Exchangepair) string {
+	// Create a slice to hold JSON objects
+	var jsonObjects []string
+
+	// Iterate through the exchangePairs
+	for _, exchangePair := range exchangePairs {
+		jsonObject := fmt.Sprintf(`{Exchange: "%s"`, exchangePair.Exchange)
+
+		var quotedArr []string
+
+		for _, item := range exchangePair.Pairs {
+			quotedArr = append(quotedArr, `"`+item+`"`)
+		}
+		pairs := `[` + strings.Join(quotedArr, ",") + `]`
+
+		jsonObject += `,Pairs:` + pairs
+
+		jsonObject += "}"
+
+		jsonObjects = append(jsonObjects, jsonObject)
+	}
+
+	jsonArray := "[" + strings.Join(jsonObjects, ",") + "]"
+
+	return jsonArray
+}
+
+type Exchangepair struct {
+	Exchange string   `json:"Exchange"`
+	Pairs    []string `json:"Pairs"`
+}
+
+type FeedSelection struct {
+	Address       string         `json:"Address"`
+	Blockchain    string         `json:"Blockchain"`
+	Exchangepairs []Exchangepair `json:"Exchangepairs"`
+}
+
+type SymbolFeed struct {
+	Methodology   string          `json:"Methodology"`
+	Symbol        string          `json:"Symbol"`
+	FeedSelection []FeedSelection `json:"FeedSelection"`
+}
+
+func generateFeedSelectionQuery(feedSelections []FeedSelection) string {
+	var jsonObjects []string
+
+	for _, feedSelection := range feedSelections {
+
+		exchangepair := convertExchangePairs(feedSelection.Exchangepairs)
+		jsonObject := fmt.Sprintf(`{
+			Address: %q,
+			Blockchain: %q,
+			Exchangepairs: %s
+		}`, feedSelection.Address, feedSelection.Blockchain, exchangepair)
+
+		jsonObjects = append(jsonObjects, jsonObject)
+	}
+
+	jsonArray := "[" + strings.Join(jsonObjects, ",") + "]"
+
+	return jsonArray
+}
+
 func (ob *Env) Dashboard(context *gin.Context) {
 	address := context.Query("address")
 	chainID := context.Query("chainID")
@@ -348,28 +413,110 @@ func (ob *Env) Dashboard(context *gin.Context) {
 		return
 	}
 
+	oracleConfig, err := ob.RelDB.GetOracleConfig(address, chainID)
+	if err != nil {
+		errorMsg := "Error fetching oracle config"
+		logMsg := "Oracle Stats error"
+		handleError(context, http.StatusInternalServerError, errorMsg, logMsg, err)
+		return
+	}
+
 	type localAssetConfig struct {
-		Address           string
-		Blockchain        string
-		Deviation         uint
-		HeartBeat         uint
-		GQLQuery          string
-		Volume24h         uint
-		LastReportedPrice uint
+		Address       string
+		Blockchain    string
+		Deviation     string
+		HeartBeat     string
+		GQLQuery      string
+		FeedSelection interface{}
+
+		Volume24h         float64
+		LastReportedPrice string
 		LastReportedTime  time.Time
 	}
 
-	asset1 := localAssetConfig{Address: "0x", Blockchain: "2", Deviation: 2, HeartBeat: 4, GQLQuery: "", Volume24h: 88, LastReportedPrice: 0, LastReportedTime: time.Now()}
-	asset2 := localAssetConfig{Address: "0x2", Blockchain: "1", Deviation: 2, HeartBeat: 4, GQLQuery: "", Volume24h: 82, LastReportedPrice: 1, LastReportedTime: time.Now()}
+	var symbolFeeds []SymbolFeed
+	if oracleConfig.FeederSelection != "" {
+		if err := json.Unmarshal([]byte(oracleConfig.FeederSelection), &symbolFeeds); err != nil {
+			return
+		}
+
+	}
+
+	var (
+		assets                []localAssetConfig
+		avgGasSpend, gasSpend float64
+		updateFeeds           []dia.FeedUpdates
+	)
+
+	for _, sf := range symbolFeeds {
+		var blockchain string
+		for _, feeds := range sf.FeedSelection {
+			blockchain = blockchain + feeds.Blockchain
+
+		}
+
+		blockDuration := 120
+		currentTime := time.Now()
+		starttime := currentTime.Add(time.Duration(-blockDuration*2) * time.Second)
+		query := `
+    query  {
+		GetFeed(
+		 	Filter: "` + strings.ToLower(sf.Methodology) + `", 
+			BlockSizeSeconds: ` + strconv.Itoa(blockDuration) + `, 
+			BlockShiftSeconds: ` + strconv.Itoa(blockDuration) + `,
+			StartTime: ` + strconv.FormatInt(starttime.Unix(), 10) + `, 
+			EndTime: ` + strconv.FormatInt(currentTime.Unix(), 10) + `, 
+			FeedSelection: ` + generateFeedSelectionQuery(sf.FeedSelection) + `
+	  ) 
+	{
+				Name
+				Symbol
+				Time
+				Value
+	  	}
+		}`
+
+		var (
+			LastReportedPrice string
+			LastReportedTime  time.Time
+		)
+
+		lastUpdate, err := ob.RelDB.GetOracleUpdates(address, chainID, offset)
+		if err == nil && len(lastUpdate) > 0 {
+			LastReportedPrice = lastUpdate[0].AssetPrice
+			LastReportedTime = lastUpdate[0].UpdateTime
+
+		}
+
+		volume24h, err := ob.RelDB.GetLastAssetVolume24H(dia.Asset{Blockchain: blockchain, Address: strings.Split(sf.Symbol, "-")[1]})
+		if err != nil {
+			volume24h = 0
+		}
+		asset := localAssetConfig{Address: strings.Split(sf.Symbol, "-")[1], Blockchain: blockchain, Deviation: oracleConfig.DeviationPermille, HeartBeat: oracleConfig.Frequency, GQLQuery: query, Volume24h: volume24h, LastReportedPrice: LastReportedPrice, LastReportedTime: LastReportedTime, FeedSelection: sf.FeedSelection}
+		assets = append(assets, asset)
+
+		gasSpend, err = ob.RelDB.GetTotalGasSpend(address, chainID, 0)
+		if err != nil {
+			gasSpend = 0.0
+		}
+		updateFeeds, avgGasSpend, err = ob.RelDB.GetDayWiseUpdates(address, chainID, 0)
+		if err != nil {
+			avgGasSpend = 0.0
+		}
+
+	}
 
 	response := make(map[string]interface{})
-	response["OracleAddress"] = totalUpdates
+	response["OracleAddress"] = address
 	response["Chain"] = chainID
 	response["OracleType"] = chainID
 	response["GasRemaining"] = chainID
-	response["GasSpend"] = chainID
+	response["GasSpend"] = gasSpend
+	response["AvgGasSpend"] = avgGasSpend
+	response["DayWiseUpdates"] = updateFeeds
+
 	response["Transactions"] = updates
-	response["Assets"] = []localAssetConfig{asset1, asset2}
+	response["Assets"] = assets
 	response["Count"] = totalUpdates
 	context.JSON(http.StatusOK, response)
 }
