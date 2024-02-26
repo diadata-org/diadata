@@ -732,7 +732,7 @@ func (r *DiaResolver) GetFeedAggregation(ctx context.Context, args struct {
 	var fsar []*FeedSelectionAggregatedResolver
 	for _, fs := range fsa {
 		if fs.Pooladdress != "" {
-			pool, err := r.RelDB.GetPoolByAddress(fs.Basetokenblockchain, fs.Pooladdress)
+			pool, err := r.RelDB.GetPoolByAddress(fs.Basetoken.Blockchain, fs.Pooladdress)
 			if err != nil {
 				log.Error("GetPoolByAddress: ", err)
 			}

@@ -95,8 +95,8 @@ func main() {
 		"polkadot",
 		"acala-dollar-acala",
 		"liquid-astr",
-		"polkadot",
-		"astar",
+		"voucher-dot",
+		"astar", //vASTR is not yet available on CG
 	}
 	oldPrices := make(map[int]float64)
 
@@ -191,6 +191,7 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 		rawQ.Price = newPrice
 		
 		// only perform CG check for asset that is not AUSD
+		// For vDOT and vASTR do the "deviation from previous update" check
 		if address != "Token:AUSD" && address != "vDOT" && address != "vASTR" {
 			// check coingecko before sending out an update transaction
 			cgPrice, err := getCoingeckoPrice(coingeckoName, coingeckoApiKey)
@@ -207,7 +208,22 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 				return oldPrice, nil
 			}
 			log.Printf("Price %f for asset %s-%s in coingecko range %f.", rawQ.Price, blockchain, address, cgPrice)
-	  }
+	  } else if oldPrice != 0.0 && (address == "vDOT" || address == "vASTR") {
+	  	// Check if newPrice is >= 20% away from oldPrice
+	  	if (newPrice > oldPrice * 1.2 || newPrice < oldPrice * 0.8) {
+	  		// Get coingecko price of the asset and use this to update the oracle
+	  		log.Printf("Error! Asset %s was out of previous deviation check, using Coingecko price for the update", address)
+				cgPrice, err := getCoingeckoPrice(coingeckoName, coingeckoApiKey)
+				if err != nil {
+					return oldPrice, err
+				}
+				if cgPrice == 0.0 {
+					log.Printf("Error! Coingecko API returned price 0.0.")
+					return oldPrice, nil
+				}
+				rawQ.Price = cgPrice
+			}
+		}
 		
 		err = updateQuotation(rawQ, auth, contract, conn, chainId)
 		if err != nil {

@@ -834,7 +834,7 @@ func (datastore *DB) GetAggregatedFeedSelection(
 		endtime.UnixNano(),
 		tradeVolumeThreshold,
 	)
-	query += ` GROUP BY "exchange","basetokenaddress","basetokenblockchain","pooladdress"`
+	query += ` GROUP BY "exchange","quotetokenaddress","quotetokenblockchain","basetokenaddress","basetokenblockchain","pooladdress","symbol","pair"`
 
 	res, err := queryInfluxDB(datastore.influxClient, query)
 	if err != nil {
@@ -846,8 +846,22 @@ func (datastore *DB) GetAggregatedFeedSelection(
 			if len(row.Values[0]) > 1 {
 				var fsa dia.FeedSelectionAggregated
 				fsa.Exchange = row.Tags["exchange"]
-				fsa.Basetokenaddress = row.Tags["basetokenaddress"]
-				fsa.Basetokenblockchain = row.Tags["basetokenblockchain"]
+				fsa.Quotetoken.Address = row.Tags["quotetokenaddress"]
+				fsa.Quotetoken.Blockchain = row.Tags["quotetokenblockchain"]
+				fsa.Basetoken.Address = row.Tags["basetokenaddress"]
+				fsa.Basetoken.Blockchain = row.Tags["basetokenblockchain"]
+				// Parse symbol of basetoken
+				pairSymbols, err := dia.GetPairSymbols(dia.ExchangePair{
+					Symbol:      row.Tags["symbol"],
+					ForeignName: row.Tags["pair"],
+					Exchange:    row.Tags["exchange"],
+				})
+				if err != nil {
+					log.Error("Get pair symbols: ", err)
+				} else if len(pairSymbols) > 1 {
+					fsa.Quotetoken.Symbol = strings.ToUpper(pairSymbols[0])
+					fsa.Basetoken.Symbol = strings.ToUpper(pairSymbols[1])
+				}
 				fsa.Pooladdress = row.Tags["pooladdress"]
 				fsa.Volume, err = row.Values[0][1].(json.Number).Float64()
 				if err != nil {
