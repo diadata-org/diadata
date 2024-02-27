@@ -2372,6 +2372,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "WELL_USDT",
+      "Ignore": false,
+      "Symbol": "WELL"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "WINGS_ETH",
       "Ignore": false,
       "Symbol": "WINGS"

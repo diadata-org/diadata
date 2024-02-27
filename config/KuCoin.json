@@ -1669,6 +1669,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "WELL",
+            "ForeignName": "WELL-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "WXT",
             "ForeignName": "WXT-BTC",
             "Exchange": "KuCoin",

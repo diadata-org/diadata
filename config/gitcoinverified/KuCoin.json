@@ -841,6 +841,12 @@
             "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
         },
         {
+            "Symbol": "WELL",
+            "Exchange": "KuCoin",
+            "Blockchain": "Moonbeam",
+            "Address": "0x511aB53F793683763E5a8829738301368a2411E3"
+        },
+        {
             "Symbol": "WOM",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

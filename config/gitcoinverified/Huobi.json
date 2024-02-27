@@ -307,6 +307,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "WELL",
+      "Exchange": "Huobi",
+      "Blockchain": "Moonbeam",
+      "Address": "0x511aB53F793683763E5a8829738301368a2411E3"
+    },
+    {
       "Symbol": "XAUT",
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",

@@ -925,6 +925,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "WELL",
+            "Exchange": "GateIO",
+            "Blockchain": "Moonbeam",
+            "Address": "0x511aB53F793683763E5a8829738301368a2411E3"
+        },
+        {
             "Symbol": "WINGS",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
