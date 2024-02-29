@@ -433,7 +433,7 @@ func (ob *Env) Dashboard(context *gin.Context) {
 	fmt.Println("oracleConfigcache", oracleConfig)
 	fmt.Println("err", err)
 
-	if err == nil {
+	if err != nil {
 
 	} else {
 		oracleConfig, err = ob.RelDB.GetOracleConfig(address, chainID)
