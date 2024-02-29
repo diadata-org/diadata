@@ -387,6 +387,10 @@ func (ob *Env) Dashboard(context *gin.Context) {
 	chainID := context.Query("chainID")
 	page := context.Query("page")
 
+	if strings.Contains(address, "0x") {
+		address = common.HexToAddress(address).Hex()
+	}
+
 	offset := 0
 	if page != "" {
 		pageInt, err := strconv.Atoi(page)
@@ -396,6 +400,7 @@ func (ob *Env) Dashboard(context *gin.Context) {
 			offset = (pageInt - 1) * 20
 		}
 	} else {
+
 		offset = 0
 	}
 
@@ -527,7 +532,7 @@ func (ob *Env) Dashboard(context *gin.Context) {
 		if len(oracleConfig.Symbols) > 0 {
 			for _, symbol := range oracleConfig.Symbols {
 
-				if len(strings.Split(symbol, "-")) > 2 {
+				if len(strings.Split(symbol, "-")) >= 2 {
 
 					blockchain := strings.TrimSpace(strings.Split(symbol, "-")[0])
 					address := strings.TrimSpace(strings.Split(symbol, "-")[1])
@@ -545,7 +550,7 @@ func (ob *Env) Dashboard(context *gin.Context) {
 
 	}
 
-	gasSpend, err = ob.RelDB.GetTotalGasSpend(address, chainID, 0)
+	gasSpend, err = ob.RelDB.GetTotalGasSpend(address, chainID)
 	if err != nil {
 		gasSpend = 0.0
 	}

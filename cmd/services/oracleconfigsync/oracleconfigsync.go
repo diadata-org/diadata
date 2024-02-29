@@ -11,6 +11,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/sirupsen/logrus"
 )
 
@@ -362,6 +363,12 @@ func main() {
 				case "DEPLOYED_CONTRACT", "ORACLE_CONTRACTADDRESS":
 					c["DEPLOYED_CONTRACT"] = env.Value
 					oc.Address = env.Value
+
+					if strings.Contains(env.Value, "0x") {
+						oc.Address = common.HexToAddress(env.Value).Hex()
+
+					}
+
 				case "SLEEP_SECONDS":
 					c["SLEEP_SECONDS"] = env.Value
 					oc.SleepSeconds = env.Value
