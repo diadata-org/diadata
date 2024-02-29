@@ -763,7 +763,7 @@ func (rdb *RelDB) GetTotalGasSpend(address string, chainid string, offset int) (
 	return 0.0, nil
 
 }
-func (rdb *RelDB) GetDayWiseUpdates(address string, chainid string, offset int) ([]dia.FeedUpdates, float64, error) {
+func (rdb *RelDB) GetDayWiseUpdates(address string, chainid string) ([]dia.FeedUpdates, float64, error) {
 	query := fmt.Sprintf(`
 	WITH DailyUpdates AS (
 		SELECT 

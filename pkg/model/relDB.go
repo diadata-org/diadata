@@ -176,6 +176,8 @@ type RelDatastore interface {
 	UpdateFeederAddressCheckSum(oracleaddress string) error
 	GetExpiredFeeders() (oracleconfigs []dia.OracleConfig, err error)
 	GetFeeder(feederID string) (oracleconfig dia.OracleConfig, err error)
+
+	GetDayWiseUpdates(address string, chainid string) ([]dia.FeedUpdates, float64, error)
 }
 
 const (
