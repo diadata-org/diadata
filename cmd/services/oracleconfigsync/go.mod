@@ -9,7 +9,6 @@ require (
 
 require (
 	github.com/StackExchange/wmi v1.2.1 // indirect
-	github.com/btcsuite/btcd v0.22.0-beta // indirect
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/ethereum/go-ethereum v1.10.10 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
