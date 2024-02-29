@@ -433,7 +433,7 @@ func (ob *Env) Dashboard(context *gin.Context) {
 	fmt.Println("oracleConfigcache", oracleConfig)
 	fmt.Println("err", err)
 
-	if err != nil {
+	if err == nil {
 
 	} else {
 		oracleConfig, err = ob.RelDB.GetOracleConfig(address, chainID)
@@ -524,18 +524,23 @@ func (ob *Env) Dashboard(context *gin.Context) {
 
 		}
 
-		for _, symbol := range oracleConfig.Symbols {
+		if len(oracleConfig.Symbols) > 0 {
+			for _, symbol := range oracleConfig.Symbols {
 
-			blockchain := strings.TrimSpace(strings.Split(symbol, "-")[0])
-			address := strings.TrimSpace(strings.Split(symbol, "-")[1])
+				if len(strings.Split(symbol, "-")) > 2 {
 
-			volume24h, err := ob.RelDB.GetLastAssetVolume24H(dia.Asset{Blockchain: blockchain, Address: address})
-			if err != nil {
-				volume24h = 0
+					blockchain := strings.TrimSpace(strings.Split(symbol, "-")[0])
+					address := strings.TrimSpace(strings.Split(symbol, "-")[1])
+
+					volume24h, err := ob.RelDB.GetLastAssetVolume24H(dia.Asset{Blockchain: blockchain, Address: address})
+					if err != nil {
+						volume24h = 0
+					}
+					asset := localAssetConfig{Address: address, Blockchain: blockchain, Deviation: oracleConfig.DeviationPermille, HeartBeat: oracleConfig.Frequency, Volume24h: volume24h, LastReportedPrice: LastReportedPrice, LastReportedTime: LastReportedTime}
+					assets = append(assets, asset)
+				}
+
 			}
-			asset := localAssetConfig{Address: address, Blockchain: blockchain, Deviation: oracleConfig.DeviationPermille, HeartBeat: oracleConfig.Frequency, Volume24h: volume24h, LastReportedPrice: LastReportedPrice, LastReportedTime: LastReportedTime}
-			assets = append(assets, asset)
-
 		}
 
 	}
