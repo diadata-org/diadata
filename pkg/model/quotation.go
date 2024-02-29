@@ -152,6 +152,7 @@ func (datastore *DB) GetAssetQuotation(asset dia.Asset, starttime time.Time, end
 		starttime.UnixNano(),
 		endtime.UnixNano(),
 	)
+	log.Info("Query: ", q)
 	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		return &quotation, err
@@ -408,7 +409,7 @@ func (rdb *RelDB) GetHistoricalQuotations(asset dia.Asset, starttime time.Time, 
 		if decimals.Valid {
 			quotation.Asset.Decimals = uint8(decimals.Int64)
 		} else {
-			err = errors.New("Cannot parse decimals.")
+			err = errors.New("cannot parse decimals")
 			return
 		}
 		if price.Valid {

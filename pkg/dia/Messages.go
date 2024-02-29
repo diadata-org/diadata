@@ -48,6 +48,8 @@ const (
 	BIFROST_POLKADOT                        = "Bifrost-polkadot"
 )
 
+var CRYPTO_ZERO_UNIX_TIME = time.Unix(1230768000, 0)
+
 type VerificationMechanism string
 
 // NFTClass is the container for a nft class defined by

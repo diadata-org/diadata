@@ -88,13 +88,13 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 	}
 
 	// Get quotation for asset.
-	quotation, err := env.DataStore.GetAssetQuotation(asset, time.Time{}, timestamp)
+	quotation, err := env.DataStore.GetAssetQuotation(asset, dia.CRYPTO_ZERO_UNIX_TIME, timestamp)
 	if err != nil {
 		restApi.SendError(c, http.StatusNotFound, err)
 		return
 	}
 
-	quotationYesterday, err := env.DataStore.GetAssetQuotation(asset, time.Time{}, timestamp.AddDate(0, 0, -1))
+	quotationYesterday, err := env.DataStore.GetAssetQuotation(asset, dia.CRYPTO_ZERO_UNIX_TIME, timestamp.AddDate(0, 0, -1))
 	if err != nil {
 		log.Warn("get quotation yesterday: ", err)
 	} else {
@@ -148,12 +148,12 @@ func (env *Env) GetQuotation(c *gin.Context) {
 		return
 	}
 	topAsset := assets[0]
-	quotation, err := env.DataStore.GetAssetQuotation(topAsset, time.Time{}, timestamp)
+	quotation, err := env.DataStore.GetAssetQuotation(topAsset, dia.CRYPTO_ZERO_UNIX_TIME, timestamp)
 	if err != nil {
 		restApi.SendError(c, http.StatusNotFound, errors.New("no quotation available"))
 		return
 	}
-	quotationYesterday, err := env.DataStore.GetAssetQuotation(topAsset, time.Time{}, timestamp.AddDate(0, 0, -1))
+	quotationYesterday, err := env.DataStore.GetAssetQuotation(topAsset, dia.CRYPTO_ZERO_UNIX_TIME, timestamp.AddDate(0, 0, -1))
 	if err != nil {
 		log.Warn("get quotation yesterday: ", err)
 	} else {
@@ -216,11 +216,11 @@ func (env *Env) GetAssetMap(c *gin.Context) {
 	for _, topAsset := range assets {
 		var quotationExtended models.AssetQuotationFull
 
-		quotation, err := env.DataStore.GetAssetQuotation(topAsset, time.Time{}, timestamp)
+		quotation, err := env.DataStore.GetAssetQuotation(topAsset, dia.CRYPTO_ZERO_UNIX_TIME, timestamp)
 		if err != nil {
 			log.Warn("get quotation: ", err)
 		}
-		quotationYesterday, err := env.DataStore.GetAssetQuotation(topAsset, time.Time{}, timestamp.AddDate(0, 0, -1))
+		quotationYesterday, err := env.DataStore.GetAssetQuotation(topAsset, dia.CRYPTO_ZERO_UNIX_TIME, timestamp.AddDate(0, 0, -1))
 		if err != nil {
 			log.Warn("get quotation yesterday: ", err)
 		} else {
@@ -1291,7 +1291,7 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 
 		aqf := dia.TopAsset{}
 		aqf.Asset = v.Asset
-		quotation, err := env.DataStore.GetAssetQuotationLatest(aqf.Asset, time.Time{})
+		quotation, err := env.DataStore.GetAssetQuotationLatest(aqf.Asset, dia.CRYPTO_ZERO_UNIX_TIME)
 		if err != nil {
 			log.Warn("quotation: ", err)
 		} else {
@@ -1310,7 +1310,7 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 		}
 		aqf.Source = sources
 
-		quotationYesterday, err := env.DataStore.GetAssetQuotation(aqf.Asset, time.Now().AddDate(0, 0, -1), time.Time{})
+		quotationYesterday, err := env.DataStore.GetAssetQuotation(aqf.Asset, time.Now().AddDate(0, 0, -1), dia.CRYPTO_ZERO_UNIX_TIME)
 		if err != nil {
 			log.Warn("get quotation yesterday: ", err)
 		} else {
@@ -3163,12 +3163,12 @@ func (env *Env) GetPairsInFeed(c *gin.Context) {
 
 	asset := env.getAssetFromCache(ASSET_CACHE, blockchain, address)
 
-	quotation, err := env.DataStore.GetAssetQuotation(asset, time.Time{}, endtime)
+	quotation, err := env.DataStore.GetAssetQuotation(asset, dia.CRYPTO_ZERO_UNIX_TIME, endtime)
 	if err != nil {
 		restApi.SendError(c, http.StatusNotFound, errors.New("no quotation available"))
 		return
 	}
-	quotationYesterday, err := env.DataStore.GetAssetQuotation(asset, time.Time{}, starttime)
+	quotationYesterday, err := env.DataStore.GetAssetQuotation(asset, dia.CRYPTO_ZERO_UNIX_TIME, starttime)
 	if err != nil {
 		log.Warn("get quotation yesterday: ", err)
 	} else {
@@ -3248,7 +3248,7 @@ func (env *Env) GetSyntheticAsset(c *gin.Context) {
 		limit = 1
 	} else if starttimeStr == "" && endtimeStr != "" {
 		// zero time if not given
-		starttime = time.Time{}
+		starttime = dia.CRYPTO_ZERO_UNIX_TIME
 		endtimeInt, errEnd := strconv.ParseInt(endtimeStr, 10, 64)
 		if errEnd != nil {
 			restApi.SendError(c, http.StatusInternalServerError, errEnd)

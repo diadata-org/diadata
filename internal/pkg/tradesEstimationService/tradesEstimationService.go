@@ -99,7 +99,7 @@ func (s *TradesEstimationService) process(t dia.Trade) {
 				price = s.priceCache[t.BaseToken].Price
 			} else {
 				// Look for historic price of base token at trade time...
-				price, err = s.datastore.GetAssetPriceUSD(t.BaseToken, time.Time{}, t.Time)
+				price, err = s.datastore.GetAssetPriceUSD(t.BaseToken, dia.CRYPTO_ZERO_UNIX_TIME, t.Time)
 				s.priceCache[t.BaseToken] = pricetime{
 					Price:     price,
 					Timestamp: t.Time,
