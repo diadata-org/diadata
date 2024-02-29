@@ -526,8 +526,8 @@ func (ob *Env) Dashboard(context *gin.Context) {
 
 		for _, symbol := range oracleConfig.Symbols {
 
-			blockchain := strings.Split(symbol, "-")[0]
-			address := strings.Split(symbol, "-")[1]
+			blockchain := strings.TrimSpace(strings.Split(symbol, "-")[0])
+			address := strings.TrimSpace(strings.Split(symbol, "-")[1])
 
 			volume24h, err := ob.RelDB.GetLastAssetVolume24H(dia.Asset{Blockchain: blockchain, Address: address})
 			if err != nil {
@@ -552,8 +552,8 @@ func (ob *Env) Dashboard(context *gin.Context) {
 	response := make(map[string]interface{})
 	response["OracleAddress"] = address
 	response["Chain"] = chainID
-	response["OracleType"] = chainID
-	response["GasRemaining"] = chainID
+	response["OracleType"] = 0
+	response["GasRemaining"] = 0
 	response["GasSpend"] = gasSpend
 	response["AvgGasSpend"] = avgGasSpend
 	response["DayWiseUpdates"] = updateFeeds

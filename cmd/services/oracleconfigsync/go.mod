@@ -3,10 +3,9 @@ module github.com/diadata-org/diadata/cmd/services/oracleconfigsync
 go 1.17
 
 require (
-	github.com/diadata-org/diadata v0.0.0-00010101000000-000000000000
+	github.com/diadata-org/diadata v1.4.440
 	github.com/sirupsen/logrus v1.9.3
 )
-
 
 require (
 	github.com/StackExchange/wmi v1.2.1 // indirect
