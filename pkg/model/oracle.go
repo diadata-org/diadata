@@ -3,6 +3,8 @@ package models
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -818,4 +820,42 @@ func (rdb *RelDB) GetDayWiseUpdates(address string, chainid string, offset int) 
 
 	return stats, avgGasUsed.Float64, nil
 
+}
+
+// dave oracleconfig in cache
+func (datastore *DB) SetOracleConfigCache(oc dia.OracleConfig) error {
+	key := oc.Address + "-" + oc.ChainID
+
+	fmt.Println("key", key)
+	fmt.Println("oc.ChainID", oc.ChainID)
+
+	if datastore.redisClient == nil {
+		return nil
+	}
+
+	data, _ := json.Marshal(oc)
+
+	err := datastore.redisClient.Set(key, data, TimeOutRedis).Err()
+	if err != nil {
+		log.Printf("Error: %v on SetOracleConfigCache %v\n", err, oc)
+	}
+
+	return err
+}
+
+func (datastore *DB) GetOracleConfigCache(key string) (dia.OracleConfig, error) {
+	// key := oc.Address + oc.ChainID
+	var oc dia.OracleConfig
+	if datastore.redisClient == nil {
+		return oc, errors.New("no redisclient")
+	}
+
+	err := datastore.redisClient.Get(key).Scan(&oc)
+	if err != nil {
+		log.Printf("Error: %v on GetOracle--ConfigCache %v\n", err, oc)
+		return oc, errors.New("no redisclient")
+
+	}
+
+	return oc, err
 }

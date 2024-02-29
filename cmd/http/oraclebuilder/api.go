@@ -36,11 +36,12 @@ type Env struct {
 	apiStats                APIStats
 }
 
-func NewEnv(relStore *models.RelDB, ph *builderUtils.PodHelper, ring kr.Keyring, rateLimitOracleCreation int) *Env {
+func NewEnv(relStore *models.RelDB, ds models.Datastore, ph *builderUtils.PodHelper, ring kr.Keyring, rateLimitOracleCreation int) *Env {
 	apistats := *NewAPIStats()
 	go apistats.ClearCachePeriodically(10 * time.Minute)
 
 	return &Env{
+		DataStore:               ds,
 		RelDB:                   relStore,
 		PodHelper:               ph,
 		Keyring:                 ring,
@@ -355,9 +356,10 @@ type FeedSelection struct {
 }
 
 type SymbolFeed struct {
-	Methodology   string          `json:"Methodology"`
-	Symbol        string          `json:"Symbol"`
-	FeedSelection []FeedSelection `json:"FeedSelection"`
+	LiquidityThreshold string          `json:"LiquidityThreshold"`
+	Methodology        string          `json:"Methodology"`
+	Symbol             string          `json:"Symbol"`
+	FeedSelection      []FeedSelection `json:"FeedSelection"`
 }
 
 func generateFeedSelectionQuery(feedSelections []FeedSelection) string {
@@ -413,30 +415,40 @@ func (ob *Env) Dashboard(context *gin.Context) {
 		return
 	}
 
-	oracleConfig, err := ob.RelDB.GetOracleConfig(address, chainID)
-	if err != nil {
-		errorMsg := "Error fetching oracle config"
-		logMsg := "Oracle Stats error"
-		handleError(context, http.StatusInternalServerError, errorMsg, logMsg, err)
-		return
-	}
-
 	type localAssetConfig struct {
-		Address       string
-		Blockchain    string
-		Deviation     string
-		HeartBeat     string
-		GQLQuery      string
-		FeedSelection interface{}
+		Address    string
+		Blockchain string
+		Deviation  string
+		HeartBeat  string
+		GQLQuery   string
+		SymbolFeed interface{}
 
 		Volume24h         float64
 		LastReportedPrice string
 		LastReportedTime  time.Time
 	}
-
 	var symbolFeeds []SymbolFeed
+
+	oracleConfig, err := ob.DataStore.GetOracleConfigCache(address + "-" + chainID)
+	fmt.Println("oracleConfigcache", oracleConfig)
+	fmt.Println("err", err)
+
+	if err == nil {
+
+	} else {
+		oracleConfig, err = ob.RelDB.GetOracleConfig(address, chainID)
+		if err != nil {
+			errorMsg := "Error fetching oracle config"
+			logMsg := "Oracle Stats error"
+			handleError(context, http.StatusInternalServerError, errorMsg, logMsg, err)
+			return
+		}
+
+	}
+
 	if oracleConfig.FeederSelection != "" {
 		if err := json.Unmarshal([]byte(oracleConfig.FeederSelection), &symbolFeeds); err != nil {
+			fmt.Println("unmarshal :", err)
 			return
 		}
 
@@ -448,17 +460,19 @@ func (ob *Env) Dashboard(context *gin.Context) {
 		updateFeeds           []dia.FeedUpdates
 	)
 
-	for _, sf := range symbolFeeds {
-		var blockchain string
-		for _, feeds := range sf.FeedSelection {
-			blockchain = blockchain + feeds.Blockchain
+	if len(symbolFeeds) > 0 {
 
-		}
+		for _, sf := range symbolFeeds {
+			var blockchain string
+			for _, feeds := range sf.FeedSelection {
+				blockchain = blockchain + feeds.Blockchain
 
-		blockDuration := 120
-		currentTime := time.Now()
-		starttime := currentTime.Add(time.Duration(-blockDuration*2) * time.Second)
-		query := `
+			}
+
+			blockDuration := 120
+			currentTime := time.Now()
+			starttime := currentTime.Add(time.Duration(-blockDuration*2) * time.Second)
+			query := `
     query  {
 		GetFeed(
 		 	Filter: "` + strings.ToLower(sf.Methodology) + `", 
@@ -476,6 +490,28 @@ func (ob *Env) Dashboard(context *gin.Context) {
 	  	}
 		}`
 
+			var (
+				LastReportedPrice string
+				LastReportedTime  time.Time
+			)
+
+			lastUpdate, err := ob.RelDB.GetOracleUpdates(address, chainID, offset)
+			if err == nil && len(lastUpdate) > 0 {
+				LastReportedPrice = lastUpdate[0].AssetPrice
+				LastReportedTime = lastUpdate[0].UpdateTime
+
+			}
+
+			volume24h, err := ob.RelDB.GetLastAssetVolume24H(dia.Asset{Blockchain: blockchain, Address: strings.Split(sf.Symbol, "-")[1]})
+			if err != nil {
+				volume24h = 0
+			}
+			asset := localAssetConfig{Address: strings.Split(sf.Symbol, "-")[1], Blockchain: blockchain, Deviation: oracleConfig.DeviationPermille, HeartBeat: oracleConfig.Frequency, GQLQuery: query, Volume24h: volume24h, LastReportedPrice: LastReportedPrice, LastReportedTime: LastReportedTime, SymbolFeed: sf}
+			assets = append(assets, asset)
+
+		}
+	} else {
+
 		var (
 			LastReportedPrice string
 			LastReportedTime  time.Time
@@ -488,22 +524,29 @@ func (ob *Env) Dashboard(context *gin.Context) {
 
 		}
 
-		volume24h, err := ob.RelDB.GetLastAssetVolume24H(dia.Asset{Blockchain: blockchain, Address: strings.Split(sf.Symbol, "-")[1]})
-		if err != nil {
-			volume24h = 0
-		}
-		asset := localAssetConfig{Address: strings.Split(sf.Symbol, "-")[1], Blockchain: blockchain, Deviation: oracleConfig.DeviationPermille, HeartBeat: oracleConfig.Frequency, GQLQuery: query, Volume24h: volume24h, LastReportedPrice: LastReportedPrice, LastReportedTime: LastReportedTime, FeedSelection: sf.FeedSelection}
-		assets = append(assets, asset)
+		for _, symbol := range oracleConfig.Symbols {
 
-		gasSpend, err = ob.RelDB.GetTotalGasSpend(address, chainID, 0)
-		if err != nil {
-			gasSpend = 0.0
-		}
-		updateFeeds, avgGasSpend, err = ob.RelDB.GetDayWiseUpdates(address, chainID, 0)
-		if err != nil {
-			avgGasSpend = 0.0
+			blockchain := strings.Split(symbol, "-")[0]
+			address := strings.Split(symbol, "-")[1]
+
+			volume24h, err := ob.RelDB.GetLastAssetVolume24H(dia.Asset{Blockchain: blockchain, Address: address})
+			if err != nil {
+				volume24h = 0
+			}
+			asset := localAssetConfig{Address: address, Blockchain: blockchain, Deviation: oracleConfig.DeviationPermille, HeartBeat: oracleConfig.Frequency, Volume24h: volume24h, LastReportedPrice: LastReportedPrice, LastReportedTime: LastReportedTime}
+			assets = append(assets, asset)
+
 		}
 
+	}
+
+	gasSpend, err = ob.RelDB.GetTotalGasSpend(address, chainID, 0)
+	if err != nil {
+		gasSpend = 0.0
+	}
+	updateFeeds, avgGasSpend, err = ob.RelDB.GetDayWiseUpdates(address, chainID, 0)
+	if err != nil {
+		avgGasSpend = 0.0
 	}
 
 	response := make(map[string]interface{})

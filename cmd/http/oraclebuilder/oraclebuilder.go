@@ -25,6 +25,11 @@ func main() {
 	if err != nil {
 		log.Errorln("NewRelDataStore", err)
 	}
+
+	ds, err := models.NewDataStore()
+	if err != nil {
+		log.Errorln("NewDataStore", err)
+	}
 	k8bridgeurl := utils.Getenv("K8SBRIDGE_URL", "127.0.0.1:50051")
 	signerurl := utils.Getenv("SIGNER_URL", "signer.dia-oracle-feeder:50052")
 	diaRestURL := utils.Getenv("DIA_REST_URL", "https://api.diadata.org")
@@ -50,7 +55,7 @@ func main() {
 		AllowedBackends: []keyring.BackendType{keyring.K8Secret},
 	})
 
-	oracle := NewEnv(relStore, ph, ring, int(rateLimitOracleCreation))
+	oracle := NewEnv(relStore, ds, ph, ring, int(rateLimitOracleCreation))
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{"*"},
