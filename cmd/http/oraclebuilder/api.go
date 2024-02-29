@@ -544,7 +544,7 @@ func (ob *Env) Dashboard(context *gin.Context) {
 	if err != nil {
 		gasSpend = 0.0
 	}
-	updateFeeds, avgGasSpend, err = ob.RelDB.GetDayWiseUpdates(address, chainID, 0)
+	updateFeeds, avgGasSpend, err = ob.RelDB.GetDayWiseUpdates(address, chainID)
 	if err != nil {
 		avgGasSpend = 0.0
 	}
