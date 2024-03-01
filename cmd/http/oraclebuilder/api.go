@@ -461,9 +461,9 @@ func (ob *Env) Dashboard(context *gin.Context) {
 	}
 
 	var (
-		assets                []localAssetConfig
-		avgGasSpend, gasSpend float64
-		updateFeeds           []dia.FeedUpdates
+		assets                              []localAssetConfig
+		avgGasSpend, gasSpend, gasRemaining float64
+		updateFeeds                         []dia.FeedUpdates
 	)
 
 	if len(symbolFeeds) > 0 {
@@ -573,6 +573,11 @@ func (ob *Env) Dashboard(context *gin.Context) {
 	if err != nil {
 		gasSpend = 0.0
 	}
+
+	gasRemaining, err = ob.RelDB.GetBalanceRemaining(address, chainID)
+	if err != nil {
+		gasRemaining = 0.0
+	}
 	updateFeeds, avgGasSpend, err = ob.RelDB.GetDayWiseUpdates(address, chainID)
 	if err != nil {
 		avgGasSpend = 0.0
@@ -582,7 +587,8 @@ func (ob *Env) Dashboard(context *gin.Context) {
 	response["OracleAddress"] = address
 	response["Chain"] = chainID
 	response["OracleType"] = 0
-	response["GasRemaining"] = 0
+
+	response["GasRemaining"] = gasRemaining
 	response["GasSpend"] = gasSpend
 	response["AvgGasSpend"] = avgGasSpend
 	response["DayWiseUpdates"] = updateFeeds

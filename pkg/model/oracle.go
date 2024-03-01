@@ -170,7 +170,6 @@ HAVING
     AND t1.expired = false
 	`, oracleconfigTable, feederupdatesTable)
 
-	fmt.Println(query)
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
 
 	if err != nil {
@@ -763,6 +762,44 @@ func (rdb *RelDB) GetTotalGasSpend(address string, chainid string) (float64, err
 	return 0.0, nil
 
 }
+
+func (rdb *RelDB) GetBalanceRemaining(address string, chainid string) (float64, error) {
+	query := fmt.Sprintf(`
+	SELECT 
+		from_balance,
+		update_time
+	FROM %s fu
+	WHERE fu.oracle_address = $1 AND fu.chain_id = $2 ORDER BY update_time DESC LIMIT 1
+	`, feederupdatesTable)
+
+	rows, err := rdb.postgresClient.Query(context.Background(), query, address, chainid)
+	if err != nil {
+		fmt.Println("err", err)
+		return 0.0, err
+	}
+	defer rows.Close()
+
+	var (
+		gasRemaining sql.NullFloat64
+	)
+
+	for rows.Next() {
+
+		rows.Scan(
+			&gasRemaining,
+			nil,
+		)
+
+	}
+
+	if gasRemaining.Valid {
+		return gasRemaining.Float64, nil
+
+	}
+	return 0.0, nil
+
+}
+
 func (rdb *RelDB) GetDayWiseUpdates(address string, chainid string) ([]dia.FeedUpdates, float64, error) {
 	query := fmt.Sprintf(`
 	WITH DailyUpdates AS (
@@ -785,7 +822,6 @@ func (rdb *RelDB) GetDayWiseUpdates(address string, chainid string) ([]dia.FeedU
 	FROM DailyUpdates
 	ORDER BY day DESC LIMIT 30
 	`, feederupdatesTable)
-	fmt.Println("---", query)
 
 	rows, err := rdb.postgresClient.Query(context.Background(), query, address, chainid)
 	if err != nil {
@@ -825,9 +861,6 @@ func (rdb *RelDB) GetDayWiseUpdates(address string, chainid string) ([]dia.FeedU
 // dave oracleconfig in cache
 func (datastore *DB) SetOracleConfigCache(oc dia.OracleConfig) error {
 	key := oc.Address + "-" + oc.ChainID
-
-	fmt.Println("key", key)
-	fmt.Println("oc.ChainID", oc.ChainID)
 
 	if datastore.redisClient == nil {
 		return nil
