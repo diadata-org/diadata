@@ -215,3 +215,50 @@ func (datastore *DB) GetExchangePairVolumes(asset dia.Asset, starttime time.Time
 	}
 	return volumeMap, nil
 }
+
+func (datastore *DB) GetExchangePairVolume(
+	ep dia.ExchangePair,
+	pooladdress string,
+	starttime time.Time,
+	endtime time.Time,
+	threshold float64,
+) (volume float64, tradesCount int64, err error) {
+	query := fmt.Sprintf(
+		`
+		SELECT SUM(multiplication),COUNT(*)
+		FROM (
+			SELECT ABS(estimatedUSDPrice*volume)
+			AS multiplication
+			FROM %s
+			WHERE quotetokenaddress='%s'
+			AND quotetokenblockchain='%s'
+			AND basetokenaddress='%s'
+			AND basetokenblockchain='%s'
+			AND pooladdress='%s'
+			AND exchange='%s'
+			AND time>%d
+			AND time<=%d
+			)
+		`,
+		influxDbTradesTable,
+		ep.UnderlyingPair.QuoteToken.Address,
+		ep.UnderlyingPair.QuoteToken.Blockchain,
+		ep.UnderlyingPair.BaseToken.Address,
+		ep.UnderlyingPair.BaseToken.Blockchain,
+		pooladdress,
+		ep.Exchange,
+		starttime.UnixNano(),
+		endtime.UnixNano(),
+	)
+
+	res, err := queryInfluxDB(datastore.influxClient, query)
+	if err != nil {
+		return
+	}
+
+	if len(res) > 0 && len(res[0].Series) > 0 {
+		volume, _ = res[0].Series[0].Values[0][1].(json.Number).Float64()
+		tradesCount, _ = res[0].Series[0].Values[0][2].(json.Number).Int64()
+	}
+	return
+}
