@@ -21,7 +21,7 @@ func main() {
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
-	relStore, err := models.NewPostgresDataStore()
+	relStore, err := models.NewRelDataStore()
 	if err != nil {
 		log.Errorln("NewRelDataStore", err)
 	}
