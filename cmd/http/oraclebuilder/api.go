@@ -421,6 +421,7 @@ func (ob *Env) Dashboard(context *gin.Context) {
 	}
 
 	type localAssetConfig struct {
+		Symbol     string
 		Address    string
 		Blockchain string
 		Deviation  string
@@ -500,6 +501,15 @@ func (ob *Env) Dashboard(context *gin.Context) {
 				LastReportedTime  time.Time
 			)
 
+			var assetSymbol string
+
+			assetDetail, err := ob.RelDB.GetAsset(address, blockchain)
+			if err != nil {
+				assetSymbol = ""
+			} else {
+				assetSymbol = assetDetail.Symbol
+			}
+
 			lastUpdate, err := ob.RelDB.GetOracleUpdates(address, chainID, offset)
 			if err == nil && len(lastUpdate) > 0 {
 				LastReportedPrice = lastUpdate[0].AssetPrice
@@ -511,7 +521,7 @@ func (ob *Env) Dashboard(context *gin.Context) {
 			if err != nil {
 				volume24h = 0
 			}
-			asset := localAssetConfig{Address: strings.Split(sf.Symbol, "-")[1], Blockchain: blockchain, Deviation: oracleConfig.DeviationPermille, HeartBeat: oracleConfig.Frequency, GQLQuery: query, Volume24h: volume24h, LastReportedPrice: LastReportedPrice, LastReportedTime: LastReportedTime, SymbolFeed: sf}
+			asset := localAssetConfig{Symbol: assetSymbol, Address: strings.Split(sf.Symbol, "-")[1], Blockchain: blockchain, Deviation: oracleConfig.DeviationPermille, HeartBeat: oracleConfig.Frequency, GQLQuery: query, Volume24h: volume24h, LastReportedPrice: LastReportedPrice, LastReportedTime: LastReportedTime, SymbolFeed: sf}
 			assets = append(assets, asset)
 
 		}
@@ -537,11 +547,20 @@ func (ob *Env) Dashboard(context *gin.Context) {
 					blockchain := strings.TrimSpace(strings.Split(symbol, "-")[0])
 					address := strings.TrimSpace(strings.Split(symbol, "-")[1])
 
+					var assetSymbol string
+
+					assetDetail, err := ob.RelDB.GetAsset(address, blockchain)
+					if err != nil {
+						assetSymbol = ""
+					} else {
+						assetSymbol = assetDetail.Symbol
+					}
+
 					volume24h, err := ob.RelDB.GetLastAssetVolume24H(dia.Asset{Blockchain: blockchain, Address: address})
 					if err != nil {
 						volume24h = 0
 					}
-					asset := localAssetConfig{Address: address, Blockchain: blockchain, Deviation: oracleConfig.DeviationPermille, HeartBeat: oracleConfig.Frequency, Volume24h: volume24h, LastReportedPrice: LastReportedPrice, LastReportedTime: LastReportedTime}
+					asset := localAssetConfig{Symbol: assetSymbol, Address: address, Blockchain: blockchain, Deviation: oracleConfig.DeviationPermille, HeartBeat: oracleConfig.Frequency, Volume24h: volume24h, LastReportedPrice: LastReportedPrice, LastReportedTime: LastReportedTime}
 					assets = append(assets, asset)
 				}
 
