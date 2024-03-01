@@ -3,6 +3,8 @@ package models
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -645,7 +647,7 @@ func (rdb *RelDB) GetOracleUpdates(address string, chainid string, offset int) (
 
 	return updates, nil
 }
-func (rdb *RelDB) GetLastOracleUpdate(address string, chainid string, offset int) ([]dia.OracleUpdate, error) {
+func (rdb *RelDB) GetLastOracleUpdate(address string, chainid string) ([]dia.OracleUpdate, error) {
 	query := fmt.Sprintf(`
 	SELECT fu.oracle_address,
 		fu.transaction_hash,
@@ -665,8 +667,8 @@ func (rdb *RelDB) GetLastOracleUpdate(address string, chainid string, offset int
 
 	FROM %s fu
 	JOIN %s oc ON fu.oracle_address = oc.address AND fu.chain_id = oc.chainID 
-	WHERE fu.oracle_address = $1 AND fu.chain_id = $2 order by fu.update_time desc LIMIT 1 OFFSET %d
-	`, feederupdatesTable, oracleconfigTable, offset)
+	WHERE fu.oracle_address = $1 AND fu.chain_id = $2 order by fu.update_time desc LIMIT 1
+	`, feederupdatesTable, oracleconfigTable)
 
 	rows, err := rdb.postgresClient.Query(context.Background(), query, address, chainid)
 	if err != nil {
@@ -726,7 +728,7 @@ func (rdb *RelDB) GetLastOracleUpdate(address string, chainid string, offset int
 
 	return updates, nil
 }
-func (rdb *RelDB) GetTotalGasSpend(address string, chainid string, offset int) (float64, error) {
+func (rdb *RelDB) GetTotalGasSpend(address string, chainid string) (float64, error) {
 	query := fmt.Sprintf(`
 	SELECT 
 		SUM(fu.gas_used) AS total_gas_used
@@ -761,7 +763,7 @@ func (rdb *RelDB) GetTotalGasSpend(address string, chainid string, offset int) (
 	return 0.0, nil
 
 }
-func (rdb *RelDB) GetDayWiseUpdates(address string, chainid string, offset int) ([]dia.FeedUpdates, float64, error) {
+func (rdb *RelDB) GetDayWiseUpdates(address string, chainid string) ([]dia.FeedUpdates, float64, error) {
 	query := fmt.Sprintf(`
 	WITH DailyUpdates AS (
 		SELECT 
@@ -818,4 +820,42 @@ func (rdb *RelDB) GetDayWiseUpdates(address string, chainid string, offset int) 
 
 	return stats, avgGasUsed.Float64, nil
 
+}
+
+// dave oracleconfig in cache
+func (datastore *DB) SetOracleConfigCache(oc dia.OracleConfig) error {
+	key := oc.Address + "-" + oc.ChainID
+
+	fmt.Println("key", key)
+	fmt.Println("oc.ChainID", oc.ChainID)
+
+	if datastore.redisClient == nil {
+		return nil
+	}
+
+	data, _ := json.Marshal(oc)
+
+	err := datastore.redisClient.Set(key, data, TimeOutRedis).Err()
+	if err != nil {
+		log.Printf("Error: %v on SetOracleConfigCache %v\n", err, oc)
+	}
+
+	return err
+}
+
+func (datastore *DB) GetOracleConfigCache(key string) (dia.OracleConfig, error) {
+	// key := oc.Address + oc.ChainID
+	var oc dia.OracleConfig
+	if datastore.redisClient == nil {
+		return oc, errors.New("no redisclient")
+	}
+
+	err := datastore.redisClient.Get(key).Scan(&oc)
+	if err != nil {
+		log.Printf("Error: %v on GetOracle--ConfigCache %v\n", err, oc)
+		return oc, errors.New("no redisclient")
+
+	}
+
+	return oc, err
 }

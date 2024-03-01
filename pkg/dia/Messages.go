@@ -759,6 +759,18 @@ type OracleConfig struct {
 	LastOracleUpdate   time.Time
 }
 
+func (e *OracleConfig) MarshalBinary() ([]byte, error) {
+	return json.Marshal(e)
+}
+
+// UnmarshalBinary -
+func (e *OracleConfig) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &e); err != nil {
+		return err
+	}
+	return nil
+}
+
 type OracleUpdate struct {
 	OracleAddress     string
 	TransactionHash   string

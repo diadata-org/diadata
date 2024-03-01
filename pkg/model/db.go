@@ -141,6 +141,9 @@ type Datastore interface {
 	SetStockQuotation(sq StockQuotation) error
 	GetStockQuotation(source string, symbol string, timeInit time.Time, timeFinal time.Time) ([]StockQuotation, error)
 	GetStockSymbols() (map[Stock]string, error)
+
+	SetOracleConfigCache(dia.OracleConfig) error
+	GetOracleConfigCache(string) (dia.OracleConfig, error)
 }
 
 const (
