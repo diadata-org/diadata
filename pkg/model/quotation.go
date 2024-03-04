@@ -135,7 +135,7 @@ func (datastore *DB) GetAssetQuotationLatest(asset dia.Asset, starttime time.Tim
 	}
 
 	// if not in cache, get quotation from influx
-	log.Infof("asset %s not in cache. Query influx...", asset.Symbol)
+	log.Infof("asset %s not in cache. Query influx for range %v -- %v ...", asset.Symbol, starttime, endtime)
 
 	return datastore.GetAssetQuotation(asset, starttime, endtime)
 

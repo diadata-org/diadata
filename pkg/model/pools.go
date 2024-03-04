@@ -489,6 +489,7 @@ func (datastore *DB) GetPoolLiquiditiesUSD(p *dia.Pool, priceCache map[string]fl
 		if _, ok := priceCache[av.Asset.Identifier()]; !ok {
 			assetQuotation, err := datastore.GetAssetQuotationLatest(av.Asset, time.Now().Add(-time.Duration(assetQuotationLookbackHours)*time.Hour))
 			if err != nil {
+				log.Errorf("GetAssetQuotationLatest on %s with address %s: %v", av.Asset.Blockchain, av.Asset.Address, err)
 				continue
 			}
 			price = assetQuotation.Price
