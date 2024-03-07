@@ -469,11 +469,13 @@ func (ob *Env) Dashboard(context *gin.Context) {
 	if len(symbolFeeds) > 0 {
 
 		for _, sf := range symbolFeeds {
-			var blockchain string
-			for _, feeds := range sf.FeedSelection {
-				blockchain = blockchain + feeds.Blockchain
+			blockchain := strings.TrimSpace(strings.Split(sf.Symbol, "-")[0])
 
+			for _, fs := range sf.FeedSelection {
+				blockchain = fs.Blockchain
 			}
+
+			feedAddress := strings.TrimSpace(strings.Split(sf.Symbol, "-")[1])
 
 			blockDuration := 120
 			currentTime := time.Now()
@@ -503,25 +505,21 @@ func (ob *Env) Dashboard(context *gin.Context) {
 
 			var assetSymbol string
 
-			assetDetail, err := ob.RelDB.GetAsset(address, blockchain)
+			assetDetail, err := ob.RelDB.GetAsset(feedAddress, blockchain)
+
 			if err != nil {
-				assetSymbol = ""
+				assetSymbol = blockchain
 			} else {
 				assetSymbol = assetDetail.Symbol
 			}
 
-			lastUpdate, err := ob.RelDB.GetOracleUpdates(address, chainID, offset)
-			if err == nil && len(lastUpdate) > 0 {
-				LastReportedPrice = lastUpdate[0].AssetPrice
-				LastReportedTime = lastUpdate[0].UpdateTime
-
-			}
+			LastReportedTime, LastReportedPrice, err = ob.RelDB.GetOracleLastUpdate(address, chainID, assetSymbol)
 
 			volume24h, err := ob.RelDB.GetLastAssetVolume24H(dia.Asset{Blockchain: blockchain, Address: strings.Split(sf.Symbol, "-")[1]})
 			if err != nil {
 				volume24h = 0
 			}
-			asset := localAssetConfig{Symbol: assetSymbol, Address: strings.Split(sf.Symbol, "-")[1], Blockchain: blockchain, Deviation: oracleConfig.DeviationPermille, HeartBeat: oracleConfig.Frequency, GQLQuery: query, Volume24h: volume24h, LastReportedPrice: LastReportedPrice, LastReportedTime: LastReportedTime, SymbolFeed: sf}
+			asset := localAssetConfig{Symbol: assetSymbol, Address: feedAddress, Blockchain: blockchain, Deviation: oracleConfig.DeviationPermille, HeartBeat: oracleConfig.Frequency, GQLQuery: query, Volume24h: volume24h, LastReportedPrice: LastReportedPrice, LastReportedTime: LastReportedTime, SymbolFeed: sf}
 			assets = append(assets, asset)
 
 		}

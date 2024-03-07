@@ -565,6 +565,25 @@ func (rdb *RelDB) GetOracleUpdateCount(address string, chainid string) (int64, e
 
 }
 
+func (rdb *RelDB) GetOracleLastUpdate(address, chainid, symbol string) (time.Time, string, error) {
+	symbol = symbol + "/USD"
+	var (
+		updateTime sql.NullTime
+		price      string
+	)
+	query := fmt.Sprintf(`
+	SELECT update_time,asset_price
+	FROM %s fu
+	WHERE oracle_address = $1 AND chain_id = $2 and asset_key=$3 order by update_block desc LIMIT 1 
+	`, feederupdatesTable)
+
+	err := rdb.postgresClient.QueryRow(context.Background(), query, address, chainid, symbol).Scan(&updateTime, &price)
+	if err != nil {
+		return time.Time{}, "", err
+	}
+
+	return updateTime.Time, price, nil
+}
 func (rdb *RelDB) GetOracleUpdates(address string, chainid string, offset int) ([]dia.OracleUpdate, error) {
 	query := fmt.Sprintf(`
 	SELECT fu.oracle_address,

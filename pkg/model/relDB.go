@@ -178,6 +178,7 @@ type RelDatastore interface {
 	GetFeeder(feederID string) (oracleconfig dia.OracleConfig, err error)
 
 	GetDayWiseUpdates(address string, chainid string) ([]dia.FeedUpdates, float64, error)
+	GetOracleLastUpdate(address, chainid, symbol string) (time.Time, string, error)
 }
 
 const (
