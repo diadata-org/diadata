@@ -24,6 +24,8 @@ var (
 	BLOCKCHAINS           = scrapers.Blockchains
 	lookbackTradesNumber  = 10
 	errInvalidInputParams = errors.New("invalid input params")
+	statusCodesMap        = make(map[string]int32)
+	statusError           = "err"
 )
 
 const (
@@ -31,6 +33,13 @@ const (
 	LIST_SEPARATOR                 = ","
 	TRADE_VOLUME_THRESHOLD_DEFAULT = float64(0.001)
 )
+
+func init() {
+	statusCodesMap[""] = int32(0)
+	statusCodesMap[statusError] = int32(1)
+	statusCodesMap["symbol not known on"] = int32(2)
+	statusCodesMap["exchange name not valid"] = int32(3)
+}
 
 // Resolver is the root resolver
 type DiaResolver struct {
@@ -568,7 +577,7 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 	if args.FeedSelection == nil {
 		return sr, errors.New("at least 1 asset must be selected")
 	}
-	feedselection, err := r.castLocalFeedSelection(*args.FeedSelection)
+	feedselection, statusMessage, statusCode, err := r.castLocalFeedSelection(*args.FeedSelection)
 	if err != nil {
 		return sr, err
 	}
@@ -663,6 +672,8 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 	var fper []*FilterPointExtendedResolver
 
 	for _, fpe := range filterPoints {
+		fpe.StatusMessage = statusMessage
+		fpe.StatusCode = statusCode
 		fper = append(fper, &FilterPointExtendedResolver{q: fpe})
 	}
 
@@ -677,7 +688,7 @@ func (r *DiaResolver) GetFeedAggregation(ctx context.Context, args struct {
 	FeedSelection        *[]FeedSelection
 }) (*[]*FeedSelectionAggregatedResolver, error) {
 	var (
-		sr                   *[]*FeedSelectionAggregatedResolver
+		sr                   []*FeedSelectionAggregatedResolver
 		starttime            time.Time
 		endtime              time.Time
 		tradeVolumeThreshold float64
@@ -696,7 +707,7 @@ func (r *DiaResolver) GetFeedAggregation(ctx context.Context, args struct {
 		starttime = endtime.Add(-time.Duration(1 * time.Hour))
 	}
 	if endtime.Before(starttime) {
-		return sr, errors.New("startTime must be before EndTime")
+		return &sr, errors.New("startTime must be before EndTime")
 	}
 	if endtime.After(time.Now()) {
 		endtime = time.Now()
@@ -714,23 +725,25 @@ func (r *DiaResolver) GetFeedAggregation(ctx context.Context, args struct {
 	}
 
 	if args.FeedSelection == nil {
-		return sr, errors.New("at least 1 asset must be selected")
+		return &sr, errors.New("at least 1 asset must be selected")
 	}
-	feedselection, err := r.castLocalFeedSelection(*args.FeedSelection)
+	feedselection, statusMessage, statusCode, err := r.castLocalFeedSelection(*args.FeedSelection)
 	if err != nil {
-		return sr, err
+		return &sr, err
 	}
 
 	// Get aggregated data in given time-range.
 	fsa, err := r.DS.GetAggregatedFeedSelection(feedselection, starttime, endtime, tradeVolumeThreshold)
 	if err != nil {
 		log.Error("GetAggregatedFeedSelection: ", err)
-		return sr, err
+		return &sr, err
 	}
 
 	// Fill response slice.
 	var fsar []*FeedSelectionAggregatedResolver
 	for _, fs := range fsa {
+		fs.StatusMessage = statusMessage
+		fs.StatusCode = statusCode
 		if fs.Pooladdress != "" {
 			pool, err := r.RelDB.GetPoolByAddress(fs.Basetoken.Blockchain, fs.Pooladdress)
 			if err != nil {
@@ -970,14 +983,17 @@ func (r *DiaResolver) fillFirstBin(assets []dia.Asset, exchanges []string, trade
 // castLocalFeedSelection casts the input selection into a @[]dia.FeedSelection type
 // so that we can call the corresponding influx trades getter.
 // It also checks for admissibility of the underlying input data.
-func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) (dfs []dia.FeedSelection, err error) {
+func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) ([]dia.FeedSelection, string, int32, error) {
+	var dfs []dia.FeedSelection
+	var warning string
+	var warnings []string
 	for _, localFeedSelection := range fs {
 		var diaFeedSelection dia.FeedSelection
 
 		// Parse asset.
 		if localFeedSelection.Address.Value == nil || localFeedSelection.Blockchain.Value == nil {
-			err = errors.New("missing asset's address and blockchain")
-			return
+			err := errors.New("missing asset's address and blockchain")
+			return dfs, warning, 1, err
 		}
 		diaFeedSelection.Asset = dia.Asset{
 			Address:    normalizeAddress(*localFeedSelection.Address.Value, *localFeedSelection.Blockchain.Value),
@@ -999,7 +1015,7 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) (dfs []dia.Feed
 		if diaFeedSelection.LiquidityThreshold > 0 {
 			pools, errPools := r.RelDB.GetPoolsByAsset(diaFeedSelection.Asset, 0, diaFeedSelection.LiquidityThreshold)
 			if errPools != nil {
-				return dfs, errPools
+				return dfs, warning, 1, errPools
 			}
 			for _, pool := range pools {
 
@@ -1032,17 +1048,23 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) (dfs []dia.Feed
 		for _, ep := range *localFeedSelection.Exchangepairs {
 			var diaExchangepairselection dia.ExchangepairSelection
 			if ep.Exchange.Value == nil {
-				err = errors.New("missing exchange name")
-				return
+				err := errors.New("missing exchange name")
+				return dfs, warning, statusCodesMap[statusError], err
 			}
-			exchange, ok := EXCHANGES[*ep.Exchange.Value]
-			if !ok && *ep.Exchange.Value != "" {
-				var exchangeString string
-				for e := range EXCHANGES {
-					exchangeString += (e + "; ")
+
+			// Check if exchange is valid.
+			var exchangeOk bool
+			var exchange dia.Exchange
+			for e := range EXCHANGES {
+				if strings.EqualFold(*ep.Exchange.Value, e) {
+					exchangeOk = true
+					exchange = EXCHANGES[e]
+					break
 				}
-				err = fmt.Errorf("exchange name %s not valid. Available exchanges: %v", *ep.Exchange.Value, exchangeString)
-				return
+			}
+			if !exchangeOk && *ep.Exchange.Value != "" {
+				warnings = append(warnings, fmt.Sprintf("exchange name not valid: %s. ", *ep.Exchange.Value))
+				continue
 			}
 			diaExchangepairselection.Exchange = exchange
 
@@ -1057,7 +1079,7 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) (dfs []dia.Feed
 			var pairsCount int
 			for _, p := range *ep.Pairs {
 				if p.Value == nil {
-					return dfs, errors.New("missing pair identifier")
+					return dfs, warning, statusCodesMap[statusError], errors.New("missing pair identifier")
 				}
 				if len(strings.Split(*p.Value, PAIR_SEPARATOR)) == 2 {
 					pairs = true
@@ -1065,25 +1087,25 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) (dfs []dia.Feed
 				}
 			}
 			if !(pairsCount == len(*ep.Pairs) || pairsCount == 0) {
-				return dfs, errors.New("pair/pool notation not consistent")
+				return dfs, warning, statusCodesMap[statusError], errors.New("pair/pool notation not consistent")
 			}
 
 			if exchange.Name != "" && exchange.Centralized {
 				if !pairs {
-					return dfs, errors.New("wrong notation for pairs")
+					return dfs, warning, statusCodesMap[statusError], errors.New("wrong notation for pairs")
 				}
 				for _, p := range *ep.Pairs {
 					if len(strings.Split(*p.Value, PAIR_SEPARATOR)) < 2 {
-						return dfs, errors.New("pair not in requested format TokenA-TokenB")
+						return dfs, warning, statusCodesMap[statusError], errors.New("pair not in requested format TokenA-TokenB")
 					}
 
 					quotetoken, err := r.RelDB.GetExchangeSymbol(exchange.Name, strings.Split(*p.Value, PAIR_SEPARATOR)[0])
 					if err != nil {
-						return dfs, fmt.Errorf("symbol %s not known on %s", strings.Split(*p.Value, PAIR_SEPARATOR)[0], exchange.Name)
+						warnings = append(warnings, fmt.Sprintf("%s: symbol not known on %s. ", strings.Split(*p.Value, PAIR_SEPARATOR)[0], exchange.Name))
 					}
 					basetoken, err := r.RelDB.GetExchangeSymbol(exchange.Name, strings.Split(*p.Value, PAIR_SEPARATOR)[1])
 					if err != nil {
-						return dfs, fmt.Errorf("symbol %s not known on %s", strings.Split(*p.Value, PAIR_SEPARATOR)[1], exchange.Name)
+						warnings = append(warnings, fmt.Sprintf("symbol %s not known on %s. ", strings.Split(*p.Value, PAIR_SEPARATOR)[1], exchange.Name))
 					}
 					pair := dia.Pair{
 						QuoteToken: quotetoken,
@@ -1098,12 +1120,12 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) (dfs []dia.Feed
 					// Check admissibility of input.
 					pairString := strings.Split(*p.Value, LIST_SEPARATOR)
 					if len(pairString) < 2 {
-						return dfs, errors.New("exactly 2 assets must be given for each pair")
+						return dfs, warning, statusCodesMap[statusError], errors.New("exactly 2 assets must be given for each pair")
 					}
 					var pair dia.Pair
 
 					if len(strings.Split(pairString[0], PAIR_SEPARATOR)) < 2 {
-						return dfs, errors.New("asset not in requested format Blockchain-Address")
+						return dfs, warning, statusCodesMap[statusError], errors.New("asset not in requested format Blockchain-Address")
 					}
 					blockchainQuotetoken := strings.Title(strings.ToLower(strings.Split(pairString[0], PAIR_SEPARATOR)[0]))
 					pair.QuoteToken.Address = normalizeAddress(strings.Split(pairString[0], PAIR_SEPARATOR)[1], blockchainQuotetoken)
@@ -1122,7 +1144,7 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) (dfs []dia.Feed
 						normalizeAddress(*p.Value, diaFeedSelection.Asset.Blockchain),
 					)
 					if err != nil {
-						return dfs, err
+						return dfs, warning, statusCodesMap[statusError], err
 					}
 					diaExchangepairselection.Pools = append(diaExchangepairselection.Pools, pool)
 				}
@@ -1132,8 +1154,11 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) (dfs []dia.Feed
 
 		dfs = append(dfs, diaFeedSelection)
 	}
-
-	return
+	uniqueWarnings := ""
+	for _, w := range utils.UniqueStrings(warnings) {
+		uniqueWarnings += w
+	}
+	return dfs, uniqueWarnings, statusCodes(uniqueWarnings), nil
 }
 
 // Returns the EIP55 compliant address in case @blockchain has an Ethereum ChainID.
@@ -1159,4 +1184,17 @@ func normalizeAddress(address string, blockchain string) string {
 
 func containsSpecialChars(s string) bool {
 	return strings.ContainsAny(s, "!@#$%^&*()'\"|{}[];><?/`~,")
+}
+
+func statusCodes(statusMessage string) int32 {
+	var statusCode int32
+	if strings.Contains(statusMessage, statusError) {
+		return statusCodesMap[statusError]
+	}
+	for status := range statusCodesMap {
+		if strings.Contains(statusMessage, status) {
+			statusCode += statusCodesMap[status]
+		}
+	}
+	return statusCode
 }

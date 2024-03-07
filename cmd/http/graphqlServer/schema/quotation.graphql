@@ -154,6 +154,8 @@ type FilterPointExtended {
   Pools: [String!]
   Pairs: [String!]
   TradesCount: Int
+  StatusMessage: String
+  StatusCode: Int
 }
 
 type FeedSelectionAggregated {
@@ -170,6 +172,8 @@ type FeedSelectionAggregated {
   TradesCount: Int
   LastPrice: Float
   Time: Time
+  StatusMessage: String
+  StatusCode: Int
 }
 
 type Trade {

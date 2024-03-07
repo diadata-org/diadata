@@ -62,3 +62,10 @@ func (qr *FeedSelectionAggregatedResolver) TradesCount(ctx context.Context) (*in
 func (qr *FeedSelectionAggregatedResolver) LastPrice(ctx context.Context) (*float64, error) {
 	return &qr.q.LastPrice, nil
 }
+
+func (qr *FeedSelectionAggregatedResolver) StatusMessage(ctx context.Context) (*string, error) {
+	return &qr.q.StatusMessage, nil
+}
+func (qr *FeedSelectionAggregatedResolver) StatusCode(ctx context.Context) (*int32, error) {
+	return &qr.q.StatusCode, nil
+}

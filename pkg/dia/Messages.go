@@ -466,6 +466,8 @@ type FeedSelectionAggregated struct {
 	LastPrice        float64
 	Starttime        time.Time
 	Endtime          time.Time
+	StatusMessage    string
+	StatusCode       int32
 }
 
 type ExchangepairSelection struct {
@@ -572,9 +574,11 @@ type FilterPoint struct {
 type FilterPointExtended struct {
 	FilterPoint FilterPoint
 	// Pools and pairs of the filter point's underlying trades.
-	Pools       []Pool
-	Pairs       []ExchangePair
-	TradesCount int32
+	Pools         []Pool
+	Pairs         []ExchangePair
+	TradesCount   int32
+	StatusMessage string
+	StatusCode    int32
 }
 
 type IndexBlock struct {
