@@ -665,6 +665,92 @@ func (rdb *RelDB) GetOracleUpdates(address string, chainid string, offset int) (
 
 	return updates, nil
 }
+func (rdb *RelDB) GetOracleUpdatesByTimeRange(address, chainid, symbol string, offset int, startTime, endTime time.Time) ([]dia.OracleUpdate, error) {
+	query := fmt.Sprintf(`
+	SELECT fu.oracle_address,
+		fu.transaction_hash,
+		fu.transaction_cost,
+		fu.asset_key,
+		fu.asset_price,
+		fu.update_block,
+		fu.update_from,
+		fu.from_balance,
+		fu.gas_cost,
+		fu.gas_used,
+		fu.chain_id,
+		fu.update_time,
+		oc.creation_block,
+		oc.creation_block_time
+
+
+	FROM %s fu
+	JOIN %s oc ON fu.oracle_address = oc.address AND fu.chain_id = oc.chainID 
+	WHERE fu.oracle_address = $1 AND fu.chain_id = $2 
+    AND fu.update_time < to_timestamp($3)
+    AND fu.update_time > to_timestamp($4)
+	AND ($5 = '' OR fu.asset_key = $5)  
+
+	order by fu.update_block desc LIMIT 20 OFFSET %d
+	`, feederupdatesTable, oracleconfigTable, offset)
+
+	rows, err := rdb.postgresClient.Query(context.Background(), query, address, chainid, startTime.Unix(), endTime.Unix(), symbol)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var (
+		updates []dia.OracleUpdate
+	)
+
+	for rows.Next() {
+
+		var (
+			update            dia.OracleUpdate
+			updateTime        sql.NullTime
+			creationBlock     sql.NullInt64
+			creationBlockTime sql.NullTime
+		)
+		err := rows.Scan(
+			&update.OracleAddress,
+			&update.TransactionHash,
+			&update.TransactionCost,
+			&update.AssetKey,
+			&update.AssetPrice,
+			&update.UpdateBlock,
+			&update.UpdateFrom,
+			&update.FromBalance,
+			&update.GasCost,
+			&update.GasUsed,
+			&update.ChainID,
+			&updateTime,
+			&creationBlock,
+			&creationBlockTime,
+		)
+
+		if updateTime.Valid {
+			update.UpdateTime = updateTime.Time
+		}
+		if creationBlockTime.Valid {
+			update.CreationBlockTime = creationBlockTime.Time
+		}
+		if creationBlock.Valid {
+			update.CreationBlock = uint64(creationBlock.Int64)
+		}
+
+		if err != nil {
+			return nil, err
+		}
+
+		updates = append(updates, update)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return updates, nil
+}
 func (rdb *RelDB) GetLastOracleUpdate(address string, chainid string) ([]dia.OracleUpdate, error) {
 	query := fmt.Sprintf(`
 	SELECT fu.oracle_address,

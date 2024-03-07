@@ -17,6 +17,7 @@ import (
 	kr "github.com/99designs/keyring"
 	"github.com/99designs/keyring/cmd/k8sbridge"
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/http/restApi"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gin-gonic/gin"
@@ -387,6 +388,20 @@ func (ob *Env) Dashboard(context *gin.Context) {
 	chainID := context.Query("chainID")
 	page := context.Query("page")
 
+	symbol := context.Query("symbol")
+
+	starttime, endtime, err := utils.MakeTimerange(context.Query("starttime"), context.Query("endtime"), time.Duration(24*time.Hour))
+	if err != nil {
+		starttime = time.Now()
+		endtime = starttime.Add(time.Duration(30 * 24 * time.Hour))
+
+	}
+
+	if ok := utils.ValidTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
+		restApi.SendError(context, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 30*24*time.Hour))
+		return
+	}
+
 	if strings.Contains(address, "0x") {
 		address = common.HexToAddress(address).Hex()
 	}
@@ -412,10 +427,10 @@ func (ob *Env) Dashboard(context *gin.Context) {
 		return
 	}
 
-	updates, err := ob.RelDB.GetOracleUpdates(address, chainID, offset)
+	updates, err := ob.RelDB.GetOracleUpdatesByTimeRange(address, chainID, symbol, offset, starttime, endtime)
 	if err != nil {
-		errorMsg := "Error fetching oracle updates"
-		logMsg := "Oracle Stats error"
+		errorMsg := "Error fetching oracle updates GetOracleUpdatesByTimeRange"
+		logMsg := "GetOracleUpdatesByTimeRange"
 		handleError(context, http.StatusInternalServerError, errorMsg, logMsg, err)
 		return
 	}
@@ -525,20 +540,10 @@ func (ob *Env) Dashboard(context *gin.Context) {
 		}
 	} else {
 
-		var (
-			LastReportedPrice string
-			LastReportedTime  time.Time
-		)
-
-		lastUpdate, err := ob.RelDB.GetOracleUpdates(address, chainID, offset)
-		if err == nil && len(lastUpdate) > 0 {
-			LastReportedPrice = lastUpdate[0].AssetPrice
-			LastReportedTime = lastUpdate[0].UpdateTime
-
-		}
-
 		if len(oracleConfig.Symbols) > 0 {
 			for _, symbol := range oracleConfig.Symbols {
+
+				LastReportedTime, LastReportedPrice, _ := ob.RelDB.GetOracleLastUpdate(address, chainID, symbol)
 
 				if len(strings.Split(symbol, "-")) >= 2 {
 
