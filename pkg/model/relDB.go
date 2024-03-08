@@ -39,6 +39,7 @@ type RelDatastore interface {
 	GetExchangePairSeparator(exchange string) (string, error)
 	GetPairsForExchange(exchange dia.Exchange, filterVerified bool, verified bool) ([]dia.ExchangePair, error)
 	GetPairsForAsset(asset dia.Asset, filterVerified bool, verified bool) ([]dia.ExchangePair, error)
+	GetExchangepairsByAsset(asset dia.Asset, exchange string, basetoken bool) ([]dia.ExchangePair, error)
 	GetExchangePairSymbols(exchange string) ([]dia.ExchangePair, error)
 	GetNumPairs(exchange dia.Exchange) (int, error)
 	SetExchangeSymbol(exchange string, symbol string) error

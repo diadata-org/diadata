@@ -706,7 +706,6 @@ func (datastore *DB) GetTradesByFeedSelection(
 		)
 	}
 
-	log.Info("query: ", query)
 	res, err := queryInfluxDB(datastore.influxClient, query)
 	if err != nil {
 		return r, err

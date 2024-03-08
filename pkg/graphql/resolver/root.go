@@ -37,8 +37,9 @@ const (
 func init() {
 	statusCodesMap[""] = int32(0)
 	statusCodesMap[statusError] = int32(1)
-	statusCodesMap["symbol not known on"] = int32(2)
+	statusCodesMap["pair not known on"] = int32(2)
 	statusCodesMap["exchange name not valid"] = int32(3)
+	statusCodesMap["not available on"] = int32(7)
 }
 
 // Resolver is the root resolver
@@ -1070,6 +1071,26 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) ([]dia.FeedSele
 
 			// Select all pairs on given exchange if not specified.
 			if ep.Pairs == nil {
+				// Check if asset is traded as quotetoken on exchange and emit warning if not.
+				eps, err := r.RelDB.GetExchangepairsByAsset(
+					dia.Asset{
+						Address:    diaFeedSelection.Asset.Address,
+						Blockchain: diaFeedSelection.Asset.Blockchain,
+					},
+					exchange.Name,
+					false,
+				)
+				log.Infof("Number of pairs on exchange %s: %v", exchange.Name, len(eps))
+				for _, e := range eps {
+					log.Info("ForeignName: ", e.ForeignName)
+				}
+				if err != nil {
+					log.Errorf("GetExchangepairsByAsset for %s on %s: %v", diaFeedSelection.Asset.Address, diaFeedSelection.Asset.Blockchain, err)
+				}
+				if len(eps) == 0 {
+					warnings = append(warnings, fmt.Sprintf("%s-%s: asset not available on %s. ", diaFeedSelection.Asset.Blockchain, diaFeedSelection.Asset.Address, exchange.Name))
+				}
+
 				diaFeedSelection.Exchangepairs = append(diaFeedSelection.Exchangepairs, diaExchangepairselection)
 				continue
 			}
@@ -1099,17 +1120,13 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) ([]dia.FeedSele
 						return dfs, warning, statusCodesMap[statusError], errors.New("pair not in requested format TokenA-TokenB")
 					}
 
-					quotetoken, err := r.RelDB.GetExchangeSymbol(exchange.Name, strings.Split(*p.Value, PAIR_SEPARATOR)[0])
+					exchangepair, err := r.RelDB.GetExchangePair(exchange.Name, *p.Value, false)
 					if err != nil {
-						warnings = append(warnings, fmt.Sprintf("%s: symbol not known on %s. ", strings.Split(*p.Value, PAIR_SEPARATOR)[0], exchange.Name))
-					}
-					basetoken, err := r.RelDB.GetExchangeSymbol(exchange.Name, strings.Split(*p.Value, PAIR_SEPARATOR)[1])
-					if err != nil {
-						warnings = append(warnings, fmt.Sprintf("symbol %s not known on %s. ", strings.Split(*p.Value, PAIR_SEPARATOR)[1], exchange.Name))
+						warnings = append(warnings, fmt.Sprintf("%s: pair not known on %s. ", *p.Value, exchange.Name))
 					}
 					pair := dia.Pair{
-						QuoteToken: quotetoken,
-						BaseToken:  basetoken,
+						QuoteToken: exchangepair.UnderlyingPair.QuoteToken,
+						BaseToken:  exchangepair.UnderlyingPair.BaseToken,
 					}
 					diaExchangepairselection.Pairs = append(diaExchangepairselection.Pairs, pair)
 				}
