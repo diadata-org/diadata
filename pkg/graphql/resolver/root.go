@@ -37,7 +37,7 @@ const (
 func init() {
 	statusCodesMap[""] = int32(0)
 	statusCodesMap[statusError] = int32(1)
-	statusCodesMap["pair not known on"] = int32(2)
+	statusCodesMap["pair not available on"] = int32(2)
 	statusCodesMap["exchange name not valid"] = int32(3)
 	statusCodesMap["not available on"] = int32(7)
 }
@@ -1122,7 +1122,7 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) ([]dia.FeedSele
 
 					exchangepair, err := r.RelDB.GetExchangePair(exchange.Name, *p.Value, false)
 					if err != nil {
-						warnings = append(warnings, fmt.Sprintf("%s: pair not known on %s. ", *p.Value, exchange.Name))
+						warnings = append(warnings, fmt.Sprintf("%s: pair not available on %s. ", *p.Value, exchange.Name))
 					}
 					pair := dia.Pair{
 						QuoteToken: exchangepair.UnderlyingPair.QuoteToken,
