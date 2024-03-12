@@ -141,7 +141,7 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 		tradeBlocks       []queryhelper.Block
 		blockchain        string
 		address           string
-		sr                *FilterPointMetaResolver
+		sr                FilterPointMetaResolver
 		asset             dia.Asset
 		err               error
 		baseAssets        []dia.Asset
@@ -211,13 +211,13 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 		asset, err = r.RelDB.GetAsset(address, blockchain)
 		if err != nil {
 			log.Errorf("Asset not found with address %s and blockchain %s ", address, blockchain)
-			return sr, err
+			return &sr, err
 		}
 	} else {
 		assets, err := r.RelDB.GetTopAssetByVolume(symbol)
 		if err != nil {
 			log.Errorf("Asset not found with symbol %s ", symbol)
-			return sr, err
+			return &sr, err
 		}
 
 		log.Infoln("All assets having same symbol", assets)
@@ -265,7 +265,7 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 			trades, err = r.DS.GetTradesByExchangesAndBaseAssets(asset, baseAssets, exchangesString, starttime, endtime, 0)
 			if err != nil {
 				log.Error("GetTradesByExchangesAndBaseAssets: ", err)
-				return sr, err
+				return &sr, err
 			}
 		} else {
 			// Fetch trades batched for disjoint bins.
@@ -277,7 +277,7 @@ func (r *DiaResolver) GetChartMeta(ctx context.Context, args struct {
 			trades, err = r.DS.GetTradesByExchangesBatched(asset, baseAssets, exchangesString, starttimes, endtimes, 0)
 			if err != nil {
 				log.Error("GetTradesByExchangesAndBaseAssets: ", err)
-				return sr, err
+				return &sr, err
 			}
 		}
 		log.Println("Generating blocks, Total Trades", len(trades))
