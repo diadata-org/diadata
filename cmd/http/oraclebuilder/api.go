@@ -392,8 +392,8 @@ func (ob *Env) Dashboard(context *gin.Context) {
 
 	starttime, endtime, err := utils.MakeTimerange(context.Query("starttime"), context.Query("endtime"), time.Duration(24*time.Hour))
 	if err != nil {
-		starttime = time.Now()
-		endtime = starttime.Add(time.Duration(30 * 24 * time.Hour))
+		endtime = time.Now()
+		starttime = endtime.Add(-time.Duration(30 * 24 * time.Hour))
 
 	}
 
@@ -528,7 +528,7 @@ func (ob *Env) Dashboard(context *gin.Context) {
 				assetSymbol = assetDetail.Symbol
 			}
 
-			LastReportedTime, LastReportedPrice, err = ob.RelDB.GetOracleLastUpdate(address, chainID, assetSymbol)
+			LastReportedTime, LastReportedPrice, _ = ob.RelDB.GetOracleLastUpdate(address, chainID, assetSymbol)
 
 			volume24h, err := ob.RelDB.GetLastAssetVolume24H(dia.Asset{Blockchain: blockchain, Address: strings.Split(sf.Symbol, "-")[1]})
 			if err != nil {
@@ -586,6 +586,8 @@ func (ob *Env) Dashboard(context *gin.Context) {
 		avgGasSpend = 0.0
 	}
 
+	lastOracleUpdate, _ := ob.RelDB.GetLastOracleUpdate(address, chainID)
+
 	response := make(map[string]interface{})
 	response["OracleAddress"] = address
 	response["Chain"] = chainID
@@ -594,6 +596,11 @@ func (ob *Env) Dashboard(context *gin.Context) {
 	response["GasRemaining"] = gasRemaining
 	response["GasSpend"] = gasSpend
 	response["AvgGasSpend"] = avgGasSpend
+
+	if len(lastOracleUpdate) > 0 {
+		response["LastOracleUpdate"] = lastOracleUpdate[0].UpdateTime
+	}
+
 	response["DayWiseUpdates"] = updateFeeds
 
 	response["Transactions"] = updates

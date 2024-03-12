@@ -693,7 +693,7 @@ func (rdb *RelDB) GetOracleUpdatesByTimeRange(address, chainid, symbol string, o
 	order by fu.update_block desc LIMIT 20 OFFSET %d
 	`, feederupdatesTable, oracleconfigTable, offset)
 
-	rows, err := rdb.postgresClient.Query(context.Background(), query, address, chainid, startTime.Unix(), endTime.Unix(), symbol)
+	rows, err := rdb.postgresClient.Query(context.Background(), query, address, chainid, endTime.Unix(), startTime.Unix(), symbol)
 	if err != nil {
 		return nil, err
 	}
