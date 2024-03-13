@@ -48,6 +48,8 @@ const (
 	BIFROST_POLKADOT                        = "Bifrost-polkadot"
 )
 
+var CRYPTO_ZERO_UNIX_TIME = time.Unix(1230768000, 0)
+
 type VerificationMechanism string
 
 // NFTClass is the container for a nft class defined by
@@ -453,6 +455,21 @@ type FeedSelection struct {
 	LiquidityThreshold float64
 }
 
+type FeedSelectionAggregated struct {
+	Exchange         string
+	Quotetoken       Asset
+	Basetoken        Asset
+	Pooladdress      string
+	PoolLiquidityUSD float64
+	TradesCount      int32
+	Volume           float64
+	LastPrice        float64
+	Starttime        time.Time
+	Endtime          time.Time
+	StatusMessage    string
+	StatusCode       int32
+}
+
 type ExchangepairSelection struct {
 	Exchange           Exchange
 	Pairs              []Pair
@@ -557,9 +574,11 @@ type FilterPoint struct {
 type FilterPointExtended struct {
 	FilterPoint FilterPoint
 	// Pools and pairs of the filter point's underlying trades.
-	Pools       []Pool
-	Pairs       []ExchangePair
-	TradesCount int32
+	Pools         []Pool
+	Pairs         []ExchangePair
+	TradesCount   int32
+	StatusMessage string
+	StatusCode    int32
 }
 
 type IndexBlock struct {
@@ -744,6 +763,18 @@ type OracleConfig struct {
 	LastOracleUpdate   time.Time
 }
 
+func (e *OracleConfig) MarshalBinary() ([]byte, error) {
+	return json.Marshal(e)
+}
+
+// UnmarshalBinary -
+func (e *OracleConfig) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, &e); err != nil {
+		return err
+	}
+	return nil
+}
+
 type OracleUpdate struct {
 	OracleAddress     string
 	TransactionHash   string
@@ -754,9 +785,15 @@ type OracleUpdate struct {
 	UpdateFrom        string
 	FromBalance       string
 	GasCost           string
-	GasUsed           string
+	GasUsed           float64
 	ChainID           string
 	UpdateTime        time.Time
 	CreationBlock     uint64
 	CreationBlockTime time.Time
+}
+
+type FeedUpdates struct {
+	Day         time.Time `json:"Day"`
+	UpdateCount int32     `json:"UpdateCount"`
+	GasUsed     float64   `json:"GasUsed"`
 }

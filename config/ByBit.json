@@ -469,6 +469,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "ORDI",
+            "ForeignName": "ORDIUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "PEOPLE",
             "ForeignName": "PEOPLEUSDT",
             "Exchange": "ByBit",
@@ -531,6 +537,12 @@
         {
             "Symbol": "SAND",
             "ForeignName": "SANDUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SATS",
+            "ForeignName": "SATSUSDT",
             "Exchange": "ByBit",
             "Ignore": false
         },

@@ -301,6 +301,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "ORDI",
+            "Exchange": "Bitmax",
+            "Blockchain": "Bitcoin",
+            "Address": "b61b0172d95e266c18aea0c624db987e971a5d6d4ebc2aaed85da4642d635735i0"
+        },
+        {
             "Symbol": "ORN",
             "Exchange": "Bitmax",
             "Blockchain": "Ethereum",

@@ -102,6 +102,7 @@ func main() {
 
 		// parse asset from env
 		entries := strings.Split(asset, "-")
+		//TODO: check if len(array) > 0
 		currAsset.blockchain = strings.TrimSpace(entries[0])
 		currAsset.address = strings.TrimSpace(entries[1])
 		currAsset.symbol = strings.TrimSpace(entries[2])
@@ -518,7 +519,7 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int,
 			// generate strings for optional parameters for liquidity threshold/pool selection
 			var lqThresholdString string
 			if selectedFeed.LiquidityThreshold > 0 {
-				lqThresholdString = "LiquidityThreshold:" + fmt.Sprintf("%.2f", gqlParameters.FeedSelection[0].LiquidityThreshold) + ","
+				lqThresholdString = "LiquidityThreshold:" + fmt.Sprintf("%.2f", selectedFeed.LiquidityThreshold) + ","
 			} else {
 				lqThresholdString = ""
 			}

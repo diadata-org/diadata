@@ -55,6 +55,7 @@ type Datastore interface {
 
 	GetTradesByExchangepairs(exchangepairMap map[string][]dia.Pair, exchangepoolMap map[string][]string, starttime time.Time, endtime time.Time) ([]dia.Trade, error)
 	GetTradesByFeedSelection(feedselection []dia.FeedSelection, starttimes []time.Time, endtimes []time.Time, limit int) ([]dia.Trade, error)
+	GetAggregatedFeedSelection(feedselection []dia.FeedSelection, starttime time.Time, endtime time.Time, tradeVolumeThreshold float64) ([]dia.FeedSelectionAggregated, error)
 
 	GetActiveExchangesAndPairs(address string, blockchain string, numTradesThreshold int64, starttime time.Time, endtime time.Time) (map[string][]dia.Pair, map[string]int64, error)
 	GetOldTradesFromInflux(table string, exchange string, verified bool, timeInit, timeFinal time.Time) ([]dia.Trade, error)
@@ -81,15 +82,16 @@ type Datastore interface {
 	GetNumTradesSeries(asset dia.Asset, exchange string, starttime time.Time, endtime time.Time, grouping string) ([]int64, error)
 	GetVolumesAllExchanges(asset dia.Asset, starttime time.Time, endtime time.Time) (exchVolumes dia.ExchangeVolumesList, err error)
 	GetExchangePairVolumes(asset dia.Asset, starttime time.Time, endtime time.Time, threshold float64) (map[string][]dia.PairVolume, error)
+	GetExchangePairVolume(ep dia.ExchangePair, pooladdress string, starttime time.Time, endtime time.Time, threshold float64) (float64, int64, error)
 
 	// New Asset pricing methods: 23/02/2021
 	SetAssetPriceUSD(asset dia.Asset, price float64, timestamp time.Time) error
-	GetAssetPriceUSD(asset dia.Asset, timestamp time.Time) (float64, error)
+	GetAssetPriceUSD(asset dia.Asset, starttime time.Time, endtime time.Time) (float64, error)
 	GetAssetPriceUSDLatest(asset dia.Asset) (price float64, err error)
 	SetAssetQuotation(quotation *AssetQuotation) error
-	GetAssetQuotation(asset dia.Asset, timestamp time.Time) (*AssetQuotation, error)
+	GetAssetQuotation(asset dia.Asset, starttime time.Time, endtime time.Time) (*AssetQuotation, error)
 	GetAssetQuotations(asset dia.Asset, starttime time.Time, endtime time.Time) ([]AssetQuotation, error)
-	GetAssetQuotationLatest(asset dia.Asset) (*AssetQuotation, error)
+	GetAssetQuotationLatest(asset dia.Asset, starttime time.Time) (*AssetQuotation, error)
 	GetSortedAssetQuotations(assets []dia.Asset) ([]AssetQuotation, error)
 	AddAssetQuotationsToBatch(quotations []*AssetQuotation) error
 	SetAssetQuotationCache(quotation *AssetQuotation, check bool) (bool, error)
@@ -139,6 +141,9 @@ type Datastore interface {
 	SetStockQuotation(sq StockQuotation) error
 	GetStockQuotation(source string, symbol string, timeInit time.Time, timeFinal time.Time) ([]StockQuotation, error)
 	GetStockSymbols() (map[Stock]string, error)
+
+	SetOracleConfigCache(dia.OracleConfig) error
+	GetOracleConfigCache(string) (dia.OracleConfig, error)
 }
 
 const (

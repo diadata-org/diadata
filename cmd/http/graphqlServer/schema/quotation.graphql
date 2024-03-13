@@ -49,6 +49,13 @@ type Query {
     FeedSelection: [FeedSelection!]
   ): [FilterPointExtended]
 
+  GetFeedAggregation(
+    StartTime: Time
+    EndTime: Time
+    TradeVolumeThreshold: Float
+    FeedSelection: [FeedSelection!]
+  ): [FeedSelectionAggregated]
+
   GetVWALP(
     Quotetokenblockchain: String!
 	  Quotetokenaddress: String!
@@ -147,6 +154,26 @@ type FilterPointExtended {
   Pools: [String!]
   Pairs: [String!]
   TradesCount: Int
+  StatusMessage: String
+  StatusCode: Int
+}
+
+type FeedSelectionAggregated {
+  Exchange: String
+  Quotetokensymbol: String
+  Quotetokenaddress: String
+  Quotetokenblockchain: String
+  Basetokensymbol: String
+  Basetokenaddress: String
+  Basetokenblockchain: String
+  Pooladdress: String
+  PoolLiquidityUSD: Float
+  Volume: Float
+  TradesCount: Int
+  LastPrice: Float
+  Time: Time
+  StatusMessage: String
+  StatusCode: Int
 }
 
 type Trade {

@@ -3,9 +3,9 @@ module graphqlServer
 go 1.17
 
 require (
-	github.com/diadata-org/diadata v1.4.415
+	github.com/diadata-org/diadata v1.4.455
 	github.com/graph-gophers/graphql-go v1.1.0
-	github.com/sirupsen/logrus v1.8.1
+	github.com/sirupsen/logrus v1.9.3
 )
 
 require (
@@ -114,7 +114,6 @@ require (
 	github.com/mostynb/zstdpool-freelist v0.0.0-20201229113212-927304c0c3b1 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/mtibben/percent v0.2.1 // indirect
-	github.com/onsi/gomega v1.27.4 // indirect
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/osmosis-labs/osmosis/v6 v6.4.1 // indirect
@@ -131,7 +130,6 @@ require (
 	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0 // indirect
 	github.com/regen-network/cosmos-proto v0.3.1 // indirect
 	github.com/rjeczalik/notify v0.9.2 // indirect
-	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	github.com/sasha-s/go-deadlock v0.2.1-0.20190427202633-1595213edefa // indirect
 	github.com/segmentio/kafka-go v0.4.35 // indirect
 	github.com/shirou/gopsutil v3.21.4-0.20210419000835-c7a38de76ee5+incompatible // indirect

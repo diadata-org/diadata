@@ -15,12 +15,6 @@ func GetPairSymbols(pair ExchangePair) ([]string, error) {
 		baseToken := strings.TrimPrefix(foreignName, quoteToken)
 		return []string{quoteToken, baseToken}, nil
 	}
-	if pair.Exchange == ZBExchange {
-		foreignName := pair.ForeignName
-		quoteToken := pair.Symbol
-		baseToken := strings.TrimPrefix(strings.ToUpper(foreignName), quoteToken)
-		return []string{quoteToken, baseToken}, nil
-	}
 	foreignName := pair.ForeignName
 	quoteToken := pair.Symbol
 

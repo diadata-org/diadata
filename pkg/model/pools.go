@@ -481,17 +481,18 @@ func (rdb *RelDB) GetPoolsByAsset(asset dia.Asset, liquidityThreshold float64, l
 func (datastore *DB) GetPoolLiquiditiesUSD(p *dia.Pool, priceCache map[string]float64) {
 	for i, av := range p.Assetvolumes {
 		var price float64
-		var err error
 		// For some pools, for instance on BalancerV2 type contracts, the pool contains itself as an asset.
 		if av.Asset.Address == p.Address {
 			log.Warnf("%s: Pool token %s has the same address as pool itself.", p.Exchange.Name, p.Address)
 			continue
 		}
 		if _, ok := priceCache[av.Asset.Identifier()]; !ok {
-			price, err = datastore.GetAssetPriceUSDCache(av.Asset)
+			assetQuotation, err := datastore.GetAssetQuotationLatest(av.Asset, time.Now().Add(-time.Duration(assetQuotationLookbackHours)*time.Hour))
 			if err != nil {
+				log.Errorf("GetAssetQuotationLatest on %s with address %s: %v", av.Asset.Blockchain, av.Asset.Address, err)
 				continue
 			}
+			price = assetQuotation.Price
 			priceCache[av.Asset.Identifier()] = price
 		} else {
 			price = priceCache[av.Asset.Identifier()]

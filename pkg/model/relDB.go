@@ -40,6 +40,7 @@ type RelDatastore interface {
 	GetExchangePairSeparator(exchange string) (string, error)
 	GetPairsForExchange(exchange dia.Exchange, filterVerified bool, verified bool) ([]dia.ExchangePair, error)
 	GetPairsForAsset(asset dia.Asset, filterVerified bool, verified bool) ([]dia.ExchangePair, error)
+	GetExchangepairsByAsset(asset dia.Asset, exchange string, basetoken bool) ([]dia.ExchangePair, error)
 	GetExchangePairSymbols(exchange string) ([]dia.ExchangePair, error)
 	GetNumPairs(exchange dia.Exchange) (int, error)
 	SetExchangeSymbol(exchange string, symbol string) error
@@ -177,6 +178,10 @@ type RelDatastore interface {
 	UpdateFeederAddressCheckSum(oracleaddress string) error
 	GetExpiredFeeders() (oracleconfigs []dia.OracleConfig, err error)
 	GetFeeder(feederID string) (oracleconfig dia.OracleConfig, err error)
+
+	GetDayWiseUpdates(address string, chainid string) ([]dia.FeedUpdates, float64, error)
+	GetOracleLastUpdate(address, chainid, symbol string) (time.Time, string, error)
+	GetOracleUpdatesByTimeRange(address, chainid, symbol string, offset int, startTime, endTime time.Time) ([]dia.OracleUpdate, error)
 }
 
 const (

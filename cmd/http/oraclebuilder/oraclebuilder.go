@@ -21,9 +21,14 @@ func main() {
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
-	relStore, err := models.NewPostgresDataStore()
+	relStore, err := models.NewRelDataStore()
 	if err != nil {
 		log.Errorln("NewRelDataStore", err)
+	}
+
+	ds, err := models.NewDataStore()
+	if err != nil {
+		log.Errorln("NewDataStore", err)
 	}
 	k8bridgeurl := utils.Getenv("K8SBRIDGE_URL", "127.0.0.1:50051")
 	signerurl := utils.Getenv("SIGNER_URL", "signer.dia-oracle-feeder:50052")
@@ -50,7 +55,7 @@ func main() {
 		AllowedBackends: []keyring.BackendType{keyring.K8Secret},
 	})
 
-	oracle := NewEnv(relStore, ph, ring, int(rateLimitOracleCreation))
+	oracle := NewEnv(relStore, ds, ph, ring, int(rateLimitOracleCreation))
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{"*"},
@@ -68,6 +73,7 @@ func main() {
 	routerGroup.PATCH("/pause", func(ctx *gin.Context) { ctx.Set("message", "Verify its your address to pause oracle feeder") }, oracle.Auth, oracle.Pause)
 	routerGroup.GET("/whitelist", oracle.Whitelist)
 	routerGroup.GET("/stats", oracle.Stats)
+	routerGroup.GET("/dashboard", oracle.Dashboard)
 
 	authMiddleware := basicAuth(oracleMonitoringUser, oracleMonitoringPassword)
 

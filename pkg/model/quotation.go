@@ -17,16 +17,17 @@ import (
 )
 
 const (
-	WindowYesterday       = 24 * 60 * 60
-	Window1h              = 60 * 60
-	Window7d              = 7 * 24 * 60 * 60
-	Window14d             = 7 * 24 * 60 * 60
-	Window30d             = 30 * 24 * 60 * 60
-	Window2               = 24 * 60 * 60 * 8
-	BufferTTL             = 60 * 60
-	BiggestWindow         = Window2
-	TimeOutRedis          = time.Duration(time.Second*BiggestWindow + time.Second*BufferTTL)
-	TimeOutAssetQuotation = time.Duration(time.Second * WindowYesterday)
+	WindowYesterday             = 24 * 60 * 60
+	Window1h                    = 60 * 60
+	Window7d                    = 7 * 24 * 60 * 60
+	Window14d                   = 7 * 24 * 60 * 60
+	Window30d                   = 30 * 24 * 60 * 60
+	Window2                     = 24 * 60 * 60 * 8
+	BufferTTL                   = 60 * 60
+	BiggestWindow               = Window2
+	TimeOutRedis                = time.Duration(time.Second*BiggestWindow + time.Second*BufferTTL)
+	TimeOutAssetQuotation       = time.Duration(time.Second * WindowYesterday)
+	assetQuotationLookbackHours = 24 * 7
 )
 
 func getKeyQuotation(value string) string {
@@ -54,7 +55,7 @@ func (datastore *DB) SetAssetPriceUSD(asset dia.Asset, price float64, timestamp 
 
 // GetAssetPriceUSDLatest returns the latest price of @asset.
 func (datastore *DB) GetAssetPriceUSDLatest(asset dia.Asset) (price float64, err error) {
-	assetQuotation, err := datastore.GetAssetQuotationLatest(asset)
+	assetQuotation, err := datastore.GetAssetQuotationLatest(asset, time.Now().Add(time.Duration(assetQuotationLookbackHours)*time.Hour))
 	if err != nil {
 		return
 	}
@@ -63,8 +64,8 @@ func (datastore *DB) GetAssetPriceUSDLatest(asset dia.Asset) (price float64, err
 }
 
 // GetAssetPriceUSD returns the latest USD price of @asset before @timestamp.
-func (datastore *DB) GetAssetPriceUSD(asset dia.Asset, timestamp time.Time) (price float64, err error) {
-	assetQuotation, err := datastore.GetAssetQuotation(asset, timestamp)
+func (datastore *DB) GetAssetPriceUSD(asset dia.Asset, starttime time.Time, endtime time.Time) (price float64, err error) {
+	assetQuotation, err := datastore.GetAssetQuotation(asset, starttime, endtime)
 	if err != nil {
 		return
 	}
@@ -123,7 +124,8 @@ func (datastore *DB) SetAssetQuotation(quotation *AssetQuotation) error {
 }
 
 // GetAssetQuotation returns the latest full quotation for @asset.
-func (datastore *DB) GetAssetQuotationLatest(asset dia.Asset) (*AssetQuotation, error) {
+func (datastore *DB) GetAssetQuotationLatest(asset dia.Asset, starttime time.Time) (*AssetQuotation, error) {
+	endtime := time.Now()
 
 	// First attempt to get latest quotation from redis cache
 	quotation, err := datastore.GetAssetQuotationCache(asset)
@@ -133,16 +135,24 @@ func (datastore *DB) GetAssetQuotationLatest(asset dia.Asset) (*AssetQuotation, 
 	}
 
 	// if not in cache, get quotation from influx
-	log.Infof("asset %s not in cache. Query influx...", asset.Symbol)
-	return datastore.GetAssetQuotation(asset, time.Now())
+	log.Infof("asset %s not in cache. Query influx for range %v -- %v ...", asset.Symbol, starttime, endtime)
+
+	return datastore.GetAssetQuotation(asset, starttime, endtime)
 
 }
 
-// GetAssetQuotation returns the latest full quotation for @asset before @timestamp.
-func (datastore *DB) GetAssetQuotation(asset dia.Asset, timestamp time.Time) (*AssetQuotation, error) {
+// GetAssetQuotation returns the latest full quotation for @asset in the range (@starttime,@endtime].
+func (datastore *DB) GetAssetQuotation(asset dia.Asset, starttime time.Time, endtime time.Time) (*AssetQuotation, error) {
 
 	quotation := AssetQuotation{}
-	q := fmt.Sprintf("SELECT price FROM %s WHERE address='%s' AND blockchain='%s' AND time<=%d ORDER BY DESC LIMIT 1", influxDBAssetQuotationsTable, asset.Address, asset.Blockchain, timestamp.UnixNano())
+	q := fmt.Sprintf(`SELECT price FROM %s WHERE address='%s' AND blockchain='%s' AND time>%d AND time<=%d ORDER BY DESC LIMIT 1`,
+		influxDBAssetQuotationsTable,
+		asset.Address,
+		asset.Blockchain,
+		starttime.UnixNano(),
+		endtime.UnixNano(),
+	)
+	log.Info("Query: ", q)
 	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		return &quotation, err
@@ -266,7 +276,7 @@ func (datastore *DB) GetSortedAssetQuotations(assets []dia.Asset) ([]AssetQuotat
 		var quotation *AssetQuotation
 		var volume *float64
 		var err error
-		quotation, err = datastore.GetAssetQuotationLatest(asset)
+		quotation, err = datastore.GetAssetQuotationLatest(asset, time.Now().Add(time.Duration(assetQuotationLookbackHours)*time.Hour))
 		if err != nil {
 			log.Errorf("get quotation for symbol %s with address %s on blockchain %s: %v", asset.Symbol, asset.Address, asset.Blockchain, err)
 			continue
@@ -399,7 +409,7 @@ func (rdb *RelDB) GetHistoricalQuotations(asset dia.Asset, starttime time.Time, 
 		if decimals.Valid {
 			quotation.Asset.Decimals = uint8(decimals.Int64)
 		} else {
-			err = errors.New("Cannot parse decimals.")
+			err = errors.New("cannot parse decimals")
 			return
 		}
 		if price.Valid {

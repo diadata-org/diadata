@@ -46,3 +46,10 @@ func (qr *FilterPointExtendedResolver) Pairs(ctx context.Context) (*[]string, er
 func (qr *FilterPointExtendedResolver) TradesCount(ctx context.Context) (*int32, error) {
 	return &qr.q.TradesCount, nil
 }
+
+func (qr *FilterPointExtendedResolver) StatusMessage(ctx context.Context) (*string, error) {
+	return &qr.q.StatusMessage, nil
+}
+func (qr *FilterPointExtendedResolver) StatusCode(ctx context.Context) (*int32, error) {
+	return &qr.q.StatusCode, nil
+}

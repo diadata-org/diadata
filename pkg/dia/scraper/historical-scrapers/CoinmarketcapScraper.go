@@ -99,7 +99,7 @@ func (s CoinmarketcapScraper) FetchQuotations() {
 	} else {
 		// TO DO: Otherwise try to fetch quotations from our DB. If too far in the past, fetch again from CMC.
 		for timestamp := lastTimestamp.Add(1 * time.Hour); timestamp.Before(endtime); timestamp = timestamp.Add(1 * time.Hour) {
-			quote, err := s.datastore.GetAssetQuotation(ethAsset, timestamp)
+			quote, err := s.datastore.GetAssetQuotation(ethAsset, dia.CRYPTO_ZERO_UNIX_TIME, timestamp)
 			if err != nil {
 				log.Error("get asset quotation: ", err)
 			}

@@ -334,6 +334,84 @@ func (rdb *RelDB) GetPairsForAsset(asset dia.Asset, filterVerified bool, verifie
 	return pairs, nil
 }
 
+// GetExchangepairsByAsset returns all exchangepairs on @exchange where @asset is quotetoken for
+// @basetoken=false and basetoken otherwise.
+func (rdb *RelDB) GetExchangepairsByAsset(asset dia.Asset, exchange string, basetoken bool) (exchangepairs []dia.ExchangePair, err error) {
+	var (
+		secondExchangeQuery string
+		baseQuoteQuery      string
+	)
+	if exchange == dia.BinanceExchange {
+		secondExchangeQuery = fmt.Sprintf(" OR ep.exchange='%s'", dia.Binance2Exchange)
+	}
+	if exchange == dia.BKEXExchange {
+		secondExchangeQuery = fmt.Sprintf(" OR ep.exchange='%s'", dia.BKEX2Exchange)
+	}
+	if basetoken {
+		baseQuoteQuery = " b.address=$2 AND b.blockchain=$3 "
+	} else {
+		baseQuoteQuery = " a.address=$2 AND a.blockchain=$3 "
+	}
+	query := fmt.Sprintf(`
+		SELECT a.symbol,a.name,a.address,a.blockchain,a.decimals,b.symbol,b.name,b.address,b.blockchain,b.decimals,ep.foreignname,ep.exchange
+		FROM %s ep
+		INNER JOIN %s a
+		ON ep.id_quotetoken=a.asset_id
+		INNER JOIN %s b
+		ON ep.id_basetoken=b.asset_id
+		WHERE (ep.exchange=$1 %s)
+		AND %s
+		`,
+		exchangepairTable,
+		assetTable,
+		assetTable,
+		secondExchangeQuery,
+		baseQuoteQuery,
+	)
+	rows, err := rdb.postgresClient.Query(context.Background(), query, exchange, asset.Address, asset.Blockchain)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			pair          dia.ExchangePair
+			quoteDecimals sql.NullInt64
+			baseDecimals  sql.NullInt64
+		)
+
+		err := rows.Scan(
+			&pair.UnderlyingPair.QuoteToken.Symbol,
+			&pair.UnderlyingPair.QuoteToken.Name,
+			&pair.UnderlyingPair.QuoteToken.Address,
+			&pair.UnderlyingPair.QuoteToken.Blockchain,
+			&quoteDecimals,
+			&pair.UnderlyingPair.BaseToken.Symbol,
+			&pair.UnderlyingPair.BaseToken.Name,
+			&pair.UnderlyingPair.BaseToken.Address,
+			&pair.UnderlyingPair.BaseToken.Blockchain,
+			&baseDecimals,
+			&pair.ForeignName,
+			&pair.Exchange,
+		)
+		if err != nil {
+			return exchangepairs, err
+		}
+		if quoteDecimals.Valid {
+			pair.UnderlyingPair.QuoteToken.Decimals = uint8(quoteDecimals.Int64)
+		}
+		if baseDecimals.Valid {
+			pair.UnderlyingPair.BaseToken.Decimals = uint8(baseDecimals.Int64)
+		}
+		pair.Symbol = pair.UnderlyingPair.QuoteToken.Symbol
+
+		exchangepairs = append(exchangepairs, pair)
+	}
+
+	return exchangepairs, nil
+}
+
 // GetNumPairs returns the number of exchangepairs/pools on @exchange.
 func (rdb *RelDB) GetNumPairs(exchange dia.Exchange) (numPairs int, err error) {
 

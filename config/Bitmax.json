@@ -1,6 +1,12 @@
 {
     "Coins": [
         {
+            "Symbol": "ORDI",
+            "ForeignName": "ORDI/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
             "Symbol": "KAVA",
             "ForeignName": "KAVA/BTC",
             "Exchange": "Bitmax",

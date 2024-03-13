@@ -3,6 +3,8 @@ package models
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -167,9 +169,12 @@ HAVING
     AND t1.deleted = false
     AND t1.expired = false
 	`, oracleconfigTable, feederupdatesTable)
+
 	rows, err = rdb.postgresClient.Query(context.Background(), query)
 
 	if err != nil {
+		fmt.Println(err)
+
 		return
 	}
 	defer rows.Close()
@@ -560,6 +565,25 @@ func (rdb *RelDB) GetOracleUpdateCount(address string, chainid string) (int64, e
 
 }
 
+func (rdb *RelDB) GetOracleLastUpdate(address, chainid, symbol string) (time.Time, string, error) {
+	symbol = symbol + "/USD"
+	var (
+		updateTime sql.NullTime
+		price      string
+	)
+	query := fmt.Sprintf(`
+	SELECT update_time,asset_price
+	FROM %s fu
+	WHERE oracle_address = $1 AND chain_id = $2 and asset_key=$3 order by update_block desc LIMIT 1 
+	`, feederupdatesTable)
+
+	err := rdb.postgresClient.QueryRow(context.Background(), query, address, chainid, symbol).Scan(&updateTime, &price)
+	if err != nil {
+		return time.Time{}, "", err
+	}
+
+	return updateTime.Time, price, nil
+}
 func (rdb *RelDB) GetOracleUpdates(address string, chainid string, offset int) ([]dia.OracleUpdate, error) {
 	query := fmt.Sprintf(`
 	SELECT fu.oracle_address,
@@ -640,4 +664,336 @@ func (rdb *RelDB) GetOracleUpdates(address string, chainid string, offset int) (
 	}
 
 	return updates, nil
+}
+func (rdb *RelDB) GetOracleUpdatesByTimeRange(address, chainid, symbol string, offset int, startTime, endTime time.Time) ([]dia.OracleUpdate, error) {
+	query := fmt.Sprintf(`
+	SELECT fu.oracle_address,
+		fu.transaction_hash,
+		fu.transaction_cost,
+		fu.asset_key,
+		fu.asset_price,
+		fu.update_block,
+		fu.update_from,
+		fu.from_balance,
+		fu.gas_cost,
+		fu.gas_used,
+		fu.chain_id,
+		fu.update_time,
+		oc.creation_block,
+		oc.creation_block_time
+
+
+	FROM %s fu
+	JOIN %s oc ON fu.oracle_address = oc.address AND fu.chain_id = oc.chainID 
+	WHERE fu.oracle_address = $1 AND fu.chain_id = $2 
+    AND fu.update_time < to_timestamp($3)
+    AND fu.update_time > to_timestamp($4)
+	AND ($5 = '' OR fu.asset_key = $5)  
+
+	order by fu.update_block desc LIMIT 20 OFFSET %d
+	`, feederupdatesTable, oracleconfigTable, offset)
+
+	rows, err := rdb.postgresClient.Query(context.Background(), query, address, chainid, startTime.Unix(), endTime.Unix(), symbol)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var (
+		updates []dia.OracleUpdate
+	)
+
+	for rows.Next() {
+
+		var (
+			update            dia.OracleUpdate
+			updateTime        sql.NullTime
+			creationBlock     sql.NullInt64
+			creationBlockTime sql.NullTime
+		)
+		err := rows.Scan(
+			&update.OracleAddress,
+			&update.TransactionHash,
+			&update.TransactionCost,
+			&update.AssetKey,
+			&update.AssetPrice,
+			&update.UpdateBlock,
+			&update.UpdateFrom,
+			&update.FromBalance,
+			&update.GasCost,
+			&update.GasUsed,
+			&update.ChainID,
+			&updateTime,
+			&creationBlock,
+			&creationBlockTime,
+		)
+
+		if updateTime.Valid {
+			update.UpdateTime = updateTime.Time
+		}
+		if creationBlockTime.Valid {
+			update.CreationBlockTime = creationBlockTime.Time
+		}
+		if creationBlock.Valid {
+			update.CreationBlock = uint64(creationBlock.Int64)
+		}
+
+		if err != nil {
+			return nil, err
+		}
+
+		updates = append(updates, update)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return updates, nil
+}
+func (rdb *RelDB) GetLastOracleUpdate(address string, chainid string) ([]dia.OracleUpdate, error) {
+	query := fmt.Sprintf(`
+	SELECT fu.oracle_address,
+		fu.transaction_hash,
+		fu.transaction_cost,
+		fu.asset_key,
+		fu.asset_price,
+		fu.update_block,
+		fu.update_from,
+		fu.from_balance,
+		fu.gas_cost,
+		fu.gas_used,
+		fu.chain_id,
+		fu.update_time,
+		oc.creation_block,
+		oc.creation_block_time
+
+
+	FROM %s fu
+	JOIN %s oc ON fu.oracle_address = oc.address AND fu.chain_id = oc.chainID 
+	WHERE fu.oracle_address = $1 AND fu.chain_id = $2 order by fu.update_time desc LIMIT 1
+	`, feederupdatesTable, oracleconfigTable)
+
+	rows, err := rdb.postgresClient.Query(context.Background(), query, address, chainid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var (
+		updates []dia.OracleUpdate
+	)
+
+	for rows.Next() {
+
+		var (
+			update            dia.OracleUpdate
+			updateTime        sql.NullTime
+			creationBlock     sql.NullInt64
+			creationBlockTime sql.NullTime
+		)
+		err := rows.Scan(
+			&update.OracleAddress,
+			&update.TransactionHash,
+			&update.TransactionCost,
+			&update.AssetKey,
+			&update.AssetPrice,
+			&update.UpdateBlock,
+			&update.UpdateFrom,
+			&update.FromBalance,
+			&update.GasCost,
+			&update.GasUsed,
+			&update.ChainID,
+			&updateTime,
+			&creationBlock,
+			&creationBlockTime,
+		)
+
+		if updateTime.Valid {
+			update.UpdateTime = updateTime.Time
+		}
+		if creationBlockTime.Valid {
+			update.CreationBlockTime = creationBlockTime.Time
+		}
+		if creationBlock.Valid {
+			update.CreationBlock = uint64(creationBlock.Int64)
+		}
+
+		if err != nil {
+			return nil, err
+		}
+
+		updates = append(updates, update)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return updates, nil
+}
+func (rdb *RelDB) GetTotalGasSpend(address string, chainid string) (float64, error) {
+	query := fmt.Sprintf(`
+	SELECT 
+		SUM(fu.gas_used) AS total_gas_used
+	FROM %s fu
+	WHERE fu.oracle_address = $1 AND fu.chain_id = $2
+	`, feederupdatesTable)
+
+	rows, err := rdb.postgresClient.Query(context.Background(), query, address, chainid)
+	if err != nil {
+		fmt.Println("err", err)
+		return 0.0, err
+	}
+	defer rows.Close()
+
+	var (
+		gasUsed sql.NullFloat64
+	)
+
+	for rows.Next() {
+
+		rows.Scan(
+
+			&gasUsed,
+		)
+
+	}
+
+	if gasUsed.Valid {
+		return gasUsed.Float64, nil
+
+	}
+	return 0.0, nil
+
+}
+
+func (rdb *RelDB) GetBalanceRemaining(address string, chainid string) (float64, error) {
+	query := fmt.Sprintf(`
+	SELECT 
+		from_balance,
+		update_time
+	FROM %s fu
+	WHERE fu.oracle_address = $1 AND fu.chain_id = $2 ORDER BY update_time DESC LIMIT 1
+	`, feederupdatesTable)
+
+	rows, err := rdb.postgresClient.Query(context.Background(), query, address, chainid)
+	if err != nil {
+		fmt.Println("err", err)
+		return 0.0, err
+	}
+	defer rows.Close()
+
+	var (
+		gasRemaining sql.NullFloat64
+	)
+
+	for rows.Next() {
+
+		rows.Scan(
+			&gasRemaining,
+			nil,
+		)
+
+	}
+
+	if gasRemaining.Valid {
+		return gasRemaining.Float64, nil
+
+	}
+	return 0.0, nil
+
+}
+
+func (rdb *RelDB) GetDayWiseUpdates(address string, chainid string) ([]dia.FeedUpdates, float64, error) {
+	query := fmt.Sprintf(`
+	WITH DailyUpdates AS (
+		SELECT 
+			DATE(fu.update_time) AS day, 
+			AVG(fu.gas_used) AS average_gas_used,
+			SUM(fu.gas_used) AS total_gas_used,
+			COUNT(*) AS total_updates
+		FROM %s fu
+		WHERE fu.oracle_address = $1 AND fu.chain_id = $2
+
+		GROUP BY DATE(fu.update_time)
+	)
+	SELECT 
+		day, 
+		average_gas_used, 
+		total_gas_used,
+		total_updates,
+		(SELECT AVG(total_updates) FROM DailyUpdates) AS average_total_updates_per_day
+	FROM DailyUpdates
+	ORDER BY day DESC LIMIT 30
+	`, feederupdatesTable)
+
+	rows, err := rdb.postgresClient.Query(context.Background(), query, address, chainid)
+	if err != nil {
+		fmt.Println("err", err)
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	var (
+		avgGasUsed sql.NullFloat64
+		count      sql.NullFloat64
+		stats      []dia.FeedUpdates
+		updateTime sql.NullTime
+	)
+
+	for rows.Next() {
+		du := dia.FeedUpdates{}
+		rows.Scan(
+			&updateTime,
+			&avgGasUsed,
+			&du.GasUsed,
+			&du.UpdateCount,
+			&count,
+		)
+		if updateTime.Valid {
+			du.Day = updateTime.Time
+		}
+
+		stats = append(stats, du)
+
+	}
+
+	return stats, avgGasUsed.Float64, nil
+
+}
+
+// dave oracleconfig in cache
+func (datastore *DB) SetOracleConfigCache(oc dia.OracleConfig) error {
+	key := oc.Address + "-" + oc.ChainID
+
+	if datastore.redisClient == nil {
+		return nil
+	}
+
+	data, _ := json.Marshal(oc)
+
+	err := datastore.redisClient.Set(key, data, TimeOutRedis).Err()
+	if err != nil {
+		log.Printf("Error: %v on SetOracleConfigCache %v\n", err, oc)
+	}
+
+	return err
+}
+
+func (datastore *DB) GetOracleConfigCache(key string) (dia.OracleConfig, error) {
+	// key := oc.Address + oc.ChainID
+	var oc dia.OracleConfig
+	if datastore.redisClient == nil {
+		return oc, errors.New("no redisclient")
+	}
+
+	err := datastore.redisClient.Get(key).Scan(&oc)
+	if err != nil {
+		log.Printf("Error: %v on GetOracle--ConfigCache %v\n", err, oc)
+		return oc, errors.New("no redisclient")
+
+	}
+
+	return oc, err
 }

@@ -1243,6 +1243,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "ORDI",
+            "ForeignName": "ORDI-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "ORN",
             "ForeignName": "ORN-USDT",
             "Exchange": "KuCoin",
@@ -1347,6 +1353,12 @@
         {
             "Symbol": "SAND",
             "ForeignName": "SAND-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SATS",
+            "ForeignName": "SATS-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
         },
@@ -1653,6 +1665,12 @@
         {
             "Symbol": "WBTC",
             "ForeignName": "WBTC-ETH",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WELL",
+            "ForeignName": "WELL-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
         },

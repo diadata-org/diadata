@@ -415,6 +415,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "ORDI",
+      "ForeignName": "ORDIUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "PAXG",
       "ForeignName": "PAXGUSDT",
       "Exchange": "MEXC",
@@ -483,6 +489,12 @@
     {
       "Symbol": "SAND",
       "ForeignName": "SANDUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "SATS",
+      "ForeignName": "SATSUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     },

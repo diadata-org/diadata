@@ -1,0 +1,13 @@
+FROM us.icr.io/dia-registry/devops/build-119:latest as build
+
+WORKDIR $GOPATH/src/
+
+COPY ./cmd/services/oracleconfigsync ./
+RUN go install
+
+FROM gcr.io/distroless/base
+
+COPY --from=build /go/bin/oracleconfigsync /bin/oracleconfigsync
+COPY --from=build /config/ /config/
+
+CMD ["oracleconfigsync"]

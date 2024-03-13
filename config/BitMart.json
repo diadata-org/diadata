@@ -2,6 +2,18 @@
   "Coins": [
     {
       "Exchange": "BitMart",
+      "ForeignName": "ORDI_USDT",
+      "Ignore": false,
+      "Symbol": "ORDI"
+    },
+    {
+      "Exchange": "BitMart",
+      "ForeignName": "SATS_USDT",
+      "Ignore": false,
+      "Symbol": "SATS"
+    },
+    {
+      "Exchange": "BitMart",
       "ForeignName": "VELA_USDT",
       "Ignore": false,
       "Symbol": "VELA"
