@@ -40,7 +40,7 @@ require (
 	github.com/kr/pretty v0.3.0 // indirect
 	github.com/lib/pq v1.10.4 // indirect
 	github.com/mattn/go-runewidth v0.0.10 // indirect
-	github.com/onsi/ginkgo v1.16.4 // indirect
+	github.com/nxadm/tail v1.4.8 // indirect
 	github.com/onsi/gomega v1.27.4 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
@@ -58,7 +58,7 @@ require (
 	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/text v0.8.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/protobuf v1.28.1 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
