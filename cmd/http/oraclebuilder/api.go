@@ -613,6 +613,21 @@ func (ob *Env) Stats(context *gin.Context) {
 	address := context.Query("address")
 	chainID := context.Query("chainID")
 	page := context.Query("page")
+	if strings.Contains(address, "0x") {
+		address = common.HexToAddress(address).Hex()
+	}
+
+	starttime, endtime, err := utils.MakeTimerange(context.Query("starttime"), context.Query("endtime"), time.Duration(24*time.Hour))
+	if err != nil {
+		endtime = time.Now()
+		starttime = endtime.Add(-time.Duration(30 * 24 * time.Hour))
+
+	}
+
+	if ok := utils.ValidTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
+		restApi.SendError(context, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 30*24*time.Hour))
+		return
+	}
 
 	offset := 0
 	if page != "" {
@@ -634,7 +649,7 @@ func (ob *Env) Stats(context *gin.Context) {
 		return
 	}
 
-	updates, err := ob.RelDB.GetOracleUpdates(address, chainID, offset)
+	updates, err := ob.RelDB.GetOracleUpdatesByTimeRange(address, chainID, "", offset, starttime, endtime)
 	if err != nil {
 		errorMsg := "Error fetching oracle updates"
 		logMsg := "Oracle Stats error"

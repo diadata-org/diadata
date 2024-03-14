@@ -327,7 +327,7 @@ func main() {
 	log := logrus.New()
 	var err error
 	var datastore *models.DB
-	datastore, err = models.NewDataStore()
+	datastore, err = models.NewDataStoreWithoutInflux()
 	if err != nil {
 		log.Errorln("Error connecting to asset DB: ", err)
 		return
