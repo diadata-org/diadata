@@ -10,6 +10,8 @@ import (
 	"github.com/zekroTJA/timedmap"
 )
 
+const TRADE_IDENTIFIER_SHORT_SEPARATOR = "-"
+
 // GetBaseToken returns the base token of a trading pair
 // TO DO (20/11/2020): This method is no longer needed once we switch to new Token/Trade structs
 func (t *Trade) GetBaseToken() string {
@@ -85,7 +87,7 @@ func (t *Trade) IdentifyDuplicateTagset(duplicateTrades *timedmap.TimedMap, memo
 		// Set trade identifier as key with value incremented.
 		duplicateTrades.Set(t.TradeIdentifierTagset(), val+1, memory)
 		// Add old value as Nanosecond to trade time.
-		t.Time = t.Time.Add(time.Duration(val) * time.Nanosecond)
+		t.Time = t.Time.Add(time.Duration(val) * time.Microsecond)
 	}
 }
 
@@ -117,4 +119,13 @@ func (t *Trade) TradeIdentifierTagset() string {
 		t.QuoteToken.Blockchain +
 		t.BaseToken.Address +
 		t.BaseToken.Blockchain
+}
+
+func (t *Trade) TradeIdentifierShort() string {
+	return t.QuoteToken.Blockchain + TRADE_IDENTIFIER_SHORT_SEPARATOR +
+		t.QuoteToken.Address + TRADE_IDENTIFIER_SHORT_SEPARATOR +
+		t.BaseToken.Blockchain + TRADE_IDENTIFIER_SHORT_SEPARATOR +
+		t.BaseToken.Address + TRADE_IDENTIFIER_SHORT_SEPARATOR +
+		t.Source + TRADE_IDENTIFIER_SHORT_SEPARATOR +
+		t.PoolAddress
 }
