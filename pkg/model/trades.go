@@ -15,6 +15,7 @@ import (
 )
 
 const (
+	// TO DO: Switch Redis Cache constants to env vars?
 	TRADES_TIMEOUT_REDIS_24H        = 60 * 60 * 24
 	TRADES_TIMEOUT_BUFFER           = 60 * 10
 	TRADED_ASSETS_KEY               = "tradedAssets"
@@ -65,29 +66,90 @@ func (datastore *DB) SaveTradeInfluxToTable(t *dia.Trade, table string) error {
 // values set are all keys from trade_... zsets which store the corresponding trades as members.
 func (datastore *DB) SaveTradeSetElementRedis(t dia.Trade) error {
 	// Store trades keys (i.e. exchangepairs) as values with asset identifier as key.
-	assetKey := TRADE_EXCHANGEPAIR_PREFIX_REDIS + t.QuoteToken.Identifier()
-	err := datastore.redisPipe.SAdd(assetKey, TRADE_PREFIX_REDIS+t.TradeIdentifierShort()).Err()
+	err := datastore.redisPipe.SAdd(getAssetKeyRedis(t), TRADE_PREFIX_REDIS+t.TradeIdentifierShort()).Err()
 	if err != nil {
 		return err
 	}
 
 	// For easier retrieval, save all assets that were traded at least once in a set.
-	return datastore.redisPipe.SAdd(TRADED_ASSETS_KEY, assetKey).Err()
+	return datastore.redisPipe.SAdd(TRADED_ASSETS_KEY, getAssetKeyRedis(t)).Err()
 }
 
 func (datastore *DB) SaveTradeRedis(t dia.Trade) error {
 
+	tradeMarshaled, err := t.MarshalBinary()
+	if err != nil {
+		return err
+	}
+
 	member := redis.Z{
 		Score:  float64(t.Time.UnixMicro()),
-		Member: &t,
+		Member: tradeMarshaled,
 	}
-	err := datastore.redisPipe.ZAdd(TRADE_PREFIX_REDIS+t.TradeIdentifierShort(), member).Err()
+	err = datastore.redisPipe.ZAdd(getTradesKeyRedis(t), member).Err()
 	if err != nil {
 		return err
 	}
 
 	//Set key as value in redis keystore with key Blockchain_Address.
 	return datastore.SaveTradeSetElementRedis(t)
+}
+
+func getAssetKeyRedis(t dia.Trade) string {
+	return TRADE_EXCHANGEPAIR_PREFIX_REDIS + t.QuoteToken.Identifier()
+}
+
+func getTradesKeyRedis(t dia.Trade) string {
+	return TRADE_PREFIX_REDIS + t.TradeIdentifierShort()
+}
+
+func (datastore *DB) GetTradesByExchangepairRedis(
+	pair dia.Pair,
+	exchange string,
+	pooladdress string,
+	startTime time.Time,
+	endTime time.Time,
+) ([]dia.Trade, error) {
+	key := getTradesKeyRedis(dia.Trade{
+		QuoteToken:  pair.QuoteToken,
+		BaseToken:   pair.BaseToken,
+		Source:      exchange,
+		PoolAddress: pooladdress,
+	})
+	log.Infof("tradesKey %s in time range %s -- %s: ", key, strconv.FormatInt(startTime.UnixMicro(), 10), strconv.FormatInt(endTime.UnixMicro(), 10))
+	vals, err := datastore.redisClient.ZRangeByScoreWithScores(key, redis.ZRangeBy{
+		Min: strconv.FormatInt(startTime.UnixMicro(), 10),
+		Max: strconv.FormatInt(endTime.UnixMicro(), 10),
+	}).Result()
+	if err != nil {
+		return []dia.Trade{}, err
+	}
+	log.Info("len response: ", len(vals))
+	for _, v := range vals {
+		trade, ok := v.Member.([]byte)
+		if !ok {
+			log.Warn("cannot cast member to trade.")
+		} else {
+			log.Info("trade: ", trade)
+		}
+		// log.Info("member: ", v.Member)
+	}
+	return []dia.Trade{}, nil
+}
+
+func (datastore *DB) GetTradesByFeedselectionRedis(fs dia.FeedSelection) {
+	for _, ep := range fs.Exchangepairs {
+		exchange := ep.Exchange
+		if exchange.Centralized {
+			for _, pair := range ep.Pairs {
+				log.Info("TO DO: ", pair)
+			}
+		} else {
+			for _, pool := range ep.Pools {
+				log.Info("TO DO: ", pool)
+			}
+		}
+	}
 }
 
 // PurgeTradesAndKeysRedis deletes all trades older than @timestampLatest.
