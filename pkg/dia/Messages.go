@@ -322,7 +322,7 @@ type Asset struct {
 }
 
 func (asset *Asset) Identifier() string {
-	return asset.Blockchain + "-" + asset.Address
+	return asset.Blockchain + TRADE_IDENTIFIER_SHORT_SEPARATOR + asset.Address
 }
 
 // BlockChain is the type for blockchains. Uniquely defined by its @Name.

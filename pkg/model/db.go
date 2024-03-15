@@ -40,6 +40,9 @@ type Datastore interface {
 	GetFirstTradeDate(table string) (time.Time, error)
 	SaveTradeInflux(t *dia.Trade) error
 	SaveTradeInfluxToTable(t *dia.Trade, table string) error
+	SaveTradeRedis(t dia.Trade) error
+	SaveTradeSetElementRedis(t dia.Trade) error
+	PurgeTradesAndKeysRedis(timestampLatest time.Time, expire time.Duration)
 	GetTradeInflux(dia.Asset, string, time.Time, time.Duration) (*dia.Trade, error)
 	SaveFilterInflux(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error
 	GetFilterAllExchanges(filter string, address string, blockchain string, starttime time.Time, endtime time.Time) ([]AssetQuotation, error)

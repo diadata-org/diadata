@@ -56,6 +56,10 @@ func init() {
 	if err != nil {
 		log.Error("Parse VOLUME_LIQUIDITY_RATIO: ", err)
 	}
+	purgeCacheSeconds, err = strconv.ParseInt(utils.Getenv("PURGE_CACHE_SECONDS", "120"), 10, 64)
+	if err != nil {
+		log.Error("Parse PURGE_CACHE_SECONDS: ", err)
+	}
 }
 
 var (
@@ -88,6 +92,7 @@ var (
 	tradeVolumeThreshold    float64
 	tradeVolumeThresholdUSD float64
 	volumeUpdateSeconds     = 60 * 10
+	purgeCacheSeconds       int64
 	volumeThreshold         float64
 	blueChipThreshold       float64
 	smallX                  float64
@@ -116,26 +121,28 @@ type TradesBlockService struct {
 	writeMeasurement string
 	batchTicker      *time.Ticker
 	volumeTicker     *time.Ticker
+	redisCacheTicker *time.Ticker
 }
 
 func NewTradesBlockService(datastore models.Datastore, relDB models.RelDatastore, blockDuration int64, historical bool) *TradesBlockService {
 	s := &TradesBlockService{
-		shutdown:        make(chan nothing),
-		shutdownDone:    make(chan nothing),
-		chanTrades:      make(chan *dia.Trade),
-		chanTradesBlock: make(chan *dia.TradesBlock),
-		error:           nil,
-		started:         false,
-		currentBlock:    nil,
-		BlockDuration:   blockDuration,
-		priceCache:      make(map[string]float64),
-		volumeCache:     make(map[string]float64),
-		poolCache:       make(map[string]dia.Pool),
-		datastore:       datastore,
-		relDB:           relDB,
-		historical:      historical,
-		batchTicker:     time.NewTicker(time.Duration(batchTimeSeconds) * time.Second),
-		volumeTicker:    time.NewTicker(time.Duration(volumeUpdateSeconds) * time.Second),
+		shutdown:         make(chan nothing),
+		shutdownDone:     make(chan nothing),
+		chanTrades:       make(chan *dia.Trade),
+		chanTradesBlock:  make(chan *dia.TradesBlock),
+		error:            nil,
+		started:          false,
+		currentBlock:     nil,
+		BlockDuration:    blockDuration,
+		priceCache:       make(map[string]float64),
+		volumeCache:      make(map[string]float64),
+		poolCache:        make(map[string]dia.Pool),
+		datastore:        datastore,
+		relDB:            relDB,
+		historical:       historical,
+		batchTicker:      time.NewTicker(time.Duration(batchTimeSeconds) * time.Second),
+		volumeTicker:     time.NewTicker(time.Duration(volumeUpdateSeconds) * time.Second),
+		redisCacheTicker: time.NewTicker(time.Duration(purgeCacheSeconds) * time.Second),
 	}
 	if historical {
 		s.writeMeasurement = utils.Getenv("INFLUX_MEASUREMENT_WRITE", "tradesTmp")
@@ -160,6 +167,7 @@ func NewTradesBlockService(datastore models.Datastore, relDB models.RelDatastore
 
 	go s.mainLoop()
 	go s.loadVolumesLoop()
+	go s.purgeRedisCacheLoop()
 	return s
 }
 
@@ -352,14 +360,26 @@ func (s *TradesBlockService) process(t dia.Trade) {
 			verifiedTrade = false
 		}
 	}
-	// Comment Philipp: We could make another check here. Store CG and/or CMC quotation in redis cache
-	// and compare with estimatedUSDPrice. If deviation is too large ignore trade.
+
 	var err error
 	if !s.historical {
 		err = s.datastore.SaveTradeInflux(&t)
 		if err != nil {
 			log.Error(err)
 		}
+		err = s.datastore.SaveTradeRedis(t)
+		if err != nil {
+			log.Error("SaveTradeRedis: ", err)
+		}
+		err = s.datastore.ExecuteRedisPipe()
+		if err != nil {
+			log.Error("execute redis pipe: ", err)
+		}
+		err = s.datastore.FlushRedisPipe()
+		if err != nil {
+			log.Error("flush redis pipe: ", err)
+		}
+
 	} else {
 		err = s.datastore.SaveTradeInfluxToTable(&t, s.writeMeasurement)
 		if err != nil {
@@ -422,6 +442,15 @@ func (s *TradesBlockService) loadVolumesLoop() {
 		if err != nil {
 			log.Error("get volumes map: ", err)
 		}
+	}
+}
+
+func (s *TradesBlockService) purgeRedisCacheLoop() {
+	for range s.redisCacheTicker.C {
+		s.datastore.PurgeTradesAndKeysRedis(
+			time.Now().Add(-(models.TRADES_TIMEOUT_REDIS_24H+models.TRADES_TIMEOUT_BUFFER)*time.Second),
+			time.Duration((models.TRADES_TIMEOUT_REDIS_24H+2*models.TRADES_TIMEOUT_BUFFER)*time.Second),
+		)
 	}
 }
 

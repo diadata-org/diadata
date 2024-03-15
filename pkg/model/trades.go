@@ -10,7 +10,16 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
+)
+
+const (
+	TRADES_TIMEOUT_REDIS_24H        = 60 * 60 * 24
+	TRADES_TIMEOUT_BUFFER           = 60 * 10
+	TRADED_ASSETS_KEY               = "tradedAssets"
+	TRADE_EXCHANGEPAIR_PREFIX_REDIS = "exchangepairKeys_"
+	TRADE_PREFIX_REDIS              = "trades_"
 )
 
 // SaveTradeInflux stores a trade in influx. Flushed when more than maxPoints in batch.
@@ -50,6 +59,65 @@ func (datastore *DB) SaveTradeInfluxToTable(t *dia.Trade, table string) error {
 	}
 
 	return err
+}
+
+// SaveTradeSetElementRedis has blockchain-address strings as keys. The elements of the
+// values set are all keys from trade_... zsets which store the corresponding trades as members.
+func (datastore *DB) SaveTradeSetElementRedis(t dia.Trade) error {
+	// Store trades keys (i.e. exchangepairs) as values with asset identifier as key.
+	assetKey := TRADE_EXCHANGEPAIR_PREFIX_REDIS + t.QuoteToken.Identifier()
+	err := datastore.redisPipe.SAdd(assetKey, TRADE_PREFIX_REDIS+t.TradeIdentifierShort()).Err()
+	if err != nil {
+		return err
+	}
+
+	// For easier retrieval, save all assets that were traded at least once in a set.
+	return datastore.redisPipe.SAdd(TRADED_ASSETS_KEY, assetKey).Err()
+}
+
+func (datastore *DB) SaveTradeRedis(t dia.Trade) error {
+
+	member := redis.Z{
+		Score:  float64(t.Time.UnixMicro()),
+		Member: &t,
+	}
+	err := datastore.redisPipe.ZAdd(TRADE_PREFIX_REDIS+t.TradeIdentifierShort(), member).Err()
+	if err != nil {
+		return err
+	}
+
+	//Set key as value in redis keystore with key Blockchain_Address.
+	return datastore.SaveTradeSetElementRedis(t)
+}
+
+// PurgeTradesAndKeysRedis deletes all trades older than @timestampLatest.
+// Furthermore, all associated keys are removed after @expire.
+func (datastore *DB) PurgeTradesAndKeysRedis(timestampLatest time.Time, expire time.Duration) {
+
+	// Get all (quote) assets traded.
+	allTradedAssetKeys := datastore.redisClient.SMembers(TRADED_ASSETS_KEY).Val()
+	log.Info("allTradedAssetKeys: ", allTradedAssetKeys)
+	for _, assetKey := range allTradedAssetKeys {
+		log.Info("assetKey: ", assetKey)
+		// Get all exchangepair keys of a given quote asset.
+		exchangepairKeys := datastore.redisClient.SMembers(assetKey).Val()
+		for _, exchangepairKey := range exchangepairKeys {
+			// Purging old values.
+			log.Info("exchangepair: ", exchangepairKey)
+			log.Info("latestScore: ", strconv.FormatInt(timestampLatest.UnixMicro(), 10))
+			err := datastore.redisClient.ZRemRangeByScore(exchangepairKey, "-inf", strconv.FormatInt(timestampLatest.UnixMicro(), 10)).Err()
+			if err != nil {
+				log.Errorf("ZRemRangeByScore on %s: %v", err, exchangepairKey)
+			}
+			if err = datastore.redisPipe.Expire(exchangepairKey, expire).Err(); err != nil {
+				log.Errorf("expire %s: %v", exchangepairKey, err)
+			}
+		}
+		if err := datastore.redisPipe.Expire(assetKey, expire).Err(); err != nil {
+			log.Errorf("expire %s: %v", assetKey, err)
+		}
+	}
+
 }
 
 // GetTradeInflux returns the latest trade of @asset on @exchange before @timestamp in the time-range [endtime-window, endtime].
