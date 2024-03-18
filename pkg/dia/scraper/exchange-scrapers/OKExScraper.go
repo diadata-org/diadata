@@ -19,7 +19,8 @@ import (
 	"github.com/zekroTJA/timedmap"
 )
 
-var _OKExSocketURL = "wss://ws.okex.com:8443/ws/v5/public"
+// var _OKExSocketURL = "wss://ws.okex.com:8443/ws/v5/public"
+var _OKExSocketURL = "wss://ws.okx.com:8443/ws/v5/public"
 
 //var _OKExSocketURL = url.URL{Scheme: "wss", Host: "real.okex.com:10441", Path: "/ws/v1", RawQuery: "compress=true"}
 
