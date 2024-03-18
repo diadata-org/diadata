@@ -931,7 +931,7 @@ func (rdb *RelDB) GetDayWiseUpdates(address string, chainid string) ([]dia.FeedU
 	rows, err := rdb.postgresClient.Query(context.Background(), query, address, chainid)
 	if err != nil {
 		fmt.Println("err", err)
-		return nil, 0, err
+		return nil, 0, 0, err
 	}
 	defer rows.Close()
 
