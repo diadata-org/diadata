@@ -62,126 +62,6 @@ func (datastore *DB) SaveTradeInfluxToTable(t *dia.Trade, table string) error {
 	return err
 }
 
-// SaveTradeSetElementRedis has blockchain-address strings as keys. The elements of the
-// values set are all keys from trade_... zsets which store the corresponding trades as members.
-func (datastore *DB) SaveTradeSetElementRedis(t dia.Trade) error {
-	// Store trades keys (i.e. exchangepairs) as values with asset identifier as key.
-	err := datastore.redisPipe.SAdd(getAssetKeyRedis(t), TRADE_PREFIX_REDIS+t.TradeIdentifierShort()).Err()
-	if err != nil {
-		return err
-	}
-
-	// For easier retrieval, save all assets that were traded at least once in a set.
-	return datastore.redisPipe.SAdd(TRADED_ASSETS_KEY, getAssetKeyRedis(t)).Err()
-}
-
-func (datastore *DB) SaveTradeRedis(t dia.Trade) error {
-
-	tradeMarshaled, err := t.MarshalBinary()
-	if err != nil {
-		return err
-	}
-
-	member := redis.Z{
-		Score:  float64(t.Time.UnixMicro()),
-		Member: tradeMarshaled,
-	}
-	err = datastore.redisPipe.ZAdd(getTradesKeyRedis(t), member).Err()
-	if err != nil {
-		return err
-	}
-
-	//Set key as value in redis keystore with key Blockchain_Address.
-	return datastore.SaveTradeSetElementRedis(t)
-}
-
-func getAssetKeyRedis(t dia.Trade) string {
-	return TRADE_EXCHANGEPAIR_PREFIX_REDIS + t.QuoteToken.Identifier()
-}
-
-func getTradesKeyRedis(t dia.Trade) string {
-	return TRADE_PREFIX_REDIS + t.TradeIdentifierShort()
-}
-
-func (datastore *DB) GetTradesByExchangepairRedis(
-	pair dia.Pair,
-	exchange string,
-	pooladdress string,
-	startTime time.Time,
-	endTime time.Time,
-) ([]dia.Trade, error) {
-	key := getTradesKeyRedis(dia.Trade{
-		QuoteToken:  pair.QuoteToken,
-		BaseToken:   pair.BaseToken,
-		Source:      exchange,
-		PoolAddress: pooladdress,
-	})
-	log.Infof("tradesKey %s in time range %s -- %s: ", key, strconv.FormatInt(startTime.UnixMicro(), 10), strconv.FormatInt(endTime.UnixMicro(), 10))
-	vals, err := datastore.redisClient.ZRangeByScoreWithScores(key, redis.ZRangeBy{
-		Min: strconv.FormatInt(startTime.UnixMicro(), 10),
-		Max: strconv.FormatInt(endTime.UnixMicro(), 10),
-	}).Result()
-	if err != nil {
-		return []dia.Trade{}, err
-	}
-	log.Info("len response: ", len(vals))
-	for _, v := range vals {
-		trade, ok := v.Member.([]byte)
-		if !ok {
-			log.Warn("cannot cast member to trade.")
-		} else {
-			log.Info("trade: ", trade)
-		}
-		// log.Info("member: ", v.Member)
-	}
-	return []dia.Trade{}, nil
-}
-
-func (datastore *DB) GetTradesByFeedselectionRedis(fs dia.FeedSelection) {
-	for _, ep := range fs.Exchangepairs {
-		exchange := ep.Exchange
-		if exchange.Centralized {
-			for _, pair := range ep.Pairs {
-				log.Info("TO DO: ", pair)
-			}
-		} else {
-			for _, pool := range ep.Pools {
-				log.Info("TO DO: ", pool)
-			}
-		}
-	}
-}
-
-// PurgeTradesAndKeysRedis deletes all trades older than @timestampLatest.
-// Furthermore, all associated keys are removed after @expire.
-func (datastore *DB) PurgeTradesAndKeysRedis(timestampLatest time.Time, expire time.Duration) {
-
-	// Get all (quote) assets traded.
-	allTradedAssetKeys := datastore.redisClient.SMembers(TRADED_ASSETS_KEY).Val()
-	log.Info("allTradedAssetKeys: ", allTradedAssetKeys)
-	for _, assetKey := range allTradedAssetKeys {
-		log.Info("assetKey: ", assetKey)
-		// Get all exchangepair keys of a given quote asset.
-		exchangepairKeys := datastore.redisClient.SMembers(assetKey).Val()
-		for _, exchangepairKey := range exchangepairKeys {
-			// Purging old values.
-			log.Info("exchangepair: ", exchangepairKey)
-			log.Info("latestScore: ", strconv.FormatInt(timestampLatest.UnixMicro(), 10))
-			err := datastore.redisClient.ZRemRangeByScore(exchangepairKey, "-inf", strconv.FormatInt(timestampLatest.UnixMicro(), 10)).Err()
-			if err != nil {
-				log.Errorf("ZRemRangeByScore on %s: %v", err, exchangepairKey)
-			}
-			if err = datastore.redisPipe.Expire(exchangepairKey, expire).Err(); err != nil {
-				log.Errorf("expire %s: %v", exchangepairKey, err)
-			}
-		}
-		if err := datastore.redisPipe.Expire(assetKey, expire).Err(); err != nil {
-			log.Errorf("expire %s: %v", assetKey, err)
-		}
-	}
-
-}
-
 // GetTradeInflux returns the latest trade of @asset on @exchange before @timestamp in the time-range [endtime-window, endtime].
 func (datastore *DB) GetTradeInflux(asset dia.Asset, exchange string, endtime time.Time, window time.Duration) (*dia.Trade, error) {
 	starttime := endtime.Add(-window)
@@ -1383,4 +1263,138 @@ func (datastore *DB) SetLastTradeTimeForExchange(asset dia.Asset, exchange strin
 		log.Printf("Error: %v on SetLastTradeTimeForExchange %v\n", err, asset.Symbol)
 	}
 	return err
+}
+
+// -------------------------------------------------------------------------------------------------------
+// REDIS TRADES CACHE
+// -------------------------------------------------------------------------------------------------------
+
+func (datastore *DB) SaveTradeRedis(t dia.Trade) error {
+
+	tradeMarshaled, err := t.MarshalBinary()
+	if err != nil {
+		return err
+	}
+
+	member := redis.Z{
+		Score:  float64(t.Time.UnixMicro()),
+		Member: tradeMarshaled,
+	}
+	err = datastore.redisPipe.ZAdd(GetTradesKeyRedis(t), member).Err()
+	if err != nil {
+		return err
+	}
+
+	//Set key as value in redis keystore with key Blockchain_Address.
+	return datastore.SaveTradeSetElementRedis(t)
+}
+
+// SaveTradeSetElementRedis has blockchain-address strings as keys. The elements of the
+// values set are all keys from trade_... zsets which store the corresponding trades as members.
+func (datastore *DB) SaveTradeSetElementRedis(t dia.Trade) error {
+	// Store trades keys (i.e. exchangepairs) as values with asset identifier as key.
+	err := datastore.redisPipe.SAdd(getAssetKeyRedis(t.QuoteToken), GetTradesKeyRedis(t)).Err()
+	if err != nil {
+		return err
+	}
+
+	// For easier retrieval, save all assets that were traded at least once in a set.
+	return datastore.redisPipe.SAdd(TRADED_ASSETS_KEY, getAssetKeyRedis(t.QuoteToken)).Err()
+}
+
+func (datastore *DB) GetExchangepairKeysRedis(asset dia.Asset) (exchangepairKeys []string, err error) {
+	err = datastore.redisClient.SMembers(getAssetKeyRedis(asset)).ScanSlice(&exchangepairKeys)
+	return
+}
+
+// TO DO: Check order of trades and compare to trades getter in getFeed.
+func (datastore *DB) GetTradesRedis(key string, startTime time.Time, endTime time.Time) (trades []dia.Trade, err error) {
+	vals, err := datastore.redisClient.ZRangeByScoreWithScores(key, redis.ZRangeBy{
+		Min: strconv.FormatInt(startTime.UnixMicro(), 10),
+		Max: strconv.FormatInt(endTime.UnixMicro(), 10),
+	}).Result()
+	if err != nil {
+		return
+	}
+
+	for _, v := range vals {
+		var t dia.Trade
+		err = t.UnmarshalBinary([]byte(v.Member.(string)))
+		if err != nil {
+			return
+		}
+		trades = append(trades, t)
+	}
+	return
+}
+
+// TO DO: Check order of trades and compare to trades getter in getFeed.
+func (datastore *DB) GetTradesByFeedselectionRedis(fs dia.FeedSelection, startTime time.Time, endTime time.Time) ([]dia.Trade, error) {
+	var trades []dia.Trade
+	for _, ep := range fs.Exchangepairs {
+		exchange := ep.Exchange
+		if exchange.Centralized {
+			for _, pair := range ep.Pairs {
+				key := GetTradesKeyRedis(dia.Trade{QuoteToken: pair.QuoteToken, BaseToken: pair.BaseToken, Source: exchange.Name})
+				ts, err := datastore.GetTradesRedis(key, startTime, endTime)
+				if err != nil {
+					return []dia.Trade{}, err
+				}
+				trades = append(trades, ts...)
+			}
+		} else {
+			for _, pool := range ep.Pools {
+				// Get exchangepair key in redis which contains the pool address (should be at most one).
+				exchangepairKeys, err := datastore.GetExchangepairKeysRedis(fs.Asset)
+				if err != nil {
+					return []dia.Trade{}, err
+				}
+				for _, ep := range exchangepairKeys {
+					if strings.Contains(ep, pool.Address) {
+						ts, err := datastore.GetTradesRedis(ep, startTime, endTime)
+						if err != nil {
+							return []dia.Trade{}, err
+						}
+						trades = append(trades, ts...)
+						break
+					}
+				}
+			}
+		}
+	}
+	return trades, nil
+}
+
+// PurgeTradesAndKeysRedis deletes all trades older than @timestampLatest.
+// Furthermore, all associated keys are removed after @expire.
+func (datastore *DB) PurgeTradesAndKeysRedis(timestampLatest time.Time, expire time.Duration) {
+
+	// Get all (quote) assets traded.
+	allTradedAssetKeys := datastore.redisClient.SMembers(TRADED_ASSETS_KEY).Val()
+	for _, assetKey := range allTradedAssetKeys {
+		// Get all exchangepair keys of a given quote asset.
+		exchangepairKeys := datastore.redisClient.SMembers(assetKey).Val()
+		for _, exchangepairKey := range exchangepairKeys {
+			// Purging old values.
+			err := datastore.redisClient.ZRemRangeByScore(exchangepairKey, "-inf", strconv.FormatInt(timestampLatest.UnixMicro(), 10)).Err()
+			if err != nil {
+				log.Errorf("ZRemRangeByScore on %s: %v", err, exchangepairKey)
+			}
+			if err = datastore.redisPipe.Expire(exchangepairKey, expire).Err(); err != nil {
+				log.Errorf("expire %s: %v", exchangepairKey, err)
+			}
+		}
+		if err := datastore.redisPipe.Expire(assetKey, expire).Err(); err != nil {
+			log.Errorf("expire %s: %v", assetKey, err)
+		}
+	}
+
+}
+
+func getAssetKeyRedis(asset dia.Asset) string {
+	return TRADE_EXCHANGEPAIR_PREFIX_REDIS + asset.Identifier()
+}
+
+func GetTradesKeyRedis(t dia.Trade) string {
+	return TRADE_PREFIX_REDIS + t.TradeIdentifierShort()
 }
