@@ -905,7 +905,7 @@ func (rdb *RelDB) GetBalanceRemaining(address string, chainid string) (float64, 
 
 }
 
-func (rdb *RelDB) GetDayWiseUpdates(address string, chainid string) ([]dia.FeedUpdates, float64, error) {
+func (rdb *RelDB) GetDayWiseUpdates(address string, chainid string) ([]dia.FeedUpdates, float64, float64, error) {
 	query := fmt.Sprintf(`
 	WITH DailyUpdates AS (
 		SELECT 
@@ -936,10 +936,10 @@ func (rdb *RelDB) GetDayWiseUpdates(address string, chainid string) ([]dia.FeedU
 	defer rows.Close()
 
 	var (
-		avgGasUsed sql.NullFloat64
-		count      sql.NullFloat64
-		stats      []dia.FeedUpdates
-		updateTime sql.NullTime
+		avgGasUsed     sql.NullFloat64
+		avgUpdateCount sql.NullFloat64
+		stats          []dia.FeedUpdates
+		updateTime     sql.NullTime
 	)
 
 	for rows.Next() {
@@ -949,7 +949,7 @@ func (rdb *RelDB) GetDayWiseUpdates(address string, chainid string) ([]dia.FeedU
 			&avgGasUsed,
 			&du.GasUsed,
 			&du.UpdateCount,
-			&count,
+			&avgUpdateCount,
 		)
 		if updateTime.Valid {
 			du.Day = updateTime.Time
@@ -959,7 +959,7 @@ func (rdb *RelDB) GetDayWiseUpdates(address string, chainid string) ([]dia.FeedU
 
 	}
 
-	return stats, avgGasUsed.Float64, nil
+	return stats, avgGasUsed.Float64, avgUpdateCount, nil
 
 }
 

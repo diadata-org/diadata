@@ -476,9 +476,9 @@ func (ob *Env) Dashboard(context *gin.Context) {
 	}
 
 	var (
-		assets                              []localAssetConfig
-		avgGasSpend, gasSpend, gasRemaining float64
-		updateFeeds                         []dia.FeedUpdates
+		assets                                              []localAssetConfig
+		avgGasSpend, gasSpend, gasRemaining, avgUpdateCount float64
+		updateFeeds                                         []dia.FeedUpdates
 	)
 
 	if len(symbolFeeds) > 0 {
@@ -581,9 +581,10 @@ func (ob *Env) Dashboard(context *gin.Context) {
 	if err != nil {
 		gasRemaining = 0.0
 	}
-	updateFeeds, avgGasSpend, err = ob.RelDB.GetDayWiseUpdates(address, chainID)
+	updateFeeds, avgGasSpend, avgUpdateCount, err = ob.RelDB.GetDayWiseUpdates(address, chainID)
 	if err != nil {
 		avgGasSpend = 0.0
+		avgUpdateCount = 0.0
 	}
 
 	lastOracleUpdate, _ := ob.RelDB.GetLastOracleUpdate(address, chainID)
@@ -596,6 +597,7 @@ func (ob *Env) Dashboard(context *gin.Context) {
 	response["GasRemaining"] = gasRemaining
 	response["GasSpend"] = gasSpend
 	response["AvgGasSpend"] = avgGasSpend
+	response["AvgDailyTxs"] = avgUpdateCount
 
 	if len(lastOracleUpdate) > 0 {
 		response["LastOracleUpdate"] = lastOracleUpdate[0].UpdateTime
@@ -613,6 +615,8 @@ func (ob *Env) Stats(context *gin.Context) {
 	address := context.Query("address")
 	chainID := context.Query("chainID")
 	page := context.Query("page")
+	symbol := context.Query("symbol")
+
 	if strings.Contains(address, "0x") {
 		address = common.HexToAddress(address).Hex()
 	}
@@ -649,7 +653,7 @@ func (ob *Env) Stats(context *gin.Context) {
 		return
 	}
 
-	updates, err := ob.RelDB.GetOracleUpdatesByTimeRange(address, chainID, "", offset, starttime, endtime)
+	updates, err := ob.RelDB.GetOracleUpdatesByTimeRange(address, chainID, symbol, offset, starttime, endtime)
 	if err != nil {
 		errorMsg := "Error fetching oracle updates"
 		logMsg := "Oracle Stats error"
