@@ -367,6 +367,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "GEL",
+            "ForeignName": "GEL_USD",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
             "Symbol": "GLM",
             "ForeignName": "GLM_USDT",
             "Exchange": "Crypto.com",

@@ -1130,6 +1130,18 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "GEL_USDT",
+      "Ignore": false,
+      "Symbol": "GEL"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "GEL_ETH",
+      "Ignore": false,
+      "Symbol": "GEL"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "GEM_ETH",
       "Ignore": false,
       "Symbol": "GEM"

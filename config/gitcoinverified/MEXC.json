@@ -253,6 +253,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "GEL",
+      "Exchange": "MEXC",
+      "Blockchain": "Ethereum",
+      "Address": "0x15b7c0c907e4C6b9AdaAaabC300C08991D6CEA05"
+    },
+    {
       "Symbol": "GHST",
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",

@@ -271,6 +271,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "GEL",
+      "ForeignName": "GELUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "GHST",
       "ForeignName": "GHSTUSDT",
       "Exchange": "MEXC",
