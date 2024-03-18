@@ -18,6 +18,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/tidwall/gjson"
 )
 
 func main() {
@@ -47,6 +48,7 @@ func main() {
 	}
 	pairStr := utils.Getenv("PAIRS", "")
 	assetsStr := utils.Getenv("ASSETS", "")
+	cbAssetsStr := utils.Getenv("CB_ASSETS", "")
 
 	// Parse assets
 	assetsParsed := strings.Split(assetsStr, ",")
@@ -55,6 +57,9 @@ func main() {
 	blockchains := []string{}
 
 	for _, asset := range assetsParsed {
+		if asset == "" {
+			continue
+		}
 		entries := strings.Split(asset, "-")
 		blockchains = append(blockchains, strings.TrimSpace(entries[0]))
 		addresses = append(addresses, strings.TrimSpace(entries[1]))
@@ -65,11 +70,23 @@ func main() {
 	pairsParsed := strings.Split(pairStr, ",")
 
 	for _, pair := range pairsParsed {
+		if pair == "" {
+			continue
+		}
 		pairs = append(pairs, strings.TrimSpace(pair))
+	}
+
+	// Parse Coinbase Assets
+	cbAssets := []string{}
+	cbAssetsParsed := strings.Split(cbAssetsStr, ",")
+
+	for _, cbAsset := range cbAssetsParsed {
+		cbAssets = append(cbAssets, strings.TrimSpace(cbAsset))
 	}
 
 	oldPrices := make(map[int]float64)
 	oldAssetPrices := make(map[int]float64)
+	oldCbAssetPrices := make(map[int]float64)
 
 	/*
 	 * Setup connection to contract, deploy if necessary
@@ -109,6 +126,16 @@ func main() {
 					}
 					time.Sleep(time.Duration(sleepSeconds) * time.Second)
 				}
+				for i, cbAsset := range cbAssets {
+					oldCbAssetPrice := oldCbAssetPrices[i]
+					log.Println("old CB Asset price", oldCbAssetPrice)
+					oldCbAssetPrice, err = periodicCbAssetOracleUpdateHelper(oldCbAssetPrice, deviationPermille, auth, contract, conn, cbAsset)
+					oldCbAssetPrices[i] = oldCbAssetPrice
+					if err != nil {
+						log.Println(err)
+					}
+					time.Sleep(time.Duration(sleepSeconds) * time.Second)
+				}
 				for i, address := range addresses {
 					oldAssetPrice := oldAssetPrices[i]
 					blockchain := blockchains[i]
@@ -140,6 +167,16 @@ func main() {
 						}
 						time.Sleep(time.Duration(sleepSeconds) * time.Second)
 					}
+					for i, cbAsset := range cbAssets {
+						oldCbAssetPrice := oldCbAssetPrices[i]
+						log.Println("old CB Asset price", oldCbAssetPrice)
+						oldCbAssetPrice, err = cbAssetOracleUpdateHelper(oldCbAssetPrice, auth, contract, conn, cbAsset)
+						oldCbAssetPrices[i] = oldCbAssetPrice
+						if err != nil {
+							log.Println(err)
+						}
+						time.Sleep(time.Duration(sleepSeconds) * time.Second)
+					}
 				}
 			}
 		}()
@@ -158,6 +195,33 @@ func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *dia
 	rawQ, err = getForeignQuotationFromDia(pair)
 	if err != nil {
 		log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", pair, err)
+		return oldPrice, err
+	}
+	rawQ.Name = rawQ.Symbol
+
+	// Check for deviation
+	newPrice := rawQ.Price
+
+	err = updateForeignQuotation(rawQ, auth, contract, conn)
+	if err != nil {
+		log.Fatalf("Failed to update DIA Oracle: %v", err)
+		return oldPrice, err
+	}
+
+	return newPrice, nil
+}
+
+func cbAssetOracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, asset string) (float64, error) {
+
+	// Empty quotation for our request
+	var rawQ *models.Quotation
+	rawQ = new(models.Quotation)
+	var err error
+
+	// Get quotation for token and update Oracle
+	rawQ, err = getForeignQuotationFromCoinbase(asset)
+	if err != nil {
+		log.Fatalf("Failed to retrieve %s quotation data from Coinbase: %v", asset, err)
 		return oldPrice, err
 	}
 	rawQ.Name = rawQ.Symbol
@@ -221,6 +285,37 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
 		log.Println("Entering deviation based update zone")
 		err = updateForeignQuotation(rawQ, auth, contract, conn)
+		if err != nil {
+			log.Fatalf("Failed to update DIA Oracle: %v", err)
+			return oldPrice, err
+		}
+		return newPrice, nil
+	}
+
+	return oldPrice, nil
+}
+
+func periodicCbAssetOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, asset string) (float64, error) {
+
+	// Empty quotation for our request
+	var rawQ *models.Quotation
+	rawQ = new(models.Quotation)
+	var err error
+
+	// Get quotation for token and update Oracle
+	rawQ, err = getForeignQuotationFromCoinbase(asset)
+	if err != nil {
+		log.Fatalf("Failed to retrieve %s quotation data from Coinbase: %v", asset, err)
+		return oldPrice, err
+	}
+	rawQ.Name = rawQ.Symbol
+
+	// Check for deviation
+	newPrice := rawQ.Price
+
+	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
+		log.Println("Entering deviation based update zone")
+		err = updateQuotation(rawQ, auth, contract, conn)
 		if err != nil {
 			log.Fatalf("Failed to update DIA Oracle: %v", err)
 			return oldPrice, err
@@ -315,6 +410,30 @@ func updateOracle(
 	log.Printf("Tx To: %s\n", tx.To().String())
 	log.Printf("Tx Hash: 0x%x\n", tx.Hash())
 	return nil
+}
+
+func getForeignQuotationFromCoinbase(asset string) (*models.Quotation, error) {
+	response, err := http.Get("https://api.coinbase.com/v2/exchange-rates")
+	if err != nil {
+		return nil, err
+	}
+
+	defer response.Body.Close()
+	if 200 != response.StatusCode {
+		return nil, fmt.Errorf("Error on Coinbase API with return code %d", response.StatusCode)
+	}
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var quotation models.Quotation
+	invPrice := gjson.Get(string(contents), "data.rates." + asset).Float()
+	price := 1/invPrice
+	quotation.Price = price
+	quotation.Symbol = asset
+
+	return &quotation, nil
 }
 
 func getForeignQuotationFromDia(pair string) (*models.Quotation, error) {

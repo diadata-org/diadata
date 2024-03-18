@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math"
 	"math/big"
 	"net/http"
 	"strconv"
@@ -25,10 +26,12 @@ import (
 )
 
 type Asset struct {
-	blockchain string
-	address    string
-	symbol     string
-	gqlParams  GqlParameters
+	blockchain                string
+	address                   string
+	symbol                    string
+	coingeckoName             string
+	allowedCoingeckoDeviation float64
+	gqlParams                 GqlParameters
 }
 
 // Update asset1 only if asset0 is updated
@@ -77,8 +80,13 @@ func main() {
 	}
 	conditionalAssets := utils.Getenv("CONDITIONAL_ASSETS", "")
 	gqlMethodology := utils.Getenv("GQL_METHODOLOGY", "vwap")
+	coingeckoApiKey := utils.Getenv("COINGECKO_API_KEY", "")
 	assetsStr := utils.Getenv("ASSETS", "")
 	gqlAssetsStr := utils.Getenv("GQL_ASSETS", "")
+	compatibilityMode, err := strconv.ParseBool(utils.Getenv("COMPATIBILITY_MODE", "false"))
+	if err != nil {
+		log.Fatalf("Failed to parse compatibilityMode: %v", err)
+	}
 
 	assets := []Asset{}
 	conditionalPairs := []ConditionalPair{}
@@ -101,16 +109,22 @@ func main() {
 		var currAsset Asset
 
 		// parse asset from env
-		entries := strings.Split(asset, "-")
+		entries := strings.Split(asset, "§")
 		//TODO: check if len(array) > 0
 		currAsset.blockchain = strings.TrimSpace(entries[0])
 		currAsset.address = strings.TrimSpace(entries[1])
 		currAsset.symbol = strings.TrimSpace(entries[2])
+    currAsset.coingeckoName = strings.TrimSpace(entries[3])
+		allowedCoingeckoDeviation, err := strconv.ParseFloat(strings.TrimSpace(entries[4]), 64)
+		if err != nil {
+			log.Fatalf("Error converting CG Deviation float on parsing %s-%s!", currAsset.blockchain, currAsset.address)
+		}
+    currAsset.allowedCoingeckoDeviation = allowedCoingeckoDeviation
 
 		// Find out is there are additional GQL parameters for this asset
-		if len(entries) > 3 {
+		if len(entries) > 5 {
 			// Join the rest of the line together, because the previous split might have affected substrings of the parameters
-			gqlFeedSelectionQuery := strings.Join(entries[3:], "-")
+			gqlFeedSelectionQuery := strings.Join(entries[5:], "-")
 			var currGqlParams GqlParameters
 			if useGql && gqlFeedSelectionQuery != "" {
 				err := json.Unmarshal([]byte(gqlFeedSelectionQuery), &currGqlParams)
@@ -197,12 +211,12 @@ func main() {
 					}
 					log.Println(newAssetPrices)
 					// update all prices
-					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, auth, contract, conn, chainId, assets, conditionalPairs)
+					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, auth, contract, conn, chainId, compatibilityMode, assets, conditionalPairs)
 					if err != nil {
 						log.Printf("Failed to execute oracle update using primary connection: %v. Retrying with backup connection...", err)
 
 						// Attempt using the backup connection
-						publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, auth, contractBackup, connBackup, chainId, assets, conditionalPairs)
+						publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, auth, contractBackup, connBackup, chainId, compatibilityMode, assets, conditionalPairs)
 						if err != nil {
 							log.Fatalf("Failed to execute oracle update using backup connection: %v", err)
 						}
@@ -227,12 +241,12 @@ func main() {
 					}
 					// update all prices, regardless of deviation
 					emptyMap := make(map[string]float64)
-					publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, deviationPermille, auth, contract, conn, chainId, assets, conditionalPairs)
+					publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, deviationPermille, coingeckoApiKey, auth, contract, conn, chainId, compatibilityMode, assets, conditionalPairs)
 					if err != nil {
 						log.Printf("Failed to execute oracle update using primary connection: %v. Retrying with backup connection...", err)
 
 						// Attempt using the backup connection
-						publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, deviationPermille, auth, contractBackup, connBackup, chainId, assets, conditionalPairs)
+						publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, deviationPermille, coingeckoApiKey, auth, contractBackup, connBackup, chainId, compatibilityMode, assets, conditionalPairs)
 						if err != nil {
 							log.Fatalf("Failed to execute oracle update using backup connection: %v", err)
 						}
@@ -252,12 +266,12 @@ func main() {
 						newAssetPrices[asset.symbol] = newAssetPrice
 					}
 					// update all prices
-					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, auth, contract, conn, chainId, assets, conditionalPairs)
+					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, auth, contract, conn, chainId, compatibilityMode, assets, conditionalPairs)
 					if err != nil {
 						log.Printf("Failed to execute oracle update using primary connection: %v. Retrying with backup connection...", err)
 
 						// Attempt using the backup connection
-						publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, auth, contractBackup, connBackup, chainId, assets, conditionalPairs)
+						publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, auth, contractBackup, connBackup, chainId, compatibilityMode, assets, conditionalPairs)
 						if err != nil {
 							log.Fatalf("Failed to execute oracle update using backup connection: %v", err)
 						}
@@ -274,10 +288,12 @@ func oracleUpdateExecutor(
 	publishedPrices map[string]float64,
 	newPrices map[string]float64,
 	deviationPermille int,
+	coingeckoApiKey string,
 	auth *bind.TransactOpts,
 	contract *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService,
 	conn *ethclient.Client,
 	chainId int64,
+	compatibilityMode bool,
 	assets []Asset,
 	conditionalAssets []ConditionalPair) (map[string]float64, error) {
 	// Check for deviation and collect all new prices in a map
@@ -312,6 +328,18 @@ func oracleUpdateExecutor(
 		oldPrice := publishedPrices[asset.symbol]
 
 		if updateAssetConditional || (newPrice > 1e-8 && ((newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))))) {
+			// Check coingecko for price deviation
+			coingeckoPrice, err := getCoingeckoPrice(asset.coingeckoName, coingeckoApiKey)
+			if err != nil {
+				log.Printf("Error retrieving coingecko information for %s: %s", asset.symbol, err)
+				priceCollector[asset.symbol] = oldPrice
+				continue
+			}
+			if (math.Abs(coingeckoPrice - newPrice) / coingeckoPrice) > asset.allowedCoingeckoDeviation {
+				priceCollector[asset.symbol] = oldPrice
+				continue
+			}
+
 			log.Printf("Entering deviation based update zone for old price %.2f of asset %s. New price: %.2f", oldPrice, asset.symbol, newPrice)
 			updateCollector[asset.symbol] = newPrice
 			priceCollector[asset.symbol] = newPrice
@@ -335,12 +363,25 @@ func oracleUpdateExecutor(
 		prices = append(prices, integerPrice)
 	}
 
-	// Update prices in one transaction
-	timestamp := time.Now().Unix()
-	err := updateOracleMultiValues(conn, contract, auth, chainId, keys, prices, timestamp)
-	if err != nil {
-		log.Printf("Failed to update Oracle: %v", err)
-		return nil, err
+	// Update prices
+	// check if we can do the multiupdate or use compatibility mode
+	if compatibilityMode {
+		for keyIndex := range keys {
+			timestamp := time.Now().Unix()
+			err := updateOracleCompatibilityMode(conn, contract, auth, chainId, keys[keyIndex], prices[keyIndex], timestamp)
+			if err != nil {
+				log.Printf("Failed to update Oracle: %v", err)
+				return nil, err
+			}
+			time.Sleep(5 * time.Second)
+		}
+	} else {
+		timestamp := time.Now().Unix()
+		err := updateOracleMultiValues(conn, contract, auth, chainId, keys, prices, timestamp)
+		if err != nil {
+			log.Printf("Failed to update Oracle: %v", err)
+			return nil, err
+		}
 	}
 
 	return priceCollector, nil
@@ -403,6 +444,72 @@ func deployOrBindContract(
 		}
 		time.Sleep(180000 * time.Millisecond)
 	}
+	return nil
+}
+
+func updateOracleCompatibilityMode(
+	client *ethclient.Client,
+	contract *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService,
+	auth *bind.TransactOpts,
+	chainId int64,
+	key string,
+	value int64,
+	timestamp int64) error {
+
+	var gasPrice *big.Int
+	var err error
+
+	// Get proper gas price depending on chainId
+	switch chainId {
+	/*case 288: //Boba
+	gasPrice = big.NewInt(1000000000)*/
+	case 592: //Astar
+		response, err := http.Get("https://gas.astar.network/api/gasnow?network=astar")
+		if err != nil {
+			return err
+		}
+
+		defer response.Body.Close()
+		if 200 != response.StatusCode {
+			return err
+		}
+		contents, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			return err
+		}
+
+		gasSuggestion := gjson.Get(string(contents), "data.fast")
+		gasPrice = big.NewInt(gasSuggestion.Int())
+	default:
+		// Get gas price suggestion
+		gasPrice, err = client.SuggestGasPrice(context.Background())
+		if err != nil {
+			log.Print(err)
+			return err
+		}
+
+		// Get 110% of the gas price
+		fGas := new(big.Float).SetInt(gasPrice)
+		fGas.Mul(fGas, big.NewFloat(1.1))
+		gasPrice, _ = fGas.Int(nil)
+	}
+
+	// Write values to smart contract
+	tx, err := contract.SetValue(&bind.TransactOpts{
+		From:   auth.From,
+		Signer: auth.Signer,
+		//GasLimit: 1000725,
+		GasPrice: gasPrice,
+	}, key, big.NewInt(value), big.NewInt(timestamp))
+	if err != nil {
+		return err
+	}
+	log.Printf("Gas price: %d\n", tx.GasPrice())
+	log.Printf("key: %s\n", key)
+	log.Printf("Data: %x\n", tx.Data())
+	log.Printf("Nonce: %d\n", tx.Nonce())
+	log.Printf("Tx To: %s\n", tx.To().String())
+	log.Printf("Tx Hash: 0x%x\n", tx.Hash())
 	return nil
 }
 
@@ -597,4 +704,24 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int,
 		return 0.0, errors.New("no results")
 	}
 	return r.GetFeed[len(r.GetFeed)-1].Value, nil
+}
+
+func getCoingeckoPrice(assetName, coingeckoApiKey string) (float64, error) {
+	url := "https://pro-api.coingecko.com/api/v3/simple/price?ids=" + assetName + "&vs_currencies=usd&x_cg_pro_api_key=" + coingeckoApiKey
+	response, err := http.Get(url)
+	if err != nil {
+		return 0.0, err
+	}
+	
+	defer response.Body.Close()
+	if 200 != response.StatusCode {
+		return 0.0, fmt.Errorf("Error on coingecko API call with return code %d", response.StatusCode)
+	}
+
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return 0.0, err
+	}
+	price := gjson.Get(string(contents), assetName + ".usd").Float()
+	return price, nil
 }

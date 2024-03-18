@@ -142,7 +142,7 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 	// stablecoin 20mins period
 	if address == "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" || address == "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56" {
 		log.Printf("Entered graphql mode")
-		rawPrice, _, err := getGraphqlAssetQuotationFromDia(blockchain, address, 1200)
+		rawPrice, err := getGraphqlAssetQuotationFromDia(blockchain, address, 1200)
 		if err != nil {
 			log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
 			return oldPrice, err
@@ -153,7 +153,7 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 	// stablecoin gql
 	if address == "0x6B175474E89094C44Da98b954EedeAC495271d0F" {
 		log.Printf("Entered graphql mode")
-		rawPrice, _, err := getGraphqlAssetQuotationFromDia(blockchain, address, 120)
+		rawPrice, err := getGraphqlAssetQuotationFromDia(blockchain, address, 120)
 		if err != nil {
 			log.Fatalf("Failed to retrieve %s quotation data from DIA: %v", address, err)
 			return oldPrice, err
@@ -293,31 +293,28 @@ func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, er
 	return &quotation, nil
 }
 
-func getGraphqlAssetQuotationFromDia(blockchain, address string, blockDuration int) (float64, string, error) {
+func getGraphqlAssetQuotationFromDia(blockchain, address string, blockDuration int) (float64, error) {
 	currentTime := time.Now()
 	starttime := currentTime.Add(time.Duration(-blockDuration * 2) * time.Second)
 	type Response struct {
-		GetChart []struct {
+		GetFeed []struct {
 			Name   string    `json:"Name"`
-			Symbol string    `json:"Symbol"`
 			Time   time.Time `json:"Time"`
 			Value  float64   `json:"Value"`
-		} `json:"GetChart"`
+		} `json:"GetFeed"`
 	}
 	client := gql.NewClient("https://api.diadata.org/graphql/query")
 	req := gql.NewRequest(`
     query  {
-		 GetChart(
-		 	filter: "mair", 
-			Symbol:"Asset",
-			BlockDurationSeconds: ` + strconv.Itoa(blockDuration) + `, 
+		 GetFeed(
+		 	Filter: "mair", 
+			BlockSizeSeconds: ` + strconv.Itoa(blockDuration) + `, 
 			BlockShiftSeconds: ` + strconv.Itoa(blockDuration) + `,
 			StartTime: ` + strconv.FormatInt(starttime.Unix(), 10) + `, 
 			EndTime: ` + strconv.FormatInt(currentTime.Unix(), 10) + `, 
 			Address: "` + address + `", 
-			BlockChain: "` + blockchain + `") {
+			Blockchain: "` + blockchain + `") {
 				Name
-				Symbol
 				Time
 				Value
 	  	}
@@ -326,12 +323,12 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, blockDuration i
 	ctx := context.Background()
 	var r Response
 	if err := client.Run(ctx, req, &r); err != nil {
-		return 0.0, "", err
+		return 0.0, err
 	}
-	if len(r.GetChart) == 0 {
-		return 0.0, "", errors.New("no results")
+	if len(r.GetFeed) == 0 {
+		return 0.0, errors.New("no results")
 	}
-	return r.GetChart[len(r.GetChart)-1].Value, r.GetChart[len(r.GetChart)-1].Symbol, nil
+	return r.GetFeed[len(r.GetFeed)-1].Value, nil
 }
 
 func getGasSuggestion() (*big.Int, error) {
