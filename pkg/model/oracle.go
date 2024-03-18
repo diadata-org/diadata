@@ -959,7 +959,7 @@ func (rdb *RelDB) GetDayWiseUpdates(address string, chainid string) ([]dia.FeedU
 
 	}
 
-	return stats, avgGasUsed.Float64, avgUpdateCount, nil
+	return stats, avgGasUsed.Float64, avgUpdateCount.Float64, nil
 
 }
 
