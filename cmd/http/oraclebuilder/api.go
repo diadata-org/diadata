@@ -419,7 +419,7 @@ func (ob *Env) Dashboard(context *gin.Context) {
 		offset = 0
 	}
 
-	totalUpdates, err := ob.RelDB.GetOracleUpdateCount(address, chainID)
+	totalUpdates, err := ob.RelDB.GetOracleUpdateCount(address, chainID, symbol)
 	if err != nil {
 		errorMsg := "Error fetching oracle update count"
 		logMsg := "Oracle Stats error GetOracleUpdateCount"
@@ -617,20 +617,27 @@ func (ob *Env) Stats(context *gin.Context) {
 	page := context.Query("page")
 	symbol := context.Query("symbol")
 
+	var (
+		startTime, endTime time.Time
+		err                error
+	)
+
 	if strings.Contains(address, "0x") {
 		address = common.HexToAddress(address).Hex()
 	}
+	if context.Query("starttime") == "" || context.Query("starttime") == "" {
+		startTime = time.Unix(0, 0)
+		endTime = time.Unix(0, 0)
 
-	starttime, endtime, err := utils.MakeTimerange(context.Query("starttime"), context.Query("endtime"), time.Duration(24*time.Hour))
-	if err != nil {
-		endtime = time.Now()
-		starttime = endtime.Add(-time.Duration(30 * 24 * time.Hour))
+	} else {
+		startTime, endTime, err = utils.MakeTimerange(context.Query("starttime"), context.Query("endtime"), time.Duration(30*24*time.Hour))
 
-	}
+		if err != nil {
+			endTime = time.Now()
+			startTime = endTime.Add(-time.Duration(30 * 24 * time.Hour))
 
-	if ok := utils.ValidTimeRange(starttime, endtime, time.Duration(30*24*time.Hour)); !ok {
-		restApi.SendError(context, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 30*24*time.Hour))
-		return
+		}
+
 	}
 
 	offset := 0
@@ -645,7 +652,7 @@ func (ob *Env) Stats(context *gin.Context) {
 		offset = 0
 	}
 
-	totalUpdates, err := ob.RelDB.GetOracleUpdateCount(address, chainID)
+	totalUpdates, err := ob.RelDB.GetOracleUpdateCount(address, chainID, symbol)
 	if err != nil {
 		errorMsg := "Error fetching oracle update count"
 		logMsg := "Oracle Stats error GetOracleUpdateCount"
@@ -653,7 +660,7 @@ func (ob *Env) Stats(context *gin.Context) {
 		return
 	}
 
-	updates, err := ob.RelDB.GetOracleUpdatesByTimeRange(address, chainID, symbol, offset, starttime, endtime)
+	updates, err := ob.RelDB.GetOracleUpdatesByTimeRange(address, chainID, symbol, offset, startTime, endTime)
 	if err != nil {
 		errorMsg := "Error fetching oracle updates"
 		logMsg := "Oracle Stats error"

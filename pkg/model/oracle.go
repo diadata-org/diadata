@@ -551,13 +551,16 @@ func (rdb *RelDB) ExpireOracle(feederID string) (err error) {
 	return
 }
 
-func (rdb *RelDB) GetOracleUpdateCount(address string, chainid string) (int64, error) {
+func (rdb *RelDB) GetOracleUpdateCount(address, chainid, symbol string) (int64, error) {
 	query := fmt.Sprintf(`
 	SELECT  count(*) from %s
-	WHERE oracle_address=$1 and chain_id=$2`, feederupdatesTable)
+	WHERE oracle_address=$1 and chain_id=$2
+	AND ($3 = '' OR asset_key = $3)
+	
+	`, feederupdatesTable)
 
 	var numUpdates sql.NullInt64
-	err := rdb.postgresClient.QueryRow(context.Background(), query, address, chainid).Scan(&numUpdates)
+	err := rdb.postgresClient.QueryRow(context.Background(), query, address, chainid, symbol).Scan(&numUpdates)
 	if numUpdates.Valid {
 		return numUpdates.Int64, nil
 	}
@@ -682,12 +685,10 @@ func (rdb *RelDB) GetOracleUpdatesByTimeRange(address, chainid, symbol string, o
 		oc.creation_block,
 		oc.creation_block_time
 
-
 	FROM %s fu
 	JOIN %s oc ON fu.oracle_address = oc.address AND fu.chain_id = oc.chainID 
 	WHERE fu.oracle_address = $1 AND fu.chain_id = $2 
-    AND fu.update_time < to_timestamp($3)
-    AND fu.update_time > to_timestamp($4)
+    AND ($3 = 0 OR $4 = 0 OR (fu.update_time < to_timestamp($3) AND fu.update_time > to_timestamp($4)))
 	AND ($5 = '' OR fu.asset_key = $5)  
 
 	order by fu.update_block desc LIMIT 20 OFFSET %d
