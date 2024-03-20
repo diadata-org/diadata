@@ -7,6 +7,10 @@
         {
             "Address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
             "Symbol": "BUSD"
+        },
+        {
+            "Address": "0x323665443CEf804A3b5206103304BD4872EA4253",
+            "Symbol": "USDV"
         }
     ]
 }

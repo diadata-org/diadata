@@ -13,6 +13,10 @@
             "ForeignName": "USDT-USDC"
         },
         {
+            "Address": "0x172fcd41e0913e95784454622d1c3724f546f849",
+            "ForeignName": "WBNB-USDT"
+        },
+        {
             "Address": "0x36696169C63e42cd08ce11f5deeBbCeBae652050",
             "ForeignName": "USDT-WBNB"
         },
@@ -39,6 +43,10 @@
         {
             "Address": "0x7d05c84581f0C41AD80ddf677A510360bae09a5A",
             "ForeignName": "ETH-WBNB"
+        },
+        {
+            "Address": "0xD0e226f674bBf064f54aB47F42473fF80DB98CBA",
+            "ForeignName": "WBNB-ETH"
         },
         {
             "Address": "0x85FAac652b707FDf6907EF726751087F9E0b6687",
@@ -99,6 +107,14 @@
         {
             "Address": "0x379044E32f5A162233E82de19DA852255d0951b8",
             "ForeignName": "wBETH-ETH"
+        },
+        {
+            "Address": "0x589a5062e47202bB994cD354913733a14b54e8Dc",
+            "ForeignName": "USDT-USDV"
+        },
+        {
+            "Address": "0x898fe77d1C083DD725004A12DF0bC55f6Dbdec2f",
+            "ForeignName": "WBNB-USDV"
         }
     ]
 }
