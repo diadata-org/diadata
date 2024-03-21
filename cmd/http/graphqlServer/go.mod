@@ -3,7 +3,7 @@ module graphqlServer
 go 1.17
 
 require (
-	github.com/diadata-org/diadata v1.4.455
+	github.com/diadata-org/diadata v1.4.461-rc-2
 	github.com/graph-gophers/graphql-go v1.1.0
 	github.com/sirupsen/logrus v1.9.3
 )
@@ -31,7 +31,7 @@ require (
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
-	github.com/cnf/structhash v0.0.0-20180104161610-62a607eb0224 // indirect
+	github.com/cnf/structhash v0.0.0-20201127153200-e1b16c1ebc08 // indirect
 	github.com/confio/ics23/go v0.7.0 // indirect
 	github.com/cosmos/btcutil v1.0.4 // indirect
 	github.com/cosmos/cosmos-sdk v0.45.1 // indirect

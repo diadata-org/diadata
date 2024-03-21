@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"math"
 	"sort"
 	"time"
@@ -100,4 +101,19 @@ func IsInBin(timestamp time.Time, bin TimeBin) bool {
 		return true
 	}
 	return false
+}
+
+func Min(values []int64) (min int64, e error) {
+	if len(values) == 0 {
+		return 0, errors.New("cannot detect a minimum value in an empty slice")
+	}
+
+	min = values[0]
+	for _, v := range values {
+		if v < min {
+			min = v
+		}
+	}
+
+	return min, nil
 }

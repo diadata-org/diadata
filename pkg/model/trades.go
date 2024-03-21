@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
 )
@@ -1307,11 +1308,13 @@ func (datastore *DB) GetExchangepairKeysRedis(asset dia.Asset) (exchangepairKeys
 	return
 }
 
-// TO DO: Check order of trades and compare to trades getter in getFeed.
-func (datastore *DB) GetTradesRedis(key string, startTime time.Time, endTime time.Time) (trades []dia.Trade, err error) {
+// GetTradesRedis returns all trades from redis cache given by @key in the specified time range.
+func (datastore *DB) GetTradesRedis(key string, startTime time.Time, endTime time.Time, offset int64, limit int64) (trades []dia.Trade, err error) {
 	vals, err := datastore.redisClient.ZRangeByScoreWithScores(key, redis.ZRangeBy{
-		Min: strconv.FormatInt(startTime.UnixMicro(), 10),
-		Max: strconv.FormatInt(endTime.UnixMicro(), 10),
+		Min:    strconv.FormatInt(startTime.UnixMicro(), 10),
+		Max:    strconv.FormatInt(endTime.UnixMicro(), 10),
+		Offset: offset,
+		Count:  limit,
 	}).Result()
 	if err != nil {
 		return
@@ -1325,44 +1328,98 @@ func (datastore *DB) GetTradesRedis(key string, startTime time.Time, endTime tim
 		}
 		trades = append(trades, t)
 	}
+	// TO DO: Add possibility of sorting as var?
+	// // Sort by time in descending order.
+	// sort.Slice(trades, func(i, j int) bool {
+	// 	return trades[i].Time.UnixMicro() > trades[j].Time.UnixMicro()
+	// })
 	return
 }
 
-// TO DO: Check order of trades and compare to trades getter in getFeed.
-func (datastore *DB) GetTradesByFeedselectionRedis(fs dia.FeedSelection, startTime time.Time, endTime time.Time) ([]dia.Trade, error) {
+// GetTradesByFeedselectionRedis returns all trades fulfilling conditions in @feedselection.
+// Trades are returned sorted by time in descending order.
+func (datastore *DB) GetTradesByFeedselectionRedis(feedselection []dia.FeedSelection, startTimes []time.Time, endTimes []time.Time, limit int64) ([]dia.Trade, error) {
 	var trades []dia.Trade
-	for _, ep := range fs.Exchangepairs {
-		exchange := ep.Exchange
-		if exchange.Centralized {
-			for _, pair := range ep.Pairs {
-				key := GetTradesKeyRedis(dia.Trade{QuoteToken: pair.QuoteToken, BaseToken: pair.BaseToken, Source: exchange.Name})
-				ts, err := datastore.GetTradesRedis(key, startTime, endTime)
+	if len(startTimes) != len(endTimes) {
+		return []dia.Trade{}, errors.New("number of start times must equal number of end times.")
+	}
+
+	for i := range startTimes {
+		for _, fs := range feedselection {
+			keys, err := datastore.GetRedisKeysByFeedselection(fs)
+			if err != nil {
+				return trades, err
+			}
+			for _, key := range keys {
+				log.Info("key: ", key)
+			}
+			for _, key := range keys {
+				ts, err := datastore.GetTradesRedis(key, startTimes[i], endTimes[i], 0, -1)
 				if err != nil {
 					return []dia.Trade{}, err
 				}
 				trades = append(trades, ts...)
 			}
+		}
+	}
+	// Sort by time in ascending order.
+	sort.Slice(trades, func(i, j int) bool {
+		return trades[i].Time.UnixMicro() < trades[j].Time.UnixMicro()
+	})
+	if limit > 0 {
+		indMax, err := utils.Min([]int64{limit, int64(len(trades))})
+		if err != nil {
+			return trades, err
+		}
+		return trades[:indMax], nil
+	}
+	return trades, nil
+}
+
+// GetRedisKeysByFeedselection returns a list of keys which are needed in order to retrieve
+// all trades from the redis cache which fulfill the conditions given by @feedselection.
+func (datastore *DB) GetRedisKeysByFeedselection(fs dia.FeedSelection) ([]string, error) {
+	if len(fs.Exchangepairs) == 0 {
+		// Take into account all available exchangepairs for the asset given by feedselection entry.
+		return datastore.GetExchangepairKeysRedis(fs.Asset)
+	}
+
+	var keys []string
+	exchangepairKeys, err := datastore.GetExchangepairKeysRedis(fs.Asset)
+	if err != nil {
+		return []string{}, err
+	}
+
+	for _, ep := range fs.Exchangepairs {
+		exchange := ep.Exchange
+		if len(ep.Pairs)+len(ep.Pools) == 0 {
+			// Take into account all pairs/pools on the given exchange.
+			for _, ep := range exchangepairKeys {
+				if strings.Contains(ep, exchange.Name) {
+					keys = append(keys, ep)
+				}
+			}
+			continue
+		}
+
+		if exchange.Centralized {
+			for _, pair := range ep.Pairs {
+				key := GetTradesKeyRedis(dia.Trade{QuoteToken: pair.QuoteToken, BaseToken: pair.BaseToken, Source: exchange.Name})
+				keys = append(keys, key)
+			}
 		} else {
 			for _, pool := range ep.Pools {
 				// Get exchangepair key in redis which contains the pool address (should be at most one).
-				exchangepairKeys, err := datastore.GetExchangepairKeysRedis(fs.Asset)
-				if err != nil {
-					return []dia.Trade{}, err
-				}
 				for _, ep := range exchangepairKeys {
 					if strings.Contains(ep, pool.Address) {
-						ts, err := datastore.GetTradesRedis(ep, startTime, endTime)
-						if err != nil {
-							return []dia.Trade{}, err
-						}
-						trades = append(trades, ts...)
+						keys = append(keys, ep)
 						break
 					}
 				}
 			}
 		}
 	}
-	return trades, nil
+	return keys, nil
 }
 
 // PurgeTradesAndKeysRedis deletes all trades older than @timestampLatest.

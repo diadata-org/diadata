@@ -560,8 +560,6 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 	} else {
 		starttime = time.Unix(starttime.Unix()-(blockShiftSeconds-((endtime.Unix()-starttime.Unix()-blockSizeSeconds)%blockShiftSeconds)), 0)
 	}
-	// starttimeimmutable := starttime
-	// endtimeimmutable := endtime
 
 	if args.TradeVolumeThreshold.Value != nil {
 		tradeVolumeThreshold = *args.TradeVolumeThreshold.Value
@@ -609,7 +607,7 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 			endtimes = append(endtimes, bin.Endtime)
 		}
 	}
-	trades, err = r.DS.GetTradesByFeedSelection(feedselection, starttimes, endtimes, 0)
+	trades, err = r.DS.GetTradesByFeedselectionRedis(feedselection, starttimes, endtimes, -1)
 	if err != nil {
 		return sr, err
 	}
@@ -620,7 +618,7 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 		// In case the first bin is empty, look for the last trades before @starttime
 		// in order to select the most recent one with sufficient volume.
 		if len(trades) == 0 || !utils.IsInBin(trades[0].Time, bins[0]) || trades[0].VolumeUSD() < tradeVolumeThreshold {
-			previousTrade, err := r.DS.GetTradesByFeedSelection(feedselection, []time.Time{endtime.AddDate(0, 0, -10)}, []time.Time{starttime}, lookbackTradesNumber)
+			previousTrade, err := r.DS.GetTradesByFeedselectionRedis(feedselection, []time.Time{endtime.AddDate(0, 0, -10)}, []time.Time{starttime}, int64(lookbackTradesNumber))
 			if len(previousTrade) == 0 {
 				log.Error("get initial trade: ", err)
 				// Fill with a zero trade so we can build blocks.
