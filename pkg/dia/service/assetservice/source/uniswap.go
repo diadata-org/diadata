@@ -24,21 +24,23 @@ type UniswapPair struct {
 }
 
 const (
-	restDial          = ""
-	restDialBSC       = ""
-	restDialPolygon   = ""
-	restDialCelo      = ""
-	restDialFantom    = ""
-	restDialMoonriver = ""
-	restDialAurora    = ""
-	restDialArbitrum  = ""
-	restDialMetis     = ""
-	restDialAvalanche = ""
-	restDialTelos     = ""
-	restDialEvmos     = "https://evmos-evm.publicnode.com"
-	restDialAstar     = ""
-	restDialMoonbeam  = ""
-	restDialWanchain  = ""
+	restDial              = ""
+	restDialBSC           = ""
+	restDialPolygon       = ""
+	restDialCelo          = ""
+	restDialFantom        = ""
+	restDialMoonriver     = ""
+	restDialAurora        = ""
+	restDialArbitrum      = ""
+	restDialMetis         = ""
+	restDialAvalanche     = ""
+	restDialTelos         = ""
+	restDialEvmos         = "https://evmos-evm.publicnode.com"
+	restDialAstar         = ""
+	restDialMoonbeam      = ""
+	restDialWanchain      = ""
+	restDialUnrealTestnet = ""
+	restDialUnreal        = ""
 
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
@@ -123,6 +125,10 @@ func NewUniswapAssetSource(exchange dia.Exchange, relDB *models.RelDB) (uas *Uni
 		uas = makeUniswapAssetSource(exchange, restDialMoonbeam, relDB, moonbeamWaitMilliseconds)
 	case dia.WanswapExchange:
 		uas = makeUniswapAssetSource(exchange, restDialWanchain, relDB, wanchainWaitMilliseconds)
+	case dia.PearlfiExchangeTestnet:
+		uas = makeUniswapAssetSource(exchange, restDialUnrealTestnet, relDB, wanchainWaitMilliseconds)
+	case dia.PearlfiExchange:
+		uas = makeUniswapAssetSource(exchange, restDialUnreal, relDB, wanchainWaitMilliseconds)
 	}
 
 	exchangeFactoryContractAddress = exchange.Contract

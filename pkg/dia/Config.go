@@ -109,6 +109,8 @@ const (
 	MaverickExchange                   = "Maverick"
 	MaverickExchangeZKSync             = "Maverick-zksync"
 	MaverickExchangeBNB                = "Maverick-bnb"
+	PearlfiExchangeTestnet             = "Pearlfi-Testnet"
+	PearlfiExchange                    = "Pearlfi"
 
 	// FinageForex        = "FinageForex"
 )

@@ -138,6 +138,10 @@ func NewLiquidityScraper(source string, relDB *models.RelDB, datastore *models.D
 		return NewVelodromePoolScraper(exchanges[dia.VelodromeExchange], relDB, datastore)
 	case dia.MaverickExchange:
 		return NewMaverickScraper(exchanges[dia.MaverickExchange], relDB, datastore)
+	case dia.PearlfiExchangeTestnet:
+		return NewUniswapV3Scraper(exchanges[dia.PearlfiExchangeTestnet], relDB, datastore)
+	case dia.PearlfiExchange:
+		return NewUniswapV3Scraper(exchanges[dia.PearlfiExchange], relDB, datastore)
 
 	default:
 		return nil

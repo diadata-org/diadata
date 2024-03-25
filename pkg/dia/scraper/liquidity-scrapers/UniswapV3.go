@@ -51,6 +51,11 @@ func NewUniswapV3Scraper(exchange dia.Exchange, relDB *models.RelDB, datastore *
 		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(165))
 	case dia.PanCakeSwapExchangeV3:
 		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(26956207))
+	case dia.PearlfiExchangeTestnet:
+		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(2890))
+	case dia.PearlfiExchange:
+		// TO DO: add init block number
+		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(0))
 	}
 
 	go func() {

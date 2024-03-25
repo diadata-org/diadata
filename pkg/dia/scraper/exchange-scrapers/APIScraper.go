@@ -261,6 +261,10 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewVelodromeScraper(Exchanges[dia.VelodromeExchange], scrape, relDB)
 	case dia.MaverickExchange:
 		return NewMaverickScraper(Exchanges[dia.MaverickExchange], scrape, relDB)
+	case dia.PearlfiExchangeTestnet:
+		return NewUniswapV3Scraper(Exchanges[dia.PearlfiExchangeTestnet], scrape, relDB)
+	case dia.PearlfiExchange:
+		return NewUniswapV3Scraper(Exchanges[dia.PearlfiExchange], scrape, relDB)
 		// case dia.FinageForex:
 		// 	return NewFinageForexScraper(Exchanges[dia.FinageForex], scrape, relDB, key, secret)
 
