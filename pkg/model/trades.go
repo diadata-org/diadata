@@ -1337,11 +1337,12 @@ func (datastore *DB) GetTradesRedis(key string, startTime time.Time, endTime tim
 }
 
 // GetTradesByFeedselectionRedis returns all trades fulfilling conditions in @feedselection.
-// Trades are returned sorted by time in descending order.
-func (datastore *DB) GetTradesByFeedselectionRedis(feedselection []dia.FeedSelection, startTimes []time.Time, endTimes []time.Time, limit int64) ([]dia.Trade, error) {
+// Trades are returned sorted by time in ascending order.
+// If @limit > 0, only @limit number of trades are returned.
+func (datastore *DB) GetTradesByFeedselectionRedis(feedselection []dia.FeedSelection, startTimes []time.Time, endTimes []time.Time, limit int64, desc bool) ([]dia.Trade, error) {
 	var trades []dia.Trade
 	if len(startTimes) != len(endTimes) {
-		return []dia.Trade{}, errors.New("number of start times must equal number of end times.")
+		return []dia.Trade{}, errors.New("number of start times must equal number of end times")
 	}
 
 	for i := range startTimes {
@@ -1350,22 +1351,32 @@ func (datastore *DB) GetTradesByFeedselectionRedis(feedselection []dia.FeedSelec
 			if err != nil {
 				return trades, err
 			}
+
 			for _, key := range keys {
-				log.Info("key: ", key)
-			}
-			for _, key := range keys {
-				ts, err := datastore.GetTradesRedis(key, startTimes[i], endTimes[i], 0, -1)
+				ts, err := datastore.GetTradesRedis(key, startTimes[i], endTimes[i], 0, limit)
 				if err != nil {
 					return []dia.Trade{}, err
 				}
 				trades = append(trades, ts...)
+
+				if limit > 0 && int64(len(trades)) >= limit {
+					return trades, err
+				}
 			}
 		}
 	}
-	// Sort by time in ascending order.
-	sort.Slice(trades, func(i, j int) bool {
-		return trades[i].Time.UnixMicro() < trades[j].Time.UnixMicro()
-	})
+
+	// Sort by time.
+	if desc {
+		// Sort in descending order.
+		sort.Slice(trades, func(i, j int) bool {
+			return trades[i].Time.UnixMicro() > trades[j].Time.UnixMicro()
+		})
+	} else {
+		sort.Slice(trades, func(i, j int) bool {
+			return trades[i].Time.UnixMicro() < trades[j].Time.UnixMicro()
+		})
+	}
 	if limit > 0 {
 		indMax, err := utils.Min([]int64{limit, int64(len(trades))})
 		if err != nil {

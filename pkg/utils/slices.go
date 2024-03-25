@@ -94,7 +94,7 @@ func MakeBins(starttime time.Time, endtime time.Time, blockSizeSeconds int64, bl
 
 // IsInBin returns true in case @timestamp is in half-open interval @bin.
 func IsInBin(timestamp time.Time, bin TimeBin) bool {
-	if timestamp.After(bin.Starttime) && timestamp.Before(bin.Endtime) {
+	if timestamp.UnixMicro() >= bin.Starttime.UnixMicro() && timestamp.UnixMicro() < bin.Endtime.UnixMicro() {
 		return true
 	}
 	if timestamp == bin.Endtime {

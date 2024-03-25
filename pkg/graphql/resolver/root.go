@@ -26,6 +26,7 @@ var (
 	errInvalidInputParams = errors.New("invalid input params")
 	statusCodesMap        = make(map[string]int32)
 	statusError           = "err"
+	EXCHANGESYMBOL_CACHE  = make(map[string]dia.Asset)
 )
 
 const (
@@ -607,7 +608,7 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 			endtimes = append(endtimes, bin.Endtime)
 		}
 	}
-	trades, err = r.DS.GetTradesByFeedselectionRedis(feedselection, starttimes, endtimes, -1)
+	trades, err = r.DS.GetTradesByFeedselectionRedis(feedselection, starttimes, endtimes, -1, false)
 	if err != nil {
 		return sr, err
 	}
@@ -618,7 +619,7 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 		// In case the first bin is empty, look for the last trades before @starttime
 		// in order to select the most recent one with sufficient volume.
 		if len(trades) == 0 || !utils.IsInBin(trades[0].Time, bins[0]) || trades[0].VolumeUSD() < tradeVolumeThreshold {
-			previousTrade, err := r.DS.GetTradesByFeedselectionRedis(feedselection, []time.Time{endtime.AddDate(0, 0, -10)}, []time.Time{starttime}, int64(lookbackTradesNumber))
+			previousTrade, err := r.DS.GetTradesByFeedselectionRedis(feedselection, []time.Time{endtime.AddDate(0, 0, -2)}, []time.Time{starttime}, int64(lookbackTradesNumber), true)
 			if len(previousTrade) == 0 {
 				log.Error("get initial trade: ", err)
 				// Fill with a zero trade so we can build blocks.
@@ -1118,13 +1119,14 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) ([]dia.FeedSele
 						return dfs, warning, statusCodesMap[statusError], errors.New("pair not in requested format TokenA-TokenB")
 					}
 
-					exchangepair, err := r.RelDB.GetExchangePair(exchange.Name, *p.Value, false)
-					if err != nil {
+					quoteAsset, errQuote := r.GetAssetByExchangesymbol(exchange.Name, strings.Split(*p.Value, PAIR_SEPARATOR)[0])
+					baseAsset, errBase := r.GetAssetByExchangesymbol(exchange.Name, strings.Split(*p.Value, PAIR_SEPARATOR)[1])
+					if errQuote != nil || errBase != nil {
 						warnings = append(warnings, fmt.Sprintf("%s: pair not available on %s. ", *p.Value, exchange.Name))
 					}
 					pair := dia.Pair{
-						QuoteToken: exchangepair.UnderlyingPair.QuoteToken,
-						BaseToken:  exchangepair.UnderlyingPair.BaseToken,
+						QuoteToken: quoteAsset,
+						BaseToken:  baseAsset,
 					}
 					diaExchangepairselection.Pairs = append(diaExchangepairselection.Pairs, pair)
 				}
@@ -1176,6 +1178,20 @@ func (r *DiaResolver) castLocalFeedSelection(fs []FeedSelection) ([]dia.FeedSele
 	return dfs, uniqueWarnings, statusCodes(uniqueWarnings), nil
 }
 
+// GetAssetByExchangesymbol is a poor man's cache that returns the underlying asset given
+// a @symbol on @exchange.
+func (r *DiaResolver) GetAssetByExchangesymbol(exchange string, symbol string) (dia.Asset, error) {
+	if asset, ok := EXCHANGESYMBOL_CACHE[exchangesymbolIdentifier(exchange, symbol)]; ok {
+		return asset, nil
+	}
+	asset, err := r.RelDB.GetExchangeSymbol(exchange, symbol)
+	if err != nil {
+		return dia.Asset{}, err
+	}
+	EXCHANGESYMBOL_CACHE[exchangesymbolIdentifier(exchange, symbol)] = asset
+	return asset, nil
+}
+
 // Returns the EIP55 compliant address in case @blockchain has an Ethereum ChainID.
 func makeAddressEIP55Compliant(address string, blockchain string) string {
 	if strings.Contains(BLOCKCHAINS[blockchain].ChainID, "Ethereum") {
@@ -1212,4 +1228,8 @@ func statusCodes(statusMessage string) int32 {
 		}
 	}
 	return statusCode
+}
+
+func exchangesymbolIdentifier(exchange string, symbol string) string {
+	return exchange + "_" + symbol
 }
