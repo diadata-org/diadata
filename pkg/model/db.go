@@ -45,7 +45,7 @@ type Datastore interface {
 	GetExchangepairKeysRedis(asset dia.Asset) ([]string, error)
 	GetRedisKeysByFeedselection(fs dia.FeedSelection) ([]string, error)
 	GetTradesRedis(key string, startTime time.Time, endTime time.Time, offset int64, limit int64) ([]dia.Trade, error)
-	GetTradesByFeedselectionRedis(fs []dia.FeedSelection, startTime time.Time, endTime time.Time, limit int64, desc bool) ([]dia.Trade, error)
+	GetTradesByFeedselectionRedis(feedselection []dia.FeedSelection, startTimes []time.Time, endTimes []time.Time, limit int64, desc bool) ([]dia.Trade, error)
 	PurgeTradesAndKeysRedis(timestampLatest time.Time, expire time.Duration)
 	GetTradeInflux(dia.Asset, string, time.Time, time.Duration) (*dia.Trade, error)
 	SaveFilterInflux(filter string, asset dia.Asset, exchange string, value float64, t time.Time) error
