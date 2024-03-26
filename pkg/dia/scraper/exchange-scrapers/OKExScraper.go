@@ -137,7 +137,7 @@ func (s *OKExScraper) subscribeToALL() {
 		allPairs []OKEXArgs
 	)
 
-	b, _, err := utils.GetRequest("https://aws.okx.com/api/v5/public/instruments?instType=SPOT")
+	b, _, err := utils.GetRequest("https://ws.okx.com/api/v5/public/instruments?instType=SPOT")
 	if err != nil {
 		log.Errorln("Error getting OKex market", err)
 	}
