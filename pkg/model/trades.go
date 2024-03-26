@@ -1298,6 +1298,9 @@ func (datastore *DB) SaveTradeSetElementRedis(t dia.Trade) error {
 	if err != nil {
 		return err
 	}
+	if err = datastore.redisPipe.Expire(getAssetKeyRedis(t.QuoteToken), time.Duration((TRADES_TIMEOUT_REDIS_24H+TRADES_TIMEOUT_BUFFER)*time.Second)).Err(); err != nil {
+		log.Errorf("expire %s: %v", getAssetKeyRedis(t.QuoteToken), err)
+	}
 
 	// For easier retrieval, save all assets that were traded at least once in a set.
 	return datastore.redisPipe.SAdd(TRADED_ASSETS_KEY, getAssetKeyRedis(t.QuoteToken)).Err()
@@ -1434,7 +1437,6 @@ func (datastore *DB) GetRedisKeysByFeedselection(fs dia.FeedSelection) ([]string
 }
 
 // PurgeTradesAndKeysRedis deletes all trades older than @timestampLatest.
-// Furthermore, all associated keys are removed after @expire.
 func (datastore *DB) PurgeTradesAndKeysRedis(timestampLatest time.Time, expire time.Duration) {
 
 	// Get all (quote) assets traded.
@@ -1448,12 +1450,11 @@ func (datastore *DB) PurgeTradesAndKeysRedis(timestampLatest time.Time, expire t
 			if err != nil {
 				log.Errorf("ZRemRangeByScore on %s: %v", err, exchangepairKey)
 			}
-			if err = datastore.redisPipe.Expire(exchangepairKey, expire).Err(); err != nil {
-				log.Errorf("expire %s: %v", exchangepairKey, err)
+			// Remove set member if no trades are left.
+			err = datastore.redisClient.SRem(assetKey, exchangepairKey).Err()
+			if err != nil {
+				log.Errorf("SRem assetKey -- exchangepairKey: %s -- %s", assetKey, exchangepairKey)
 			}
-		}
-		if err := datastore.redisPipe.Expire(assetKey, expire).Err(); err != nil {
-			log.Errorf("expire %s: %v", assetKey, err)
 		}
 	}
 
