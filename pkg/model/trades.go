@@ -1281,7 +1281,7 @@ func (datastore *DB) SaveTradeRedis(t dia.Trade) error {
 		Score:  float64(t.Time.UnixMicro()),
 		Member: tradeMarshaled,
 	}
-	err = datastore.redisPipe.ZAdd(GetTradesKeyRedis(t), member).Err()
+	err = datastore.redisClient.ZAdd(GetTradesKeyRedis(t), member).Err()
 	if err != nil {
 		return err
 	}
@@ -1294,16 +1294,16 @@ func (datastore *DB) SaveTradeRedis(t dia.Trade) error {
 // values set are all keys from trade_... zsets which store the corresponding trades as members.
 func (datastore *DB) SaveTradeSetElementRedis(t dia.Trade) error {
 	// Store trades keys (i.e. exchangepairs) as values with asset identifier as key.
-	err := datastore.redisPipe.SAdd(getAssetKeyRedis(t.QuoteToken), GetTradesKeyRedis(t)).Err()
+	err := datastore.redisClient.SAdd(getAssetKeyRedis(t.QuoteToken), GetTradesKeyRedis(t)).Err()
 	if err != nil {
 		return err
 	}
-	if err = datastore.redisPipe.Expire(getAssetKeyRedis(t.QuoteToken), time.Duration((TRADES_TIMEOUT_REDIS_24H+TRADES_TIMEOUT_BUFFER)*time.Second)).Err(); err != nil {
+	if err = datastore.redisClient.Expire(getAssetKeyRedis(t.QuoteToken), time.Duration((TRADES_TIMEOUT_REDIS_24H+TRADES_TIMEOUT_BUFFER)*time.Second)).Err(); err != nil {
 		log.Errorf("expire %s: %v", getAssetKeyRedis(t.QuoteToken), err)
 	}
 
 	// For easier retrieval, save all assets that were traded at least once in a set.
-	return datastore.redisPipe.SAdd(TRADED_ASSETS_KEY, getAssetKeyRedis(t.QuoteToken)).Err()
+	return datastore.redisClient.SAdd(TRADED_ASSETS_KEY, getAssetKeyRedis(t.QuoteToken)).Err()
 }
 
 func (datastore *DB) GetExchangepairKeysRedis(asset dia.Asset) (exchangepairKeys []string, err error) {

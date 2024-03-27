@@ -371,14 +371,14 @@ func (s *TradesBlockService) process(t dia.Trade) {
 		if err != nil {
 			log.Error("SaveTradeRedis: ", err)
 		}
-		err = s.datastore.ExecuteRedisPipe()
-		if err != nil {
-			log.Error("execute redis pipe: ", err)
-		}
-		err = s.datastore.FlushRedisPipe()
-		if err != nil {
-			log.Error("flush redis pipe: ", err)
-		}
+		// err = s.datastore.ExecuteRedisPipe()
+		// if err != nil {
+		// 	log.Error("execute redis pipe: ", err)
+		// }
+		// err = s.datastore.FlushRedisPipe()
+		// if err != nil {
+		// 	log.Error("flush redis pipe: ", err)
+		// }
 
 	} else {
 		err = s.datastore.SaveTradeInfluxToTable(&t, s.writeMeasurement)
