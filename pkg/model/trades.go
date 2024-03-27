@@ -1437,7 +1437,7 @@ func (datastore *DB) GetRedisKeysByFeedselection(fs dia.FeedSelection) ([]string
 }
 
 // PurgeTradesAndKeysRedis deletes all trades older than @timestampLatest.
-func (datastore *DB) PurgeTradesAndKeysRedis(timestampLatest time.Time, expire time.Duration) {
+func (datastore *DB) PurgeTradesAndKeysRedis(timestampLatest time.Time) {
 
 	// Get all (quote) assets traded.
 	allTradedAssetKeys := datastore.redisClient.SMembers(TRADED_ASSETS_KEY).Val()
@@ -1450,10 +1450,21 @@ func (datastore *DB) PurgeTradesAndKeysRedis(timestampLatest time.Time, expire t
 			if err != nil {
 				log.Errorf("ZRemRangeByScore on %s: %v", err, exchangepairKey)
 			}
-			// Remove set member if no trades are left.
-			err = datastore.redisClient.SRem(assetKey, exchangepairKey).Err()
+
+			// Count remaining trades and remove set member if none are left.
+			vals, err := datastore.redisClient.ZRangeByScoreWithScores(exchangepairKey, redis.ZRangeBy{
+				Min: "-inf",
+				Max: "inf",
+			}).Result()
 			if err != nil {
-				log.Errorf("SRem assetKey -- exchangepairKey: %s -- %s", assetKey, exchangepairKey)
+				return
+			}
+			if len(vals) == 0 {
+				log.Infof("remove member %s in set %s.", exchangepairKey, assetKey)
+				err = datastore.redisClient.SRem(assetKey, exchangepairKey).Err()
+				if err != nil {
+					log.Errorf("SRem assetKey -- exchangepairKey: %s -- %s", assetKey, exchangepairKey)
+				}
 			}
 		}
 	}

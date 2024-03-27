@@ -447,10 +447,7 @@ func (s *TradesBlockService) loadVolumesLoop() {
 
 func (s *TradesBlockService) purgeRedisCacheLoop() {
 	for range s.redisCacheTicker.C {
-		s.datastore.PurgeTradesAndKeysRedis(
-			time.Now().Add(-(models.TRADES_TIMEOUT_REDIS_24H+models.TRADES_TIMEOUT_BUFFER)*time.Second),
-			time.Duration((models.TRADES_TIMEOUT_REDIS_24H+2*models.TRADES_TIMEOUT_BUFFER)*time.Second),
-		)
+		s.datastore.PurgeTradesAndKeysRedis(time.Now().Add(-(models.TRADES_TIMEOUT_REDIS_24H + models.TRADES_TIMEOUT_BUFFER) * time.Second))
 	}
 }
 
