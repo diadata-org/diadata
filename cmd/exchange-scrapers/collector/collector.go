@@ -221,6 +221,10 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wTest 
 				if err != nil {
 					log.Error(err)
 				}
+				err = ds.Flush()
+				if err != nil {
+					log.Error("Flush Influx in storeTrades mode: ", err)
+				}
 			}
 
 			if mode == "assetmap" {
