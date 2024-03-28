@@ -669,7 +669,35 @@ func (rdb *RelDB) GetOracleUpdates(address string, chainid string, offset int) (
 	return updates, nil
 }
 func (rdb *RelDB) GetOracleUpdatesByTimeRange(address, chainid, symbol string, offset int, startTime, endTime time.Time) ([]dia.OracleUpdate, error) {
-	query := fmt.Sprintf(`
+	query := ""
+	if offset == -1 {
+		query = fmt.Sprintf(`
+	SELECT fu.oracle_address,
+		fu.transaction_hash,
+		fu.transaction_cost,
+		fu.asset_key,
+		fu.asset_price,
+		fu.update_block,
+		fu.update_from,
+		fu.from_balance,
+		fu.gas_cost,
+		fu.gas_used,
+		fu.chain_id,
+		fu.update_time,
+		oc.creation_block,
+		oc.creation_block_time
+
+	FROM %s fu
+	JOIN %s oc ON fu.oracle_address = oc.address AND fu.chain_id = oc.chainID 
+	WHERE fu.oracle_address = $1 AND fu.chain_id = $2 
+    AND ($3 = 0 OR $4 = 0 OR (fu.update_time < to_timestamp($3) AND fu.update_time > to_timestamp($4)))
+	AND ($5 = '' OR fu.asset_key = $5)  
+
+	order by fu.update_block desc 
+	`, feederupdatesTable, oracleconfigTable)
+
+	} else {
+		query = fmt.Sprintf(`
 	SELECT fu.oracle_address,
 		fu.transaction_hash,
 		fu.transaction_cost,
@@ -693,6 +721,8 @@ func (rdb *RelDB) GetOracleUpdatesByTimeRange(address, chainid, symbol string, o
 
 	order by fu.update_block desc LIMIT 20 OFFSET %d
 	`, feederupdatesTable, oracleconfigTable, offset)
+
+	}
 
 	rows, err := rdb.postgresClient.Query(context.Background(), query, address, chainid, endTime.Unix(), startTime.Unix(), symbol)
 	if err != nil {

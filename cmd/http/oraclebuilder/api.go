@@ -386,11 +386,10 @@ func generateFeedSelectionQuery(feedSelections []FeedSelection) string {
 func (ob *Env) Dashboard(context *gin.Context) {
 	address := context.Query("address")
 	chainID := context.Query("chainID")
-	page := context.Query("page")
 
 	symbol := context.Query("symbol")
 
-	starttime, endtime, err := utils.MakeTimerange(context.Query("starttime"), context.Query("endtime"), time.Duration(24*time.Hour))
+	starttime, endtime, err := utils.MakeTimerange(context.Query("starttime"), context.Query("endtime"), time.Duration(30*24*time.Hour))
 	if err != nil {
 		endtime = time.Now()
 		starttime = endtime.Add(-time.Duration(30 * 24 * time.Hour))
@@ -406,18 +405,8 @@ func (ob *Env) Dashboard(context *gin.Context) {
 		address = common.HexToAddress(address).Hex()
 	}
 
-	offset := 0
-	if page != "" {
-		pageInt, err := strconv.Atoi(page)
-		if err != nil || pageInt < 1 {
-			offset = 0
-		} else {
-			offset = (pageInt - 1) * 20
-		}
-	} else {
-
-		offset = 0
-	}
+	//no pagination required
+	offset := -1
 
 	totalUpdates, err := ob.RelDB.GetOracleUpdateCount(address, chainID, symbol)
 	if err != nil {
