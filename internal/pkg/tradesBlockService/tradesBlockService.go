@@ -620,6 +620,13 @@ func buildBridge(t dia.Trade) dia.Asset {
 	if basetoken.Blockchain == dia.UNREAL_TESTNET && t.Source == dia.PearlfiExchangeTestnet {
 		if basetoken.Address == "0x0C68a3C11FB3550e50a4ed8403e873D367A8E361" {
 			basetoken = dia.Asset{
+				Symbol:     "WETH",
+				Address:    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+				Blockchain: dia.ETHEREUM,
+			}
+		}
+		if basetoken.Address == "0x3F93beBAd7BA4d7A5129eA8159A5829Eacb06497" {
+			basetoken = dia.Asset{
 				Symbol:     "DAI",
 				Address:    "0x6B175474E89094C44Da98b954EedeAC495271d0F",
 				Blockchain: dia.ETHEREUM,
