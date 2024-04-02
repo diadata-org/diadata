@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/99designs/keyring"
-	// "github.com/99designs/keyring/cmd/k8sbridge"
 
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -36,23 +35,14 @@ func main() {
 		log.Errorln("NewDataStore", err)
 	}
 	k8bridgeurl := utils.Getenv("K8SBRIDGE_URL", "127.0.0.1:50051")
-	// signerurl := utils.Getenv("SIGNER_URL", "signer.dia-oracle-feeder:50052")
-	// diaRestURL := utils.Getenv("DIA_REST_URL", "https://api.diadata.org")
-	// diaGraphqlURL := utils.Getenv("DIA_GRAPHQL_URL", "https://api.diadata.org/graphql/query")
-	// postgresqlHost := utils.Getenv("POSTGRES_HOST_POD", "dia-postgresql.dia-db")
 
 	rateLimitOracleCreationString := utils.Getenv("RATE_LIMIT_ORACLE_CREATION", "4")
 	rateLimitOracleCreation, _ := strconv.ParseInt(rateLimitOracleCreationString, 10, 64)
 
-	// oraclebaseimage := utils.Getenv("ORACLE_BASE_IMAGE", "us.icr.io/dia-registry/oracles/oracle-baseimage:latest")
-	// oraclenamespace := utils.Getenv("ORACLE_NAMESPACE", "dia-oracle-feeder")
 	oracleMonitoringUser := utils.Getenv("ORACLE_MONITORING_USER", "user")
 	oracleMonitoringPassword := utils.Getenv("ORACLE_MONITORING_PASSWORD", "password")
-	// affinity := utils.Getenv("ORACLE_FEEDER_AFFINITY", "default")
 
 	routerPath := utils.Getenv("ROUTER_PATH", "/oraclebuilder")
-
-	// ph := builderUtils.NewPodHelper(oraclebaseimage, oraclenamespace, affinity, signerurl, diaRestURL, diaGraphqlURL, postgresqlHost)
 
 	conn, err := grpc.Dial(k8bridgeurl, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {

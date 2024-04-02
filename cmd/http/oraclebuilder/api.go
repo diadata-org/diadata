@@ -232,7 +232,6 @@ func (ob *Env) Create(context *gin.Context) {
 	address = keypair.GetPublickey()
 
 	if !isUpdate {
-		// err = ob.PodHelper.CreateOracleFeeder(context, feederID, creator, address, oracleaddress, chainID, symbols, feedSelection, blockchainnode, frequency, sleepSeconds, deviationPermille, mandatoryFrequency)
 
 		fc := &k8sbridge.FeederConfig{
 			FeederID:           feederID,
@@ -288,7 +287,6 @@ func (ob *Env) Create(context *gin.Context) {
 		}
 		_, err = ob.k8sbridgeClient.CreatePod(context, fc)
 
-		// err = ob.PodHelper.RestartOracleFeeder(context, feederID, oracleconfig)
 		if err != nil {
 			log.Errorln("error RestartOracleFeeder ", err)
 			context.JSON(http.StatusInternalServerError, err)
@@ -473,8 +471,9 @@ func (ob *Env) Dashboard(context *gin.Context) {
 	var symbolFeeds []SymbolFeed
 
 	oracleConfig, err := ob.DataStore.GetOracleConfigCache(address + "-" + chainID)
-	fmt.Println("oracleConfigcache", oracleConfig)
-	fmt.Println("err", err)
+	if err != nil {
+		log.Infoln("oracle not in redis might be oracle builder oracle", err)
+	}
 
 	if err == nil {
 
@@ -491,7 +490,6 @@ func (ob *Env) Dashboard(context *gin.Context) {
 
 	if oracleConfig.FeederSelection != "" {
 		if err := json.Unmarshal([]byte(oracleConfig.FeederSelection), &symbolFeeds); err != nil {
-			fmt.Println("unmarshal :", err)
 			return
 		}
 
@@ -719,7 +717,6 @@ func (ob *Env) View(context *gin.Context) {
 	oracleaddress := context.Query("oracleaddress")
 
 	signedData, err := getAuthToken(context.Request)
-	log.Infoln("signedData", signedData)
 
 	if err != nil {
 		context.JSON(http.StatusUnauthorized, errors.New("sign err"))
@@ -727,8 +724,10 @@ func (ob *Env) View(context *gin.Context) {
 		return
 	}
 
-	signer, _ := utils.GetSigner(chainID, creator, oracleaddress, "Verify its your address to delete oracle", signedData)
-
+	signer, err := utils.GetSigner(chainID, creator, oracleaddress, "Verify its your address to delete oracle", signedData)
+	if err != nil {
+		log.Errorln("error identifying signer", err)
+	}
 	log.Infoln("signer", signer)
 
 	if signer.Hex() != creator {
@@ -736,7 +735,6 @@ func (ob *Env) View(context *gin.Context) {
 		log.Errorln("invalid signer", signer)
 		return
 	}
-	// creator := context.PostForm("creator")
 
 	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress, chainID)
 	if err != nil {
@@ -899,7 +897,6 @@ func (ob *Env) Restart(context *gin.Context) {
 
 func getAuthToken(req *http.Request) (string, error) {
 	authHeader := req.Header.Get("Authorization")
-	log.Println("authHeader", authHeader)
 	authFields := strings.Fields(authHeader)
 	if len(authFields) != 2 || strings.ToLower(authFields[0]) != "bearer" {
 		return "", errors.New("bad authorization header")
