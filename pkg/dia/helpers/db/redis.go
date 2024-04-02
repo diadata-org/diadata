@@ -8,28 +8,31 @@ import (
 )
 
 func GetRedisClient() *redis.Client {
-	var redisClient *redis.Client
+	var redisFailoverClient *redis.Client
 
 	// This environment variable is either set in docker-compose or empty
-	address := utils.Getenv("REDISURL", "localhost:6379")
+	masterName := utils.Getenv("REDIS_MASTER_NAME", "redis")
+	address := utils.Getenv("REDISURL", "localhost:26379")
 	password := utils.Getenv("REDISPASSWORD", "")
 	defaultDB, err := strconv.Atoi(utils.Getenv("REDISUSEDEFAULTDB", "0"))
 	if err != nil {
 		log.Error("wrong value for redis default db", err)
 	}
 
-	redisClient = redis.NewClient(&redis.Options{
-		Addr:     address,
-		Password: password,  // no password set
-		DB:       defaultDB, // use default DB
+	redisFailoverClient = redis.NewFailoverClient(&redis.FailoverOptions{
+		MasterName:    masterName,
+		Password:      password,
+		SentinelAddrs: []string{address},
+		DB:            defaultDB,
 	})
 
-	pong2, err := redisClient.Ping().Result()
+	pong, err := redisFailoverClient.Ping().Result()
 	if err != nil {
 		log.Error("NewDataStore redis: ", err)
 	}
 
-	log.Debug("NewDB", pong2)
+	log.Debug("redisFailoverClient", pong)
 
-	return redisClient
+	return redisFailoverClient
+
 }

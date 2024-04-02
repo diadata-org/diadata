@@ -1281,6 +1281,7 @@ func (datastore *DB) SaveTradeRedis(t dia.Trade) error {
 		Score:  float64(t.Time.UnixMicro()),
 		Member: tradeMarshaled,
 	}
+
 	err = datastore.redisClient.ZAdd(GetTradesKeyRedis(t), member).Err()
 	if err != nil {
 		return err
@@ -1348,57 +1349,24 @@ func (datastore *DB) GetTradesByFeedselectionRedis(feedselection []dia.FeedSelec
 		return []dia.Trade{}, errors.New("number of start times must equal number of end times")
 	}
 
-	// Queue all commands in a redis pipe.
-	var commands []*redis.ZSliceCmd
 	for i := range startTimes {
 		for _, fs := range feedselection {
-			t0 := time.Now()
 			keys, err := datastore.GetRedisKeysByFeedselection(fs)
 			if err != nil {
 				return trades, err
 			}
-			log.Info("time elapsed for GetRedisKeysByFeedselection: ", time.Since(t0))
 
 			for _, key := range keys {
-				cmd := datastore.redisPipe.ZRangeByScoreWithScores(key, redis.ZRangeBy{
-					Min:    strconv.FormatInt(startTimes[i].UnixMicro(), 10),
-					Max:    strconv.FormatInt(endTimes[i].UnixMicro(), 10),
-					Offset: 0,
-					Count:  limit,
-				})
-				commands = append(commands, cmd)
+				ts, err := datastore.GetTradesRedis(key, startTimes[i], endTimes[i], 0, limit)
+				if err != nil {
+					return []dia.Trade{}, err
+				}
+				trades = append(trades, ts...)
 
+				if limit > 0 && int64(len(trades)) >= limit {
+					return trades, err
+				}
 			}
-		}
-	}
-
-	err := datastore.ExecuteRedisPipe()
-	if err != nil {
-		log.Error("execute redis pipe: ", err)
-	}
-
-	err = datastore.FlushRedisPipe()
-	if err != nil {
-		log.Error("flush redis pipe: ", err)
-	}
-
-	// Get results from redis pipe.
-	for _, cmd := range commands {
-		vals, err := cmd.Result()
-		if err != nil {
-			log.Error("cmd.Result(): ", err)
-			continue
-		}
-		for _, v := range vals {
-			var t dia.Trade
-			err = t.UnmarshalBinary([]byte(v.Member.(string)))
-			if err != nil {
-				log.Error("Unmarshal: ", err)
-			}
-			if limit > 0 && int64(len(trades)) >= limit {
-				return trades, err
-			}
-			trades = append(trades, t)
 		}
 	}
 
