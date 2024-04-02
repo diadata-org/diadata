@@ -11,15 +11,16 @@ import (
 
 	"strings"
 
-	builderUtils "github.com/diadata-org/diadata/http/oraclebuilder/utils"
 	"github.com/ethereum/go-ethereum/common"
 
 	kr "github.com/99designs/keyring"
-	"github.com/99designs/keyring/cmd/k8sbridge"
+	// "github.com/99designs/keyring/cmd/k8sbridge"
 	"github.com/diadata-org/diadata/pkg/dia"
+	k8sbridge "github.com/diadata-org/diadata/pkg/dia/helpers/k8sbridge/protoc"
 	"github.com/diadata-org/diadata/pkg/http/restApi"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -31,21 +32,21 @@ Auth using EIP712 spec
 type Env struct {
 	DataStore               models.Datastore
 	RelDB                   *models.RelDB
-	PodHelper               *builderUtils.PodHelper
+	k8sbridgeClient         k8sbridge.K8SHelperClient
 	Keyring                 kr.Keyring
 	RateLimitOracleCreation int
 	apiStats                APIStats
 }
 
-func NewEnv(relStore *models.RelDB, ds models.Datastore, ph *builderUtils.PodHelper, ring kr.Keyring, rateLimitOracleCreation int) *Env {
+func NewEnv(relStore *models.RelDB, ds models.Datastore, kc k8sbridge.K8SHelperClient, ring kr.Keyring, rateLimitOracleCreation int) *Env {
 	apistats := *NewAPIStats()
 	go apistats.ClearCachePeriodically(10 * time.Minute)
 
 	return &Env{
 		DataStore:               ds,
 		RelDB:                   relStore,
-		PodHelper:               ph,
 		Keyring:                 ring,
+		k8sbridgeClient:         kc,
 		RateLimitOracleCreation: rateLimitOracleCreation,
 		apiStats:                apistats,
 	}
@@ -231,7 +232,23 @@ func (ob *Env) Create(context *gin.Context) {
 	address = keypair.GetPublickey()
 
 	if !isUpdate {
-		err = ob.PodHelper.CreateOracleFeeder(context, feederID, creator, address, oracleaddress, chainID, symbols, feedSelection, blockchainnode, frequency, sleepSeconds, deviationPermille, mandatoryFrequency)
+		// err = ob.PodHelper.CreateOracleFeeder(context, feederID, creator, address, oracleaddress, chainID, symbols, feedSelection, blockchainnode, frequency, sleepSeconds, deviationPermille, mandatoryFrequency)
+
+		fc := &k8sbridge.FeederConfig{
+			FeederID:           feederID,
+			Creator:            creator,
+			FeederAddress:      address,
+			Oracle:             oracleaddress,
+			ChainID:            chainID,
+			Symbols:            symbols,
+			FeedSelection:      feedSelection,
+			Blockchainnode:     blockchainnode,
+			Frequency:          frequency,
+			SleepSeconds:       sleepSeconds,
+			DeviationPermille:  deviationPermille,
+			MandatoryFrequency: mandatoryFrequency,
+		}
+		_, err = ob.k8sbridgeClient.CreatePod(context, fc)
 		if err != nil {
 			log.Errorln("error CreateOracleFeeder ", err)
 			context.JSON(http.StatusInternalServerError, errors.New("error creating oraclefeeder"))
@@ -255,7 +272,23 @@ func (ob *Env) Create(context *gin.Context) {
 			return
 		}
 
-		err = ob.PodHelper.RestartOracleFeeder(context, feederID, oracleconfig)
+		fc := &k8sbridge.FeederConfig{
+			FeederID:           feederID,
+			Creator:            oracleconfig.Owner,
+			FeederAddress:      oracleconfig.FeederAddress,
+			Oracle:             oracleconfig.Address,
+			ChainID:            oracleconfig.ChainID,
+			Symbols:            strings.Join(oracleconfig.Symbols[:], ","),
+			FeedSelection:      oracleconfig.FeederSelection,
+			Blockchainnode:     oracleconfig.BlockchainNode,
+			Frequency:          oracleconfig.Frequency,
+			SleepSeconds:       oracleconfig.SleepSeconds,
+			DeviationPermille:  oracleconfig.DeviationPermille,
+			MandatoryFrequency: oracleconfig.MandatoryFrequency,
+		}
+		_, err = ob.k8sbridgeClient.CreatePod(context, fc)
+
+		// err = ob.PodHelper.RestartOracleFeeder(context, feederID, oracleconfig)
 		if err != nil {
 			log.Errorln("error RestartOracleFeeder ", err)
 			context.JSON(http.StatusInternalServerError, err)
@@ -735,7 +768,11 @@ func (ob *Env) Pause(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, err)
 		return
 	}
-	err = ob.PodHelper.DeleteOracleFeeder(context, oracleconfig.FeederID)
+
+	fc := &k8sbridge.FeederConfig{
+		FeederID: oracleconfig.FeederID,
+	}
+	_, err = ob.k8sbridgeClient.DeletePod(context, fc)
 	if err != nil {
 		log.Errorln("error DeleteOracleFeeder ", err)
 		context.JSON(http.StatusInternalServerError, err)
@@ -783,7 +820,10 @@ func (ob *Env) Delete(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, err)
 		return
 	}
-	err = ob.PodHelper.DeleteOracleFeeder(context, oracleconfig.FeederID)
+	fc := &k8sbridge.FeederConfig{
+		FeederID: oracleconfig.FeederID,
+	}
+	_, err = ob.k8sbridgeClient.DeletePod(context, fc)
 	if err != nil {
 		log.Errorln("error DeleteOracleFeeder ", err)
 		context.JSON(http.StatusInternalServerError, err)
@@ -827,7 +867,22 @@ func (ob *Env) Restart(context *gin.Context) {
 		return
 	}
 
-	err = ob.PodHelper.RestartOracleFeeder(context, oracleconfig.FeederID, oracleconfig)
+	fc := &k8sbridge.FeederConfig{
+		FeederID:           oracleconfig.FeederID,
+		Creator:            oracleconfig.Owner,
+		FeederAddress:      oracleconfig.FeederAddress,
+		Oracle:             oracleconfig.Address,
+		ChainID:            oracleconfig.ChainID,
+		Symbols:            strings.Join(oracleconfig.Symbols[:], ","),
+		FeedSelection:      oracleconfig.FeederSelection,
+		Blockchainnode:     oracleconfig.BlockchainNode,
+		Frequency:          oracleconfig.Frequency,
+		SleepSeconds:       oracleconfig.SleepSeconds,
+		DeviationPermille:  oracleconfig.DeviationPermille,
+		MandatoryFrequency: oracleconfig.MandatoryFrequency,
+	}
+
+	_, err = ob.k8sbridgeClient.RestartPod(context, fc)
 	if err != nil {
 		log.Errorln("error RestartOracleFeeder ", err)
 		context.JSON(http.StatusInternalServerError, err)

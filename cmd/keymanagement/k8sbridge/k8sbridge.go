@@ -16,6 +16,7 @@ import (
 
 	"google.golang.org/grpc"
 
+	"github.com/diadata-org/diadata/pkg/utils"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
@@ -42,6 +43,14 @@ func main() {
 		namespace = "dia-oracle-feeder"
 	}
 
+	signerurl := utils.Getenv("SIGNER_URL", "signer.dia-oracle-feeder:50052")
+	diaRestURL := utils.Getenv("DIA_REST_URL", "https://api.diadata.org")
+	diaGraphqlURL := utils.Getenv("DIA_GRAPHQL_URL", "https://api.diadata.org/graphql/query")
+	postgresqlHost := utils.Getenv("POSTGRES_HOST_POD", "dia-postgresql.dia-db")
+
+	oraclebaseimage := utils.Getenv("ORACLE_BASE_IMAGE", "us.icr.io/dia-registry/oracles/oracle-baseimage:latest")
+	affinity := utils.Getenv("ORACLE_FEEDER_AFFINITY", "default")
+
 	// creates the in-cluster config
 	config, err := rest.InClusterConfig()
 	if err != nil {
@@ -66,7 +75,7 @@ func main() {
 	}
 
 	s := grpc.NewServer()
-	kb := k8util.New(clientset, namespace)
+	kb := k8util.New(clientset, namespace, signerurl, diaRestURL, diaGraphqlURL, postgresqlHost, affinity, oraclebaseimage)
 
 	pb.RegisterK8SHelperServer(s, &server{kb: kb})
 
@@ -75,7 +84,7 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	log.Infoln("server listening at %v", lis.Addr())
+	log.Infof("server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
@@ -100,4 +109,34 @@ func (s *server) GetKey(ctx context.Context, request *pb.K8SHelperRequest) (*pb.
 	}
 
 	return &pb.KeyPair{Publickey: fmt.Sprintf("%s", publickey.Data[".public"]), Privatekey: fmt.Sprintf("%s", publickey.Data[".private"])}, nil
+}
+
+func (s *server) CreatePod(ctx context.Context, request *pb.FeederConfig) (*pb.CreatePodResult, error) {
+	err := s.kb.CreateOracleFeeder(ctx, request.FeederID, request.Creator, request.FeederAddress, request.Oracle, request.ChainID, request.Symbols, request.FeedSelection, request.Blockchainnode, request.Frequency, request.SleepSeconds, request.DeviationPermille, request.MandatoryFrequency)
+	if err != nil {
+		return &pb.CreatePodResult{}, err
+
+	}
+
+	return &pb.CreatePodResult{}, err
+}
+
+func (s *server) RestartPod(ctx context.Context, request *pb.FeederConfig) (*pb.RestartPodResult, error) {
+	err := s.kb.CreateOracleFeeder(ctx, request.FeederID, request.Creator, request.FeederAddress, request.Oracle, request.ChainID, request.Symbols, request.FeedSelection, request.Blockchainnode, request.Frequency, request.SleepSeconds, request.DeviationPermille, request.MandatoryFrequency)
+	if err != nil {
+		return &pb.RestartPodResult{}, err
+
+	}
+
+	return &pb.RestartPodResult{}, err
+}
+
+func (s *server) DeletePod(ctx context.Context, request *pb.FeederConfig) (*pb.DeletePodResult, error) {
+	err := s.kb.DeleteOracleFeeder(ctx, request.FeederID)
+	if err != nil {
+		return &pb.DeletePodResult{}, err
+
+	}
+
+	return &pb.DeletePodResult{}, err
 }

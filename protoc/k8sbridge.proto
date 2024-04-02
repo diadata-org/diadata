@@ -11,18 +11,51 @@ option go_package = "github.com/diadata-org/diadata/pkg/dia/helper/k8sbridge";
   rpc CreateKeypair (K8SHelperRequest) returns ( KeyPair) {}
   rpc GetKey (K8SHelperRequest) returns ( KeyPair) {}
 
+  rpc CreatePod (FeederConfig) returns ( CreatePodResult) {}
+  rpc RestartPod (FeederConfig) returns ( RestartPodResult) {}
+  rpc DeletePod (FeederConfig) returns ( DeletePodResult) {}
+
+
+
+
 }
 
 // The request message containing the user's name.
 message KeyPair {
   string publickey = 1;
   string privatekey = 2;
-
 }
+
+message CreatePodResult {
+  string done = 1;
+ }
+ message RestartPodResult {
+  string done = 1;
+ }
+
+ message DeletePodResult {
+  string done = 1;
+ }
 
 
 message K8SHelperRequest {
   string keyname = 1;
 }
+ 
+ 
+message FeederConfig {
+  string feederID = 1;
+  string creator = 2;
+  string feederAddress = 3;
+  string oracle = 4;
+  string symbols = 5;
+  string feedSelection = 6;
+  string blockchainnode = 7;
+  string frequency = 8;
+  string sleepSeconds = 9;
+  string deviationPermille = 10;
+  string mandatoryFrequency = 11;
+  string chainID = 12;
 
+}
 
