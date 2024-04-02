@@ -2,7 +2,7 @@ FROM us.icr.io/dia-registry/devops/build-119:latest as build
 
 WORKDIR $GOPATH/src/
 COPY ./cmd/keymanagement/k8sbridge ./
-RUN go mod tidy && go install
+RUN go mod tidy && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go install
 
 FROM gcr.io/distroless/base
 

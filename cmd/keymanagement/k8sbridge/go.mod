@@ -3,8 +3,8 @@ module k8sbridge
 go 1.19
 
 require (
-	github.com/diadata-org/diadata v1.4.397
-	github.com/sirupsen/logrus v1.9.0
+	github.com/diadata-org/diadata v1.4.475-rc-1
+	github.com/sirupsen/logrus v1.9.3
 	google.golang.org/grpc v1.51.0
 	k8s.io/api v0.27.2
 	k8s.io/apimachinery v0.27.2
@@ -20,6 +20,7 @@ require (
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/emicklei/go-restful/v3 v3.9.0 // indirect
 	github.com/ethereum/go-ethereum v1.10.10 // indirect
+	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/go-openapi/jsonpointer v0.19.6 // indirect
@@ -43,9 +44,14 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/shirou/gopsutil v3.21.4-0.20210419000835-c7a38de76ee5+incompatible // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/tidwall/gjson v1.14.3 // indirect
+	github.com/tidwall/match v1.1.1 // indirect
+	github.com/tidwall/pretty v1.2.0 // indirect
+	github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf // indirect
 	github.com/tklauser/go-sysconf v0.3.7 // indirect
 	github.com/tklauser/numcpus v0.2.3 // indirect
-	golang.org/x/crypto v0.1.0 // indirect
+	github.com/zekroTJA/timedmap v1.4.0 // indirect
+	golang.org/x/crypto v0.4.0 // indirect
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20220223155221-ee480838109b // indirect
 	golang.org/x/sys v0.6.0 // indirect

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -24,8 +23,6 @@ var log = logrus.New()
 
 func main() {
 
-	fmt.Println("--")
-
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
@@ -34,7 +31,7 @@ func main() {
 		log.Errorln("NewRelDataStore", err)
 	}
 
-	ds, err := models.NewDataStore()
+	ds, err := models.NewDataStoreWithoutInflux()
 	if err != nil {
 		log.Errorln("NewDataStore", err)
 	}
