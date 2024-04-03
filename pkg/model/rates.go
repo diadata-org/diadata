@@ -1,17 +1,19 @@
 package models
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/diadata-org/diadata/internal/pkg/rateDerivatives"
 	"math"
 	"sort"
 	"strconv"
 	"time"
 
+	ratederivatives "github.com/diadata-org/diadata/internal/pkg/rateDerivatives"
+
 	"github.com/diadata-org/diadata/pkg/utils"
-	"github.com/go-redis/redis"
+	"github.com/redis/go-redis/v9"
 )
 
 const (
@@ -69,13 +71,13 @@ func (datastore *DB) SetInterestRate(ir *InterestRate) error {
 	key := getKeyInterestRate(ir.Symbol, ir.EffectiveDate)
 	// Write interest rate quantities into database
 	log.Debug("setting", key, ir)
-	err := datastore.redisClient.Set(key, ir, TimeOutRedis).Err()
+	err := datastore.redisClient.Set(context.Background(), key, ir, TimeOutRedis).Err()
 	if err != nil {
 		log.Printf("Error: %v on SetInterestRate %v\n", err, ir.Symbol)
 	}
 
 	// Write rate type into set of available rates
-	err = datastore.redisClient.SAdd(keyAllRates, ir.Symbol).Err()
+	err = datastore.redisClient.SAdd(context.Background(), keyAllRates, ir.Symbol).Err()
 	if err != nil {
 		log.Printf("Error: %v on writing rate %v into set of available rates\n", err, ir.Symbol)
 	}
@@ -96,7 +98,7 @@ func (datastore *DB) GetInterestRate(symbol, date string) (*InterestRate, error)
 
 	// Run database querie with found key
 	ir := &InterestRate{}
-	err := datastore.redisClient.Get(key).Scan(ir)
+	err := datastore.redisClient.Get(context.Background(), key).Scan(ir)
 	if err != nil {
 		if !errors.Is(err, redis.Nil) {
 			log.Errorf("Error: %v on GetInterestRate %v\n", err, symbol)
@@ -119,7 +121,7 @@ func (datastore *DB) GetInterestRateRange(symbol, dateInit, dateFinal string) ([
 		auxDate = utils.GetTomorrow(auxDate, "2006-01-02")
 	}
 	// Retrieve corresponding values from database
-	result := datastore.redisClient.MGet(keys...).Val()
+	result := datastore.redisClient.MGet(context.Background(), keys...).Val()
 	allValues := []*InterestRate{}
 	for _, val := range result {
 		if val != nil {
@@ -147,7 +149,7 @@ func (datastore *DB) GetInterestRateRange(symbol, dateInit, dateFinal string) ([
 // GetRates returns a (unique) slice of all rates that have been written into the database
 func (datastore *DB) GetRates() []string {
 	// log.Info("Fetching set of available rates")
-	allRates := datastore.redisClient.SMembers(keyAllRates).Val()
+	allRates := datastore.redisClient.SMembers(context.Background(), keyAllRates).Val()
 	return allRates
 }
 
@@ -201,7 +203,7 @@ func (datastore *DB) GetIssuer(symbol string) (string, error) {
 	}
 	key := getKeyInterestRate(symbol, newdate)
 	ir := &InterestRate{}
-	err = datastore.redisClient.Get(key).Scan(ir)
+	err = datastore.redisClient.Get(context.Background(), key).Scan(ir)
 	if err != nil {
 		return "", err
 	}
@@ -218,12 +220,12 @@ func (datastore *DB) GetFirstDate(symbol string) (time.Time, error) {
 	// Fetch all available keys for @symbol
 	patt := "dia_quotation_" + symbol + "_*"
 	// Comment: This could be improved. Should be when the database gets larger.
-	allKeys := datastore.redisClient.Keys(patt).Val()
+	allKeys := datastore.redisClient.Keys(context.Background(), patt).Val()
 	oldestKey, _ := utils.MinString(allKeys)
 
 	// Scan the struct corresponding to the oldest timestamp and fetch effective date.
 	ir := &InterestRate{}
-	err := datastore.redisClient.Get(oldestKey).Scan(ir)
+	err := datastore.redisClient.Get(context.Background(), oldestKey).Scan(ir)
 	if err != nil {
 		return time.Time{}, err
 	}
@@ -706,7 +708,7 @@ func (datastore *DB) GetCompoundedAvgDIARange(symbol string, dateInit, dateFinal
 // @date should be a substring of a string formatted as "yyyy-mm-dd hh:mm:ss".
 func (datastore *DB) ExistInterestRate(symbol, date string) bool {
 	pattern := "*" + symbol + "_" + date + "*"
-	strSlice := datastore.redisClient.Keys(pattern).Val()
+	strSlice := datastore.redisClient.Keys(context.Background(), pattern).Val()
 	return len(strSlice) != 0
 }
 
@@ -719,7 +721,7 @@ func (datastore *DB) matchKeyInterestRate(symbol, date string) (string, error) {
 	}
 	// Determine all database entries with given date
 	pattern := "*" + symbol + "_" + exDate + "*"
-	strSlice := datastore.redisClient.Keys(pattern).Val()
+	strSlice := datastore.redisClient.Keys(context.Background(), pattern).Val()
 
 	var strSliceFormatted []string
 	layout := "2006-01-02 15:04:05"

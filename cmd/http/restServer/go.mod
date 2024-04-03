@@ -1,10 +1,10 @@
 module github.com/diadata-org/diadata/http/restServer
 
-go 1.17
+go 1.19
 
 require (
 	github.com/appleboy/gin-jwt/v2 v2.6.4
-	github.com/diadata-org/diadata v1.4.438
+	github.com/diadata-org/diadata v1.4.475-rc-3
 	github.com/gin-contrib/cache v1.1.0
 	github.com/gin-gonic/contrib v0.0.0-20201101042839-6a891bf89f19
 	github.com/gin-gonic/gin v1.8.1
@@ -15,9 +15,11 @@ require (
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/bradfitz/gomemcache v0.0.0-20180710155616-bc664df96737 // indirect
 	github.com/btcsuite/btcd v0.22.0-beta // indirect
-	github.com/cnf/structhash v0.0.0-20180104161610-62a607eb0224 // indirect
+	github.com/cespare/xxhash/v2 v2.2.0 // indirect
+	github.com/cnf/structhash v0.0.0-20201127153200-e1b16c1ebc08 // indirect
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/ethereum/go-ethereum v1.10.10 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
@@ -25,7 +27,6 @@ require (
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.11.1 // indirect
-	github.com/go-redis/redis v6.15.9+incompatible // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/goccy/go-json v0.10.0 // indirect
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
@@ -49,10 +50,10 @@ require (
 	github.com/memcachier/mc v2.0.1+incompatible // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
-	github.com/onsi/ginkgo v1.16.4 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
 	github.com/pierrec/lz4/v4 v4.1.15 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/redis/go-redis/v9 v9.5.1 // indirect
 	github.com/robfig/go-cache v0.0.0-20130306151617-9fc39e0dbf62 // indirect
 	github.com/rs/cors v1.8.0 // indirect
 	github.com/segmentio/kafka-go v0.4.35 // indirect

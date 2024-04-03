@@ -11,9 +11,9 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
-	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
 	"github.com/jackc/pgx/v4"
+	"github.com/redis/go-redis/v9"
 )
 
 const (
@@ -236,7 +236,7 @@ func (datastore *DB) SetAssetQuotationCache(quotation *AssetQuotation, check boo
 	}
 	// Otherwise write to cache
 	key := getKeyAssetQuotation(quotation.Asset.Blockchain, quotation.Asset.Address)
-	return true, datastore.redisPipe.Set(key, quotation, TimeOutAssetQuotation).Err()
+	return true, datastore.redisPipe.Set(context.Background(), key, quotation, TimeOutAssetQuotation).Err()
 }
 
 // GetAssetQuotationCache returns the latest quotation for @asset from the redis cache.
@@ -246,7 +246,7 @@ func (datastore *DB) GetAssetQuotationCache(asset dia.Asset) (*AssetQuotation, e
 
 	quotation := &AssetQuotation{}
 
-	err := datastore.redisClient.Get(key).Scan(quotation)
+	err := datastore.redisClient.Get(context.Background(), key).Scan(quotation)
 	if err != nil {
 		if !errors.Is(err, redis.Nil) {
 			log.Errorf("GetAssetQuotationCache on %s: %v\n", asset.Name, err)

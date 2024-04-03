@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/go-redis/redis"
 	"github.com/jackc/pgtype"
 	"github.com/jackc/pgx/v4"
+	"github.com/redis/go-redis/v9"
 )
 
 // GetKeyAsset returns an asset's key in the redis cache of the asset table.
@@ -736,21 +736,21 @@ func (rdb *RelDB) Count() (count uint32, err error) {
 // SetAssetCache stores @asset in redis, using its primary key in postgres as key.
 // As a consequence, @asset is only cached iff it exists in postgres.
 func (rdb *RelDB) SetAssetCache(asset dia.Asset) error {
-	return rdb.redisClient.Set(keyAssetCache+asset.Identifier(), &asset, 0).Err()
+	return rdb.redisClient.Set(context.Background(), keyAssetCache+asset.Identifier(), &asset, 0).Err()
 }
 
 // GetAssetCache returns an asset by its asset_id as defined in asset table in postgres
 func (rdb *RelDB) GetAssetCache(blockchain string, address string) (asset dia.Asset, err error) {
 	asset.Blockchain = blockchain
 	asset.Address = address
-	err = rdb.redisClient.Get(keyAssetCache + asset.Identifier()).Scan(&asset)
+	err = rdb.redisClient.Get(context.Background(), keyAssetCache+asset.Identifier()).Scan(&asset)
 	return
 }
 
 // CountCache returns the number of assets in the cache
 func (rdb *RelDB) CountCache() (uint32, error) {
 	keysPattern := keyAssetCache + "*"
-	allAssets := rdb.redisClient.Keys(keysPattern).Val()
+	allAssets := rdb.redisClient.Keys(context.Background(), keysPattern).Val()
 	return uint32(len(allAssets)), nil
 }
 
@@ -759,13 +759,13 @@ func (rdb *RelDB) CountCache() (uint32, error) {
 // SetExchangePairCache stores @pairs in redis
 func (rdb *RelDB) SetExchangePairCache(exchange string, pair dia.ExchangePair) error {
 	key := keyExchangePairCache + exchange + "_" + pair.ForeignName
-	return rdb.redisClient.Set(key, &pair, 0).Err()
+	return rdb.redisClient.Set(context.Background(), key, &pair, 0).Err()
 }
 
 // GetExchangePairCache returns an exchange pair by @exchange and @foreigName
 func (rdb *RelDB) GetExchangePairCache(exchange string, foreignName string) (dia.ExchangePair, error) {
 	exchangePair := dia.ExchangePair{}
-	err := rdb.redisClient.Get(keyExchangePairCache + exchange + "_" + foreignName).Scan(&exchangePair)
+	err := rdb.redisClient.Get(context.Background(), keyExchangePairCache+exchange+"_"+foreignName).Scan(&exchangePair)
 	if err != nil {
 		if !errors.Is(err, redis.Nil) {
 			log.Errorf("GetExchangePairCache on %s with foreign name %s: %v\n", exchange, foreignName, err)

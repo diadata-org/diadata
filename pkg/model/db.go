@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,8 +11,8 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia/helpers/db"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
+	"github.com/redis/go-redis/v9"
 )
 
 type Datastore interface {
@@ -299,12 +300,12 @@ func (datastore *DB) addPoint(pt *clientInfluxdb.Point) {
 
 func (datastore *DB) ExecuteRedisPipe() (err error) {
 	// TO DO: Handle first return value for read requests.
-	_, err = datastore.redisPipe.Exec()
+	_, err = datastore.redisPipe.Exec(context.Background())
 	return
 }
 
-func (datastore *DB) FlushRedisPipe() error {
-	return datastore.redisPipe.Discard()
+func (datastore *DB) FlushRedisPipe() {
+	datastore.redisPipe.Discard()
 }
 
 // CopyInfluxMeasurements copies entries from measurement @tableOrigin in database @dbOrigin into @tableDestination in database @dbDestination.

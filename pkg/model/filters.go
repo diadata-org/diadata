@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -8,8 +9,8 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
+	"github.com/redis/go-redis/v9"
 )
 
 // SetFilter stores a filter point
@@ -254,7 +255,7 @@ func (datastore *DB) setZSETValue(key string, value float64, unixTime int64, max
 	}
 	member := strconv.FormatFloat(value, 'f', -1, 64) + " " + strconv.FormatInt(unixTime, 10)
 
-	err := datastore.redisPipe.ZAdd(key, redis.Z{
+	err := datastore.redisPipe.ZAdd(context.Background(), key, redis.Z{
 		Score:  float64(unixTime),
 		Member: member,
 	}).Err()
@@ -263,11 +264,11 @@ func (datastore *DB) setZSETValue(key string, value float64, unixTime int64, max
 		log.Errorf("Error: %v on SetZSETValue %v\n", err, key)
 	}
 	// purging old values
-	err = datastore.redisPipe.ZRemRangeByScore(key, "-inf", "("+strconv.FormatInt(unixTime-maxWindow, 10)).Err()
+	err = datastore.redisPipe.ZRemRangeByScore(context.Background(), key, "-inf", "("+strconv.FormatInt(unixTime-maxWindow, 10)).Err()
 	if err != nil {
 		log.Errorf("Error: %v on SetZSETValue %v\n", err, key)
 	}
-	if err = datastore.redisPipe.Expire(key, TimeOutRedis).Err(); err != nil {
+	if err = datastore.redisPipe.Expire(context.Background(), key, TimeOutRedis).Err(); err != nil {
 		log.Error(err)
 	} //TODO put two commands together ?
 	return err
@@ -277,7 +278,7 @@ func (datastore *DB) getZSETValue(key string, atUnixTime int64) (float64, error)
 
 	result := 0.0
 	max := strconv.FormatInt(atUnixTime, 10)
-	vals, err := datastore.redisClient.ZRangeByScoreWithScores(key, redis.ZRangeBy{
+	vals, err := datastore.redisClient.ZRangeByScoreWithScores(context.Background(), key, &redis.ZRangeBy{
 		Min: "-inf",
 		Max: max,
 	}).Result()
@@ -299,7 +300,7 @@ func (datastore *DB) getZSETValue(key string, atUnixTime int64) (float64, error)
 func (datastore *DB) getZSETLastValue(key string) (float64, int64, error) {
 	value := 0.0
 	var unixTime int64
-	vals, err := datastore.redisClient.ZRange(key, -1, -1).Result()
+	vals, err := datastore.redisClient.ZRange(context.Background(), key, -1, -1).Result()
 	log.Debug(key, "on getZSETLastValue:", vals)
 	if err == nil {
 		if len(vals) == 1 {

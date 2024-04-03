@@ -973,7 +973,7 @@ func (datastore *DB) SetOracleConfigCache(oc dia.OracleConfig) error {
 
 	data, _ := json.Marshal(oc)
 
-	err := datastore.redisClient.Set(key, data, TimeOutRedis).Err()
+	err := datastore.redisClient.Set(context.Background(), key, data, TimeOutRedis).Err()
 	if err != nil {
 		log.Printf("Error: %v on SetOracleConfigCache %v\n", err, oc)
 	}
@@ -988,7 +988,7 @@ func (datastore *DB) GetOracleConfigCache(key string) (dia.OracleConfig, error) 
 		return oc, errors.New("no redisclient")
 	}
 
-	err := datastore.redisClient.Get(key).Scan(&oc)
+	err := datastore.redisClient.Get(context.Background(), key).Scan(&oc)
 	if err != nil {
 		log.Printf("Error: %v on GetOracle--ConfigCache %v\n", err, oc)
 		return oc, errors.New("no redisclient")

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"strings"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -13,7 +14,7 @@ func (datastore *DB) GetSymbols(exchange string) ([]string, error) {
 	for {
 		var keys []string
 		var err error
-		keys, cursor, err = datastore.redisClient.Scan(cursor, key+"*", 10).Result()
+		keys, cursor, err = datastore.redisClient.Scan(context.Background(), cursor, key+"*", 10).Result()
 		if err != nil {
 			log.Error("GetPairs err", err)
 			return result, err

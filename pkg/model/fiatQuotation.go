@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"fmt"
 
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
@@ -58,7 +59,7 @@ func (datastore *DB) SetSingleFiatPriceRedis(fiatQuotation *FiatQuotation) error
 	key := getKeyQuotation(fiatQuotation.QuoteCurrency)
 	log.Info("setting ", key, fiatQuotation)
 
-	err = datastore.redisClient.Set(key, fiatQuotation, TimeOutRedis).Err()
+	err = datastore.redisClient.Set(context.Background(), key, fiatQuotation, TimeOutRedis).Err()
 	if err != nil {
 		log.Printf("Error: %v on SetQuotation %v\n", err, fiatQuotation.QuoteCurrency)
 	}

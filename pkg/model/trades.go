@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,8 +12,8 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
-	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
+	"github.com/redis/go-redis/v9"
 )
 
 const (
@@ -1239,7 +1240,7 @@ func getKeyLastTradeTimeForExchange(asset dia.Asset, exchange string) string {
 
 func (datastore *DB) GetLastTradeTimeForExchange(asset dia.Asset, exchange string) (*time.Time, error) {
 	key := getKeyLastTradeTimeForExchange(asset, exchange)
-	t, err := datastore.redisClient.Get(key).Result()
+	t, err := datastore.redisClient.Get(context.Background(), key).Result()
 	if err != nil {
 		log.Errorln("Error: on GetLastTradeTimeForExchange", err, key)
 		return nil, err
@@ -1259,7 +1260,7 @@ func (datastore *DB) SetLastTradeTimeForExchange(asset dia.Asset, exchange strin
 	}
 	key := getKeyLastTradeTimeForExchange(asset, exchange)
 	log.Debug("setting ", key, t)
-	err := datastore.redisPipe.Set(key, t.Unix(), TimeOutRedis).Err()
+	err := datastore.redisPipe.Set(context.Background(), key, t.Unix(), TimeOutRedis).Err()
 	if err != nil {
 		log.Printf("Error: %v on SetLastTradeTimeForExchange %v\n", err, asset.Symbol)
 	}
@@ -1282,7 +1283,7 @@ func (datastore *DB) SaveTradeRedis(t dia.Trade) error {
 		Member: tradeMarshaled,
 	}
 
-	err = datastore.redisClient.ZAdd(GetTradesKeyRedis(t), member).Err()
+	err = datastore.redisClient.ZAdd(context.Background(), GetTradesKeyRedis(t), member).Err()
 	if err != nil {
 		return err
 	}
@@ -1295,26 +1296,30 @@ func (datastore *DB) SaveTradeRedis(t dia.Trade) error {
 // values set are all keys from trade_... zsets which store the corresponding trades as members.
 func (datastore *DB) SaveTradeSetElementRedis(t dia.Trade) error {
 	// Store trades keys (i.e. exchangepairs) as values with asset identifier as key.
-	err := datastore.redisClient.SAdd(getAssetKeyRedis(t.QuoteToken), GetTradesKeyRedis(t)).Err()
+	err := datastore.redisClient.SAdd(context.Background(), getAssetKeyRedis(t.QuoteToken), GetTradesKeyRedis(t)).Err()
 	if err != nil {
 		return err
 	}
-	if err = datastore.redisClient.Expire(getAssetKeyRedis(t.QuoteToken), time.Duration((TRADES_TIMEOUT_REDIS_24H+TRADES_TIMEOUT_BUFFER)*time.Second)).Err(); err != nil {
+	if err = datastore.redisClient.Expire(
+		context.Background(),
+		getAssetKeyRedis(t.QuoteToken),
+		time.Duration((TRADES_TIMEOUT_REDIS_24H+TRADES_TIMEOUT_BUFFER)*time.Second),
+	).Err(); err != nil {
 		log.Errorf("expire %s: %v", getAssetKeyRedis(t.QuoteToken), err)
 	}
 
 	// For easier retrieval, save all assets that were traded at least once in a set.
-	return datastore.redisClient.SAdd(TRADED_ASSETS_KEY, getAssetKeyRedis(t.QuoteToken)).Err()
+	return datastore.redisClient.SAdd(context.Background(), TRADED_ASSETS_KEY, getAssetKeyRedis(t.QuoteToken)).Err()
 }
 
 func (datastore *DB) GetExchangepairKeysRedis(asset dia.Asset) (exchangepairKeys []string, err error) {
-	err = datastore.redisClient.SMembers(getAssetKeyRedis(asset)).ScanSlice(&exchangepairKeys)
+	err = datastore.redisClient.SMembers(context.Background(), getAssetKeyRedis(asset)).ScanSlice(&exchangepairKeys)
 	return
 }
 
 // GetTradesRedis returns all trades from redis cache given by @key in the specified time range.
 func (datastore *DB) GetTradesRedis(key string, startTime time.Time, endTime time.Time, offset int64, limit int64) (trades []dia.Trade, err error) {
-	vals, err := datastore.redisClient.ZRangeByScoreWithScores(key, redis.ZRangeBy{
+	vals, err := datastore.redisClient.ZRangeByScoreWithScores(context.Background(), key, &redis.ZRangeBy{
 		Min:    strconv.FormatInt(startTime.UnixMicro(), 10),
 		Max:    strconv.FormatInt(endTime.UnixMicro(), 10),
 		Offset: offset,
@@ -1441,19 +1446,19 @@ func (datastore *DB) GetRedisKeysByFeedselection(fs dia.FeedSelection) ([]string
 func (datastore *DB) PurgeTradesAndKeysRedis(timestampLatest time.Time) {
 
 	// Get all (quote) assets traded.
-	allTradedAssetKeys := datastore.redisClient.SMembers(TRADED_ASSETS_KEY).Val()
+	allTradedAssetKeys := datastore.redisClient.SMembers(context.Background(), TRADED_ASSETS_KEY).Val()
 	for _, assetKey := range allTradedAssetKeys {
 		// Get all exchangepair keys of a given quote asset.
-		exchangepairKeys := datastore.redisClient.SMembers(assetKey).Val()
+		exchangepairKeys := datastore.redisClient.SMembers(context.Background(), assetKey).Val()
 		for _, exchangepairKey := range exchangepairKeys {
 			// Purging old values.
-			err := datastore.redisClient.ZRemRangeByScore(exchangepairKey, "-inf", strconv.FormatInt(timestampLatest.UnixMicro(), 10)).Err()
+			err := datastore.redisClient.ZRemRangeByScore(context.Background(), exchangepairKey, "-inf", strconv.FormatInt(timestampLatest.UnixMicro(), 10)).Err()
 			if err != nil {
 				log.Errorf("ZRemRangeByScore on %s: %v", err, exchangepairKey)
 			}
 
 			// Count remaining trades and remove set member if none are left.
-			vals, err := datastore.redisClient.ZRangeByScoreWithScores(exchangepairKey, redis.ZRangeBy{
+			vals, err := datastore.redisClient.ZRangeByScoreWithScores(context.Background(), exchangepairKey, &redis.ZRangeBy{
 				Min: "-inf",
 				Max: "inf",
 			}).Result()
@@ -1462,7 +1467,7 @@ func (datastore *DB) PurgeTradesAndKeysRedis(timestampLatest time.Time) {
 			}
 			if len(vals) == 0 {
 				log.Infof("remove member %s in set %s.", exchangepairKey, assetKey)
-				err = datastore.redisClient.SRem(assetKey, exchangepairKey).Err()
+				err = datastore.redisClient.SRem(context.Background(), assetKey, exchangepairKey).Err()
 				if err != nil {
 					log.Errorf("SRem assetKey -- exchangepairKey: %s -- %s", assetKey, exchangepairKey)
 				}

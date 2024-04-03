@@ -92,14 +92,14 @@ func (rdb *RelDB) GetExchangesForSymbol(symbol string) (exchanges []string, err 
 func (datastore *DB) SetAvailablePairs(exchange string, pairs []dia.ExchangePair) error {
 	key := "dia_available_pairs_" + exchange
 	var p dia.Pairs = pairs
-	return datastore.redisClient.Set(key, &p, 0).Err()
+	return datastore.redisClient.Set(context.Background(), key, &p, 0).Err()
 }
 
 // GetAvailablePairs a slice of all pairs available in the exchange in the internal redis db
 func (datastore *DB) GetAvailablePairs(exchange string) ([]dia.ExchangePair, error) {
 	key := "dia_available_pairs_" + exchange
 	p := dia.Pairs{}
-	err := datastore.redisClient.Get(key).Scan(&p)
+	err := datastore.redisClient.Get(context.Background(), key).Scan(&p)
 	if err != nil {
 		log.Errorf("Error: %v on GetAvailablePairs %v\n", err, exchange)
 		return nil, err

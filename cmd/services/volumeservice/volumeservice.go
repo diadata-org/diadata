@@ -5,7 +5,7 @@ import (
 
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/jasonlvhit/gocron"
-	"github.com/prometheus/common/log"
+	log "github.com/sirupsen/logrus"
 )
 
 var (

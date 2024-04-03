@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -9,8 +10,8 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers"
-	"github.com/go-redis/redis"
 	clientInfluxdb "github.com/influxdata/influxdb1-client/v2"
+	"github.com/redis/go-redis/v9"
 )
 
 func getKeySupply(asset dia.Asset) string {
@@ -151,7 +152,7 @@ func (datastore *DB) GetSupply(symbol string, starttime, endtime time.Time, relD
 }
 
 func (datastore *DB) GetSupplyCache(asset dia.Asset) (supply dia.Supply, err error) {
-	err = datastore.redisClient.Get(getKeySupply(asset)).Scan(&supply)
+	err = datastore.redisClient.Get(context.Background(), getKeySupply(asset)).Scan(&supply)
 	if err != nil {
 		return
 	}
@@ -161,7 +162,7 @@ func (datastore *DB) GetSupplyCache(asset dia.Asset) (supply dia.Supply, err err
 func (datastore *DB) SetSupply(supply *dia.Supply) error {
 	key := getKeySupply(supply.Asset)
 	log.Debug("setting ", key, supply)
-	err := datastore.redisClient.Set(key, supply, 0).Err()
+	err := datastore.redisClient.Set(context.Background(), key, supply, 0).Err()
 	if err != nil {
 		log.Errorf("Error: %v on SetSupply (redis) %v\n", err, supply.Asset.Symbol)
 	}
@@ -176,7 +177,7 @@ func (db *DB) SetDiaTotalSupply(totalSupply float64) error {
 	key := getKeyDiaTotalSupply()
 	log.Debug("setting ", key, totalSupply)
 
-	err := db.redisClient.Set(key, totalSupply, 0).Err()
+	err := db.redisClient.Set(context.Background(), key, totalSupply, 0).Err()
 	if err != nil {
 		log.Errorf("Error: %v on SetDiaTotalSupply (redis) %v\n", err, totalSupply)
 	}
@@ -185,7 +186,7 @@ func (db *DB) SetDiaTotalSupply(totalSupply float64) error {
 
 func (db *DB) GetDiaTotalSupply() (float64, error) {
 	key := getKeyDiaTotalSupply()
-	value, err := db.redisClient.Get(key).Result()
+	value, err := db.redisClient.Get(context.Background(), key).Result()
 	if err != nil {
 		if err != redis.Nil {
 			log.Errorf("Error: %v on GetDiaTotalSupply\n", err)
@@ -204,7 +205,7 @@ func (db *DB) SetDiaCirculatingSupply(circulatingSupply float64) error {
 	key := getKeyDiaCirculatingSupply()
 	log.Debug("setting ", key, circulatingSupply)
 
-	err := db.redisClient.Set(key, circulatingSupply, 0).Err()
+	err := db.redisClient.Set(context.Background(), key, circulatingSupply, 0).Err()
 	if err != nil {
 		log.Errorf("Error: %v on SetDiaCirculatingSupply (redis) %v\n", err, circulatingSupply)
 	}
@@ -213,7 +214,7 @@ func (db *DB) SetDiaCirculatingSupply(circulatingSupply float64) error {
 
 func (db *DB) GetDiaCirculatingSupply() (float64, error) {
 	key := getKeyDiaCirculatingSupply()
-	value, err := db.redisClient.Get(key).Result()
+	value, err := db.redisClient.Get(context.Background(), key).Result()
 	if err != nil {
 		if err != redis.Nil {
 			log.Errorf("Error: %v on GetDiaCirculatingSupply\n", err)
