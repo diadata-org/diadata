@@ -220,7 +220,7 @@ func (s *ECBScraper) Update() error {
 		log.Error("execute redis pipe: ", err)
 	}
 
-	err = s.datastore.FlushRedisPipe()
+	s.datastore.FlushRedisPipe()
 	if err != nil {
 		log.Error("flush redis pipe: ", err)
 	}

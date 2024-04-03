@@ -164,7 +164,7 @@ func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 		log.Error("execute redis pipe: ", err)
 	}
 
-	err = s.datastore.FlushRedisPipe()
+	s.datastore.FlushRedisPipe()
 	if err != nil {
 		log.Error("flush redis pipe: ", err)
 	}
