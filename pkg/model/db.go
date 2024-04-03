@@ -71,7 +71,7 @@ type Datastore interface {
 
 	Flush() error
 	ExecuteRedisPipe() error
-	FlushRedisPipe() error
+	FlushRedisPipe()
 	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
 	GetFilterPointsAsset(filter string, exchange string, address string, blockchain string, starttime time.Time, endtime time.Time) (*Points, error)
 	SetFilter(filterName string, asset dia.Asset, exchange string, value float64, t time.Time) error
