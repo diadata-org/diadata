@@ -1,10 +1,11 @@
 package db
 
 import (
+	"context"
 	"strconv"
 
 	"github.com/diadata-org/diadata/pkg/utils"
-	"github.com/go-redis/redis"
+	"github.com/redis/go-redis/v9"
 )
 
 func GetRedisClient() *redis.Client {
@@ -20,13 +21,14 @@ func GetRedisClient() *redis.Client {
 	}
 
 	redisFailoverClient = redis.NewFailoverClient(&redis.FailoverOptions{
-		MasterName:    masterName,
-		Password:      password,
-		SentinelAddrs: []string{address},
-		DB:            defaultDB,
+		MasterName:       masterName,
+		Password:         password,
+		SentinelAddrs:    []string{address},
+		DB:               defaultDB,
+		SentinelPassword: password,
 	})
 
-	pong, err := redisFailoverClient.Ping().Result()
+	pong, err := redisFailoverClient.Ping(context.Background()).Result()
 	if err != nil {
 		log.Error("NewDataStore redis: ", err)
 	}
