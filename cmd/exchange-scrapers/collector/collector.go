@@ -116,14 +116,12 @@ func main() {
 		w *kafka.Writer
 		// This topic can be used to forward trades to services other than the prod. tradesblockservice.
 		wReplica *kafka.Writer
-		wTest    *kafka.Writer
 	)
 
 	switch *mode {
 	case "current":
 		w = kafkaHelper.NewWriter(kafkaHelper.TopicTrades)
 		wReplica = kafkaHelper.NewWriter(kafkaHelper.TopicTradesReplica)
-		wTest = kafkaHelper.NewWriter(kafkaHelper.TopicTradesTest)
 	case "estimation":
 		w = kafkaHelper.NewWriter(kafkaHelper.TopicTradesEstimation)
 	case "assetmap":
@@ -162,10 +160,10 @@ func main() {
 		defer wg.Wait()
 
 	}
-	go handleTrades(es.Channel(), &wg, w, wTest, wReplica, ds, *exchange, *mode)
+	go handleTrades(es.Channel(), &wg, w, wReplica, ds, *exchange, *mode)
 }
 
-func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wTest *kafka.Writer, wReplica *kafka.Writer, ds *models.DB, exchange string, mode string) {
+func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wReplica *kafka.Writer, ds *models.DB, exchange string, mode string) {
 	lastTradeTime := time.Now()
 	watchdogDelay := scrapers.Exchanges[exchange].WatchdogDelay
 	if watchdogDelay == 0 {
@@ -195,16 +193,6 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wTest 
 				err := writeTradeToKafka(w, t)
 				if err != nil {
 					log.Error(err)
-				}
-
-				if scrapers.Exchanges[t.Source].Centralized {
-					// Write CEX trades to test Kafka.
-					if mode == "current" {
-						err = writeTradeToKafka(wTest, t)
-						if err != nil {
-							log.Error(err)
-						}
-					}
 				}
 
 				if replicaKafkaTopic == "true" {
