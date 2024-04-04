@@ -1283,7 +1283,7 @@ func (datastore *DB) SaveTradeRedis(t dia.Trade) error {
 		Member: tradeMarshaled,
 	}
 
-	err = datastore.redisClient.ZAdd(context.Background(), GetTradesKeyRedis(t), member).Err()
+	err = datastore.redisPipe.ZAdd(context.Background(), getTradesKeyRedis(t), member).Err()
 	if err != nil {
 		return err
 	}
@@ -1296,11 +1296,11 @@ func (datastore *DB) SaveTradeRedis(t dia.Trade) error {
 // values set are all keys from trade_... zsets which store the corresponding trades as members.
 func (datastore *DB) SaveTradeSetElementRedis(t dia.Trade) error {
 	// Store trades keys (i.e. exchangepairs) as values with asset identifier as key.
-	err := datastore.redisClient.SAdd(context.Background(), getAssetKeyRedis(t.QuoteToken), GetTradesKeyRedis(t)).Err()
+	err := datastore.redisPipe.SAdd(context.Background(), getAssetKeyRedis(t.QuoteToken), getTradesKeyRedis(t)).Err()
 	if err != nil {
 		return err
 	}
-	if err = datastore.redisClient.Expire(
+	if err = datastore.redisPipe.Expire(
 		context.Background(),
 		getAssetKeyRedis(t.QuoteToken),
 		time.Duration((TRADES_TIMEOUT_REDIS_24H+TRADES_TIMEOUT_BUFFER)*time.Second),
@@ -1424,7 +1424,7 @@ func (datastore *DB) GetRedisKeysByFeedselection(fs dia.FeedSelection) ([]string
 
 		if exchange.Centralized {
 			for _, pair := range ep.Pairs {
-				key := GetTradesKeyRedis(dia.Trade{QuoteToken: pair.QuoteToken, BaseToken: pair.BaseToken, Source: exchange.Name})
+				key := getTradesKeyRedis(dia.Trade{QuoteToken: pair.QuoteToken, BaseToken: pair.BaseToken, Source: exchange.Name})
 				keys = append(keys, key)
 			}
 		} else {
@@ -1481,6 +1481,6 @@ func getAssetKeyRedis(asset dia.Asset) string {
 	return TRADE_EXCHANGEPAIR_PREFIX_REDIS + asset.Identifier()
 }
 
-func GetTradesKeyRedis(t dia.Trade) string {
+func getTradesKeyRedis(t dia.Trade) string {
 	return TRADE_PREFIX_REDIS + t.TradeIdentifierShort()
 }
