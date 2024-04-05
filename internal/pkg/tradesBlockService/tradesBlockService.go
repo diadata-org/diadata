@@ -253,7 +253,7 @@ func (s *TradesBlockService) checkTrade(t dia.Trade) bool {
 
 	// Discard (very) low volume trade.
 	if math.Abs(t.Volume) < tradeVolumeThreshold {
-		log.Info("low volume trade: ", t)
+		// log.Info("low volume trade: ", t)
 		return false
 	}
 
@@ -432,11 +432,12 @@ func (s *TradesBlockService) process(t dia.Trade) {
 			if _, ok := checkTradesDuplicate[t.TradeIdentifierFull()]; !ok {
 				s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
 				checkTradesDuplicate[t.TradeIdentifierFull()] = struct{}{}
-			} else {
-				if scrapers.Exchanges[t.Source].Name != dia.BitforexExchange {
-					log.Warn("duplicate trade within one tradesblock: ", t)
-				}
 			}
+			// } else {
+			// 	// if scrapers.Exchanges[t.Source].Name != dia.BitforexExchange {
+			// 	// log.Warn("duplicate trade within one tradesblock: ", t)
+			// 	// }
+			// }
 		} else {
 			s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
 		}
@@ -482,6 +483,7 @@ func (s *TradesBlockService) getPool(trade dia.Trade) (pool dia.Pool, err error)
 }
 
 func (s *TradesBlockService) finaliseCurrentBlock() {
+	log.Infof("Start finaliseCurrentBlock with endTime %v ...", s.currentBlock.TradesBlockData.EndTime)
 
 	sort.Slice(s.currentBlock.TradesBlockData.Trades, func(i, j int) bool {
 		return s.currentBlock.TradesBlockData.Trades[i].Time.Before(s.currentBlock.TradesBlockData.Trades[j].Time)
@@ -496,6 +498,8 @@ func (s *TradesBlockService) finaliseCurrentBlock() {
 	s.currentBlock.TradesBlockData.TradesNumber = len(s.currentBlock.TradesBlockData.Trades)
 	// Reset duplicate trades identifier.
 	checkTradesDuplicate = make(map[string]struct{})
+
+	log.Infof("... done finalising current Block with endTime %v.", s.currentBlock.TradesBlockData.EndTime)
 	s.chanTradesBlock <- s.currentBlock
 }
 
