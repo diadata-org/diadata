@@ -122,6 +122,8 @@ type TradesBlockService struct {
 	batchTicker      *time.Ticker
 	volumeTicker     *time.Ticker
 	redisCacheTicker *time.Ticker
+	tradesCount      int
+	countTimeInit    time.Time
 }
 
 func NewTradesBlockService(datastore models.Datastore, relDB models.RelDatastore, blockDuration int64, historical bool) *TradesBlockService {
@@ -143,6 +145,8 @@ func NewTradesBlockService(datastore models.Datastore, relDB models.RelDatastore
 		batchTicker:      time.NewTicker(time.Duration(batchTimeSeconds) * time.Second),
 		volumeTicker:     time.NewTicker(time.Duration(volumeUpdateSeconds) * time.Second),
 		redisCacheTicker: time.NewTicker(time.Duration(purgeCacheSeconds) * time.Second),
+		tradesCount:      0,
+		countTimeInit:    time.Now(),
 	}
 	if historical {
 		s.writeMeasurement = utils.Getenv("INFLUX_MEASUREMENT_WRITE", "tradesTmp")
@@ -363,6 +367,12 @@ func (s *TradesBlockService) process(t dia.Trade) {
 
 	var err error
 	if !s.historical {
+		s.tradesCount++
+		if s.tradesCount > 100000 {
+			log.Info("timeElapsed to store 100K trades: ", time.Since(s.countTimeInit))
+			s.countTimeInit = time.Now()
+			s.tradesCount = 0
+		}
 		err = s.datastore.SaveTradeInflux(&t)
 		if err != nil {
 			log.Error(err)

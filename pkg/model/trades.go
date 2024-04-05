@@ -1444,7 +1444,7 @@ func (datastore *DB) GetRedisKeysByFeedselection(fs dia.FeedSelection) ([]string
 
 // PurgeTradesAndKeysRedis deletes all trades older than @timestampLatest.
 func (datastore *DB) PurgeTradesAndKeysRedis(timestampLatest time.Time) {
-
+	t0 := time.Now()
 	// Get all (quote) assets traded.
 	allTradedAssetKeys := datastore.redisClient.SMembers(context.Background(), TRADED_ASSETS_KEY).Val()
 	for _, assetKey := range allTradedAssetKeys {
@@ -1474,7 +1474,7 @@ func (datastore *DB) PurgeTradesAndKeysRedis(timestampLatest time.Time) {
 			}
 		}
 	}
-
+	log.Info("time elapsed for purge redis cache: ", time.Since(t0))
 }
 
 func getAssetKeyRedis(asset dia.Asset) string {
