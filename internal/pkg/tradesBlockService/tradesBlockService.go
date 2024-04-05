@@ -178,11 +178,11 @@ func NewTradesBlockService(datastore models.Datastore, relDB models.RelDatastore
 // runs in a goroutine until s is closed
 func (s *TradesBlockService) mainLoop() {
 	var (
-		acceptCount        int
-		acceptCountDEX     int
-		acceptCountSwapDEX int
-		totalCount         int
-		logTicker          = *time.NewTicker(120 * time.Second)
+		// acceptCount        int
+		// acceptCountDEX     int
+		// acceptCountSwapDEX int
+		// totalCount         int
+		logTicker = *time.NewTicker(120 * time.Second)
 	)
 	for {
 		select {
@@ -228,22 +228,20 @@ func (s *TradesBlockService) mainLoop() {
 			if err != nil {
 				log.Error("flush influx batch: ", err)
 			}
-			t0 := time.Now()
 			log.Info("start executing and flushing redis pipe...")
 			err = s.datastore.ExecuteRedisPipe()
 			if err != nil {
 				log.Error("execute redis pipe: ", err)
 			}
 			s.datastore.FlushRedisPipe()
-			log.Infof("...executed and flushed redis pipe in %v.", time.Since(t0))
 		case <-logTicker.C:
-			log.Info("accepted trades DEX: ", acceptCountDEX)
-			log.Info("accepted swapped trades DEX: ", acceptCountSwapDEX)
-			log.Info("discarded trades: ", totalCount-acceptCount)
-			acceptCount = 0
-			acceptCountDEX = 0
-			acceptCountSwapDEX = 0
-			totalCount = 0
+			// log.Info("accepted trades DEX: ", acceptCountDEX)
+			// log.Info("accepted swapped trades DEX: ", acceptCountSwapDEX)
+			// log.Info("discarded trades: ", totalCount-acceptCount)
+			// acceptCount = 0
+			// acceptCountDEX = 0
+			// acceptCountSwapDEX = 0
+			// totalCount = 0
 		}
 	}
 }
@@ -358,7 +356,7 @@ func (s *TradesBlockService) process(t dia.Trade) {
 					if t.VolumeUSD() > tradeVolumeThresholdUSD {
 						verifiedTrade = true
 					} else {
-						log.Warn("low $ volume on trade: ", t)
+						// log.Warn("low $ volume on trade: ", t)
 					}
 				}
 			}
@@ -484,6 +482,7 @@ func (s *TradesBlockService) getPool(trade dia.Trade) (pool dia.Pool, err error)
 
 func (s *TradesBlockService) finaliseCurrentBlock() {
 	log.Infof("Start finaliseCurrentBlock with endTime %v ...", s.currentBlock.TradesBlockData.EndTime)
+	t0 := time.Now()
 
 	sort.Slice(s.currentBlock.TradesBlockData.Trades, func(i, j int) bool {
 		return s.currentBlock.TradesBlockData.Trades[i].Time.Before(s.currentBlock.TradesBlockData.Trades[j].Time)
@@ -499,7 +498,7 @@ func (s *TradesBlockService) finaliseCurrentBlock() {
 	// Reset duplicate trades identifier.
 	checkTradesDuplicate = make(map[string]struct{})
 
-	log.Infof("... done finalising current Block with endTime %v.", s.currentBlock.TradesBlockData.EndTime)
+	log.Infof("... done finalising current Block with endTime %v after elapsed time: %v.", s.currentBlock.TradesBlockData.EndTime, time.Since(t0))
 	s.chanTradesBlock <- s.currentBlock
 }
 
