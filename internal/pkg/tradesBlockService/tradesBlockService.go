@@ -445,16 +445,22 @@ func (s *TradesBlockService) process(t dia.Trade) {
 func (s *TradesBlockService) loadVolumesLoop() {
 	var err error
 	for range s.volumeTicker.C {
+		t0 := time.Now()
+		log.Info("start loading new volumes...")
 		s.volumeCache, err = s.relDB.GetVolumesMap(time.Now().AddDate(0, 0, -7))
 		if err != nil {
 			log.Error("get volumes map: ", err)
 		}
+		log.Infof("...time elapsed for new volumes: %v", time.Since(t0))
 	}
 }
 
 func (s *TradesBlockService) purgeRedisCacheLoop() {
 	for range s.redisCacheTicker.C {
+		t0 := time.Now()
+		log.Info("start purging trades and keys...")
 		s.datastore.PurgeTradesAndKeysRedis(time.Now().Add(-(models.TRADES_TIMEOUT_REDIS_24H + models.TRADES_TIMEOUT_BUFFER) * time.Second))
+		log.Info("...time elapsed for purge redis cache: ", time.Since(t0))
 	}
 }
 
