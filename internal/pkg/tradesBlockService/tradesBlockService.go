@@ -228,11 +228,14 @@ func (s *TradesBlockService) mainLoop() {
 			if err != nil {
 				log.Error("flush influx batch: ", err)
 			}
+			t0 := time.Now()
+			log.Info("start executing and flushing redis pipe...")
 			err = s.datastore.ExecuteRedisPipe()
 			if err != nil {
 				log.Error("execute redis pipe: ", err)
 			}
 			s.datastore.FlushRedisPipe()
+			log.Infof("...executed and flushed redis pipe in %v.", time.Since(t0))
 		case <-logTicker.C:
 			log.Info("accepted trades DEX: ", acceptCountDEX)
 			log.Info("accepted swapped trades DEX: ", acceptCountSwapDEX)
