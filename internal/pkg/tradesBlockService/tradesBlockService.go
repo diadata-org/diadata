@@ -228,7 +228,6 @@ func (s *TradesBlockService) mainLoop() {
 			if err != nil {
 				log.Error("flush influx batch: ", err)
 			}
-			log.Info("start executing and flushing redis pipe...")
 			err = s.datastore.ExecuteRedisPipe()
 			if err != nil {
 				log.Error("execute redis pipe: ", err)
