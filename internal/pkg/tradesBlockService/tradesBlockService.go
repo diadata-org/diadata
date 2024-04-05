@@ -228,6 +228,11 @@ func (s *TradesBlockService) mainLoop() {
 			if err != nil {
 				log.Error("flush influx batch: ", err)
 			}
+			err = s.datastore.ExecuteRedisPipe()
+			if err != nil {
+				log.Error("execute redis pipe: ", err)
+			}
+			s.datastore.FlushRedisPipe()
 		case <-logTicker.C:
 			log.Info("accepted trades DEX: ", acceptCountDEX)
 			log.Info("accepted swapped trades DEX: ", acceptCountSwapDEX)
@@ -381,11 +386,6 @@ func (s *TradesBlockService) process(t dia.Trade) {
 		if err != nil {
 			log.Error("SaveTradeRedis: ", err)
 		}
-		err = s.datastore.ExecuteRedisPipe()
-		if err != nil {
-			log.Error("execute redis pipe: ", err)
-		}
-		s.datastore.FlushRedisPipe()
 
 	} else {
 		err = s.datastore.SaveTradeInfluxToTable(&t, s.writeMeasurement)
