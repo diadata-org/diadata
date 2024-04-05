@@ -84,8 +84,8 @@ func (s *FiltersBlockService) mainLoop() {
 			log.Println("Filters shutting down")
 			s.cleanup(nil)
 			return
-		case tb, ok := <-s.chanTradesBlock:
-			log.Info("receive tradesBlock for further processing ok: ", ok)
+		case tb := <-s.chanTradesBlock:
+			log.Infof("receive tradesBlock for further processing with endTime: %v", tb.TradesBlockData.EndTime)
 			s.processTradesBlock(tb)
 		}
 	}
@@ -95,7 +95,7 @@ func (s *FiltersBlockService) mainLoop() {
 // computations are done here.
 func (s *FiltersBlockService) processTradesBlock(tb *dia.TradesBlock) {
 
-	log.Infoln("processTradesBlock starting")
+	log.Info("start process TradesBlock with endtime: ", tb.TradesBlockData.EndTime)
 	t0 := time.Now()
 
 	for _, trade := range tb.TradesBlockData.Trades {
@@ -235,7 +235,7 @@ func addMissingPoints(previousBlockFilters []dia.FilterPoint, newFilters []dia.F
 				missingPoints++
 			}
 		} else {
-			log.Warnf("ignoring old filter %s on blockchain %s with age %v", filter.Asset.Symbol, filter.Asset.Blockchain, d)
+			// log.Warnf("ignoring old filter %s on blockchain %s with age %v", filter.Asset.Symbol, filter.Asset.Blockchain, d)
 		}
 	}
 	if missingPoints != 0 {
