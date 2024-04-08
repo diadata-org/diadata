@@ -385,7 +385,7 @@ func (scraper *CurveFIScraper) processSwap(pool string, swp interface{}) {
 	// Hotfix for zero address bug.
 	// TO DO: Improve decoding.
 	if quoteToken.Address == "0x0000000000000000000000000000000000000000" || baseToken.Address == "0x0000000000000000000000000000000000000000" {
-		log.Errorf("got zero address on pool %s. Continue.", pool)
+		log.Errorf("got zero address on pool %s. discard trade.", pool)
 		return
 	}
 
