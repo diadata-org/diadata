@@ -938,25 +938,29 @@ func (rdb *RelDB) GetBalanceRemaining(address string, chainid string) (float64, 
 
 func (rdb *RelDB) GetDayWiseUpdates(address string, chainid string) ([]dia.FeedUpdates, float64, float64, error) {
 	query := fmt.Sprintf(`
-	WITH DailyUpdates AS (
+	WITH Dates AS (
+		SELECT generate_series(CURRENT_DATE - INTERVAL '29 days', CURRENT_DATE, INTERVAL '1 day')::DATE AS day
+	),
+	DailyUpdates AS (
 		SELECT 
-			DATE(fu.update_time) AS day, 
+			d.day, 
 			AVG(fu.gas_used) AS average_gas_used,
 			SUM(fu.gas_used) AS total_gas_used,
-			COUNT(*) AS total_updates
-		FROM %s fu
-		WHERE fu.oracle_address = $1 AND fu.chain_id = $2
-
-		GROUP BY DATE(fu.update_time)
+			COUNT(fu.update_time) AS total_updates
+		FROM Dates d
+		LEFT JOIN %s fu ON DATE(fu.update_time) = d.day
+			AND fu.oracle_address = $1 
+			AND fu.chain_id = $2
+		GROUP BY d.day
 	)
 	SELECT 
 		day, 
-		average_gas_used, 
-		total_gas_used,
-		total_updates,
-		(SELECT AVG(total_updates) FROM DailyUpdates) AS average_total_updates_per_day
+		COALESCE(average_gas_used, 0) AS average_gas_used, 
+		COALESCE(total_gas_used, 0) AS total_gas_used,
+		COALESCE(total_updates, 0) AS total_updates,
+		(SELECT AVG(total_updates::NUMERIC) FROM DailyUpdates) AS average_total_updates_per_day
 	FROM DailyUpdates
-	ORDER BY day DESC LIMIT 30
+	ORDER BY day DESC;
 	`, feederupdatesTable)
 
 	rows, err := rdb.postgresClient.Query(context.Background(), query, address, chainid)
