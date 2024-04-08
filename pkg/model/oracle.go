@@ -957,8 +957,8 @@ func (rdb *RelDB) GetDayWiseUpdates(address string, chainid string) ([]dia.FeedU
 		day, 
 		COALESCE(average_gas_used, 0) AS average_gas_used, 
 		COALESCE(total_gas_used, 0) AS total_gas_used,
-		COALESCE(total_updates, 0) AS total_updates,
-		(SELECT AVG(total_updates::NUMERIC) FROM DailyUpdates) AS average_total_updates_per_day
+		(SELECT AVG(total_updates::NUMERIC) FROM DailyUpdates) AS average_total_updates_per_day,
+		(SELECT AVG(average_gas_used) FROM DailyUpdates) AS average_gas_used_per_day
 	FROM DailyUpdates
 	ORDER BY day DESC;
 	`, feederupdatesTable)
@@ -981,10 +981,11 @@ func (rdb *RelDB) GetDayWiseUpdates(address string, chainid string) ([]dia.FeedU
 		du := dia.FeedUpdates{}
 		rows.Scan(
 			&updateTime,
-			&avgGasUsed,
+			nil,
 			&du.GasUsed,
 			&du.UpdateCount,
 			&avgUpdateCount,
+			&avgGasUsed,
 		)
 		if updateTime.Valid {
 			du.Day = updateTime.Time
