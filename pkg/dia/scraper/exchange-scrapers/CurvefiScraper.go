@@ -382,6 +382,13 @@ func (scraper *CurveFIScraper) processSwap(pool string, swp interface{}) {
 		foreignTradeID = s.Raw.TxHash.Hex() + "-" + fmt.Sprint(s.Raw.Index)
 	}
 
+	// Hotfix for zero address bug.
+	// TO DO: Improve decoding.
+	if quoteToken.Address == "0x0000000000000000000000000000000000000000" || baseToken.Address == "0x0000000000000000000000000000000000000000" {
+		log.Errorf("got zero address on pool %s. Continue.", pool)
+		return
+	}
+
 	timestamp := time.Now().Unix()
 
 	trade := &dia.Trade{
