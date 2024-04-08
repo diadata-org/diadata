@@ -981,7 +981,6 @@ func (rdb *RelDB) GetDayWiseUpdates(address string, chainid string) ([]dia.FeedU
 		du := dia.FeedUpdates{}
 		rows.Scan(
 			&updateTime,
-			nil,
 			&du.GasUsed,
 			&du.UpdateCount,
 			&avgUpdateCount,
