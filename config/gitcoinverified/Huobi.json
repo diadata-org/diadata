@@ -7,6 +7,12 @@
       "Address": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9"
     },
     {
+      "Symbol": "ADA",
+      "Exchange": "Huobi",
+      "Blockchain": "Cardano",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "AKRO",
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",
@@ -73,6 +79,12 @@
       "Address": "0xba100000625a3754423978a60c9317c58a424e3D"
     },
     {
+      "Symbol": "BCH",
+      "Exchange": "Huobi",
+      "Blockchain": "BitcoinCash",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "BTC",
       "Exchange": "Huobi",
       "Blockchain": "Bitcoin",
@@ -83,6 +95,12 @@
       "Exchange": "Huobi",
       "Blockchain": "BitcoinGold",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "CHR",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0x8A2279d4A90B6fe1C4B30fa660cC9f926797bAA2"
     },
     {
       "Symbol": "CKB",
@@ -109,6 +127,12 @@
       "Address": "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B"
     },
     {
+      "Symbol": "DASH",
+      "Exchange": "Huobi",
+      "Blockchain": "Dash",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "DOGE",
       "Exchange": "Huobi",
       "Blockchain": "Dogechain",
@@ -125,6 +149,18 @@
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",
       "Address": "0x57e114B691Db790C35207b2e685D4A43181e6061"
+    },
+    {
+      "Symbol": "EOS",
+      "Exchange": "Huobi",
+      "Blockchain": "EOS.IO",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "ETC",
+      "Exchange": "Huobi",
+      "Blockchain": "EthereumClassic",
+      "Address": "0x0000000000000000000000000000000000000000"
     },
     {
       "Symbol": "ETH",
@@ -187,6 +223,18 @@
       "Address": "0x7DD9c5Cba05E151C895FDe1CF355C9A1D5DA6429"
     },
     {
+      "Symbol": "GRT",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0xc944E90C64B2c07662A292be6244BDf05Cda44a7"
+    },
+    {
+      "Symbol": "IOTA",
+      "Exchange": "Huobi",
+      "Blockchain": "Iota",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "KAVA",
       "Exchange": "Huobi",
       "Blockchain": "Osmosis",
@@ -211,6 +259,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "LTC",
+      "Exchange": "Huobi",
+      "Blockchain": "Litecoin",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "LUNA",
       "Exchange": "Huobi",
       "Blockchain": "Terra",
@@ -223,6 +277,24 @@
       "Address": "0x4b8285aB433D8f69CB48d5Ad62b415ed1a221e4f"
     },
     {
+      "Symbol": "NEAR",
+      "Exchange": "Huobi",
+      "Blockchain": "NEAR",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "OMG",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07"
+    },
+    {
+      "Symbol": "ONT",
+      "Exchange": "Huobi",
+      "Blockchain": "Ontology",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "ORDI",
       "Exchange": "Huobi",
       "Blockchain": "Bitcoin",
@@ -233,6 +305,12 @@
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",
       "Address": "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
+    },
+    {
+      "Symbol": "QTUM",
+      "Exchange": "Huobi",
+      "Blockchain": "Qtum",
+      "Address": "0x0000000000000000000000000000000000000000"
     },
     {
       "Symbol": "QUICK",
@@ -335,6 +413,12 @@
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",
       "Address": "0x68749665FF8D2d112Fa859AA293F07A622782F38"
+    },
+    {
+      "Symbol": "XRP",
+      "Exchange": "Huobi",
+      "Blockchain": "Ripple",
+      "Address": "0x0000000000000000000000000000000000000000"
     },
     {
       "Symbol": "YFI",
