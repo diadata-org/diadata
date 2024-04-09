@@ -247,6 +247,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "ENA",
+            "ForeignName": "ENAUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "ENJ",
             "ForeignName": "ENJUSDT",
             "Exchange": "ByBit",
@@ -381,6 +387,12 @@
         {
             "Symbol": "IOTX",
             "ForeignName": "IOTXUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "KDA",
+            "ForeignName": "KDAUSDT",
             "Exchange": "ByBit",
             "Ignore": false
         },

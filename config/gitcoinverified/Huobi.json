@@ -73,6 +73,12 @@
       "Address": "0xba100000625a3754423978a60c9317c58a424e3D"
     },
     {
+      "Symbol": "BTC",
+      "Exchange": "Huobi",
+      "Blockchain": "Bitcoin",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "BTG",
       "Exchange": "Huobi",
       "Blockchain": "BitcoinGold",
@@ -112,6 +118,18 @@
       "Symbol": "DOT",
       "Exchange": "Huobi",
       "Blockchain": "Polkadot",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "ENA",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0x57e114B691Db790C35207b2e685D4A43181e6061"
+    },
+    {
+      "Symbol": "ETH",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {

@@ -31,6 +31,12 @@
             "Address": "0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e"
         },
         {
+            "Symbol": "ENA",
+            "Exchange": "Bitfinex",
+            "Blockchain": "Ethereum",
+            "Address": "0x57e114B691Db790C35207b2e685D4A43181e6061"
+        },
+        {
             "Symbol": "FIL",
             "Exchange": "Bitfinex",
             "Blockchain": "Filecoin",

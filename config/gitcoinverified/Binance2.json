@@ -97,6 +97,12 @@
             "Address": "0x92D6C1e31e14520e676a687F0a93788B716BEff5"
         },
         {
+            "Symbol": "ENA",
+            "Exchange": "Binance2",
+            "Blockchain": "Ethereum",
+            "Address": "0x57e114B691Db790C35207b2e685D4A43181e6061"
+        },
+        {
             "Symbol": "ENS",
             "Exchange": "Binance2",
             "Blockchain": "Ethereum",
@@ -143,6 +149,12 @@
             "Exchange": "Binance2",
             "Blockchain": "Osmosis",
             "Address": "ibc/57AA1A70A4BC9769C525EBF6386F7A21536E04A79D62E1981EFCEF9428EBB205"
+        },
+        {
+            "Symbol": "KDA",
+            "Exchange": "Binance2",
+            "Blockchain": "Kadena",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "KNC",

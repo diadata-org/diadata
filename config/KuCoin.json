@@ -637,6 +637,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "ENA",
+            "ForeignName": "ENA-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "ENJ",
             "ForeignName": "ENJ-BTC",
             "Exchange": "KuCoin",
@@ -879,6 +885,18 @@
         {
             "Symbol": "KCS",
             "ForeignName": "KCS-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "KDA",
+            "ForeignName": "KDA-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "KDA",
+            "ForeignName": "KDA-USDC",
             "Exchange": "KuCoin",
             "Ignore": false
         },

@@ -1,6 +1,18 @@
 {
     "Tokens": [
         {
+            "Symbol": "ENA",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0x57e114B691Db790C35207b2e685D4A43181e6061"
+        },
+        {
+            "Symbol": "KDA",
+            "Exchange": "ByBit",
+            "Blockchain": "Kadena",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "ORDI",
             "Exchange": "ByBit",
             "Blockchain": "Bitcoin",

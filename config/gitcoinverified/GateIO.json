@@ -385,6 +385,12 @@
             "Address": "0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e"
         },
         {
+            "Symbol": "ENA",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x57e114B691Db790C35207b2e685D4A43181e6061"
+        },
+        {
             "Symbol": "FLOW",
             "Exchange": "GateIO",
             "Blockchain": "Flow",
@@ -497,6 +503,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0xa5Fd1A791C4dfcaacC963D4F73c6Ae5824149eA7"
+        },
+        {
+            "Symbol": "KDA",
+            "Exchange": "GateIO",
+            "Blockchain": "Kadena",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "KICK",

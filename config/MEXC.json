@@ -199,6 +199,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "ENA",
+      "ForeignName": "ENAUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "EOS",
       "ForeignName": "EOSUSDT",
       "Exchange": "MEXC",

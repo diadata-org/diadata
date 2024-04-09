@@ -1418,6 +1418,12 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "KDA-USDT",
+      "Ignore": false,
+      "Symbol": "KDA"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "LA-ETH",
       "Ignore": false,
       "Symbol": "LA"

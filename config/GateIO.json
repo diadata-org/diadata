@@ -26,6 +26,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "ENA_USDT",
+      "Ignore": false,
+      "Symbol": "ENA"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "FDUSD_USDT",
       "Ignore": false,
       "Symbol": "FDUSD"
@@ -395,6 +401,12 @@
       "ForeignName": "AKRO_USDT",
       "Ignore": false,
       "Symbol": "AKRO"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "KDA_USDT",
+      "Ignore": false,
+      "Symbol": "KDA"
     },
     {
       "Exchange": "GateIO",

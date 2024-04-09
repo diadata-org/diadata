@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "BitMart",
+      "ForeignName": "ENA_USDT",
+      "Ignore": false,
+      "Symbol": "ENA"
+    },
+    {
+      "Exchange": "BitMart",
       "ForeignName": "ORDI_USDT",
       "Ignore": false,
       "Symbol": "ORDI"

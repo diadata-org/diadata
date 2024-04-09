@@ -19,6 +19,12 @@
             "Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
         },
         {
+            "Symbol": "ENA",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0x57e114B691Db790C35207b2e685D4A43181e6061"
+        },
+        {
             "Symbol": "LUNA",
             "Exchange": "Crypto.com",
             "Blockchain": "Terra",
@@ -269,6 +275,12 @@
             "Exchange": "Crypto.com",
             "Blockchain": "Ethereum",
             "Address": "0x408e41876cCCDC0F92210600ef50372656052a38"
+        },
+        {
+            "Symbol": "KDA",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Kadena",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "KEEP",

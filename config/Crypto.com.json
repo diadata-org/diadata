@@ -253,6 +253,18 @@
             "Ignore": false
         },
         {
+            "Symbol": "ENA",
+            "ForeignName": "ENA_USD",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ENA",
+            "ForeignName": "ENA_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
             "Symbol": "ENJ",
             "ForeignName": "ENJ_BTC",
             "Exchange": "Crypto.com",
@@ -387,6 +399,12 @@
         {
             "Symbol": "GRT",
             "ForeignName": "GRT_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "KDA",
+            "ForeignName": "KDA_USD",
             "Exchange": "Crypto.com",
             "Ignore": false
         },

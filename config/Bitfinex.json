@@ -1,6 +1,18 @@
 {
   "Coins": [
     {
+      "Symbol": "ENA",
+      "ForeignName": "ENAUSDT",
+      "Exchange": "Bitfinex",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ENA",
+      "ForeignName": "ENAUSD",
+      "Exchange": "Bitfinex",
+      "Ignore": false
+    },
+    {
       "Symbol": "UDC",
       "ForeignName": "UDCUST",
       "Exchange": "Bitfinex",

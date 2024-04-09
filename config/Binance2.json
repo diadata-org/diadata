@@ -92,6 +92,18 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "ENAUSDT",
+            "Ignore": false,
+            "Symbol": "ENA"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "ENAFDUSD",
+            "Ignore": false,
+            "Symbol": "ENA"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "ENSUSDT",
             "Ignore": false,
             "Symbol": "ENS"
@@ -137,6 +149,18 @@
             "ForeignName": "KAVAUSDT",
             "Ignore": false,
             "Symbol": "KAVA"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "KDAUSDT",
+            "Ignore": false,
+            "Symbol": "KDA"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "KDABTC",
+            "Ignore": false,
+            "Symbol": "KDA"
         },
         {
             "Exchange": "Binance",
