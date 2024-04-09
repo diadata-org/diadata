@@ -2,7 +2,7 @@
   "Coins": [
     {
       "Symbol": "ENA",
-      "ForeignName": "ENAUSDT",
+      "ForeignName": "ENAUST",
       "Exchange": "Bitfinex",
       "Ignore": false
     },
