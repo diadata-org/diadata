@@ -1475,14 +1475,16 @@ func (datastore *DB) PurgeTradesAndKeysRedis(timestampLatest time.Time) {
 			// }
 
 			// Count remaining trades and remove set member if none are left.
-			vals, err := datastore.redisClient.ZRangeByScoreWithScores(context.Background(), exchangepairKey, &redis.ZRangeBy{
-				Min: strconv.FormatInt(timestampLatest.UnixMicro(), 10),
-				Max: strconv.FormatInt(time.Now().UnixMicro(), 10),
-			}).Result()
+			numScores, err := datastore.redisClient.ZCount(
+				context.Background(),
+				exchangepairKey,
+				strconv.FormatInt(timestampLatest.UnixMicro(), 10),
+				strconv.FormatInt(time.Now().UnixMicro(), 10),
+			).Result()
 			if err != nil {
-				log.Errorf("ZRangeByScoreWithScores for %s: %v", exchangepairKey, err)
+				log.Errorf("ZCount for %s: %v", exchangepairKey, err)
 			}
-			if len(vals) == 0 {
+			if numScores == 0 {
 				log.Infof("remove member %s in set %s.", exchangepairKey, assetKey)
 				err = datastore.redisClient.SRem(context.Background(), assetKey, exchangepairKey).Err()
 				if err != nil {
