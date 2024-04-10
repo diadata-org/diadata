@@ -1461,9 +1461,11 @@ func (datastore *DB) PurgeRedisByScore(key string, scoreMax int64) (int64, error
 func (datastore *DB) PurgeTradesAndKeysRedis(timestampLatest time.Time) {
 	// Get all (quote) assets traded.
 	allTradedAssetKeys := datastore.redisClient.SMembers(context.Background(), TRADED_ASSETS_KEY).Val()
+	log.Info("number of asset keys: ", len(allTradedAssetKeys))
 	for _, assetKey := range allTradedAssetKeys {
 		// Get all exchangepair keys of a given quote asset.
 		exchangepairKeys := datastore.redisClient.SMembers(context.Background(), assetKey).Val()
+		log.Infof("purge %v keys descending from asset key: %s", len(exchangepairKeys), assetKey)
 		for _, exchangepairKey := range exchangepairKeys {
 			// Purging old values.
 			numDel, err := datastore.PurgeRedisByScore(exchangepairKey, timestampLatest.UnixMicro())
