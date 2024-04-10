@@ -278,7 +278,7 @@ func (s *TradesBlockService) checkTrade(t dia.Trade) bool {
 	if err == nil {
 		liquidity, lowerBound := pool.GetPoolLiquidityUSD()
 		if quoteVolumeOk && !lowerBound && quoteVolume > volumeLiquidityRatio*liquidity {
-			log.Warn("discard trade due to volumeLiquidityRatio: ", t)
+			log.Warnf("pool %s has liquidity %v.\n discard trade due to volumeLiquidityRatio: %v", pool.Address, liquidity, t)
 			return false
 		}
 	}
