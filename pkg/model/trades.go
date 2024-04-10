@@ -1442,6 +1442,21 @@ func (datastore *DB) GetRedisKeysByFeedselection(fs dia.FeedSelection) ([]string
 	return keys, nil
 }
 
+// PurgeByKey deletes entries of an ordered set (zrange) given by @key.
+// In particular, it deletes all scores from -inf to @scoreMax.
+// It returns the number of deleted entries.
+func (datastore *DB) PurgeRedisByScore(key string, scoreMax int64) (int64, error) {
+	cmd := datastore.redisClient.ZRemRangeByScore(context.Background(), key, "-inf", strconv.FormatInt(scoreMax, 10))
+
+	err := cmd.Err()
+	if err != nil {
+		return 0, err
+	}
+
+	return cmd.Result()
+
+}
+
 // PurgeTradesAndKeysRedis deletes all trades older than @timestampLatest.
 func (datastore *DB) PurgeTradesAndKeysRedis(timestampLatest time.Time) {
 	// Get all (quote) assets traded.
@@ -1451,9 +1466,11 @@ func (datastore *DB) PurgeTradesAndKeysRedis(timestampLatest time.Time) {
 		exchangepairKeys := datastore.redisClient.SMembers(context.Background(), assetKey).Val()
 		for _, exchangepairKey := range exchangepairKeys {
 			// Purging old values.
-			err := datastore.redisClient.ZRemRangeByScore(context.Background(), exchangepairKey, "-inf", strconv.FormatInt(timestampLatest.UnixMicro(), 10)).Err()
+			numDel, err := datastore.PurgeRedisByScore(exchangepairKey, timestampLatest.UnixMicro())
 			if err != nil {
-				log.Errorf("ZRemRangeByScore on %s: %v", err, exchangepairKey)
+				log.Errorf("PurgeRedisByScore on %s: %v", exchangepairKey, err)
+			} else {
+				log.Infof("Deleted %v entries for key %s up to score %v", numDel, exchangepairKey, timestampLatest.UnixMicro())
 			}
 
 			// Count remaining trades and remove set member if none are left.
