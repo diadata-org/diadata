@@ -1447,10 +1447,8 @@ func (datastore *DB) GetRedisKeysByFeedselection(fs dia.FeedSelection) ([]string
 // It returns the number of deleted entries.
 func (datastore *DB) PurgeRedisByScore(key string, scoreMax int64) (int64, error) {
 	cmd := datastore.redisClient.ZRemRangeByScore(context.Background(), key, "-inf", strconv.FormatInt(scoreMax, 10))
-
-	err := cmd.Err()
-	if err != nil {
-		return 0, err
+	if cmd.Err() != nil {
+		return 0, cmd.Err()
 	}
 
 	return cmd.Result()
@@ -1462,23 +1460,24 @@ func (datastore *DB) PurgeTradesAndKeysRedis(timestampLatest time.Time) {
 	// Get all (quote) assets traded.
 	allTradedAssetKeys := datastore.redisClient.SMembers(context.Background(), TRADED_ASSETS_KEY).Val()
 	log.Info("number of asset keys: ", len(allTradedAssetKeys))
-	for i, assetKey := range allTradedAssetKeys {
+	for _, assetKey := range allTradedAssetKeys {
 		// Get all exchangepair keys of a given quote asset.
 		exchangepairKeys := datastore.redisClient.SMembers(context.Background(), assetKey).Val()
-		log.Infof("%v: purge %v keys descending from asset key: %s", i, len(exchangepairKeys), assetKey)
+		// log.Infof("%v: purge %v keys descending from asset key: %s", i, len(exchangepairKeys), assetKey)
 		for _, exchangepairKey := range exchangepairKeys {
 			// Purging old values.
-			numDel, err := datastore.PurgeRedisByScore(exchangepairKey, timestampLatest.UnixMicro())
+			_, err := datastore.PurgeRedisByScore(exchangepairKey, timestampLatest.UnixMicro())
 			if err != nil {
 				log.Errorf("PurgeRedisByScore on %s: %v", exchangepairKey, err)
-			} else {
-				log.Infof("Deleted %v entries for key %s up to score %v", numDel, exchangepairKey, timestampLatest.UnixMicro())
 			}
+			// } else {
+			// 	log.Infof("Deleted %v entries for key %s up to score %v", numDel, exchangepairKey, timestampLatest.UnixMicro())
+			// }
 
 			// Count remaining trades and remove set member if none are left.
 			vals, err := datastore.redisClient.ZRangeByScoreWithScores(context.Background(), exchangepairKey, &redis.ZRangeBy{
-				Min: "-inf",
-				Max: "inf",
+				Min: strconv.FormatInt(timestampLatest.UnixMicro(), 10),
+				Max: strconv.FormatInt(time.Now().UnixMicro(), 10),
 			}).Result()
 			if err != nil {
 				log.Errorf("ZRangeByScoreWithScores for %s: %v", exchangepairKey, err)
