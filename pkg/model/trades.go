@@ -1481,7 +1481,7 @@ func (datastore *DB) PurgeTradesAndKeysRedis(timestampLatest time.Time) {
 				Max: "inf",
 			}).Result()
 			if err != nil {
-				return
+				log.Errorf("ZRangeByScoreWithScores for %s: %v", exchangepairKey, err)
 			}
 			if len(vals) == 0 {
 				log.Infof("remove member %s in set %s.", exchangepairKey, assetKey)
