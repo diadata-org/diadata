@@ -40,7 +40,16 @@ func main() {
 		log.Fatal("parse batch duration ", err)
 	}
 
-	diaSchema := graphql.MustParseSchema(ds, &resolver.DiaResolver{DS: *datastore, RelDB: *relStore, InfluxBatchSize: influxBatchSize}, graphql.UseFieldResolvers())
+	withInflux, err := strconv.ParseBool(utils.Getenv("WITH_INFLUX", "false"))
+	if err != nil {
+		log.Fatal("parse WITH_INFLUX: ", err)
+	}
+
+	diaSchema := graphql.MustParseSchema(
+		ds,
+		&resolver.DiaResolver{DS: *datastore, RelDB: *relStore, InfluxBatchSize: influxBatchSize, WithInflux: withInflux},
+		graphql.UseFieldResolvers(),
+	)
 
 	mux := http.NewServeMux()
 	urlFolderPrefix := utils.Getenv("URL_FOLDER_PREFIX", "/graphql")

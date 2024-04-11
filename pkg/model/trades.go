@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math"
 	"sort"
 	"strconv"
 	"strings"
@@ -1442,6 +1443,59 @@ func (datastore *DB) GetRedisKeysByFeedselection(fs dia.FeedSelection) ([]string
 	return keys, nil
 }
 
+// GetAggregatedFeedSelection returns aggregated quantities with restrictions given by the struct @feedselection.
+func (datastore *DB) GetAggregatedFeedSelectionRedis(
+	feedselection []dia.FeedSelection,
+	starttime time.Time,
+	endtime time.Time,
+	tradeVolumeThreshold float64,
+) ([]dia.FeedSelectionAggregated, error) {
+
+	var feedSelectionAggregated []dia.FeedSelectionAggregated
+
+	if starttime.After(endtime) {
+		return feedSelectionAggregated, errors.New("starttime is after endtime")
+	}
+
+	for _, fs := range feedselection {
+		keys, err := datastore.GetRedisKeysByFeedselection(fs)
+		if err != nil {
+			return feedSelectionAggregated, err
+		}
+
+		for _, key := range keys {
+			var fsa dia.FeedSelectionAggregated
+			fsa.Exchange = getExchangeFromTradesKey(key)
+			fsa.Quotetoken = fs.Asset
+			fsa.Basetoken = dia.Asset{Address: getBasetokenAddressFromTradesKey(key), Blockchain: getBasetokenBlockchainFromTradesKey(key)}
+			fsa.Pooladdress = getPoolAddressFromTradesKey(key)
+			// PoolLiquidityUSD should be done by the caller.
+			// Compute Volume, tradesCount and LastPrice.
+			trades, err := datastore.GetTradesRedis(key, starttime, endtime, 0, 0)
+			if err != nil {
+				return feedSelectionAggregated, err
+			}
+			fsa.TradesCount = int32(len(trades))
+			lastPriceTime := starttime
+			for _, t := range trades {
+				vol := math.Abs(t.Volume) * t.EstimatedUSDPrice
+				if vol < tradeVolumeThreshold {
+					continue
+				}
+				fsa.Volume += vol
+				if t.Time.After(lastPriceTime) {
+					fsa.LastPrice = t.EstimatedUSDPrice
+				}
+			}
+			fsa.Starttime = starttime
+			fsa.Endtime = endtime
+
+			feedSelectionAggregated = append(feedSelectionAggregated, fsa)
+		}
+	}
+	return feedSelectionAggregated, nil
+}
+
 // PurgeByKey deletes entries of an ordered set (zrange) given by @key.
 // In particular, it deletes all scores from -inf to @scoreMax.
 // It returns the number of deleted entries.
@@ -1463,17 +1517,12 @@ func (datastore *DB) PurgeTradesAndKeysRedis(timestampLatest time.Time) {
 	for _, assetKey := range allTradedAssetKeys {
 		// Get all exchangepair keys of a given quote asset.
 		exchangepairKeys := datastore.redisClient.SMembers(context.Background(), assetKey).Val()
-		// log.Infof("%v: purge %v keys descending from asset key: %s", i, len(exchangepairKeys), assetKey)
 		for _, exchangepairKey := range exchangepairKeys {
 			// Purging old values.
 			_, err := datastore.PurgeRedisByScore(exchangepairKey, timestampLatest.UnixMicro())
 			if err != nil {
 				log.Errorf("PurgeRedisByScore on %s: %v", exchangepairKey, err)
 			}
-			// } else {
-			// 	log.Infof("Deleted %v entries for key %s up to score %v", numDel, exchangepairKey, timestampLatest.UnixMicro())
-			// }
-
 			// Count remaining trades and remove set member if none are left.
 			numScores, err := datastore.redisClient.ZCount(
 				context.Background(),
@@ -1501,4 +1550,24 @@ func getAssetKeyRedis(asset dia.Asset) string {
 
 func getTradesKeyRedis(t dia.Trade) string {
 	return TRADE_PREFIX_REDIS + t.TradeIdentifierShort()
+}
+
+func getBasetokenBlockchainFromTradesKey(key string) string {
+	return strings.Split(key, dia.TRADE_IDENTIFIER_SHORT_SEPARATOR)[2]
+}
+
+func getBasetokenAddressFromTradesKey(key string) string {
+	return strings.Split(key, dia.TRADE_IDENTIFIER_SHORT_SEPARATOR)[3]
+}
+
+func getPoolAddressFromTradesKey(key string) string {
+	id := strings.Split(key, dia.TRADE_IDENTIFIER_SHORT_SEPARATOR)
+	if len(id) < 5 {
+		return ""
+	}
+	return id[5]
+}
+
+func getExchangeFromTradesKey(key string) string {
+	return strings.Split(key, dia.TRADE_IDENTIFIER_SHORT_SEPARATOR)[4]
 }

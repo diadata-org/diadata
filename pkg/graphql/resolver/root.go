@@ -48,6 +48,7 @@ type DiaResolver struct {
 	DS              models.DB
 	RelDB           models.RelDB
 	InfluxBatchSize int64
+	WithInflux      bool
 }
 
 func (r *DiaResolver) GetSupply(ctx context.Context, args struct{ Symbol graphql.NullString }) (*SupplyResolver, error) {
@@ -608,7 +609,11 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 			endtimes = append(endtimes, bin.Endtime)
 		}
 	}
-	trades, err = r.DS.GetTradesByFeedselectionRedis(feedselection, starttimes, endtimes, -1, false)
+	if r.WithInflux {
+		trades, err = r.DS.GetTradesByFeedSelection(feedselection, starttimes, endtimes, 0)
+	} else {
+		trades, err = r.DS.GetTradesByFeedselectionRedis(feedselection, starttimes, endtimes, -1, false)
+	}
 	if err != nil {
 		return sr, err
 	}
@@ -733,7 +738,12 @@ func (r *DiaResolver) GetFeedAggregation(ctx context.Context, args struct {
 	}
 
 	// Get aggregated data in given time-range.
-	fsa, err := r.DS.GetAggregatedFeedSelection(feedselection, starttime, endtime, tradeVolumeThreshold)
+	var fsa []dia.FeedSelectionAggregated
+	if r.WithInflux {
+		fsa, err = r.DS.GetAggregatedFeedSelection(feedselection, starttime, endtime, tradeVolumeThreshold)
+	} else {
+		fsa, err = r.DS.GetAggregatedFeedSelectionRedis(feedselection, starttime, endtime, tradeVolumeThreshold)
+	}
 	if err != nil {
 		log.Error("GetAggregatedFeedSelection: ", err)
 		return &sr, err
