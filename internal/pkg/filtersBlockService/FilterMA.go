@@ -66,8 +66,8 @@ func (filter *FilterMA) fill(trade dia.Trade) {
 	// filter.currentTime is the timestamp of the last filled trade.
 	// It is initialized with begin time of tradesblock upon creation of the filter.
 	diff := int(trade.Time.Sub(filter.currentTime).Seconds())
-	if diff > 1 {
-		for diff > 1 {
+	if diff >= 1 {
+		for diff >= 1 {
 			filter.processDataPoint(trade)
 			diff--
 		}
@@ -75,13 +75,13 @@ func (filter *FilterMA) fill(trade dia.Trade) {
 		if diff == 0.0 {
 			if len(filter.prices) >= 1 {
 				/// Remove latest data point and update with newer
-				filter.prices = filter.prices[1:]
-				filter.volumes = filter.volumes[1:]
+				filter.prices = filter.prices[:len(filter.prices)-1]
+				filter.volumes = filter.volumes[:len(filter.volumes)-1]
 			}
 		}
 		filter.processDataPoint(trade)
 	}
-	filter.currentTime = trade.Time
+	filter.currentTime = time.Unix(int64(trade.Time.Unix()), 0)
 }
 
 func (filter *FilterMA) processDataPoint(trade dia.Trade) {
@@ -91,9 +91,9 @@ func (filter *FilterMA) processDataPoint(trade dia.Trade) {
 		filter.volumes = filter.volumes[0 : filter.memory-1]
 	}
 	if !filter.nativeDenomination {
-		filter.prices = append([]float64{trade.EstimatedUSDPrice}, filter.prices...)
+		filter.prices = append(filter.prices, trade.EstimatedUSDPrice)
 	} else {
-		filter.prices = append([]float64{trade.Price}, filter.prices...)
+		filter.prices = append(filter.prices, trade.Price)
 	}
 
 	filter.volumes = append([]float64{trade.Volume}, filter.volumes...)
