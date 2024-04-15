@@ -312,8 +312,12 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, blockDuration i
 			BlockShiftSeconds: ` + strconv.Itoa(blockDuration) + `,
 			StartTime: ` + strconv.FormatInt(starttime.Unix(), 10) + `, 
 			EndTime: ` + strconv.FormatInt(currentTime.Unix(), 10) + `, 
-			Address: "` + address + `", 
-			Blockchain: "` + blockchain + `") {
+			FeedSelection: [{
+			  Address: "` + address + `", 
+			  Blockchain: "` + blockchain + `"
+		  },
+		  ],
+		  ) {
 				Name
 				Time
 				Value
