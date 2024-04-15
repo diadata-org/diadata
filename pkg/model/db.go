@@ -74,6 +74,7 @@ type Datastore interface {
 	Flush() error
 	ExecuteRedisPipe() error
 	FlushRedisPipe()
+	LenRedisPipe() int
 	GetFilterPoints(filter string, exchange string, symbol string, scale string, starttime time.Time, endtime time.Time) (*Points, error)
 	GetFilterPointsAsset(filter string, exchange string, address string, blockchain string, starttime time.Time, endtime time.Time) (*Points, error)
 	SetFilter(filterName string, asset dia.Asset, exchange string, value float64, t time.Time) error
@@ -308,6 +309,10 @@ func (datastore *DB) ExecuteRedisPipe() (err error) {
 
 func (datastore *DB) FlushRedisPipe() {
 	datastore.redisPipe.Discard()
+}
+
+func (datastore *DB) LenRedisPipe() int {
+	return datastore.redisPipe.Len()
 }
 
 // CopyInfluxMeasurements copies entries from measurement @tableOrigin in database @dbOrigin into @tableDestination in database @dbDestination.
