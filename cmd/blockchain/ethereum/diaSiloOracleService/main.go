@@ -226,6 +226,15 @@ func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *dia
 			}
 			rawQ.Symbol = symbol
 			rawQ.Price = price
+		} else if address == "0x51fC0f6660482Ea73330E414eFd7808811a57Fa2" && blockchain == "Arbitrum" {
+			// Special case: PREMIA with liquidity threshold
+			price, symbol, err := getGraphqlLiquidityThresholdAssetQuotationFromDia(blockchain, address, "PREMIA", 120, "vwapir", 500000.0)
+			if err != nil {
+				log.Printf("Failed to retrieve %s quotation with liquidity threshold from GraphQL on DIA: %v", symbol, err)
+				return oldPrice, err
+			}
+			rawQ.Symbol = symbol
+			rawQ.Price = price
 		} else {
 			rawQ, err = getAssetQuotationFromDia(blockchain, address)
 			if err != nil {
@@ -346,6 +355,15 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 			price, symbol, err := getDpxGraphqlAssetQuotationFromDia(blockchain, address)
 			if err != nil {
 				log.Printf("Failed to retrieve %s (DPX) quotation data from Graphql on DIA: %v", address, err)
+				return oldPrice, err
+			}
+			rawQ.Symbol = symbol
+			rawQ.Price = price
+		} else if address == "0x51fC0f6660482Ea73330E414eFd7808811a57Fa2" && blockchain == "Arbitrum" {
+			// Special case: PREMIA with liquidity threshold
+			price, symbol, err := getGraphqlLiquidityThresholdAssetQuotationFromDia(blockchain, address, "PREMIA", 120, "vwapir", 500000.0)
+			if err != nil {
+				log.Printf("Failed to retrieve %s quotation with liquidity threshold from GraphQL on DIA: %v", symbol, err)
 				return oldPrice, err
 			}
 			rawQ.Symbol = symbol
@@ -741,6 +759,50 @@ func getGraphqlXcAssetQuotationFromDia(blockchains, addresses []string, windowSi
 		return 0.0, errors.New("no results")
 	}
 	return r.GetxcFeed[len(r.GetxcFeed)-1].Value, nil
+}
+
+func getGraphqlLiquidityThresholdAssetQuotationFromDia(blockchain, address, symbol string, windowSize int, gqlMethodology string, liquidityThreshold float64) (float64, string, error) {
+	currentTime := time.Now()
+	starttime := currentTime.Add(time.Duration(-windowSize*2) * time.Second)
+	type Response struct {
+		GetFeed []struct {
+			Name   string    `json:"Name"`
+			Time   time.Time `json:"Time"`
+			Value  float64   `json:"Value"`
+		} `json:"GetFeed"`
+	}
+	client := gql.NewClient("https://api.diadata.org/graphql/query")
+	req := gql.NewRequest(`
+    query  {
+		 GetFeed(
+		 	Filter: "` + gqlMethodology + `", 
+			BlockSizeSeconds: ` + strconv.Itoa(windowSize) + `, 
+			BlockShiftSeconds: ` + strconv.Itoa(windowSize) + `,
+			StartTime: ` + strconv.FormatInt(starttime.Unix(), 10) + `, 
+			EndTime: ` + strconv.FormatInt(currentTime.Unix(), 10) + `,
+			FeedSelection: [
+				{
+					Address: "` + address + `", 
+					Blockchain: "` + blockchain + `",
+					LiquidityThreshold: "` + fmt.Sprintf(".2%f", liquidityThreshold) + `",
+				},
+			],
+			) {
+				Name
+				Time
+				Value
+	  	}
+		}`)
+
+	ctx := context.Background()
+	var r Response
+	if err := client.Run(ctx, req, &r); err != nil {
+		return 0.0, "", err
+	}
+	if len(r.GetFeed) == 0 {
+		return 0.0, "", errors.New("no results")
+	}
+	return r.GetFeed[len(r.GetFeed)-1].Value, symbol, nil
 }
 
 func getCoingeckoPrice(assetName, coingeckoApiKey string) (float64, error) {
