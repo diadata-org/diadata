@@ -114,12 +114,14 @@ func main() {
 		currAsset.blockchain = strings.TrimSpace(entries[0])
 		currAsset.address = strings.TrimSpace(entries[1])
 		currAsset.symbol = strings.TrimSpace(entries[2])
-    currAsset.coingeckoName = strings.TrimSpace(entries[3])
-		allowedCoingeckoDeviation, err := strconv.ParseFloat(strings.TrimSpace(entries[4]), 64)
-		if err != nil {
-			log.Fatalf("Error converting CG Deviation float on parsing %s-%s!", currAsset.blockchain, currAsset.address)
+		if len (entries) > 3 {
+    	currAsset.coingeckoName = strings.TrimSpace(entries[3])
+			allowedCoingeckoDeviation, err := strconv.ParseFloat(strings.TrimSpace(entries[4]), 64)
+			if err != nil {
+				log.Fatalf("Error converting CG Deviation float on parsing %s-%s!", currAsset.blockchain, currAsset.address)
+			}
+    	currAsset.allowedCoingeckoDeviation = allowedCoingeckoDeviation
 		}
-    currAsset.allowedCoingeckoDeviation = allowedCoingeckoDeviation
 
 		// Find out is there are additional GQL parameters for this asset
 		if len(entries) > 5 {
@@ -328,16 +330,18 @@ func oracleUpdateExecutor(
 		oldPrice := publishedPrices[asset.symbol]
 
 		if updateAssetConditional || (newPrice > 1e-8 && ((newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))))) {
-			// Check coingecko for price deviation
-			coingeckoPrice, err := getCoingeckoPrice(asset.coingeckoName, coingeckoApiKey)
-			if err != nil {
-				log.Printf("Error retrieving coingecko information for %s: %s", asset.symbol, err)
-				priceCollector[asset.symbol] = oldPrice
-				continue
-			}
-			if (math.Abs(coingeckoPrice - newPrice) / coingeckoPrice) > asset.allowedCoingeckoDeviation {
-				priceCollector[asset.symbol] = oldPrice
-				continue
+			if asset.coingeckoName != "" {
+				// Check coingecko for price deviation
+				coingeckoPrice, err := getCoingeckoPrice(asset.coingeckoName, coingeckoApiKey)
+				if err != nil {
+					log.Printf("Error retrieving coingecko information for %s: %s", asset.symbol, err)
+					priceCollector[asset.symbol] = oldPrice
+					continue
+				}
+				if (math.Abs(coingeckoPrice - newPrice) / coingeckoPrice) > asset.allowedCoingeckoDeviation {
+					priceCollector[asset.symbol] = oldPrice
+					continue
+				}
 			}
 
 			log.Printf("Entering deviation based update zone for old price %.2f of asset %s. New price: %.2f", oldPrice, asset.symbol, newPrice)
