@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -1456,47 +1457,93 @@ func (datastore *DB) GetAggregatedFeedSelectionRedis(
 	if starttime.After(endtime) {
 		return feedSelectionAggregated, errors.New("starttime is after endtime")
 	}
+	t0 := time.Now()
 
 	for _, fs := range feedselection {
 		keys, err := datastore.GetRedisKeysByFeedselection(fs)
 		if err != nil {
 			return feedSelectionAggregated, err
 		}
+		fsaChan := make(chan *dia.FeedSelectionAggregated)
+		errChan := make(chan error)
+		var wg sync.WaitGroup
 
 		for _, key := range keys {
-			var fsa dia.FeedSelectionAggregated
-			fsa.Exchange = getExchangeFromTradesKey(key)
-			fsa.Quotetoken = fs.Asset
-			fsa.Basetoken = dia.Asset{Address: getBasetokenAddressFromTradesKey(key), Blockchain: getBasetokenBlockchainFromTradesKey(key)}
-			fsa.Pooladdress = getPoolAddressFromTradesKey(key)
-			// PoolLiquidityUSD should be done by the caller.
-			// Compute Volume, tradesCount and LastPrice.
-			t0 := time.Now()
-			log.Infof("query trades for key %s ...", key)
-			trades, err := datastore.GetTradesRedis(key, starttime, endtime, 0, 0)
-			if err != nil {
-				return feedSelectionAggregated, err
-			}
-			log.Infof("... time elapsed %v.", time.Since(t0))
-			fsa.TradesCount = int32(len(trades))
-			lastPriceTime := starttime
-			for _, t := range trades {
-				vol := math.Abs(t.Volume) * t.EstimatedUSDPrice
-				if vol < tradeVolumeThreshold {
-					continue
-				}
-				fsa.Volume += vol
-				if t.Time.After(lastPriceTime) {
-					fsa.LastPrice = t.EstimatedUSDPrice
-				}
-			}
-			fsa.Starttime = starttime
-			fsa.Endtime = endtime
+			wg.Add(1)
+			go datastore.GetTradesAggregationRedis(key, fs.Asset, starttime, endtime, tradeVolumeThreshold, &wg, fsaChan, errChan)
+		}
 
-			feedSelectionAggregated = append(feedSelectionAggregated, fsa)
+		go func() {
+			for {
+				select {
+				case fsa := <-fsaChan:
+					if fsa != nil {
+						feedSelectionAggregated = append(feedSelectionAggregated, *fsa)
+					}
+				case err := <-errChan:
+					if len(errChan) != 0 {
+						log.Error("GetTradesAggregationRedis: ", err)
+					}
+				}
+			}
+		}()
+
+		wg.Wait()
+
+	}
+	// Sort response by volume.
+	sort.Slice(feedSelectionAggregated, func(m, n int) bool {
+		return feedSelectionAggregated[m].Volume > feedSelectionAggregated[n].Volume
+	})
+
+	log.Infof("--------------- total time elapsed: %v ---------------", time.Since(t0))
+	return feedSelectionAggregated, nil
+}
+
+// GetTradesAggregationRedis returns aggregated trading data for @key.
+func (datastore *DB) GetTradesAggregationRedis(
+	key string,
+	asset dia.Asset,
+	starttime time.Time,
+	endtime time.Time,
+	tradeVolumeThreshold float64,
+	wg *sync.WaitGroup,
+	fsaChan chan *dia.FeedSelectionAggregated,
+	errChan chan error,
+) {
+	defer wg.Done()
+
+	var fsa dia.FeedSelectionAggregated
+	fsa.Exchange = getExchangeFromTradesKey(key)
+	fsa.Quotetoken = asset
+	fsa.Basetoken = dia.Asset{Address: getBasetokenAddressFromTradesKey(key), Blockchain: getBasetokenBlockchainFromTradesKey(key)}
+	fsa.Pooladdress = getPoolAddressFromTradesKey(key)
+	// PoolLiquidityUSD should be done by the caller.
+	// Compute Volume, tradesCount and LastPrice.
+
+	t0 := time.Now()
+	trades, err := datastore.GetTradesRedis(key, starttime, endtime, 0, 0)
+	if err != nil {
+		errChan <- err
+	}
+	log.Infof("%v elapsed for key %s.", time.Since(t0), key)
+
+	fsa.TradesCount = int32(len(trades))
+	lastPriceTime := starttime
+	for _, t := range trades {
+		vol := math.Abs(t.Volume) * t.EstimatedUSDPrice
+		if vol < tradeVolumeThreshold {
+			continue
+		}
+		fsa.Volume += vol
+		if t.Time.After(lastPriceTime) {
+			fsa.LastPrice = t.EstimatedUSDPrice
 		}
 	}
-	return feedSelectionAggregated, nil
+	fsa.Starttime = starttime
+	fsa.Endtime = endtime
+	fsaChan <- &fsa
+
 }
 
 // PurgeByKey deletes entries of an ordered set (zrange) given by @key.
