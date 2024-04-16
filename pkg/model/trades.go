@@ -1471,10 +1471,13 @@ func (datastore *DB) GetAggregatedFeedSelectionRedis(
 			fsa.Pooladdress = getPoolAddressFromTradesKey(key)
 			// PoolLiquidityUSD should be done by the caller.
 			// Compute Volume, tradesCount and LastPrice.
+			t0 := time.Now()
+			log.Infof("query trades for key %s ...", key)
 			trades, err := datastore.GetTradesRedis(key, starttime, endtime, 0, 0)
 			if err != nil {
 				return feedSelectionAggregated, err
 			}
+			log.Infof("... time elapsed %v.", time.Since(t0))
 			fsa.TradesCount = int32(len(trades))
 			lastPriceTime := starttime
 			for _, t := range trades {
