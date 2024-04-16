@@ -1481,7 +1481,7 @@ func (datastore *DB) GetAggregatedFeedSelectionRedis(
 						feedSelectionAggregated = append(feedSelectionAggregated, *fsa)
 					}
 				case err := <-errChan:
-					if len(errChan) != 0 {
+					if len(errChan) != 0 && err != nil {
 						log.Error("GetTradesAggregationRedis: ", err)
 					}
 				}
@@ -1526,9 +1526,10 @@ func (datastore *DB) GetTradesAggregationRedis(
 	t0 := time.Now()
 	trades, err := datastore.GetTradesRedis(key, starttime, endtime, 0, 0)
 	if err != nil {
+		log.Errorf("GetTradesRedis for key %s: %v ", key, err)
 		errChan <- err
 	}
-	log.Infof("%v elapsed for key %s.", time.Since(t0), key)
+	log.Infof("%v elapsed for key %s with %v trades.", time.Since(t0), key, len(trades))
 
 	fsa.TradesCount = int32(len(trades))
 	lastPriceTime := starttime
