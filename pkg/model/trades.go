@@ -1458,16 +1458,16 @@ func (datastore *DB) GetAggregatedFeedSelectionRedis(
 		return feedSelectionAggregated, errors.New("starttime is after endtime")
 	}
 	t0 := time.Now()
+	fsaChan := make(chan *dia.FeedSelectionAggregated)
+	errChan := make(chan error)
 
 	for _, fs := range feedselection {
 		keys, err := datastore.GetRedisKeysByFeedselection(fs)
 		if err != nil {
 			return feedSelectionAggregated, err
 		}
-		fsaChan := make(chan *dia.FeedSelectionAggregated)
-		errChan := make(chan error)
-		var wg sync.WaitGroup
 
+		var wg sync.WaitGroup
 		for _, key := range keys {
 			wg.Add(1)
 			go datastore.GetTradesAggregationRedis(key, fs.Asset, starttime, endtime, tradeVolumeThreshold, &wg, fsaChan, errChan)
@@ -1489,8 +1489,10 @@ func (datastore *DB) GetAggregatedFeedSelectionRedis(
 		}()
 
 		wg.Wait()
-
+		close(errChan)
+		close(fsaChan)
 	}
+
 	// Sort response by volume.
 	sort.Slice(feedSelectionAggregated, func(m, n int) bool {
 		return feedSelectionAggregated[m].Volume > feedSelectionAggregated[n].Volume

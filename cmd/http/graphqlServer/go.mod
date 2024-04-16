@@ -3,7 +3,7 @@ module graphqlServer
 go 1.19
 
 require (
-	github.com/diadata-org/diadata v1.4.479-rc-2
+	github.com/diadata-org/diadata v1.4.479-rc-3
 	github.com/graph-gophers/graphql-go v1.1.0
 	github.com/sirupsen/logrus v1.9.3
 )
