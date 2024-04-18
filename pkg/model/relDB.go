@@ -229,7 +229,7 @@ const (
 type RelDB struct {
 	URI            string
 	postgresClient *pgxpool.Pool
-	redisClient    *redis.Client
+	redisClient    *redis.ClusterClient
 	redisPipe      redis.Pipeliner
 	pagesize       uint32
 }
@@ -254,7 +254,7 @@ func NewCachingLayer() (*RelDB, error) {
 func NewRelDataStoreWithOptions(withPostgres bool, withRedis bool) (*RelDB, error) {
 	var (
 		postgresClient *pgxpool.Pool
-		redisClient    *redis.Client
+		redisClient    *redis.ClusterClient
 		redisPipe      redis.Pipeliner
 		url            string
 	)

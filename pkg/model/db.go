@@ -165,7 +165,7 @@ const (
 )
 
 type DB struct {
-	redisClient         *redis.Client
+	redisClient         *redis.ClusterClient
 	redisPipe           redis.Pipeliner
 	influxClient        clientInfluxdb.Client
 	influxBatchPoints   clientInfluxdb.BatchPoints
@@ -236,7 +236,7 @@ func NewDataStoreWithOptions(withRedis bool, withInflux bool) (*DB, error) {
 	var (
 		influxClient      clientInfluxdb.Client
 		influxBatchPoints clientInfluxdb.BatchPoints
-		redisClient       *redis.Client
+		redisClient       *redis.ClusterClient
 		redisPipe         redis.Pipeliner
 	)
 
