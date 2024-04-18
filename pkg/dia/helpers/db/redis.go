@@ -15,7 +15,7 @@ func GetRedisClient() *redis.ClusterClient {
 
 	redisClusterClient = redis.NewClusterClient(&redis.ClusterOptions{
 		Password: password,
-		// Addrs:    []string{},
+		Addrs:    []string{":6379"},
 	})
 
 	pong, err := redisClusterClient.Ping(context.Background()).Result()
