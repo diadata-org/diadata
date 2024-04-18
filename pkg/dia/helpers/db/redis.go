@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"strings"
 
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/redis/go-redis/v9"
@@ -12,10 +13,11 @@ func GetRedisClient() *redis.ClusterClient {
 
 	// This environment variable is either set in docker-compose or empty
 	password := utils.Getenv("REDISPASSWORD", "")
+	addresses := strings.Split(utils.Getenv("REDIS_ADDRS", ""), ",")
 
 	redisClusterClient = redis.NewClusterClient(&redis.ClusterOptions{
 		Password: password,
-		Addrs:    []string{":6379"},
+		Addrs:    addresses,
 	})
 
 	pong, err := redisClusterClient.Ping(context.Background()).Result()
