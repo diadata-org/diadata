@@ -1489,6 +1489,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "TIA",
+            "ForeignName": "TIA-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "TLOS",
             "ForeignName": "TLOS-USDT",
             "Exchange": "KuCoin",

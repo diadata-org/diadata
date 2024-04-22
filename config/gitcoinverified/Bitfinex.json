@@ -103,6 +103,12 @@
             "Address": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD"
         },
         {
+            "Symbol": "TIA",
+            "Exchange": "Bitfinex",
+            "Blockchain": "Osmosis",
+            "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877"
+        },
+        {
             "Symbol": "XAUT",
             "Exchange": "Bitfinex",
             "Blockchain": "Ethereum",

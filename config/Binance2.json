@@ -278,6 +278,24 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "TIABTC",
+            "Ignore": false,
+            "Symbol": "TIA"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "TIAFDUSD",
+            "Ignore": false,
+            "Symbol": "TIA"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "TIAUSDT",
+            "Ignore": false,
+            "Symbol": "TIA"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "UNIUSDT",
             "Ignore": false,
             "Symbol": "UNI"

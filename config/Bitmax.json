@@ -1,6 +1,12 @@
 {
     "Coins": [
         {
+            "Symbol": "TIA",
+            "ForeignName": "TIA/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
             "Symbol": "ORDI",
             "ForeignName": "ORDI/USDT",
             "Exchange": "Bitmax",

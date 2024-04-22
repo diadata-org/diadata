@@ -391,6 +391,18 @@
       "Address": "0x0f2D719407FdBeFF09D87557AbB7232601FD9F29"
     },
     {
+      "Symbol": "TIA",
+      "Exchange": "BitMart",
+      "Blockchain": "Osmosis",
+      "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877"
+    },
+    {
+      "Symbol": "TLOS",
+      "Exchange": "BitMart",
+      "Blockchain": "Telos",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "TRX",
       "Exchange": "BitMart",
       "Blockchain": "Tron",

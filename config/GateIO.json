@@ -104,6 +104,24 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "CUSD_ETH",
+      "Ignore": false,
+      "Symbol": "CUSD"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "SOV_USDT",
+      "Ignore": false,
+      "Symbol": "SOV"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "SOV_BTC",
+      "Ignore": false,
+      "Symbol": "SOV"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "KAVA_USDT",
       "Ignore": false,
       "Symbol": "KAVA"
@@ -449,6 +467,12 @@
       "ForeignName": "SNOW_USDT",
       "Ignore": false,
       "Symbol": "SNOW"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "TIA_USDT",
+      "Ignore": false,
+      "Symbol": "TIA"
     },
     {
       "Exchange": "GateIO",

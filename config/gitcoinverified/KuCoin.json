@@ -745,6 +745,12 @@
             "Address": "0xF001937650bb4f62b57521824B2c20f5b91bEa05"
         },
         {
+            "Symbol": "TIA",
+            "Exchange": "KuCoin",
+            "Blockchain": "Osmosis",
+            "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877"
+        },
+        {
             "Symbol": "TIME",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

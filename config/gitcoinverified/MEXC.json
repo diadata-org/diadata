@@ -511,6 +511,12 @@
       "Address": "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC"
     },
     {
+      "Symbol": "TIA",
+      "Exchange": "MEXC",
+      "Blockchain": "Osmosis",
+      "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877"
+    },
+    {
       "Symbol": "TKB",
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",

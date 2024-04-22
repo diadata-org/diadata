@@ -446,6 +446,18 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "TIAUSDT",
+      "Ignore": false,
+      "Symbol": "TIA"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "TLOSUSDT",
+      "Ignore": false,
+      "Symbol": "TLOS"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "VLXUSDT",
       "Ignore": false,
       "Symbol": "VLX"

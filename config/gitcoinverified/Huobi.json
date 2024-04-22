@@ -367,6 +367,12 @@
       "Address": "0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6"
     },
     {
+      "Symbol": "TIA",
+      "Exchange": "Huobi",
+      "Blockchain": "Osmosis",
+      "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877"
+    },
+    {
       "Symbol": "TLOS",
       "Exchange": "Huobi",
       "Blockchain": "Telos",

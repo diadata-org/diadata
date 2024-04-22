@@ -1,6 +1,12 @@
 {
   "Coins": [
     {
+      "Symbol": "TIA",
+      "ForeignName": "TIAUST",
+      "Exchange": "Bitfinex",
+      "Ignore": false
+    },
+    {
       "Symbol": "ENA",
       "ForeignName": "ENAUST",
       "Exchange": "Bitfinex",

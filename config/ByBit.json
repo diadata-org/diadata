@@ -619,6 +619,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "TIA",
+            "ForeignName": "TIAUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "TLM",
             "ForeignName": "TLMUSDT",
             "Exchange": "ByBit",

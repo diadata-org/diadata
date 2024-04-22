@@ -2,6 +2,18 @@
   "Coins": [
     {
       "Exchange": "BitMart",
+      "ForeignName": "TIA_USDT",
+      "Ignore": false,
+      "Symbol": "TIA"
+    },
+    {
+      "Exchange": "BitMart",
+      "ForeignName": "TLOS_USDT",
+      "Ignore": false,
+      "Symbol": "TLOS"
+    },
+    {
+      "Exchange": "BitMart",
       "ForeignName": "ENA_USDT",
       "Ignore": false,
       "Symbol": "ENA"

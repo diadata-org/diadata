@@ -625,6 +625,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "TIA",
+            "ForeignName": "TIA_USD",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
             "Symbol": "UNI",
             "ForeignName": "UNI_USDC",
             "Exchange": "Crypto.com",

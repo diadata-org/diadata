@@ -859,6 +859,12 @@
             "Address": "0x79C75E2e8720B39e258F41c37cC4f309E0b0fF80"
         },
         {
+            "Symbol": "SOV",
+            "Exchange": "GateIO",
+            "Blockchain": "Rootstock",
+            "Address": "0xEfC78FC7D48B64958315949279bA181C2114abbD"
+        },
+        {
             "Symbol": "SPA",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -887,6 +893,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x4824A7b64E3966B0133f4f4FFB1b9D6bEb75FFF7"
+        },
+        {
+            "Symbol": "TIA",
+            "Exchange": "GateIO",
+            "Blockchain": "Osmosis",
+            "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877"
         },
         {
             "Symbol": "TNC",

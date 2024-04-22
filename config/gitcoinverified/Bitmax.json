@@ -367,6 +367,12 @@
             "Address": "0x476c5E26a75bd202a9683ffD34359C0CC15be0fF"
         },
         {
+            "Symbol": "TIA",
+            "Exchange": "Bitmax",
+            "Blockchain": "Osmosis",
+            "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877"
+        },
+        {
             "Symbol": "TRX",
             "Exchange": "Bitmax",
             "Blockchain": "Tron",

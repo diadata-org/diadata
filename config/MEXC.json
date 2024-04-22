@@ -553,6 +553,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "TIA",
+      "ForeignName": "TIAUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "TKB",
       "ForeignName": "TKBUSDT",
       "Exchange": "MEXC",

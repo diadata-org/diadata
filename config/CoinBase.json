@@ -188,6 +188,12 @@
     },
     {
       "Exchange": "CoinBase",
+      "ForeignName": "TIA-USD",
+      "Ignore": false,
+      "Symbol": "TIA"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "UST-USD",
       "Ignore": false,
       "Symbol": "UST"

@@ -152,6 +152,12 @@
     },
     {
       "Exchange": "Kraken",
+      "ForeignName": "TIAUSD",
+      "Ignore": false,
+      "Symbol": "TIA"
+    },
+    {
+      "Exchange": "Kraken",
       "ForeignName": "USDTZUSD",
       "Ignore": false,
       "Symbol": "USDT"

@@ -2528,6 +2528,12 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "TIA-USDT",
+      "Ignore": false,
+      "Symbol": "TIA"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "TNB-BTC",
       "Ignore": false,
       "Symbol": "TNB"
