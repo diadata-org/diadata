@@ -63,6 +63,10 @@
             "ChainID": "Ethereum137"
         },
         {
+            "Name": "Rootstock",
+            "ChainID": "Ethereum30"
+        },
+        {
             "Name": "Fantom",
             "GenesisDate": 1540857600,
             "NativeToken": {
