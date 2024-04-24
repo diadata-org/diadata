@@ -8,6 +8,7 @@ require (
 	github.com/beldur/kraken-go-api-client v0.0.0-20200330152217-ed78f31b987e
 	github.com/bitfinexcom/bitfinex-api-go v0.0.0-20200709134622-b8be40b33f25
 	github.com/blockstatecom/go-bitcoind v0.0.0-20180820094557-9dedf42af7c3
+	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/cnf/structhash v0.0.0-20180104161610-62a607eb0224
 	github.com/cosmos/cosmos-sdk v0.45.1
 	github.com/cosmos/ibc-go/v3 v3.0.0
@@ -49,9 +50,7 @@ require (
 	github.com/vincent-petithory/dataurl v1.0.0
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	go.uber.org/ratelimit v0.2.0
-	go.uber.org/zap v1.21.0
 	golang.org/x/crypto v0.4.0
-	golang.org/x/net v0.8.0
 	golang.org/x/sync v0.1.0
 	google.golang.org/grpc v1.44.0
 	google.golang.org/protobuf v1.28.1
@@ -197,6 +196,8 @@ require (
 	go.etcd.io/bbolt v1.3.6 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.7.0 // indirect
+	go.uber.org/zap v1.21.0 // indirect
+	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/term v0.6.0 // indirect
 	golang.org/x/text v0.8.0 // indirect
