@@ -5,7 +5,7 @@ go 1.19
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 require (
-	github.com/diadata-org/diadata v1.4.475-rc-3
+	github.com/diadata-org/diadata v1.4.479-rc-7
 	github.com/jasonlvhit/gocron v0.0.1
 	github.com/sirupsen/logrus v1.9.3
 )

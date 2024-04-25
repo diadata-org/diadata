@@ -1302,16 +1302,18 @@ func (datastore *DB) SaveTradeSetElementRedis(t dia.Trade) error {
 	if err != nil {
 		return err
 	}
-	if err = datastore.redisPipe.Expire(
+
+	err = datastore.redisPipe.Expire(
 		context.Background(),
 		getAssetKeyRedis(t.QuoteToken),
 		time.Duration((TRADES_TIMEOUT_REDIS_24H+TRADES_TIMEOUT_BUFFER)*time.Second),
-	).Err(); err != nil {
+	).Err()
+	if err != nil {
 		log.Errorf("expire %s: %v", getAssetKeyRedis(t.QuoteToken), err)
 	}
 
 	// For easier retrieval, save all assets that were traded at least once in a set.
-	return datastore.redisClient.SAdd(context.Background(), TRADED_ASSETS_KEY, getAssetKeyRedis(t.QuoteToken)).Err()
+	return datastore.redisPipe.SAdd(context.Background(), TRADED_ASSETS_KEY, getAssetKeyRedis(t.QuoteToken)).Err()
 }
 
 func (datastore *DB) GetExchangepairKeysRedis(asset dia.Asset) (exchangepairKeys []string, err error) {

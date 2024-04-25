@@ -303,10 +303,13 @@ func (datastore *DB) addPoint(pt *clientInfluxdb.Point) {
 	}
 }
 
-func (datastore *DB) ExecuteRedisPipe() (err error) {
+func (datastore *DB) ExecuteRedisPipe() error {
 	// TO DO: Handle first return value for read requests.
-	_, err = datastore.redisPipe.Exec(context.Background())
-	return
+	cmd, err := datastore.redisPipe.Exec(context.Background())
+	if len(cmd) > 0 {
+		log.Infof("first and last entry of redis pipe: %s -- %s", cmd[0].String(), cmd[len(cmd)-1].String())
+	}
+	return err
 }
 
 func (datastore *DB) FlushRedisPipe() {
