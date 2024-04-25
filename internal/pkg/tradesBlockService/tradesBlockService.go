@@ -231,11 +231,12 @@ func (s *TradesBlockService) mainLoop() {
 
 			t0 = time.Now()
 
+			log.Infof("execute redis pipe of length %v ...", s.datastore.LenRedisPipe())
 			err = s.datastore.ExecuteRedisPipe()
 			if err != nil {
 				log.Error("execute redis pipe: ", err)
 			}
-			log.Infof("--- execution of redis pipe of length %v done in %v.", s.datastore.LenRedisPipe(), time.Since(t0))
+			log.Infof("... execute redis pipe done in %v.", time.Since(t0))
 
 			t0 = time.Now()
 			s.datastore.FlushRedisPipe()
