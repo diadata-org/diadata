@@ -8,6 +8,7 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	alephiumhelper "github.com/diadata-org/diadata/pkg/dia/helpers/alephium-helper"
+	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/sirupsen/logrus"
 )
@@ -35,11 +36,12 @@ type AlphiumAssetSource struct {
 	doneChannel    chan bool
 	blockchain     string
 	limit          uint
+	relDB          *models.RelDB
 	logger         *logrus.Entry
 	sleepTimeout   int
 }
 
-func NewAlphiumAssetSource(exchange dia.Exchange) *AlphiumAssetSource {
+func NewAlphiumAssetSource(exchange dia.Exchange, relDB *models.RelDB) *AlphiumAssetSource {
 	limit := utils.GetenvUint(strings.ToUpper(exchange.Name)+"_ASSETS_LIMIT", defaultAssetRequestLimit)
 	sleepTimeout := utils.GetenvInt(strings.ToUpper(exchange.Name)+"_ASSETS_SLEEP_TIMEOUT", defaultSleepTimeout)
 	contractsLimit := utils.GetenvInt(strings.ToUpper(exchange.Name)+"_ASSETS_CONTRACTS_LIMIT", defaultContractsLimit)
@@ -66,6 +68,7 @@ func NewAlphiumAssetSource(exchange dia.Exchange) *AlphiumAssetSource {
 		doneChannel:    doneChannel,
 		blockchain:     exchange.BlockChain.Name,
 		limit:          limit,
+		relDB:          relDB,
 		sleepTimeout:   sleepTimeout,
 		logger:         logger,
 	}
@@ -100,6 +103,23 @@ func (s *AlphiumAssetSource) fetchAssets(contractsLimit int) {
 
 		uniqueAddressesMap[tokenPairs[0]]++
 		uniqueAddressesMap[tokenPairs[1]]++
+
+		swapRelation := dia.SwapRelation{
+			Blockchain:    s.blockchain,
+			ParentAddress: contractAddress,
+			AssetAddress0: tokenPairs[0],
+			AssetAddress1: tokenPairs[1],
+		}
+
+		err = s.relDB.SetSwapRelation(swapRelation)
+		if err != nil {
+			s.logger.
+				WithField("contractAddress", contractAddress).
+				WithError(err).
+				Error("failed to call SetSwapRelation")
+			time.Sleep(time.Duration(s.sleepTimeout) * time.Millisecond)
+			continue
+		}
 
 		s.logger.
 			WithField("contractAddress", contractAddress).
