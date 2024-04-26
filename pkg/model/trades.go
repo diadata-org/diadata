@@ -1481,9 +1481,9 @@ func (datastore *DB) GetAggregatedFeedSelectionRedis(
 				case fsa := <-fsaChan:
 					if fsa != nil {
 						feedSelectionAggregated = append(feedSelectionAggregated, *fsa)
+						log.Info("Memory after adding basetoken symbol and exchange ", fsa.Basetoken.Symbol+"-"+fsa.Exchange)
+						utils.PrintMemUsage()
 					}
-					log.Info("Memory after adding basetoken symbol and exchange ", fsa.Basetoken.Symbol+"-"+fsa.Exchange)
-					utils.PrintMemUsage()
 
 				case err := <-errChan:
 					if len(errChan) != 0 && err != nil {
