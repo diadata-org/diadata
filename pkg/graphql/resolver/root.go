@@ -738,6 +738,9 @@ func (r *DiaResolver) GetFeedAggregation(ctx context.Context, args struct {
 	}
 
 	// Get aggregated data in given time-range.
+	log.Info("Memory usage before GetAggregatedFeedSelectionRedis...")
+	utils.PrintMemUsage()
+
 	var fsa []dia.FeedSelectionAggregated
 	if r.WithInflux {
 		fsa, err = r.DS.GetAggregatedFeedSelection(feedselection, starttime, endtime, tradeVolumeThreshold)
@@ -748,6 +751,8 @@ func (r *DiaResolver) GetFeedAggregation(ctx context.Context, args struct {
 		log.Error("GetAggregatedFeedSelection: ", err)
 		return &sr, err
 	}
+	log.Info("Memory usage after GetAggregatedFeedSelectionRedis...")
+	utils.PrintMemUsage()
 
 	// Fill response slice.
 	var fsar []*FeedSelectionAggregatedResolver

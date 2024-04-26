@@ -1471,6 +1471,8 @@ func (datastore *DB) GetAggregatedFeedSelectionRedis(
 
 		var wg sync.WaitGroup
 		for _, key := range keys {
+			log.Info("Memory at key ", key)
+			utils.PrintMemUsage()
 			wg.Add(1)
 			go datastore.GetTradesAggregationRedis(key, fs.Asset, starttime, endtime, tradeVolumeThreshold, &wg, fsaChan, errChan)
 		}
