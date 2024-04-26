@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/redis/go-redis/v9"
@@ -16,8 +17,9 @@ func GetRedisClient() *redis.ClusterClient {
 	addresses := strings.Split(utils.Getenv("REDIS_ADDRS", ""), ",")
 
 	redisClusterClient = redis.NewClusterClient(&redis.ClusterOptions{
-		Password: password,
-		Addrs:    addresses,
+		Password:    password,
+		Addrs:       addresses,
+		ReadTimeout: time.Duration(120 * time.Second),
 	})
 
 	pong, err := redisClusterClient.Ping(context.Background()).Result()
