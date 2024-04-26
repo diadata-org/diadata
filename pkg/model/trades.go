@@ -1471,8 +1471,6 @@ func (datastore *DB) GetAggregatedFeedSelectionRedis(
 
 		var wg sync.WaitGroup
 		for _, key := range keys {
-			log.Info("Memory at key ", key)
-			utils.PrintMemUsage()
 			wg.Add(1)
 			go datastore.GetTradesAggregationRedis(key, fs.Asset, starttime, endtime, tradeVolumeThreshold, &wg, fsaChan, errChan)
 		}
@@ -1484,6 +1482,9 @@ func (datastore *DB) GetAggregatedFeedSelectionRedis(
 					if fsa != nil {
 						feedSelectionAggregated = append(feedSelectionAggregated, *fsa)
 					}
+					log.Info("Memory after adding basetoken symbol and exchange ", fsa.Basetoken.Symbol+"-"+fsa.Exchange)
+					utils.PrintMemUsage()
+
 				case err := <-errChan:
 					if len(errChan) != 0 && err != nil {
 						log.Error("GetTradesAggregationRedis: ", err)
