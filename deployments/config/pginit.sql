@@ -129,7 +129,7 @@ CREATE TABLE polling (
     polling_id UUID DEFAULT gen_random_uuid(),
     blockchain text,
     contract_address text NOT NULL,
-    next_start numeric DEFAULT 0,    
+    page numeric DEFAULT 1,
     UNIQUE(blockchain, contract_address)
 );
 

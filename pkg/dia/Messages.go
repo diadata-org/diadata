@@ -352,10 +352,17 @@ type SwapRelation struct {
 	AssetAddress1 string `json:"AssetAddress1"`
 }
 
+type SwapRelationWithAssets struct {
+	Blockchain    string `json:"Blockchain"`
+	ParentAddress string `json:"ParentAddress"`
+	Asset0        Asset  `json:"Asset0"`
+	Asset1        Asset  `json:"Asset1"`
+}
+
 type Polling struct {
 	Blockchain      string `json:"Blockchain"`
 	ContractAddress string `json:"ContractAddress"`
-	NextStart       int    `json:"NextStart"`
+	Page            int    `json:"Page"`
 }
 
 // Pair substitues the old dia.Pair. It includes the new asset type.

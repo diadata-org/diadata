@@ -70,3 +70,24 @@ go run collector.go -exchange MySource
 ```
 
 For an illustration you can have a look at the `KrakenScraper.go`.
+
+### kafka tips
+
+Sometimes kafka docker container cant create topics, required for writing
+Kafka needs to write results of exchange scrapper from command
+
+```
+go run /cmd/exchange-scrapers/collector/collector.go -exchange StellarExchange
+```
+
+It can be resolved it by ssh login to kafka container and run kafka scripts
+```
+your-console> docker exec -it <kafka-docker-container-id> bash
+...
+root@ad1f7deb4762:/# kafka-topics.sh --zookeeper zookeeper --topic trades --create --partitions 2 --replication-factor 1
+Created topic trades.
+root@ad1f7deb4762:/# kafka-topics.sh --zookeeper zookeeper --topic tradesReplicadia --create --partitions 2 --replication-factor 1
+Created topic tradesReplicadia.
+root@ad1f7deb4762:/# kafka-topics.sh --zookeeper zookeeper --topic tradestest --create --partitions 2 --replication-factor 1
+Created topic tradestest.
+```

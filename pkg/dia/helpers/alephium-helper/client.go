@@ -12,6 +12,7 @@ import (
 	"net/http/httputil"
 	"time"
 
+	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/sirupsen/logrus"
 )
 
@@ -27,6 +28,18 @@ const (
 	DecimalsMethod
 	TokenPairMethod = 7
 )
+
+const SwapEventIndex = 2
+
+// "0000000000000000000000000000000000000000000000000000000000000000"
+// native alephium token - it has no related contract
+// https://github.com/alephium/token-list/blob/master/tokens/mainnet.json#L4-L11
+var ALPHNativeToken = dia.Asset{
+	Address:  "tgx7VNFoP9DJiFMFgXXtafQZkUvyEdDHT9ryamHJYrjq",
+	Symbol:   "ALPH",
+	Decimals: 18,
+	Name:     "Alephium",
+}
 
 type AlephiumClient struct {
 	Debug      bool
@@ -224,4 +237,50 @@ func (c *AlephiumClient) GetTokenInfoForContract(contractAddress string) (*Outpu
 		output.Results = append(output.Results, result)
 	}
 	return &output, nil
+}
+
+func (c *AlephiumClient) GetSwapContractEvents(contractAddress string, limit, nextStart int) ([]EventContract, error) {
+	// TODO waiting from alephium feature - filter by eventIndex
+	logger := c.logger.WithField("function", "GetSwapContractEvents")
+	// curl https://node.mainnet.alephium.org/events/contract/2A5R8KZQ3rhKYrW7bAS4JTjY9FCFLJg6HjQpqSFZBqACX?start=0&limit=10
+	// https://backend.mainnet.alephium.org/contract-events/contract-address/vFpZ1DF93x1xGHoXM8rsDBFjpcoSsCi5ZEuA5NG5UJGX/?page=2&limit=2
+	if nextStart == 0 {
+		nextStart = 1
+	}
+	url := fmt.Sprintf("%s/contract-events/contract-address/%s?page=%d&limit=%d", BackendURL, contractAddress, nextStart, limit)
+	request, _ := http.NewRequest("GET", url, nil)
+
+	logger.WithField("url", url).Info("url")
+
+	eventContractResponse := make([]EventContract, 0)
+	err := c.callAPI(request, &eventContractResponse)
+	if err != nil {
+		logger.WithError(err).Error("failed to callApi")
+		return eventContractResponse, err
+	}
+
+	swapEvents := make([]EventContract, 0)
+	for _, event := range eventContractResponse {
+		if event.EventIndex == SwapEventIndex {
+			swapEvents = append(swapEvents, event)
+		}
+	}
+
+	return swapEvents, nil
+}
+
+func (c *AlephiumClient) GetTransactionDetails(txnHash string) (TransactionDetailsResponse, error) {
+	logger := c.logger.WithField("function", "GetTransactionDetails")
+
+	// 'https://backend.mainnet.alephium.org/transactions/b9744b60b94a342c488dbf827747e5ac8ff8adabce48a72167f0ce3dfbe8291a
+	url := fmt.Sprintf("%s/transactions/%s", BackendURL, txnHash)
+	request, _ := http.NewRequest("GET", url, nil)
+
+	var transactionDetailsResponse TransactionDetailsResponse
+	err := c.callAPI(request, &transactionDetailsResponse)
+	if err != nil {
+		logger.WithError(err).Error("failed to callApi")
+		return transactionDetailsResponse, err
+	}
+	return transactionDetailsResponse, nil
 }

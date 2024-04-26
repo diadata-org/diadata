@@ -20,16 +20,6 @@ const (
 	defaultContractsLimit    = 100
 )
 
-// "0000000000000000000000000000000000000000000000000000000000000000"
-// native alephium token - it has no related contract
-// https://github.com/alephium/token-list/blob/master/tokens/mainnet.json#L4-L11
-var ALPHNativeToken = dia.Asset{
-	Address:  "tgx7VNFoP9DJiFMFgXXtafQZkUvyEdDHT9ryamHJYrjq",
-	Symbol:   "ALPH",
-	Decimals: 18,
-	Name:     "Alephium",
-}
-
 type AlphiumAssetSource struct {
 	alephiumClient *alephiumhelper.AlephiumClient
 	assetChannel   chan dia.Asset
@@ -136,9 +126,9 @@ func (s *AlphiumAssetSource) fetchAssets(contractsLimit int) {
 	}
 
 	for _, contractAddress := range uniqueAddresses {
-		if contractAddress == ALPHNativeToken.Address {
-			ALPHNativeToken.Blockchain = s.blockchain
-			s.assetChannel <- ALPHNativeToken
+		if contractAddress == alephiumhelper.ALPHNativeToken.Address {
+			alephiumhelper.ALPHNativeToken.Blockchain = s.blockchain
+			s.assetChannel <- alephiumhelper.ALPHNativeToken
 			continue
 		}
 		tokens, err := s.alephiumClient.GetTokenInfoForContract(contractAddress)
