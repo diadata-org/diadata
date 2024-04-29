@@ -16,10 +16,10 @@ import (
 )
 
 const (
-	// TODO fix to interval - seconds
-	defaultRefreshDelay              = 60 // sec
-	defaultSleepBetweenContractCalls = 5  // sec
+	defaultRefreshDelay              = 400  // millisec
+	defaultSleepBetweenContractCalls = 1000 // millisec
 	defaultEventsLimit               = 10
+	defaultSwapContractsLimit        = 100
 )
 
 type AlephiumScraper struct {
@@ -38,24 +38,35 @@ type AlephiumScraper struct {
 	exchangeName              string
 	blockchain                string
 	eventsLimit               int
+	swapContractsLimit        int
+	targetSwapContract        string
 	chanTrades                chan *dia.Trade
 	db                        *models.RelDB
 	refreshDelay              time.Duration
 	sleepBetweenContractCalls time.Duration
 }
 
-func getTimeDurationFromIntAsSeconds(input int) time.Duration {
-	result := time.Duration(input) * time.Second
+func getTimeDurationFromIntAsMilliseconds(input int) time.Duration {
+	result := time.Duration(input) * time.Millisecond
 	return result
 }
 
 // NewAlephiumScraper returns a new AlephiumScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
+// ENV values:
+//
+//		AYIN_REFRESH_DELAY - (optional,millisecond) refresh data after each poll, default "defaultRefreshDelay" value
+//	 	AYIN_SLEEP_TIMEOUT - (optional,millisecond), make timeout between API calls, default "defaultSleepBetweenContractCalls" value
+//		AYIN_SWAP_CONTRACTS_LIMIT - (optional, int), limit to get swap contact addresses, default "defaultSwapContractsLimit" value
+//		AYIN_TARGET_SWAP_CONTRACT - (optional, string), default = ""
+//		AYIN_DEBUG - (optional, bool), make stdout output with alephium client http call, default = false
 func NewAlephiumScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *AlephiumScraper {
-	refreshDelay := getTimeDurationFromIntAsSeconds(utils.GetenvInt(strings.ToUpper(exchange.Name)+"_REFRESH_DELAY", defaultRefreshDelay))
-	sleepBetweenContractCalls := getTimeDurationFromIntAsSeconds(utils.GetenvInt(strings.ToUpper(exchange.Name)+"_SLEEP_TIMEOUT", defaultSleepBetweenContractCalls))
+	ayinRefreshDelay := getTimeDurationFromIntAsMilliseconds(utils.GetenvInt(strings.ToUpper(exchange.Name)+"_REFRESH_DELAY", defaultRefreshDelay))
+	sleepBetweenContractCalls := getTimeDurationFromIntAsMilliseconds(utils.GetenvInt(strings.ToUpper(exchange.Name)+"_SLEEP_TIMEOUT", defaultSleepBetweenContractCalls))
 	isDebug := utils.GetenvBool(strings.ToUpper(exchange.Name)+"_DEBUG", false)
 	eventsLimit := utils.GetenvInt(strings.ToUpper(exchange.Name)+"_REFRESH_DELAY", defaultEventsLimit)
+	swapContractsLimit := utils.GetenvInt(strings.ToUpper(exchange.Name)+"_SWAP_CONTRACTS_LIMIT", defaultSwapContractsLimit)
+	targetSwapContract := utils.Getenv(strings.ToUpper(exchange.Name)+"_TARGET_SWAP_CONTRACT", "")
 
 	alephiumClient := alephiumhelper.NewAlephiumClient(
 		log.WithContext(context.Background()).WithField("context", "AlephiumClient"),
@@ -66,16 +77,18 @@ func NewAlephiumScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB)
 		shutdownDone:              make(chan nothing),
 		pairScrapers:              make(map[string]*AlephiumPairScraper),
 		api:                       alephiumClient,
-		ticker:                    time.NewTicker(krakenRefreshDelay),
+		ticker:                    time.NewTicker(ayinRefreshDelay),
 		exchangeName:              exchange.Name,
 		blockchain:                exchange.BlockChain.Name,
 		error:                     nil,
 		chanTrades:                make(chan *dia.Trade),
 		db:                        relDB,
-		refreshDelay:              refreshDelay,
+		refreshDelay:              ayinRefreshDelay,
 		sleepBetweenContractCalls: sleepBetweenContractCalls,
 		logger:                    logrus.New().WithContext(context.Background()).WithField("context", "AlephiumScraper"),
 		eventsLimit:               eventsLimit,
+		swapContractsLimit:        swapContractsLimit,
+		targetSwapContract:        targetSwapContract,
 	}
 	if scrape {
 		go s.mainLoop()
@@ -87,17 +100,17 @@ func NewAlephiumScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB)
 func (s *AlephiumScraper) mainLoop() {
 	err := s.Update()
 	if err != nil {
-		log.Error(err)
+		s.logger.Error(err)
 	}
 	for {
 		select {
 		case <-s.ticker.C:
 			err := s.Update()
 			if err != nil {
-				log.Error(err)
+				s.logger.Error(err)
 			}
 		case <-s.shutdown: // user requested shutdown
-			log.Println("AlephiumScraper shutting down")
+			s.logger.Println("shutting down")
 			s.cleanup(nil)
 			return
 		}
@@ -109,7 +122,6 @@ func (s *AlephiumScraper) FillSymbolData(symbol string) (dia.Asset, error) {
 }
 
 func (s *AlephiumScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
-	// as for now we do not need to normalize the pair
 	return pair, nil
 }
 
@@ -133,12 +145,28 @@ func (s *AlephiumScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error)
 	return ps, nil
 }
 
+func (s *AlephiumScraper) getRowsForTargetSwapContract() ([]dia.SwapRelationWithAssets, error) {
+	swapRows, err := s.db.GetSwapRelationsByBlockchain(s.blockchain)
+
+	if err != nil {
+		return swapRows, err
+	}
+	for _, swapRow := range swapRows {
+		if s.targetSwapContract != "" && swapRow.ParentAddress == s.targetSwapContract {
+			returnedValue := make([]dia.SwapRelationWithAssets, 1)
+			returnedValue[0] = swapRow
+			return returnedValue, nil
+		}
+	}
+	return swapRows, nil
+}
+
 func (s *AlephiumScraper) Update() error {
 	logger := s.logger.WithFields(logrus.Fields{
 		"function": "Update",
 	})
 
-	swapRows, err := s.db.GetSwapRelationsByBlockchain(s.blockchain)
+	swapRows, err := s.getRowsForTargetSwapContract()
 
 	if err != nil {
 		logger.
@@ -189,7 +217,7 @@ func (s *AlephiumScraper) Update() error {
 			return err
 		}
 		for _, event := range events {
-			logger.WithField("event", event).WithField("polling.NextStart", polling.Page).Info("event")
+			logger.WithField("event", event).WithField("polling.Page", polling.Page).Info("event")
 			transactionDetails, err := s.api.GetTransactionDetails(event.TxHash)
 			if err != nil {
 				logger.
@@ -286,56 +314,59 @@ func (s *AlephiumScraper) Close() error {
 }
 
 // Channel returns a channel that can be used to receive trades/pricing information
-func (ps *AlephiumScraper) Channel() chan *dia.Trade {
-	return ps.chanTrades
+func (s *AlephiumScraper) Channel() chan *dia.Trade {
+	return s.chanTrades
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs as dia.ExchangePair for the pairDiscorvery service
-func (ps *AlephiumScraper) FetchAvailablePairs() (pair []dia.ExchangePair, err error) {
-	//logger := ps.logger.WithFields(logrus.Fields{
-	//	"function": "Update",
-	//})
-	//contractAddresses, err := ps.api.GetSwapPairsContractAddresses(contractsLimit)
-	//if err != nil {
-	//	logger.WithError(err).Error("failed to get swap contract addresses")
-	//	return
-	//}
-	//for _, contractAddress := range contractAddresses.SubContracts {
-	//	tokenPairs, err := ps.api.GetTokenPairAddresses(contractAddress)
-	//
-	//	if err != nil {
-	//		logger.
-	//			WithField("contractAddress", contractAddress).
-	//			WithError(err).
-	//			Error("failed to get GetTokenPairAddresses")
-	//		continue
-	//	}
-	//}
-	//data, _, err := utils.GetRequest("https://api.binance.us/api/v1/exchangeInfo")
-	//
-	//if err != nil {
-	//	return
-	//}
-	//var ar binance.ExchangeInfo
-	//err = json.Unmarshal(data, &ar)
-	//if err == nil {
-	//	for _, p := range ar.Symbols {
-	//		pairToNormalise := dia.ExchangePair{
-	//			Symbol:      p.BaseAsset,
-	//			ForeignName: p.Symbol,
-	//			Exchange:    s.exchangeName,
-	//		}
-	//		pair, serr := s.normalizeSymbol(pairToNormalise, p.BaseAsset, p.Status)
-	//		if serr == nil {
-	//			pairs = append(pairs, pair)
-	//		} else {
-	//			log.Error(serr)
-	//		}
-	//	}
-	//}
-	//return
+func (s *AlephiumScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
+	logger := s.logger.WithFields(logrus.Fields{
+		"function": "FetchAvailablePairs",
+	})
+	contractAddresses, err := s.api.GetSwapPairsContractAddresses(s.swapContractsLimit)
+	if err != nil {
+		logger.WithError(err).Error("failed to get swap contract addresses")
+		return
+	}
+	for _, contractAddress := range contractAddresses.SubContracts {
+		tokenPairs, err := s.api.GetTokenPairAddresses(contractAddress)
 
-	return []dia.ExchangePair{}, errors.New("FetchAvailablePairs() not implemented")
+		if err != nil {
+			logger.
+				WithField("contractAddress", contractAddress).
+				WithError(err).
+				Error("failed to get GetTokenPairAddresses")
+			continue
+		}
+
+		token0, err := s.api.GetTokenInfoForContractDecoded(tokenPairs[0], s.blockchain)
+		if err != nil {
+			logger.
+				WithField("contractAddress", contractAddress).
+				WithError(err).
+				Error("failed to get GetTokenInfoForContractDecoded for token0")
+			continue
+		}
+
+		token1, err := s.api.GetTokenInfoForContractDecoded(tokenPairs[1], s.blockchain)
+		if err != nil {
+			logger.
+				WithField("contractAddress", contractAddress).
+				WithError(err).
+				Error("failed to get GetTokenInfoForContractDecoded for token1")
+			continue
+		}
+		pair := dia.ExchangePair{
+			Symbol:      token0.Symbol,
+			ForeignName: fmt.Sprintf("%s-%s", token0.Symbol, token1.Symbol),
+			Exchange:    s.exchangeName,
+		}
+
+		pairs = append(pairs, pair)
+
+		time.Sleep(s.sleepBetweenContractCalls)
+	}
+	return pairs, nil
 }
 
 type AlephiumPairScraper struct {

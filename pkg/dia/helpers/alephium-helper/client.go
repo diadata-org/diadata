@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httputil"
+	"strconv"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
@@ -31,8 +32,7 @@ const (
 
 const SwapEventIndex = 2
 
-// "0000000000000000000000000000000000000000000000000000000000000000"
-// native alephium token - it has no related contract
+// ALPHNativeToken: native alephium token - it has no related contract
 // https://github.com/alephium/token-list/blob/master/tokens/mainnet.json#L4-L11
 var ALPHNativeToken = dia.Asset{
 	Address:  "tgx7VNFoP9DJiFMFgXXtafQZkUvyEdDHT9ryamHJYrjq",
@@ -41,12 +41,14 @@ var ALPHNativeToken = dia.Asset{
 	Name:     "Alephium",
 }
 
+// AlephiumClient: interaction with alephium REST API with urls from @BackendURL, @NodeURL contants
 type AlephiumClient struct {
 	Debug      bool
 	HTTPClient *http.Client
 	logger     *logrus.Entry
 }
 
+// NewAlephiumClient returns AlephiumClient
 func NewAlephiumClient(logger *logrus.Entry, debug bool) *AlephiumClient {
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{
@@ -107,10 +109,11 @@ func (c *AlephiumClient) callAPI(request *http.Request, target interface{}) erro
 	return err
 }
 
-func (c *AlephiumClient) GetSwapPairsContractAddresses(defaultContractsLimit int) (SubContractResponse, error) {
+// GetSwapPairsContractAddresses returns swap contract addresses for alephium
+func (c *AlephiumClient) GetSwapPairsContractAddresses(swapContractsLimit int) (SubContractResponse, error) {
 	var contractResponse SubContractResponse
 
-	url := fmt.Sprintf("%s/contracts/%s/sub-contracts?limit=%d", BackendURL, AYINPairContractAddress, defaultContractsLimit)
+	url := fmt.Sprintf("%s/contracts/%s/sub-contracts?limit=%d", BackendURL, AYINPairContractAddress, swapContractsLimit)
 	request, _ := http.NewRequest("GET", url, nil)
 
 	err := c.callAPI(request, &contractResponse)
@@ -118,6 +121,7 @@ func (c *AlephiumClient) GetSwapPairsContractAddresses(defaultContractsLimit int
 	return contractResponse, err
 }
 
+// GetTokenPairAddresses returns token address pair for swap contract address
 func (c *AlephiumClient) GetTokenPairAddresses(contractAddress string) ([]string, error) {
 	group, err := groupOfAddress(contractAddress)
 	if err != nil {
@@ -177,10 +181,14 @@ func (c *AlephiumClient) GetTokenPairAddresses(contractAddress string) ([]string
 	return output, nil
 }
 
-func (c *AlephiumClient) GetTokenInfoForContract(contractAddress string) (*OutputResult, error) {
+// GetTokenInfoForContractDecoded returns alephium token metainfo, decoded to dia.Asset struct
+func (c *AlephiumClient) GetTokenInfoForContractDecoded(contractAddress, blockchain string) (*dia.Asset, error) {
 	inputData := make([]CallContractRequest, 0)
 	logger := c.logger.WithField("function", "GetTokenInfoForContract")
 
+	if contractAddress == ALPHNativeToken.Address {
+		return &ALPHNativeToken, nil
+	}
 	for i := 0; i < 3; i++ {
 		group, err := groupOfAddress(contractAddress)
 		if err != nil {
@@ -236,18 +244,21 @@ func (c *AlephiumClient) GetTokenInfoForContract(contractAddress string) (*Outpu
 		}
 		output.Results = append(output.Results, result)
 	}
-	return &output, nil
+	asset, err := c.decodeMulticallRequestToAssets(contractAddress, blockchain, &output)
+
+	return &asset, err
 }
 
-func (c *AlephiumClient) GetSwapContractEvents(contractAddress string, limit, nextStart int) ([]EventContract, error) {
-	// TODO waiting from alephium feature - filter by eventIndex
+// GetSwapContractEvents returns swap events from REST API for swap contract address
+func (c *AlephiumClient) GetSwapContractEvents(contractAddress string, limit, page int) ([]EventContract, error) {
 	logger := c.logger.WithField("function", "GetSwapContractEvents")
 	// curl https://node.mainnet.alephium.org/events/contract/2A5R8KZQ3rhKYrW7bAS4JTjY9FCFLJg6HjQpqSFZBqACX?start=0&limit=10
 	// https://backend.mainnet.alephium.org/contract-events/contract-address/vFpZ1DF93x1xGHoXM8rsDBFjpcoSsCi5ZEuA5NG5UJGX/?page=2&limit=2
-	if nextStart == 0 {
-		nextStart = 1
+	if page == 0 {
+		page = 1
 	}
-	url := fmt.Sprintf("%s/contract-events/contract-address/%s?page=%d&limit=%d", BackendURL, contractAddress, nextStart, limit)
+	// TODO waiting from alephium feature - filter by eventIndex - can be refactored here to simplify code
+	url := fmt.Sprintf("%s/contract-events/contract-address/%s?page=%d&limit=%d", BackendURL, contractAddress, page, limit)
 	request, _ := http.NewRequest("GET", url, nil)
 
 	logger.WithField("url", url).Info("url")
@@ -269,6 +280,7 @@ func (c *AlephiumClient) GetSwapContractEvents(contractAddress string, limit, ne
 	return swapEvents, nil
 }
 
+// GetSwapContractEvents returns swap event transaction details by transaction hash
 func (c *AlephiumClient) GetTransactionDetails(txnHash string) (TransactionDetailsResponse, error) {
 	logger := c.logger.WithField("function", "GetTransactionDetails")
 
@@ -283,4 +295,42 @@ func (c *AlephiumClient) GetTransactionDetails(txnHash string) (TransactionDetai
 		return transactionDetailsResponse, err
 	}
 	return transactionDetailsResponse, nil
+}
+
+func (s *AlephiumClient) decodeMulticallRequestToAssets(contractAddress, blockchain string, resp *OutputResult) (dia.Asset, error) {
+	asset := dia.Asset{}
+
+	symbol, err := DecodeHex(resp.Results[SymbolMethod].Value)
+	if err != nil {
+		s.logger.
+			WithField("row", resp).
+			WithError(err).
+			Error("failed to decode symbol")
+		return asset, err
+	}
+	asset.Symbol = symbol
+
+	name, err := DecodeHex(resp.Results[NameMethod].Value)
+	if err != nil {
+		s.logger.
+			WithField("row", resp).
+			WithError(err).
+			Error("failed to decode name")
+		return asset, err
+	}
+	asset.Name = name
+
+	decimals, err := strconv.ParseUint(resp.Results[DecimalsMethod].Value, 10, 32)
+	if err != nil {
+		s.logger.
+			WithField("row", resp).
+			WithError(err).
+			Error("failed to decode decimals")
+		return asset, err
+	}
+	asset.Decimals = uint8(decimals)
+	asset.Address = contractAddress
+	asset.Blockchain = blockchain
+
+	return asset, nil
 }
