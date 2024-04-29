@@ -276,8 +276,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 
 	case "UniswapHistory":
 		return NewUniswapHistoryScraper(Exchanges[dia.UniswapExchange], scrape, relDB)
-	case dia.AlephiumExchange:
-		return NewAlephiumScraper(Exchanges[dia.AlephiumExchange], scrape, relDB)
+	case dia.AyinExchange:
+		return NewAyinScraper(Exchanges[dia.AyinExchange], scrape, relDB)
 	default:
 		return nil
 	}

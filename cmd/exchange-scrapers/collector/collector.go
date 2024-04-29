@@ -43,7 +43,7 @@ var (
 		dia.PearlfiExchangeTestnet,
 		dia.PearlfiExchange,
 		dia.PanCakeSwapExchangeV3,
-		dia.AlephiumExchange,
+		dia.AyinExchange,
 	}
 
 	exchange = flag.String("exchange", "", "which exchange")

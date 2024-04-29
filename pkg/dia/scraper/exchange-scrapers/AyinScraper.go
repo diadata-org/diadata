@@ -22,7 +22,7 @@ const (
 	defaultSwapContractsLimit        = 100
 )
 
-type AlephiumScraper struct {
+type AyinScraper struct {
 	logger *logrus.Entry
 	// signaling channels
 	shutdown     chan nothing
@@ -32,7 +32,7 @@ type AlephiumScraper struct {
 	errorLock                 sync.RWMutex
 	error                     error
 	closed                    bool
-	pairScrapers              map[string]*AlephiumPairScraper // pc.ExchangePair -> pairScraperSet
+	pairScrapers              map[string]*AyinPairScraper // pc.ExchangePair -> pairScraperSet
 	api                       *alephiumhelper.AlephiumClient
 	ticker                    *time.Ticker
 	exchangeName              string
@@ -51,7 +51,7 @@ func getTimeDurationFromIntAsMilliseconds(input int) time.Duration {
 	return result
 }
 
-// NewAlephiumScraper returns a new AlephiumScraper initialized with default values.
+// NewAyinScraper returns a new AyinScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
 // ENV values:
 //
@@ -60,7 +60,7 @@ func getTimeDurationFromIntAsMilliseconds(input int) time.Duration {
 //		AYIN_SWAP_CONTRACTS_LIMIT - (optional, int), limit to get swap contact addresses, default "defaultSwapContractsLimit" value
 //		AYIN_TARGET_SWAP_CONTRACT - (optional, string), default = ""
 //		AYIN_DEBUG - (optional, bool), make stdout output with alephium client http call, default = false
-func NewAlephiumScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *AlephiumScraper {
+func NewAyinScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *AyinScraper {
 	ayinRefreshDelay := getTimeDurationFromIntAsMilliseconds(utils.GetenvInt(strings.ToUpper(exchange.Name)+"_REFRESH_DELAY", defaultRefreshDelay))
 	sleepBetweenContractCalls := getTimeDurationFromIntAsMilliseconds(utils.GetenvInt(strings.ToUpper(exchange.Name)+"_SLEEP_TIMEOUT", defaultSleepBetweenContractCalls))
 	isDebug := utils.GetenvBool(strings.ToUpper(exchange.Name)+"_DEBUG", false)
@@ -72,10 +72,10 @@ func NewAlephiumScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB)
 		log.WithContext(context.Background()).WithField("context", "AlephiumClient"),
 		isDebug,
 	)
-	s := &AlephiumScraper{
+	s := &AyinScraper{
 		shutdown:                  make(chan nothing),
 		shutdownDone:              make(chan nothing),
-		pairScrapers:              make(map[string]*AlephiumPairScraper),
+		pairScrapers:              make(map[string]*AyinPairScraper),
 		api:                       alephiumClient,
 		ticker:                    time.NewTicker(ayinRefreshDelay),
 		exchangeName:              exchange.Name,
@@ -97,7 +97,7 @@ func NewAlephiumScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB)
 }
 
 // mainLoop runs in a goroutine until channel s is closed.
-func (s *AlephiumScraper) mainLoop() {
+func (s *AyinScraper) mainLoop() {
 	err := s.Update()
 	if err != nil {
 		s.logger.Error(err)
@@ -117,15 +117,15 @@ func (s *AlephiumScraper) mainLoop() {
 	}
 }
 
-func (s *AlephiumScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+func (s *AyinScraper) FillSymbolData(symbol string) (dia.Asset, error) {
 	return dia.Asset{Symbol: symbol}, nil
 }
 
-func (s *AlephiumScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+func (s *AyinScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	return pair, nil
 }
 
-func (s *AlephiumScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
+func (s *AyinScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 	if s.error != nil {
@@ -134,7 +134,7 @@ func (s *AlephiumScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error)
 	if s.closed {
 		return nil, errors.New("AlephiumScraper: Call ScrapePair on closed scraper")
 	}
-	ps := &AlephiumPairScraper{
+	ps := &AyinPairScraper{
 		parent:     s,
 		pair:       pair,
 		lastRecord: 0,
@@ -145,7 +145,7 @@ func (s *AlephiumScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error)
 	return ps, nil
 }
 
-func (s *AlephiumScraper) getRowsForTargetSwapContract() ([]dia.SwapRelationWithAssets, error) {
+func (s *AyinScraper) getRowsForTargetSwapContract() ([]dia.SwapRelationWithAssets, error) {
 	swapRows, err := s.db.GetSwapRelationsByBlockchain(s.blockchain)
 
 	if err != nil {
@@ -161,7 +161,7 @@ func (s *AlephiumScraper) getRowsForTargetSwapContract() ([]dia.SwapRelationWith
 	return swapRows, nil
 }
 
-func (s *AlephiumScraper) Update() error {
+func (s *AyinScraper) Update() error {
 	logger := s.logger.WithFields(logrus.Fields{
 		"function": "Update",
 	})
@@ -237,7 +237,7 @@ func (s *AlephiumScraper) Update() error {
 	return nil
 }
 
-func (s *AlephiumScraper) handleTrade(swapRow *dia.SwapRelationWithAssets, event *alephiumhelper.EventContract, timestamp int64) *dia.Trade {
+func (s *AyinScraper) handleTrade(swapRow *dia.SwapRelationWithAssets, event *alephiumhelper.EventContract, timestamp int64) *dia.Trade {
 	var volume, price float64
 	var symbolPair string
 	var baseToken, quoteToken *dia.Asset
@@ -285,7 +285,7 @@ func (s *AlephiumScraper) handleTrade(swapRow *dia.SwapRelationWithAssets, event
 
 // closes all connected PairScrapers
 // must only be called from mainLoop
-func (s *AlephiumScraper) cleanup(err error) {
+func (s *AyinScraper) cleanup(err error) {
 
 	s.errorLock.Lock()
 	defer s.errorLock.Unlock()
@@ -302,7 +302,7 @@ func (s *AlephiumScraper) cleanup(err error) {
 
 // Close closes any existing API connections, as well as channels of
 // PairScrapers from calls to ScrapePair
-func (s *AlephiumScraper) Close() error {
+func (s *AyinScraper) Close() error {
 	if s.closed {
 		return errors.New("AlephiumScraper: Already closed")
 	}
@@ -314,12 +314,12 @@ func (s *AlephiumScraper) Close() error {
 }
 
 // Channel returns a channel that can be used to receive trades/pricing information
-func (s *AlephiumScraper) Channel() chan *dia.Trade {
+func (s *AyinScraper) Channel() chan *dia.Trade {
 	return s.chanTrades
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs as dia.ExchangePair for the pairDiscorvery service
-func (s *AlephiumScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
+func (s *AyinScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	logger := s.logger.WithFields(logrus.Fields{
 		"function": "FetchAvailablePairs",
 	})
@@ -369,25 +369,25 @@ func (s *AlephiumScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err e
 	return pairs, nil
 }
 
-type AlephiumPairScraper struct {
-	parent     *AlephiumScraper
+type AyinPairScraper struct {
+	parent     *AyinScraper
 	pair       dia.ExchangePair
 	closed     bool
 	lastRecord int64
 }
 
-func (ps *AlephiumPairScraper) Pair() dia.ExchangePair {
+func (ps *AyinPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }
 
-func (ps *AlephiumPairScraper) Close() error {
+func (ps *AyinPairScraper) Close() error {
 	ps.closed = true
 	return nil
 }
 
 // Error returns an error when the channel Channel() is closed
 // and nil otherwise
-func (ps *AlephiumPairScraper) Error() error {
+func (ps *AyinPairScraper) Error() error {
 	s := ps.parent
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()

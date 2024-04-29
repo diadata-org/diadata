@@ -114,7 +114,7 @@ func (c *AlephiumClient) GetSwapPairsContractAddresses(swapContractsLimit int) (
 	var contractResponse SubContractResponse
 
 	url := fmt.Sprintf("%s/contracts/%s/sub-contracts?limit=%d", BackendURL, AYINPairContractAddress, swapContractsLimit)
-	request, _ := http.NewRequest("GET", url, nil)
+	request, _ := http.NewRequest("GET", url, http.NoBody)
 
 	err := c.callAPI(request, &contractResponse)
 
@@ -259,7 +259,7 @@ func (c *AlephiumClient) GetSwapContractEvents(contractAddress string, limit, pa
 	}
 	// TODO waiting from alephium feature - filter by eventIndex - can be refactored here to simplify code
 	url := fmt.Sprintf("%s/contract-events/contract-address/%s?page=%d&limit=%d", BackendURL, contractAddress, page, limit)
-	request, _ := http.NewRequest("GET", url, nil)
+	request, _ := http.NewRequest("GET", url, http.NoBody)
 
 	logger.WithField("url", url).Info("url")
 
@@ -286,7 +286,7 @@ func (c *AlephiumClient) GetTransactionDetails(txnHash string) (TransactionDetai
 
 	// 'https://backend.mainnet.alephium.org/transactions/b9744b60b94a342c488dbf827747e5ac8ff8adabce48a72167f0ce3dfbe8291a
 	url := fmt.Sprintf("%s/transactions/%s", BackendURL, txnHash)
-	request, _ := http.NewRequest("GET", url, nil)
+	request, _ := http.NewRequest("GET", url, http.NoBody)
 
 	var transactionDetailsResponse TransactionDetailsResponse
 	err := c.callAPI(request, &transactionDetailsResponse)
