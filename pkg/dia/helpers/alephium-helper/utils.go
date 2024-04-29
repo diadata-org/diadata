@@ -32,9 +32,12 @@ func AddressFromTokenId(tokenId string) (string, error) {
 		return "", err
 	}
 	addressType := []byte{AddressTypeP2C}
+	bytes := make([]byte, 0)
+	bytes = append(addressType, hash...)
 
-	bytes := append(addressType, hash...)
-	return base58.Encode(bytes), nil
+	result := base58.Encode(bytes)
+
+	return result, nil
 }
 
 func groupOfAddress(address string) (uint32, error) {
