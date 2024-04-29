@@ -1,0 +1,59 @@
+@startuml
+
+legend top left
+  1. Asset collector service fetches all swap assets from AYIN exchange - and stores to DB
+  2. Exchange scraper polls alephium REST API - to get info about swap events
+end legend
+
+box "DEX scraper" #LightBlue
+participant "Asset collector" as assetCollector
+participant "Scraper" as scraper
+participant "Storage" as storage
+end box
+
+box Alephium
+participant "Alephium node https://node.mainnet.alephium.org/docs" as anode
+participant "Alephium backend https://backend.mainnet.alephium.org/docs" as abackend
+end box
+
+== Get tokens data - symbol, decimals, name - asset collector ==
+
+group "Tokens"
+
+autonumber
+assetCollector -> abackend++: get all swap contract addresses
+abackend -> assetCollector--++: swap contract response ([]string)
+loop Each swap contract address
+  assetCollector -> anode--++: Get token id pair for swap contract address
+  anode ->  assetCollector--++: response with token pair
+end
+
+loop Each unique token address
+  assetCollector -> anode--++: Multicall contract - give me token's data(name, symbol, decimals)
+  anode -> assetCollector--++: multicall response
+  assetCollector -> storage--++: Adopt data to dia.Asset and store to db.asset
+end
+
+storage -> assetCollector--: all in DB
+
+deactivate assetCollector
+
+end group
+
+
+== Scrap data ==
+
+group "Scrap data"
+
+scraper -> storage--++: get data from DB - swapAddress(token0, token1)
+storage -> scraper--++: response tokens - ready for use (dia.Asset)
+
+loop Each swap contract address
+  scraper -> abackend--++: Get events for token
+  abackend -> scraper--++: Decode and handle data for next streams (kafka)
+end     
+
+end group
+
+@enduml
+
