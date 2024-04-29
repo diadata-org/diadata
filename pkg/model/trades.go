@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"runtime"
 	"sort"
 	"strconv"
 	"strings"
@@ -1551,7 +1552,7 @@ func (datastore *DB) GetTradesAggregationRedis(
 	fsa.Starttime = starttime
 	fsa.Endtime = endtime
 	fsaChan <- &fsa
-
+	runtime.GC()
 }
 
 // PurgeByKey deletes entries of an ordered set (zrange) given by @key.
