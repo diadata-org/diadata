@@ -9,6 +9,7 @@ box "DEX scraper" #LightBlue
 participant "Asset collector" as assetCollector
 participant "Scraper" as scraper
 participant "Storage" as storage
+participant "Stream" as stream #LightGreen
 end box
 
 box Alephium
@@ -50,7 +51,10 @@ storage -> scraper--++: response tokens - ready for use (dia.Asset)
 
 loop Each swap contract address
   scraper -> abackend--++: Get events for token
-  abackend -> scraper--++: Decode and handle data for next streams (kafka)
+  abackend -> scraper--++: Decode data
+  scraper -> anode--++: get transaction details to fill Timestamp in dia.Trade
+  anode -> scraper--++: decode data, fill dia.Trade struct,
+  scraper -> stream--++: send decoded data to next stream handler
 end     
 
 end group
