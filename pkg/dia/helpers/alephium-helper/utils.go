@@ -32,6 +32,7 @@ func AddressFromTokenId(tokenId string) (string, error) {
 		return "", err
 	}
 	addressType := []byte{AddressTypeP2C}
+
 	bytes := append(addressType, hash...)
 	return base58.Encode(bytes), nil
 }

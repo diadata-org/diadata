@@ -84,8 +84,6 @@ func (c *AlephiumClient) callAPI(request *http.Request, target interface{}) erro
 		return err
 	}
 
-	defer resp.Body.Close()
-
 	if c.Debug && resp != nil {
 		dump, err := httputil.DumpResponse(resp, true)
 		if err != nil {
@@ -106,7 +104,7 @@ func (c *AlephiumClient) callAPI(request *http.Request, target interface{}) erro
 
 	err = json.Unmarshal(data, &target)
 
-	return err
+	return resp.Body.Close()
 }
 
 // GetSwapPairsContractAddresses returns swap contract addresses for alephium

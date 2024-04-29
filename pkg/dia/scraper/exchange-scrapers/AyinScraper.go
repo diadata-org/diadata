@@ -250,7 +250,7 @@ func (s *AyinScraper) handleTrade(swapRow *dia.SwapRelationWithAssets, event *al
 		//	and amount1Out (fields[4]) will be the amount for USDT.
 		amount0In, _ := utils.StringToFloat64(event.Fields[1].Value, decimals0)
 		amount1Out, _ := utils.StringToFloat64(event.Fields[4].Value, decimals1)
-		volume = -amount0In
+		volume = amount0In
 		price = amount1Out / amount0In
 		symbolPair = fmt.Sprintf("%s-%s", swapRow.Asset0.Symbol, swapRow.Asset1.Symbol)
 		baseToken = &swapRow.Asset0
@@ -261,7 +261,7 @@ func (s *AyinScraper) handleTrade(swapRow *dia.SwapRelationWithAssets, event *al
 		//	and amount0Out (fields[3]) will be the amount for ALPH.
 		amount0In, _ := utils.StringToFloat64(event.Fields[2].Value, decimals1)
 		amount1Out, _ := utils.StringToFloat64(event.Fields[3].Value, decimals0)
-		volume = -amount0In
+		volume = amount0In
 		price = amount1Out / amount0In
 		symbolPair = fmt.Sprintf("%s-%s", swapRow.Asset1.Symbol, swapRow.Asset0.Symbol)
 		baseToken = &swapRow.Asset1
