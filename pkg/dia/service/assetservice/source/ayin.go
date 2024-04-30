@@ -19,7 +19,7 @@ const (
 )
 
 // AlphiumAssetSource aset collector object - which serves assetCollector command
-type AlphiumAssetSource struct {
+type AyinAssetSource struct {
 	// client - interaction with alephium REST API services
 	alephiumClient *alephiumhelper.AlephiumClient
 	// channel to store received asset info
@@ -44,7 +44,7 @@ type AlphiumAssetSource struct {
 //	 	AYIN_ASSETS_SLEEP_TIMEOUT - (optional,millisecond), make timeout between API calls, default "defaultSleepTimeout" value
 //		AYIN_SWAP_CONTRACTS_LIMIT - (optional, int), limit to get swap contact addresses, default "defaultSwapContractsLimit" value
 //		AYIN_DEBUG - (optional, bool), make stdout output with alephium client http call, default = false
-func NewAlephiumAssetSource(exchange dia.Exchange, relDB *models.RelDB) *AlphiumAssetSource {
+func NewAyinAssetSource(exchange dia.Exchange, relDB *models.RelDB) *AyinAssetSource {
 	sleepTimeout := utils.GetenvInt(strings.ToUpper(exchange.Name)+"_ASSETS_SLEEP_TIMEOUT", defaultSleepTimeout)
 	swapContractsLimit := utils.GetenvInt(strings.ToUpper(exchange.Name)+"_SWAP_CONTRACTS_LIMIT", defaultSwapContractsLimit)
 	isDebug := utils.GetenvBool(strings.ToUpper(exchange.Name)+"_DEBUG", false)
@@ -64,7 +64,7 @@ func NewAlephiumAssetSource(exchange dia.Exchange, relDB *models.RelDB) *Alphium
 		WithField("service", "assetCollector").
 		WithField("network", exchange.BlockChain.Name)
 
-	scraper := &AlphiumAssetSource{
+	scraper := &AyinAssetSource{
 		alephiumClient:     alephiumClient,
 		assetChannel:       assetChannel,
 		doneChannel:        doneChannel,
@@ -81,7 +81,7 @@ func NewAlephiumAssetSource(exchange dia.Exchange, relDB *models.RelDB) *Alphium
 	return scraper
 }
 
-func (s *AlphiumAssetSource) fetchAssets() {
+func (s *AyinAssetSource) fetchAssets() {
 	s.logger.Info("started")
 
 	contractAddresses, err := s.alephiumClient.GetSwapPairsContractAddresses(s.swapContractsLimit)
@@ -160,10 +160,10 @@ func (s *AlphiumAssetSource) fetchAssets() {
 	s.doneChannel <- true
 }
 
-func (s *AlphiumAssetSource) Asset() chan dia.Asset {
+func (s *AyinAssetSource) Asset() chan dia.Asset {
 	return s.assetChannel
 }
 
-func (s *AlphiumAssetSource) Done() chan bool {
+func (s *AyinAssetSource) Done() chan bool {
 	return s.doneChannel
 }

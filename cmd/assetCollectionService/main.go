@@ -149,7 +149,7 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 	case "assetlists":
 		return source.NewJSONReader(exchange, secret)
 	case dia.AyinExchange:
-		return source.NewAlephiumAssetSource(exchanges[dia.AyinExchange], relDB)
+		return source.NewAyinAssetSource(exchanges[dia.AyinExchange], relDB)
 	default:
 		return nil
 	}
