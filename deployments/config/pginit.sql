@@ -113,17 +113,6 @@ CREATE TABLE assetvolume (
     time_stamp timestamp
 );
 
--- swap_relation table stores asset relations - required for DEX scraper
--- case: some blockchain(ex.: alephium) has swap contract - which related to token pair addresses
-CREATE TABLE swap_relation (
-    swap_relation_id UUID DEFAULT gen_random_uuid(),
-    blockchain text,
-    parent_address text NOT NULL,
-    asset_address0 text NOT NULL,
-    asset_address1 text NOT NULL,    
-    UNIQUE(blockchain, parent_address)
-);
-
 -- polling table stores data - required for HTTP polling
 CREATE TABLE polling (
     polling_id UUID DEFAULT gen_random_uuid(),

@@ -113,14 +113,20 @@ func (rdb *RelDB) SetPool(pool dia.Pool) error {
 	for i := 0; i < len(pool.Assetvolumes); i++ {
 		query1 = fmt.Sprintf(
 			`INSERT INTO %s (pool_id,asset_id,liquidity,liquidity_usd,time_stamp,token_index)
-				VALUES ((SELECT pool_id from %s where address=$1 and blockchain=$2),(SELECT asset_id from %s where address=$3 and blockchain=$4),$5,$6,$7,$8)
+				VALUES (
+					(SELECT pool_id from %s where address=$1 and blockchain=$2),
+				    (SELECT asset_id from %s where address=$3 and blockchain=$4),$5,$6,$7,$8
+				)
 				ON CONFLICT (pool_id,asset_id) 
-				DO UPDATE SET liquidity=EXCLUDED.liquidity, liquidity_usd=EXCLUDED.liquidity_usd, time_stamp=EXCLUDED.time_stamp, token_index=EXCLUDED.token_index`,
+				DO UPDATE 
+				    SET liquidity=EXCLUDED.liquidity, 
+				    	liquidity_usd=EXCLUDED.liquidity_usd, 
+				    	time_stamp=EXCLUDED.time_stamp, 
+				    	token_index=EXCLUDED.token_index`,
 			poolassetTable,
 			poolTable,
 			assetTable,
 		)
-
 		_, err := rdb.postgresClient.Exec(
 			context.Background(),
 			query1,

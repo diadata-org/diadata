@@ -145,39 +145,31 @@ func (s *AyinScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	return ps, nil
 }
 
-func (s *AyinScraper) getRowsForTargetSwapContract() ([]dia.SwapRelationWithAssets, error) {
-	swapRows, err := s.db.GetSwapRelationsByBlockchain(s.blockchain)
-
-	if err != nil {
-		return swapRows, err
+func (s *AyinScraper) getPools() ([]dia.Pool, error) {
+	if s.targetSwapContract != "" {
+		result := make([]dia.Pool, 1)
+		pool, err := s.db.GetPoolByAddress(s.blockchain, s.targetSwapContract)
+		result[0] = pool
+		return result, err
 	}
-	for _, swapRow := range swapRows {
-		if s.targetSwapContract != "" && swapRow.ParentAddress == s.targetSwapContract {
-			returnedValue := make([]dia.SwapRelationWithAssets, 1)
-			returnedValue[0] = swapRow
-			return returnedValue, nil
-		}
-	}
-	return swapRows, nil
+	return s.db.GetAllPoolsExchange(s.exchangeName, 0)
 }
 
 func (s *AyinScraper) Update() error {
 	logger := s.logger.WithFields(logrus.Fields{
 		"function": "Update",
 	})
-
-	swapRows, err := s.getRowsForTargetSwapContract()
-
+	pools, err := s.getPools()
 	if err != nil {
 		logger.
 			WithError(err).
-			Error("failed to GetSwapRelationsByBlockchain")
+			Error("failed to GetAllPoolsExchange")
 		return err
 	}
-	for _, swapRow := range swapRows {
+	for _, pool := range pools {
 		polling := dia.Polling{
 			Blockchain:      s.blockchain,
-			ContractAddress: swapRow.ParentAddress,
+			ContractAddress: pool.Address,
 			Page:            1,
 		}
 		err := s.db.SetPolling(polling)
@@ -187,7 +179,28 @@ func (s *AyinScraper) Update() error {
 				Error("failed to SetPolling")
 			continue
 		}
-		polling, err = s.db.GetPolling(swapRow.ParentAddress, s.blockchain)
+		polling, err = s.db.GetPolling(pool.Address, s.blockchain)
+		if err != nil {
+			logger.
+				WithError(err).
+				Error("failed to GetPolling")
+			continue
+		}
+	}
+	for _, pool := range pools {
+		polling := dia.Polling{
+			Blockchain:      s.blockchain,
+			ContractAddress: pool.Address,
+			Page:            1,
+		}
+		err := s.db.SetPolling(polling)
+		if err != nil {
+			logger.
+				WithError(err).
+				Error("failed to SetPolling")
+			continue
+		}
+		polling, err = s.db.GetPolling(pool.Address, s.blockchain)
 		if err != nil {
 			logger.
 				WithError(err).
@@ -196,7 +209,7 @@ func (s *AyinScraper) Update() error {
 		}
 
 		events, err := s.api.GetSwapContractEvents(
-			swapRow.ParentAddress,
+			pool.Address,
 			s.eventsLimit,
 			polling.Page,
 		)
@@ -226,10 +239,13 @@ func (s *AyinScraper) Update() error {
 				continue
 			}
 
-			diaTrade := s.handleTrade(&swapRow, &event, transactionDetails.Timestamp)
-			logger.WithField("diaTrade", diaTrade).Info("diaTrade")
+			diaTrade := s.handleTrade(&pool, &event, transactionDetails.Timestamp)
+			logger.
+				WithField("parentAddress", pool.Address).
+				WithField("diaTrade", diaTrade).
+				Info("diaTrade")
 			s.chanTrades <- diaTrade
-		}
+		} // END for _, event := range events {
 
 		time.Sleep(s.sleepBetweenContractCalls)
 	}
@@ -237,12 +253,12 @@ func (s *AyinScraper) Update() error {
 	return nil
 }
 
-func (s *AyinScraper) handleTrade(swapRow *dia.SwapRelationWithAssets, event *alephiumhelper.EventContract, timestamp int64) *dia.Trade {
+func (s *AyinScraper) handleTrade(pool *dia.Pool, event *alephiumhelper.EventContract, timestamp int64) *dia.Trade {
 	var volume, price float64
 	var symbolPair string
 	var baseToken, quoteToken *dia.Asset
-	decimals0 := int64(swapRow.Asset0.Decimals)
-	decimals1 := int64(swapRow.Asset1.Decimals)
+	decimals0 := int64(pool.Assetvolumes[0].Asset.Decimals)
+	decimals1 := int64(pool.Assetvolumes[1].Asset.Decimals)
 
 	if event.Fields[1].Value != "0" {
 		// if we are swapping from ALPH(asset0) to USDT(asset1), - default behaviour
@@ -252,9 +268,9 @@ func (s *AyinScraper) handleTrade(swapRow *dia.SwapRelationWithAssets, event *al
 		amount1Out, _ := utils.StringToFloat64(event.Fields[4].Value, decimals1)
 		volume = amount0In
 		price = amount1Out / amount0In
-		symbolPair = fmt.Sprintf("%s-%s", swapRow.Asset0.Symbol, swapRow.Asset1.Symbol)
-		baseToken = &swapRow.Asset0
-		quoteToken = &swapRow.Asset1
+		symbolPair = fmt.Sprintf("%s-%s", pool.Assetvolumes[0].Asset.Symbol, pool.Assetvolumes[1].Asset.Symbol)
+		baseToken = &pool.Assetvolumes[0].Asset
+		quoteToken = &pool.Assetvolumes[1].Asset
 	} else {
 		// If we are swapping from USDT(asset1) to ALPH(asset0),
 		//	then amount1In ((fields[2]) will be the amount for USDT
@@ -263,9 +279,9 @@ func (s *AyinScraper) handleTrade(swapRow *dia.SwapRelationWithAssets, event *al
 		amount1Out, _ := utils.StringToFloat64(event.Fields[3].Value, decimals0)
 		volume = amount0In
 		price = amount1Out / amount0In
-		symbolPair = fmt.Sprintf("%s-%s", swapRow.Asset1.Symbol, swapRow.Asset0.Symbol)
-		baseToken = &swapRow.Asset1
-		quoteToken = &swapRow.Asset0
+		symbolPair = fmt.Sprintf("%s-%s", pool.Assetvolumes[1].Asset.Symbol, pool.Assetvolumes[0].Asset.Symbol)
+		baseToken = &pool.Assetvolumes[1].Asset
+		quoteToken = &pool.Assetvolumes[0].Asset
 	}
 
 	diaTrade := &dia.Trade{

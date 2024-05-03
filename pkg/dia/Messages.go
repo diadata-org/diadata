@@ -345,20 +345,6 @@ type ChainConfig struct {
 	ChainID string `json:"ChainID"`
 }
 
-type SwapRelation struct {
-	Blockchain    string `json:"Blockchain"`
-	ParentAddress string `json:"ParentAddress"`
-	AssetAddress0 string `json:"AssetAddress0"`
-	AssetAddress1 string `json:"AssetAddress1"`
-}
-
-type SwapRelationWithAssets struct {
-	Blockchain    string `json:"Blockchain"`
-	ParentAddress string `json:"ParentAddress"`
-	Asset0        Asset  `json:"Asset0"`
-	Asset1        Asset  `json:"Asset1"`
-}
-
 type Polling struct {
 	Blockchain      string `json:"Blockchain"`
 	ContractAddress string `json:"ContractAddress"`
