@@ -39,6 +39,13 @@ func main() {
 	case "YahooFinance":
 		log.Println("Foreign Scraper: Start scraping data from YahooFinance")
 		sc = scrapers.NewYahooFinScraper(ds)
+	case "TwelveData":
+		config, err := dia.GetConfig(*scraperType)
+		if err != nil {
+			log.Error("Get API key: ", err)
+		}
+		log.Println("Foreign Scraper: Start scraping data from TwelveData")
+		sc = scrapers.NewTwelvedataScraper(ds, config.ApiKey)
 	default:
 		sc = scrapers.NewGenericForeignScraper()
 	}
