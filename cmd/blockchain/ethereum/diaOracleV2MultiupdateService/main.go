@@ -60,23 +60,23 @@ func main() {
 	backupNode := utils.Getenv("BACKUP_NODE", "")
 	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "120"))
 	if err != nil {
-		log.Fatalf("Failed to parse frequencySeconds: %v")
+		log.Fatalf("Failed to parse frequencySeconds: %v", err)
 	}
 	mandatoryFrequencySeconds, err := strconv.Atoi(utils.Getenv("MANDATORY_FREQUENCY_SECONDS", "0"))
 	if err != nil {
-		log.Fatalf("Failed to parse mandatoryFrequencySeconds: %v")
+		log.Fatalf("Failed to parse mandatoryFrequencySeconds: %v", err)
 	}
 	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "1"), 10, 64)
 	if err != nil {
-		log.Fatalf("Failed to parse chainId: %v")
+		log.Fatalf("Failed to parse chainId: %v", err)
 	}
 	deviationPermille, err := strconv.Atoi(utils.Getenv("DEVIATION_PERMILLE", "10"))
 	if err != nil {
-		log.Fatalf("Failed to parse deviationPermille: %v")
+		log.Fatalf("Failed to parse deviationPermille: %v", err)
 	}
 	gqlWindowSize, err := strconv.Atoi(utils.Getenv("GQL_WINDOW_SIZE", "120"))
 	if err != nil {
-		log.Fatalf("Failed to parse gqlWindowSize: %v")
+		log.Fatalf("Failed to parse gqlWindowSize: %v", err)
 	}
 	conditionalAssets := utils.Getenv("CONDITIONAL_ASSETS", "")
 	gqlMethodology := utils.Getenv("GQL_METHODOLOGY", "vwap")
@@ -114,13 +114,13 @@ func main() {
 		currAsset.blockchain = strings.TrimSpace(entries[0])
 		currAsset.address = strings.TrimSpace(entries[1])
 		currAsset.symbol = strings.TrimSpace(entries[2])
-		if len (entries) > 3 {
-    	currAsset.coingeckoName = strings.TrimSpace(entries[3])
+		if len(entries) > 3 {
+			currAsset.coingeckoName = strings.TrimSpace(entries[3])
 			allowedCoingeckoDeviation, err := strconv.ParseFloat(strings.TrimSpace(entries[4]), 64)
 			if err != nil {
 				log.Fatalf("Error converting CG Deviation float on parsing %s-%s!", currAsset.blockchain, currAsset.address)
 			}
-    	currAsset.allowedCoingeckoDeviation = allowedCoingeckoDeviation
+			currAsset.allowedCoingeckoDeviation = allowedCoingeckoDeviation
 		}
 
 		// Find out is there are additional GQL parameters for this asset
@@ -338,7 +338,7 @@ func oracleUpdateExecutor(
 					priceCollector[asset.symbol] = oldPrice
 					continue
 				}
-				if (math.Abs(coingeckoPrice - newPrice) / coingeckoPrice) > asset.allowedCoingeckoDeviation {
+				if (math.Abs(coingeckoPrice-newPrice) / coingeckoPrice) > asset.allowedCoingeckoDeviation {
 					priceCollector[asset.symbol] = oldPrice
 					continue
 				}
@@ -716,7 +716,7 @@ func getCoingeckoPrice(assetName, coingeckoApiKey string) (float64, error) {
 	if err != nil {
 		return 0.0, err
 	}
-	
+
 	defer response.Body.Close()
 	if 200 != response.StatusCode {
 		return 0.0, fmt.Errorf("Error on coingecko API call with return code %d", response.StatusCode)
@@ -726,6 +726,6 @@ func getCoingeckoPrice(assetName, coingeckoApiKey string) (float64, error) {
 	if err != nil {
 		return 0.0, err
 	}
-	price := gjson.Get(string(contents), assetName + ".usd").Float()
+	price := gjson.Get(string(contents), assetName+".usd").Float()
 	return price, nil
 }
