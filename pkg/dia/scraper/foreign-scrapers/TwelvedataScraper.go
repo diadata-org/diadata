@@ -41,13 +41,13 @@ type TwelvedataScraper struct {
 
 func init() {
 	var err error
-	twelvedataUpdateSeconds, err = strconv.ParseInt(utils.Getenv("UPDATE_SECONDS", "14400"), 10, 64)
+	twelvedataUpdateSeconds, err = strconv.ParseInt(utils.Getenv("UPDATE_SECONDS", "3600"), 10, 64)
 	if err != nil {
 		log.Error("Parse UPDATE_SECONDS: ", err)
 	}
 }
 
-func NewTwelvedataScraper(datastore models.Datastore, apiKey string) *TwelvedataScraper {
+func NewTwelvedataScraper(datastore models.Datastore) *TwelvedataScraper {
 
 	foreignScrapper := ForeignScraper{
 		shutdown:      make(chan nothing),
@@ -60,7 +60,7 @@ func NewTwelvedataScraper(datastore models.Datastore, apiKey string) *Twelvedata
 		foreignScrapper:        foreignScrapper,
 		twelvedataStockSymbols: strings.Split(utils.Getenv("STOCK_SYMBOLS", ""), ","),
 		twelvedataFXTickers:    strings.Split(utils.Getenv("FX_TICKERS", ""), ","),
-		apiKey:                 apiKey,
+		apiKey:                 utils.Getenv("TWELVEDATA_API_KEY", ""),
 	}
 
 	go s.mainLoop()
