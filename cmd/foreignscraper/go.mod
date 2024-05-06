@@ -3,7 +3,7 @@ module github.com/diadata-org/diadata/foreignscraper
 go 1.17
 
 require (
-	github.com/diadata-org/diadata v1.4.480
+	github.com/diadata-org/diadata v1.4.481
 	github.com/sirupsen/logrus v1.9.3
 )
 

@@ -62,7 +62,6 @@ func NewTwelvedataScraper(datastore models.Datastore) *TwelvedataScraper {
 		twelvedataFXTickers:    strings.Split(utils.Getenv("FX_TICKERS", ""), ","),
 		apiKey:                 utils.Getenv("TWELVEDATA_API_KEY", ""),
 	}
-	log.Info("apiKey: ", s.apiKey)
 
 	go s.mainLoop()
 
@@ -106,7 +105,7 @@ func (scraper *TwelvedataScraper) UpdateQuotation() error {
 		}
 		price, err := strconv.ParseFloat(quotation.Price, 64)
 		if err != nil {
-			return err
+			log.Error("Parse Float for: ", symbol)
 		}
 
 		foreignQuotation := models.ForeignQuotation{
