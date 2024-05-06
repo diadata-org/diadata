@@ -14,7 +14,6 @@ require (
 require (
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/bradfitz/gomemcache v0.0.0-20180710155616-bc664df96737 // indirect
-	github.com/btcsuite/btcd v0.22.0-beta // indirect
 	github.com/cnf/structhash v0.0.0-20180104161610-62a607eb0224 // indirect
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
