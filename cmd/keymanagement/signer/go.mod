@@ -16,7 +16,6 @@ require (
 require (
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
-	github.com/btcsuite/btcd v0.21.0-beta // indirect
 	github.com/danieljoos/wincred v1.1.2 // indirect
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/dvsekhvalnov/jose2go v1.5.0 // indirect
@@ -42,4 +41,3 @@ require (
 )
 
 replace github.com/99designs/keyring => github.com/nnn-gif/keyring v1.0.0
-
