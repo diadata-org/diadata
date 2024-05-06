@@ -62,6 +62,7 @@ func NewTwelvedataScraper(datastore models.Datastore) *TwelvedataScraper {
 		twelvedataFXTickers:    strings.Split(utils.Getenv("FX_TICKERS", ""), ","),
 		apiKey:                 utils.Getenv("TWELVEDATA_API_KEY", ""),
 	}
+	log.Info("apiKey: ", s.apiKey)
 
 	go s.mainLoop()
 
