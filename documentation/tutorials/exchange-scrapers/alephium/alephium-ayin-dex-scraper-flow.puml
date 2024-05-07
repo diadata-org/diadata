@@ -1,13 +1,15 @@
 @startuml
 
 legend top left
-  1. Asset collector service fetches all swap assets from AYIN exchange - and stores to DB
+  1. Asset collector service fetches all swap assets from AYIN exchange - and stores to DB(dia.Pool) with liquidity=0
   2. Exchange scraper polls alephium REST API - to get info about swap events
+  3. Liquidity scraper fills liquidity via alephium REST API
 end legend
 
 box "DEX scraper" #LightBlue
 participant "Asset collector" as assetCollector
 participant "Scraper" as scraper
+participant "Liquidity" as liquidity
 participant "Storage" as storage
 participant "Stream" as stream #LightGreen
 end box
@@ -19,7 +21,7 @@ end box
 
 == Get tokens data - symbol, decimals, name - asset collector ==
 
-group "Tokens"
+group "Asset collector"
 
 autonumber
 assetCollector -> abackend++: get all swap contract addresses
@@ -27,27 +29,23 @@ abackend -> assetCollector--++: swap contract response ([]string)
 loop Each swap contract address
   assetCollector -> anode--++: Get token id pair for swap contract address
   anode ->  assetCollector--++: response with token pair
-end
-
-loop Each unique token address
   assetCollector -> anode--++: Multicall contract - give me token's data(name, symbol, decimals)
   anode -> assetCollector--++: multicall response
-  assetCollector -> storage--++: Adopt data to dia.Asset and store to db.asset
+  assetCollector -> storage--++: Adopt data to dia.Asset and store to dia.Asset and to dia.Pool
 end
 
-storage -> assetCollector--: all in DB
-
+deactivate storage
 deactivate assetCollector
 
 end group
 
 
-== Scrap data ==
+== DEX scraper ==
 
-group "Scrap data"
+group "Listen swap events(eventIndex=7)"
 
-scraper -> storage--++: get data from DB - swapAddress(token0, token1)
-storage -> scraper--++: response tokens - ready for use (dia.Asset)
+scraper -> storage--++: get data from DB - dia.Pool
+storage -> scraper--++: response tokens - ready for use (dia.Pool([]dia.Asset))
 
 loop Each swap contract address
   scraper -> abackend--++: Get events for token
@@ -56,6 +54,24 @@ loop Each swap contract address
   anode -> scraper--++: decode data, fill dia.Trade struct,
   scraper -> stream--++: send decoded data to next stream handler
 end     
+
+end group
+
+== Liquidity scraper ==
+
+group "Receive pool liquidity data"
+
+liquidity -> storage--++: get data from DB - dia.Pool
+storage -> liquidity--++: response tokens - ready for use (dia.Pool([]dia.Asset))
+
+loop Each pool contract address(dia.Pool)
+    liquidity -> anode--++: Get liquidity data
+    anode -> liquidity--++: Decode data
+    liquidity -> storage--++: Store data
+end
+
+deactivate storage
+deactivate liquidity
 
 end group
 
