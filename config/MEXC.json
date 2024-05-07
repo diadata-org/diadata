@@ -385,6 +385,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "MCB",
+      "ForeignName": "MCBUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "MCRT",
       "ForeignName": "MCRTUSDT",
       "Exchange": "MEXC",
@@ -609,6 +615,12 @@
     {
       "Symbol": "VELA",
       "ForeignName": "VELAUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "VRTX",
+      "ForeignName": "VRTXUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     },

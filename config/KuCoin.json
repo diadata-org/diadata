@@ -1663,6 +1663,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "VRTX",
+            "ForeignName": "VRTX-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "WAN",
             "ForeignName": "WAN-ETH",
             "Exchange": "KuCoin",

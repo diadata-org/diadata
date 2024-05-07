@@ -847,6 +847,12 @@
             "Address": "0xF411903cbC70a74d22900a5DE66A2dda66507255"
         },
         {
+            "Symbol": "VRTX",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xbbEE07B3e8121227AfCFe1E2B82772246226128e"
+        },
+        {
             "Symbol": "WAN",
             "Exchange": "KuCoin",
             "Blockchain": "Wanchain",

@@ -14,6 +14,12 @@
     },
     {
       "Exchange": "BitMart",
+      "ForeignName": "VRTX_USDT",
+      "Ignore": false,
+      "Symbol": "VRTX"
+    },
+    {
+      "Exchange": "BitMart",
       "ForeignName": "ENA_USDT",
       "Ignore": false,
       "Symbol": "ENA"
