@@ -12,12 +12,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Default values for asset collector
-const (
-	defaultSleepTimeout       = 200 // millisecond
-	defaultSwapContractsLimit = 100
-)
-
 // AlphiumAssetSource aset collector object - which serves assetCollector command
 type AyinAssetSource struct {
 	// client - interaction with alephium REST API services
@@ -34,23 +28,27 @@ type AyinAssetSource struct {
 	relDB *models.RelDB
 	// logs all events here
 	logger *logrus.Entry
-	// sleeps between alephium API calls - to avoid "Too many requests" exception from alephium REST API
-	sleepTimeout int
 	// swap contracts count limitation in alephium REST API
 	swapContractsLimit int
 
+	sleepTimeout time.Duration
 	exchangeName string
 }
 
 // NewAlephiumAssetSource creates object to get alephium assets
 // ENV values:
 //
-//	 	AYIN_ASSETS_SLEEP_TIMEOUT - (optional,millisecond), make timeout between API calls, default "defaultSleepTimeout" value
-//		AYIN_SWAP_CONTRACTS_LIMIT - (optional, int), limit to get swap contact addresses, default "defaultSwapContractsLimit" value
+//	 	AYIN_ASSETS_SLEEP_TIMEOUT - (optional,millisecond), make timeout between API calls, default "alephiumhelper.DefaultSleepBetweenContractCalls" value
+//		AYIN_SWAP_CONTRACTS_LIMIT - (optional, int), limit to get swap contact addresses, default "alephiumhelper.DefaultSwapContractsLimit" value
 //		AYIN_DEBUG - (optional, bool), make stdout output with alephium client http call, default = false
 func NewAyinAssetSource(exchange dia.Exchange, relDB *models.RelDB) *AyinAssetSource {
-	sleepTimeout := utils.GetenvInt(strings.ToUpper(exchange.Name)+"_ASSETS_SLEEP_TIMEOUT", defaultSleepTimeout)
-	swapContractsLimit := utils.GetenvInt(strings.ToUpper(exchange.Name)+"_SWAP_CONTRACTS_LIMIT", defaultSwapContractsLimit)
+	sleepBetweenContractCalls := utils.GetTimeDurationFromIntAsMilliseconds(
+		utils.GetenvInt(strings.ToUpper(exchange.Name)+"_SLEEP_TIMEOUT", alephiumhelper.DefaultSleepBetweenContractCalls),
+	)
+	swapContractsLimit := utils.GetenvInt(
+		strings.ToUpper(exchange.Name)+"_SWAP_CONTRACTS_LIMIT",
+		alephiumhelper.DefaultSwapContractsLimit,
+	)
 	isDebug := utils.GetenvBool(strings.ToUpper(exchange.Name)+"_DEBUG", false)
 
 	var (
@@ -61,6 +59,7 @@ func NewAyinAssetSource(exchange dia.Exchange, relDB *models.RelDB) *AyinAssetSo
 
 	alephiumClient := alephiumhelper.NewAlephiumClient(
 		log.WithContext(context.Background()).WithField("context", "AlephiumClient"),
+		sleepBetweenContractCalls,
 		isDebug,
 	)
 
@@ -75,11 +74,11 @@ func NewAyinAssetSource(exchange dia.Exchange, relDB *models.RelDB) *AyinAssetSo
 		doneChannel:        doneChannel,
 		blockchain:         exchange.BlockChain.Name,
 		relDB:              relDB,
-		sleepTimeout:       sleepTimeout,
 		logger:             logger,
 		swapContractsLimit: swapContractsLimit,
 		exchangeName:       exchange.Name,
 		poolChannel:        poolChannel,
+		sleepTimeout:       sleepBetweenContractCalls,
 	}
 
 	go scraper.fetchAssets()
@@ -120,6 +119,7 @@ func (s *AyinAssetSource) fetchAssets() {
 
 		for i := 0; i < 2; i++ {
 			pools[contractAddress].Assetvolumes[i] = dia.AssetVolume{
+				Index: uint8(i),
 				Asset: dia.Asset{
 					Address: tokenPairs[i],
 				},
@@ -148,14 +148,10 @@ func (s *AyinAssetSource) fetchAssets() {
 			pools[contractAddress].Assetvolumes[i].Asset = *asset
 
 			s.assetChannel <- *asset
-
-			s.waiting()
 		} // END for i := 0; i < 2; i++
 		if _, ok := pools[contractAddress]; ok {
 			s.poolChannel <- pools[contractAddress]
 		}
-
-		s.waiting()
 	} // END for _, contractAddress := range contractAddresses.SubContracts {
 
 	s.doneChannel <- true
@@ -167,10 +163,6 @@ func (s *AyinAssetSource) Asset() chan dia.Asset {
 
 func (s *AyinAssetSource) Done() chan bool {
 	return s.doneChannel
-}
-
-func (s *AyinAssetSource) waiting() {
-	time.Sleep(time.Duration(s.sleepTimeout) * time.Millisecond)
 }
 
 func (s *AyinAssetSource) poolListener() {
