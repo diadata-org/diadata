@@ -30,10 +30,19 @@ const (
 	TokenPairMethod = 7
 )
 
-const SwapEventIndex = 2
+const (
+	SwapEventIndex = 2
+)
+
+const (
+	DefaultRefreshDelay              = 400 // millisec
+	DefaultSleepBetweenContractCalls = 200 // millisec
+	DefaultEventsLimit               = 100
+	DefaultSwapContractsLimit        = 100
+)
 
 // ALPHNativeToken: native alephium token - it has no related contract
-// https://github.com/alephium/token-list/blob/master/tokens/mainnet.json#L4-L11
+// details -> https://github.com/alephium/token-list/blob/master/tokens/mainnet.json#L4-L11
 var ALPHNativeToken = dia.Asset{
 	Address:  "tgx7VNFoP9DJiFMFgXXtafQZkUvyEdDHT9ryamHJYrjq",
 	Symbol:   "ALPH",
@@ -43,13 +52,14 @@ var ALPHNativeToken = dia.Asset{
 
 // AlephiumClient: interaction with alephium REST API with urls from @BackendURL, @NodeURL contants
 type AlephiumClient struct {
-	Debug      bool
-	HTTPClient *http.Client
-	logger     *logrus.Entry
+	Debug             bool
+	HTTPClient        *http.Client
+	logger            *logrus.Entry
+	sleepBetweenCalls time.Duration
 }
 
 // NewAlephiumClient returns AlephiumClient
-func NewAlephiumClient(logger *logrus.Entry, debug bool) *AlephiumClient {
+func NewAlephiumClient(logger *logrus.Entry, sleepBetweenCalls time.Duration, debug bool) *AlephiumClient {
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{
 			MinVersion: tls.VersionTLS12,
@@ -62,9 +72,10 @@ func NewAlephiumClient(logger *logrus.Entry, debug bool) *AlephiumClient {
 	}
 
 	result := &AlephiumClient{
-		HTTPClient: httpClient,
-		Debug:      debug,
-		logger:     logger,
+		HTTPClient:        httpClient,
+		Debug:             debug,
+		logger:            logger,
+		sleepBetweenCalls: sleepBetweenCalls,
 	}
 
 	return result
@@ -92,10 +103,12 @@ func (c *AlephiumClient) callAPI(request *http.Request, target interface{}) erro
 		c.logger.Printf("\n%s\n", string(dump))
 	}
 	data, _ := io.ReadAll(resp.Body)
+
 	if resp.StatusCode != http.StatusOK {
 		err = errors.New("not 200 http response code from api")
 		c.logger.
 			WithError(err).
+			WithField("resp.StatusCode", resp.StatusCode).
 			WithField("body", string(data)).
 			WithField("url", request.URL).
 			Error("failed to call api")
@@ -103,6 +116,8 @@ func (c *AlephiumClient) callAPI(request *http.Request, target interface{}) erro
 	}
 
 	err = json.Unmarshal(data, &target)
+
+	c.waiting()
 
 	return resp.Body.Close()
 }
@@ -130,7 +145,9 @@ func (c *AlephiumClient) GetTokenPairAddresses(contractAddress string) ([]string
 		Address:     contractAddress,
 		MethodIndex: TokenPairMethod,
 	}
-	logger := c.logger.WithField("function", "GetTokenPairAddresses")
+	logger := c.logger.
+		WithField("function", "GetTokenPairAddresses").
+		WithField("contractAddress", contractAddress)
 
 	jsonData, err := json.Marshal(inputData)
 
@@ -160,10 +177,7 @@ func (c *AlephiumClient) GetTokenPairAddresses(contractAddress string) ([]string
 			Error("failed to get token pair")
 		return nil, err
 	}
-	logger.
-		WithField("response", response).
-		Info("GetTokenPairAddresses")
-
+	
 	address1, err := AddressFromTokenId(response.Returns[0].Value)
 	if err != nil {
 		logger.WithError(err).Error("failed to calculate address1")
@@ -247,8 +261,8 @@ func (c *AlephiumClient) GetTokenInfoForContractDecoded(contractAddress, blockch
 	return &asset, err
 }
 
-// GetSwapContractEvents returns swap events from REST API for swap contract address
-func (c *AlephiumClient) GetSwapContractEvents(contractAddress string, limit, page int) ([]EventContract, error) {
+// GetContractEvents returns swap events from REST API for swap contract address
+func (c *AlephiumClient) GetContractEvents(contractAddress string, limit, page int) ([]EventContract, error) {
 	logger := c.logger.WithField("function", "GetSwapContractEvents")
 	// curl https://node.mainnet.alephium.org/events/contract/2A5R8KZQ3rhKYrW7bAS4JTjY9FCFLJg6HjQpqSFZBqACX?start=0&limit=10
 	// https://backend.mainnet.alephium.org/contract-events/contract-address/vFpZ1DF93x1xGHoXM8rsDBFjpcoSsCi5ZEuA5NG5UJGX/?page=2&limit=2
@@ -268,14 +282,12 @@ func (c *AlephiumClient) GetSwapContractEvents(contractAddress string, limit, pa
 		return eventContractResponse, err
 	}
 
-	swapEvents := make([]EventContract, 0)
+	events := make([]EventContract, 0)
 	for _, event := range eventContractResponse {
-		if event.EventIndex == SwapEventIndex {
-			swapEvents = append(swapEvents, event)
-		}
+		events = append(events, event)
 	}
 
-	return swapEvents, nil
+	return events, nil
 }
 
 // GetSwapContractEvents returns swap event transaction details by transaction hash
@@ -288,11 +300,37 @@ func (c *AlephiumClient) GetTransactionDetails(txnHash string) (TransactionDetai
 
 	var transactionDetailsResponse TransactionDetailsResponse
 	err := c.callAPI(request, &transactionDetailsResponse)
+
 	if err != nil {
 		logger.WithError(err).Error("failed to callApi")
 		return transactionDetailsResponse, err
 	}
 	return transactionDetailsResponse, nil
+}
+
+func (s *AlephiumClient) FilterEvents(allEvents []EventContract, filter int) []EventContract {
+	events := make([]EventContract, 0)
+	for _, event := range allEvents {
+		if event.EventIndex == filter {
+			events = append(events, event)
+		}
+	}
+	return events
+}
+
+func (c *AlephiumClient) GetContractState(address string) (ContractStateResponse, error) {
+	logger := c.logger.WithField("function", "GetContractState")
+	// https://node.mainnet.alephium.org/contracts/22po9GJCMoLcYgXL3Znv2cSXcMnKmfm36MrBdqB4rSoKV/state
+	url := fmt.Sprintf("%s/contracts/%s/state", NodeURL, address)
+	request, _ := http.NewRequest("GET", url, http.NoBody)
+
+	var contractStateResponse ContractStateResponse
+	err := c.callAPI(request, &contractStateResponse)
+	if err != nil {
+		logger.WithError(err).Error("failed to callApi")
+		return contractStateResponse, err
+	}
+	return contractStateResponse, nil
 }
 
 func (s *AlephiumClient) decodeMulticallRequestToAssets(contractAddress, blockchain string, resp *OutputResult) (dia.Asset, error) {
@@ -331,4 +369,8 @@ func (s *AlephiumClient) decodeMulticallRequestToAssets(contractAddress, blockch
 	asset.Blockchain = blockchain
 
 	return asset, nil
+}
+
+func (c *AlephiumClient) waiting() {
+	time.Sleep(c.sleepBetweenCalls)
 }
