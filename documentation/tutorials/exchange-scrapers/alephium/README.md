@@ -66,16 +66,26 @@ This returns the first 10 events for the ALPH <-> USDT token pair, the eventInde
       ]
     }
 ```    
-The schema of the events is event Swap(sender: Address, amount0In: U256, amount1In: U256, amount0Out: U256, amount1Out: U256, to: Address)
 
-The response of this endpoint also contains a field nextStart, which is useful to continue fetching the next batch of events until it reaches to the end.
+The schema of the events is event
+
+```
+    Swap(sender: Address, amount0In: U256, amount1In: U256, amount0Out: U256, amount1Out: U256, to: Address)
+```
+
+The response of this endpoint also contains a field nextStart, 
+which is useful to continue fetching the next batch of events until it reaches to the end.
+
 2.
 ```curl https://node.mainnet.alephium.org/events/contract/2A5R8KZQ3rhKYrW7bAS4JTjY9FCFLJg6HjQpqSFZBqACX/current-count```
 
-This endpoint returns the current event count for this contract, we can use this number of as the value to fetch events from now going forward
+This endpoint returns the current event count for this contract, 
+we can use this number of as the value to fetch events from now going forward
 
-The SDK has more dev friendly support for event subscription but it requires having the artifacts of the contracts, otherwise we can use the above endpoints to poll the events. 
-We have written a general description of the event here (https://docs.alephium.org/dapps/events/), which might be helpful as well.
+The SDK has more dev friendly support for event subscription but it requires having the artifacts of the contracts, 
+otherwise we can use the above endpoints to poll the events. 
+We have written a general description of the event here (https://docs.alephium.org/dapps/events/), 
+which might be helpful as well.
 
 each token pairs has its own contract. You can do something like this to get all token pairs:
 ```
@@ -131,7 +141,7 @@ This doc about fungible tokens might be helpful as well (https://docs.alephium.o
 ## how to interpret swap event
 
 Given the token pair address 2A5R8KZQ3rhKYrW7bAS4JTjY9FCFLJg6HjQpqSFZBqACX, we can do 
-JSON
+
 ```
 ➜  Blockchain curl https://node.mainnet.alephium.org/contracts/call-contract -d '{"address": "2A5R8KZQ3rhKYrW7bAS4JTjY9FCFLJg6HjQpqSFZBqACX", "methodIndex": 7, "group": 0}' jq .returns
 [
@@ -155,48 +165,3 @@ event Swap(sender: Address, amount0In: U256, amount1In: U256, amount0Out: U256, 
 if we are swapping from ALPH to USDT, then amount0In ((fields[1]) will be the amount for ALPH and amount1Out (fields[4]) will be the amount for USDT. 
 
 If we are swapping from USDT to ALPH, then amount1In ((fields[2]) will be the amount for USDT and amount0Out (fields[3]) will be the amount for ALPH.
-
-
-## QnA about liquidity scraper
-
-```
-Hi
-@h0ngcha0 is there  way to listen liguidity events on https://www.ayin.app/
-```
-Answer
-```
-Hey, yeah eventIndex 0 is the event emitted when adding liquidity. 
-eventIndex 1 is the event emited when removing liquidity. 
-e.g. This returns the removing liquidity event for AYIN <-> ALPH pair
-
-JSON
-
-➜  curl -s https://backend.mainnet.alephium.org/contract-events/contract-address/25ywM8iGxKpZWuGA5z6DXKGcZCXtPBmnbQyJEsjvjjWTy\?page\=1\&limit\=100 | jq '.[] | select(.eventIndex==1)'
-{
-  "blockHash": "000000000000e206326e55696d3f260e3e99518e52c10beb107c2d5701593540",
-  "txHash": "de629ba7f0e476b2fef4b246b64bc5a3e62758a4c733a19e6e823a6b8e1ac223",
-  "contractAddress": "25ywM8iGxKpZWuGA5z6DXKGcZCXtPBmnbQyJEsjvjjWTy",
-  "inputAddress": "1BZSKPEpX22FNxmJmQr6nxn4M9S6SQpzmLa2RDFouVuUH",
-  "eventIndex": 1,
-  "fields": [
-    {
-      "type": "Address",
-      "value": "1BZSKPEpX22FNxmJmQr6nxn4M9S6SQpzmLa2RDFouVuUH"
-    },
-    {
-      "type": "U256",
-      "value": "618923586484962840"
-    },
-    {
-      "type": "U256",
-      "value": "81161933607970296"
-    },
-    {
-      "type": "U256",
-      "value": "220047821876243110"
-    }
-  ]
-}
-First field is the address initiated the removing of liquidity. 2nd field is the amount for first token (ALPH), 3rd field is the amount for 2nd token (AYIN), 4th field is amount for liquidity token
-Event for adding liquidity has the same schema.
-```
