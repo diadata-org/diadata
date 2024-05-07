@@ -15,13 +15,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const (
-	defaultRefreshDelay              = 400  // millisec
-	defaultSleepBetweenContractCalls = 1000 // millisec
-	defaultEventsLimit               = 10
-	defaultSwapContractsLimit        = 100
-)
-
 type AyinScraper struct {
 	logger *logrus.Entry
 	// signaling channels
@@ -46,30 +39,30 @@ type AyinScraper struct {
 	sleepBetweenContractCalls time.Duration
 }
 
-func getTimeDurationFromIntAsMilliseconds(input int) time.Duration {
-	result := time.Duration(input) * time.Millisecond
-	return result
-}
-
 // NewAyinScraper returns a new AyinScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
 // ENV values:
 //
-//		AYIN_REFRESH_DELAY - (optional,millisecond) refresh data after each poll, default "defaultRefreshDelay" value
-//	 	AYIN_SLEEP_TIMEOUT - (optional,millisecond), make timeout between API calls, default "defaultSleepBetweenContractCalls" value
-//		AYIN_SWAP_CONTRACTS_LIMIT - (optional, int), limit to get swap contact addresses, default "defaultSwapContractsLimit" value
-//		AYIN_TARGET_SWAP_CONTRACT - (optional, string), default = ""
+//		AYIN_REFRESH_DELAY - (optional,millisecond) refresh data after each poll, default "alephiumhelper.DefaultRefreshDelay" value
+//	 	AYIN_SLEEP_TIMEOUT - (optional,millisecond), make timeout between API calls, default "alephiumhelper.DefaultSleepBetweenContractCalls" value
+//		AYIN_SWAP_CONTRACTS_LIMIT - (optional, int), limit to get swap contact addresses, default "alephiumhelper.DefaultSwapContractsLimit" value
+//		AYIN_TARGET_SWAP_CONTRACT - (optional, string), useful for debug, default = ""
 //		AYIN_DEBUG - (optional, bool), make stdout output with alephium client http call, default = false
 func NewAyinScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *AyinScraper {
-	ayinRefreshDelay := getTimeDurationFromIntAsMilliseconds(utils.GetenvInt(strings.ToUpper(exchange.Name)+"_REFRESH_DELAY", defaultRefreshDelay))
-	sleepBetweenContractCalls := getTimeDurationFromIntAsMilliseconds(utils.GetenvInt(strings.ToUpper(exchange.Name)+"_SLEEP_TIMEOUT", defaultSleepBetweenContractCalls))
+	ayinRefreshDelay := utils.GetTimeDurationFromIntAsMilliseconds(
+		utils.GetenvInt(strings.ToUpper(exchange.Name)+"_REFRESH_DELAY", alephiumhelper.DefaultRefreshDelay),
+	)
+	sleepBetweenContractCalls := utils.GetTimeDurationFromIntAsMilliseconds(
+		utils.GetenvInt(strings.ToUpper(exchange.Name)+"_SLEEP_TIMEOUT", alephiumhelper.DefaultSleepBetweenContractCalls),
+	)
 	isDebug := utils.GetenvBool(strings.ToUpper(exchange.Name)+"_DEBUG", false)
-	eventsLimit := utils.GetenvInt(strings.ToUpper(exchange.Name)+"_REFRESH_DELAY", defaultEventsLimit)
-	swapContractsLimit := utils.GetenvInt(strings.ToUpper(exchange.Name)+"_SWAP_CONTRACTS_LIMIT", defaultSwapContractsLimit)
+	eventsLimit := utils.GetenvInt(strings.ToUpper(exchange.Name)+"_REFRESH_DELAY", alephiumhelper.DefaultEventsLimit)
+	swapContractsLimit := utils.GetenvInt(strings.ToUpper(exchange.Name)+"_SWAP_CONTRACTS_LIMIT", alephiumhelper.DefaultSwapContractsLimit)
 	targetSwapContract := utils.Getenv(strings.ToUpper(exchange.Name)+"_TARGET_SWAP_CONTRACT", "")
 
 	alephiumClient := alephiumhelper.NewAlephiumClient(
 		log.WithContext(context.Background()).WithField("context", "AlephiumClient"),
+		sleepBetweenContractCalls,
 		isDebug,
 	)
 	s := &AyinScraper{
@@ -85,11 +78,15 @@ func NewAyinScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *Ay
 		db:                        relDB,
 		refreshDelay:              ayinRefreshDelay,
 		sleepBetweenContractCalls: sleepBetweenContractCalls,
-		logger:                    logrus.New().WithContext(context.Background()).WithField("context", "AlephiumScraper"),
 		eventsLimit:               eventsLimit,
 		swapContractsLimit:        swapContractsLimit,
 		targetSwapContract:        targetSwapContract,
 	}
+	s.logger = logrus.
+		New().
+		WithContext(context.Background()).
+		WithField("context", "AyinDEXScraper")
+
 	if scrape {
 		go s.mainLoop()
 	}
@@ -166,27 +163,7 @@ func (s *AyinScraper) Update() error {
 			Error("failed to GetAllPoolsExchange")
 		return err
 	}
-	for _, pool := range pools {
-		polling := dia.Polling{
-			Blockchain:      s.blockchain,
-			ContractAddress: pool.Address,
-			Page:            1,
-		}
-		err := s.db.SetPolling(polling)
-		if err != nil {
-			logger.
-				WithError(err).
-				Error("failed to SetPolling")
-			continue
-		}
-		polling, err = s.db.GetPolling(pool.Address, s.blockchain)
-		if err != nil {
-			logger.
-				WithError(err).
-				Error("failed to GetPolling")
-			continue
-		}
-	}
+
 	for _, pool := range pools {
 		polling := dia.Polling{
 			Blockchain:      s.blockchain,
@@ -208,7 +185,7 @@ func (s *AyinScraper) Update() error {
 			continue
 		}
 
-		events, err := s.api.GetSwapContractEvents(
+		allEvents, err := s.api.GetContractEvents(
 			pool.Address,
 			s.eventsLimit,
 			polling.Page,
@@ -218,18 +195,23 @@ func (s *AyinScraper) Update() error {
 			return err
 		}
 
-		if len(events) == 0 {
+		swapEvents := s.api.FilterEvents(allEvents, alephiumhelper.SwapEventIndex)
+
+		if len(swapEvents) == 0 {
 			logger.
 				Info("empty events. Skip to next iteration...")
 			continue
 		}
 		polling.Page += 1
 
-		_, err = s.db.UpdateNextStartInPolling(polling.ContractAddress, polling.Blockchain, polling.Page)
+		_, err = s.db.UpdateNextStartInPolling(polling)
 		if err != nil {
-			return err
+			logger.
+				WithError(err).
+				Error("failed to UpdateNextStartInPolling")
+			continue
 		}
-		for _, event := range events {
+		for _, event := range swapEvents {
 			logger.WithField("event", event).WithField("polling.Page", polling.Page).Info("event")
 			transactionDetails, err := s.api.GetTransactionDetails(event.TxHash)
 			if err != nil {
@@ -246,8 +228,6 @@ func (s *AyinScraper) Update() error {
 				Info("diaTrade")
 			s.chanTrades <- diaTrade
 		} // END for _, event := range events {
-
-		time.Sleep(s.sleepBetweenContractCalls)
 	}
 
 	return nil
