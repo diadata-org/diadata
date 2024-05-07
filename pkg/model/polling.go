@@ -19,7 +19,9 @@ import (
 // SetPolling stores an pollings into postgres.
 func (rdb *RelDB) SetPolling(polling dia.Polling) error {
 	query := fmt.Sprintf(
-		"INSERT INTO %s (contract_address,blockchain,page) VALUES ($1,$2,$3) ON CONFLICT (blockchain, contract_address) DO NOTHING",
+		`INSERT INTO %s (contract_address,blockchain,page) 
+				VALUES ($1,$2,$3) 
+				ON CONFLICT (blockchain, contract_address) DO NOTHING`,
 		pollingTable,
 	)
 	_, err := rdb.postgresClient.Exec(
@@ -38,7 +40,8 @@ func (rdb *RelDB) SetPolling(polling dia.Polling) error {
 // GetPolling is the standard method in order to uniquely retrieve an record from polling table.
 func (rdb *RelDB) GetPolling(contractAddress, blockchain string) (polling dia.Polling, err error) {
 	query := fmt.Sprintf(
-		`SELECT contract_address,blockchain, page FROM %s WHERE contract_address=$1 AND blockchain=$2`,
+		`SELECT contract_address,blockchain, page 
+				FROM %s WHERE contract_address=$1 AND blockchain=$2 `,
 		pollingTable,
 	)
 	err = rdb.postgresClient.QueryRow(context.Background(),
@@ -59,14 +62,14 @@ func (rdb *RelDB) GetPolling(contractAddress, blockchain string) (polling dia.Po
 
 // UpdateNextStartInPolling updates next_start in @polling table
 // It returns true if next_start succesfully updated.
-func (rdb *RelDB) UpdateNextStartInPolling(contractAddress, blockchain string, page int) (bool, error) {
+func (rdb *RelDB) UpdateNextStartInPolling(polling dia.Polling) (bool, error) {
 	query := fmt.Sprintf("UPDATE %s SET page=$3 WHERE blockchain=$1 AND contract_address=$2", pollingTable)
 	resp, err := rdb.postgresClient.Exec(
 		context.Background(),
 		query,
-		blockchain,
-		contractAddress,
-		page,
+		polling.Blockchain,
+		polling.ContractAddress,
+		polling.Page,
 	)
 	if err != nil {
 		return false, err
