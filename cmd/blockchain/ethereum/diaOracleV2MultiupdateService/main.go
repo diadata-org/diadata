@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	diaOracleV2MultiupdateService "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleV2MultiupdateService"
@@ -53,6 +54,8 @@ type GqlParameters struct {
 }
 
 func main() {
+	var oracleUpdateMutex sync.Mutex
+
 	key := utils.Getenv("PRIVATE_KEY", "")
 	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
 	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
@@ -65,6 +68,10 @@ func main() {
 	mandatoryFrequencySeconds, err := strconv.Atoi(utils.Getenv("MANDATORY_FREQUENCY_SECONDS", "0"))
 	if err != nil {
 		log.Fatalf("Failed to parse mandatoryFrequencySeconds: %v")
+	}
+	mutexSeconds, err := strconv.Atoi(utils.Getenv("MUTEX_SECONDS", "10"))
+	if err != nil {
+		log.Fatalf("Failed to parse mutexSeconds: %v")
 	}
 	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "1"), 10, 64)
 	if err != nil {
@@ -116,11 +123,13 @@ func main() {
 		currAsset.symbol = strings.TrimSpace(entries[2])
 		if len (entries) > 3 {
     	currAsset.coingeckoName = strings.TrimSpace(entries[3])
-			allowedCoingeckoDeviation, err := strconv.ParseFloat(strings.TrimSpace(entries[4]), 64)
-			if err != nil {
-				log.Fatalf("Error converting CG Deviation float on parsing %s-%s!", currAsset.blockchain, currAsset.address)
+			if currAsset.coingeckoName != "" {
+				allowedCoingeckoDeviation, err := strconv.ParseFloat(strings.TrimSpace(entries[4]), 64)
+				if err != nil {
+					log.Fatalf("Error converting CG Deviation float on parsing %s-%s!", currAsset.blockchain, currAsset.address)
+				}
+    		currAsset.allowedCoingeckoDeviation = allowedCoingeckoDeviation
 			}
-    	currAsset.allowedCoingeckoDeviation = allowedCoingeckoDeviation
 		}
 
 		// Find out is there are additional GQL parameters for this asset
@@ -213,12 +222,12 @@ func main() {
 					}
 					log.Println(newAssetPrices)
 					// update all prices
-					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, auth, contract, conn, chainId, compatibilityMode, assets, conditionalPairs)
+					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, auth, contract, conn, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
 					if err != nil {
 						log.Printf("Failed to execute oracle update using primary connection: %v. Retrying with backup connection...", err)
 
 						// Attempt using the backup connection
-						publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, auth, contractBackup, connBackup, chainId, compatibilityMode, assets, conditionalPairs)
+						publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, auth, contractBackup, connBackup, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
 						if err != nil {
 							log.Fatalf("Failed to execute oracle update using backup connection: %v", err)
 						}
@@ -243,12 +252,12 @@ func main() {
 					}
 					// update all prices, regardless of deviation
 					emptyMap := make(map[string]float64)
-					publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, deviationPermille, coingeckoApiKey, auth, contract, conn, chainId, compatibilityMode, assets, conditionalPairs)
+					publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, deviationPermille, coingeckoApiKey, auth, contract, conn, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
 					if err != nil {
 						log.Printf("Failed to execute oracle update using primary connection: %v. Retrying with backup connection...", err)
 
 						// Attempt using the backup connection
-						publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, deviationPermille, coingeckoApiKey, auth, contractBackup, connBackup, chainId, compatibilityMode, assets, conditionalPairs)
+						publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, deviationPermille, coingeckoApiKey, auth, contractBackup, connBackup, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
 						if err != nil {
 							log.Fatalf("Failed to execute oracle update using backup connection: %v", err)
 						}
@@ -268,12 +277,12 @@ func main() {
 						newAssetPrices[asset.symbol] = newAssetPrice
 					}
 					// update all prices
-					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, auth, contract, conn, chainId, compatibilityMode, assets, conditionalPairs)
+					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, auth, contract, conn, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
 					if err != nil {
 						log.Printf("Failed to execute oracle update using primary connection: %v. Retrying with backup connection...", err)
 
 						// Attempt using the backup connection
-						publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, auth, contractBackup, connBackup, chainId, compatibilityMode, assets, conditionalPairs)
+						publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, auth, contractBackup, connBackup, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
 						if err != nil {
 							log.Fatalf("Failed to execute oracle update using backup connection: %v", err)
 						}
@@ -297,7 +306,9 @@ func oracleUpdateExecutor(
 	chainId int64,
 	compatibilityMode bool,
 	assets []Asset,
-	conditionalAssets []ConditionalPair) (map[string]float64, error) {
+	conditionalAssets []ConditionalPair,
+	mutexSeconds int,
+	oracleUpdateMutex sync.Mutex) (map[string]float64, error) {
 	// Check for deviation and collect all new prices in a map
 	// If a published price is 0, update in any case
 	updateCollector := make(map[string]float64)
@@ -371,17 +382,22 @@ func oracleUpdateExecutor(
 	// check if we can do the multiupdate or use compatibility mode
 	if compatibilityMode {
 		for keyIndex := range keys {
+			oracleUpdateMutex.Lock()
 			timestamp := time.Now().Unix()
 			err := updateOracleCompatibilityMode(conn, contract, auth, chainId, keys[keyIndex], prices[keyIndex], timestamp)
+			time.Sleep(time.Duration(mutexSeconds) * time.Second)
+			oracleUpdateMutex.Unlock()
 			if err != nil {
 				log.Printf("Failed to update Oracle: %v", err)
 				return nil, err
 			}
-			time.Sleep(5 * time.Second)
 		}
 	} else {
+		oracleUpdateMutex.Lock()
 		timestamp := time.Now().Unix()
 		err := updateOracleMultiValues(conn, contract, auth, chainId, keys, prices, timestamp)
+		time.Sleep(time.Duration(mutexSeconds) * time.Second)
+		oracleUpdateMutex.Unlock()
 		if err != nil {
 			log.Printf("Failed to update Oracle: %v", err)
 			return nil, err
