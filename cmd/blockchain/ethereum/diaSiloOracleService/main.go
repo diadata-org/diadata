@@ -772,6 +772,7 @@ func getGraphqlLiquidityThresholdAssetQuotationFromDia(blockchain, address, symb
 		} `json:"GetFeed"`
 	}
 	client := gql.NewClient("https://api.diadata.org/graphql/query")
+	log.Printf("float: %.2f", liquidityThreshold)
 	req := gql.NewRequest(`
     query  {
 		 GetFeed(
@@ -784,7 +785,7 @@ func getGraphqlLiquidityThresholdAssetQuotationFromDia(blockchain, address, symb
 				{
 					Address: "` + address + `", 
 					Blockchain: "` + blockchain + `",
-					LiquidityThreshold: "` + fmt.Sprintf(".2%f", liquidityThreshold) + `",
+					LiquidityThreshold: ` + fmt.Sprintf("%.2f", liquidityThreshold) + `,
 				},
 			],
 			) {

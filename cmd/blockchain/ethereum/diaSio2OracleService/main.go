@@ -409,7 +409,7 @@ func getGasSuggestion(chainId int64) (*big.Int, error) {
 		return nil, err
 	}
 
-	gasSuggestion := gjson.Get(string(contents), "data.fast")
+	gasSuggestion := gjson.Get(string(contents), "data.average")
 	retval := big.NewInt(gasSuggestion.Int())
 
 	return retval, nil
