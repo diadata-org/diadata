@@ -39,6 +39,9 @@ func main() {
 	case "YahooFinance":
 		log.Println("Foreign Scraper: Start scraping data from YahooFinance")
 		sc = scrapers.NewYahooFinScraper(ds)
+	case "TwelveData":
+		log.Println("Foreign Scraper: Start scraping data from TwelveData")
+		sc = scrapers.NewTwelvedataScraper(ds)
 	default:
 		sc = scrapers.NewGenericForeignScraper()
 	}

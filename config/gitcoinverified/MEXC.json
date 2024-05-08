@@ -349,6 +349,12 @@
       "Address": "0x0000000000000000000000000000000000001010"
     },
     {
+      "Symbol": "MCB",
+      "Exchange": "MEXC",
+      "Blockchain": "Arbitrum",
+      "Address": "0x4e352cF164E64ADCBad318C3a1e222E9EBa4Ce42"
+    },
+    {
       "Symbol": "MCRT",
       "Exchange": "MEXC",
       "Blockchain": "BinanceSmartChain",
@@ -575,6 +581,12 @@
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",
       "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+    },
+    {
+      "Symbol": "VRTX",
+      "Exchange": "MEXC",
+      "Blockchain": "Ethereum",
+      "Address": "0xbbEE07B3e8121227AfCFe1E2B82772246226128e"
     },
     {
       "Symbol": "WBTC",

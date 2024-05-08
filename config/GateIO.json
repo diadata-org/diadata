@@ -74,6 +74,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "VRTX_USDT",
+      "Ignore": false,
+      "Symbol": "VRTX"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "ATOM_USDT",
       "Ignore": false,
       "Symbol": "ATOM"

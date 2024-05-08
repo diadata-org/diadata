@@ -464,6 +464,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "VRTXUSDT",
+      "Ignore": false,
+      "Symbol": "VRTX"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "WELLUSDT",
       "Ignore": false,
       "Symbol": "WELL"

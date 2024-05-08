@@ -1361,9 +1361,87 @@ func (env *Env) GetFiatQuotations(c *gin.Context) {
 	}
 }
 
+func (env *Env) GetTwelvedataFiatQuotations(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	// Parse symbol.
+	assets := strings.Split(c.Param("symbol"), "-")
+	if len(assets) != 2 {
+		restApi.SendError(c, http.StatusNotFound, errors.New("wrong format for forex pair"))
+		return
+	}
+	symbol := assets[0] + "/" + assets[1]
+
+	// Time for quotation is time.Now() by default.
+	timestampInt, err := strconv.ParseInt(c.DefaultQuery("timestamp", strconv.Itoa(int(time.Now().Unix()))), 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, errors.New("could not parse Unix timestamp"))
+		return
+	}
+	timestamp := time.Unix(timestampInt, 0)
+
+	q, err := env.DataStore.GetForeignQuotationInflux(symbol, "TwelveData", timestamp)
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			restApi.SendError(c, http.StatusNotFound, err)
+		} else {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+	} else {
+		// Format response.
+		response := struct {
+			Ticker    string
+			Price     float64
+			Timestamp time.Time
+		}{
+			Ticker:    c.Param("symbol"),
+			Price:     q.Price,
+			Timestamp: q.Time,
+		}
+		c.JSON(http.StatusOK, response)
+	}
+}
+
 // -----------------------------------------------------------------------------
 // STOCKS
 // -----------------------------------------------------------------------------
+
+func (env *Env) GetTwelvedataStockQuotations(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	// Time for quotation is time.Now() by default.
+	timestampInt, err := strconv.ParseInt(c.DefaultQuery("timestamp", strconv.Itoa(int(time.Now().Unix()))), 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, errors.New("could not parse Unix timestamp"))
+		return
+	}
+	timestamp := time.Unix(timestampInt, 0)
+
+	q, err := env.DataStore.GetForeignQuotationInflux(c.Param("symbol"), "TwelveData", timestamp)
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			restApi.SendError(c, http.StatusNotFound, err)
+		} else {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+	} else {
+		// Format response.
+		response := struct {
+			Ticker    string
+			Price     float64
+			Timestamp time.Time
+		}{
+			Ticker:    c.Param("symbol"),
+			Price:     q.Price,
+			Timestamp: q.Time,
+		}
+		c.JSON(http.StatusOK, response)
+	}
+}
 
 func (env *Env) GetStockSymbols(c *gin.Context) {
 	if !validateInputParams(c) {

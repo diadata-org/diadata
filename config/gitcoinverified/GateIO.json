@@ -955,6 +955,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "VRTX",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0xbbEE07B3e8121227AfCFe1E2B82772246226128e"
+        },
+        {
             "Symbol": "WELL",
             "Exchange": "GateIO",
             "Blockchain": "Moonbeam",

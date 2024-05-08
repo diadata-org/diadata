@@ -667,6 +667,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "VRTX",
+            "ForeignName": "VRTXUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "WOO",
             "ForeignName": "WOOUSDT",
             "Exchange": "ByBit",

@@ -77,7 +77,9 @@ func (datastore *DB) GetForeignQuotationInflux(symbol, source string, timestamp 
 			log.Error(err)
 		}
 
-		retval.Name = vals[4].(string)
+		if vals[4] != nil {
+			retval.Name = vals[4].(string)
+		}
 		retval.Source = source
 		retval.Symbol = symbol
 
