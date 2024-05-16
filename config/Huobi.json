@@ -50,6 +50,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "ASTRUSDT",
+      "Ignore": false,
+      "Symbol": "ASTR"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "ATOMUSDT",
       "Ignore": false,
       "Symbol": "ATOM"

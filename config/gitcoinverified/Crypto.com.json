@@ -1,6 +1,12 @@
 {
     "Tokens": [
         {
+            "Symbol": "ASTR",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Astar",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "GEL",
             "Exchange": "Crypto.com",
             "Blockchain": "Ethereum",

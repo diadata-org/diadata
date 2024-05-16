@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "BitMart",
+      "ForeignName": "ASTR_USDT",
+      "Ignore": false,
+      "Symbol": "ASTR"
+    },
+    {
+      "Exchange": "BitMart",
       "ForeignName": "TIA_USDT",
       "Ignore": false,
       "Symbol": "TIA"

@@ -79,6 +79,18 @@
             "Ignore": false
         },
         {
+            "Symbol": "ASTR",
+            "ForeignName": "ASTR_USD",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ASTR",
+            "ForeignName": "ASTR_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
             "Symbol": "BAT",
             "ForeignName": "BAT_USDT",
             "Exchange": "Crypto.com",
