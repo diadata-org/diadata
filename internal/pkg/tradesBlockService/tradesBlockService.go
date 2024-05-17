@@ -633,5 +633,14 @@ func buildBridge(t dia.Trade) dia.Asset {
 			}
 		}
 	}
+	if basetoken.Blockchain == dia.UNREAL && t.Source == dia.PearlfiExchange {
+		if basetoken.Address == "0x75d0cBF342060b14c2fC756fd6E717dFeb5B1B70" {
+			basetoken = dia.Asset{
+				Symbol:     "DAI",
+				Address:    "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+				Blockchain: dia.ETHEREUM,
+			}
+		}
+	}
 	return basetoken
 }
