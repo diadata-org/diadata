@@ -24,6 +24,8 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+var diaBaseUrl string
+
 func main() {
 	key := utils.Getenv("PRIVATE_KEY", "")
 	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
@@ -65,6 +67,7 @@ func main() {
 	xcAssetsStr := utils.Getenv("XC_ASSETS", "")
 	xcAssetSymbol := utils.Getenv("XC_ASSET_SYMBOL", "SILO")
 	xcCoingeckoName := utils.Getenv("XC_COINGECKO_NAME", "silo-finance")
+	diaBaseUrl = utils.Getenv("DIA_BASE_URL", "https://api.diadata.org")
 
 	addresses := []string{}
 	blockchains := []string{}
@@ -548,7 +551,7 @@ func updateOracle(
 }
 
 func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, error) {
-	response, err := http.Get("https://api.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
+	response, err := http.Get(diaBaseUrl + "/v1/assetQuotation/" + blockchain + "/" + address)
 	if err != nil {
 		return nil, err
 	}
@@ -582,7 +585,7 @@ func getRdpxGraphqlAssetQuotationFromDia(blockchain, address string) (float64, s
 			Value  float64   `json:"Value"`
 		} `json:"GetFeed"`
 	}
-	client := gql.NewClient("https://api.diadata.org/graphql/query")
+	client := gql.NewClient(diaBaseUrl + "/graphql/query")
 	req := gql.NewRequest(`
     query  {
 		 GetFeed(
@@ -630,7 +633,7 @@ func getDpxGraphqlAssetQuotationFromDia(blockchain, address string) (float64, st
 			Value  float64   `json:"Value"`
 		} `json:"GetFeed"`
 	}
-	client := gql.NewClient("https://api.diadata.org/graphql/query")
+	client := gql.NewClient(diaBaseUrl + "/graphql/query")
 	req := gql.NewRequest(`
     query  {
 		 GetFeed(
@@ -683,7 +686,7 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int,
 			Value  float64   `json:"Value"`
 		} `json:"GetChart"`
 	}
-	client := gql.NewClient("https://api.diadata.org/graphql/query")
+	client := gql.NewClient(diaBaseUrl + "/graphql/query")
 	req := gql.NewRequest(`
     query  {
 		 GetChart(
@@ -731,7 +734,7 @@ func getGraphqlXcAssetQuotationFromDia(blockchains, addresses []string, windowSi
 			Value  float64   `json:"Value"`
 		} `json:"GetxcFeed"`
 	}
-	client := gql.NewClient("https://api.diadata.org/graphql/query")
+	client := gql.NewClient(diaBaseUrl + "/graphql/query")
 	req := gql.NewRequest(`
     query  {
 		 GetxcFeed(
@@ -771,7 +774,7 @@ func getGraphqlLiquidityThresholdAssetQuotationFromDia(blockchain, address, symb
 			Value  float64   `json:"Value"`
 		} `json:"GetFeed"`
 	}
-	client := gql.NewClient("https://api.diadata.org/graphql/query")
+	client := gql.NewClient(diaBaseUrl + "/graphql/query")
 	log.Printf("float: %.2f", liquidityThreshold)
 	req := gql.NewRequest(`
     query  {

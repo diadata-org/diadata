@@ -21,6 +21,8 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+var diaBaseUrl string
+
 func main() {
 	key := utils.Getenv("PRIVATE_KEY", "")
 	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
@@ -49,6 +51,7 @@ func main() {
 	pairStr := utils.Getenv("PAIRS", "")
 	assetsStr := utils.Getenv("ASSETS", "")
 	cbAssetsStr := utils.Getenv("CB_ASSETS", "")
+	diaBaseUrl = utils.Getenv("DIA_BASE_URL", "https://api.diadata.org")
 
 	// Parse assets
 	assetsParsed := strings.Split(assetsStr, ",")
@@ -437,7 +440,7 @@ func getForeignQuotationFromCoinbase(asset string) (*models.Quotation, error) {
 }
 
 func getForeignQuotationFromDia(pair string) (*models.Quotation, error) {
-	response, err := http.Get("https://api.diadata.org/v1/foreignQuotation/YahooFinance/" + pair)
+	response, err := http.Get(diaBaseUrl + "/v1/foreignQuotation/YahooFinance/" + pair)
 	if err != nil {
 		return nil, err
 	}
@@ -459,7 +462,7 @@ func getForeignQuotationFromDia(pair string) (*models.Quotation, error) {
 }
 
 func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, error) {
-	response, err := http.Get("https://api.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
+	response, err := http.Get(diaBaseUrl + "/v1/assetQuotation/" + blockchain + "/" + address)
 	if err != nil {
 		return nil, err
 	}

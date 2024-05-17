@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	//"github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/reEthFairValueService"
 	diaOracleServiceV2 "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleServiceV2"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -22,19 +21,12 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
+var diaBaseUrl string
+
 var reethcontractabi = `[{"inputs":[{"internalType":"address","name":"_real","type":"address"},{"internalType":"address payable","name":"_vault","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"Minter__NotVault","type":"error"},{"inputs":[],"name":"Minter__ZeroAddress","type":"error"},{"inputs":[{"internalType":"address","name":"_from","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"burn","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getTokenPrice","outputs":[{"internalType":"uint256","name":"price","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_to","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"mint","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"real","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_vault","type":"address"}],"name":"setNewVault","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"vault","outputs":[{"internalType":"address payable","name":"","type":"address"}],"stateMutability":"view","type":"function"}]`
 var reethcontract *bind.BoundContract
 var parsedAbi abi.ABI
 var deployedContract string
-
-/*
-
-1) DATA_RPC := rpc url for another chain from which
-2) Get Balance of USDC from contract 0xB1fbcD7415F9177F5EBD3d9700eD5F15B476a5Fe
-3) Get total supply of 0x2FdA8c6783Aa36BeD645baD28a4cDC8769dCD252 token
-4) Supplu usdc price, balance and totalSupply to contract
-
-*/
 
 func main() {
 	key := utils.Getenv("PRIVATE_KEY", "")
@@ -44,10 +36,6 @@ func main() {
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
 	dataNode := utils.Getenv("DATA_NODE", "")
 
-	sleepSeconds, err := strconv.Atoi(utils.Getenv("SLEEP_SECONDS", "120"))
-	if err != nil {
-		log.Fatalf("Failed to parse sleepSeconds: %v")
-	}
 	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "120"))
 	if err != nil {
 		log.Fatalf("Failed to parse frequencySeconds: %v")
@@ -61,11 +49,12 @@ func main() {
 		log.Fatalf("Failed to parse deviationPermille: %v")
 	}
 
+	diaBaseUrl = utils.Getenv("DIA_BASE_URL", "https://api.diadata.org")
+
 	baseaddress := "0x0000000000000000000000000000000000000000"
 	baseblockchain := "Ethereum"
 
 	oldPrice := 0.0
-	oldBalance := big.NewInt(0)
 
 	parsedAbi, err = abi.JSON(strings.NewReader(reethcontractabi))
 	if err != nil {
@@ -94,8 +83,6 @@ func main() {
 
 	var contract *diaOracleServiceV2.DIAOracleV2
 
-	//damfinancecontract := bind.NewBoundContract(common.HexToAddress(deployedContract), parsedAbi, nil, conn, nil)
-
 	err = deployOrBindContract(deployedContract, conn, auth, &contract)
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
@@ -115,13 +102,10 @@ func main() {
 			select {
 			case <-ticker.C:
 				log.Println("old price", oldPrice)
-				log.Println("old balance", oldBalance)
-				//log.Println("old totalSupply", oldTotalSupply)
 				oldPrice, err = periodicOracleUpdateHelper(oldPrice, deviationPermille, auth, contract, reethconn, conn, baseblockchain, baseaddress)
 				if err != nil {
 					log.Println(err)
 				}
-				time.Sleep(time.Duration(sleepSeconds) * time.Second)
 			}
 		}
 	}()
@@ -141,7 +125,7 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 	// Get reeth token price
 	rawReethTokenRatio, err := reethconn.GetTokenPrice(&bind.CallOpts{})
 	if err != nil {
-		log.Fatalf("Failed to get reETH token price: %v", err)
+		log.Fatalf("Failed to get reETH token ratio: %v", err)
 		return oldPrice, err
 	}
 
@@ -194,7 +178,7 @@ func deployOrBindContract(deployedContract string, conn *ethclient.Client, auth 
 }
 
 func updatePair(baseQuotation *models.Quotation, auth *bind.TransactOpts, contract *diaOracleServiceV2.DIAOracleV2, conn *ethclient.Client, reethTokenRatio float64) error {
-	symbol := baseQuotation.Symbol
+	symbol := "re" + baseQuotation.Symbol
 	price := reethTokenRatio
 	timestamp := time.Now().Unix()
 	err := updateOracle(conn, contract, auth, symbol, int64(price*100000000), timestamp)
@@ -214,9 +198,6 @@ func updateOracle(
 	value int64,
 	timestamp int64) error {
 		
-	log.Println(client, contract, auth, key, value, timestamp)
-	return nil
-
 	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
 		log.Fatal(err)
@@ -246,7 +227,7 @@ func updateOracle(
 }
 
 func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, error) {
-	response, err := http.Get("https://api.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
+	response, err := http.Get(diaBaseUrl + "/v1/assetQuotation/" + blockchain + "/" + address)
 	if err != nil {
 		return nil, err
 	}

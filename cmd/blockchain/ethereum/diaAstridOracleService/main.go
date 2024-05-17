@@ -24,6 +24,8 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+var diaBaseUrl string
+
 func main() {
 	key := utils.Getenv("PRIVATE_KEY", "")
 	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
@@ -46,6 +48,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse deviationPermille: %v")
 	}
+	diaBaseUrl = utils.Getenv("DIA_BASE_URL", "https://api.diadata.org")
 
 	addresses := []string{
 		"0x0000000000000000000000000000000000000000",//ASTR
@@ -55,7 +58,6 @@ func main() {
 		"0x0000000000000000000000000000000000000000",//BTC
 		"0x0000000000000000000000000000000000000000",//ETH
 		"0x6B175474E89094C44Da98b954EedeAC495271d0F",//DAI
-		//"0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",//BUSD
 		"0xdAC17F958D2ee523a2206206994597C13D831ec7",//USDT
 	}
 	blockchains := []string{
@@ -66,7 +68,6 @@ func main() {
 		"Bitcoin",           //BTC
 		"Ethereum",          //ETH
 		"Ethereum",					 //DAI
-		//"BinanceSmartChain", //BUSD
 		"Ethereum",          //USDT
 	}
 	cgNames := []string{
@@ -162,7 +163,7 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 	}
 
 	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
-		// USDC and BUSD emergency brake
+		// USDC emergency brake
 		if address == "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56" {
 			log.Printf("brake check new price: %f\n", newPrice)
 			if newPrice < 0.99 || newPrice > 1.01 {
@@ -272,7 +273,7 @@ func updateOracle(
 }
 
 func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, error) {
-	response, err := http.Get("https://api.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
+	response, err := http.Get(diaBaseUrl + "/v1/assetQuotation/" + blockchain + "/" + address)
 	if err != nil {
 		return nil, err
 	}
@@ -303,7 +304,7 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, blockDuration i
 			Value  float64   `json:"Value"`
 		} `json:"GetFeed"`
 	}
-	client := gql.NewClient("https://api.diadata.org/graphql/query")
+	client := gql.NewClient(diaBaseUrl + "/graphql/query")
 	req := gql.NewRequest(`
     query  {
 		 GetFeed(

@@ -27,6 +27,8 @@ import (
 	"github.com/google/uuid"
 )
 
+var diaBaseUrl string
+
 const (
 	baseURL      = "https://api.navconsulting.net"
 )
@@ -71,6 +73,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse deviationPermille: %v")
 	}
+	diaBaseUrl = utils.Getenv("DIA_BASE_URL", "https://api.diadata.org")
 
 	publishedValue := 0.0
 
@@ -380,7 +383,7 @@ func getAssetQuotationFromDia(blockchain, address string) (float64, error) {
 	}
 
 	// Execute the query
-	response, err := http.Get("https://api.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
+	response, err := http.Get(diaBaseUrl + "/v1/assetQuotation/" + blockchain + "/" + address)
 	if err != nil {
 		return 0.0, err
 	}

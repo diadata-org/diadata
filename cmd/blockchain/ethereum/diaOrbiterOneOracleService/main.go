@@ -23,6 +23,8 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+var diaBaseUrl string
+
 func main() {
 	key := utils.Getenv("PRIVATE_KEY", "")
 	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
@@ -51,6 +53,7 @@ func main() {
 	gqlMethodology := utils.Getenv("GQL_METHODOLOGY", "vwap")
 	assetsStr := utils.Getenv("ASSETS", "")
 	gqlAssetsStr := utils.Getenv("GQL_ASSETS", "")
+	diaBaseUrl = utils.Getenv("DIA_BASE_URL", "https://api.diadata.org")
 
 	addresses := []string{}
 	blockchains := []string{}
@@ -291,7 +294,7 @@ func updateOracle(
 }
 
 func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, error) {
-	response, err := http.Get("https://api.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
+	response, err := http.Get(diaBaseUrl + "/v1/assetQuotation/" + blockchain + "/" + address)
 	if err != nil {
 		return nil, err
 	}
@@ -323,7 +326,7 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int,
 			Value  float64   `json:"Value"`
 		} `json:"GetChart"`
 	}
-	client := gql.NewClient("https://api.diadata.org/graphql/query")
+	client := gql.NewClient(diaBaseUrl + "/graphql/query")
 	req := gql.NewRequest(`
     query  {
 		 GetChart(
@@ -364,7 +367,7 @@ func getFraxGraphqlAssetQuotationFromDia(blockchain, address string, windowSize 
 			Value  float64   `json:"Value"`
 		} `json:"GetChart"`
 	}
-	client := gql.NewClient("https://api.diadata.org/graphql/query")
+	client := gql.NewClient(diaBaseUrl + "/graphql/query")
 	req := gql.NewRequest(`
     query  {
 		 GetChart(
@@ -396,7 +399,7 @@ func getFraxGraphqlAssetQuotationFromDia(blockchain, address string, windowSize 
 }
 
 func getCollateralRatioFromDia(symbol string) (float64, error) {
-	response, err := http.Get("https://api.diadata.org/xlsd/interlay/" + symbol)
+	response, err := http.Get(diaBaseUrl + "/xlsd/interlay/" + symbol)
 	if err != nil {
 		return 0.0, err
 	}

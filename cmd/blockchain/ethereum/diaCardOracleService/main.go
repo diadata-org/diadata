@@ -12,7 +12,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -21,11 +20,14 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
+var diaBaseUrl string
+
 func main() {
 	key := utils.Getenv("PRIVATE_KEY", "")
 	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
 	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
+	diaBaseUrl = utils.Getenv("DIA_BASE_URL", "https://api.diadata.org")
 	sleepSeconds, err := strconv.Atoi(utils.Getenv("SLEEP_SECONDS", "120"))
 	if err != nil {
 		log.Fatalf("Failed to parse sleepSeconds: %v")
@@ -192,7 +194,7 @@ func updateOracle(
 }
 
 func getQuotationFromDia(symbol string) (*models.Quotation, error) {
-	response, err := http.Get(dia.BaseUrl + "v1/quotation/" + strings.ToUpper(symbol))
+	response, err := http.Get(diaBaseUrl + "v1/quotation/" + strings.ToUpper(symbol))
 	if err != nil {
 		return nil, err
 	}

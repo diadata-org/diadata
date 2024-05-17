@@ -20,6 +20,8 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+var diaBaseUrl string
+
 func main() {
 	key := utils.Getenv("PRIVATE_KEY", "")
 	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
@@ -42,6 +44,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse deviationPermille: %v")
 	}
+	diaBaseUrl = utils.Getenv("DIA_BASE_URL", "https://api.diadata.org")
 
 	publishedValue := 0.0
 

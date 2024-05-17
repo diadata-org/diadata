@@ -24,12 +24,15 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+var diaBaseUrl string
+
 func main() {
 	key := utils.Getenv("PRIVATE_KEY", "")
 	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
 	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
 	coingeckoApiKey := utils.Getenv("COINGECKO_API_KEY", "")
+	diaBaseUrl = utils.Getenv("DIA_BASE_URL", "https://api.diadata.org")
 	sleepSeconds, err := strconv.Atoi(utils.Getenv("SLEEP_SECONDS", "10"))
 	if err != nil {
 		log.Fatalf("Failed to parse sleepSeconds: %v")
@@ -315,7 +318,7 @@ func updateOracle(
 }
 
 func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, error) {
-	response, err := http.Get("https://api.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
+	response, err := http.Get(diaBaseUrl + "/v1/assetQuotation/" + blockchain + "/" + address)
 	if err != nil {
 		return nil, err
 	}
@@ -347,7 +350,7 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, blockDuration i
 			Value  float64   `json:"Value"`
 		} `json:"GetChart"`
 	}
-	client := gql.NewClient("https://api.diadata.org/graphql/query")
+	client := gql.NewClient(diaBaseUrl + "/graphql/query")
 	req := gql.NewRequest(`
     query  {
 		 GetChart(
@@ -423,7 +426,7 @@ func getCoingeckoPrice(assetName, coingeckoApiKey string) (float64, error) {
 }
 
 func getFairPriceFromDia(symbol string) (float64, error) {
-	response, err := http.Get("https://api.diadata.org/xlsd/bifrost/" + symbol)
+	response, err := http.Get(diaBaseUrl + "/xlsd/bifrost/" + symbol)
 	if err != nil {
 		return 0.0, err
 	}

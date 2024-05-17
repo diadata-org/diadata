@@ -53,6 +53,8 @@ type GqlParameters struct {
 	} `json:"FeedSelection"`
 }
 
+var diaBaseUrl string
+
 func main() {
 	var oracleUpdateMutex sync.Mutex
 
@@ -90,6 +92,7 @@ func main() {
 	coingeckoApiKey := utils.Getenv("COINGECKO_API_KEY", "")
 	assetsStr := utils.Getenv("ASSETS", "")
 	gqlAssetsStr := utils.Getenv("GQL_ASSETS", "")
+	diaBaseUrl = utils.Getenv("DIA_BASE_URL", "https://api.diadata.org")
 	compatibilityMode, err := strconv.ParseBool(utils.Getenv("COMPATIBILITY_MODE", "false"))
 	if err != nil {
 		log.Fatalf("Failed to parse compatibilityMode: %v", err)
@@ -616,7 +619,7 @@ func getAssetQuotationFromDia(blockchain, address string) (float64, error) {
 	}
 
 	// Execute the query
-	response, err := http.Get("https://api.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
+	response, err := http.Get(diaBaseUrl + "/v1/assetQuotation/" + blockchain + "/" + address)
 	if err != nil {
 		return 0.0, err
 	}
@@ -698,7 +701,7 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int,
 		} `json:"GetFeed"`
 	}
 
-	client := gql.NewClient("https://api.diadata.org/graphql/query")
+	client := gql.NewClient(diaBaseUrl + "/graphql/query")
 	req := gql.NewRequest(`
     query  {
 		 GetFeed(

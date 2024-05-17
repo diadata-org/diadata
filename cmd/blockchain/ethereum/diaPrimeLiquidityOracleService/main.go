@@ -21,6 +21,8 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+var diaBaseUrl string
+
 func main() {
 	key := utils.Getenv("PRIVATE_KEY", "")
 	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
@@ -47,6 +49,7 @@ func main() {
 		log.Fatalf("Failed to parse liquidityDeviationPermille: %v")
 	}
 	poolsStr := utils.Getenv("POOLS", "")
+	diaBaseUrl = utils.Getenv("DIA_BASE_URL", "https://api.diadata.org")
 
 	// Parse Pools
 	poolsParsed := strings.Split(poolsStr, ",")
@@ -231,7 +234,7 @@ func updateOracle(
 }
 
 func getLiquidityValuesFromDia(blockchain, poolAddress string) ([]float64, []string, error) {
-	response, err := http.Get("https://api.diadata.org/v1/poolLiquidity/" + blockchain + "/" + poolAddress)
+	response, err := http.Get(diaBaseUrl + "/v1/poolLiquidity/" + blockchain + "/" + poolAddress)
 	if err != nil {
 		return []float64{}, []string{}, err
 	}

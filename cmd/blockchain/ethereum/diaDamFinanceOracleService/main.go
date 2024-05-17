@@ -27,6 +27,8 @@ var damcontract *bind.BoundContract
 var parsedAbi abi.ABI
 var deployedContract string
 
+var diaBaseUrl string
+
 /*
 
 1) DATA_RPC := rpc url for another chain from which
@@ -60,6 +62,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse deviationPermille: %v")
 	}
+	diaBaseUrl = utils.Getenv("DIA_BASE_URL", "https://api.diadata.org")
 
 	baseaddress := "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
 	baseblockchain := "Ethereum"
@@ -263,7 +266,7 @@ func updateOracle(
 }
 
 func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, error) {
-	response, err := http.Get("https://api.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
+	response, err := http.Get(diaBaseUrl + "/v1/assetQuotation/" + blockchain + "/" + address)
 	if err != nil {
 		return nil, err
 	}

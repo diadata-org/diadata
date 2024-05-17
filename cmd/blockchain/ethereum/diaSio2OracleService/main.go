@@ -25,6 +25,8 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+var diaBaseUrl string
+
 type GqlParameters struct {
 	FeedSelection []struct {
 		Address            string  `json:"Address"`
@@ -59,6 +61,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse deviationPermille: %v", err)
 	}
+	diaBaseUrl = utils.Getenv("DIA_BASE_URL", "https://api.diadata.org")
 
 	addresses := []string{
 		"0xE511ED88575C57767BAfb72BfD10775413E3F2b0", //nASTR
@@ -69,7 +72,6 @@ func main() {
 		"0x0000000000000000000000000000000000000000", //BTC
 		"0x0000000000000000000000000000000000000000", //ETH
 		"0x6B175474E89094C44Da98b954EedeAC495271d0F", //DAI
-		"0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", //BUSD
 		"0xdAC17F958D2ee523a2206206994597C13D831ec7", //USDT
 		"0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35", //BAI
 		"Token:AUSD", //aUSD
@@ -83,7 +85,6 @@ func main() {
 		"Bitcoin",           //BTC
 		"Ethereum",          //ETH
 		"Ethereum",          //DAI
-		"BinanceSmartChain", //BUSD
 		"Ethereum",          //USDT
 		"Astar",             //BAI
 		"Acala",             //aUSD
@@ -97,7 +98,6 @@ func main() {
 		"bitcoin",
 		"ethereum",
 		"dai",
-		"binance-usd",
 		"tether",
 		"bai-stablecoin",
 		"acala-dollar-acala",
@@ -328,7 +328,7 @@ func updateOracle(
 }
 
 func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, error) {
-	response, err := http.Get("https://api.diadata.org/v1/assetQuotation/" + blockchain + "/" + address)
+	response, err := http.Get(diaBaseUrl + "/v1/assetQuotation/" + blockchain + "/" + address)
 	if err != nil {
 		return nil, err
 	}
@@ -360,7 +360,7 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, blockDuration i
 			Value  float64   `json:"Value"`
 		} `json:"GetChart"`
 	}
-	client := gql.NewClient("https://api.diadata.org/graphql/query")
+	client := gql.NewClient(diaBaseUrl + "/graphql/query")
 	req := gql.NewRequest(`
     query  {
 		 GetChart(
@@ -496,7 +496,7 @@ func getNAstrGraphqlAssetQuotationFromDia(blockchain, address string, windowSize
 		} `json:"GetFeed"`
 	}
 
-	client := gql.NewClient("https://api.diadata.org/graphql/query")
+	client := gql.NewClient(diaBaseUrl + "/graphql/query")
 	req := gql.NewRequest(`
     query  {
 		 GetFeed(
