@@ -32,9 +32,9 @@ function redis() {
   const redisport = process.env.REDISPORT;
 
   const redispassword = process.env.REDISPASSWORD;
-
   let redisurl = "redis://:" + redispassword + "@" + redishost + ":" + redisport;
 
+ 
   if (!isRedisStarted) {
     (async () => {
       cache = redis.createClient({
@@ -144,7 +144,9 @@ const allowedTokens = [
 ];
 
 async function getPrice(asset) {
-  let response = await fetch("https://api.diadata.org/v1/quotation/" + asset);
+  var providerurl = process.env.DIADATA_API || "https://api.diadata.org/v1/quotation/";
+
+  let response = await fetch(providerurl + "/quotation/" + asset);
   let ethprice = await response.json();
   return ethprice.Price;
 }
