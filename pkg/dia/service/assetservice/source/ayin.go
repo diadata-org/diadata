@@ -31,8 +31,9 @@ type AyinAssetSource struct {
 	// swap contracts count limitation in alephium REST API
 	swapContractsLimit int
 
-	sleepTimeout time.Duration
-	exchangeName string
+	sleepTimeout       time.Duration
+	exchangeName       string
+	targetSwapContract string
 }
 
 // NewAlephiumAssetSource creates object to get alephium assets
@@ -40,6 +41,7 @@ type AyinAssetSource struct {
 //
 //	 	AYIN_ASSETS_SLEEP_TIMEOUT - (optional,millisecond), make timeout between API calls, default "alephiumhelper.DefaultSleepBetweenContractCalls" value
 //		AYIN_SWAP_CONTRACTS_LIMIT - (optional, int), limit to get swap contact addresses, default "alephiumhelper.DefaultSwapContractsLimit" value
+//		AYIN_TARGET_SWAP_CONTRACT - (optional, string), useful for debug, default = ""
 //		AYIN_DEBUG - (optional, bool), make stdout output with alephium client http call, default = false
 func NewAyinAssetSource(exchange dia.Exchange, relDB *models.RelDB) *AyinAssetSource {
 	sleepBetweenContractCalls := utils.GetTimeDurationFromIntAsMilliseconds(
@@ -49,6 +51,7 @@ func NewAyinAssetSource(exchange dia.Exchange, relDB *models.RelDB) *AyinAssetSo
 		strings.ToUpper(exchange.Name)+"_SWAP_CONTRACTS_LIMIT",
 		alephiumhelper.DefaultSwapContractsLimit,
 	)
+	targetSwapContract := utils.Getenv(strings.ToUpper(exchange.Name)+"_TARGET_SWAP_CONTRACT", "")
 	isDebug := utils.GetenvBool(strings.ToUpper(exchange.Name)+"_DEBUG", false)
 
 	var (
@@ -79,6 +82,7 @@ func NewAyinAssetSource(exchange dia.Exchange, relDB *models.RelDB) *AyinAssetSo
 		exchangeName:       exchange.Name,
 		poolChannel:        poolChannel,
 		sleepTimeout:       sleepBetweenContractCalls,
+		targetSwapContract: targetSwapContract,
 	}
 
 	go scraper.fetchAssets()
@@ -88,10 +92,18 @@ func NewAyinAssetSource(exchange dia.Exchange, relDB *models.RelDB) *AyinAssetSo
 	return scraper
 }
 
+func (s *AyinAssetSource) getSubcontracts() ([]string, error) {
+	if s.targetSwapContract != "" {
+		return []string{s.targetSwapContract}, nil
+	}
+	contractAddresses, err := s.alephiumClient.GetSwapPairsContractAddresses(s.swapContractsLimit)
+	return contractAddresses.SubContracts, err
+}
+
 func (s *AyinAssetSource) fetchAssets() {
 	s.logger.Info("started")
 
-	contractAddresses, err := s.alephiumClient.GetSwapPairsContractAddresses(s.swapContractsLimit)
+	contractAddresses, err := s.getSubcontracts()
 	if err != nil {
 		s.logger.WithError(err).Error("failed to get contract addresses")
 		return
@@ -99,7 +111,7 @@ func (s *AyinAssetSource) fetchAssets() {
 
 	pools := make(map[string]dia.Pool)
 
-	for _, contractAddress := range contractAddresses.SubContracts {
+	for _, contractAddress := range contractAddresses {
 		tokenPairs, err := s.alephiumClient.GetTokenPairAddresses(contractAddress)
 
 		if err != nil {
