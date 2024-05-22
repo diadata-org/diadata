@@ -7,12 +7,18 @@ services:
   influxdb:
     image: influxdb:1.8.3
     ports:
-      - "8087:8087"
+      - "8086:8086"
+    environment:
+      INFLUXDB_HTTP_AUTH_ENABLED: "false"
+    volumes:
+      - influxdb-data:/var/lib/influxdb
+    networks:
+      - influxdb-network
 #  influxdb_cli:
 #    links:
 #      - influxdb
 #    image: influxdb:1.8.3
-#    entrypoint: influx setup --bucket test_bucket -t test_token -o test_org --username test --password testtest --host http://127.0.0.1:8086 -f
+#    entrypoint: influx setup --bucket test_bucket -t test_token -o test_org --username test --password testtest --host http://127.0.0.1:8087 -f
 #    # restart: on-failure:20
 #    depends_on:
 #      - influxdb
@@ -74,7 +80,12 @@ networks:
   kafka-network:
     driver: overlay
     attachable: true
+  influxdb-network:
+    driver: overlay
+    attachable: true
 volumes:
   kafka_data:
+    driver: local
+  influxdb-data:
     driver: local
 
