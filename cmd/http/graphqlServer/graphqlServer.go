@@ -72,6 +72,7 @@ func main() {
 		log.Error("parse timeouts: ", err)
 	}
 
+	log.Infof("readTimeout -- writeTimeout -- idleTimeout: %v -- %v -- %v", readTimeout, writeTimeout, idleTimeout)
 	srv := &http.Server{
 		Addr:         utils.Getenv("LISTEN_PORT", ":1111"),
 		Handler:      logged(mux),
