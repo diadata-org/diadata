@@ -49,6 +49,7 @@ func main() {
 		ds,
 		&resolver.DiaResolver{DS: *datastore, RelDB: *relStore, InfluxBatchSize: influxBatchSize, WithInflux: withInflux},
 		graphql.UseFieldResolvers(),
+		graphql.SubscribeResolverTimeout(time.Duration(5*time.Second)),
 	)
 
 	mux := http.NewServeMux()
