@@ -49,7 +49,6 @@ func main() {
 		ds,
 		&resolver.DiaResolver{DS: *datastore, RelDB: *relStore, InfluxBatchSize: influxBatchSize, WithInflux: withInflux},
 		graphql.UseFieldResolvers(),
-		graphql.SubscribeResolverTimeout(time.Duration(5*time.Second)),
 	)
 
 	mux := http.NewServeMux()
@@ -57,17 +56,25 @@ func main() {
 	if !strings.HasPrefix(urlFolderPrefix, "/") {
 		urlFolderPrefix = "/" + urlFolderPrefix
 	}
-	mux.Handle(urlFolderPrefix+"/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, err := w.Write(page)
 		if err != nil {
 			return
 		}
-	}))
-
+	})
+	mux.Handle(urlFolderPrefix+"/", handler)
 	mux.Handle(urlFolderPrefix+"/query", &relay.Handler{Schema: diaSchema})
 
+	srv := &http.Server{
+		Addr:    utils.Getenv("LISTEN_PORT", ":1111"),
+		Handler: logged(mux),
+		// ReadTimeout:  10 * time.Second,
+		WriteTimeout: 5 * time.Second,
+		// IdleTimeout:  15 * time.Second,
+	}
+
 	log.WithFields(log.Fields{"time": time.Now()}).Info("starting server")
-	log.Fatal(http.ListenAndServe(utils.Getenv("LISTEN_PORT", ":1111"), logged(mux)))
+	log.Fatal(srv.ListenAndServe())
 }
 
 var page = []byte(`
