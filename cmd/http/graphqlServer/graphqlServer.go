@@ -65,12 +65,19 @@ func main() {
 	mux.Handle(urlFolderPrefix+"/", handler)
 	mux.Handle(urlFolderPrefix+"/query", &relay.Handler{Schema: diaSchema})
 
+	readTimeout, err := strconv.Atoi(utils.Getenv("READ_TIMEOUT", "10"))
+	writeTimeout, err := strconv.Atoi(utils.Getenv("WRITE_TIMEOUT", "10"))
+	idleTimeout, err := strconv.Atoi(utils.Getenv("IDLE_TIMEOUT", "10"))
+	if err != nil {
+		log.Error("parse timeouts: ", err)
+	}
+
 	srv := &http.Server{
-		Addr:    utils.Getenv("LISTEN_PORT", ":1111"),
-		Handler: logged(mux),
-		// ReadTimeout:  10 * time.Second,
-		WriteTimeout: 5 * time.Second,
-		// IdleTimeout:  15 * time.Second,
+		Addr:         utils.Getenv("LISTEN_PORT", ":1111"),
+		Handler:      logged(mux),
+		ReadTimeout:  time.Duration(readTimeout) * time.Second,
+		WriteTimeout: time.Duration(writeTimeout) * time.Second,
+		IdleTimeout:  time.Duration(idleTimeout) * time.Second,
 	}
 
 	log.WithFields(log.Fields{"time": time.Now()}).Info("starting server")
