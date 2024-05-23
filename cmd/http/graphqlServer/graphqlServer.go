@@ -83,6 +83,7 @@ func main() {
 
 	log.WithFields(log.Fields{"time": time.Now()}).Info("starting server")
 	log.Fatal(srv.ListenAndServe())
+
 }
 
 var page = []byte(`
@@ -132,17 +133,37 @@ func getSchema(path string) (string, error) {
 	return string(b), nil
 }
 
-// logging middleware
+// responseRecorder is used to capture the status code for logging
+type responseRecorder struct {
+	http.ResponseWriter
+	statusCode int
+}
+
+func (rr *responseRecorder) WriteHeader(statusCode int) {
+	rr.statusCode = statusCode
+	rr.ResponseWriter.WriteHeader(statusCode)
+}
+
+// enhanced logging middleware
 func logged(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now().UTC()
-
-		next.ServeHTTP(w, r)
-
+		log.Infof("Started %s %s", r.Method, r.URL.Path)
+		// Log request details
+		log.WithFields(log.Fields{
+			"method":  r.Method,
+			"url":     r.URL.Path,
+			"headers": r.Header,
+		}).Info("Request details")
+		// Capture the response details
+		rr := &responseRecorder{ResponseWriter: w, statusCode: http.StatusOK}
+		next.ServeHTTP(rr, r)
+		// Log response details
 		log.WithFields(log.Fields{
 			"path":    r.RequestURI,
 			"IP":      r.RemoteAddr,
-			"elapsed": time.Now().UTC().Sub(start),
-		}).Info()
+			"status":  rr.statusCode,
+			"elapsed": time.Since(start),
+		}).Info("Completed request")
 	})
 }
