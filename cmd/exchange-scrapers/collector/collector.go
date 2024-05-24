@@ -41,7 +41,6 @@ var (
 		dia.ZenlinkswapExchange,
 		dia.ZenlinkswapExchangeBifrostPolkadot,
 		dia.PearlfiExchangeTestnet,
-		dia.PearlfiExchange,
 		dia.PanCakeSwapExchangeV3,
 	}
 
