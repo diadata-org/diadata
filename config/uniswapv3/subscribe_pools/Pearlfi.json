@@ -1,0 +1,16 @@
+{
+    "Pools": [
+        {
+            "Address": "0xC6B3AaaAbf2f6eD6cF7fdFFfb0DaC45E10c4A5B3",
+            "ForeignName": "USTB-arcUSD"
+        },
+        {
+            "Address": "0x727B8b6135dcFe1E18A2689aBBe776a6810E763c",
+            "ForeignName": "DAI-USTB"
+        },
+        {
+            "Address": "0x6b1a34df762f1d3367e7e93AE5661c88CA848423",
+            "ForeignName": "MORE-USTB"
+        }
+    ]
+}
