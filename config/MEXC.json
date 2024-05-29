@@ -361,6 +361,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "KWENTA",
+      "ForeignName": "KWENTAUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "LTC",
       "ForeignName": "LTCUSDT",
       "Exchange": "MEXC",

@@ -331,6 +331,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "KWENTA",
+      "Exchange": "MEXC",
+      "Blockchain": "Optimism",
+      "Address": "0x920Cf626a271321C151D027030D5d08aF699456b"
+    },
+    {
       "Symbol": "LTC",
       "Exchange": "MEXC",
       "Blockchain": "Litecoin",
