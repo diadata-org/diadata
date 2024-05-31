@@ -103,6 +103,11 @@ func (s *AyinLiquidityScraper) fetchPools() {
 		return
 	}
 	for _, pool := range pools {
+		if len(pool.Assetvolumes) < 2 {
+			logger.WithField("poolAddress", pool.Address).Error("pool is missing a second asset")
+			continue
+		}
+
 		decimals0 := int64(pool.Assetvolumes[0].Asset.Decimals)
 		decimals1 := int64(pool.Assetvolumes[1].Asset.Decimals)
 

@@ -37,6 +37,7 @@ type AyinScraper struct {
 	db                        *models.RelDB
 	refreshDelay              time.Duration
 	sleepBetweenContractCalls time.Duration
+	pollingPage               map[string]int
 }
 
 // NewAyinScraper returns a new AyinScraper initialized with default values.
@@ -69,6 +70,7 @@ func NewAyinScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *Ay
 		shutdown:                  make(chan nothing),
 		shutdownDone:              make(chan nothing),
 		pairScrapers:              make(map[string]*AyinPairScraper),
+		pollingPage:               make(map[string]int),
 		api:                       alephiumClient,
 		ticker:                    time.NewTicker(ayinRefreshDelay),
 		exchangeName:              exchange.Name,
@@ -165,30 +167,14 @@ func (s *AyinScraper) Update() error {
 	}
 
 	for _, pool := range pools {
-		polling := dia.Polling{
-			Blockchain:      s.blockchain,
-			ContractAddress: pool.Address,
-			Page:            1,
-		}
-		err := s.db.SetPolling(polling)
-		if err != nil {
-			logger.
-				WithError(err).
-				Error("failed to SetPolling")
-			continue
-		}
-		polling, err = s.db.GetPolling(pool.Address, s.blockchain)
-		if err != nil {
-			logger.
-				WithError(err).
-				Error("failed to GetPolling")
-			continue
+		if _, ok := s.pollingPage[pool.Address]; !ok {
+			s.pollingPage[pool.Address] = 1
 		}
 
 		allEvents, err := s.api.GetContractEvents(
 			pool.Address,
 			s.eventsLimit,
-			polling.Page,
+			s.pollingPage[pool.Address],
 		)
 
 		if err != nil {
@@ -202,17 +188,11 @@ func (s *AyinScraper) Update() error {
 				Info("empty events. Skip to next iteration...")
 			continue
 		}
-		polling.Page += 1
 
-		_, err = s.db.UpdateNextStartInPolling(polling)
-		if err != nil {
-			logger.
-				WithError(err).
-				Error("failed to UpdateNextStartInPolling")
-			continue
-		}
+		s.pollingPage[pool.Address] += 1
+
 		for _, event := range swapEvents {
-			logger.WithField("event", event).WithField("polling.Page", polling.Page).Info("event")
+			logger.WithField("event", event).WithField("page", s.pollingPage[pool.Address]).Info("event")
 			transactionDetails, err := s.api.GetTransactionDetails(event.TxHash)
 			if err != nil {
 				logger.
@@ -227,7 +207,7 @@ func (s *AyinScraper) Update() error {
 				WithField("diaTrade", diaTrade).
 				Info("diaTrade")
 			s.chanTrades <- diaTrade
-		} // END for _, event := range events {
+		}
 	}
 
 	return nil

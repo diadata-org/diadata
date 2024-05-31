@@ -345,12 +345,6 @@ type ChainConfig struct {
 	ChainID string `json:"ChainID"`
 }
 
-type Polling struct {
-	Blockchain      string `json:"Blockchain"`
-	ContractAddress string `json:"ContractAddress"`
-	Page            int    `json:"Page"`
-}
-
 // Pair substitues the old dia.Pair. It includes the new asset type.
 type Pair struct {
 	QuoteToken Asset `json:"QuoteToken"`
