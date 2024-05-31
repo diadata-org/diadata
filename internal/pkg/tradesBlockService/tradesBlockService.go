@@ -642,5 +642,14 @@ func buildBridge(t dia.Trade) dia.Asset {
 			}
 		}
 	}
+	if basetoken.Blockchain == dia.BINANCESMARTCHAIN && t.Source == dia.PanCakeSwapExchangeV3 {
+		if basetoken.Address == "0x55d398326f99059fF775485246999027B3197955" {
+			basetoken = dia.Asset{
+				Symbol:     "USDT",
+				Address:    "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+				Blockchain: dia.ETHEREUM,
+			}
+		}
+	}
 	return basetoken
 }
