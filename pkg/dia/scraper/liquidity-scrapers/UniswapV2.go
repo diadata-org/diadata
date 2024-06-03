@@ -138,6 +138,8 @@ func NewUniswapScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *mo
 		us = makeUniswapPoolScraper(exchange, pathToPools, restDialMoonbeam, relDB, datastore, moonbeamWaitMilliseconds)
 	case dia.WanswapExchange:
 		us = makeUniswapPoolScraper(exchange, pathToPools, restDialWanchain, relDB, datastore, wanchainWaitMilliseconds)
+	case dia.ThenaExchange:
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialBSC, relDB, datastore, sushiswapWaitMilliseconds)
 	}
 
 	exchangeFactoryContractAddress = exchange.Contract

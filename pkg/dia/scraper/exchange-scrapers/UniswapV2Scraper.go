@@ -223,6 +223,8 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialMoonbeam, wsDialMoonbeam, moonbeamWaitMilliseconds)
 	case dia.WanswapExchange:
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialWanchain, wsDialWanchain, wanchainWaitMilliseconds)
+	case dia.ThenaExchange:
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialBSC, wsDialBSC, sushiswapWaitMilliseconds)
 	}
 
 	s.relDB = relDB
