@@ -8,6 +8,12 @@
     },
     {
       "Exchange": "BitMart",
+      "ForeignName": "GMT_USDT",
+      "Ignore": false,
+      "Symbol": "GMT"
+    },
+    {
+      "Exchange": "BitMart",
       "ForeignName": "TIA_USDT",
       "Ignore": false,
       "Symbol": "TIA"

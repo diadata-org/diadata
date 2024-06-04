@@ -31,10 +31,28 @@
       "Address": "0xa117000000f279D81A1D3cc75430fAA017FA5A2e"
     },
     {
+      "Symbol": "APT",
+      "Exchange": "Huobi",
+      "Blockchain": "Aptos",
+      "Address": "0x1::aptos_coin::AptosCoin"
+    },
+    {
+      "Symbol": "AR",
+      "Exchange": "Huobi",
+      "Blockchain": "Arweave",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "ARB",
       "Exchange": "Huobi",
       "Blockchain": "Arbitrum",
       "Address": "0x912CE59144191C1204E64559FE8253a0e49E6548"
+    },
+    {
+      "Symbol": "AKT",
+      "Exchange": "Huobi",
+      "Blockchain": "Osmosis",
+      "Address": "ibc/C2CFB1C37C146CF95B0784FD518F8030FEFC76C5800105B1742FB65FFE65F873"
     },
     {
       "Symbol": "ATOM",
@@ -295,10 +313,22 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "ONDO",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0xfAbA6f8e4a5E8Ab82F62fe7C39859FA577269BE3"
+    },
+    {
       "Symbol": "ORDI",
       "Exchange": "Huobi",
       "Blockchain": "Bitcoin",
       "Address": "b61b0172d95e266c18aea0c624db987e971a5d6d4ebc2aaed85da4642d635735i0"
+    },
+    {
+      "Symbol": "PENDLE",
+      "Exchange": "Huobi",
+      "Blockchain": "Arbitrum",
+      "Address": "0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8"
     },
     {
       "Symbol": "PEPE",
@@ -337,6 +367,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "SEI",
+      "Exchange": "Huobi",
+      "Blockchain": "Sei",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "SNT",
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",
@@ -349,6 +385,12 @@
       "Address": "0xB4A3B0Faf0Ab53df58001804DdA5Bfc6a3D59008"
     },
     {
+      "Symbol": "STRK",
+      "Exchange": "Huobi",
+      "Blockchain": "Starknet",
+      "Address": "0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d"
+    },
+    {
       "Symbol": "SAND",
       "Exchange": "Huobi",
       "Blockchain": "Ethereum",
@@ -359,6 +401,12 @@
       "Exchange": "Huobi",
       "Blockchain": "Steem",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "SUI",
+      "Exchange": "Huobi",
+      "Blockchain": "Sui",
+      "Address": "0x2::sui::SUI"
     },
     {
       "Symbol": "STG",
@@ -376,6 +424,12 @@
       "Symbol": "TLOS",
       "Exchange": "Huobi",
       "Blockchain": "Telos",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "TON",
+      "Exchange": "Huobi",
+      "Blockchain": "Ton",
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
@@ -419,6 +473,18 @@
       "Exchange": "Huobi",
       "Blockchain": "Moonbeam",
       "Address": "0x511aB53F793683763E5a8829738301368a2411E3"
+    },
+    {
+      "Symbol": "WIF",
+      "Exchange": "Huobi",
+      "Blockchain": "Solana",
+      "Address": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm"
+    },
+    {
+      "Symbol": "WLD",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0x163f8C2467924be0ae7B5347228CABF260318753"
     },
     {
       "Symbol": "XAUT",

@@ -19,6 +19,12 @@
             "Address": "0x4d224452801ACEd8B2F0aebE155379bb5D594381"
         },
         {
+            "Symbol": "APT",
+            "Exchange": "Binance2",
+            "Blockchain": "Aptos",
+            "Address": "0x1::aptos_coin::AptosCoin"
+        },
+        {
             "Symbol": "AR",
             "Exchange": "Binance2",
             "Blockchain": "Arweave",
@@ -53,6 +59,12 @@
             "Exchange": "Binance2",
             "Blockchain": "BinanceSmartChain",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "BONK",
+            "Exchange": "Binance2",
+            "Blockchain": "Solana",
+            "Address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"
         },
         {
             "Symbol": "BTC",
@@ -139,6 +151,12 @@
             "Address": "0x18c11FD286C5EC11c3b683Caa813B77f5163A122"
         },
         {
+            "Symbol": "ICP",
+            "Exchange": "Binance2",
+            "Blockchain": "InternetComputer",
+            "Address": "ryjl3-tyaaa-aaaaa-aaaba-cai"
+        },
+        {
             "Symbol": "JOE",
             "Exchange": "Binance2",
             "Blockchain": "Avalanche",
@@ -187,6 +205,12 @@
             "Address": "0x45804880De22913dAFE09f4980848ECE6EcbAf78"
         },
         {
+            "Symbol": "PENDLE",
+            "Exchange": "Binance2",
+            "Blockchain": "Arbitrum",
+            "Address": "0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8"
+        },
+        {
             "Symbol": "PEPE",
             "Exchange": "Binance2",
             "Blockchain": "Ethereum",
@@ -197,6 +221,12 @@
             "Exchange": "Binance2",
             "Blockchain": "Arbitrum",
             "Address": "0x3082CC23568eA640225c2467653dB90e9250AaA0"
+        },
+        {
+            "Symbol": "SEI",
+            "Exchange": "Binance2",
+            "Blockchain": "Sei",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "SHIB",
@@ -223,6 +253,18 @@
             "Address": "0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6"
         },
         {
+            "Symbol": "STRK",
+            "Exchange": "Binance2",
+            "Blockchain": "Starknet",
+            "Address": "0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d"
+        },
+        {
+            "Symbol": "SUI",
+            "Exchange": "Binance2",
+            "Blockchain": "Sui",
+            "Address": "0x2::sui::SUI"
+        },
+        {
             "Symbol": "SUSHI",
             "Exchange": "Binance2",
             "Blockchain": "Ethereum",
@@ -239,6 +281,12 @@
             "Exchange": "Binance2",
             "Blockchain": "Osmosis",
             "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877"
+        },
+        {
+            "Symbol": "TAO",
+            "Exchange": "Binance2",
+            "Blockchain": "Bittensor",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "UNI",
@@ -269,6 +317,18 @@
             "Exchange": "Binance2",
             "Blockchain": "BinanceSmartChain",
             "Address": "0xa2E3356610840701BDf5611a53974510Ae27E2e1"
+        },
+        {
+            "Symbol": "WIF",
+            "Exchange": "Binance2",
+            "Blockchain": "Solana",
+            "Address": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm"
+        },
+        {
+            "Symbol": "WLD",
+            "Exchange": "Binance2",
+            "Blockchain": "Ethereum",
+            "Address": "0x163f8C2467924be0ae7B5347228CABF260318753"
         },
         {
             "Symbol": "XRP",

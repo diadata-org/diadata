@@ -2,6 +2,18 @@
   "Coins": [
     {
       "Exchange": "GateIO",
+      "ForeignName": "AKT_USDT",
+      "Ignore": false,
+      "Symbol": "AKT"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "AR_USDT",
+      "Ignore": false,
+      "Symbol": "AR"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "ARB_USDT",
       "Ignore": false,
       "Symbol": "ARB"
@@ -23,6 +35,12 @@
       "ForeignName": "BOBA_USDT",
       "Ignore": false,
       "Symbol": "BOBA"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "BONK_USDT",
+      "Ignore": false,
+      "Symbol": "BONK"
     },
     {
       "Exchange": "GateIO",
@@ -71,6 +89,12 @@
       "ForeignName": "PSP_ETH",
       "Ignore": false,
       "Symbol": "PSP"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "PENDLE_USDT",
+      "Ignore": false,
+      "Symbol": "PENDLE"
     },
     {
       "Exchange": "GateIO",
@@ -407,6 +431,12 @@
       "ForeignName": "HEGIC_USDT",
       "Ignore": false,
       "Symbol": "HEGIC"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "ICP_USDT",
+      "Ignore": false,
+      "Symbol": "ICP"
     },
     {
       "Exchange": "GateIO",
@@ -1838,6 +1868,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "ONDO_USDT",
+      "Ignore": false,
+      "Symbol": "ONDO"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "ONT_ETH",
       "Ignore": false,
       "Symbol": "ONT"
@@ -2138,6 +2174,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "SEI_USDT",
+      "Ignore": false,
+      "Symbol": "SEI"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "SENC_ETH",
       "Ignore": false,
       "Symbol": "SENC"
@@ -2270,6 +2312,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "TAO_USDT",
+      "Ignore": false,
+      "Symbol": "TAO"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "TCT_ETH",
       "Ignore": false,
       "Symbol": "TCT"
@@ -2354,6 +2402,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "TON_USDT",
+      "Ignore": false,
+      "Symbol": "TON"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "TRX_ETH",
       "Ignore": false,
       "Symbol": "TRX"
@@ -2429,6 +2483,12 @@
       "ForeignName": "WELL_USDT",
       "Ignore": false,
       "Symbol": "WELL"
+    },
+    {
+      "Exchange": "GateIO",
+      "ForeignName": "WIF_USDT",
+      "Ignore": false,
+      "Symbol": "WIF"
     },
     {
       "Exchange": "GateIO",

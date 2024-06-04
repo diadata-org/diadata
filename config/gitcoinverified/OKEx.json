@@ -25,6 +25,12 @@
             "Address": "0xa117000000f279D81A1D3cc75430fAA017FA5A2e"
         },
         {
+            "Symbol": "AR",
+            "Exchange": "OKEx",
+            "Blockchain": "Arweave",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "ARB",
             "Exchange": "OKEx",
             "Blockchain": "Arbitrum",
@@ -65,6 +71,12 @@
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
             "Address": "0xba100000625a3754423978a60c9317c58a424e3D"
+        },
+        {
+            "Symbol": "BONK",
+            "Exchange": "OKEx",
+            "Blockchain": "Solana",
+            "Address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"
         },
         {
             "Symbol": "CHAT",
@@ -173,6 +185,12 @@
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
             "Address": "0x767FE9EDC9E0dF98E07454847909b5E959D7ca0E"
+        },
+        {
+            "Symbol": "INJ",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0xe28b3B32B6c345A34Ff64674606124Dd5Aceca30"
         },
         {
             "Symbol": "KAN",
@@ -343,10 +361,28 @@
             "Address": "0x090185f2135308BaD17527004364eBcC2D37e5F6"
         },
         {
+            "Symbol": "STETH",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84"
+        },
+        {
             "Symbol": "STORJ",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
             "Address": "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC"
+        },
+        {
+            "Symbol": "STRK",
+            "Exchange": "OKEx",
+            "Blockchain": "Starknet",
+            "Address": "0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d"
+        },
+        {
+            "Symbol": "SUI",
+            "Exchange": "OKEx",
+            "Blockchain": "Sui",
+            "Address": "0x2::sui::SUI"
         },
         {
             "Symbol": "TCT",
@@ -359,6 +395,12 @@
             "Exchange": "OKEx",
             "Blockchain": "Osmosis",
             "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877"
+        },
+        {
+            "Symbol": "TON",
+            "Exchange": "OKEx",
+            "Blockchain": "Ton",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "TRIO",
@@ -389,6 +431,18 @@
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
             "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
+        },
+        {
+            "Symbol": "WIF",
+            "Exchange": "OKEx",
+            "Blockchain": "Solana",
+            "Address": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm"
+        },
+        {
+            "Symbol": "WLD",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x163f8C2467924be0ae7B5347228CABF260318753"
         },
         {
             "Symbol": "WTC",

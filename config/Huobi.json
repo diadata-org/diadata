@@ -32,6 +32,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "AKTUSDT",
+      "Ignore": false,
+      "Symbol": "AKT"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "ANKRUSDT",
       "Ignore": false,
       "Symbol": "ANKR"
@@ -41,6 +47,18 @@
       "ForeignName": "ANTUSDT",
       "Ignore": false,
       "Symbol": "ANT"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "APTUSDT",
+      "Ignore": false,
+      "Symbol": "APT"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "ARUSDT",
+      "Ignore": false,
+      "Symbol": "AR"
     },
     {
       "Exchange": "Huobi",
@@ -350,6 +368,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "ONDOUSDT",
+      "Ignore": false,
+      "Symbol": "ONDO"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "ONTUSDT",
       "Ignore": false,
       "Symbol": "ONT"
@@ -359,6 +383,12 @@
       "ForeignName": "ORDIUSDT",
       "Ignore": false,
       "Symbol": "ORDI"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "PENDLEUSDT",
+      "Ignore": false,
+      "Symbol": "PENDLE"
     },
     {
       "Exchange": "Huobi",
@@ -416,6 +446,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "SEIUSDT",
+      "Ignore": false,
+      "Symbol": "SEI"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "SNTBTC",
       "Ignore": false,
       "Symbol": "SNT"
@@ -452,6 +488,18 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "STRKUSDT",
+      "Ignore": false,
+      "Symbol": "STRK"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "SUIUSDT",
+      "Ignore": false,
+      "Symbol": "SUI"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "TIAUSDT",
       "Ignore": false,
       "Symbol": "TIA"
@@ -461,6 +509,12 @@
       "ForeignName": "TLOSUSDT",
       "Ignore": false,
       "Symbol": "TLOS"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "TONUSDT",
+      "Ignore": false,
+      "Symbol": "TON"
     },
     {
       "Exchange": "Huobi",
@@ -479,6 +533,18 @@
       "ForeignName": "WELLUSDT",
       "Ignore": false,
       "Symbol": "WELL"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "WIFUSDT",
+      "Ignore": false,
+      "Symbol": "WIF"
+    },
+    {
+      "Exchange": "Huobi",
+      "ForeignName": "WLDUSDT",
+      "Ignore": false,
+      "Symbol": "WLD"
     },
     {
       "Exchange": "Huobi",

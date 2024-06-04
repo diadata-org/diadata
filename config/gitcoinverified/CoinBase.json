@@ -19,6 +19,12 @@
             "Address": "0x912CE59144191C1204E64559FE8253a0e49E6548"
         },
         {
+            "Symbol": "AKT",
+            "Exchange": "CoinBase",
+            "Blockchain": "Osmosis",
+            "Address": "ibc/C2CFB1C37C146CF95B0784FD518F8030FEFC76C5800105B1742FB65FFE65F873"
+        },
+        {
             "Symbol": "ATOM",
             "Exchange": "CoinBase",
             "Blockchain": "Cosmos",
@@ -41,6 +47,12 @@
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
             "Address": "0x42bBFa2e77757C645eeaAd1655E0911a7553Efbc"
+        },
+        {
+            "Symbol": "BONK",
+            "Exchange": "CoinBase",
+            "Blockchain": "Solana",
+            "Address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"
         },
         {
             "Symbol": "DOT",
@@ -67,10 +79,22 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "ICP",
+            "Exchange": "CoinBase",
+            "Blockchain": "InternetComputer",
+            "Address": "ryjl3-tyaaa-aaaaa-aaaba-cai"
+        },
+        {
             "Symbol": "KAVA",
             "Exchange": "CoinBase",
             "Blockchain": "Osmosis",
             "Address": "ibc/57AA1A70A4BC9769C525EBF6386F7A21536E04A79D62E1981EFCEF9428EBB205"
+        },
+        {
+            "Symbol": "ONDO",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xfAbA6f8e4a5E8Ab82F62fe7C39859FA577269BE3"
         },
         {
             "Symbol": "OP",
@@ -89,6 +113,12 @@
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
             "Address": "0xB4A3B0Faf0Ab53df58001804DdA5Bfc6a3D59008"
+        },
+        {
+            "Symbol": "SEI",
+            "Exchange": "CoinBase",
+            "Blockchain": "Sei",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "SHIB",
@@ -208,6 +238,24 @@
             "Symbol": "FET",
             "Exchange": "CoinBase",
             "Blockchain": "Fetch",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "INJ",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xe28b3B32B6c345A34Ff64674606124Dd5Aceca30"
+        },
+        {
+            "Symbol": "CBETH",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xBe9895146f7AF43049ca1c1AE358B0541Ea49704"
+        },
+        {
+            "Symbol": "ETH",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {

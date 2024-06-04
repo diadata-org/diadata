@@ -565,6 +565,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "TAO",
+      "ForeignName": "TAOUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "TIA",
       "ForeignName": "TIAUSDT",
       "Exchange": "MEXC",

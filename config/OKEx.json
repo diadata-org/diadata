@@ -8,6 +8,12 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "AR-USDT",
+      "Ignore": false,
+      "Symbol": "AR"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "ARB-USDT",
       "Ignore": false,
       "Symbol": "ARB"
@@ -41,6 +47,12 @@
       "ForeignName": "BAL-USDT",
       "Ignore": false,
       "Symbol": "BAL"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "BONK-USDT",
+      "Ignore": false,
+      "Symbol": "BONK"
     },
     {
       "Exchange": "OKEx",
@@ -1256,6 +1268,12 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "INJ-USDT",
+      "Ignore": false,
+      "Symbol": "INJ"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "INS-BTC",
       "Ignore": false,
       "Symbol": "INS"
@@ -2444,6 +2462,12 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "STETH-USDT",
+      "Ignore": false,
+      "Symbol": "STETH"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "STORJ-BTC",
       "Ignore": false,
       "Symbol": "STORJ"
@@ -2462,6 +2486,12 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "STRK-USDT",
+      "Ignore": false,
+      "Symbol": "STRK"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "SUB-BTC",
       "Ignore": false,
       "Symbol": "SUB"
@@ -2471,6 +2501,12 @@
       "ForeignName": "SUB-ETH",
       "Ignore": false,
       "Symbol": "SUB"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "SUI-USDT",
+      "Ignore": false,
+      "Symbol": "SUI"
     },
     {
       "Exchange": "OKEx",
@@ -2549,6 +2585,12 @@
       "ForeignName": "TNB-USDT",
       "Ignore": false,
       "Symbol": "TNB"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "TON-USDT",
+      "Ignore": false,
+      "Symbol": "TON"
     },
     {
       "Exchange": "OKEx",
@@ -2768,6 +2810,12 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "WIF-USDT",
+      "Ignore": false,
+      "Symbol": "WIF"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "WIN-BTC",
       "Ignore": false,
       "Symbol": "WIN"
@@ -2789,6 +2837,12 @@
       "ForeignName": "WIN-USDT",
       "Ignore": false,
       "Symbol": "WIN"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "WLD-USDT",
+      "Ignore": false,
+      "Symbol": "WLD"
     },
     {
       "Exchange": "OKEx",
