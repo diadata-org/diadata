@@ -36,7 +36,7 @@ const (
 
 const (
 	DefaultRefreshDelay              = 400 // millisec
-	DefaultSleepBetweenContractCalls = 200 // millisec
+	DefaultSleepBetweenContractCalls = 300 // millisec
 	DefaultEventsLimit               = 100
 	DefaultSwapContractsLimit        = 100
 )
@@ -116,6 +116,9 @@ func (c *AlephiumClient) callAPI(request *http.Request, target interface{}) erro
 	}
 
 	err = json.Unmarshal(data, &target)
+	if err != nil {
+		return err
+	}
 
 	c.waiting()
 
@@ -177,7 +180,7 @@ func (c *AlephiumClient) GetTokenPairAddresses(contractAddress string) ([]string
 			Error("failed to get token pair")
 		return nil, err
 	}
-	
+
 	address1, err := AddressFromTokenId(response.Returns[0].Value)
 	if err != nil {
 		logger.WithError(err).Error("failed to calculate address1")
@@ -261,33 +264,58 @@ func (c *AlephiumClient) GetTokenInfoForContractDecoded(contractAddress, blockch
 	return &asset, err
 }
 
-// GetContractEvents returns swap events from REST API for swap contract address
-func (c *AlephiumClient) GetContractEvents(contractAddress string, limit, page int) ([]EventContract, error) {
-	logger := c.logger.WithField("function", "GetSwapContractEvents")
-	// curl https://node.mainnet.alephium.org/events/contract/2A5R8KZQ3rhKYrW7bAS4JTjY9FCFLJg6HjQpqSFZBqACX?start=0&limit=10
-	// https://backend.mainnet.alephium.org/contract-events/contract-address/vFpZ1DF93x1xGHoXM8rsDBFjpcoSsCi5ZEuA5NG5UJGX/?page=2&limit=2
-	if page == 0 {
-		page = 1
-	}
-	// TODO waiting from alephium feature - filter by eventIndex - can be refactored here to simplify code
-	url := fmt.Sprintf("%s/contract-events/contract-address/%s?page=%d&limit=%d", BackendURL, contractAddress, page, limit)
+// GetCurrentHeight returns the current height (block number) in Alephium network
+func (c *AlephiumClient) GetCurrentHeight() (int, error) {
+	logger := c.logger.WithField("function", "GetLatestBlockHash")
+
+	url := fmt.Sprintf("%s/blockflow/chain-info?fromGroup=0&toGroup=0", NodeURL)
 	request, _ := http.NewRequest("GET", url, http.NoBody)
 
-	logger.WithField("url", url).Info("url")
+	var response ChainInfoResponse
+	err := c.callAPI(request, &response)
 
-	eventContractResponse := make([]EventContract, 0)
-	err := c.callAPI(request, &eventContractResponse)
 	if err != nil {
 		logger.WithError(err).Error("failed to callApi")
-		return eventContractResponse, err
+		return 0, err
 	}
 
-	events := make([]EventContract, 0)
-	for _, event := range eventContractResponse {
-		events = append(events, event)
+	return response.CurrentHeight, nil
+}
+
+// GetBlockHashes returns all block hashes at a given height from REST API
+func (c *AlephiumClient) GetBlockHashes(height int) ([]string, error) {
+	logger := c.logger.WithField("function", "GetBlockHashes")
+
+	url := fmt.Sprintf("%s/blockflow/hashes?fromGroup=0&toGroup=0&height=%d", NodeURL, height)
+	request, _ := http.NewRequest("GET", url, http.NoBody)
+
+	var response BlockHashesResponse
+	err := c.callAPI(request, &response)
+
+	if err != nil {
+		logger.WithError(err).Error("failed to callApi")
+		return nil, err
 	}
 
-	return events, nil
+	return response.Headers, nil
+}
+
+// GetContractEvents returns events included in a specific block from REST API
+func (c *AlephiumClient) GetBlockEvents(blockHash string) ([]ContractEvent, error) {
+	logger := c.logger.WithField("function", "GetEvents")
+
+	url := fmt.Sprintf("%s/events/block-hash/%s?group=0", NodeURL, blockHash)
+	request, _ := http.NewRequest("GET", url, http.NoBody)
+
+	var response BlockEventsResponse
+	err := c.callAPI(request, &response)
+
+	if err != nil {
+		logger.WithError(err).Error("failed to callApi")
+		return nil, err
+	}
+
+	return response.Events, nil
 }
 
 // GetSwapContractEvents returns swap event transaction details by transaction hash
@@ -308,8 +336,8 @@ func (c *AlephiumClient) GetTransactionDetails(txnHash string) (TransactionDetai
 	return transactionDetailsResponse, nil
 }
 
-func (s *AlephiumClient) FilterEvents(allEvents []EventContract, filter int) []EventContract {
-	events := make([]EventContract, 0)
+func (s *AlephiumClient) FilterEvents(allEvents []ContractEvent, filter int) []ContractEvent {
+	events := make([]ContractEvent, 0, len(allEvents))
 	for _, event := range allEvents {
 		if event.EventIndex == filter {
 			events = append(events, event)

@@ -102,7 +102,7 @@ func groupFromAddress(address string) ([]byte, error) {
 func idFromAddress(address string) ([]byte, error) {
 	decoded := base58.Decode(address)
 	if len(decoded) == 0 {
-		return nil, errors.New("Address string is empty")
+		return nil, errors.New("address string is empty")
 	}
 	addressType := decoded[0]
 	addressBody := decoded[1:]
@@ -110,7 +110,7 @@ func idFromAddress(address string) ([]byte, error) {
 	if addressType == AddressTypeP2C {
 		return addressBody, nil
 	} else {
-		return nil, errors.New("Invalid contract address type")
+		return nil, errors.New("invalid contract address type")
 	}
 }
 
@@ -127,5 +127,5 @@ func decodeAndValidateAddress(address string) ([]byte, error) {
 	if (addressType == AddressTypeP2PKH || addressType == AddressTypeP2SH || addressType == AddressTypeP2C) && (len(decoded) == 33) {
 		return decoded, nil
 	}
-	return nil, errors.New("Invalid address")
+	return nil, errors.New("invalid address")
 }

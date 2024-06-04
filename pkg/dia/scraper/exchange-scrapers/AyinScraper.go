@@ -30,6 +30,7 @@ type AyinScraper struct {
 	ticker                    *time.Ticker
 	exchangeName              string
 	blockchain                string
+	currentHeight             int
 	eventsLimit               int
 	swapContractsLimit        int
 	targetSwapContract        string
@@ -37,7 +38,6 @@ type AyinScraper struct {
 	db                        *models.RelDB
 	refreshDelay              time.Duration
 	sleepBetweenContractCalls time.Duration
-	pollingPage               map[string]int
 }
 
 // NewAyinScraper returns a new AyinScraper initialized with default values.
@@ -70,11 +70,11 @@ func NewAyinScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *Ay
 		shutdown:                  make(chan nothing),
 		shutdownDone:              make(chan nothing),
 		pairScrapers:              make(map[string]*AyinPairScraper),
-		pollingPage:               make(map[string]int),
 		api:                       alephiumClient,
 		ticker:                    time.NewTicker(ayinRefreshDelay),
 		exchangeName:              exchange.Name,
 		blockchain:                exchange.BlockChain.Name,
+		currentHeight:             0,
 		error:                     nil,
 		chanTrades:                make(chan *dia.Trade),
 		db:                        relDB,
@@ -97,7 +97,15 @@ func NewAyinScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *Ay
 
 // mainLoop runs in a goroutine until channel s is closed.
 func (s *AyinScraper) mainLoop() {
-	err := s.Update()
+	currentHeight, err := s.api.GetCurrentHeight()
+	if err != nil {
+		s.logger.WithError(err).Error("failed to GetCurrentHeight")
+		s.cleanup(err)
+		return
+	}
+	s.currentHeight = currentHeight
+
+	err = s.Update()
 	if err != nil {
 		s.logger.Error(err)
 	}
@@ -158,6 +166,29 @@ func (s *AyinScraper) Update() error {
 	logger := s.logger.WithFields(logrus.Fields{
 		"function": "Update",
 	})
+
+	blockHashes, err := s.api.GetBlockHashes(s.currentHeight)
+	if err != nil {
+		s.logger.WithError(err).Error("failed to GetBlockHashes")
+		return err
+	}
+	if len(blockHashes) == 0 {
+		logger.Info("no new blocks in the network, waiting...")
+		return nil
+	}
+
+	allEvents, err := s.fetchEvents(blockHashes)
+	if err != nil {
+		logger.WithError(err).Error("failed to fetch events")
+		return err
+	}
+	s.currentHeight += 1
+
+	if len(allEvents) == 0 {
+		logger.WithField("currentHeight", s.currentHeight).Info("no events, skipping to the next block...")
+		return nil
+	}
+
 	pools, err := s.getPools()
 	if err != nil {
 		logger.
@@ -167,33 +198,26 @@ func (s *AyinScraper) Update() error {
 	}
 
 	for _, pool := range pools {
-		if _, ok := s.pollingPage[pool.Address]; !ok {
-			s.pollingPage[pool.Address] = 1
-		}
-
-		allEvents, err := s.api.GetContractEvents(
-			pool.Address,
-			s.eventsLimit,
-			s.pollingPage[pool.Address],
-		)
-
-		if err != nil {
-			return err
-		}
-
-		swapEvents := s.api.FilterEvents(allEvents, alephiumhelper.SwapEventIndex)
-
-		if len(swapEvents) == 0 {
-			logger.
-				Info("empty events. Skip to next iteration...")
+		if len(pool.Assetvolumes) != 2 {
+			logger.WithField("poolAddress", pool.Address).Error("pool is missing required asset volumes")
 			continue
 		}
 
-		s.pollingPage[pool.Address] += 1
+		poolEvents := make([]alephiumhelper.ContractEvent, 0)
 
-		for _, event := range swapEvents {
-			logger.WithField("event", event).WithField("page", s.pollingPage[pool.Address]).Info("event")
-			transactionDetails, err := s.api.GetTransactionDetails(event.TxHash)
+		for _, event := range allEvents {
+			if event.ContractAddress == pool.Address {
+				poolEvents = append(poolEvents, event)
+			}
+		}
+
+		if len(poolEvents) == 0 {
+			continue
+		}
+
+		for _, event := range poolEvents {
+			logger.WithField("event", event).WithField("currentHeight", s.currentHeight).Info("event")
+			transactionDetails, err := s.api.GetTransactionDetails(event.TxID)
 			if err != nil {
 				logger.
 					WithError(err).
@@ -213,7 +237,23 @@ func (s *AyinScraper) Update() error {
 	return nil
 }
 
-func (s *AyinScraper) handleTrade(pool *dia.Pool, event *alephiumhelper.EventContract, timestamp int64) *dia.Trade {
+func (s *AyinScraper) fetchEvents(blockHashes []string) ([]alephiumhelper.ContractEvent, error) {
+	allEvents := make([]alephiumhelper.ContractEvent, 0)
+
+	for _, hash := range blockHashes {
+		events, err := s.api.GetBlockEvents(hash)
+		if err != nil {
+			return allEvents, err
+		}
+
+		filtered := s.api.FilterEvents(events, alephiumhelper.SwapEventIndex)
+		allEvents = append(allEvents, filtered...)
+	}
+
+	return allEvents, nil
+}
+
+func (s *AyinScraper) handleTrade(pool *dia.Pool, event *alephiumhelper.ContractEvent, timestamp int64) *dia.Trade {
 	var volume, price float64
 	var symbolPair string
 	var baseToken, quoteToken *dia.Asset
@@ -248,13 +288,14 @@ func (s *AyinScraper) handleTrade(pool *dia.Pool, event *alephiumhelper.EventCon
 		Time:           time.UnixMilli(timestamp),
 		Symbol:         symbolPair,
 		Pair:           symbolPair,
-		ForeignTradeID: event.TxHash,
+		ForeignTradeID: event.TxID,
 		Source:         s.exchangeName,
 		Price:          price,
 		Volume:         volume,
 		VerifiedPair:   true,
 		BaseToken:      *baseToken,
 		QuoteToken:     *quoteToken,
+		PoolAddress:    pool.Address,
 	}
 	return diaTrade
 }
