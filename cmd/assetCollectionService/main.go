@@ -154,6 +154,8 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 		return source.NewUniswapAssetSource(exchanges[dia.PearlfiExchangeTestnet], relDB)
 	case dia.PearlfiExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.PearlfiExchange], relDB)
+	case dia.ThenaExchange:
+		return source.NewUniswapAssetSource(exchanges[dia.ThenaExchange], relDB)
 	case "assetlists":
 		return source.NewJSONReader(exchange, secret)
 	default:

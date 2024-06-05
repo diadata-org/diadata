@@ -115,6 +115,7 @@ const (
 	RamsesV2Exchange                   = "RamsesV2"
 	NileV1Exchange                     = "NileV1"
 	NileV2Exchange                     = "NileV2"
+	ThenaExchange                      = "Thena"
 
 	// FinageForex        = "FinageForex"
 )

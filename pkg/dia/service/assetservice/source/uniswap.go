@@ -134,6 +134,8 @@ func NewUniswapAssetSource(exchange dia.Exchange, relDB *models.RelDB) (uas *Uni
 		uas = makeUniswapAssetSource(exchange, restDialArbitrum, relDB, wanchainWaitMilliseconds)
 	case dia.NileV1Exchange:
 		uas = makeUniswapAssetSource(exchange, restDialLinea, relDB, wanchainWaitMilliseconds)
+	case dia.ThenaExchange:
+		uas = makeUniswapAssetSource(exchange, restDialBSC, relDB, sushiswapWaitMilliseconds)
 	}
 
 	exchangeFactoryContractAddress = exchange.Contract
