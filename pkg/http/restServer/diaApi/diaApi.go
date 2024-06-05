@@ -3595,12 +3595,12 @@ func (env *Env) GetAssetListBySymbol(c *gin.Context) {
 
 	asset := dia.Asset{Symbol: selectedAsset.Symbol, Name: selectedAsset.CustomName, Blockchain: splitted[0], Address: splitted[1]}
 
-	// volumeYesterday, err := env.DataStore.Get24HoursAssetVolume(asset)
-	// if err != nil {
-	// 	log.Errorln("error getting Get24HoursAssetVolume", err)
-	// }
+	volumeYesterday, err := env.DataStore.Get24HoursAssetVolume(asset)
+	if err != nil {
+		log.Errorln("error getting Get24HoursAssetVolume", err)
+	}
 	q := models.AssetQuotationFull{Symbol: asset.Symbol, Name: asset.Name, Address: asset.Address, Price: price, Time: time.Now(), Source: "diagql"}
-	// q.VolumeYesterdayUSD = *volumeYesterday
+	q.VolumeYesterdayUSD = *volumeYesterday
 	q.Source = selectedAsset.String()
 	c.JSON(http.StatusOK, q)
 }
