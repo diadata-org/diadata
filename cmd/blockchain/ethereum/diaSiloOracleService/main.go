@@ -238,6 +238,15 @@ func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *dia
 			}
 			rawQ.Symbol = symbol
 			rawQ.Price = price
+		} else if address == "0xACC51FFDeF63fB0c014c882267C3A17261A5eD50" && blockchain == "Arbitrum" {
+			// Special case: SYK with liquidity threshold
+			price, symbol, err := getGraphqlLiquidityThresholdAssetQuotationFromDia(blockchain, address, "SYK", 120, "vwapir", 500000.0)
+			if err != nil {
+				log.Printf("Failed to retrieve %s quotation with liquidity threshold from GraphQL on DIA: %v", symbol, err)
+				return oldPrice, err
+			}
+			rawQ.Symbol = symbol
+			rawQ.Price = price
 		} else {
 			rawQ, err = getAssetQuotationFromDia(blockchain, address)
 			if err != nil {
