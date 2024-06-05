@@ -298,6 +298,10 @@ func main() {
 
 		diaGroup.GET("/synthasset/:blockchain/:protocol", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetSyntheticAsset))
 
+		// Endpoints for asset list
+		diaGroup.GET("/assetlist/:query/", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.SearchAssetList))
+		diaGroup.GET("/assetlist/symbol/:symbol/", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetAssetListBySymbol))
+
 	}
 
 	r.Use(static.Serve(urlFolderPrefix+"/v1/chart", static.LocalFile("/charts", true)))

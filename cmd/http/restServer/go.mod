@@ -11,6 +11,7 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 )
 
+
 require (
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/bradfitz/gomemcache v0.0.0-20180710155616-bc664df96737 // indirect
@@ -44,6 +45,8 @@ require (
 	github.com/klauspost/compress v1.15.7 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.10.4 // indirect
+	github.com/machinebox/graphql v0.2.2 // indirect
+	github.com/matryer/is v1.4.1 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mattn/go-runewidth v0.0.10 // indirect
 	github.com/memcachier/mc v2.0.1+incompatible // indirect
