@@ -88,7 +88,7 @@ func main() {
 		log.Fatalf("Failed to Deploy or Bind contract: %v", err)
 	}
 
-	reethconn, err := NewMain(common.HexToAddress("0x6254c71Eae8476BE8fd0B9F14AEB61d578422991"), dataConn)
+	reethconn, err := NewMain(common.HexToAddress("0x655756824385F8903AC8cFDa17B656cc26f7C7da"), dataConn)
 	if err != nil {
 		log.Fatalf("Failed to get data contract conn: %v", err)
 	}
