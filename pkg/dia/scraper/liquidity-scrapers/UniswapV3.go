@@ -143,6 +143,8 @@ func (uls *UniswapV3Scraper) fetchPools() {
 
 	for endblock < currentBlockNumber+uls.chunksBlockSize {
 
+		time.Sleep(time.Duration(uls.waitTime) * time.Millisecond)
+
 		poolCreated, err := contract.FilterPoolCreated(
 			&bind.FilterOpts{
 				Start: startblock,

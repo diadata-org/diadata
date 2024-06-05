@@ -265,7 +265,6 @@ func NewRelDataStoreWithOptions(withPostgres bool, withRedis bool) (*RelDB, erro
 
 	if withPostgres {
 		url = db.GetPostgresURL()
-		fmt.Println("------------url", url)
 		postgresClient = db.PostgresDatabase()
 	}
 	if withRedis {
