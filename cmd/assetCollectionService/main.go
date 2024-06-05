@@ -74,6 +74,8 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 		return source.NewUniswapAssetSource(exchanges[dia.SpiritswapExchange], relDB)
 	case dia.SolarbeamExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.SolarbeamExchange], relDB)
+	case dia.RamsesV1Exchange:
+		return source.NewUniswapAssetSource(exchanges[dia.RamsesV1Exchange], relDB)
 	case dia.SerumExchange:
 		return source.NewSerumAssetSource(exchanges[dia.SerumExchange])
 	case dia.TrisolarisExchange:
@@ -106,12 +108,18 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 		return source.NewUniswapAssetSource(exchanges[dia.DiffusionExchange], relDB)
 	case dia.ArthswapExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.ArthswapExchange], relDB)
+	case dia.NileV1Exchange:
+		return source.NewUniswapAssetSource(exchanges[dia.NileV1Exchange], relDB)
 	case dia.UniswapExchangeV3:
 		return source.NewUniswapV3AssetSource(exchanges[dia.UniswapExchangeV3], relDB)
 	case dia.UniswapExchangeV3Polygon:
 		return source.NewUniswapV3AssetSource(exchanges[dia.UniswapExchangeV3Polygon], relDB)
 	case dia.UniswapExchangeV3Arbitrum:
 		return source.NewUniswapV3AssetSource(exchanges[dia.UniswapExchangeV3Arbitrum], relDB)
+	case dia.RamsesV2Exchange:
+		return source.NewUniswapV3AssetSource(exchanges[dia.RamsesV2Exchange], relDB)
+	case dia.NileV2Exchange:
+		return source.NewUniswapV3AssetSource(exchanges[dia.NileV2Exchange], relDB)
 	case dia.StellaswapExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.StellaswapExchange], relDB)
 	case dia.WanswapExchange:

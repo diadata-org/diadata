@@ -59,6 +59,9 @@ const (
 	restDialArbitrum = ""
 	wsDialArbitrum   = ""
 
+	restDialLinea = ""
+	wsDialLinea   = ""
+
 	restDialMetis = ""
 	wsDialMetis   = ""
 
@@ -223,6 +226,10 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialMoonbeam, wsDialMoonbeam, moonbeamWaitMilliseconds)
 	case dia.WanswapExchange:
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialWanchain, wsDialWanchain, wanchainWaitMilliseconds)
+	case dia.NileV1Exchange:
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialLinea, wsDialLinea, wanchainWaitMilliseconds)
+	case dia.RamsesV1Exchange:
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialArbitrum, wsDialArbitrum, wanchainWaitMilliseconds)
 	}
 
 	s.relDB = relDB
