@@ -8,6 +8,12 @@
     },
     {
       "Exchange": "CoinBase",
+      "ForeignName": "AKT-USD",
+      "Ignore": false,
+      "Symbol": "AKT"
+    },
+    {
+      "Exchange": "CoinBase",
       "ForeignName": "ATOM-USD",
       "Ignore": false,
       "Symbol": "ATOM"
@@ -23,6 +29,48 @@
       "ForeignName": "BOBA-USD",
       "Ignore": false,
       "Symbol": "BOBA"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "BONK-USD",
+      "Ignore": false,
+      "Symbol": "BONK"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "CBETH-USD",
+      "Ignore": false,
+      "Symbol": "CBETH"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "CBETH-ETH",
+      "Ignore": false,
+      "Symbol": "CBETH"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "ICP-USD",
+      "Ignore": false,
+      "Symbol": "ICP"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "INJ-USD",
+      "Ignore": false,
+      "Symbol": "INJ"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "ONDO-USD",
+      "Ignore": false,
+      "Symbol": "ONDO"
+    },
+    {
+      "Exchange": "CoinBase",
+      "ForeignName": "SEI-USD",
+      "Ignore": false,
+      "Symbol": "SEI"
     },
     {
       "Exchange": "CoinBase",

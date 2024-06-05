@@ -43,6 +43,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "APT",
+            "ForeignName": "APTUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "AR",
             "ForeignName": "ARUSDT",
             "Exchange": "ByBit",
@@ -99,6 +105,12 @@
         {
             "Symbol": "BIT",
             "ForeignName": "BITUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BONK",
+            "ForeignName": "BONKUSDT",
             "Exchange": "ByBit",
             "Ignore": false
         },
@@ -373,6 +385,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "INJ",
+            "ForeignName": "INJUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "IOST",
             "ForeignName": "IOSTUSDT",
             "Exchange": "ByBit",
@@ -469,6 +487,18 @@
             "Ignore": false
         },
         {
+            "Symbol": "MNT",
+            "ForeignName": "MNTUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MNT",
+            "ForeignName": "MNTUSDC",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "NEAR",
             "ForeignName": "NEARUSDT",
             "Exchange": "ByBit",
@@ -483,6 +513,18 @@
         {
             "Symbol": "ORDI",
             "ForeignName": "ORDIUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ONDO",
+            "ForeignName": "ONDOUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PENDLE",
+            "ForeignName": "PENDLEUSDT",
             "Exchange": "ByBit",
             "Ignore": false
         },
@@ -565,6 +607,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "SEI",
+            "ForeignName": "SEIUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "SNX",
             "ForeignName": "SNXUSDT",
             "Exchange": "ByBit",
@@ -589,6 +637,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "STETH",
+            "ForeignName": "STETHUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "STG",
             "ForeignName": "STGUSDT",
             "Exchange": "ByBit",
@@ -601,8 +655,20 @@
             "Ignore": false
         },
         {
+            "Symbol": "STRK",
+            "ForeignName": "STRKUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "STX",
             "ForeignName": "STXUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SUI",
+            "ForeignName": "SUIUSDT",
             "Exchange": "ByBit",
             "Ignore": false
         },
@@ -627,6 +693,12 @@
         {
             "Symbol": "TLM",
             "ForeignName": "TLMUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TON",
+            "ForeignName": "TONUSDT",
             "Exchange": "ByBit",
             "Ignore": false
         },
@@ -669,6 +741,18 @@
         {
             "Symbol": "VRTX",
             "ForeignName": "VRTXUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WIF",
+            "ForeignName": "WIFUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WLD",
+            "ForeignName": "WLDUSDT",
             "Exchange": "ByBit",
             "Ignore": false
         },

@@ -199,6 +199,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "GMT",
+      "Exchange": "BitMart",
+      "Blockchain": "Solana",
+      "Address": "7i5KKsX2weiTkry7jA4ZwSuXGhs5eJBEjY8vVxR4pfRx"
+    },
+    {
       "Symbol": "GMX",
       "Exchange": "BitMart",
       "Blockchain": "Arbitrum",

@@ -20,6 +20,12 @@
     },
     {
       "Exchange": "Kraken",
+      "ForeignName": "AKTUSD",
+      "Ignore": false,
+      "Symbol": "AKT"
+    },
+    {
+      "Exchange": "Kraken",
       "ForeignName": "ARBUSD",
       "Ignore": false,
       "Symbol": "ARB"

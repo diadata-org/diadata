@@ -1,6 +1,12 @@
 {
   "Tokens": [
     {
+      "Symbol": "AKT",
+      "Exchange": "Kraken",
+      "Blockchain": "Osmosis",
+      "Address": "ibc/C2CFB1C37C146CF95B0784FD518F8030FEFC76C5800105B1742FB65FFE65F873"
+    },
+    {
       "Symbol": "ARB",
       "Exchange": "Kraken",
       "Blockchain": "Arbitrum",

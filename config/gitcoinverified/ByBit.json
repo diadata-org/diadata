@@ -1,6 +1,36 @@
 {
     "Tokens": [
         {
+            "Symbol": "APT",
+            "Exchange": "ByBit",
+            "Blockchain": "Aptos",
+            "Address": "0x1::aptos_coin::AptosCoin"
+        },
+        {
+            "Symbol": "TON",
+            "Exchange": "ByBit",
+            "Blockchain": "Ton",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "WIF",
+            "Exchange": "ByBit",
+            "Blockchain": "Solana",
+            "Address": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm"
+        },
+        {
+            "Symbol": "BONK",
+            "Exchange": "ByBit",
+            "Blockchain": "Solana",
+            "Address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"
+        },
+        {
+            "Symbol": "WLD",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0x163f8C2467924be0ae7B5347228CABF260318753"
+        },
+        {
             "Symbol": "ENA",
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
@@ -11,6 +41,36 @@
             "Exchange": "ByBit",
             "Blockchain": "Kadena",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "MNT",
+            "Exchange": "ByBit",
+            "Blockchain": "Mantle",
+            "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
+        },
+        {
+            "Symbol": "SEI",
+            "Exchange": "ByBit",
+            "Blockchain": "Sei",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "STRK",
+            "Exchange": "ByBit",
+            "Blockchain": "Starknet",
+            "Address": "0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d"
+        },
+        {
+            "Symbol": "SUI",
+            "Exchange": "ByBit",
+            "Blockchain": "Sui",
+            "Address": "0x2::sui::SUI"
+        },
+        {
+            "Symbol": "ONDO",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0xfAbA6f8e4a5E8Ab82F62fe7C39859FA577269BE3"
         },
         {
             "Symbol": "ORDI",
@@ -349,6 +409,12 @@
             "Address": "0x8A2279d4A90B6fe1C4B30fa660cC9f926797bAA2"
         },
         {
+            "Symbol": "INJ",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0xe28b3B32B6c345A34Ff64674606124Dd5Aceca30"
+        },
+        {
             "Symbol": "VRTX",
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
@@ -562,7 +628,7 @@
             "Symbol": "ICP",
             "Exchange": "ByBit",
             "Blockchain": "InternetComputer",
-            "Address": "0x0000000000000000000000000000000000000000"
+            "Address": "ryjl3-tyaaa-aaaaa-aaaba-cai"
         },
         {
             "Symbol": "ILV",
@@ -613,6 +679,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "PENDLE",
+            "Exchange": "ByBit",
+            "Blockchain": "Arbitrum",
+            "Address": "0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8"
+        },
+        {
             "Symbol": "PEOPLE",
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
@@ -659,6 +731,12 @@
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
             "Address": "0x476c5E26a75bd202a9683ffD34359C0CC15be0fF"
+        },
+        {
+            "Symbol": "STETH",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84"
         },
         {
             "Symbol": "STX",
