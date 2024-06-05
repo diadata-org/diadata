@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"math"
 	"math/big"
 	"strings"
@@ -334,11 +335,26 @@ type AssetList struct {
 	Exchanges []ExchangeList
 }
 
+func (a AssetList) String() string {
+	var exchanges []string
+	for _, exchange := range a.Exchanges {
+		exchanges = append(exchanges, exchange.String())
+	}
+
+	return fmt.Sprintf(
+		" Exchanges: [%s]",
+		strings.Join(exchanges, "; "),
+	)
+}
+
 type ExchangeList struct {
 	Name  string
 	Pairs []string
 }
 
+func (e ExchangeList) String() string {
+	return fmt.Sprintf("%s: [%s]", e.Name, strings.Join(e.Pairs, ", "))
+}
 func (asset *Asset) Identifier() string {
 	return asset.Blockchain + "-" + asset.Address
 }

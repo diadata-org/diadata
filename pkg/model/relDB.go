@@ -184,7 +184,7 @@ type RelDatastore interface {
 
 	// Asset List methods
 	SetAssetList(asset dia.AssetList)
-	GetAssetListBySymbol(symbol string)
+	GetAssetListBySymbol(symbol string, listname string)
 	DeleteAssetList(sheetName string)
 }
 

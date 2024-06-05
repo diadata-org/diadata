@@ -62,9 +62,9 @@ func (rdb *RelDB) SearchAssetList(searchTerm string) ([]dia.AssetList, error) {
 	var assets []dia.AssetList
 
 	rows, err := rdb.postgresClient.Query(context.Background(),
-		`SELECT id, assetName, customeName, symbol, methodology 
+		`SELECT id, asset_name, custom_name, symbol, methodology 
          FROM asset_list 
-         WHERE assetName LIKE '%' || $1 || '%' OR symbol LIKE '%' || $1 || '%'`,
+         WHERE asset_name LIKE '%' || $1 || '%' OR symbol LIKE '%' || $1 || '%'`,
 		searchTerm,
 	)
 	if err != nil {
@@ -89,14 +89,14 @@ func (rdb *RelDB) SearchAssetList(searchTerm string) ([]dia.AssetList, error) {
 
 	return assets, nil
 }
-func (rdb *RelDB) GetAssetListBySymbol(symbol string) ([]dia.AssetList, error) {
+func (rdb *RelDB) GetAssetListBySymbol(symbol string, listname string) ([]dia.AssetList, error) {
 	var assets []dia.AssetList
 
 	rows, err := rdb.postgresClient.Query(context.Background(),
 		`SELECT id, asset_name, custom_name, symbol, methodology 
          FROM asset_list 
-         WHERE customename LIKE   $1`,
-		symbol,
+         WHERE custom_name LIKE   $1  AND list_name LIKE $2`,
+		symbol, listname,
 	)
 	if err != nil {
 		return nil, err

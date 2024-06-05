@@ -1,9 +1,9 @@
 module assetlist
 
-go 1.21.5
+go 1.19
 
 require (
-	github.com/diadata-org/diadata v1.4.487
+	github.com/diadata-org/diadata v1.4.488
 	github.com/sirupsen/logrus v1.9.3
 	github.com/xuri/excelize/v2 v2.8.1
 )

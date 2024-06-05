@@ -3563,6 +3563,7 @@ func (env *Env) GetAssetListBySymbol(c *gin.Context) {
 	if !validateInputParams(c) {
 		return
 	}
+	listname := c.Param("listname")
 
 	querystring := c.Param("symbol")
 	var (
@@ -3570,10 +3571,14 @@ func (env *Env) GetAssetListBySymbol(c *gin.Context) {
 		err    error
 	)
 
-	assets, err = env.RelDB.GetAssetListBySymbol(querystring)
+	assets, err = env.RelDB.GetAssetListBySymbol(querystring, listname)
 	if err != nil {
 		// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
 		log.Errorln("error getting SearchAssetList", err)
+	}
+	if len(assets) <= 0 {
+		restApi.SendError(c, http.StatusNotFound, err)
+		return
 	}
 
 	selectedAsset := assets[0]
@@ -3590,11 +3595,12 @@ func (env *Env) GetAssetListBySymbol(c *gin.Context) {
 
 	asset := dia.Asset{Symbol: selectedAsset.Symbol, Name: selectedAsset.CustomName, Blockchain: splitted[0], Address: splitted[1]}
 
-	volumeYesterday, err := env.DataStore.Get24HoursAssetVolume(asset)
-	if err != nil {
-		log.Errorln("error getting Get24HoursAssetVolume", err)
-	}
+	// volumeYesterday, err := env.DataStore.Get24HoursAssetVolume(asset)
+	// if err != nil {
+	// 	log.Errorln("error getting Get24HoursAssetVolume", err)
+	// }
 	q := models.AssetQuotationFull{Symbol: asset.Symbol, Name: asset.Name, Address: asset.Address, Price: price, Time: time.Now(), Source: "diagql"}
-	q.VolumeYesterdayUSD = *volumeYesterday
+	// q.VolumeYesterdayUSD = *volumeYesterday
+	q.Source = selectedAsset.String()
 	c.JSON(http.StatusOK, q)
 }
