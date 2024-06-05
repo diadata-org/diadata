@@ -3599,7 +3599,7 @@ func (env *Env) GetAssetListBySymbol(c *gin.Context) {
 	if err != nil {
 		log.Errorln("error getting Get24HoursAssetVolume", err)
 	}
-	q := models.AssetQuotationFull{Symbol: asset.Symbol, Name: asset.Name, Address: asset.Address, Price: price, Time: time.Now(), Source: "diagql"}
+	q := models.AssetQuotationFull{Symbol: asset.Symbol, Name: asset.Name, Address: asset.Address, Price: price, Blockchain: asset.Blockchain, Time: time.Now(), Source: "diagql"}
 	q.VolumeYesterdayUSD = *volumeYesterday
 	q.Source = selectedAsset.String()
 	c.JSON(http.StatusOK, q)
