@@ -4,6 +4,7 @@ import (
 	"math/big"
 	"strconv"
 	"strings"
+	"time"
 
 	uniswapcontract "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
 	uniswapcontractv3 "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswapv3"
@@ -133,6 +134,7 @@ func (uas *UniswapV3AssetSource) fetchAssets() {
 		log.Error("filter pool created: ", err)
 	}
 	for poolCreated.Next() {
+		time.Sleep(time.Duration(uas.waitTime) * time.Millisecond)
 		poolsCount++
 		log.Info("pools count: ", poolsCount)
 		blocknumber = int64(poolCreated.Event.Raw.BlockNumber)

@@ -3,7 +3,7 @@ module github.com/diadata-org/diadata/assetCollectionService
 go 1.17
 
 require (
-	github.com/diadata-org/diadata v1.4.492
+	github.com/diadata-org/diadata v1.4.493
 	github.com/sirupsen/logrus v1.9.3
 )
 
@@ -102,7 +102,9 @@ require (
 	github.com/kr/pretty v0.3.0 // indirect
 	github.com/libp2p/go-buffer-pool v0.0.2 // indirect
 	github.com/logrusorgru/aurora v2.0.3+incompatible // indirect
+	github.com/machinebox/graphql v0.2.2 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
+	github.com/matryer/is v1.4.1 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mattn/go-runewidth v0.0.10 // indirect
