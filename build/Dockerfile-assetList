@@ -1,0 +1,8 @@
+FROM us.icr.io/dia-registry/devops/build-119:latest as build
+
+WORKDIR $GOPATH/src/
+COPY ./cmd/http/assetlists ./
+RUN go mod tidy && go install
+
+
+CMD ["/go/bin/restServer/assetlist"]

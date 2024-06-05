@@ -181,6 +181,11 @@ type RelDatastore interface {
 	GetDayWiseUpdates(address string, chainid string) ([]dia.FeedUpdates, float64, float64, error)
 	GetOracleLastUpdate(address, chainid, symbol string) (time.Time, string, error)
 	GetOracleUpdatesByTimeRange(address, chainid, symbol string, offset int, startTime, endTime time.Time) ([]dia.OracleUpdate, error)
+
+	// Asset List methods
+	SetAssetList(asset dia.AssetList)
+	GetAssetListBySymbol(symbol string)
+	DeleteAssetList(sheetName string)
 }
 
 const (
@@ -260,6 +265,7 @@ func NewRelDataStoreWithOptions(withPostgres bool, withRedis bool) (*RelDB, erro
 
 	if withPostgres {
 		url = db.GetPostgresURL()
+		fmt.Println("------------url", url)
 		postgresClient = db.PostgresDatabase()
 	}
 	if withRedis {

@@ -3538,3 +3538,63 @@ func (env *Env) getQuotationFromCache(localCache map[string]*models.AssetQuotati
 func assetIdentifier(blockchain string, address string) string {
 	return blockchain + "-" + address
 }
+
+func (env *Env) SearchAssetList(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	querystring := c.Param("query")
+	var (
+		assets = []dia.AssetList{}
+		err    error
+	)
+
+	assets, err = env.RelDB.SearchAssetList(querystring)
+	if err != nil {
+		// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
+		log.Errorln("error getting SearchAssetList", err)
+	}
+
+	c.JSON(http.StatusOK, assets)
+}
+
+func (env *Env) GetAssetListBySymbol(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	querystring := c.Param("symbol")
+	var (
+		assets = []dia.AssetList{}
+		err    error
+	)
+
+	assets, err = env.RelDB.GetAssetListBySymbol(querystring)
+	if err != nil {
+		// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
+		log.Errorln("error getting SearchAssetList", err)
+	}
+
+	selectedAsset := assets[0]
+
+	splitted := strings.Split(selectedAsset.AssetName, "-")
+
+	fmt.Println(splitted)
+
+	price, err := utils.GetGraphqlAssetQuotationFromDia(splitted[0], splitted[1], 60)
+	if err != nil {
+		// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
+		log.Errorln("error getting GetGraphqlAssetQuotationFromDia", err)
+	}
+
+	asset := dia.Asset{Symbol: selectedAsset.Symbol, Name: selectedAsset.CustomName, Blockchain: splitted[0], Address: splitted[1]}
+
+	volumeYesterday, err := env.DataStore.Get24HoursAssetVolume(asset)
+	if err != nil {
+		log.Errorln("error getting Get24HoursAssetVolume", err)
+	}
+	q := models.AssetQuotationFull{Symbol: asset.Symbol, Name: asset.Name, Address: asset.Address, Price: price, Time: time.Now(), Source: "diagql"}
+	q.VolumeYesterdayUSD = *volumeYesterday
+	c.JSON(http.StatusOK, q)
+}

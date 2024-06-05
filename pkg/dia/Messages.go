@@ -323,6 +323,22 @@ type Asset struct {
 	Blockchain string `json:"Blockchain"`
 }
 
+type AssetList struct {
+	AssetName   string
+	CustomName  string
+	Symbol      string
+	Methodology string
+	Price       float64
+	ListName    string
+
+	Exchanges []ExchangeList
+}
+
+type ExchangeList struct {
+	Name  string
+	Pairs []string
+}
+
 func (asset *Asset) Identifier() string {
 	return asset.Blockchain + "-" + asset.Address
 }

@@ -343,5 +343,26 @@ CREATE TABLE feederresource (
     UNIQUE (owner)
 );
 
+CREATE TABLE asset_list (
+    id SERIAL PRIMARY KEY,
+    asset_name VARCHAR(255) NOT NULL,
+    custom_name VARCHAR(255),
+    symbol VARCHAR(50),
+    methodology TEXT,
+    list_name TEXT
+    
+);
+
+CREATE TABLE exchange_list (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    asset_id INT REFERENCES asset_list(id) ON DELETE CASCADE
+);
+
+CREATE TABLE exchange_pairs (
+    id SERIAL PRIMARY KEY,
+    exchange_id INT REFERENCES exchange_list(id) ON DELETE CASCADE,
+    pair VARCHAR(255) NOT NULL
+);
 
 
