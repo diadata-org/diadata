@@ -193,6 +193,14 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapScraper(Exchanges[dia.DfynNetwork], scrape, relDB)
 	case dia.UbeswapExchange:
 		return NewUniswapScraper(Exchanges[dia.UbeswapExchange], scrape, relDB)
+	case dia.NileV1Exchange:
+		return NewUniswapScraper(Exchanges[dia.NileV1Exchange], scrape, relDB)
+	case dia.RamsesV1Exchange:
+		return NewUniswapScraper(Exchanges[dia.RamsesV1Exchange], scrape, relDB)
+	case dia.NileV2Exchange:
+		return NewUniswapV3Scraper(Exchanges[dia.NileV2Exchange], scrape, relDB)
+	case dia.RamsesV2Exchange:
+		return NewUniswapV3Scraper(Exchanges[dia.RamsesV2Exchange], scrape, relDB)
 	case dia.UniswapExchangeV3Polygon:
 		return NewUniswapV3Scraper(Exchanges[dia.UniswapExchangeV3Polygon], scrape, relDB)
 	case dia.UniswapExchangeV3Arbitrum:

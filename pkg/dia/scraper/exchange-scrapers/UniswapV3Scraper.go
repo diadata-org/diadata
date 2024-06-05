@@ -90,6 +90,10 @@ func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 	case dia.PearlfiExchange:
 		// TO DO: add init block number
 		s = makeUniswapV3Scraper(exchange, listenByAddress, "", "", "200", uint64(0))
+	case dia.RamsesV2Exchange:
+		s = makeUniswapV3Scraper(exchange, listenByAddress, "", "", "200", uint64(90593047))
+	case dia.NileV2Exchange:
+		s = makeUniswapV3Scraper(exchange, listenByAddress, "", "", "2000", uint64(1768866))
 	}
 
 	s.relDB = relDB
