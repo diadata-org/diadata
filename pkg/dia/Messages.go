@@ -49,6 +49,7 @@ const (
 	BIFROST_POLKADOT                        = "Bifrost-polkadot"
 	UNREAL_TESTNET                          = "Unreal-Testnet"
 	UNREAL                                  = "Unreal"
+	LINEA                                   = "Linea"
 )
 
 var CRYPTO_ZERO_UNIX_TIME = time.Unix(1230768000, 0)
