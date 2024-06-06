@@ -1,0 +1,8 @@
+{
+    "Pools": [
+        {
+            "Address": "0x64bCcad8e7302E81b09894f56F6BBa85ae82CD03",
+            "ForeignName": "USDC-WETH"
+        }
+    ]
+}

@@ -1,0 +1,12 @@
+{
+    "Pools": [
+        {
+            "Address": "0x688547381eEC7C1d3d9eBa778fE275D1D7e03946",
+            "ForeignName": "WETH-RAM"
+        },
+        {
+            "Address": "0xdfD43483970B8179CBb842dCA2D34c6352f4603C",
+            "ForeignName": "WBTC-RAM"
+        }
+    ]
+}

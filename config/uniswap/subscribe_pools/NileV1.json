@@ -1,0 +1,12 @@
+{
+    "Pools": [
+        {
+            "Address": "0xFC6A4cd4007C3d24D37114d81A801a56F9536625",
+            "ForeignName": "NILE-WETH"
+        },
+        {
+            "Address": "0x9971DBA6e18536b0415a6Fbbf49d81AB12068AB7",
+            "ForeignName": "USDC-NILE"
+        }
+    ]
+}
