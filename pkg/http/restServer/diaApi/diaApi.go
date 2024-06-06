@@ -3567,6 +3567,7 @@ func (env *Env) GetAssetListBySymbol(c *gin.Context) {
 	listname := c.Param("listname")
 
 	querystring := c.Param("symbol")
+	querystring = strings.ToUpper(querystring)
 	var (
 		assets = []dia.AssetList{}
 		err    error
@@ -3578,15 +3579,13 @@ func (env *Env) GetAssetListBySymbol(c *gin.Context) {
 		log.Errorln("error getting SearchAssetList", err)
 	}
 	if len(assets) <= 0 {
-		restApi.SendError(c, http.StatusNotFound, err)
+		restApi.SendError(c, http.StatusNotFound, errors.New("asset missing"))
 		return
 	}
 
 	selectedAsset := assets[0]
 
 	splitted := strings.Split(selectedAsset.AssetName, "-")
-
-	fmt.Println(splitted)
 
 	price, _, time, source, err := gqlclient.GetGraphqlAssetQuotationFromDia(splitted[0], splitted[1], 60, selectedAsset)
 	if err != nil {
