@@ -14,6 +14,7 @@ import (
 	filters "github.com/diadata-org/diadata/internal/pkg/filtersBlockService"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/gqlclient"
 	"github.com/diadata-org/diadata/pkg/http/restApi"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -3587,20 +3588,21 @@ func (env *Env) GetAssetListBySymbol(c *gin.Context) {
 
 	fmt.Println(splitted)
 
-	price, err := utils.GetGraphqlAssetQuotationFromDia(splitted[0], splitted[1], 60)
+	price, _, time, source, err := gqlclient.GetGraphqlAssetQuotationFromDia(splitted[0], splitted[1], 60, selectedAsset)
 	if err != nil {
 		// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
 		log.Errorln("error getting GetGraphqlAssetQuotationFromDia", err)
 	}
 
 	asset := dia.Asset{Symbol: selectedAsset.Symbol, Name: selectedAsset.CustomName, Blockchain: splitted[0], Address: splitted[1]}
+	q := models.AssetQuotationFull{Symbol: asset.Symbol, Name: asset.Name, Address: asset.Address, Price: price, Blockchain: asset.Blockchain}
 
 	volumeYesterday, err := env.DataStore.Get24HoursAssetVolume(asset)
 	if err != nil {
 		log.Errorln("error getting Get24HoursAssetVolume", err)
 	}
-	q := models.AssetQuotationFull{Symbol: asset.Symbol, Name: asset.Name, Address: asset.Address, Price: price, Blockchain: asset.Blockchain, Time: time.Now(), Source: "diagql"}
 	q.VolumeYesterdayUSD = *volumeYesterday
-	q.Source = selectedAsset.String()
+	q.Time = time
+	q.Source = strings.Join(source, ",")
 	c.JSON(http.StatusOK, q)
 }
