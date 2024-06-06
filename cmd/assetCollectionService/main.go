@@ -61,7 +61,9 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 	case dia.CamelotExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.CamelotExchange], relDB)
 	case dia.CamelotExchangeV3:
-		return source.NewCamelotV3AssetSource(exchanges[dia.CamelotExchangeV3])
+		return source.NewCamelotV3AssetSource(exchanges[dia.CamelotExchangeV3], relDB)
+	case dia.ThenaV3Exchange:
+		return source.NewCamelotV3AssetSource(exchanges[dia.ThenaV3Exchange], relDB)
 	case dia.DfynNetwork:
 		return source.NewUniswapAssetSource(exchanges[dia.DfynNetwork], relDB)
 	case dia.QuickswapExchange:

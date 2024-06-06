@@ -43,6 +43,8 @@ func NewCamelotV3Scraper(exchange dia.Exchange, relDB *models.RelDB, datastore *
 	switch exchange.Name {
 	case dia.CamelotExchangeV3:
 		cls = makeCamelotV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(101163738))
+	case dia.ThenaV3Exchange:
+		cls = makeCamelotV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(26030310))
 	}
 
 	go func() {

@@ -6,6 +6,7 @@ import (
 
 	camelotv3 "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/camelotv3"
 	uniswapcontract "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/uniswap"
+	models "github.com/diadata-org/diadata/pkg/model"
 
 	"github.com/diadata-org/diadata/pkg/utils"
 
@@ -18,17 +19,19 @@ import (
 type CamelotV3AssetSource struct {
 	RestClient *ethclient.Client
 	WsClient   *ethclient.Client
+	relDB      *models.RelDB
 	// signaling channels for session initialization and finishing
 	assetChannel    chan dia.Asset
 	doneChannel     chan bool
 	blockchain      string
+	exchange        dia.Exchange
 	startBlock      uint64
 	factoryContract string
 	waitTime        int
 }
 
 // NewCamelotV3AssetSource returns a new CamelotV3AssetSource
-func NewCamelotV3AssetSource(exchange dia.Exchange) *CamelotV3AssetSource {
+func NewCamelotV3AssetSource(exchange dia.Exchange, relDB *models.RelDB) *CamelotV3AssetSource {
 	log.Info("NewCamelotV3Scraper ", exchange.Name)
 	log.Info("NewCamelotV3Scraper Address ", exchange.Contract)
 
@@ -36,7 +39,9 @@ func NewCamelotV3AssetSource(exchange dia.Exchange) *CamelotV3AssetSource {
 
 	switch exchange.Name {
 	case dia.CamelotExchangeV3:
-		uas = makeCamelotV3AssetSource(exchange, "", "", "200", uint64(101163738))
+		uas = makeCamelotV3AssetSource(exchange, "", "", relDB, "200", uint64(101163738))
+	case dia.ThenaV3Exchange:
+		uas = makeCamelotV3AssetSource(exchange, "", "", relDB, "200", uint64(26030310))
 	}
 
 	go func() {
@@ -47,7 +52,7 @@ func NewCamelotV3AssetSource(exchange dia.Exchange) *CamelotV3AssetSource {
 }
 
 // makeCamelotV3AssetSource returns a Camelot asset source.
-func makeCamelotV3AssetSource(exchange dia.Exchange, restDial string, wsDial string, waitMilliseconds string, startBlock uint64) *CamelotV3AssetSource {
+func makeCamelotV3AssetSource(exchange dia.Exchange, restDial string, wsDial string, relDB *models.RelDB, waitMilliseconds string, startBlock uint64) *CamelotV3AssetSource {
 	var (
 		restClient   *ethclient.Client
 		wsClient     *ethclient.Client
@@ -78,11 +83,13 @@ func makeCamelotV3AssetSource(exchange dia.Exchange, restDial string, wsDial str
 	uas = &CamelotV3AssetSource{
 		RestClient:      restClient,
 		WsClient:        wsClient,
+		relDB:           relDB,
 		assetChannel:    assetChannel,
 		doneChannel:     doneChannel,
 		blockchain:      exchange.BlockChain.Name,
 		startBlock:      startBlock,
 		factoryContract: exchange.Contract,
+		exchange:        exchange,
 		waitTime:        waitTime,
 	}
 	return uas
@@ -92,8 +99,16 @@ func makeCamelotV3AssetSource(exchange dia.Exchange, restDial string, wsDial str
 func (uas *CamelotV3AssetSource) fetchAssets() {
 
 	// filter from contract created https://etherscan.io/tx/0x1e20cd6d47d7021ae7e437792823517eeadd835df09dde17ab45afd7a5df4603
+	var blocknumber int64
 
-	log.Info("get pool creations from address: ", uas.factoryContract)
+	_, startblock, err := uas.relDB.GetScraperIndex(uas.exchange.Name, dia.SCRAPER_TYPE_ASSETCOLLECTOR)
+	if err != nil {
+		log.Error("GetScraperIndex: ", err)
+	} else {
+		uas.startBlock = uint64(startblock)
+	}
+
+	log.Infof("get pool creations from address %s at startblock %v.", uas.factoryContract, uas.startBlock)
 	poolsCount := 0
 	checkMap := make(map[string]struct{})
 	contract, err := camelotv3.NewCamelotv3Filterer(common.HexToAddress(uas.factoryContract), uas.WsClient)
@@ -112,6 +127,7 @@ func (uas *CamelotV3AssetSource) fetchAssets() {
 	for poolCreated.Next() {
 		poolsCount++
 		log.Info("pools count: ", poolsCount)
+		blocknumber = int64(poolCreated.Event.Raw.BlockNumber)
 		// Don't repeat sending already sent assets
 		if _, ok := checkMap[poolCreated.Event.Token0.Hex()]; !ok {
 			checkMap[poolCreated.Event.Token0.Hex()] = struct{}{}
@@ -129,6 +145,10 @@ func (uas *CamelotV3AssetSource) fetchAssets() {
 			}
 			uas.assetChannel <- asset
 		}
+	}
+	err = uas.relDB.SetScraperIndex(uas.exchange.Name, dia.SCRAPER_TYPE_ASSETCOLLECTOR, dia.INDEX_TYPE_BLOCKNUMBER, blocknumber)
+	if err != nil {
+		log.Error("SetScraperIndex: ", err)
 	}
 	uas.doneChannel <- true
 }
