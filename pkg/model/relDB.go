@@ -183,8 +183,8 @@ type RelDatastore interface {
 	GetOracleUpdatesByTimeRange(address, chainid, symbol string, offset int, startTime, endTime time.Time) ([]dia.OracleUpdate, error)
 
 	// Asset List methods
-	SetAssetList(asset dia.AssetList)
-	GetAssetListBySymbol(symbol string, listname string)
+	SetAssetList(asset dia.AssetList) error
+	GetAssetListBySymbol(symbol string, listname string) ([]dia.AssetList, error)
 	DeleteAssetList(sheetName string) error
 }
 
