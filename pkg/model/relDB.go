@@ -186,6 +186,8 @@ type RelDatastore interface {
 	SetAssetList(asset dia.AssetList) error
 	GetAssetListBySymbol(symbol string, listname string) ([]dia.AssetList, error)
 	DeleteAssetList(sheetName string) error
+
+	CreateCustomer(email string, customerPlan int, paymentStatus string, paymentSource string, numberOfDataFeeds int, walletPublicKeys []string) error
 }
 
 const (
