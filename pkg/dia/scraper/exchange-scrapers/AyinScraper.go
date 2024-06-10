@@ -225,7 +225,14 @@ func (s *AyinScraper) Update() error {
 				continue
 			}
 
-			diaTrade := s.handleTrade(&pool, &event, transactionDetails.Timestamp)
+			var timestamp time.Time
+			if transactionDetails.Timestamp > 0 {
+				timestamp = time.UnixMilli(transactionDetails.Timestamp)
+			} else {
+				timestamp = time.Now()
+			}
+
+			diaTrade := s.handleTrade(&pool, &event, timestamp)
 			logger.
 				WithField("parentAddress", pool.Address).
 				WithField("diaTrade", diaTrade).
@@ -253,10 +260,9 @@ func (s *AyinScraper) fetchEvents(blockHashes []string) ([]alephiumhelper.Contra
 	return allEvents, nil
 }
 
-func (s *AyinScraper) handleTrade(pool *dia.Pool, event *alephiumhelper.ContractEvent, timestamp int64) *dia.Trade {
+func (s *AyinScraper) handleTrade(pool *dia.Pool, event *alephiumhelper.ContractEvent, time time.Time) *dia.Trade {
 	var volume, price float64
-	var symbolPair string
-	var baseToken, quoteToken *dia.Asset
+
 	decimals0 := int64(pool.Assetvolumes[0].Asset.Decimals)
 	decimals1 := int64(pool.Assetvolumes[1].Asset.Decimals)
 
@@ -268,24 +274,20 @@ func (s *AyinScraper) handleTrade(pool *dia.Pool, event *alephiumhelper.Contract
 		amount1Out, _ := utils.StringToFloat64(event.Fields[4].Value, decimals1)
 		volume = amount0In
 		price = amount1Out / amount0In
-		symbolPair = fmt.Sprintf("%s-%s", pool.Assetvolumes[0].Asset.Symbol, pool.Assetvolumes[1].Asset.Symbol)
-		baseToken = &pool.Assetvolumes[0].Asset
-		quoteToken = &pool.Assetvolumes[1].Asset
 	} else {
 		// If we are swapping from USDT(asset1) to ALPH(asset0),
-		//	then amount1In ((fields[2]) will be the amount for USDT
-		//	and amount0Out (fields[3]) will be the amount for ALPH.
-		amount0In, _ := utils.StringToFloat64(event.Fields[2].Value, decimals1)
-		amount1Out, _ := utils.StringToFloat64(event.Fields[3].Value, decimals0)
-		volume = amount0In
-		price = amount1Out / amount0In
-		symbolPair = fmt.Sprintf("%s-%s", pool.Assetvolumes[1].Asset.Symbol, pool.Assetvolumes[0].Asset.Symbol)
-		baseToken = &pool.Assetvolumes[1].Asset
-		quoteToken = &pool.Assetvolumes[0].Asset
+		//  then amount0Out (fields[3]) will be the amount for ALPH
+		//	and amount1In ((fields[2]) will be the amount for USDT.
+		amount1In, _ := utils.StringToFloat64(event.Fields[3].Value, decimals1)
+		amount0Out, _ := utils.StringToFloat64(event.Fields[2].Value, decimals0)
+		volume = -amount1In
+		price = amount0Out / amount1In
 	}
 
+	symbolPair := fmt.Sprintf("%s-%s", pool.Assetvolumes[0].Asset.Symbol, pool.Assetvolumes[1].Asset.Symbol)
+
 	diaTrade := &dia.Trade{
-		Time:           time.UnixMilli(timestamp),
+		Time:           time,
 		Symbol:         symbolPair,
 		Pair:           symbolPair,
 		ForeignTradeID: event.TxID,
@@ -293,8 +295,8 @@ func (s *AyinScraper) handleTrade(pool *dia.Pool, event *alephiumhelper.Contract
 		Price:          price,
 		Volume:         volume,
 		VerifiedPair:   true,
-		BaseToken:      *baseToken,
-		QuoteToken:     *quoteToken,
+		BaseToken:      pool.Assetvolumes[0].Asset,
+		QuoteToken:     pool.Assetvolumes[1].Asset,
 		PoolAddress:    pool.Address,
 	}
 	return diaTrade
