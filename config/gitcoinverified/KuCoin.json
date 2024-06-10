@@ -427,6 +427,12 @@
             "Address": "0xc690F7C7FcfFA6a82b79faB7508c466FEfdfc8c5"
         },
         {
+            "Symbol": "LYX",
+            "Exchange": "KuCoin",
+            "Blockchain": "Lukso",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "LYXE",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

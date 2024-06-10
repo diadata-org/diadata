@@ -373,6 +373,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "LYX",
+      "ForeignName": "LYXUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "MANA",
       "ForeignName": "MANAUSDT",
       "Exchange": "MEXC",

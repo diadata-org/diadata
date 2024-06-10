@@ -499,6 +499,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "LYX",
+            "ForeignName": "LYX_USD",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
             "Symbol": "MANA",
             "ForeignName": "MANA_BTC",
             "Exchange": "Crypto.com",

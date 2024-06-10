@@ -343,6 +343,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "LYX",
+      "Exchange": "MEXC",
+      "Blockchain": "Lukso",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "MANA",
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",

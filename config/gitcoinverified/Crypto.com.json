@@ -157,6 +157,12 @@
             "Address": "0x514910771AF9Ca656af840dff83E8264EcF986CA"
         },
         {
+            "Symbol": "LYX",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Lukso",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "SUSHI",
             "Exchange": "Crypto.com",
             "Blockchain": "Ethereum",

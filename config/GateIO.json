@@ -1586,6 +1586,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "LYX_USDT",
+      "Ignore": false,
+      "Symbol": "LYX"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "MANA_ETH",
       "Ignore": false,
       "Symbol": "MANA"

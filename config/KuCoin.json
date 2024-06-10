@@ -1033,6 +1033,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "LYX",
+            "ForeignName": "LYX-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "LYXE",
             "ForeignName": "LYXE-USDT",
             "Exchange": "KuCoin",
