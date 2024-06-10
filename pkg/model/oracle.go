@@ -1032,3 +1032,54 @@ func (datastore *DB) GetOracleConfigCache(key string) (dia.OracleConfig, error) 
 
 	return oc, err
 }
+
+func (reldb *RelDB) CreateCustomer(email string, customerPlan int, paymentStatus string, paymentSource string, numberOfDataFeeds int, walletPublicKeys []string) error {
+	// Begin a transaction
+	tx, err := reldb.postgresClient.Begin(context.Background())
+	if err != nil {
+		return fmt.Errorf("unable to start a transaction: %v", err)
+	}
+	defer tx.Rollback(context.Background())
+
+	// Insert the new customer
+	var customerID int
+	insertCustomerQuery := `
+        INSERT INTO customers (email, customer_plan, payment_status, payment_source, number_of_data_feeds)
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING customer_id`
+
+	err = tx.QueryRow(context.Background(), insertCustomerQuery, email, customerPlan, paymentStatus, paymentSource, numberOfDataFeeds).Scan(&customerID)
+	if err != nil {
+		return fmt.Errorf("unable to insert customer: %v", err)
+	}
+
+	// Insert wallet public keys
+	err = addWalletPublicKeys(tx, customerID, walletPublicKeys)
+	if err != nil {
+		return err
+	}
+
+	// Commit the transaction
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return fmt.Errorf("unable to commit transaction: %v", err)
+	}
+
+	return nil
+}
+
+func addWalletPublicKeys(tx pgx.Tx, customerID int, walletPublicKeys []string) error {
+	// Insert wallet public keys
+	insertWalletKeyQuery := `
+        INSERT INTO wallet_public_keys (customer_id, public_key)
+        VALUES ($1, $2)`
+
+	for _, publicKey := range walletPublicKeys {
+		_, err := tx.Exec(context.Background(), insertWalletKeyQuery, customerID, publicKey)
+		if err != nil {
+			return fmt.Errorf("unable to insert wallet public key: %v", err)
+		}
+	}
+
+	return nil
+}

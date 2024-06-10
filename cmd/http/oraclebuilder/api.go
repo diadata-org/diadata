@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"sync"
 	"time"
 
 	"strings"
@@ -14,7 +13,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 
 	kr "github.com/99designs/keyring"
-	// "github.com/99designs/keyring/cmd/k8sbridge"
 	"github.com/diadata-org/diadata/pkg/dia"
 	k8sbridge "github.com/diadata-org/diadata/pkg/dia/helpers/k8sbridge/protoc"
 	"github.com/diadata-org/diadata/pkg/http/restApi"
@@ -35,12 +33,9 @@ type Env struct {
 	k8sbridgeClient         k8sbridge.K8SHelperClient
 	Keyring                 kr.Keyring
 	RateLimitOracleCreation int
-	apiStats                APIStats
 }
 
 func NewEnv(relStore *models.RelDB, ds models.Datastore, kc k8sbridge.K8SHelperClient, ring kr.Keyring, rateLimitOracleCreation int) *Env {
-	apistats := *NewAPIStats()
-	go apistats.ClearCachePeriodically(10 * time.Minute)
 
 	return &Env{
 		DataStore:               ds,
@@ -48,7 +43,6 @@ func NewEnv(relStore *models.RelDB, ds models.Datastore, kc k8sbridge.K8SHelperC
 		Keyring:                 ring,
 		k8sbridgeClient:         kc,
 		RateLimitOracleCreation: rateLimitOracleCreation,
-		apiStats:                apistats,
 	}
 }
 
@@ -99,26 +93,26 @@ func (ob *Env) Create(context *gin.Context) {
 	log.Infoln("Creating oracle: signer", signer)
 
 	if signer.Hex() != creator {
-		handleError(context, http.StatusUnauthorized, "sign err", "Creating oracle: invalid signer", signer)
+		handleError(context, http.StatusUnauthorized, "sign err", "Creating oracle: invalid signer %v", signer)
 	}
 
 	// validations
 	// check for  symbols and feedSelection
 
 	if symbols == "" && feedSelection == "" {
-		handleError(context, http.StatusBadRequest, "no symbols", "Creating oracle: no symbols or feedSelection", symbols)
+		handleError(context, http.StatusBadRequest, "no symbols", "Creating oracle: no symbols or feedSelection %v", symbols)
 
 	}
 	symbolsArray := strings.Split(symbols, ",")
 
 	if len(symbolsArray) > 10 {
-		handleError(context, http.StatusBadRequest, "max symbols exceed", "Creating oracle: max symbols exceed", symbols)
+		handleError(context, http.StatusBadRequest, "max symbols exceed", "Creating oracle: max symbols exceed %d", len(symbols))
 	}
 
 	// check for duplicate symbol
 
 	if utils.CheckDuplicates(symbolsArray) {
-		handleError(context, http.StatusBadRequest, "duplicate symbols", "Creating oracle: duplicate symbols", symbols)
+		handleError(context, http.StatusBadRequest, "duplicate symbols", "Creating oracle: duplicate symbols %v", symbols)
 
 	}
 
@@ -126,7 +120,7 @@ func (ob *Env) Create(context *gin.Context) {
 
 	frequencyInt, err := strconv.Atoi(frequency)
 	if err != nil {
-		handleError(context, http.StatusBadRequest, "invalid frequency", "Creating oracle: invalid frequency", err)
+		handleError(context, http.StatusBadRequest, "invalid frequency", "Creating oracle: invalid frequency %v", err)
 	}
 
 	mandatoryFrequencyInt, err := strconv.Atoi(mandatoryFrequency)
@@ -145,7 +139,7 @@ func (ob *Env) Create(context *gin.Context) {
 
 	if frequencyInt == 0 || mandatoryFrequencyInt > 0 {
 		if mandatoryFrequencyInt < 120 || mandatoryFrequencyInt > 2630000 {
-			handleError(context, http.StatusBadRequest, "invalid mandatoryFrequencyInt, out of range", "Creating oracle: invalid mandatoryFrequencyInt, out of range", err)
+			handleError(context, http.StatusBadRequest, "invalid mandatoryFrequencyInt, out of range", "Creating oracle: invalid mandatoryFrequencyInt, out of range %v", err)
 		}
 
 	}
@@ -175,24 +169,6 @@ func (ob *Env) Create(context *gin.Context) {
 
 	if feederID == "" {
 		//Oracle Creation Action
-		count, isAllowed := ob.createOracleFeederLimiter(false)
-		log.Infoln("Rate limit check, isAllowed", count, isAllowed)
-
-		if !isAllowed {
-			log.Errorln("Rate limit exceeded for createOracleFeeder", err)
-			context.JSON(http.StatusTooManyRequests, "Rate limit exceeded for createOracleFeeder")
-			return
-		}
-		// check if creator has resources to create new oracle feeder
-		// limit := ob.RelDB.GetFeederLimit(creator)
-		// total := ob.RelDB.GetTotalFeeder(creator)
-
-		// log.Infof("Creating oracle: Feeders Limit %d, Total Feeders:%d, Creator: %s", limit, total, creator)
-		// if total >= limit {
-		// 	log.Errorln("not enought resource left ", creator)
-		// 	context.JSON(http.StatusUnauthorized, errors.New("limit over"))
-		// 	return
-		// }
 
 		feederID = "feeder-" + utils.GenerateAutoname("-")
 
@@ -303,26 +279,6 @@ func (ob *Env) Create(context *gin.Context) {
 	k["publicKey"] = address
 
 	context.JSON(http.StatusCreated, k)
-}
-
-func (ob *Env) createOracleFeederLimiter(isCheck bool) (int, bool) {
-
-	count, exist := ob.apiStats.Get("createOracleFeeder")
-
-	if !exist {
-		ob.apiStats.Set("createOracleFeeder", 0)
-		return count, true
-	}
-	if count >= ob.RateLimitOracleCreation {
-		return count, false
-	}
-	if !isCheck {
-		count++
-		ob.apiStats.Set("createOracleFeeder", count)
-	}
-
-	return count, true
-
 }
 
 // List: list owner oracles
@@ -645,7 +601,7 @@ func (ob *Env) Stats(context *gin.Context) {
 	if strings.Contains(address, "0x") {
 		address = common.HexToAddress(address).Hex()
 	}
-	if context.Query("starttime") == "" || context.Query("starttime") == "" {
+	if context.Query("starttime") == "" || context.Query("endTime") == "" {
 		startTime = time.Unix(0, 0)
 		endTime = time.Unix(0, 0)
 
@@ -785,16 +741,6 @@ func (ob *Env) Pause(context *gin.Context) {
 	context.JSON(http.StatusOK, oracleconfig)
 }
 
-func (ob *Env) ViewLimit(context *gin.Context) {
-
-	response := make(map[string]interface{})
-	count, isAllowed := ob.createOracleFeederLimiter(true)
-	response["Count"] = count
-	response["IsAllowed"] = isAllowed
-
-	context.JSON(http.StatusOK, response)
-}
-
 func (ob *Env) Delete(context *gin.Context) {
 	var (
 		// address string
@@ -909,6 +855,13 @@ func (ob *Env) Auth(context *gin.Context) {
 
 	chainID := context.Query("chainID")
 	creator := context.Query("creator")
+	if creator == "" {
+		creator = context.PostForm("creator")
+	}
+
+	if chainID == "" {
+		chainID = context.PostForm("chainId")
+	}
 	oracleaddress := context.Query("oracleaddress")
 
 	if oracleaddress == "" {
@@ -935,7 +888,7 @@ func (ob *Env) Auth(context *gin.Context) {
 	signer, err := utils.GetSigner(chainID, creator, oracleaddress, actionmessage, signedData)
 
 	if err != nil {
-		log.Error("error while signign %v", err)
+		log.Errorf("error while signign %v", err)
 	}
 
 	log.Infoln("signer", signer)
@@ -948,44 +901,4 @@ func (ob *Env) Auth(context *gin.Context) {
 
 	}
 
-}
-
-type APIStats struct {
-	data map[string]int
-	mu   sync.RWMutex
-}
-
-func NewAPIStats() *APIStats {
-	return &APIStats{
-		data: make(map[string]int),
-	}
-}
-
-func (c *APIStats) Set(key string, value int) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	c.data[key] = value
-}
-
-func (c *APIStats) Get(key string) (int, bool) {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
-	value, exists := c.data[key]
-	return value, exists
-}
-
-func (c *APIStats) ClearCachePeriodically(interval time.Duration) {
-	ticker := time.NewTicker(interval)
-	defer ticker.Stop()
-
-	for {
-		select {
-		case <-ticker.C:
-			c.mu.Lock()
-			for k := range c.data {
-				delete(c.data, k)
-			}
-			c.mu.Unlock()
-		}
-	}
 }
