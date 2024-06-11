@@ -69,7 +69,14 @@ func setupRouter() *gin.Engine {
 
 	// Define routes
 	routerGroup.POST("create", oracle.Create)
-	routerGroup.POST("/createAccount", authenticate("Verify its your address to create Account"), oracle.Auth, oracle.CreateAccount)
+
+	routerGroup.POST("createAccount", authenticate("Verify its your address to create Account"), oracle.Auth, oracle.CreateAccount)
+	routerGroup.POST("/account/addWallet", authenticate("Verify its your address to Add Wallet"), oracle.Auth, oracle.AddWallet)
+	routerGroup.POST("/account/removeWallet", authenticate("Verify its your address to Remove Wallet"), oracle.Auth, oracle.RemoveWallet)
+
+	routerGroup.POST("/account/updateAccess", authenticate("Verify its your address to Update Access"), oracle.Auth, oracle.UpdateAccess)
+
+	routerGroup.POST("/account/view", authenticate("Verify its your address to View Account"), oracle.Auth, oracle.ViewAccount)
 
 	routerGroup.GET("/list", authenticate("Verify its your address to List your oracles"), oracle.Auth, oracle.List)
 	routerGroup.GET("/view", authenticate("Verify its your address to List your oracles"), oracle.Auth, oracle.View)

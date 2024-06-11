@@ -15,6 +15,24 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
+type Customer struct {
+	CustomerID          int       `json:"customer_id"`
+	Email               string    `json:"email"`
+	AccountCreationDate time.Time `json:"account_creation_date"`
+	CustomerPlan        int       `json:"customer_plan"`
+	DeployedOracles     int       `json:"deployed_oracles"`
+	PaymentStatus       string    `json:"payment_status"`
+	// LastPayment         time.Time `json:"last_payment"`
+	PaymentSource     string      `json:"payment_source"`
+	NumberOfDataFeeds int         `json:"number_of_data_feeds"`
+	Active            bool        `json:"active"`
+	PublicKeys        []PublicKey `json:"public_keys"`
+}
+type PublicKey struct {
+	AccessLevel string `json:"access_level"`
+	PublicKey   string `json:"public_key"`
+}
+
 func (rdb *RelDB) SetKeyPair(publickey string, privatekey string) error {
 	query := fmt.Sprintf(`INSERT INTO %s 
 	(publickey,privatekey) VALUES ($1,$2) 
@@ -1033,8 +1051,107 @@ func (datastore *DB) GetOracleConfigCache(key string) (dia.OracleConfig, error) 
 	return oc, err
 }
 
+func (reldb *RelDB) AddWalletKeys(owner string, publicKey []string) error {
+	var err error
+
+	customerID, err := reldb.GetCustomerIDByWalletPublicKey(owner)
+	if err != nil {
+		return err
+	}
+
+	tx, err := reldb.postgresClient.BeginTx(context.Background(), pgx.TxOptions{})
+	if err != nil {
+		return err
+
+	}
+	defer tx.Rollback(context.Background())
+
+	for _, publicKey := range publicKey {
+		_, err = tx.Exec(context.Background(), `
+			INSERT INTO wallet_public_keys (customer_id, public_key)
+			VALUES ($1, $2)
+		`, customerID, publicKey)
+		if err != nil {
+			return err
+		}
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (reldb *RelDB) UpdateAccessLevel(accessLevel, publicKey string) error {
+	var err error
+
+	tx, err := reldb.postgresClient.BeginTx(context.Background(), pgx.TxOptions{})
+	if err != nil {
+		return err
+
+	}
+	defer tx.Rollback(context.Background())
+
+	_, err = tx.Exec(context.Background(), `
+		UPDATE wallet_public_keys
+		SET access_level = $1
+		WHERE public_key = $2
+		`, accessLevel, publicKey)
+	if err != nil {
+		return err
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (reldb *RelDB) RemoveWalletKeys(publicKey []string) error {
+	var err error
+
+	tx, err := reldb.postgresClient.BeginTx(context.Background(), pgx.TxOptions{})
+	if err != nil {
+		return err
+
+	}
+	defer tx.Rollback(context.Background())
+
+	for _, publicKey := range publicKey {
+		_, err = tx.Exec(context.Background(), `
+		DELETE FROM wallet_public_keys 
+		WHERE public_key = $1
+		`, publicKey)
+		if err != nil {
+			return err
+		}
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+func (reldb *RelDB) GetCustomerIDByWalletPublicKey(publicKey string) (int, error) {
+	var customerID int
+	err := reldb.postgresClient.QueryRow(context.Background(), `
+		SELECT customer_id
+		FROM wallet_public_keys
+		WHERE public_key = $1
+	`, publicKey).Scan(&customerID)
+	if err != nil {
+		return 0, err
+	}
+	return customerID, nil
+}
+
 func (reldb *RelDB) CreateCustomer(email string, customerPlan int, paymentStatus string, paymentSource string, numberOfDataFeeds int, walletPublicKeys []string) error {
-	// Begin a transaction
 	tx, err := reldb.postgresClient.Begin(context.Background())
 	if err != nil {
 		return fmt.Errorf("unable to start a transaction: %v", err)
@@ -1053,13 +1170,11 @@ func (reldb *RelDB) CreateCustomer(email string, customerPlan int, paymentStatus
 		return fmt.Errorf("unable to insert customer: %v", err)
 	}
 
-	// Insert wallet public keys
 	err = addWalletPublicKeys(tx, customerID, walletPublicKeys)
 	if err != nil {
 		return err
 	}
 
-	// Commit the transaction
 	err = tx.Commit(context.Background())
 	if err != nil {
 		return fmt.Errorf("unable to commit transaction: %v", err)
@@ -1069,7 +1184,6 @@ func (reldb *RelDB) CreateCustomer(email string, customerPlan int, paymentStatus
 }
 
 func addWalletPublicKeys(tx pgx.Tx, customerID int, walletPublicKeys []string) error {
-	// Insert wallet public keys
 	insertWalletKeyQuery := `
         INSERT INTO wallet_public_keys (customer_id, public_key)
         VALUES ($1, $2)`
@@ -1082,4 +1196,53 @@ func addWalletPublicKeys(tx pgx.Tx, customerID int, walletPublicKeys []string) e
 	}
 
 	return nil
+}
+
+func (reldb *RelDB) GetCustomerByPublicKey(publicKey string) (*Customer, error) {
+	var customer Customer
+	query := `
+		SELECT c.customer_id, c.email, c.account_creation_date, c.customer_plan, c.deployed_oracles,
+		       c.payment_status, c.payment_source, c.number_of_data_feeds, c.active
+		FROM customers c
+		INNER JOIN wallet_public_keys wpk ON c.customer_id = wpk.customer_id
+		WHERE wpk.public_key = $1
+	`
+	err := reldb.postgresClient.QueryRow(context.Background(), query, publicKey).Scan(
+		&customer.CustomerID,
+		&customer.Email,
+		&customer.AccountCreationDate,
+		&customer.CustomerPlan,
+		&customer.DeployedOracles,
+		&customer.PaymentStatus,
+		// &customer.LastPayment,
+		&customer.PaymentSource,
+		&customer.NumberOfDataFeeds,
+		&customer.Active,
+	)
+	if err != nil {
+		return nil, err
+	}
+	query = `
+		SELECT public_key, access_level
+		FROM wallet_public_keys
+		WHERE customer_id = $1
+	`
+	rows, err := reldb.postgresClient.Query(context.Background(), query, customer.CustomerID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var publicKey PublicKey
+		if err := rows.Scan(&publicKey.PublicKey, &publicKey.AccessLevel); err != nil {
+			return nil, err
+		}
+		customer.PublicKeys = append(customer.PublicKeys, publicKey)
+	}
+
+	if rows.Err() != nil {
+		return nil, rows.Err()
+	}
+	return &customer, nil
 }
