@@ -281,7 +281,7 @@ func (s *AyinScraper) handleTrade(pool *dia.Pool, event *alephiumhelper.Contract
 		amount1In, _ := utils.StringToFloat64(event.Fields[2].Value, decimals1)
 		amount0Out, _ := utils.StringToFloat64(event.Fields[3].Value, decimals0)
 		volume = -amount1In
-		price = amount0Out / amount1In
+		price = amount1In / amount0Out
 	}
 
 	symbolPair := fmt.Sprintf("%s-%s", pool.Assetvolumes[0].Asset.Symbol, pool.Assetvolumes[1].Asset.Symbol)
