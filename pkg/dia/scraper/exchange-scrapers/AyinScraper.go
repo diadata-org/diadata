@@ -280,7 +280,7 @@ func (s *AyinScraper) handleTrade(pool *dia.Pool, event *alephiumhelper.Contract
 		//  and amount0Out (fields[3]) will be the amount for ALPH.
 		amount1In, _ := utils.StringToFloat64(event.Fields[2].Value, decimals1)
 		amount0Out, _ := utils.StringToFloat64(event.Fields[3].Value, decimals0)
-		volume = -amount1In
+		volume = -amount0Out
 		price = amount1In / amount0Out
 	}
 
