@@ -276,10 +276,10 @@ func (s *AyinScraper) handleTrade(pool *dia.Pool, event *alephiumhelper.Contract
 		price = amount1Out / amount0In
 	} else {
 		// If we are swapping from USDT(asset1) to ALPH(asset0),
-		//  then amount0Out (fields[3]) will be the amount for ALPH
-		//	and amount1In ((fields[2]) will be the amount for USDT.
-		amount1In, _ := utils.StringToFloat64(event.Fields[3].Value, decimals1)
-		amount0Out, _ := utils.StringToFloat64(event.Fields[2].Value, decimals0)
+		//	then amount1In ((fields[2]) will be the amount for USDT
+		//  and amount0Out (fields[3]) will be the amount for ALPH.
+		amount1In, _ := utils.StringToFloat64(event.Fields[2].Value, decimals1)
+		amount0Out, _ := utils.StringToFloat64(event.Fields[3].Value, decimals0)
 		volume = -amount1In
 		price = amount0Out / amount1In
 	}
