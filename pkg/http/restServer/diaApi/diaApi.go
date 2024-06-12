@@ -89,18 +89,23 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 	}
 
 	// Get quotation for asset.
+	t0 := time.Now()
 	quotation, err := env.DataStore.GetAssetQuotation(asset, dia.CRYPTO_ZERO_UNIX_TIME, timestamp)
 	if err != nil {
 		restApi.SendError(c, http.StatusNotFound, err)
 		return
 	}
+	log.Infof("%v spent for GetAssetQuotation on (address,blockchain)=(%s,%s)", time.Since(t0), asset.Address, asset.Blockchain)
 
+	t0 = time.Now()
 	quotationYesterday, err := env.DataStore.GetAssetQuotation(asset, dia.CRYPTO_ZERO_UNIX_TIME, timestamp.AddDate(0, 0, -1))
 	if err != nil {
 		log.Warn("get quotation yesterday: ", err)
 	} else {
 		quotationExtended.PriceYesterday = quotationYesterday.Price
 	}
+	log.Infof("%v spent for GetAssetQuotation yesterday on (address,blockchain)=(%s,%s)", time.Since(t0), asset.Address, asset.Blockchain)
+
 	volumeYesterday, err := env.DataStore.Get24HoursAssetVolume(asset)
 	if err != nil {
 		log.Warn("get volume yesterday: ", err)
