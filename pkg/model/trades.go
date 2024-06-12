@@ -1470,6 +1470,7 @@ func (datastore *DB) GetAggregatedFeedSelectionRedis(
 		}
 
 		var wg sync.WaitGroup
+		defer wg.Done()
 		for _, key := range keys {
 			wg.Add(1)
 			go datastore.GetTradesAggregationRedis(key, fs.Asset, starttime, endtime, tradeVolumeThreshold, &wg, fsaChan, errChan)
