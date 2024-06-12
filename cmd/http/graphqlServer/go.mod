@@ -3,9 +3,14 @@ module graphqlServer
 go 1.19
 
 require (
-	github.com/diadata-org/diadata v1.4.501-rc-5
+	github.com/diadata-org/diadata v1.4.501-rc-6
 	github.com/graph-gophers/graphql-go v1.1.0
 	github.com/sirupsen/logrus v1.9.3
+)
+
+require (
+	github.com/felixge/fgprof v0.9.3 // indirect
+	github.com/google/pprof v0.0.0-20211214055906-6f57359322fd // indirect
 )
 
 require (
@@ -121,6 +126,7 @@ require (
 	github.com/petermattis/goid v0.0.0-20180202154549-b0b1615b78e5 // indirect
 	github.com/pierrec/lz4/v4 v4.1.15 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/pkg/profile v1.7.0
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/preichenberger/go-coinbasepro/v2 v2.0.5 // indirect
 	github.com/prometheus/client_golang v1.11.0 // indirect

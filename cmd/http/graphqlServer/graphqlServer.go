@@ -13,12 +13,13 @@ import (
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
+	profile "github.com/pkg/profile"
 	log "github.com/sirupsen/logrus"
 )
 
 // nolint: gas
 func main() {
-
+	defer profile.Start(profile.ProfilePath(".")).Stop()
 	ds, err := getSchema("./schema/quotation.graphql")
 	if err != nil {
 		panic(err)
