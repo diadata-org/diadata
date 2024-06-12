@@ -1464,7 +1464,6 @@ func (datastore *DB) GetAggregatedFeedSelectionRedis(
 	errChan := make(chan error)
 
 	var wg sync.WaitGroup
-	defer wg.Done()
 
 	for _, fs := range feedselection {
 		keys, err := datastore.GetRedisKeysByFeedselection(fs)
