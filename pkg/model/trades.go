@@ -1497,6 +1497,7 @@ func (datastore *DB) GetAggregatedFeedSelectionRedis(
 		wg.Wait()
 		close(errChan)
 		close(fsaChan)
+		log.Info("closed all channels.")
 	}
 
 	// Sort response by volume.
