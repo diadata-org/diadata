@@ -389,6 +389,18 @@
             "ForeignName": "XRPFDUSD",
             "Ignore": false,
             "Symbol": "XRP"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "ZKFDUSD",
+            "Ignore": false,
+            "Symbol": "ZK"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "ZKUSDT",
+            "Ignore": false,
+            "Symbol": "ZK"
         }
     ]
 }

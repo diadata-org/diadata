@@ -665,6 +665,12 @@
       "ForeignName": "XRPUSDT",
       "Exchange": "MEXC",
       "Ignore": false
+    },
+    {
+      "Symbol": "ZK",
+      "ForeignName": "ZKUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
     }
   ]
 }

@@ -809,6 +809,18 @@
             "ForeignName": "ZENUSDT",
             "Exchange": "ByBit",
             "Ignore": false
+        },
+        {
+            "Symbol": "ZK",
+            "ForeignName": "ZKUSDC",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZK",
+            "ForeignName": "ZKUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
         }
     ]
 }

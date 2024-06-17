@@ -1045,6 +1045,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "ZK",
+            "Exchange": "GateIO",
+            "Blockchain": "ZKsync",
+            "Address": "0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E"
+        },
+        {
             "Symbol": "ZSC",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
