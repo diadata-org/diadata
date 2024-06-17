@@ -3,6 +3,23 @@
         {
             "Address": "0x64bCcad8e7302E81b09894f56F6BBa85ae82CD03",
             "ForeignName": "USDC-WETH"
+        },
+        {
+            "Address": "0xE0557855d30C1E0Fc2C16755389FD2CaF31F4e3C",
+            "ForeignName": "NILE-WETH"
+        },
+        {
+            "Address": "0x9a7D4B6Ec73ED2fc7cF0305e38AEd62202520fC6",
+            "ForeignName": "USDC-NILE"
+        },
+        {
+            "Address": "0x09B38f2181D46962618146dcd9f7e963A5d119c8",
+            "ForeignName": "WBTC-NILE"
+        },
+        {
+            "Address": "0x17e8F93CC2f4fFBea74478b3f542fD3BD9e0cD08",
+            "ForeignName": "USDT-NILE"
         }
+        
     ]
 }
