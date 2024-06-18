@@ -20,8 +20,6 @@ type AyinAssetSource struct {
 	assetChannel chan dia.Asset
 	// channel which informs about work is finished
 	doneChannel chan bool
-	// channel to set data to Pool
-	poolChannel chan dia.Pool
 	// blockchain name
 	blockchain string
 	// DB connector to interact with databases
@@ -57,7 +55,6 @@ func NewAyinAssetSource(exchange dia.Exchange, relDB *models.RelDB) *AyinAssetSo
 	var (
 		assetChannel = make(chan dia.Asset)
 		doneChannel  = make(chan bool)
-		poolChannel  = make(chan dia.Pool)
 	)
 
 	alephiumClient := alephiumhelper.NewAlephiumClient(
@@ -80,14 +77,11 @@ func NewAyinAssetSource(exchange dia.Exchange, relDB *models.RelDB) *AyinAssetSo
 		logger:             logger,
 		swapContractsLimit: swapContractsLimit,
 		exchangeName:       exchange.Name,
-		poolChannel:        poolChannel,
 		sleepTimeout:       sleepBetweenContractCalls,
 		targetSwapContract: targetSwapContract,
 	}
 
 	go scraper.fetchAssets()
-
-	go scraper.poolListener()
 
 	return scraper
 }
@@ -130,12 +124,7 @@ func (s *AyinAssetSource) fetchAssets() {
 		}
 
 		for i := 0; i < 2; i++ {
-			pools[contractAddress].Assetvolumes[i] = dia.AssetVolume{
-				Index: uint8(i),
-				Asset: dia.Asset{
-					Address: tokenPairs[i],
-				},
-			}
+
 			// native ALPH token has no contract - use data from variable
 			if tokenPairs[i] == alephiumhelper.ALPHNativeToken.Address {
 				pools[contractAddress].Assetvolumes[i].Asset = alephiumhelper.ALPHNativeToken
@@ -160,11 +149,8 @@ func (s *AyinAssetSource) fetchAssets() {
 			pools[contractAddress].Assetvolumes[i].Asset = *asset
 
 			s.assetChannel <- *asset
-		} // END for i := 0; i < 2; i++
-		if _, ok := pools[contractAddress]; ok {
-			s.poolChannel <- pools[contractAddress]
 		}
-	} // END for _, contractAddress := range contractAddresses.SubContracts {
+	}
 
 	s.doneChannel <- true
 }
@@ -175,27 +161,4 @@ func (s *AyinAssetSource) Asset() chan dia.Asset {
 
 func (s *AyinAssetSource) Done() chan bool {
 	return s.doneChannel
-}
-
-func (s *AyinAssetSource) poolListener() {
-	logger := s.logger.WithField("function", "poolListener")
-	for {
-		select {
-		case receivedPool := <-s.poolChannel:
-			// Set to persistent DB.
-			err := s.relDB.SetPool(receivedPool)
-			if err != nil {
-				logger.
-					WithField("receivedPool", receivedPool).
-					Errorf("Error saving pool %v", err)
-			} else {
-				logger.
-					WithField("receivedPool", receivedPool).
-					Info("successfully set pool")
-			}
-
-		case <-s.Done():
-			return
-		}
-	}
 }

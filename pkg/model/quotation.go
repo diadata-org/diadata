@@ -152,7 +152,7 @@ func (datastore *DB) GetAssetQuotation(asset dia.Asset, starttime time.Time, end
 		starttime.UnixNano(),
 		endtime.UnixNano(),
 	)
-	log.Info("Query: ", q)
+
 	res, err := queryInfluxDB(datastore.influxClient, q)
 	if err != nil {
 		return &quotation, err

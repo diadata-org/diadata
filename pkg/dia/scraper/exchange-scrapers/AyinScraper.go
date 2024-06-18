@@ -38,6 +38,8 @@ type AyinScraper struct {
 	db                        *models.RelDB
 	refreshDelay              time.Duration
 	sleepBetweenContractCalls time.Duration
+	reverseBasetokens         []string
+	reverseQuotetokens        []string
 }
 
 // NewAyinScraper returns a new AyinScraper initialized with default values.
@@ -84,6 +86,22 @@ func NewAyinScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *Ay
 		swapContractsLimit:        swapContractsLimit,
 		targetSwapContract:        targetSwapContract,
 	}
+
+	// Import tokens which appear as base token and we need a quotation for
+	var err error
+	reverseBasetokens, err = getReverseTokensFromConfig("ayin/reverse_tokens/" + s.exchangeName + "Basetoken")
+	if err != nil {
+		log.Error("error getting tokens for which pairs should be reversed: ", err)
+	}
+	log.Info("reverse basetokens: ", reverseBasetokens)
+	reverseQuotetokens, err = getReverseTokensFromConfig("ayin/reverse_tokens/" + s.exchangeName + "Quotetoken")
+	if err != nil {
+		log.Error("error getting tokens for which pairs should be reversed: ", err)
+	}
+	log.Info("reverse quotetokens: ", reverseQuotetokens)
+	s.reverseBasetokens = *reverseBasetokens
+	s.reverseQuotetokens = *reverseQuotetokens
+
 	s.logger = logrus.
 		New().
 		WithContext(context.Background()).
@@ -173,7 +191,7 @@ func (s *AyinScraper) Update() error {
 		return err
 	}
 	if len(blockHashes) == 0 {
-		logger.Info("no new blocks in the network, waiting...")
+		// logger.Info("no new blocks in the network, waiting...")
 		return nil
 	}
 
@@ -288,17 +306,34 @@ func (s *AyinScraper) handleTrade(pool *dia.Pool, event *alephiumhelper.Contract
 
 	diaTrade := &dia.Trade{
 		Time:           time,
-		Symbol:         symbolPair,
+		Symbol:         pool.Assetvolumes[0].Asset.Symbol,
 		Pair:           symbolPair,
 		ForeignTradeID: event.TxID,
 		Source:         s.exchangeName,
 		Price:          price,
 		Volume:         volume,
 		VerifiedPair:   true,
-		BaseToken:      pool.Assetvolumes[0].Asset,
-		QuoteToken:     pool.Assetvolumes[1].Asset,
+		QuoteToken:     pool.Assetvolumes[0].Asset,
+		BaseToken:      pool.Assetvolumes[1].Asset,
 		PoolAddress:    pool.Address,
 	}
+
+	// Reverse the order of the trade for selected assets.
+	switch {
+	case utils.Contains(reverseBasetokens, diaTrade.BaseToken.Address):
+		// If we need quotation of a base token, reverse pair
+		tSwapped, err := dia.SwapTrade(*diaTrade)
+		if err == nil {
+			diaTrade = &tSwapped
+		}
+	case utils.Contains(reverseQuotetokens, diaTrade.QuoteToken.Address):
+		// If we don't need quotation of quote token, reverse pair.
+		tSwapped, err := dia.SwapTrade(*diaTrade)
+		if err == nil {
+			diaTrade = &tSwapped
+		}
+	}
+
 	return diaTrade
 }
 
