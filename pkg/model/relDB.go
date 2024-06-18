@@ -211,7 +211,8 @@ const (
 	blockchainTable          = "blockchain"
 	assetVolumeTable         = "assetvolume"
 	historicalQuotationTable = "historicalquotation"
-
+	pollingTable             = "polling"
+	swapRelationTable        = "swap_relation"
 	// cache keys
 	keyAssetCache        = "dia_asset_"
 	keyExchangePairCache = "dia_exchangepair_"
