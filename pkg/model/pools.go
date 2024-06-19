@@ -113,14 +113,20 @@ func (rdb *RelDB) SetPool(pool dia.Pool) error {
 	for i := 0; i < len(pool.Assetvolumes); i++ {
 		query1 = fmt.Sprintf(
 			`INSERT INTO %s (pool_id,asset_id,liquidity,liquidity_usd,time_stamp,token_index)
-				VALUES ((SELECT pool_id from %s where address=$1 and blockchain=$2),(SELECT asset_id from %s where address=$3 and blockchain=$4),$5,$6,$7,$8)
-				ON CONFLICT (pool_id,asset_id) 
-				DO UPDATE SET liquidity=EXCLUDED.liquidity, liquidity_usd=EXCLUDED.liquidity_usd, time_stamp=EXCLUDED.time_stamp, token_index=EXCLUDED.token_index`,
+				VALUES (
+					(SELECT pool_id from %s where address=$1 and blockchain=$2),
+				    (SELECT asset_id from %s where address=$3 and blockchain=$4),$5,$6,$7,$8
+				)
+				ON CONFLICT (pool_id,asset_id)
+				DO UPDATE
+				    SET liquidity=EXCLUDED.liquidity,
+				    	liquidity_usd=EXCLUDED.liquidity_usd,
+				    	time_stamp=EXCLUDED.time_stamp,
+				    	token_index=EXCLUDED.token_index`,
 			poolassetTable,
 			poolTable,
 			assetTable,
 		)
-
 		_, err := rdb.postgresClient.Exec(
 			context.Background(),
 			query1,
@@ -170,14 +176,16 @@ func (rdb *RelDB) GetPoolByAddress(blockchain string, address string) (pool dia.
 
 	var rows pgx.Rows
 	query := fmt.Sprintf(`
-		SELECT pa.liquidity,pa.liquidity_usd,a.symbol,a.name,a.address,a.decimals,p.exchange,pa.time_stamp,pa.token_index 
-		FROM %s pa 
-		INNER JOIN %s p 
-		ON p.pool_id=pa.pool_id 
+		SELECT pa.liquidity,pa.liquidity_usd,a.symbol,a.name,a.address,a.decimals,p.exchange,pa.time_stamp,pa.token_index
+		FROM %s pa
+		INNER JOIN %s p
+		ON p.pool_id=pa.pool_id
 		INNER JOIN %s a
-		ON pa.asset_id=a.asset_id 
+		ON pa.asset_id=a.asset_id
 		WHERE p.blockchain=$1
-		AND p.address=$2`,
+		AND p.address=$2
+		ORDER BY pa.token_index ASC
+		`,
 		poolassetTable,
 		poolTable,
 		assetTable,
@@ -248,11 +256,11 @@ func (rdb *RelDB) GetAllPoolAddrsExchange(exchange string, liquiThreshold float6
 		rows, err = rdb.postgresClient.Query(context.Background(), query, exchange)
 	} else {
 		query = fmt.Sprintf(`
-		SELECT DISTINCT p.address 
-		FROM %s p 
-		INNER JOIN %s pa 
-		ON p.pool_id=pa.pool_id 
-		WHERE p.exchange=$1 
+		SELECT DISTINCT p.address
+		FROM %s p
+		INNER JOIN %s pa
+		ON p.pool_id=pa.pool_id
+		WHERE p.exchange=$1
 		AND pa.liquidity>=$2
 		`, poolTable, poolassetTable)
 		rows, err = rdb.postgresClient.Query(context.Background(), query, exchange, liquiThreshold)
@@ -284,18 +292,19 @@ func (rdb *RelDB) GetAllPoolsExchange(exchange string, liquiThreshold float64) (
 	query = fmt.Sprintf(`
 		SELECT exch_pools.address,a.address,a.blockchain,a.decimals,a.symbol,a.name,pa.token_index,pa.liquidity,pa.liquidity_usd
 		FROM (
-			SELECT p.pool_id,p.address, SUM(CASE WHEN pa.liquidity<$1 THEN 1 ELSE 0 END) AS no_liqui 
-			FROM %s p 
-			INNER JOIN %s pa 
-			ON p.pool_id=pa.pool_id 
-			WHERE p.exchange=$2 
+			SELECT p.pool_id,p.address, SUM(CASE WHEN pa.liquidity<$1 THEN 1 ELSE 0 END) AS no_liqui
+			FROM %s p
+			INNER JOIN %s pa
+			ON p.pool_id=pa.pool_id
+			WHERE p.exchange=$2
 			GROUP BY p.pool_id,p.address
-			) exch_pools 
-		INNER JOIN %s pa 
-		ON exch_pools.pool_id=pa.pool_id 
-		INNER JOIN %s a 
-		ON pa.asset_id=a.asset_id 
-		WHERE exch_pools.no_liqui=0;
+			) exch_pools
+		INNER JOIN %s pa
+		ON exch_pools.pool_id=pa.pool_id
+		INNER JOIN %s a
+		ON pa.asset_id=a.asset_id
+		WHERE exch_pools.no_liqui=0
+		ORDER BY pa.token_index ASC;
 	`,
 		poolTable,
 		poolassetTable,
@@ -374,19 +383,19 @@ func (rdb *RelDB) GetPoolsByAsset(asset dia.Asset, liquidityThreshold float64, l
 	query = fmt.Sprintf(`
 		SELECT exch_pools.exchange,exch_pools.address,a.address,a.blockchain,a.decimals,a.symbol,a.name,pa.token_index,pa.liquidity,pa.liquidity_usd,pa.time_stamp
 		FROM (
-			SELECT p.exchange,p.pool_id,p.address, SUM(CASE WHEN pa.liquidity>=$1 THEN 0 ELSE 1 END) AS no_liqui, SUM(CASE WHEN a.address=$2 THEN 1 ELSE 0 END) AS correct_asset 
-			FROM %s p 
-			INNER JOIN %s pa 
-			ON p.pool_id=pa.pool_id 
-			INNER JOIN %s a 
-			ON pa.asset_id=a.asset_id 
-			WHERE p.blockchain=$3 
+			SELECT p.exchange,p.pool_id,p.address, SUM(CASE WHEN pa.liquidity>=$1 THEN 0 ELSE 1 END) AS no_liqui, SUM(CASE WHEN a.address=$2 THEN 1 ELSE 0 END) AS correct_asset
+			FROM %s p
+			INNER JOIN %s pa
+			ON p.pool_id=pa.pool_id
+			INNER JOIN %s a
+			ON pa.asset_id=a.asset_id
+			WHERE p.blockchain=$3
 			GROUP BY p.exchange,p.pool_id,p.address
-			) exch_pools 
-		INNER JOIN %s pa 
-		ON exch_pools.pool_id=pa.pool_id 
-		INNER JOIN %s a ON pa.asset_id=a.asset_id 
-		WHERE exch_pools.no_liqui=0 
+			) exch_pools
+		INNER JOIN %s pa
+		ON exch_pools.pool_id=pa.pool_id
+		INNER JOIN %s a ON pa.asset_id=a.asset_id
+		WHERE exch_pools.no_liqui=0
 		AND exch_pools.correct_asset=1
 		AND pa.time_stamp IS NOT NULL;
 	`,

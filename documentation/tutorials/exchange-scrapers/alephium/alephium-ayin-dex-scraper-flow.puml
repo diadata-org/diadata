@@ -1,0 +1,79 @@
+@startuml
+
+legend top left
+  1. Asset collector service fetches all swap assets from AYIN exchange - and stores to DB(dia.Pool) with liquidity=0
+  2. Exchange scraper polls alephium REST API - to get info about swap events
+  3. Liquidity scraper fills liquidity via alephium REST API
+end legend
+
+box "DEX scraper" #LightBlue
+participant "Asset collector" as assetCollector
+participant "Scraper" as scraper
+participant "Liquidity" as liquidity
+participant "Storage" as storage
+participant "Stream" as stream #LightGreen
+end box
+
+box Alephium
+participant "Alephium node https://node.mainnet.alephium.org/docs" as anode
+participant "Alephium backend https://backend.mainnet.alephium.org/docs" as abackend
+end box
+
+== Get tokens data - symbol, decimals, name - asset collector ==
+
+group "Asset collector"
+
+autonumber
+assetCollector -> abackend++: get all swap contract addresses
+abackend -> assetCollector--++: swap contract response ([]string)
+loop Each swap contract address
+  assetCollector -> anode--++: Get token id pair for swap contract address
+  anode ->  assetCollector--++: response with token pair
+  assetCollector -> anode--++: Multicall contract - give me token's data(name, symbol, decimals)
+  anode -> assetCollector--++: multicall response
+  assetCollector -> storage--++: Adopt data to dia.Asset and store to dia.Asset and to dia.Pool
+end
+
+deactivate storage
+deactivate assetCollector
+
+end group
+
+
+== DEX scraper ==
+
+group "Listen swap events(eventIndex=7)"
+
+scraper -> storage--++: get data from DB - dia.Pool
+storage -> scraper--++: response tokens - ready for use (dia.Pool([]dia.Asset))
+
+loop Each swap contract address
+  scraper -> abackend--++: Get events for token
+  abackend -> scraper--++: Decode data
+  scraper -> anode--++: get transaction details to fill Timestamp in dia.Trade
+  anode -> scraper--++: decode data, fill dia.Trade struct,
+  scraper -> stream--++: send decoded data to next stream handler
+end     
+
+end group
+
+== Liquidity scraper ==
+
+group "Receive pool liquidity data"
+
+liquidity -> storage--++: get data from DB - dia.Pool
+storage -> liquidity--++: response tokens - ready for use (dia.Pool([]dia.Asset))
+
+loop Each pool contract address(dia.Pool)
+    liquidity -> anode--++: Get liquidity data
+    anode -> liquidity--++: Decode data
+    liquidity -> storage--++: Store data
+end
+
+deactivate storage
+deactivate liquidity
+
+end group
+
+@enduml
+

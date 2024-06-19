@@ -7,6 +7,18 @@
         {
             "Address": "0xdfD43483970B8179CBb842dCA2D34c6352f4603C",
             "ForeignName": "WBTC-RAM"
+        },
+        {
+            "Address": "0x0d69204d025c380bc44F3B183e4F9fc19d5a8605",
+            "ForeignName": "ARB-RAM"
+        },
+        {
+            "Address": "0xd037a2A7d1Fcf1161734D2417B6cE36C10e5332E",
+            "ForeignName": "RAM-USDC"
+        },
+        {
+            "Address": "0xb54E265160De97b465879667Aa27EdaB818aF62F",
+            "ForeignName": "RAM-USDT"
         }
     ]
 }

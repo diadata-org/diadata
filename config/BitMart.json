@@ -560,6 +560,12 @@
     },
     {
       "Exchange": "BitMart",
+      "ForeignName": "ZK_USDT",
+      "Ignore": false,
+      "Symbol": "ZK"
+    },
+    {
+      "Exchange": "BitMart",
       "ForeignName": "ZRX_USDT",
       "Ignore": false,
       "Symbol": "ZRX"

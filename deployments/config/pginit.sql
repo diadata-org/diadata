@@ -113,6 +113,15 @@ CREATE TABLE assetvolume (
     time_stamp timestamp
 );
 
+-- polling table stores data - required for HTTP polling
+CREATE TABLE polling (
+    polling_id UUID DEFAULT gen_random_uuid(),
+    blockchain text,
+    contract_address text NOT NULL,
+    page numeric DEFAULT 1,
+    UNIQUE(blockchain, contract_address)
+);
+
 ---------------------------------------
 ------- tables for NFT storage --------
 ---------------------------------------

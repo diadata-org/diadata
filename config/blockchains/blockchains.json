@@ -208,6 +208,15 @@
             "ChainID": "Ethereum888"
         },
         {
+            "Name": "Linea",
+            "GenesisDate": 0,
+            "NativeToken": {
+                "Address": "0xE0557855d30C1E0Fc2C16755389FD2CaF31F4e3C"
+            },
+            "VerificationMechanism": "pos",
+            "ChainID": "Ethereum59144"
+        },
+        {
             "Name": "Fetch",
             "GenesisDate": 1601510400,
             "NativeToken": {

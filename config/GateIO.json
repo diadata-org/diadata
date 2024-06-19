@@ -2612,6 +2612,12 @@
     },
     {
       "Exchange": "GateIO",
+      "ForeignName": "ZK_USDT",
+      "Ignore": false,
+      "Symbol": "ZK"
+    },
+    {
+      "Exchange": "GateIO",
       "ForeignName": "ZPT_BTC",
       "Ignore": false,
       "Symbol": "ZPT"

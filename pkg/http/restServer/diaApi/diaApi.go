@@ -101,6 +101,7 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 	} else {
 		quotationExtended.PriceYesterday = quotationYesterday.Price
 	}
+
 	volumeYesterday, err := env.DataStore.Get24HoursAssetVolume(asset)
 	if err != nil {
 		log.Warn("get volume yesterday: ", err)
