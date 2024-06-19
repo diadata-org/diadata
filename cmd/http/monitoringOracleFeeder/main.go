@@ -2,15 +2,17 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"github.com/diadata-org/diadata/pkg/http/restApi"
-	"github.com/diadata-org/diadata/pkg/utils/probes"
-	appsv1 "k8s.io/api/apps/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/diadata-org/diadata/pkg/http/restApi"
+	"github.com/diadata-org/diadata/pkg/utils/probes"
+	appsv1 "k8s.io/api/apps/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gin-gonic/gin"
@@ -75,6 +77,7 @@ func readAllStates() {
 	log.Info("reading namespaces services")
 
 	kube := GetKubernetesConnection()
+	fmt.Println(kube)
 	// Fetch all namespaces
 	namespaces, err := kube.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
@@ -92,9 +95,9 @@ func readAllStates() {
 			fmt.Printf("Error listing services in namespace %s: %s\n", ns.Name, err)
 			continue
 		}
-		for _, service := range deployments.Items {
-			deploymentItems = append(deploymentItems, service)
-		}
+
+		deploymentItems = append(deploymentItems, deployments.Items...)
+
 		namespaceServices.deployments = deploymentItems
 		fmt.Printf("listing services in namespace %s: %s\n", ns.Name, strconv.Itoa(len(deploymentItems)))
 		k8sServices = append(k8sServices, namespaceServices)
@@ -102,7 +105,7 @@ func readAllStates() {
 
 	CacheGlobalState = k8sServices
 	log.Info("finished reading static endpoints")
-	return
+
 }
 
 func GetAllStates(context *gin.Context) {
@@ -114,5 +117,7 @@ func GetAllStates(context *gin.Context) {
 			}
 		}
 	}
-	restApi.SendError(context, http.StatusNotFound, nil)
+	log.Errorln("error getting states CacheGlobalState", CacheGlobalState)
+
+	restApi.SendError(context, http.StatusNotFound, errors.New("error getting state"))
 }
