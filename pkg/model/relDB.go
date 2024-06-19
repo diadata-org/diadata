@@ -193,6 +193,7 @@ type RelDatastore interface {
 	RemoveWalletKeys(publicKey []string) error
 	GetCustomerIDByWalletPublicKey(publicKey string) (int, error)
 	GetCustomerByPublicKey(publicKey string) (*Customer, error)
+	GetAccessLevel(publicKey string) (string, error)
 }
 
 const (

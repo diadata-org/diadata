@@ -327,14 +327,6 @@ CREATE TABLE oracleconfig (
 -- ALTER TABLE oracleconfig  ADD COLUMN expired_time TIMESTAMP DEFAULT 'epoch'::timestamp;
 
 
-
-
-
-
-         
-
-
-
 CREATE TABLE feederresource (
     id  SERIAL PRIMARY KEY,
     owner text NOT NULL,
@@ -365,4 +357,41 @@ CREATE TABLE exchange_pairs (
     pair VARCHAR(255) NOT NULL
 );
 
+
+
+CREATE TABLE plans (
+    plan_id SERIAL PRIMARY KEY,
+    plan_name VARCHAR(50) NOT NULL UNIQUE,
+    plan_description TEXT,
+    plan_price NUMERIC(10, 2) NOT NULL,
+    plan_features TEXT
+);
+
+
+
+ CREATE TABLE customers (
+    customer_id SERIAL PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    account_creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    customer_plan INTEGER REFERENCES plans(plan_id) ON DELETE SET NULL,
+    deployed_oracles INTEGER DEFAULT 0,
+    payment_status VARCHAR(50),
+    last_payment TIMESTAMP,
+    payment_source VARCHAR(255),
+    number_of_data_feeds INTEGER DEFAULT 0,
+    active BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE wallet_public_keys (
+    key_id SERIAL PRIMARY KEY,
+    customer_id INTEGER REFERENCES customers(customer_id) ON DELETE CASCADE,
+    public_key TEXT NOT NULL,
+    access_level VARCHAR(50) NOT NULL DEFAULT 'read_write',
+    UNIQUE (public_key)
+);
+
+
+INSERT INTO  "plans"("plan_id","plan_name","plan_description","plan_price","plan_features")
+VALUES
+(0,E'default',E'default',0,E'desc');
 
