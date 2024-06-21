@@ -50,6 +50,7 @@ const (
 	UNREAL_TESTNET                          = "Unreal-Testnet"
 	UNREAL                                  = "Unreal"
 	LINEA                                   = "Linea"
+	ALEPHIUM                                = "Alephium"
 )
 
 var CRYPTO_ZERO_UNIX_TIME = time.Unix(1230768000, 0)
