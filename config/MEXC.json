@@ -7,6 +7,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "ALPH",
+      "ForeignName": "ALPHUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "ANY",
       "ForeignName": "ANYUSDT",
       "Exchange": "MEXC",
@@ -189,6 +195,12 @@
     {
       "Symbol": "DUST",
       "ForeignName": "DUSTUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "EDU",
+      "ForeignName": "EDUUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     },

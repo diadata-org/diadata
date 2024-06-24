@@ -625,6 +625,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "EDU",
+            "ForeignName": "EDU-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "ELF",
             "ForeignName": "ELF-ETH",
             "Exchange": "KuCoin",

@@ -2,9 +2,21 @@
   "Coins": [
     {
       "Exchange": "BitMart",
+      "ForeignName": "ALPH_USDT",
+      "Ignore": false,
+      "Symbol": "ALPH"
+    },
+    {
+      "Exchange": "BitMart",
       "ForeignName": "ASTR_USDT",
       "Ignore": false,
       "Symbol": "ASTR"
+    },
+    {
+      "Exchange": "BitMart",
+      "ForeignName": "EDU_USDT",
+      "Ignore": false,
+      "Symbol": "EDU"
     },
     {
       "Exchange": "BitMart",

@@ -13,6 +13,12 @@
             "Address": "0x31429d1856aD1377A8A0079410B297e1a9e214c2"
         },
         {
+            "Symbol": "ALPH",
+            "Exchange": "GateIO",
+            "Blockchain": "Alephium",
+            "Address": "tgx7VNFoP9DJiFMFgXXtafQZkUvyEdDHT9ryamHJYrjq"
+        },
+        {
             "Symbol": "AR",
             "Exchange": "GateIO",
             "Blockchain": "Arweave",
@@ -95,6 +101,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Celo",
             "Address": "0x765DE816845861e75A25fCA122bb6898B8B1282a"
+        },
+        {
+            "Symbol": "EDU",
+            "Exchange": "GateIO",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xBdEAe1cA48894A1759A8374D63925f21f2Ee2639"
         },
         {
             "Symbol": "FDUSD",

@@ -109,6 +109,12 @@
             "Address": "0x92D6C1e31e14520e676a687F0a93788B716BEff5"
         },
         {
+            "Symbol": "EDU",
+            "Exchange": "Binance2",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xBdEAe1cA48894A1759A8374D63925f21f2Ee2639"
+        },   
+        {
             "Symbol": "ENA",
             "Exchange": "Binance2",
             "Blockchain": "Ethereum",

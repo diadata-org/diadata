@@ -283,6 +283,12 @@
             "Address": "0x89020f0D5C5AF4f3407Eb5Fe185416c457B0e93e"
         },
         {
+            "Symbol": "EDU",
+            "Exchange": "KuCoin",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xBdEAe1cA48894A1759A8374D63925f21f2Ee2639"
+        },   
+        {
             "Symbol": "ELF",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

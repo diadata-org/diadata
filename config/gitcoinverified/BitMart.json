@@ -13,6 +13,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "ALPH",
+      "Exchange": "BitMart",
+      "Blockchain": "Alephium",
+      "Address": "tgx7VNFoP9DJiFMFgXXtafQZkUvyEdDHT9ryamHJYrjq"
+    },
+    {
       "Symbol": "APE",
       "Exchange": "BitMart",
       "Blockchain": "Ethereum",
@@ -144,6 +150,12 @@
       "Blockchain": "Polkadot",
       "Address": "0x0000000000000000000000000000000000000000"
     },
+    {
+      "Symbol": "EDU",
+      "Exchange": "BitMart",
+      "Blockchain": "BinanceSmartChain",
+      "Address": "0xBdEAe1cA48894A1759A8374D63925f21f2Ee2639"
+    },    
     {
       "Symbol": "EGLD",
       "Exchange": "BitMart",
