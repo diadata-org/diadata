@@ -22,6 +22,7 @@ type AyinLiquidityScraper struct {
 	relDB                     *models.RelDB
 	datastore                 *models.DB
 	targetSwapContract        string
+	swapContractsLimit        int
 	handlerType               string
 	sleepBetweenContractCalls time.Duration
 }
@@ -45,6 +46,10 @@ func NewAyinLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, datasto
 			alephiumhelper.DefaultSleepBetweenContractCalls,
 		),
 	)
+	swapContractsLimit := utils.GetenvInt(
+		strings.ToUpper(exchange.Name)+"_SWAP_CONTRACTS_LIMIT",
+		alephiumhelper.DefaultSwapContractsLimit,
+	)
 
 	var (
 		poolChannel = make(chan dia.Pool)
@@ -67,6 +72,7 @@ func NewAyinLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, datasto
 		relDB:                     relDB,
 		datastore:                 datastore,
 		targetSwapContract:        targetSwapContract,
+		swapContractsLimit:        swapContractsLimit,
 		handlerType:               "liquidity",
 		sleepBetweenContractCalls: sleepBetweenContractCalls,
 	}
@@ -81,37 +87,52 @@ func NewAyinLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, datasto
 	return scraper
 }
 
-func (s *AyinLiquidityScraper) getPools() ([]dia.Pool, error) {
-	if s.targetSwapContract != "" {
-		result := make([]dia.Pool, 1)
-		pool, err := s.relDB.GetPoolByAddress(s.blockchain, s.targetSwapContract)
-		result[0] = pool
-		return result, err
-	}
-	return s.relDB.GetAllPoolsExchange(s.exchangeName, 0)
-}
-
 func (s *AyinLiquidityScraper) fetchPools() {
 	logger := s.logger.WithFields(logrus.Fields{
 		"function": "fetchPools",
 	})
-	pools, err := s.getPools()
+
+	contractAddresses, err := s.getSubcontracts()
 	if err != nil {
-		logger.
-			WithError(err).
-			Error("failed to GetAllPoolsExchange")
+		s.logger.WithError(err).Error("failed to get contract addresses")
 		return
 	}
-	for _, pool := range pools {
-		if len(pool.Assetvolumes) != 2 {
-			logger.WithField("poolAddress", pool.Address).Error("pool is missing a second asset")
+	log.Infof("fetched %v contract addresses.", len(contractAddresses))
+
+	// Fetch all pool addresses from on-chain
+	for _, contractAddress := range contractAddresses {
+		var decimals []int64
+
+		tokenPairs, err := s.api.GetTokenPairAddresses(contractAddress)
+		if err != nil {
+			s.logger.
+				WithField("contractAddress", contractAddress).
+				WithError(err).
+				Error("failed to get GetTokenPairAddresses")
 			continue
 		}
 
-		decimals0 := int64(pool.Assetvolumes[0].Asset.Decimals)
-		decimals1 := int64(pool.Assetvolumes[1].Asset.Decimals)
+		pool := dia.Pool{
+			Exchange:     dia.Exchange{Name: s.exchangeName},
+			Blockchain:   dia.BlockChain{Name: s.blockchain},
+			Address:      contractAddress,
+			Time:         time.Now(),
+			Assetvolumes: make([]dia.AssetVolume, 2),
+		}
 
-		contractState, err := s.api.GetContractState(pool.Address)
+		for i := 0; i < 2; i++ {
+			asset, err := s.relDB.GetAsset(tokenPairs[i], dia.ALEPHIUM)
+			if err != nil {
+				log.Error("GetAsset from DB: ", err)
+			}
+			pool.Assetvolumes[i] = dia.AssetVolume{
+				Index: uint8(i),
+				Asset: asset,
+			}
+			decimals = append(decimals, int64(asset.Decimals))
+		}
+
+		contractState, err := s.api.GetContractState(contractAddress)
 		if err != nil {
 			logger.
 				WithError(err).
@@ -121,21 +142,30 @@ func (s *AyinLiquidityScraper) fetchPools() {
 
 		pool.Assetvolumes[0].Volume, _ = utils.StringToFloat64(
 			contractState.MutFields[0].Value,
-			decimals0,
+			decimals[0],
 		)
 		pool.Assetvolumes[1].Volume, _ = utils.StringToFloat64(
 			contractState.MutFields[1].Value,
-			decimals1,
+			decimals[1],
 		)
+
 		// Determine USD liquidity.
 		if pool.SufficientNativeBalance(GLOBAL_NATIVE_LIQUIDITY_THRESHOLD) {
 			s.datastore.GetPoolLiquiditiesUSD(&pool, priceCache)
 		}
-
 		s.poolChannel <- pool
-	} // END for _, pool := range pools
+
+	}
 
 	s.doneChannel <- true
+}
+
+func (s *AyinLiquidityScraper) getSubcontracts() ([]string, error) {
+	if s.targetSwapContract != "" {
+		return []string{s.targetSwapContract}, nil
+	}
+	contractAddresses, err := s.api.GetSwapPairsContractAddresses(s.swapContractsLimit)
+	return contractAddresses.SubContracts, err
 }
 
 func (s *AyinLiquidityScraper) Pool() chan dia.Pool {

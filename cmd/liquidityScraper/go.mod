@@ -1,6 +1,6 @@
 module github.com/diadata-org/diadata/liquidityScraper
 
-go 1.17
+go 1.20
 
 require (
 	github.com/diadata-org/diadata v1.4.504
