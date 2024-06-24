@@ -320,14 +320,14 @@ func (s *AyinScraper) handleTrade(pool *dia.Pool, event *alephiumhelper.Contract
 
 	// Reverse the order of the trade for selected assets.
 	switch {
-	case utils.Contains(reverseBasetokens, diaTrade.BaseToken.Address):
-		// If we need quotation of a base token, reverse pair
+	case utils.Contains(reverseQuotetokens, diaTrade.QuoteToken.Address):
+		// If we don't need quotation of quote token, reverse pair.
 		tSwapped, err := dia.SwapTrade(*diaTrade)
 		if err == nil {
 			diaTrade = &tSwapped
 		}
-	case utils.Contains(reverseQuotetokens, diaTrade.QuoteToken.Address):
-		// If we don't need quotation of quote token, reverse pair.
+	case utils.Contains(reverseBasetokens, diaTrade.BaseToken.Address):
+		// If we need quotation of a base token, reverse pair
 		tSwapped, err := dia.SwapTrade(*diaTrade)
 		if err == nil {
 			diaTrade = &tSwapped
