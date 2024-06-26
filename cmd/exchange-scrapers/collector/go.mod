@@ -1,6 +1,6 @@
 module github.com/diadata-org/diadata/exchange-scrapers/collector
 
-go 1.17
+go 1.19
 
 require (
 	github.com/diadata-org/diadata v1.4.506
