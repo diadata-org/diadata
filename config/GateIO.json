@@ -1,2680 +1,2710 @@
 {
-  "Coins": [
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "AKT_USDT",
-      "Ignore": false,
-      "Symbol": "AKT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ALPH_USDT",
-      "Ignore": false,
-      "Symbol": "ALPH"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "AR_USDT",
-      "Ignore": false,
-      "Symbol": "AR"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ARB_USDT",
-      "Ignore": false,
-      "Symbol": "ARB"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "AZERO_USDT",
-      "Ignore": false,
-      "Symbol": "AZERO"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BEPRO_USDT",
-      "Ignore": false,
-      "Symbol": "BEPRO"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BOBA_USDT",
-      "Ignore": false,
-      "Symbol": "BOBA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BONK_USDT",
-      "Ignore": false,
-      "Symbol": "BONK"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "EDU_USDT",
-      "Ignore": false,
-      "Symbol": "EDU"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ENA_USDT",
-      "Ignore": false,
-      "Symbol": "ENA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "FDUSD_USDT",
-      "Ignore": false,
-      "Symbol": "FDUSD"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GNS_USDT",
-      "Ignore": false,
-      "Symbol": "GNS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MCRT_USDT",
-      "Ignore": false,
-      "Symbol": "MCRT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "PEPE_USDT",
-      "Ignore": false,
-      "Symbol": "PEPE"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "PNG_USDT",
-      "Ignore": false,
-      "Symbol": "PNG"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "PSP_USDT",
-      "Ignore": false,
-      "Symbol": "PSP"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "PSP_ETH",
-      "Ignore": false,
-      "Symbol": "PSP"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "PENDLE_USDT",
-      "Ignore": false,
-      "Symbol": "PENDLE"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "VRTX_USDT",
-      "Ignore": false,
-      "Symbol": "VRTX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ATOM_USDT",
-      "Ignore": false,
-      "Symbol": "ATOM"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BFC_USDT",
-      "Ignore": false,
-      "Symbol": "BFC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BNC_USDT",
-      "Ignore": false,
-      "Symbol": "BNC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GMX_USDT",
-      "Ignore": false,
-      "Symbol": "GMX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "CUSD_USDT",
-      "Ignore": false,
-      "Symbol": "CUSD"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "CUSD_ETH",
-      "Ignore": false,
-      "Symbol": "CUSD"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SOV_USDT",
-      "Ignore": false,
-      "Symbol": "SOV"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SOV_BTC",
-      "Ignore": false,
-      "Symbol": "SOV"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "KAVA_USDT",
-      "Ignore": false,
-      "Symbol": "KAVA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "KINT_USDT",
-      "Ignore": false,
-      "Symbol": "KINT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ACA_USDT",
-      "Ignore": false,
-      "Symbol": "ACA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "AVAX_USDT",
-      "Ignore": false,
-      "Symbol": "AVAX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "CFG_USDT",
-      "Ignore": false,
-      "Symbol": "CFG"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "INTR_USDT",
-      "Ignore": false,
-      "Symbol": "INTR"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SHIB_USDT",
-      "Ignore": false,
-      "Symbol": "SHIB"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "CKB_USDT",
-      "Ignore": false,
-      "Symbol": "CKB"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DUST_USDT",
-      "Ignore": false,
-      "Symbol": "DUST"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LMR_USDT",
-      "Ignore": false,
-      "Symbol": "LMR"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MSOL_USDT",
-      "Ignore": false,
-      "Symbol": "MSOL"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MSOL_ETH",
-      "Ignore": false,
-      "Symbol": "MSOL"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "OP_USDT",
-      "Ignore": false,
-      "Symbol": "OP"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "OUSD_USDT",
-      "Ignore": false,
-      "Symbol": "OUSD"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GRAIL_USDT",
-      "Ignore": false,
-      "Symbol": "GRAIL"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "RDNT_USDT",
-      "Ignore": false,
-      "Symbol": "RDNT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SAMO_USDT",
-      "Ignore": false,
-      "Symbol": "SAMO"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SAMO_ETH",
-      "Ignore": false,
-      "Symbol": "SAMO"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "STG_USDT",
-      "Ignore": false,
-      "Symbol": "STG"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SYN_USDT",
-      "Ignore": false,
-      "Symbol": "SYN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LKR_USDT",
-      "Ignore": false,
-      "Symbol": "LKR"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "NFTY_USDT",
-      "Ignore": false,
-      "Symbol": "NFTY"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "TLOS_USDT",
-      "Ignore": false,
-      "Symbol": "TLOS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "TLOS_BTC",
-      "Ignore": false,
-      "Symbol": "TLOS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "AURORA_USDT",
-      "Ignore": false,
-      "Symbol": "AURORA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "METIS_USDT",
-      "Ignore": false,
-      "Symbol": "METIS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "FUSE_USDT",
-      "Ignore": false,
-      "Symbol": "FUSE"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GLMR_USDT",
-      "Ignore": false,
-      "Symbol": "GLMR"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ANT_USDT",
-      "Ignore": false,
-      "Symbol": "ANT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BOSON_USDT",
-      "Ignore": false,
-      "Symbol": "BOSON"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "FLOW_USDT",
-      "Ignore": false,
-      "Symbol": "FLOW"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GLM_USDT",
-      "Ignore": false,
-      "Symbol": "GLM"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "OCEAN_USDT",
-      "Ignore": false,
-      "Symbol": "OCEAN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "RARI_USDT",
-      "Ignore": false,
-      "Symbol": "RARI"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SDN_USDT",
-      "Ignore": false,
-      "Symbol": "SDN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ASTR_USDT",
-      "Ignore": false,
-      "Symbol": "ASTR"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ASTR_BTC",
-      "Ignore": false,
-      "Symbol": "ASTR"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ASTR_ETH",
-      "Ignore": false,
-      "Symbol": "ASTR"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SPA_USDT",
-      "Ignore": false,
-      "Symbol": "SPA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GHST_USDT",
-      "Ignore": false,
-      "Symbol": "GHST"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MOVR_USDT",
-      "Ignore": false,
-      "Symbol": "MOVR"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "FTM_USDT",
-      "Ignore": false,
-      "Symbol": "FTM"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "CELO_USDT",
-      "Ignore": false,
-      "Symbol": "CELO"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DOWS_USDT",
-      "Ignore": false,
-      "Symbol": "DOWS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DOWS_ETH",
-      "Ignore": false,
-      "Symbol": "DOWS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DFYN_USDT",
-      "Ignore": false,
-      "Symbol": "DFYN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "HEGIC_USDT",
-      "Ignore": false,
-      "Symbol": "HEGIC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ICP_USDT",
-      "Ignore": false,
-      "Symbol": "ICP"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "INJ_USDT",
-      "Ignore": false,
-      "Symbol": "INJ"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DAFI_USDT",
-      "Ignore": false,
-      "Symbol": "DAFI"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "AKRO_USDT",
-      "Ignore": false,
-      "Symbol": "AKRO"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "KDA_USDT",
-      "Ignore": false,
-      "Symbol": "KDA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "KILT_USDT",
-      "Ignore": false,
-      "Symbol": "KILT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "KSM_USDT",
-      "Ignore": false,
-      "Symbol": "KSM"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MANA_USDT",
-      "Ignore": false,
-      "Symbol": "MANA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "PERP_USDT",
-      "Ignore": false,
-      "Symbol": "PERP"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SUPER_USDT",
-      "Ignore": false,
-      "Symbol": "SUPER"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SNOW_ETH",
-      "Ignore": false,
-      "Symbol": "SNOW"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SNOW_USDT",
-      "Ignore": false,
-      "Symbol": "SNOW"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "TIA_USDT",
-      "Ignore": false,
-      "Symbol": "TIA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "NEAR_ETH",
-      "Ignore": false,
-      "Symbol": "NEAR"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "NEAR_USDT",
-      "Ignore": false,
-      "Symbol": "NEAR"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "USDD_USDT",
-      "Ignore": false,
-      "Symbol": "USDD"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ABT_ETH",
-      "Ignore": false,
-      "Symbol": "ABT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ABT_USDT",
-      "Ignore": false,
-      "Symbol": "ABT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ADA_BTC",
-      "Ignore": false,
-      "Symbol": "ADA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ADA_USDT",
-      "Ignore": false,
-      "Symbol": "ADA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ADD_ETH",
-      "Ignore": false,
-      "Symbol": "ADD"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "AE_BTC",
-      "Ignore": false,
-      "Symbol": "AE"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "AE_ETH",
-      "Ignore": false,
-      "Symbol": "AE"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "AE_USDT",
-      "Ignore": false,
-      "Symbol": "AE"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ANGLE_USDT",
-      "Ignore": false,
-      "Symbol": "ANGLE"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ARN_ETH",
-      "Ignore": false,
-      "Symbol": "ARN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BAT_BTC",
-      "Ignore": false,
-      "Symbol": "BAT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BAT_ETH",
-      "Ignore": false,
-      "Symbol": "BAT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BAT_USDT",
-      "Ignore": false,
-      "Symbol": "BAT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BCDN_ETH",
-      "Ignore": false,
-      "Symbol": "BCDN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BCDN_USDT",
-      "Ignore": false,
-      "Symbol": "BCDN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BCD_BTC",
-      "Ignore": false,
-      "Symbol": "BCD"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BCD_USDT",
-      "Ignore": false,
-      "Symbol": "BCD"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BCH_BTC",
-      "Ignore": false,
-      "Symbol": "BCH"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BCH_USDT",
-      "Ignore": false,
-      "Symbol": "BCH"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BCN_BTC",
-      "Ignore": false,
-      "Symbol": "BCN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BCN_USDT",
-      "Ignore": false,
-      "Symbol": "BCN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BCX_BTC",
-      "Ignore": false,
-      "Symbol": "BCX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BCX_USDT",
-      "Ignore": false,
-      "Symbol": "BCX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BFT_ETH",
-      "Ignore": false,
-      "Symbol": "BFT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BFT_USDT",
-      "Ignore": false,
-      "Symbol": "BFT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BIFI_BTC",
-      "Ignore": false,
-      "Symbol": "BIFI"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BIFI_USDT",
-      "Ignore": false,
-      "Symbol": "BIFI"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BNB_USDT",
-      "Ignore": false,
-      "Symbol": "BNB"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BNTY_ETH",
-      "Ignore": false,
-      "Symbol": "BNTY"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BNTY_USDT",
-      "Ignore": false,
-      "Symbol": "BNTY"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BNT_ETH",
-      "Ignore": false,
-      "Symbol": "BNT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BOE_ETH",
-      "Ignore": false,
-      "Symbol": "BOE"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BOE_USDT",
-      "Ignore": false,
-      "Symbol": "BOE"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BOT_ETH",
-      "Ignore": false,
-      "Symbol": "BOT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BOT_QTUM",
-      "Ignore": false,
-      "Symbol": "BOT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BOT_USDT",
-      "Ignore": false,
-      "Symbol": "BOT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BTC_USDT",
-      "Ignore": false,
-      "Symbol": "BTC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BTF_BTC",
-      "Ignore": false,
-      "Symbol": "BTF"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BTF_USDT",
-      "Ignore": false,
-      "Symbol": "BTF"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BTG_BTC",
-      "Ignore": false,
-      "Symbol": "BTG"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BTG_USDT",
-      "Ignore": false,
-      "Symbol": "BTG"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BTO_ETH",
-      "Ignore": false,
-      "Symbol": "BTO"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BTO_USDT",
-      "Ignore": false,
-      "Symbol": "BTO"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BTS_BTC",
-      "Ignore": false,
-      "Symbol": "BTS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BTS_USDT",
-      "Ignore": false,
-      "Symbol": "BTS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BU_BTC",
-      "Ignore": false,
-      "Symbol": "BU"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BU_ETH",
-      "Ignore": false,
-      "Symbol": "BU"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BU_USDT",
-      "Ignore": false,
-      "Symbol": "BU"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BXC_ETH",
-      "Ignore": false,
-      "Symbol": "BXC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "BXC_USDT",
-      "Ignore": false,
-      "Symbol": "BXC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "CDT_ETH",
-      "Ignore": false,
-      "Symbol": "CDT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "CDT_USDT",
-      "Ignore": false,
-      "Symbol": "CDT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "COFI_ETH",
-      "Ignore": false,
-      "Symbol": "COFI"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "COFI_USDT",
-      "Ignore": false,
-      "Symbol": "COFI"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "CS_ETH",
-      "Ignore": false,
-      "Symbol": "CS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "CS_USDT",
-      "Ignore": false,
-      "Symbol": "CS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "CVC_ETH",
-      "Ignore": false,
-      "Symbol": "CVC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "CVC_USDT",
-      "Ignore": false,
-      "Symbol": "CVC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DADI_ETH",
-      "Ignore": false,
-      "Symbol": "DADI"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DADI_USDT",
-      "Ignore": false,
-      "Symbol": "DADI"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DAI_USDT",
-      "Ignore": false,
-      "Symbol": "DAI"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DASH_BTC",
-      "Ignore": false,
-      "Symbol": "DASH"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DASH_USDT",
-      "Ignore": false,
-      "Symbol": "DASH"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DATA_ETH",
-      "Ignore": false,
-      "Symbol": "DATA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DATA_USDT",
-      "Ignore": false,
-      "Symbol": "DATA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DBC_BTC",
-      "Ignore": false,
-      "Symbol": "DBC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DBC_ETH",
-      "Ignore": false,
-      "Symbol": "DBC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DBC_USDT",
-      "Ignore": false,
-      "Symbol": "DBC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DCR_BTC",
-      "Ignore": false,
-      "Symbol": "DCR"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DCR_USDT",
-      "Ignore": false,
-      "Symbol": "DCR"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DDD_BTC",
-      "Ignore": false,
-      "Symbol": "DDD"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DDD_ETH",
-      "Ignore": false,
-      "Symbol": "DDD"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DDD_USDT",
-      "Ignore": false,
-      "Symbol": "DDD"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DGD_ETH",
-      "Ignore": false,
-      "Symbol": "DGD"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DGD_USDT",
-      "Ignore": false,
-      "Symbol": "DGD"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DNT_ETH",
-      "Ignore": false,
-      "Symbol": "DNT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DOCK_ETH",
-      "Ignore": false,
-      "Symbol": "DOCK"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DOCK_USDT",
-      "Ignore": false,
-      "Symbol": "DOCK"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DOGE_BTC",
-      "Ignore": false,
-      "Symbol": "DOGE"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DOGE_USDT",
-      "Ignore": false,
-      "Symbol": "DOGE"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DOT_USDT",
-      "Ignore": false,
-      "Symbol": "DOT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DPY_ETH",
-      "Ignore": false,
-      "Symbol": "DPY"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DPY_USDT",
-      "Ignore": false,
-      "Symbol": "DPY"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DRGN_ETH",
-      "Ignore": false,
-      "Symbol": "DRGN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DRGN_USDT",
-      "Ignore": false,
-      "Symbol": "DRGN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DX_ETH",
-      "Ignore": false,
-      "Symbol": "DX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "DX_USDT",
-      "Ignore": false,
-      "Symbol": "DX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ELEC_ETH",
-      "Ignore": false,
-      "Symbol": "ELEC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ELEC_USDT",
-      "Ignore": false,
-      "Symbol": "ELEC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ELF_ETH",
-      "Ignore": false,
-      "Symbol": "ELF"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ELF_USDT",
-      "Ignore": false,
-      "Symbol": "ELF"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "EOSDAC_ETH",
-      "Ignore": false,
-      "Symbol": "EOSDAC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "EOSDAC_USDT",
-      "Ignore": false,
-      "Symbol": "EOSDAC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "EOS_BTC",
-      "Ignore": false,
-      "Symbol": "EOS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "EOS_ETH",
-      "Ignore": false,
-      "Symbol": "EOS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "EOS_USDT",
-      "Ignore": false,
-      "Symbol": "EOS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ETC_BTC",
-      "Ignore": false,
-      "Symbol": "ETC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ETC_ETH",
-      "Ignore": false,
-      "Symbol": "ETC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ETC_USDT",
-      "Ignore": false,
-      "Symbol": "ETC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ETH_BTC",
-      "Ignore": false,
-      "Symbol": "ETH"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ETH_USDT",
-      "Ignore": false,
-      "Symbol": "ETH"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "FIL_USDT",
-      "Ignore": false,
-      "Symbol": "FIL"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "FTI_ETH",
-      "Ignore": false,
-      "Symbol": "FTI"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "FTI_USDT",
-      "Ignore": false,
-      "Symbol": "FTI"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "FUEL_ETH",
-      "Ignore": false,
-      "Symbol": "FUEL"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "FUEL_USDT",
-      "Ignore": false,
-      "Symbol": "FUEL"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "FUN_ETH",
-      "Ignore": false,
-      "Symbol": "FUN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "FUN_USDT",
-      "Ignore": false,
-      "Symbol": "FUN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GARD_ETH",
-      "Ignore": false,
-      "Symbol": "GARD"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GARD_USDT",
-      "Ignore": false,
-      "Symbol": "GARD"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GAS_BTC",
-      "Ignore": false,
-      "Symbol": "GAS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GAS_USDT",
-      "Ignore": false,
-      "Symbol": "GAS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GEL_USDT",
-      "Ignore": false,
-      "Symbol": "GEL"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GEL_ETH",
-      "Ignore": false,
-      "Symbol": "GEL"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GEM_ETH",
-      "Ignore": false,
-      "Symbol": "GEM"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GEM_USDT",
-      "Ignore": false,
-      "Symbol": "GEM"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GNT_ETH",
-      "Ignore": false,
-      "Symbol": "GNT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GNT_USDT",
-      "Ignore": false,
-      "Symbol": "GNT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GNX_ETH",
-      "Ignore": false,
-      "Symbol": "GNX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GNX_USDT",
-      "Ignore": false,
-      "Symbol": "GNX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GOD_BTC",
-      "Ignore": false,
-      "Symbol": "GOD"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GOD_USDT",
-      "Ignore": false,
-      "Symbol": "GOD"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GSE_ETH",
-      "Ignore": false,
-      "Symbol": "GSE"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GSE_USDT",
-      "Ignore": false,
-      "Symbol": "GSE"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GXS_BTC",
-      "Ignore": false,
-      "Symbol": "GXS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "GXS_USDT",
-      "Ignore": false,
-      "Symbol": "GXS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "HAV_ETH",
-      "Ignore": false,
-      "Symbol": "HAV"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "HAV_USDT",
-      "Ignore": false,
-      "Symbol": "HAV"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "HIT_ETH",
-      "Ignore": false,
-      "Symbol": "HIT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "HIT_USDT",
-      "Ignore": false,
-      "Symbol": "HIT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "HSC_ETH",
-      "Ignore": false,
-      "Symbol": "HSC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "HSC_USDT",
-      "Ignore": false,
-      "Symbol": "HSC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "HT_USDT",
-      "Ignore": false,
-      "Symbol": "HT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ICX_ETH",
-      "Ignore": false,
-      "Symbol": "ICX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ICX_USDT",
-      "Ignore": false,
-      "Symbol": "ICX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "IHT_ETH",
-      "Ignore": false,
-      "Symbol": "IHT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "IHT_USDT",
-      "Ignore": false,
-      "Symbol": "IHT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "INK_BTC",
-      "Ignore": false,
-      "Symbol": "INK"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "INK_ETH",
-      "Ignore": false,
-      "Symbol": "INK"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "INK_QTUM",
-      "Ignore": false,
-      "Symbol": "INK"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "INK_USDT",
-      "Ignore": false,
-      "Symbol": "INK"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "IOTA_BTC",
-      "Ignore": false,
-      "Symbol": "MIOTA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "IOTA_USDT",
-      "Ignore": false,
-      "Symbol": "MIOTA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "IOTX_ETH",
-      "Ignore": false,
-      "Symbol": "IOTX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "IOTX_USDT",
-      "Ignore": false,
-      "Symbol": "IOTX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "JNT_BTC",
-      "Ignore": false,
-      "Symbol": "JNT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "JNT_ETH",
-      "Ignore": false,
-      "Symbol": "JNT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "JNT_USDT",
-      "Ignore": false,
-      "Symbol": "JNT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "KICK_ETH",
-      "Ignore": false,
-      "Symbol": "KICK"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "KICK_USDT",
-      "Ignore": false,
-      "Symbol": "KICK"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LBA_ETH",
-      "Ignore": false,
-      "Symbol": "LBA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LBA_USDT",
-      "Ignore": false,
-      "Symbol": "LBA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LEDU_BTC",
-      "Ignore": false,
-      "Symbol": "LEDU"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LEDU_ETH",
-      "Ignore": false,
-      "Symbol": "LEDU"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LEMO_ETH",
-      "Ignore": false,
-      "Symbol": "LEMO"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LEMO_USDT",
-      "Ignore": false,
-      "Symbol": "LEMO"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LEND_ETH",
-      "Ignore": false,
-      "Symbol": "LEND"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LEND_USDT",
-      "Ignore": false,
-      "Symbol": "LEND"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LINK_ETH",
-      "Ignore": false,
-      "Symbol": "LINK"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LINK_USDT",
-      "Ignore": false,
-      "Symbol": "LINK"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LLT_ETH",
-      "Ignore": false,
-      "Symbol": "LLT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LLT_SNET",
-      "Ignore": false,
-      "Symbol": "LLT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LRC_BTC",
-      "Ignore": false,
-      "Symbol": "LRC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LRC_ETH",
-      "Ignore": false,
-      "Symbol": "LRC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LRC_USDT",
-      "Ignore": false,
-      "Symbol": "LRC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LRN_ETH",
-      "Ignore": false,
-      "Symbol": "LRN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LRN_USDT",
-      "Ignore": false,
-      "Symbol": "LRN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LSK_BTC",
-      "Ignore": false,
-      "Symbol": "LSK"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LSK_USDT",
-      "Ignore": false,
-      "Symbol": "LSK"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LTC_BTC",
-      "Ignore": false,
-      "Symbol": "LTC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LTC_USDT",
-      "Ignore": false,
-      "Symbol": "LTC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LUN_ETH",
-      "Ignore": false,
-      "Symbol": "LUN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LUN_USDT",
-      "Ignore": false,
-      "Symbol": "LUN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LYM_BTC",
-      "Ignore": false,
-      "Symbol": "LYM"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LYM_ETH",
-      "Ignore": false,
-      "Symbol": "LYM"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LYM_USDT",
-      "Ignore": false,
-      "Symbol": "LYM"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "LYX_USDT",
-      "Ignore": false,
-      "Symbol": "LYX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MANA_ETH",
-      "Ignore": false,
-      "Symbol": "MANA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MANA_USDT",
-      "Ignore": false,
-      "Symbol": "MANA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MAN_ETH",
-      "Ignore": false,
-      "Symbol": "MAN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MAN_USDT",
-      "Ignore": false,
-      "Symbol": "MAN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MATIC_USDT",
-      "Ignore": false,
-      "Symbol": "MATIC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MCO_ETH",
-      "Ignore": false,
-      "Symbol": "MCO"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MCO_USDT",
-      "Ignore": false,
-      "Symbol": "MCO"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MDA_ETH",
-      "Ignore": false,
-      "Symbol": "MDA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MDA_USDT",
-      "Ignore": false,
-      "Symbol": "MDA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MDS_ETH",
-      "Ignore": false,
-      "Symbol": "MDS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MDS_USDT",
-      "Ignore": false,
-      "Symbol": "MDS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MDT_BTC",
-      "Ignore": false,
-      "Symbol": "MDT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MDT_ETH",
-      "Ignore": false,
-      "Symbol": "MDT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MDT_USDT",
-      "Ignore": false,
-      "Symbol": "MDT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MEDX_ETH",
-      "Ignore": false,
-      "Symbol": "MEDX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MEDX_USDT",
-      "Ignore": false,
-      "Symbol": "MEDX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MED_ETH",
-      "Ignore": false,
-      "Symbol": "MED"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MED_QTUM",
-      "Ignore": false,
-      "Symbol": "MED"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MED_USDT",
-      "Ignore": false,
-      "Symbol": "MED"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MEETONE_ETH",
-      "Ignore": false,
-      "Symbol": "MEETONE"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MET_ETH",
-      "Ignore": false,
-      "Symbol": "MET"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MET_USDT",
-      "Ignore": false,
-      "Symbol": "MET"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MITH_ETH",
-      "Ignore": false,
-      "Symbol": "MITH"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MITH_USDT",
-      "Ignore": false,
-      "Symbol": "MITH"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MKR_ETH",
-      "Ignore": false,
-      "Symbol": "MKR"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MKR_USDT",
-      "Ignore": false,
-      "Symbol": "MKR"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MOBI_BTC",
-      "Ignore": false,
-      "Symbol": "MOBI"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MOBI_ETH",
-      "Ignore": false,
-      "Symbol": "MOBI"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MOBI_USDT",
-      "Ignore": false,
-      "Symbol": "MOBI"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MTN_ETH",
-      "Ignore": false,
-      "Symbol": "MTN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "MTN_USDT",
-      "Ignore": false,
-      "Symbol": "MTN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "NANO_BTC",
-      "Ignore": false,
-      "Symbol": "NANO"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "NANO_USDT",
-      "Ignore": false,
-      "Symbol": "NANO"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "NAS_BTC",
-      "Ignore": false,
-      "Symbol": "NAS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "NAS_ETH",
-      "Ignore": false,
-      "Symbol": "NAS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "NAS_USDT",
-      "Ignore": false,
-      "Symbol": "NAS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "NEO_BTC",
-      "Ignore": false,
-      "Symbol": "NEO"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "NEO_USDT",
-      "Ignore": false,
-      "Symbol": "NEO"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "NKN_ETH",
-      "Ignore": false,
-      "Symbol": "NKN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "NKN_USDT",
-      "Ignore": false,
-      "Symbol": "NKN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "OAX_ETH",
-      "Ignore": false,
-      "Symbol": "OAX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "OCN_BTC",
-      "Ignore": false,
-      "Symbol": "OCN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "OCN_ETH",
-      "Ignore": false,
-      "Symbol": "OCN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "OCN_USDT",
-      "Ignore": false,
-      "Symbol": "OCN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "OMG_BTC",
-      "Ignore": false,
-      "Symbol": "OMG"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "OMG_ETH",
-      "Ignore": false,
-      "Symbol": "OMG"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "OMG_USDT",
-      "Ignore": false,
-      "Symbol": "OMG"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ONDO_USDT",
-      "Ignore": false,
-      "Symbol": "ONDO"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ONT_ETH",
-      "Ignore": false,
-      "Symbol": "ONT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ONT_USDT",
-      "Ignore": false,
-      "Symbol": "ONT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "OPEN_ETH",
-      "Ignore": false,
-      "Symbol": "OPEN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "OPEN_USDT",
-      "Ignore": false,
-      "Symbol": "OPEN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ORDI_USDT",
-      "Ignore": false,
-      "Symbol": "ORDI"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "OST_ETH",
-      "Ignore": false,
-      "Symbol": "OST"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "OST_USDT",
-      "Ignore": false,
-      "Symbol": "OST"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "PAX_USDT",
-      "Ignore": false,
-      "Symbol": "PAX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "PAY_BTC",
-      "Ignore": false,
-      "Symbol": "PAY"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "PAY_ETH",
-      "Ignore": false,
-      "Symbol": "PAY"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "PAY_USDT",
-      "Ignore": false,
-      "Symbol": "PAY"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "POWR_BTC",
-      "Ignore": false,
-      "Symbol": "POWR"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "POWR_ETH",
-      "Ignore": false,
-      "Symbol": "POWR"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "POWR_USDT",
-      "Ignore": false,
-      "Symbol": "POWR"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "PST_ETH",
-      "Ignore": false,
-      "Symbol": "PST"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "PST_USDT",
-      "Ignore": false,
-      "Symbol": "PST"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "QASH_BTC",
-      "Ignore": false,
-      "Symbol": "QASH"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "QASH_ETH",
-      "Ignore": false,
-      "Symbol": "QASH"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "QASH_USDT",
-      "Ignore": false,
-      "Symbol": "QASH"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "QKC_ETH",
-      "Ignore": false,
-      "Symbol": "QKC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "QKC_USDT",
-      "Ignore": false,
-      "Symbol": "QKC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "QLC_BTC",
-      "Ignore": false,
-      "Symbol": "QLC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "QLC_ETH",
-      "Ignore": false,
-      "Symbol": "QLC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "QLC_USDT",
-      "Ignore": false,
-      "Symbol": "QLC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "QSP_ETH",
-      "Ignore": false,
-      "Symbol": "QSP"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "QSP_USDT",
-      "Ignore": false,
-      "Symbol": "QSP"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "QTUM_BTC",
-      "Ignore": false,
-      "Symbol": "QTUM"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "QTUM_ETH",
-      "Ignore": false,
-      "Symbol": "QTUM"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "QTUM_USDT",
-      "Ignore": false,
-      "Symbol": "QTUM"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "RATING_ETH",
-      "Ignore": false,
-      "Symbol": "RATING"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "RATING_USDT",
-      "Ignore": false,
-      "Symbol": "RATING"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "RDN_ETH",
-      "Ignore": false,
-      "Symbol": "RDN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "RDN_USDT",
-      "Ignore": false,
-      "Symbol": "RDN"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "REM_ETH",
-      "Ignore": false,
-      "Symbol": "REM"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "REM_USDT",
-      "Ignore": false,
-      "Symbol": "REM"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "REP_ETH",
-      "Ignore": false,
-      "Symbol": "REP"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "REQ_ETH",
-      "Ignore": false,
-      "Symbol": "REQ"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "REQ_USDT",
-      "Ignore": false,
-      "Symbol": "REQ"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "RFR_ETH",
-      "Ignore": false,
-      "Symbol": "RFR"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "RFR_USDT",
-      "Ignore": false,
-      "Symbol": "RFR"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "RLC_ETH",
-      "Ignore": false,
-      "Symbol": "RLC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "RLC_USDT",
-      "Ignore": false,
-      "Symbol": "RLC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "RUFF_BTC",
-      "Ignore": false,
-      "Symbol": "RUFF"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "RUFF_ETH",
-      "Ignore": false,
-      "Symbol": "RUFF"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "RUFF_USDT",
-      "Ignore": false,
-      "Symbol": "RUFF"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SALT_ETH",
-      "Ignore": false,
-      "Symbol": "SALT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SATS_USDT",
-      "Ignore": false,
-      "Symbol": "SATS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SALT_USDT",
-      "Ignore": false,
-      "Symbol": "SALT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SBTC_BTC",
-      "Ignore": false,
-      "Symbol": "SBTC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SBTC_USDT",
-      "Ignore": false,
-      "Symbol": "SBTC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SEI_USDT",
-      "Ignore": false,
-      "Symbol": "SEI"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SENC_ETH",
-      "Ignore": false,
-      "Symbol": "SENC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SENC_USDT",
-      "Ignore": false,
-      "Symbol": "SENC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SKM_ETH",
-      "Ignore": false,
-      "Symbol": "SKM"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SKM_USDT",
-      "Ignore": false,
-      "Symbol": "SKM"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SMT_ETH",
-      "Ignore": false,
-      "Symbol": "SMT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SMT_USDT",
-      "Ignore": false,
-      "Symbol": "SMT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SNET_ETH",
-      "Ignore": false,
-      "Symbol": "SNET"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SNET_USDT",
-      "Ignore": false,
-      "Symbol": "SNET"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SNT_BTC",
-      "Ignore": false,
-      "Symbol": "SNT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SNT_ETH",
-      "Ignore": false,
-      "Symbol": "SNT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SNT_USDT",
-      "Ignore": false,
-      "Symbol": "SNT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SOP_ETH",
-      "Ignore": false,
-      "Symbol": "SOP"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SOP_USDT",
-      "Ignore": false,
-      "Symbol": "SOP"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SOUL_ETH",
-      "Ignore": false,
-      "Symbol": "SOUL"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SOUL_USDT",
-      "Ignore": false,
-      "Symbol": "SOUL"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "STORJ_BTC",
-      "Ignore": false,
-      "Symbol": "STORJ"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "STORJ_ETH",
-      "Ignore": false,
-      "Symbol": "STORJ"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "STORJ_USDT",
-      "Ignore": false,
-      "Symbol": "STORJ"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "STX_ETH",
-      "Ignore": false,
-      "Symbol": "STX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "STX_USDT",
-      "Ignore": false,
-      "Symbol": "STX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SWTH_ETH",
-      "Ignore": false,
-      "Symbol": "SWTH"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "SWTH_USDT",
-      "Ignore": false,
-      "Symbol": "SWTH"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "TAO_USDT",
-      "Ignore": false,
-      "Symbol": "TAO"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "TCT_ETH",
-      "Ignore": false,
-      "Symbol": "TCT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "TCT_USDT",
-      "Ignore": false,
-      "Symbol": "TCT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "THETA_ETH",
-      "Ignore": false,
-      "Symbol": "THETA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "THETA_USDT",
-      "Ignore": false,
-      "Symbol": "THETA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "TIO_ETH",
-      "Ignore": false,
-      "Symbol": "TIO"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "TIO_USDT",
-      "Ignore": false,
-      "Symbol": "TIO"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "TIPS_ETH",
-      "Ignore": false,
-      "Symbol": "TIPS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "TNC_BTC",
-      "Ignore": false,
-      "Symbol": "TNC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "TNC_ETH",
-      "Ignore": false,
-      "Symbol": "TNC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "TNC_USDT",
-      "Ignore": false,
-      "Symbol": "TNC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "TNT_ETH",
-      "Ignore": false,
-      "Symbol": "TNT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "TNT_USDT",
-      "Ignore": false,
-      "Symbol": "TNT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "TOMO_ETH",
-      "Ignore": false,
-      "Symbol": "TOMO"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "TOMO_USDT",
-      "Ignore": false,
-      "Symbol": "TOMO"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "TON_USDT",
-      "Ignore": false,
-      "Symbol": "TON"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "TRX_ETH",
-      "Ignore": false,
-      "Symbol": "TRX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "TRX_USDT",
-      "Ignore": false,
-      "Symbol": "TRX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "TSL_QTUM",
-      "Ignore": false,
-      "Symbol": "TSL"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "TSL_USDT",
-      "Ignore": false,
-      "Symbol": "TSL"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "TUSD_USDT",
-      "Ignore": false,
-      "Symbol": "TUSD"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "UNI_USDT",
-      "Ignore": false,
-      "Symbol": "UNI"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "USDC_USDT",
-      "Ignore": false,
-      "Symbol": "USDC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "USDT_USD",
-      "Ignore": false,
-      "Symbol": "USDT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "VLX_USDT",
-      "Ignore": false,
-      "Symbol": "VLX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "VELA_USDT",
-      "Ignore": false,
-      "Symbol": "VELA"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "WAVES_BTC",
-      "Ignore": false,
-      "Symbol": "WAVES"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "WAVES_USDT",
-      "Ignore": false,
-      "Symbol": "WAVES"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "WELL_USDT",
-      "Ignore": false,
-      "Symbol": "WELL"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "WIF_USDT",
-      "Ignore": false,
-      "Symbol": "WIF"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "WINGS_ETH",
-      "Ignore": false,
-      "Symbol": "WINGS"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "XLM_BTC",
-      "Ignore": false,
-      "Symbol": "XLM"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "XLM_ETH",
-      "Ignore": false,
-      "Symbol": "XLM"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "XLM_USDT",
-      "Ignore": false,
-      "Symbol": "XLM"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "XMC_BTC",
-      "Ignore": false,
-      "Symbol": "XMC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "XMC_USDT",
-      "Ignore": false,
-      "Symbol": "XMC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "XMR_BTC",
-      "Ignore": false,
-      "Symbol": "XMR"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "XMR_USDT",
-      "Ignore": false,
-      "Symbol": "XMR"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "XRP_BTC",
-      "Ignore": false,
-      "Symbol": "XRP"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "XRP_USDT",
-      "Ignore": false,
-      "Symbol": "XRP"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "XTZ_BTC",
-      "Ignore": false,
-      "Symbol": "XTZ"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "XTZ_ETH",
-      "Ignore": false,
-      "Symbol": "XTZ"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "XTZ_USDT",
-      "Ignore": false,
-      "Symbol": "XTZ"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "XVG_BTC",
-      "Ignore": false,
-      "Symbol": "XVG"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "XVG_USDT",
-      "Ignore": false,
-      "Symbol": "XVG"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ZEC_BTC",
-      "Ignore": false,
-      "Symbol": "ZEC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ZEC_USDT",
-      "Ignore": false,
-      "Symbol": "ZEC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ZIL_ETH",
-      "Ignore": false,
-      "Symbol": "ZIL"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ZIL_USDT",
-      "Ignore": false,
-      "Symbol": "ZIL"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ZK_USDT",
-      "Ignore": false,
-      "Symbol": "ZK"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ZPT_BTC",
-      "Ignore": false,
-      "Symbol": "ZPT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ZPT_ETH",
-      "Ignore": false,
-      "Symbol": "ZPT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ZPT_USDT",
-      "Ignore": false,
-      "Symbol": "ZPT"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ZRX_BTC",
-      "Ignore": false,
-      "Symbol": "ZRX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ZRX_ETH",
-      "Ignore": false,
-      "Symbol": "ZRX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ZRX_USDT",
-      "Ignore": false,
-      "Symbol": "ZRX"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ZSC_ETH",
-      "Ignore": false,
-      "Symbol": "ZSC"
-    },
-    {
-      "Exchange": "GateIO",
-      "ForeignName": "ZSC_USDT",
-      "Ignore": false,
-      "Symbol": "ZSC"
-    }
-  ]
+    "Coins": [
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ABT_ETH",
+            "Ignore": false,
+            "Symbol": "ABT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ABT_USDT",
+            "Ignore": false,
+            "Symbol": "ABT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ACA_USDT",
+            "Ignore": false,
+            "Symbol": "ACA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ADA_BTC",
+            "Ignore": false,
+            "Symbol": "ADA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ADA_USDT",
+            "Ignore": false,
+            "Symbol": "ADA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ADD_ETH",
+            "Ignore": false,
+            "Symbol": "ADD"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "AE_BTC",
+            "Ignore": false,
+            "Symbol": "AE"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "AE_ETH",
+            "Ignore": false,
+            "Symbol": "AE"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "AE_USDT",
+            "Ignore": false,
+            "Symbol": "AE"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "AKRO_USDT",
+            "Ignore": false,
+            "Symbol": "AKRO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "AKT_USDT",
+            "Ignore": false,
+            "Symbol": "AKT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ALPH_USDT",
+            "Ignore": false,
+            "Symbol": "ALPH"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ANGLE_USDT",
+            "Ignore": false,
+            "Symbol": "ANGLE"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ANT_USDT",
+            "Ignore": false,
+            "Symbol": "ANT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "AR_USDT",
+            "Ignore": false,
+            "Symbol": "AR"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ARB_USDT",
+            "Ignore": false,
+            "Symbol": "ARB"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ARN_ETH",
+            "Ignore": false,
+            "Symbol": "ARN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ASTR_USDT",
+            "Ignore": false,
+            "Symbol": "ASTR"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ASTR_BTC",
+            "Ignore": false,
+            "Symbol": "ASTR"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ASTR_ETH",
+            "Ignore": false,
+            "Symbol": "ASTR"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ATOM_USDT",
+            "Ignore": false,
+            "Symbol": "ATOM"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "AURORA_USDT",
+            "Ignore": false,
+            "Symbol": "AURORA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "AVAX_USDT",
+            "Ignore": false,
+            "Symbol": "AVAX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "AZERO_USDT",
+            "Ignore": false,
+            "Symbol": "AZERO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BAT_BTC",
+            "Ignore": false,
+            "Symbol": "BAT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BAT_ETH",
+            "Ignore": false,
+            "Symbol": "BAT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BAT_USDT",
+            "Ignore": false,
+            "Symbol": "BAT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BCD_BTC",
+            "Ignore": false,
+            "Symbol": "BCD"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BCD_USDT",
+            "Ignore": false,
+            "Symbol": "BCD"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BCDN_ETH",
+            "Ignore": false,
+            "Symbol": "BCDN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BCDN_USDT",
+            "Ignore": false,
+            "Symbol": "BCDN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BCH_BTC",
+            "Ignore": false,
+            "Symbol": "BCH"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BCH_USDT",
+            "Ignore": false,
+            "Symbol": "BCH"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BCN_BTC",
+            "Ignore": false,
+            "Symbol": "BCN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BCN_USDT",
+            "Ignore": false,
+            "Symbol": "BCN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BCX_BTC",
+            "Ignore": false,
+            "Symbol": "BCX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BCX_USDT",
+            "Ignore": false,
+            "Symbol": "BCX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BEPRO_USDT",
+            "Ignore": false,
+            "Symbol": "BEPRO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BFC_USDT",
+            "Ignore": false,
+            "Symbol": "BFC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BFT_ETH",
+            "Ignore": false,
+            "Symbol": "BFT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BFT_USDT",
+            "Ignore": false,
+            "Symbol": "BFT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BIFI_BTC",
+            "Ignore": false,
+            "Symbol": "BIFI"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BIFI_USDT",
+            "Ignore": false,
+            "Symbol": "BIFI"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BNB_USDT",
+            "Ignore": false,
+            "Symbol": "BNB"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BNC_USDT",
+            "Ignore": false,
+            "Symbol": "BNC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BNT_ETH",
+            "Ignore": false,
+            "Symbol": "BNT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BNTY_ETH",
+            "Ignore": false,
+            "Symbol": "BNTY"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BNTY_USDT",
+            "Ignore": false,
+            "Symbol": "BNTY"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BOBA_USDT",
+            "Ignore": false,
+            "Symbol": "BOBA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BOE_ETH",
+            "Ignore": false,
+            "Symbol": "BOE"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BOE_USDT",
+            "Ignore": false,
+            "Symbol": "BOE"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BONK_USDT",
+            "Ignore": false,
+            "Symbol": "BONK"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BOSON_USDT",
+            "Ignore": false,
+            "Symbol": "BOSON"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BOT_ETH",
+            "Ignore": false,
+            "Symbol": "BOT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BOT_QTUM",
+            "Ignore": false,
+            "Symbol": "BOT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BOT_USDT",
+            "Ignore": false,
+            "Symbol": "BOT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BRETT_USDT",
+            "Ignore": false,
+            "Symbol": "BRETT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BTC_USDT",
+            "Ignore": false,
+            "Symbol": "BTC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BTF_BTC",
+            "Ignore": false,
+            "Symbol": "BTF"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BTF_USDT",
+            "Ignore": false,
+            "Symbol": "BTF"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BTG_BTC",
+            "Ignore": false,
+            "Symbol": "BTG"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BTG_USDT",
+            "Ignore": false,
+            "Symbol": "BTG"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BTO_ETH",
+            "Ignore": false,
+            "Symbol": "BTO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BTO_USDT",
+            "Ignore": false,
+            "Symbol": "BTO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BTS_BTC",
+            "Ignore": false,
+            "Symbol": "BTS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BTS_USDT",
+            "Ignore": false,
+            "Symbol": "BTS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BU_BTC",
+            "Ignore": false,
+            "Symbol": "BU"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BU_ETH",
+            "Ignore": false,
+            "Symbol": "BU"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BU_USDT",
+            "Ignore": false,
+            "Symbol": "BU"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BXC_ETH",
+            "Ignore": false,
+            "Symbol": "BXC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BXC_USDT",
+            "Ignore": false,
+            "Symbol": "BXC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "CDT_ETH",
+            "Ignore": false,
+            "Symbol": "CDT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "CDT_USDT",
+            "Ignore": false,
+            "Symbol": "CDT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "CELO_USDT",
+            "Ignore": false,
+            "Symbol": "CELO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "CFG_USDT",
+            "Ignore": false,
+            "Symbol": "CFG"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "CKB_USDT",
+            "Ignore": false,
+            "Symbol": "CKB"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "COFI_ETH",
+            "Ignore": false,
+            "Symbol": "COFI"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "COFI_USDT",
+            "Ignore": false,
+            "Symbol": "COFI"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "CS_ETH",
+            "Ignore": false,
+            "Symbol": "CS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "CS_USDT",
+            "Ignore": false,
+            "Symbol": "CS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "CUSD_USDT",
+            "Ignore": false,
+            "Symbol": "CUSD"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "CUSD_ETH",
+            "Ignore": false,
+            "Symbol": "CUSD"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "CVC_ETH",
+            "Ignore": false,
+            "Symbol": "CVC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "CVC_USDT",
+            "Ignore": false,
+            "Symbol": "CVC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DADI_ETH",
+            "Ignore": false,
+            "Symbol": "DADI"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DADI_USDT",
+            "Ignore": false,
+            "Symbol": "DADI"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DAFI_USDT",
+            "Ignore": false,
+            "Symbol": "DAFI"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DAI_USDT",
+            "Ignore": false,
+            "Symbol": "DAI"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DASH_BTC",
+            "Ignore": false,
+            "Symbol": "DASH"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DASH_USDT",
+            "Ignore": false,
+            "Symbol": "DASH"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DATA_ETH",
+            "Ignore": false,
+            "Symbol": "DATA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DATA_USDT",
+            "Ignore": false,
+            "Symbol": "DATA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DBC_BTC",
+            "Ignore": false,
+            "Symbol": "DBC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DBC_ETH",
+            "Ignore": false,
+            "Symbol": "DBC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DBC_USDT",
+            "Ignore": false,
+            "Symbol": "DBC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DCR_BTC",
+            "Ignore": false,
+            "Symbol": "DCR"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DCR_USDT",
+            "Ignore": false,
+            "Symbol": "DCR"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DDD_BTC",
+            "Ignore": false,
+            "Symbol": "DDD"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DDD_ETH",
+            "Ignore": false,
+            "Symbol": "DDD"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DDD_USDT",
+            "Ignore": false,
+            "Symbol": "DDD"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DFYN_USDT",
+            "Ignore": false,
+            "Symbol": "DFYN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DGD_ETH",
+            "Ignore": false,
+            "Symbol": "DGD"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DGD_USDT",
+            "Ignore": false,
+            "Symbol": "DGD"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DNT_ETH",
+            "Ignore": false,
+            "Symbol": "DNT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DOCK_ETH",
+            "Ignore": false,
+            "Symbol": "DOCK"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DOCK_USDT",
+            "Ignore": false,
+            "Symbol": "DOCK"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DOGE_BTC",
+            "Ignore": false,
+            "Symbol": "DOGE"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DOGE_USDT",
+            "Ignore": false,
+            "Symbol": "DOGE"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DOT_USDT",
+            "Ignore": false,
+            "Symbol": "DOT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DOWS_USDT",
+            "Ignore": false,
+            "Symbol": "DOWS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DOWS_ETH",
+            "Ignore": false,
+            "Symbol": "DOWS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DPY_ETH",
+            "Ignore": false,
+            "Symbol": "DPY"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DPY_USDT",
+            "Ignore": false,
+            "Symbol": "DPY"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DRGN_ETH",
+            "Ignore": false,
+            "Symbol": "DRGN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DRGN_USDT",
+            "Ignore": false,
+            "Symbol": "DRGN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DUST_USDT",
+            "Ignore": false,
+            "Symbol": "DUST"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DX_ETH",
+            "Ignore": false,
+            "Symbol": "DX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DX_USDT",
+            "Ignore": false,
+            "Symbol": "DX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "EDU_USDT",
+            "Ignore": false,
+            "Symbol": "EDU"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ELEC_ETH",
+            "Ignore": false,
+            "Symbol": "ELEC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ELEC_USDT",
+            "Ignore": false,
+            "Symbol": "ELEC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ELF_ETH",
+            "Ignore": false,
+            "Symbol": "ELF"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ELF_USDT",
+            "Ignore": false,
+            "Symbol": "ELF"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ENA_USDT",
+            "Ignore": false,
+            "Symbol": "ENA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "EOS_BTC",
+            "Ignore": false,
+            "Symbol": "EOS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "EOS_ETH",
+            "Ignore": false,
+            "Symbol": "EOS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "EOS_USDT",
+            "Ignore": false,
+            "Symbol": "EOS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "EOSDAC_ETH",
+            "Ignore": false,
+            "Symbol": "EOSDAC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "EOSDAC_USDT",
+            "Ignore": false,
+            "Symbol": "EOSDAC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ETC_BTC",
+            "Ignore": false,
+            "Symbol": "ETC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ETC_ETH",
+            "Ignore": false,
+            "Symbol": "ETC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ETC_USDT",
+            "Ignore": false,
+            "Symbol": "ETC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ETH_BTC",
+            "Ignore": false,
+            "Symbol": "ETH"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ETH_USDT",
+            "Ignore": false,
+            "Symbol": "ETH"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ETHFI_USDT",
+            "Ignore": false,
+            "Symbol": "ETHFI"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "FDUSD_USDT",
+            "Ignore": false,
+            "Symbol": "FDUSD"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "FIL_USDT",
+            "Ignore": false,
+            "Symbol": "FIL"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "FLOW_USDT",
+            "Ignore": false,
+            "Symbol": "FLOW"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "FTI_ETH",
+            "Ignore": false,
+            "Symbol": "FTI"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "FTI_USDT",
+            "Ignore": false,
+            "Symbol": "FTI"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "FTM_USDT",
+            "Ignore": false,
+            "Symbol": "FTM"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "FUEL_ETH",
+            "Ignore": false,
+            "Symbol": "FUEL"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "FUEL_USDT",
+            "Ignore": false,
+            "Symbol": "FUEL"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "FUN_ETH",
+            "Ignore": false,
+            "Symbol": "FUN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "FUN_USDT",
+            "Ignore": false,
+            "Symbol": "FUN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "FUSE_USDT",
+            "Ignore": false,
+            "Symbol": "FUSE"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GARD_ETH",
+            "Ignore": false,
+            "Symbol": "GARD"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GARD_USDT",
+            "Ignore": false,
+            "Symbol": "GARD"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GAS_BTC",
+            "Ignore": false,
+            "Symbol": "GAS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GAS_USDT",
+            "Ignore": false,
+            "Symbol": "GAS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GEL_USDT",
+            "Ignore": false,
+            "Symbol": "GEL"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GEL_ETH",
+            "Ignore": false,
+            "Symbol": "GEL"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GEM_ETH",
+            "Ignore": false,
+            "Symbol": "GEM"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GEM_USDT",
+            "Ignore": false,
+            "Symbol": "GEM"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GHST_USDT",
+            "Ignore": false,
+            "Symbol": "GHST"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GLM_USDT",
+            "Ignore": false,
+            "Symbol": "GLM"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GLMR_USDT",
+            "Ignore": false,
+            "Symbol": "GLMR"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GMX_USDT",
+            "Ignore": false,
+            "Symbol": "GMX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GNS_USDT",
+            "Ignore": false,
+            "Symbol": "GNS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GNT_ETH",
+            "Ignore": false,
+            "Symbol": "GNT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GNT_USDT",
+            "Ignore": false,
+            "Symbol": "GNT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GNX_ETH",
+            "Ignore": false,
+            "Symbol": "GNX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GNX_USDT",
+            "Ignore": false,
+            "Symbol": "GNX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GOD_BTC",
+            "Ignore": false,
+            "Symbol": "GOD"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GOD_USDT",
+            "Ignore": false,
+            "Symbol": "GOD"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GRAIL_USDT",
+            "Ignore": false,
+            "Symbol": "GRAIL"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GSE_ETH",
+            "Ignore": false,
+            "Symbol": "GSE"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GSE_USDT",
+            "Ignore": false,
+            "Symbol": "GSE"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GXS_BTC",
+            "Ignore": false,
+            "Symbol": "GXS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "GXS_USDT",
+            "Ignore": false,
+            "Symbol": "GXS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "HAV_ETH",
+            "Ignore": false,
+            "Symbol": "HAV"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "HAV_USDT",
+            "Ignore": false,
+            "Symbol": "HAV"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "HEGIC_USDT",
+            "Ignore": false,
+            "Symbol": "HEGIC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "HIT_ETH",
+            "Ignore": false,
+            "Symbol": "HIT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "HIT_USDT",
+            "Ignore": false,
+            "Symbol": "HIT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "HSC_ETH",
+            "Ignore": false,
+            "Symbol": "HSC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "HSC_USDT",
+            "Ignore": false,
+            "Symbol": "HSC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "HT_USDT",
+            "Ignore": false,
+            "Symbol": "HT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ICP_USDT",
+            "Ignore": false,
+            "Symbol": "ICP"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ICX_ETH",
+            "Ignore": false,
+            "Symbol": "ICX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ICX_USDT",
+            "Ignore": false,
+            "Symbol": "ICX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "IHT_ETH",
+            "Ignore": false,
+            "Symbol": "IHT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "IHT_USDT",
+            "Ignore": false,
+            "Symbol": "IHT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "INJ_USDT",
+            "Ignore": false,
+            "Symbol": "INJ"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "INK_BTC",
+            "Ignore": false,
+            "Symbol": "INK"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "INK_ETH",
+            "Ignore": false,
+            "Symbol": "INK"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "INK_QTUM",
+            "Ignore": false,
+            "Symbol": "INK"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "INK_USDT",
+            "Ignore": false,
+            "Symbol": "INK"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "INTR_USDT",
+            "Ignore": false,
+            "Symbol": "INTR"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "IOTX_ETH",
+            "Ignore": false,
+            "Symbol": "IOTX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "IOTX_USDT",
+            "Ignore": false,
+            "Symbol": "IOTX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "JNT_BTC",
+            "Ignore": false,
+            "Symbol": "JNT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "JNT_ETH",
+            "Ignore": false,
+            "Symbol": "JNT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "JNT_USDT",
+            "Ignore": false,
+            "Symbol": "JNT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "KAVA_USDT",
+            "Ignore": false,
+            "Symbol": "KAVA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "KDA_USDT",
+            "Ignore": false,
+            "Symbol": "KDA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "KICK_ETH",
+            "Ignore": false,
+            "Symbol": "KICK"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "KICK_USDT",
+            "Ignore": false,
+            "Symbol": "KICK"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "KILT_USDT",
+            "Ignore": false,
+            "Symbol": "KILT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "KINT_USDT",
+            "Ignore": false,
+            "Symbol": "KINT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "KSM_USDT",
+            "Ignore": false,
+            "Symbol": "KSM"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LBA_ETH",
+            "Ignore": false,
+            "Symbol": "LBA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LBA_USDT",
+            "Ignore": false,
+            "Symbol": "LBA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LEDU_BTC",
+            "Ignore": false,
+            "Symbol": "LEDU"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LEDU_ETH",
+            "Ignore": false,
+            "Symbol": "LEDU"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LEMO_ETH",
+            "Ignore": false,
+            "Symbol": "LEMO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LEMO_USDT",
+            "Ignore": false,
+            "Symbol": "LEMO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LEND_ETH",
+            "Ignore": false,
+            "Symbol": "LEND"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LEND_USDT",
+            "Ignore": false,
+            "Symbol": "LEND"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LINK_ETH",
+            "Ignore": false,
+            "Symbol": "LINK"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LINK_USDT",
+            "Ignore": false,
+            "Symbol": "LINK"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LKR_USDT",
+            "Ignore": false,
+            "Symbol": "LKR"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LLT_ETH",
+            "Ignore": false,
+            "Symbol": "LLT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LLT_SNET",
+            "Ignore": false,
+            "Symbol": "LLT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LMR_USDT",
+            "Ignore": false,
+            "Symbol": "LMR"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LRC_BTC",
+            "Ignore": false,
+            "Symbol": "LRC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LRC_ETH",
+            "Ignore": false,
+            "Symbol": "LRC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LRC_USDT",
+            "Ignore": false,
+            "Symbol": "LRC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LRN_ETH",
+            "Ignore": false,
+            "Symbol": "LRN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LRN_USDT",
+            "Ignore": false,
+            "Symbol": "LRN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LSK_BTC",
+            "Ignore": false,
+            "Symbol": "LSK"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LSK_USDT",
+            "Ignore": false,
+            "Symbol": "LSK"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LTC_BTC",
+            "Ignore": false,
+            "Symbol": "LTC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LTC_USDT",
+            "Ignore": false,
+            "Symbol": "LTC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LUN_ETH",
+            "Ignore": false,
+            "Symbol": "LUN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LUN_USDT",
+            "Ignore": false,
+            "Symbol": "LUN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LYM_BTC",
+            "Ignore": false,
+            "Symbol": "LYM"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LYM_ETH",
+            "Ignore": false,
+            "Symbol": "LYM"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LYM_USDT",
+            "Ignore": false,
+            "Symbol": "LYM"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "LYX_USDT",
+            "Ignore": false,
+            "Symbol": "LYX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MAN_ETH",
+            "Ignore": false,
+            "Symbol": "MAN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MAN_USDT",
+            "Ignore": false,
+            "Symbol": "MAN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MANA_USDT",
+            "Ignore": false,
+            "Symbol": "MANA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MANA_ETH",
+            "Ignore": false,
+            "Symbol": "MANA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MANA_USDT",
+            "Ignore": false,
+            "Symbol": "MANA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MATIC_USDT",
+            "Ignore": false,
+            "Symbol": "MATIC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MCO_ETH",
+            "Ignore": false,
+            "Symbol": "MCO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MCO_USDT",
+            "Ignore": false,
+            "Symbol": "MCO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MCRT_USDT",
+            "Ignore": false,
+            "Symbol": "MCRT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MDA_ETH",
+            "Ignore": false,
+            "Symbol": "MDA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MDA_USDT",
+            "Ignore": false,
+            "Symbol": "MDA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MDS_ETH",
+            "Ignore": false,
+            "Symbol": "MDS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MDS_USDT",
+            "Ignore": false,
+            "Symbol": "MDS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MDT_BTC",
+            "Ignore": false,
+            "Symbol": "MDT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MDT_ETH",
+            "Ignore": false,
+            "Symbol": "MDT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MDT_USDT",
+            "Ignore": false,
+            "Symbol": "MDT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MED_ETH",
+            "Ignore": false,
+            "Symbol": "MED"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MED_QTUM",
+            "Ignore": false,
+            "Symbol": "MED"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MED_USDT",
+            "Ignore": false,
+            "Symbol": "MED"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MEDX_ETH",
+            "Ignore": false,
+            "Symbol": "MEDX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MEDX_USDT",
+            "Ignore": false,
+            "Symbol": "MEDX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MEETONE_ETH",
+            "Ignore": false,
+            "Symbol": "MEETONE"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MET_ETH",
+            "Ignore": false,
+            "Symbol": "MET"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MET_USDT",
+            "Ignore": false,
+            "Symbol": "MET"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "METIS_USDT",
+            "Ignore": false,
+            "Symbol": "METIS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "IOTA_BTC",
+            "Ignore": false,
+            "Symbol": "MIOTA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "IOTA_USDT",
+            "Ignore": false,
+            "Symbol": "MIOTA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MITH_ETH",
+            "Ignore": false,
+            "Symbol": "MITH"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MITH_USDT",
+            "Ignore": false,
+            "Symbol": "MITH"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MKR_ETH",
+            "Ignore": false,
+            "Symbol": "MKR"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MKR_USDT",
+            "Ignore": false,
+            "Symbol": "MKR"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MOBI_BTC",
+            "Ignore": false,
+            "Symbol": "MOBI"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MOBI_ETH",
+            "Ignore": false,
+            "Symbol": "MOBI"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MOBI_USDT",
+            "Ignore": false,
+            "Symbol": "MOBI"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MOG_USDT",
+            "Ignore": false,
+            "Symbol": "MOG"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MOVR_USDT",
+            "Ignore": false,
+            "Symbol": "MOVR"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MSOL_USDT",
+            "Ignore": false,
+            "Symbol": "MSOL"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MSOL_ETH",
+            "Ignore": false,
+            "Symbol": "MSOL"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MTN_ETH",
+            "Ignore": false,
+            "Symbol": "MTN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "MTN_USDT",
+            "Ignore": false,
+            "Symbol": "MTN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "NANO_BTC",
+            "Ignore": false,
+            "Symbol": "NANO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "NANO_USDT",
+            "Ignore": false,
+            "Symbol": "NANO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "NAS_BTC",
+            "Ignore": false,
+            "Symbol": "NAS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "NAS_ETH",
+            "Ignore": false,
+            "Symbol": "NAS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "NAS_USDT",
+            "Ignore": false,
+            "Symbol": "NAS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "NEAR_ETH",
+            "Ignore": false,
+            "Symbol": "NEAR"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "NEAR_USDT",
+            "Ignore": false,
+            "Symbol": "NEAR"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "NEO_BTC",
+            "Ignore": false,
+            "Symbol": "NEO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "NEO_USDT",
+            "Ignore": false,
+            "Symbol": "NEO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "NFTY_USDT",
+            "Ignore": false,
+            "Symbol": "NFTY"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "NKN_ETH",
+            "Ignore": false,
+            "Symbol": "NKN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "NKN_USDT",
+            "Ignore": false,
+            "Symbol": "NKN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "OAX_ETH",
+            "Ignore": false,
+            "Symbol": "OAX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "OCEAN_USDT",
+            "Ignore": false,
+            "Symbol": "OCEAN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "OCN_BTC",
+            "Ignore": false,
+            "Symbol": "OCN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "OCN_ETH",
+            "Ignore": false,
+            "Symbol": "OCN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "OCN_USDT",
+            "Ignore": false,
+            "Symbol": "OCN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "OMG_BTC",
+            "Ignore": false,
+            "Symbol": "OMG"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "OMG_ETH",
+            "Ignore": false,
+            "Symbol": "OMG"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "OMG_USDT",
+            "Ignore": false,
+            "Symbol": "OMG"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ONDO_USDT",
+            "Ignore": false,
+            "Symbol": "ONDO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ONT_ETH",
+            "Ignore": false,
+            "Symbol": "ONT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ONT_USDT",
+            "Ignore": false,
+            "Symbol": "ONT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "OP_USDT",
+            "Ignore": false,
+            "Symbol": "OP"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "OPEN_ETH",
+            "Ignore": false,
+            "Symbol": "OPEN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "OPEN_USDT",
+            "Ignore": false,
+            "Symbol": "OPEN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ORDI_USDT",
+            "Ignore": false,
+            "Symbol": "ORDI"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "OST_ETH",
+            "Ignore": false,
+            "Symbol": "OST"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "OST_USDT",
+            "Ignore": false,
+            "Symbol": "OST"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "OUSD_USDT",
+            "Ignore": false,
+            "Symbol": "OUSD"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "PAX_USDT",
+            "Ignore": false,
+            "Symbol": "PAX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "PAY_BTC",
+            "Ignore": false,
+            "Symbol": "PAY"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "PAY_ETH",
+            "Ignore": false,
+            "Symbol": "PAY"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "PAY_USDT",
+            "Ignore": false,
+            "Symbol": "PAY"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "PENDLE_USDT",
+            "Ignore": false,
+            "Symbol": "PENDLE"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "PEPE_USDT",
+            "Ignore": false,
+            "Symbol": "PEPE"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "PERP_USDT",
+            "Ignore": false,
+            "Symbol": "PERP"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "PNG_USDT",
+            "Ignore": false,
+            "Symbol": "PNG"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "POWR_BTC",
+            "Ignore": false,
+            "Symbol": "POWR"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "POWR_ETH",
+            "Ignore": false,
+            "Symbol": "POWR"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "POWR_USDT",
+            "Ignore": false,
+            "Symbol": "POWR"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "PSP_USDT",
+            "Ignore": false,
+            "Symbol": "PSP"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "PSP_ETH",
+            "Ignore": false,
+            "Symbol": "PSP"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "PST_ETH",
+            "Ignore": false,
+            "Symbol": "PST"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "PST_USDT",
+            "Ignore": false,
+            "Symbol": "PST"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "QASH_BTC",
+            "Ignore": false,
+            "Symbol": "QASH"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "QASH_ETH",
+            "Ignore": false,
+            "Symbol": "QASH"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "QASH_USDT",
+            "Ignore": false,
+            "Symbol": "QASH"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "QKC_ETH",
+            "Ignore": false,
+            "Symbol": "QKC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "QKC_USDT",
+            "Ignore": false,
+            "Symbol": "QKC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "QLC_BTC",
+            "Ignore": false,
+            "Symbol": "QLC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "QLC_ETH",
+            "Ignore": false,
+            "Symbol": "QLC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "QLC_USDT",
+            "Ignore": false,
+            "Symbol": "QLC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "QSP_ETH",
+            "Ignore": false,
+            "Symbol": "QSP"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "QSP_USDT",
+            "Ignore": false,
+            "Symbol": "QSP"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "QTUM_BTC",
+            "Ignore": false,
+            "Symbol": "QTUM"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "QTUM_ETH",
+            "Ignore": false,
+            "Symbol": "QTUM"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "QTUM_USDT",
+            "Ignore": false,
+            "Symbol": "QTUM"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "RARI_USDT",
+            "Ignore": false,
+            "Symbol": "RARI"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "RATING_ETH",
+            "Ignore": false,
+            "Symbol": "RATING"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "RATING_USDT",
+            "Ignore": false,
+            "Symbol": "RATING"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "RDN_ETH",
+            "Ignore": false,
+            "Symbol": "RDN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "RDN_USDT",
+            "Ignore": false,
+            "Symbol": "RDN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "RDNT_USDT",
+            "Ignore": false,
+            "Symbol": "RDNT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "REM_ETH",
+            "Ignore": false,
+            "Symbol": "REM"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "REM_USDT",
+            "Ignore": false,
+            "Symbol": "REM"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "REP_ETH",
+            "Ignore": false,
+            "Symbol": "REP"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "REQ_ETH",
+            "Ignore": false,
+            "Symbol": "REQ"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "REQ_USDT",
+            "Ignore": false,
+            "Symbol": "REQ"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "RFR_ETH",
+            "Ignore": false,
+            "Symbol": "RFR"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "RFR_USDT",
+            "Ignore": false,
+            "Symbol": "RFR"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "RLC_ETH",
+            "Ignore": false,
+            "Symbol": "RLC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "RLC_USDT",
+            "Ignore": false,
+            "Symbol": "RLC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "RUFF_BTC",
+            "Ignore": false,
+            "Symbol": "RUFF"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "RUFF_ETH",
+            "Ignore": false,
+            "Symbol": "RUFF"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "RUFF_USDT",
+            "Ignore": false,
+            "Symbol": "RUFF"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SALT_ETH",
+            "Ignore": false,
+            "Symbol": "SALT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SALT_USDT",
+            "Ignore": false,
+            "Symbol": "SALT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SAMO_USDT",
+            "Ignore": false,
+            "Symbol": "SAMO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SAMO_ETH",
+            "Ignore": false,
+            "Symbol": "SAMO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SATS_USDT",
+            "Ignore": false,
+            "Symbol": "SATS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SBTC_BTC",
+            "Ignore": false,
+            "Symbol": "SBTC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SBTC_USDT",
+            "Ignore": false,
+            "Symbol": "SBTC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SDN_USDT",
+            "Ignore": false,
+            "Symbol": "SDN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SEI_USDT",
+            "Ignore": false,
+            "Symbol": "SEI"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SENC_ETH",
+            "Ignore": false,
+            "Symbol": "SENC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SENC_USDT",
+            "Ignore": false,
+            "Symbol": "SENC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SHIB_USDT",
+            "Ignore": false,
+            "Symbol": "SHIB"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SKM_ETH",
+            "Ignore": false,
+            "Symbol": "SKM"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SKM_USDT",
+            "Ignore": false,
+            "Symbol": "SKM"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SMT_ETH",
+            "Ignore": false,
+            "Symbol": "SMT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SMT_USDT",
+            "Ignore": false,
+            "Symbol": "SMT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SNET_ETH",
+            "Ignore": false,
+            "Symbol": "SNET"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SNET_USDT",
+            "Ignore": false,
+            "Symbol": "SNET"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SNOW_ETH",
+            "Ignore": false,
+            "Symbol": "SNOW"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SNOW_USDT",
+            "Ignore": false,
+            "Symbol": "SNOW"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SNT_BTC",
+            "Ignore": false,
+            "Symbol": "SNT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SNT_ETH",
+            "Ignore": false,
+            "Symbol": "SNT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SNT_USDT",
+            "Ignore": false,
+            "Symbol": "SNT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SOP_ETH",
+            "Ignore": false,
+            "Symbol": "SOP"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SOP_USDT",
+            "Ignore": false,
+            "Symbol": "SOP"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SOUL_ETH",
+            "Ignore": false,
+            "Symbol": "SOUL"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SOUL_USDT",
+            "Ignore": false,
+            "Symbol": "SOUL"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SOV_USDT",
+            "Ignore": false,
+            "Symbol": "SOV"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SOV_BTC",
+            "Ignore": false,
+            "Symbol": "SOV"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SPA_USDT",
+            "Ignore": false,
+            "Symbol": "SPA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "STG_USDT",
+            "Ignore": false,
+            "Symbol": "STG"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "STORJ_BTC",
+            "Ignore": false,
+            "Symbol": "STORJ"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "STORJ_ETH",
+            "Ignore": false,
+            "Symbol": "STORJ"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "STORJ_USDT",
+            "Ignore": false,
+            "Symbol": "STORJ"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "STRK_USDT",
+            "Ignore": false,
+            "Symbol": "STRK"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "STX_ETH",
+            "Ignore": false,
+            "Symbol": "STX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "STX_USDT",
+            "Ignore": false,
+            "Symbol": "STX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SUPER_USDT",
+            "Ignore": false,
+            "Symbol": "SUPER"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SWTH_ETH",
+            "Ignore": false,
+            "Symbol": "SWTH"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SWTH_USDT",
+            "Ignore": false,
+            "Symbol": "SWTH"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "SYN_USDT",
+            "Ignore": false,
+            "Symbol": "SYN"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TAO_USDT",
+            "Ignore": false,
+            "Symbol": "TAO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TCT_ETH",
+            "Ignore": false,
+            "Symbol": "TCT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TCT_USDT",
+            "Ignore": false,
+            "Symbol": "TCT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "THETA_ETH",
+            "Ignore": false,
+            "Symbol": "THETA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "THETA_USDT",
+            "Ignore": false,
+            "Symbol": "THETA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TIA_USDT",
+            "Ignore": false,
+            "Symbol": "TIA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TIO_ETH",
+            "Ignore": false,
+            "Symbol": "TIO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TIO_USDT",
+            "Ignore": false,
+            "Symbol": "TIO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TIPS_ETH",
+            "Ignore": false,
+            "Symbol": "TIPS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TLOS_USDT",
+            "Ignore": false,
+            "Symbol": "TLOS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TLOS_BTC",
+            "Ignore": false,
+            "Symbol": "TLOS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TNC_BTC",
+            "Ignore": false,
+            "Symbol": "TNC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TNC_ETH",
+            "Ignore": false,
+            "Symbol": "TNC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TNC_USDT",
+            "Ignore": false,
+            "Symbol": "TNC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TNT_ETH",
+            "Ignore": false,
+            "Symbol": "TNT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TNT_USDT",
+            "Ignore": false,
+            "Symbol": "TNT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TOMO_ETH",
+            "Ignore": false,
+            "Symbol": "TOMO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TOMO_USDT",
+            "Ignore": false,
+            "Symbol": "TOMO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TON_USDT",
+            "Ignore": false,
+            "Symbol": "TON"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TRX_ETH",
+            "Ignore": false,
+            "Symbol": "TRX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TRX_USDT",
+            "Ignore": false,
+            "Symbol": "TRX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TSL_QTUM",
+            "Ignore": false,
+            "Symbol": "TSL"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TSL_USDT",
+            "Ignore": false,
+            "Symbol": "TSL"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TUSD_USDT",
+            "Ignore": false,
+            "Symbol": "TUSD"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "UNI_USDT",
+            "Ignore": false,
+            "Symbol": "UNI"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "USDC_USDT",
+            "Ignore": false,
+            "Symbol": "USDC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "USDD_USDT",
+            "Ignore": false,
+            "Symbol": "USDD"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "USDT_USD",
+            "Ignore": false,
+            "Symbol": "USDT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "VELA_USDT",
+            "Ignore": false,
+            "Symbol": "VELA"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "VLX_USDT",
+            "Ignore": false,
+            "Symbol": "VLX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "VRTX_USDT",
+            "Ignore": false,
+            "Symbol": "VRTX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "WAVES_BTC",
+            "Ignore": false,
+            "Symbol": "WAVES"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "WAVES_USDT",
+            "Ignore": false,
+            "Symbol": "WAVES"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "WELL_USDT",
+            "Ignore": false,
+            "Symbol": "WELL"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "WIF_USDT",
+            "Ignore": false,
+            "Symbol": "WIF"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "WINGS_ETH",
+            "Ignore": false,
+            "Symbol": "WINGS"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "XLM_BTC",
+            "Ignore": false,
+            "Symbol": "XLM"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "XLM_ETH",
+            "Ignore": false,
+            "Symbol": "XLM"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "XLM_USDT",
+            "Ignore": false,
+            "Symbol": "XLM"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "XMC_BTC",
+            "Ignore": false,
+            "Symbol": "XMC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "XMC_USDT",
+            "Ignore": false,
+            "Symbol": "XMC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "XMR_BTC",
+            "Ignore": false,
+            "Symbol": "XMR"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "XMR_USDT",
+            "Ignore": false,
+            "Symbol": "XMR"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "XRP_BTC",
+            "Ignore": false,
+            "Symbol": "XRP"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "XRP_USDT",
+            "Ignore": false,
+            "Symbol": "XRP"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "XTZ_BTC",
+            "Ignore": false,
+            "Symbol": "XTZ"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "XTZ_ETH",
+            "Ignore": false,
+            "Symbol": "XTZ"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "XTZ_USDT",
+            "Ignore": false,
+            "Symbol": "XTZ"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "XVG_BTC",
+            "Ignore": false,
+            "Symbol": "XVG"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "XVG_USDT",
+            "Ignore": false,
+            "Symbol": "XVG"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ZEC_BTC",
+            "Ignore": false,
+            "Symbol": "ZEC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ZEC_USDT",
+            "Ignore": false,
+            "Symbol": "ZEC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ZIL_ETH",
+            "Ignore": false,
+            "Symbol": "ZIL"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ZIL_USDT",
+            "Ignore": false,
+            "Symbol": "ZIL"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ZK_USDT",
+            "Ignore": false,
+            "Symbol": "ZK"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ZPT_BTC",
+            "Ignore": false,
+            "Symbol": "ZPT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ZPT_ETH",
+            "Ignore": false,
+            "Symbol": "ZPT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ZPT_USDT",
+            "Ignore": false,
+            "Symbol": "ZPT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ZRO_USDT",
+            "Ignore": false,
+            "Symbol": "ZRO"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ZRX_BTC",
+            "Ignore": false,
+            "Symbol": "ZRX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ZRX_ETH",
+            "Ignore": false,
+            "Symbol": "ZRX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ZRX_USDT",
+            "Ignore": false,
+            "Symbol": "ZRX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ZSC_ETH",
+            "Ignore": false,
+            "Symbol": "ZSC"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "ZSC_USDT",
+            "Ignore": false,
+            "Symbol": "ZSC"
+        }
+    ]
 }

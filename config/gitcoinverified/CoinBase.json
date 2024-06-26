@@ -293,6 +293,18 @@
             "Exchange": "CoinBase",
             "Blockchain": "Avalanche",
             "Address": "0x60781C2586D68229fde47564546784ab3fACA982"
+        },
+        {
+            "Symbol": "VELO",
+            "Exchange": "CoinBase",
+            "Blockchain": "Optimism",
+            "Address": "0x9560e827aF36c94D2Ac33a39bCE1Fe78631088Db"
+        },
+        {
+            "Symbol": "ZRO",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x6985884C4392D348587B19cb9eAAf157F13271cd"
         }
     ]
 }

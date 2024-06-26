@@ -1,304 +1,316 @@
 {
-  "Coins": [
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "ARB-USD",
-      "Ignore": false,
-      "Symbol": "ARB"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "AKT-USD",
-      "Ignore": false,
-      "Symbol": "AKT"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "ATOM-USD",
-      "Ignore": false,
-      "Symbol": "ATOM"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "AAVE-USD",
-      "Ignore": false,
-      "Symbol": "AAVE"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "BOBA-USD",
-      "Ignore": false,
-      "Symbol": "BOBA"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "BONK-USD",
-      "Ignore": false,
-      "Symbol": "BONK"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "CBETH-USD",
-      "Ignore": false,
-      "Symbol": "CBETH"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "CBETH-ETH",
-      "Ignore": false,
-      "Symbol": "CBETH"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "ICP-USD",
-      "Ignore": false,
-      "Symbol": "ICP"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "INJ-USD",
-      "Ignore": false,
-      "Symbol": "INJ"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "ONDO-USD",
-      "Ignore": false,
-      "Symbol": "ONDO"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "SEI-USD",
-      "Ignore": false,
-      "Symbol": "SEI"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "GHST-USD",
-      "Ignore": false,
-      "Symbol": "GHST"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "STG-USD",
-      "Ignore": false,
-      "Symbol": "STG"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "SPELL-USD",
-      "Ignore": false,
-      "Symbol": "SPELL"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "SYN-USD",
-      "Ignore": false,
-      "Symbol": "SYN"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "KNC-USD",
-      "Ignore": false,
-      "Symbol": "KNC"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "ANKR-USD",
-      "Ignore": false,
-      "Symbol": "ANKR"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "AVAX-USD",
-      "Ignore": false,
-      "Symbol": "AVAX"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "BNT-USD",
-      "Ignore": false,
-      "Symbol": "BNT"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "EUROC-USD",
-      "Ignore": false,
-      "Symbol": "EUROC"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "OP-USD",
-      "Ignore": false,
-      "Symbol": "OP"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "SPA-USD",
-      "Ignore": false,
-      "Symbol": "SPA"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "KAVA-USD",
-      "Ignore": false,
-      "Symbol": "KAVA"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "YFI-USD",
-      "Ignore": false,
-      "Symbol": "YFI"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "SHIB-USD",
-      "Ignore": false,
-      "Symbol": "SHIB"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "QUICK-USD",
-      "Ignore": false,
-      "Symbol": "QUICK"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "WBTC-BTC",
-      "Ignore": false,
-      "Symbol": "WBTC"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "DIA-USD",
-      "Ignore": false,
-      "Symbol": "DIA"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "BUSD-USD",
-      "Ignore": false,
-      "Symbol": "BUSD"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "DOGE-USD",
-      "Ignore": false,
-      "Symbol": "DOGE"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "DOT-USD",
-      "Ignore": false,
-      "Symbol": "DOT"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "ETC-USD",
-      "Ignore": false,
-      "Symbol": "ETC"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "FET-USD",
-      "Ignore": false,
-      "Symbol": "FET"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "AXS-USD",
-      "Ignore": false,
-      "Symbol": "AXS"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "GRT-USD",
-      "Ignore": false,
-      "Symbol": "GRT"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "GLM-USD",
-      "Ignore": false,
-      "Symbol": "GLM"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "DAI-USD",
-      "Ignore": false,
-      "Symbol": "DAI"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "STORJ-USD",
-      "Ignore": false,
-      "Symbol": "STORJ"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "TIA-USD",
-      "Ignore": false,
-      "Symbol": "TIA"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "UST-USD",
-      "Ignore": false,
-      "Symbol": "UST"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "PNG-USD",
-      "Ignore": false,
-      "Symbol": "PNG"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "RARI-USD",
-      "Ignore": false,
-      "Symbol": "RARI"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "USDT-USD",
-      "Ignore": false,
-      "Symbol": "USDT"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "GTC-USD",
-      "Ignore": false,
-      "Symbol": "GTC"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "BCH-USD",
-      "Ignore": false,
-      "Symbol": "BCH"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "BTC-USD",
-      "Ignore": false,
-      "Symbol": "BTC"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "ETH-BTC",
-      "Ignore": false,
-      "Symbol": "ETH"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "LTC-USD",
-      "Ignore": false,
-      "Symbol": "LTC"
-    },
-    {
-      "Exchange": "CoinBase",
-      "ForeignName": "MANA-USD",
-      "Ignore": false,
-      "Symbol": "MANA"
-    }
-  ]
+    "Coins": [
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "AAVE-USD",
+            "Ignore": false,
+            "Symbol": "AAVE"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "AKT-USD",
+            "Ignore": false,
+            "Symbol": "AKT"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "ANKR-USD",
+            "Ignore": false,
+            "Symbol": "ANKR"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "ARB-USD",
+            "Ignore": false,
+            "Symbol": "ARB"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "ATOM-USD",
+            "Ignore": false,
+            "Symbol": "ATOM"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "AVAX-USD",
+            "Ignore": false,
+            "Symbol": "AVAX"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "AXS-USD",
+            "Ignore": false,
+            "Symbol": "AXS"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "BCH-USD",
+            "Ignore": false,
+            "Symbol": "BCH"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "BNT-USD",
+            "Ignore": false,
+            "Symbol": "BNT"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "BOBA-USD",
+            "Ignore": false,
+            "Symbol": "BOBA"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "BONK-USD",
+            "Ignore": false,
+            "Symbol": "BONK"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "BTC-USD",
+            "Ignore": false,
+            "Symbol": "BTC"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "BUSD-USD",
+            "Ignore": false,
+            "Symbol": "BUSD"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "CBETH-USD",
+            "Ignore": false,
+            "Symbol": "CBETH"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "CBETH-ETH",
+            "Ignore": false,
+            "Symbol": "CBETH"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "DAI-USD",
+            "Ignore": false,
+            "Symbol": "DAI"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "DIA-USD",
+            "Ignore": false,
+            "Symbol": "DIA"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "DOGE-USD",
+            "Ignore": false,
+            "Symbol": "DOGE"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "DOT-USD",
+            "Ignore": false,
+            "Symbol": "DOT"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "ETC-USD",
+            "Ignore": false,
+            "Symbol": "ETC"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "ETH-BTC",
+            "Ignore": false,
+            "Symbol": "ETH"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "EUROC-USD",
+            "Ignore": false,
+            "Symbol": "EUROC"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "FET-USD",
+            "Ignore": false,
+            "Symbol": "FET"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "GHST-USD",
+            "Ignore": false,
+            "Symbol": "GHST"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "GLM-USD",
+            "Ignore": false,
+            "Symbol": "GLM"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "GRT-USD",
+            "Ignore": false,
+            "Symbol": "GRT"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "GTC-USD",
+            "Ignore": false,
+            "Symbol": "GTC"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "ICP-USD",
+            "Ignore": false,
+            "Symbol": "ICP"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "INJ-USD",
+            "Ignore": false,
+            "Symbol": "INJ"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "KAVA-USD",
+            "Ignore": false,
+            "Symbol": "KAVA"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "KNC-USD",
+            "Ignore": false,
+            "Symbol": "KNC"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "LTC-USD",
+            "Ignore": false,
+            "Symbol": "LTC"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "MANA-USD",
+            "Ignore": false,
+            "Symbol": "MANA"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "ONDO-USD",
+            "Ignore": false,
+            "Symbol": "ONDO"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "OP-USD",
+            "Ignore": false,
+            "Symbol": "OP"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "PNG-USD",
+            "Ignore": false,
+            "Symbol": "PNG"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "QUICK-USD",
+            "Ignore": false,
+            "Symbol": "QUICK"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "RARI-USD",
+            "Ignore": false,
+            "Symbol": "RARI"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "SEI-USD",
+            "Ignore": false,
+            "Symbol": "SEI"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "SHIB-USD",
+            "Ignore": false,
+            "Symbol": "SHIB"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "SPA-USD",
+            "Ignore": false,
+            "Symbol": "SPA"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "SPELL-USD",
+            "Ignore": false,
+            "Symbol": "SPELL"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "STG-USD",
+            "Ignore": false,
+            "Symbol": "STG"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "STORJ-USD",
+            "Ignore": false,
+            "Symbol": "STORJ"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "SYN-USD",
+            "Ignore": false,
+            "Symbol": "SYN"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "TIA-USD",
+            "Ignore": false,
+            "Symbol": "TIA"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "USDT-USD",
+            "Ignore": false,
+            "Symbol": "USDT"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "UST-USD",
+            "Ignore": false,
+            "Symbol": "UST"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "VELO-USD",
+            "Ignore": false,
+            "Symbol": "VELO"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "WBTC-BTC",
+            "Ignore": false,
+            "Symbol": "WBTC"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "YFI-USD",
+            "Ignore": false,
+            "Symbol": "YFI"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "ZRO-USD",
+            "Ignore": false,
+            "Symbol": "ZRO"
+        }
+    ]
 }

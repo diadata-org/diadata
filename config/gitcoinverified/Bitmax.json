@@ -175,6 +175,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "ETHFI",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0xFe0c30065B384F05761f15d0CC899D4F9F9Cc0eB"
+        },
+        {
             "Symbol": "FET",
             "Exchange": "Bitmax",
             "Blockchain": "Fetch",

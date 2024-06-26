@@ -344,6 +344,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "MOGUSDT",
+      "Ignore": false,
+      "Symbol": "MOG"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "NEARUSDT",
       "Ignore": false,
       "Symbol": "NEAR"

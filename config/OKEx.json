@@ -1034,6 +1034,12 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "ETHFI-USDT",
+      "Ignore": false,
+      "Symbol": "ETHFI"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "EVX-ETH",
       "Ignore": false,
       "Symbol": "EVX"
@@ -2750,6 +2756,12 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "VELO-USDT",
+      "Ignore": false,
+      "Symbol": "VELO"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "VIB-BTC",
       "Ignore": false,
       "Symbol": "VIB"
@@ -3143,6 +3155,12 @@
       "ForeignName": "ZIP-USDT",
       "Ignore": false,
       "Symbol": "ZIP"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "ZRO-USDT",
+      "Ignore": false,
+      "Symbol": "ZRO"
     },
     {
       "Exchange": "OKEx",

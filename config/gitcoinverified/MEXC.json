@@ -197,7 +197,7 @@
       "Exchange": "MEXC",
       "Blockchain": "BinanceSmartChain",
       "Address": "0xBdEAe1cA48894A1759A8374D63925f21f2Ee2639"
-    },   
+    },
     {
       "Symbol": "EGLD",
       "Exchange": "MEXC",
@@ -227,6 +227,12 @@
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "ETHFI",
+      "Exchange": "MEXC",
+      "Blockchain": "Ethereum",
+      "Address": "0xFe0c30065B384F05761f15d0CC899D4F9F9Cc0eB"
     },
     {
       "Symbol": "EVMOS",
@@ -389,6 +395,12 @@
       "Exchange": "MEXC",
       "Blockchain": "Metis",
       "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
+    },
+    {
+      "Symbol": "MOG",
+      "Exchange": "MEXC",
+      "Blockchain": "Ethereum",
+      "Address": "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a"
     },
     {
       "Symbol": "MOVR",
@@ -565,6 +577,18 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "TON",
+      "Exchange": "MEXC",
+      "Blockchain": "Ton",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "TRUMP",
+      "Exchange": "MEXC",
+      "Blockchain": "Ethereum",
+      "Address": "0x576e2BeD8F7b46D34016198911Cdf9886f78bea7"
+    },
+    {
       "Symbol": "TRX",
       "Exchange": "MEXC",
       "Blockchain": "Tron",
@@ -613,6 +637,12 @@
       "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
     },
     {
+      "Symbol": "VELO",
+      "Exchange": "MEXC",
+      "Blockchain": "Optimism",
+      "Address": "0x9560e827aF36c94D2Ac33a39bCE1Fe78631088Db"
+    },
+    {
       "Symbol": "VRTX",
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",
@@ -653,6 +683,12 @@
       "Exchange": "MEXC",
       "Blockchain": "ZKsync",
       "Address": "0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E"
-  }
+    },
+    {
+      "Symbol": "ZRO",
+      "Exchange": "MEXC",
+      "Blockchain": "Ethereum",
+      "Address": "0x6985884C4392D348587B19cb9eAAf157F13271cd"
+    }
   ]
 }

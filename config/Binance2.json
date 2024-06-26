@@ -140,6 +140,12 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "ETHFIUSDT",
+            "Ignore": false,
+            "Symbol": "ETHFI"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "EURUSDT",
             "Ignore": false,
             "Symbol": "EUR"
@@ -413,6 +419,18 @@
             "ForeignName": "ZKUSDT",
             "Ignore": false,
             "Symbol": "ZK"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "ZROUSDT",
+            "Ignore": false,
+            "Symbol": "ZRO"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "ZROFDUSD",
+            "Ignore": false,
+            "Symbol": "ZRO"
         }
     ]
 }

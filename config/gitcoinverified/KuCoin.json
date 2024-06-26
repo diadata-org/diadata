@@ -133,6 +133,12 @@
             "Address": "0xC477D038d5420C6A9e0b031712f61c5120090de9"
         },
         {
+            "Symbol": "BRETT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Base",
+            "Address": "0x532f27101965dd16442E59d40670FaF5eBB142E4"
+        },
+        {
             "Symbol": "BUY",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
@@ -727,6 +733,12 @@
             "Address": "0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6"
         },
         {
+            "Symbol": "STRK",
+            "Exchange": "GateIO",
+            "Blockchain": "Starknet",
+            "Address": "0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d"
+        },
+        {
             "Symbol": "STRONG",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
@@ -778,6 +790,12 @@
             "Symbol": "TLOS",
             "Exchange": "KuCoin",
             "Blockchain": "Telos",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "TON",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ton",
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
@@ -911,6 +929,12 @@
             "Exchange": "KuCoin",
             "Blockchain": "ZKsync",
             "Address": "0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E"
+        },
+        {
+            "Symbol": "ZRO",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x6985884C4392D348587B19cb9eAAf157F13271cd"
         }
     ]
 }

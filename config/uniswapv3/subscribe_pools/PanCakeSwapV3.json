@@ -115,6 +115,10 @@
         {
             "Address": "0x898fe77d1C083DD725004A12DF0bC55f6Dbdec2f",
             "ForeignName": "WBNB-USDV"
+        },
+        {
+            "Address": "0x032AB93B734BEf57D98552EB56839F0995D4FB28",
+            "ForeignName": "TRUMP-WBNB"
         }
     ]
 }

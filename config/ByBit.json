@@ -121,6 +121,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "BRETT",
+            "ForeignName": "BRETTUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "BSV",
             "ForeignName": "BSVUSDT",
             "Exchange": "ByBit",
@@ -303,6 +309,12 @@
         {
             "Symbol": "ETH",
             "ForeignName": "ETHUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETHFI",
+            "ForeignName": "ETHFIUSDT",
             "Exchange": "ByBit",
             "Ignore": false
         },
@@ -495,6 +507,12 @@
         {
             "Symbol": "MNT",
             "ForeignName": "MNTUSDC",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MOG",
+            "ForeignName": "MOGUSDT",
             "Exchange": "ByBit",
             "Ignore": false
         },
@@ -819,6 +837,18 @@
         {
             "Symbol": "ZK",
             "ForeignName": "ZKUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZRO",
+            "ForeignName": "ZROUSDC",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZRO",
+            "ForeignName": "ZROUSDT",
             "Exchange": "ByBit",
             "Ignore": false
         }

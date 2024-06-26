@@ -313,6 +313,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "BRETT",
+            "ForeignName": "BRETT-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "BTC",
             "ForeignName": "BTC-TUSD",
             "Exchange": "KuCoin",
@@ -1447,6 +1453,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "STRK",
+            "ForeignName": "STRK-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "STX",
             "ForeignName": "STX-BTC",
             "Exchange": "KuCoin",
@@ -1515,6 +1527,12 @@
         {
             "Symbol": "TLOS",
             "ForeignName": "TLOS-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TON",
+            "ForeignName": "TON-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
         },
@@ -1911,6 +1929,12 @@
         {
             "Symbol": "ZK",
             "ForeignName": "ZK-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZRO",
+            "ForeignName": "ZRO-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
         },

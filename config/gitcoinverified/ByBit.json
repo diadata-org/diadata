@@ -1,6 +1,18 @@
 {
     "Tokens": [
         {
+            "Symbol": "ZRO",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0x6985884C4392D348587B19cb9eAAf157F13271cd"
+        },
+        {
+            "Symbol": "ETHFI",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0xFe0c30065B384F05761f15d0CC899D4F9F9Cc0eB"
+        },
+        {
             "Symbol": "APT",
             "Exchange": "ByBit",
             "Blockchain": "Aptos",
@@ -23,6 +35,12 @@
             "Exchange": "ByBit",
             "Blockchain": "Solana",
             "Address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"
+        },
+        {
+            "Symbol": "BRETT",
+            "Exchange": "ByBit",
+            "Blockchain": "Base",
+            "Address": "0x532f27101965dd16442E59d40670FaF5eBB142E4"
         },
         {
             "Symbol": "WLD",
@@ -671,6 +689,12 @@
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
             "Address": "0x69af81e73A73B40adF4f3d4223Cd9b1ECE623074"
+        },
+        {
+            "Symbol": "MOG",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a"
         },
         {
             "Symbol": "NEAR",

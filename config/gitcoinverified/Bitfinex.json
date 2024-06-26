@@ -79,6 +79,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "TON",
+            "Exchange": "Bitfinex",
+            "Blockchain": "Ton",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "UDC",
             "Exchange": "Bitfinex",
             "Blockchain": "Ethereum",

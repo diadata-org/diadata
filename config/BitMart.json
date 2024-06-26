@@ -1,586 +1,616 @@
 {
-  "Coins": [
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "ALPH_USDT",
-      "Ignore": false,
-      "Symbol": "ALPH"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "ASTR_USDT",
-      "Ignore": false,
-      "Symbol": "ASTR"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "EDU_USDT",
-      "Ignore": false,
-      "Symbol": "EDU"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "GMT_USDT",
-      "Ignore": false,
-      "Symbol": "GMT"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "TIA_USDT",
-      "Ignore": false,
-      "Symbol": "TIA"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "TLOS_USDT",
-      "Ignore": false,
-      "Symbol": "TLOS"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "VRTX_USDT",
-      "Ignore": false,
-      "Symbol": "VRTX"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "ENA_USDT",
-      "Ignore": false,
-      "Symbol": "ENA"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "ORDI_USDT",
-      "Ignore": false,
-      "Symbol": "ORDI"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "SATS_USDT",
-      "Ignore": false,
-      "Symbol": "SATS"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "VELA_USDT",
-      "Ignore": false,
-      "Symbol": "VELA"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "STORJ_USDT",
-      "Ignore": false,
-      "Symbol": "STORJ"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "KAVA_USDT",
-      "Ignore": false,
-      "Symbol": "KAVA"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "QUICK_USDT",
-      "Ignore": false,
-      "Symbol": "QUICK"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "BEPRO_USDT",
-      "Ignore": false,
-      "Symbol": "BEPRO"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "MCRT_USDT",
-      "Ignore": false,
-      "Symbol": "MCRT"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "RAY_USDT",
-      "Ignore": false,
-      "Symbol": "RAY"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "PEPE_USDT",
-      "Ignore": false,
-      "Symbol": "PEPE"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "BTC_USDT",
-      "Ignore": false,
-      "Symbol": "BTC"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "BUSD_USDT",
-      "Ignore": false,
-      "Symbol": "BUSD"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "BUSD_USDC",
-      "Ignore": false,
-      "Symbol": "BUSD"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "USDC_USDT",
-      "Ignore": false,
-      "Symbol": "USDC"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "ETH_USDT",
-      "Ignore": false,
-      "Symbol": "ETH"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "ETH_USDC",
-      "Ignore": false,
-      "Symbol": "ETH"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "ETH_BTC",
-      "Ignore": false,
-      "Symbol": "ETH"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "ETH_DAI",
-      "Ignore": false,
-      "Symbol": "ETH"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "BTC_USDC",
-      "Ignore": false,
-      "Symbol": "BTC"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "BTC_DAI",
-      "Ignore": false,
-      "Symbol": "BTC"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "LINK_BTC",
-      "Ignore": false,
-      "Symbol": "LINK"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "GMX_USDT",
-      "Ignore": false,
-      "Symbol": "GMX"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "TUSD_USDT",
-      "Ignore": false,
-      "Symbol": "TUSD"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "TUSD_USDC",
-      "Ignore": false,
-      "Symbol": "TUSD"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "DAI_USDT",
-      "Ignore": false,
-      "Symbol": "DAI"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "DAI_USDC",
-      "Ignore": false,
-      "Symbol": "DAI"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "CELO_USDT",
-      "Ignore": false,
-      "Symbol": "CELO"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "WBTC_USDT",
-      "Ignore": false,
-      "Symbol": "WBTC"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "METIS_USDT",
-      "Ignore": false,
-      "Symbol": "METIS"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "KSM_USDT",
-      "Ignore": false,
-      "Symbol": "KSM"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "SOLAR_USDT",
-      "Ignore": false,
-      "Symbol": "SOLAR"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "NEAR_USDT",
-      "Ignore": false,
-      "Symbol": "NEAR"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "DOT_USDT",
-      "Ignore": false,
-      "Symbol": "DOT"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "APE_USDC",
-      "Ignore": false,
-      "Symbol": "APE"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "BNB_BTC",
-      "Ignore": false,
-      "Symbol": "BNB"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "ADA_USDT",
-      "Ignore": false,
-      "Symbol": "ADA"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "SOL_USDT",
-      "Ignore": false,
-      "Symbol": "SOL"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "DOGE_USDT",
-      "Ignore": false,
-      "Symbol": "DOGE"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "MATIC_USDT",
-      "Ignore": false,
-      "Symbol": "MATIC"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "SHIB_USDT",
-      "Ignore": false,
-      "Symbol": "SHIB"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "TRX_USDT",
-      "Ignore": false,
-      "Symbol": "TRX"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "AVAX_USDT",
-      "Ignore": false,
-      "Symbol": "AVAX"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "ETC_USDT",
-      "Ignore": false,
-      "Symbol": "ETC"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "CVX_USDT",
-      "Ignore": false,
-      "Symbol": "CVX"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "GNS_USDT",
-      "Ignore": false,
-      "Symbol": "GNS"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "GRAIL_USDT",
-      "Ignore": false,
-      "Symbol": "GRAIL"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "SPELL_USDT",
-      "Ignore": false,
-      "Symbol": "SPELL"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "SYN_USDT",
-      "Ignore": false,
-      "Symbol": "SYN"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "RDNT_USDT",
-      "Ignore": false,
-      "Symbol": "RDNT"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "UNI_USDT",
-      "Ignore": false,
-      "Symbol": "UNI"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "LTC_ETH",
-      "Ignore": false,
-      "Symbol": "LTC"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "ATOM_BTC",
-      "Ignore": false,
-      "Symbol": "ATOM"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "LUNC_USDT",
-      "Ignore": false,
-      "Symbol": "LUNC"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "XLM_USDT",
-      "Ignore": false,
-      "Symbol": "XLM"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "BCH_BTC",
-      "Ignore": false,
-      "Symbol": "BCH"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "VET_USDT",
-      "Ignore": false,
-      "Symbol": "VET"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "FIL_USDT",
-      "Ignore": false,
-      "Symbol": "FIL"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "EOS_USDT",
-      "Ignore": false,
-      "Symbol": "EOS"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "EOS_USDC",
-      "Ignore": false,
-      "Symbol": "EOS"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "MANA_USDT",
-      "Ignore": false,
-      "Symbol": "MANA"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "SAND_USDT",
-      "Ignore": false,
-      "Symbol": "SAND"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "SAND_USDC",
-      "Ignore": false,
-      "Symbol": "SAND"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "HBAR_USDT",
-      "Ignore": false,
-      "Symbol": "HBAR"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "AAVE_USDT",
-      "Ignore": false,
-      "Symbol": "AAVE"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "EGLD_USDT",
-      "Ignore": false,
-      "Symbol": "EGLD"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "CHZ_USDT",
-      "Ignore": false,
-      "Symbol": "CHZ"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "QNT_USDT",
-      "Ignore": false,
-      "Symbol": "QNT"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "AXS_USDT",
-      "Ignore": false,
-      "Symbol": "AXS"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "BSV_USDT",
-      "Ignore": false,
-      "Symbol": "BSV"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "OKB_USDT",
-      "Ignore": false,
-      "Symbol": "OKB"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "ZEC_USDT",
-      "Ignore": false,
-      "Symbol": "ZEC"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "USDP_USDT",
-      "Ignore": false,
-      "Symbol": "USDP"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "GRT_USDT",
-      "Ignore": false,
-      "Symbol": "GRT"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "MKR_BTC",
-      "Ignore": false,
-      "Symbol": "MKR"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "USDD_USDT",
-      "Ignore": false,
-      "Symbol": "USDD"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "USDD_USDC",
-      "Ignore": false,
-      "Symbol": "USDD"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "SNX_USDT",
-      "Ignore": false,
-      "Symbol": "SNX"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "FTM_USDT",
-      "Ignore": false,
-      "Symbol": "FTM"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "CRV_USDT",
-      "Ignore": false,
-      "Symbol": "CRV"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "ENJ_USDT",
-      "Ignore": false,
-      "Symbol": "ENJ"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "CAKE_USDT",
-      "Ignore": false,
-      "Symbol": "CAKE"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "BAT_USDT",
-      "Ignore": false,
-      "Symbol": "BAT"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "LRC_USDT",
-      "Ignore": false,
-      "Symbol": "LRC"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "COMP_USDT",
-      "Ignore": false,
-      "Symbol": "COMP"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "YFI_USDT",
-      "Ignore": false,
-      "Symbol": "YFI"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "ENS_USDT",
-      "Ignore": false,
-      "Symbol": "ENS"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "BAL_USDT",
-      "Ignore": false,
-      "Symbol": "BAL"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "ZK_USDT",
-      "Ignore": false,
-      "Symbol": "ZK"
-    },
-    {
-      "Exchange": "BitMart",
-      "ForeignName": "ZRX_USDT",
-      "Ignore": false,
-      "Symbol": "ZRX"
-    }
-  ]
+    "Coins": [
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "AAVE_USDT",
+            "Ignore": false,
+            "Symbol": "AAVE"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "ADA_USDT",
+            "Ignore": false,
+            "Symbol": "ADA"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "ALPH_USDT",
+            "Ignore": false,
+            "Symbol": "ALPH"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "APE_USDC",
+            "Ignore": false,
+            "Symbol": "APE"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "ASTR_USDT",
+            "Ignore": false,
+            "Symbol": "ASTR"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "ATOM_BTC",
+            "Ignore": false,
+            "Symbol": "ATOM"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "AVAX_USDT",
+            "Ignore": false,
+            "Symbol": "AVAX"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "AXS_USDT",
+            "Ignore": false,
+            "Symbol": "AXS"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "BAL_USDT",
+            "Ignore": false,
+            "Symbol": "BAL"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "BAT_USDT",
+            "Ignore": false,
+            "Symbol": "BAT"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "BCH_BTC",
+            "Ignore": false,
+            "Symbol": "BCH"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "BEPRO_USDT",
+            "Ignore": false,
+            "Symbol": "BEPRO"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "BNB_BTC",
+            "Ignore": false,
+            "Symbol": "BNB"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "BRETT_BTC",
+            "Ignore": false,
+            "Symbol": "BRETT"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "BSV_USDT",
+            "Ignore": false,
+            "Symbol": "BSV"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "BTC_USDT",
+            "Ignore": false,
+            "Symbol": "BTC"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "BTC_USDC",
+            "Ignore": false,
+            "Symbol": "BTC"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "BTC_DAI",
+            "Ignore": false,
+            "Symbol": "BTC"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "BUSD_USDT",
+            "Ignore": false,
+            "Symbol": "BUSD"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "BUSD_USDC",
+            "Ignore": false,
+            "Symbol": "BUSD"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "CAKE_USDT",
+            "Ignore": false,
+            "Symbol": "CAKE"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "CELO_USDT",
+            "Ignore": false,
+            "Symbol": "CELO"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "CHZ_USDT",
+            "Ignore": false,
+            "Symbol": "CHZ"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "COMP_USDT",
+            "Ignore": false,
+            "Symbol": "COMP"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "CRV_USDT",
+            "Ignore": false,
+            "Symbol": "CRV"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "CVX_USDT",
+            "Ignore": false,
+            "Symbol": "CVX"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "DAI_USDT",
+            "Ignore": false,
+            "Symbol": "DAI"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "DAI_USDC",
+            "Ignore": false,
+            "Symbol": "DAI"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "DOGE_USDT",
+            "Ignore": false,
+            "Symbol": "DOGE"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "DOT_USDT",
+            "Ignore": false,
+            "Symbol": "DOT"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "EDU_USDT",
+            "Ignore": false,
+            "Symbol": "EDU"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "EGLD_USDT",
+            "Ignore": false,
+            "Symbol": "EGLD"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "ENA_USDT",
+            "Ignore": false,
+            "Symbol": "ENA"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "ENJ_USDT",
+            "Ignore": false,
+            "Symbol": "ENJ"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "ENS_USDT",
+            "Ignore": false,
+            "Symbol": "ENS"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "EOS_USDT",
+            "Ignore": false,
+            "Symbol": "EOS"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "EOS_USDC",
+            "Ignore": false,
+            "Symbol": "EOS"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "ETC_USDT",
+            "Ignore": false,
+            "Symbol": "ETC"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "ETH_USDT",
+            "Ignore": false,
+            "Symbol": "ETH"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "ETH_USDC",
+            "Ignore": false,
+            "Symbol": "ETH"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "ETH_BTC",
+            "Ignore": false,
+            "Symbol": "ETH"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "ETH_DAI",
+            "Ignore": false,
+            "Symbol": "ETH"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "FIL_USDT",
+            "Ignore": false,
+            "Symbol": "FIL"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "FTM_USDT",
+            "Ignore": false,
+            "Symbol": "FTM"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "GMT_USDT",
+            "Ignore": false,
+            "Symbol": "GMT"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "GMX_USDT",
+            "Ignore": false,
+            "Symbol": "GMX"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "GNS_USDT",
+            "Ignore": false,
+            "Symbol": "GNS"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "GRAIL_USDT",
+            "Ignore": false,
+            "Symbol": "GRAIL"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "GRT_USDT",
+            "Ignore": false,
+            "Symbol": "GRT"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "HBAR_USDT",
+            "Ignore": false,
+            "Symbol": "HBAR"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "KAVA_USDT",
+            "Ignore": false,
+            "Symbol": "KAVA"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "KSM_USDT",
+            "Ignore": false,
+            "Symbol": "KSM"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "LINK_BTC",
+            "Ignore": false,
+            "Symbol": "LINK"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "LRC_USDT",
+            "Ignore": false,
+            "Symbol": "LRC"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "LTC_ETH",
+            "Ignore": false,
+            "Symbol": "LTC"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "LUNC_USDT",
+            "Ignore": false,
+            "Symbol": "LUNC"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "MANA_USDT",
+            "Ignore": false,
+            "Symbol": "MANA"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "MATIC_USDT",
+            "Ignore": false,
+            "Symbol": "MATIC"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "MCRT_USDT",
+            "Ignore": false,
+            "Symbol": "MCRT"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "METIS_USDT",
+            "Ignore": false,
+            "Symbol": "METIS"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "MKR_BTC",
+            "Ignore": false,
+            "Symbol": "MKR"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "MOG_USDT",
+            "Ignore": false,
+            "Symbol": "MOG"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "NEAR_USDT",
+            "Ignore": false,
+            "Symbol": "NEAR"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "OKB_USDT",
+            "Ignore": false,
+            "Symbol": "OKB"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "ORDI_USDT",
+            "Ignore": false,
+            "Symbol": "ORDI"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "PEPE_USDT",
+            "Ignore": false,
+            "Symbol": "PEPE"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "QNT_USDT",
+            "Ignore": false,
+            "Symbol": "QNT"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "QUICK_USDT",
+            "Ignore": false,
+            "Symbol": "QUICK"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "RAY_USDT",
+            "Ignore": false,
+            "Symbol": "RAY"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "RDNT_USDT",
+            "Ignore": false,
+            "Symbol": "RDNT"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "SAND_USDT",
+            "Ignore": false,
+            "Symbol": "SAND"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "SAND_USDC",
+            "Ignore": false,
+            "Symbol": "SAND"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "SATS_USDT",
+            "Ignore": false,
+            "Symbol": "SATS"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "SHIB_USDT",
+            "Ignore": false,
+            "Symbol": "SHIB"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "SNX_USDT",
+            "Ignore": false,
+            "Symbol": "SNX"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "SOL_USDT",
+            "Ignore": false,
+            "Symbol": "SOL"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "SOLAR_USDT",
+            "Ignore": false,
+            "Symbol": "SOLAR"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "SPELL_USDT",
+            "Ignore": false,
+            "Symbol": "SPELL"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "STORJ_USDT",
+            "Ignore": false,
+            "Symbol": "STORJ"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "SYN_USDT",
+            "Ignore": false,
+            "Symbol": "SYN"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "TIA_USDT",
+            "Ignore": false,
+            "Symbol": "TIA"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "TLOS_USDT",
+            "Ignore": false,
+            "Symbol": "TLOS"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "TON_USDT",
+            "Ignore": false,
+            "Symbol": "TON"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "TRUMP_USDT",
+            "Ignore": false,
+            "Symbol": "TRUMP"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "TRX_USDT",
+            "Ignore": false,
+            "Symbol": "TRX"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "TUSD_USDT",
+            "Ignore": false,
+            "Symbol": "TUSD"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "TUSD_USDC",
+            "Ignore": false,
+            "Symbol": "TUSD"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "UNI_USDT",
+            "Ignore": false,
+            "Symbol": "UNI"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "USDC_USDT",
+            "Ignore": false,
+            "Symbol": "USDC"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "USDD_USDT",
+            "Ignore": false,
+            "Symbol": "USDD"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "USDD_USDC",
+            "Ignore": false,
+            "Symbol": "USDD"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "USDP_USDT",
+            "Ignore": false,
+            "Symbol": "USDP"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "VELA_USDT",
+            "Ignore": false,
+            "Symbol": "VELA"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "VELO_USDT",
+            "Ignore": false,
+            "Symbol": "VELO"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "VET_USDT",
+            "Ignore": false,
+            "Symbol": "VET"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "VRTX_USDT",
+            "Ignore": false,
+            "Symbol": "VRTX"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "WBTC_USDT",
+            "Ignore": false,
+            "Symbol": "WBTC"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "XLM_USDT",
+            "Ignore": false,
+            "Symbol": "XLM"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "YFI_USDT",
+            "Ignore": false,
+            "Symbol": "YFI"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "ZEC_USDT",
+            "Ignore": false,
+            "Symbol": "ZEC"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "ZK_USDT",
+            "Ignore": false,
+            "Symbol": "ZK"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "ZRX_USDT",
+            "Ignore": false,
+            "Symbol": "ZRX"
+        }
+    ]
 }

@@ -139,6 +139,16 @@
             "ChainID": "Ethereum1313161554"
         },
         {
+            "Name": "Base",
+            "GenesisDate": 1686793242,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000",
+                "Blockchain": "Ethereum"
+            },
+            "VerificationMechanism": "pos",
+            "ChainID": "Ethereum8453"
+        },
+        {
             "Name": "NEAR",
             "GenesisDate": 0,
             "NativeToken": {

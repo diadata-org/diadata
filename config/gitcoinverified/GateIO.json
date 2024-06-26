@@ -85,6 +85,12 @@
             "Address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"
         },
         {
+            "Symbol": "BRETT",
+            "Exchange": "GateIO",
+            "Blockchain": "Base",
+            "Address": "0x532f27101965dd16442E59d40670FaF5eBB142E4"
+        },
+        {
             "Symbol": "CFG",
             "Exchange": "GateIO",
             "Blockchain": "Centrifuge",
@@ -107,6 +113,12 @@
             "Exchange": "GateIO",
             "Blockchain": "BinanceSmartChain",
             "Address": "0xBdEAe1cA48894A1759A8374D63925f21f2Ee2639"
+        },
+        {
+            "Symbol": "ETHFI",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0xFe0c30065B384F05761f15d0CC899D4F9F9Cc0eB"
         },
         {
             "Symbol": "FDUSD",
@@ -151,6 +163,12 @@
             "Address": "0x4b8285aB433D8f69CB48d5Ad62b415ed1a221e4f"
         },
         {
+            "Symbol": "MOG",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a"
+        },
+        {
             "Symbol": "MSOL",
             "Exchange": "GateIO",
             "Blockchain": "Solana",
@@ -179,6 +197,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Solana",
             "Address": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
+        },
+        {
+            "Symbol": "STRK",
+            "Exchange": "GateIO",
+            "Blockchain": "Starknet",
+            "Address": "0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d"
         },
         {
             "Symbol": "SYN",
@@ -1061,6 +1085,12 @@
             "Exchange": "GateIO",
             "Blockchain": "ZKsync",
             "Address": "0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E"
+        },
+        {
+            "Symbol": "ZRO",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x6985884C4392D348587B19cb9eAAf157F13271cd"
         },
         {
             "Symbol": "ZSC",

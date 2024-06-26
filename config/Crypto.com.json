@@ -199,18 +199,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "DAI",
-            "ForeignName": "DAI_USDC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "DAI",
-            "ForeignName": "DAI_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
             "Symbol": "DOGE",
             "ForeignName": "DOGE_BTC",
             "Exchange": "Crypto.com",
@@ -543,6 +531,12 @@
         {
             "Symbol": "MATIC",
             "ForeignName": "MATIC_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MOG",
+            "ForeignName": "MOG_USDT",
             "Exchange": "Crypto.com",
             "Ignore": false
         },

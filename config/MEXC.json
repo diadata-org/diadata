@@ -247,6 +247,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "ETHFI",
+      "ForeignName": "ETHFIUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "EVMOS",
       "ForeignName": "EVMOSUSDT",
       "Exchange": "MEXC",
@@ -423,6 +429,12 @@
     {
       "Symbol": "METIS",
       "ForeignName": "METISUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MOG",
+      "ForeignName": "MOGUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     },
@@ -607,6 +619,18 @@
       "Ignore": false
     },
     {
+      "Symbol": "TON",
+      "ForeignName": "TONUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "TRUMP",
+      "ForeignName": "TRUMPUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "TRX",
       "ForeignName": "TRXUSDT",
       "Exchange": "MEXC",
@@ -649,6 +673,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "VELO",
+      "ForeignName": "VELOUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "VRTX",
       "ForeignName": "VRTXUSDT",
       "Exchange": "MEXC",
@@ -681,6 +711,12 @@
     {
       "Symbol": "ZK",
       "ForeignName": "ZKUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "ZRO",
+      "ForeignName": "ZROUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     }

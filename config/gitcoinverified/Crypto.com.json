@@ -103,6 +103,12 @@
             "Address": "0xBBbbCA6A901c926F240b89EacB641d8Aec7AEafD"
         },
         {
+            "Symbol": "MOG",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a"
+        },
+        {
             "Symbol": "SOL",
             "Exchange": "Crypto.com",
             "Blockchain": "Solana",

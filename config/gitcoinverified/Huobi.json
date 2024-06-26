@@ -295,6 +295,12 @@
       "Address": "0x4b8285aB433D8f69CB48d5Ad62b415ed1a221e4f"
     },
     {
+      "Symbol": "MOG",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a"
+    },
+    {
       "Symbol": "NEAR",
       "Exchange": "Huobi",
       "Blockchain": "NEAR",
