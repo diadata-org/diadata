@@ -1246,3 +1246,18 @@ func (reldb *RelDB) GetCustomerByPublicKey(publicKey string) (*Customer, error) 
 	}
 	return &customer, nil
 }
+
+func (reldb *RelDB) GetAccessLevel(publicKey string) (string, error) {
+	var accessLevel string
+	err := reldb.postgresClient.QueryRow(context.Background(), `
+		SELECT access_level
+		FROM wallet_public_keys
+		WHERE public_key = $1
+	`, publicKey).Scan(&accessLevel)
+
+	if err != nil {
+		return "", err
+	}
+	return accessLevel, nil
+
+}
