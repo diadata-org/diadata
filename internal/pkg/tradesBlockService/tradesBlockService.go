@@ -661,7 +661,7 @@ func buildBridge(t dia.Trade) dia.Asset {
 		}
 	}
 	if basetoken.Blockchain == dia.OPTIMISM && t.Source == dia.VelodromeExchange {
-		if basetoken.Address == "0x7F5c764cBc14f9669B88837ca1490cCa17c31607" {
+		if basetoken.Address == "0x7F5c764cBc14f9669B88837ca1490cCa17c31607" || basetoken.Address == "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85" {
 			basetoken = dia.Asset{
 				Symbol:     "USDC",
 				Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
