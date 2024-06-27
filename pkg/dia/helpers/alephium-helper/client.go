@@ -127,14 +127,28 @@ func (c *AlephiumClient) callAPI(request *http.Request, target interface{}) erro
 
 // GetSwapPairsContractAddresses returns swap contract addresses for alephium
 func (c *AlephiumClient) GetSwapPairsContractAddresses(swapContractsLimit int) (SubContractResponse, error) {
-	var contractResponse SubContractResponse
+	var contractResponsePage1, contractResponsePage2 SubContractResponse
 
-	url := fmt.Sprintf("%s/contracts/%s/sub-contracts?limit=%d", BackendURL, AYINPairContractAddress, swapContractsLimit)
+	// Page 1
+	url := fmt.Sprintf("%s/contracts/%s/sub-contracts?limit=%d&page=1", BackendURL, AYINPairContractAddress, swapContractsLimit)
 	request, _ := http.NewRequest("GET", url, http.NoBody)
+	err := c.callAPI(request, &contractResponsePage1)
+	if err != nil {
+		return contractResponsePage1, err
+	}
 
-	err := c.callAPI(request, &contractResponse)
+	// Page 2
+	url = fmt.Sprintf("%s/contracts/%s/sub-contracts?limit=%d&page=2", BackendURL, AYINPairContractAddress, swapContractsLimit)
+	request, _ = http.NewRequest("GET", url, http.NoBody)
+	err = c.callAPI(request, &contractResponsePage2)
+	if err != nil {
+		return contractResponsePage1, err
+	}
 
-	return contractResponse, err
+	for _, contract := range contractResponsePage2.SubContracts {
+		contractResponsePage1.SubContracts = append(contractResponsePage1.SubContracts, contract)
+	}
+	return contractResponsePage1, nil
 }
 
 // GetTokenPairAddresses returns token address pair for swap contract address
