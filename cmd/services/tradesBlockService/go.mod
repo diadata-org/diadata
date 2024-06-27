@@ -1,9 +1,9 @@
 module github.com/diadata-org/diadata/services/tradesBlockService
 
-go 1.17
+go 1.19
 
 require (
-	github.com/diadata-org/diadata v1.4.508
+	github.com/diadata-org/diadata v1.4.509
 	github.com/segmentio/kafka-go v0.4.35
 	github.com/sirupsen/logrus v1.8.1
 )
