@@ -2498,6 +2498,12 @@
         },
         {
             "Exchange": "GateIO",
+            "ForeignName": "VELODROME_USDT",
+            "Ignore": false,
+            "Symbol": "VELODROME"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "VLX_USDT",
             "Ignore": false,
             "Symbol": "VLX"

@@ -2756,9 +2756,9 @@
     },
     {
       "Exchange": "OKEx",
-      "ForeignName": "VELO-USDT",
+      "ForeignName": "VELODROME-USDT",
       "Ignore": false,
-      "Symbol": "VELO"
+      "Symbol": "VELODROME"
     },
     {
       "Exchange": "OKEx",

@@ -673,8 +673,8 @@
       "Ignore": false
     },
     {
-      "Symbol": "VELO",
-      "ForeignName": "VELOUSDT",
+      "Symbol": "VELODROME",
+      "ForeignName": "VELODROMEUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     },
