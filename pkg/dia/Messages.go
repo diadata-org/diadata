@@ -50,6 +50,7 @@ const (
 	UNREAL_TESTNET                          = "Unreal-Testnet"
 	UNREAL                                  = "Unreal"
 	LINEA                                   = "Linea"
+	OPTIMISM                                = "Optimism"
 	ALEPHIUM                                = "Alephium"
 )
 
