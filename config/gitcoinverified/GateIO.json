@@ -823,12 +823,6 @@
             "Address": "0d821bd7b6d53f5c2b40e217c6defc8bbe896cf5"
         },
         {
-            "Symbol": "QSP",
-            "Exchange": "GateIO",
-            "Blockchain": "Ethereum",
-            "Address": "0x99ea4dB9EE77ACD40B119BD1dC4E33e1C070b80d"
-        },
-        {
             "Symbol": "RARI",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",

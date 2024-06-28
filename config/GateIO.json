@@ -1940,18 +1940,6 @@
         },
         {
             "Exchange": "GateIO",
-            "ForeignName": "QSP_ETH",
-            "Ignore": false,
-            "Symbol": "QSP"
-        },
-        {
-            "Exchange": "GateIO",
-            "ForeignName": "QSP_USDT",
-            "Ignore": false,
-            "Symbol": "QSP"
-        },
-        {
-            "Exchange": "GateIO",
             "ForeignName": "QTUM_BTC",
             "Ignore": false,
             "Symbol": "QTUM"
