@@ -3,7 +3,8 @@ FROM us.icr.io/dia-registry/devops/build-120:latest as build
 WORKDIR $GOPATH/src/
 
 COPY ./cmd/assetCollectionService ./
-RUN go mod tidy -go=1.20 && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go install
+ARG CGO_ENABLED=0
+RUN go mod tidy && go install -ldflags="-s -w"
 
 FROM gcr.io/distroless/base
 
