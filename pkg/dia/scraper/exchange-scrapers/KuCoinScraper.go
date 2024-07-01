@@ -52,9 +52,11 @@ type KuCoinScraper struct {
 	// signaling channels for session initialization and finishing
 	// error handling; to read error or closed, first acquire read lock
 	// only cleanup method should hold write lock
-	errorLock sync.RWMutex
-	error     error
-	closed    bool
+	errorLock    sync.RWMutex
+	error        error
+	closed       bool
+	shutdown     chan nothing
+	shutdownDone chan nothing
 	// used to keep track of trading pairs that we subscribed to
 	// use sync.Maps to concurrently handle multiple pairs
 	pairScrapers map[string]*KuCoinPairScraper // dia.ExchangePair -> KuCoinPairScraper
@@ -77,6 +79,8 @@ func NewKuCoinScraper(apiKey string, secretKey string, exchange dia.Exchange, sc
 		exchangeName: exchange.Name,
 		pairScrapers: make(map[string]*KuCoinPairScraper),
 		error:        nil,
+		shutdown:     make(chan nothing),
+		shutdownDone: make(chan nothing),
 		chanTrades:   make(chan *dia.Trade),
 		publicToken:  token,
 		pingInterval: pingInterval,
@@ -274,6 +278,19 @@ func (s *KuCoinScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err err
 func (s *KuCoinScraper) FillSymbolData(symbol string) (asset dia.Asset, err error) {
 	asset.Symbol = symbol
 	return
+}
+
+// Close closes any existing API connections, as well as channels of
+// PairScrapers from calls to ScrapePair
+func (s *KuCoinScraper) Close() error {
+	if s.closed {
+		return errors.New("KuCoinScraper: Already closed")
+	}
+	close(s.shutdown)
+	<-s.shutdownDone
+	s.errorLock.RLock()
+	defer s.errorLock.RUnlock()
+	return s.error
 }
 
 // KuCoinPairScraper implements PairScraper for kuCoin
