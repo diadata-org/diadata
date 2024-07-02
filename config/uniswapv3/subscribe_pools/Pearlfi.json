@@ -11,6 +11,10 @@
         {
             "Address": "0x6b1a34df762f1d3367e7e93AE5661c88CA848423",
             "ForeignName": "MORE-USTB"
+        },
+        {
+            "Address": "0x72c20EBBffaE1fe4E9C759b326D97763E218F9F6",
+            "ForeignName": "UKRE-arcUSD"
         }
     ]
 }

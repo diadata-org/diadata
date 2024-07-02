@@ -565,6 +565,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "SHIDO",
+      "ForeignName": "SHIDOUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "SOL",
       "ForeignName": "SOLUSDT",
       "Exchange": "MEXC",

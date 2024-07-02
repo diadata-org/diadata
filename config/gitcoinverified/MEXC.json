@@ -523,6 +523,12 @@
       "Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
     },
     {
+      "Symbol": "SHIDO",
+      "Exchange": "MEXC",
+      "Blockchain": "Ethereum",
+      "Address": "0xe2512A2f19F0388aD3D7A5263eaA82AcD564827b"
+    },
+    {
       "Symbol": "SOL",
       "Exchange": "MEXC",
       "Blockchain": "Solana",
