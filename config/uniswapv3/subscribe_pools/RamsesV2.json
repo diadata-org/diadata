@@ -19,6 +19,10 @@
         {
             "Address": "0xb54E265160De97b465879667Aa27EdaB818aF62F",
             "ForeignName": "RAM-USDT"
+        },
+        {
+            "Address": "0xe9e3Ef12f1f9Dbaf7b7F57ab262c54117448884B",
+            "ForeignName": "GUSDC/USDC"
         }
     ]
 }
