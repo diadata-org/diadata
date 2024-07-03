@@ -3,6 +3,10 @@
     {
       "Address": "0xAAA6C1E32C55A7Bfa8066A6FAE9b42650F262418",
       "Symbol": "RAM"
+    },
+    {
+     "Address": "0xd3443ee1e91aF28e5FB858Fbd0D72A63bA8046E0",
+      "Symbol": "GUSDC"
     }
   ]
 }
