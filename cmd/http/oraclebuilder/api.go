@@ -318,7 +318,7 @@ func (ob *Env) SupportedChains(context *gin.Context) {
 
 	for _, chainInfo := range chains {
 
-		if ob.SupportedChain == chainInfo.ChainID {
+		if contains(ob.SupportedChain, chainInfo.ChainID) {
 			chainArray = append(chainArray, chainInfo.ChainID)
 
 		}
@@ -963,4 +963,13 @@ func (ob *Env) Auth(context *gin.Context) {
 
 	}
 
+}
+
+func contains(arr []string, str string) bool {
+	for _, v := range arr {
+		if v == str {
+			return true
+		}
+	}
+	return false
 }
