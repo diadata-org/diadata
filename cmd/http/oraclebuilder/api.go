@@ -312,7 +312,15 @@ func (ob *Env) SupportedChains(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, err)
 		return
 	}
-	context.JSON(http.StatusOK, chains)
+	chainArray := []string{}
+
+	for _, chainInfo := range chains {
+
+		chainArray = append(chainArray, chainInfo.ChainID)
+
+	}
+
+	context.JSON(http.StatusOK, chainArray)
 }
 
 func convertExchangePairs(exchangePairs []Exchangepair) string {
