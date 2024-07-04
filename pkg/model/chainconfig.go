@@ -54,3 +54,30 @@ func (rdb *RelDB) GetAllChainConfig() (chainconfigs []dia.ChainConfig, err error
 
 	return chainconfigs, nil
 }
+
+func (rdb *RelDB) GetAllChains() (chainconfigs []dia.ChainConfig, err error) {
+	query := fmt.Sprintf("SELECT chainID FROM %s", chainconfigTable)
+	rows, err := rdb.postgresClient.Query(context.Background(), query)
+	if err != nil {
+		return []dia.ChainConfig{}, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var chainconfig dia.ChainConfig
+		var chainID string
+
+		err := rows.Scan(
+			&chainID,
+		)
+		if err != nil {
+			return []dia.ChainConfig{}, err
+		}
+
+		chainconfig.ChainID = chainID
+
+		chainconfigs = append(chainconfigs, chainconfig)
+	}
+
+	return chainconfigs, nil
+}

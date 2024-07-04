@@ -305,6 +305,16 @@ func (ob *Env) Whitelist(context *gin.Context) {
 	context.JSON(http.StatusOK, addresses)
 }
 
+func (ob *Env) SupportedChains(context *gin.Context) {
+	chains, err := ob.RelDB.GetAllChains()
+	if err != nil {
+		log.Errorln("List SupportedChains: error on GetAllChains ", err)
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	context.JSON(http.StatusOK, chains)
+}
+
 func convertExchangePairs(exchangePairs []Exchangepair) string {
 	// Create a slice to hold JSON objects
 	var jsonObjects []string
@@ -849,6 +859,45 @@ func getAuthToken(req *http.Request) (string, error) {
 	}
 	token := authFields[1]
 	return token, nil
+}
+
+func (ob *Env) CanRead(context *gin.Context) {
+	creator := context.Query("creator")
+	if creator == "" {
+		creator = context.PostForm("creator")
+	}
+	accessLevel, err := ob.RelDB.GetAccessLevel(creator)
+	if err != nil {
+		context.Abort()
+		return
+	}
+	if accessLevel == "read" || accessLevel == "read_write" {
+
+	} else {
+		context.JSON(http.StatusUnauthorized, errors.New("no read access"))
+		context.Abort()
+		return
+	}
+
+}
+func (ob *Env) CanWrite(context *gin.Context) {
+	creator := context.Query("creator")
+	if creator == "" {
+		creator = context.PostForm("creator")
+	}
+	accessLevel, err := ob.RelDB.GetAccessLevel(creator)
+	if err != nil {
+		context.Abort()
+		return
+	}
+	if accessLevel == "read_write" {
+
+	} else {
+		context.JSON(http.StatusUnauthorized, errors.New("no write access"))
+		context.Abort()
+		return
+	}
+
 }
 
 func (ob *Env) Auth(context *gin.Context) {
