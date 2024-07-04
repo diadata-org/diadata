@@ -44,7 +44,7 @@ func NewEnv(relStore *models.RelDB, ds models.Datastore, kc k8sbridge.K8SHelperC
 		Keyring:                 ring,
 		k8sbridgeClient:         kc,
 		RateLimitOracleCreation: rateLimitOracleCreation,
-		SupportedChains :[]string{"11155111","421614","123420111","94204209","88153591557","80002"}
+		SupportedChains:         []string{"11155111", "421614", "123420111", "94204209", "88153591557", "80002"},
 	}
 }
 
@@ -318,11 +318,10 @@ func (ob *Env) SupportedChains(context *gin.Context) {
 
 	for _, chainInfo := range chains {
 
-		if ob.SupportedChains == chainInfo.ChainID{
+		if ob.SupportedChains == chainInfo.ChainID {
 			chainArray = append(chainArray, chainInfo.ChainID)
 
 		}
-
 
 	}
 
