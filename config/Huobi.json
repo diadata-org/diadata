@@ -440,12 +440,6 @@
     },
     {
       "Exchange": "Huobi",
-      "ForeignName": "SATSUSDT",
-      "Ignore": false,
-      "Symbol": "SATS"
-    },
-    {
-      "Exchange": "Huobi",
       "ForeignName": "SDNUSDT",
       "Ignore": false,
       "Symbol": "SDN"
