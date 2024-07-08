@@ -385,6 +385,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "LOCK",
+      "ForeignName": "LOCKUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "LTC",
       "ForeignName": "LTCUSDT",
       "Exchange": "MEXC",
