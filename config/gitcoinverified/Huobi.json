@@ -499,6 +499,12 @@
       "Address": "0x68749665FF8D2d112Fa859AA293F07A622782F38"
     },
     {
+      "Symbol": "XFI",
+      "Exchange": "Huobi",
+      "Blockchain": "Ethereum",
+      "Address": "0xc8ceed65e236f7d6fb378b8715f9e6912e486a54"
+    },
+    {
       "Symbol": "XRP",
       "Exchange": "Huobi",
       "Blockchain": "Ripple",

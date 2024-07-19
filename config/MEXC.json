@@ -715,6 +715,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "XFI",
+      "ForeignName": "XFIUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "XRP",
       "ForeignName": "XRPUSDT",
       "Exchange": "MEXC",

@@ -691,6 +691,12 @@
       "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
     },
     {
+      "Symbol": "XFI",
+      "Exchange": "MEXC",
+      "Blockchain": "Ethereum",
+      "Address": "0xc8ceed65e236f7d6fb378b8715f9e6912e486a54"
+    },
+    {
       "Symbol": "ZK",
       "Exchange": "MEXC",
       "Blockchain": "ZKsync",
