@@ -300,6 +300,8 @@ func main() {
 
 		// Endpoints for asset list
 		// diaGroup.GET("/assetlist/:query/", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.SearchAssetList))
+		diaGroup.GET("/assetlist/:listname/", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetAssetList))
+
 		diaGroup.GET("/assetlist/:listname/:symbol/", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetAssetListBySymbol))
 
 	}

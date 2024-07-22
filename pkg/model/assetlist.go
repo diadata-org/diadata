@@ -89,6 +89,37 @@ func (rdb *RelDB) SearchAssetList(searchTerm string) ([]dia.AssetList, error) {
 
 	return assets, nil
 }
+
+func (rdb *RelDB) GetAssetList(listname string) ([]dia.AssetList, error) {
+	var assets []dia.AssetList
+
+	rows, err := rdb.postgresClient.Query(context.Background(),
+		`SELECT id, asset_name, custom_name, symbol, methodology 
+         FROM asset_list 
+         WHERE  AND list_name LIKE $1`, listname,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var asset dia.AssetList
+		var assetID int
+		if err := rows.Scan(&assetID, &asset.AssetName, &asset.CustomName, &asset.Symbol, &asset.Methodology); err != nil {
+			return nil, err
+		}
+
+		exchanges, err := rdb.getExchangesByAssetID(assetID)
+		if err != nil {
+			return nil, err
+		}
+		asset.Exchanges = exchanges
+		assets = append(assets, asset)
+	}
+
+	return assets, nil
+}
 func (rdb *RelDB) GetAssetListBySymbol(symbol string, listname string) ([]dia.AssetList, error) {
 	var assets []dia.AssetList
 
