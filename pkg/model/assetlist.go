@@ -96,7 +96,7 @@ func (rdb *RelDB) GetAssetList(listname string) ([]dia.AssetList, error) {
 	rows, err := rdb.postgresClient.Query(context.Background(),
 		`SELECT id, asset_name, custom_name, symbol, methodology 
          FROM asset_list 
-         WHERE  AND list_name LIKE $1`, listname,
+         WHERE  list_name LIKE $1`, listname,
 	)
 	if err != nil {
 		return nil, err
