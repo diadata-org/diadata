@@ -332,7 +332,6 @@ type AssetList struct {
 	CustomName  string
 	Symbol      string
 	Methodology string
-	Price       float64
 	ListName    string
 
 	Exchanges []ExchangeList

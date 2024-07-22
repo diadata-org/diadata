@@ -3577,27 +3577,7 @@ func (env *Env) GetAssetList(c *gin.Context) {
 		return
 	}
 
-	selectedAsset := assets[0]
-
-	splitted := strings.Split(selectedAsset.AssetName, "-")
-
-	price, _, time, source, err := gqlclient.GetGraphqlAssetQuotationFromDia(splitted[0], splitted[1], 60, selectedAsset)
-	if err != nil {
-		// restApi.SendError(c, http.StatusInternalServerError, errors.New("eror getting asset"))
-		log.Errorln("error getting GetGraphqlAssetQuotationFromDia", err)
-	}
-
-	asset := dia.Asset{Symbol: selectedAsset.Symbol, Name: selectedAsset.CustomName, Blockchain: splitted[0], Address: splitted[1]}
-	q := models.AssetQuotationFull{Symbol: asset.Symbol, Name: asset.Name, Address: asset.Address, Price: price, Blockchain: asset.Blockchain}
-
-	volumeYesterday, err := env.DataStore.Get24HoursAssetVolume(asset)
-	if err != nil {
-		log.Errorln("error getting Get24HoursAssetVolume", err)
-	}
-	q.VolumeYesterdayUSD = *volumeYesterday
-	q.Time = time
-	q.Source = strings.Join(source, ",")
-	c.JSON(http.StatusOK, q)
+	c.JSON(http.StatusOK, assets)
 }
 
 func (env *Env) GetAssetListBySymbol(c *gin.Context) {
