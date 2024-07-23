@@ -180,11 +180,20 @@ func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *dia
 		rawQ.Symbol = symbol
 		rawQ.Price = price
 	} else {
-		// Special case: RDPX
-		if address == "0x32Eb7902D4134bf98A28b963D26de779AF92A212" && blockchain == "Arbitrum" {
-			price, symbol, err := getRdpxGraphqlAssetQuotationFromDia(blockchain, address)
+		// Special case: RAM with liq threshold
+		if address == "0xaaa6c1e32c55a7bfa8066a6fae9b42650f262418" && blockchain == "Arbitrum" {
+			price, symbol, err := getLiqThreshGraphqlAssetQuotationFromDia(blockchain, address, "RAM", 500000)
 			if err != nil {
-				log.Printf("Failed to retrieve %s (RDPX) quotation data from Graphql on DIA: %v", address, err)
+				log.Printf("Failed to retrieve %s (RAM) quotation data from Graphql on DIA: %v", address, err)
+				return oldPrice, err
+			}
+			rawQ.Symbol = symbol
+			rawQ.Price = price
+		// Special case: gUSDC with liq threshold
+		} else if address == "0xd3443ee1e91af28e5fb858fbd0d72a63ba8046e0" && blockchain == "Arbitrum" {
+			price, symbol, err := getLiqThreshGraphqlAssetQuotationFromDia(blockchain, address, "gUSDC", 500000)
+			if err != nil {
+				log.Printf("Failed to retrieve %s (gUSDC) quotation data from Graphql on DIA: %v", address, err)
 				return oldPrice, err
 			}
 			rawQ.Symbol = symbol
@@ -234,6 +243,10 @@ func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *dia
 	if address == "0x32Eb7902D4134bf98A28b963D26de779AF92A212" && blockchain == "Arbitrum" {
 		allowedCoingeckoDeviation = 0.2
 	}
+	// gUSDC: stablecoin is expected to be tighter
+	if address == "0xd3443ee1e91af28e5fb858fbd0d72a63ba8046e0" && blockchain == "Arbitrum" {
+		allowedCoingeckoDeviation = 0.01
+	}
 	cgPrice, err := getCoingeckoPrice(coingeckoName, coingeckoApiKey)
 	if err != nil {
 		return oldPrice, err
@@ -276,11 +289,20 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 		rawQ.Symbol = symbol
 		rawQ.Price = price
 	} else {
-		// Special case: RDPX
-		if address == "0x32Eb7902D4134bf98A28b963D26de779AF92A212" && blockchain == "Arbitrum" {
-			price, symbol, err := getRdpxGraphqlAssetQuotationFromDia(blockchain, address)
+		// Special case: RAM with liq threshold
+		if address == "0xaaa6c1e32c55a7bfa8066a6fae9b42650f262418" && blockchain == "Arbitrum" {
+			price, symbol, err := getLiqThreshGraphqlAssetQuotationFromDia(blockchain, address, "RAM", 500000)
 			if err != nil {
-				log.Printf("Failed to retrieve %s (RDPX) quotation data from Graphql on DIA: %v", address, err)
+				log.Printf("Failed to retrieve %s (RAM) quotation data from Graphql on DIA: %v", address, err)
+				return oldPrice, err
+			}
+			rawQ.Symbol = symbol
+			rawQ.Price = price
+		// Special case: gUSDC with liq threshold
+		} else if address == "0xd3443ee1e91af28e5fb858fbd0d72a63ba8046e0" && blockchain == "Arbitrum" {
+			price, symbol, err := getLiqThreshGraphqlAssetQuotationFromDia(blockchain, address, "gUSDC", 500000)
+			if err != nil {
+				log.Printf("Failed to retrieve %s (gUSDC) quotation data from Graphql on DIA: %v", address, err)
 				return oldPrice, err
 			}
 			rawQ.Symbol = symbol
@@ -329,6 +351,10 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 		// Exception for RDPX: CG data is not super reliable, high deviations expected
 		if address == "0x32Eb7902D4134bf98A28b963D26de779AF92A212" && blockchain == "Arbitrum" {
 			allowedCoingeckoDeviation = 0.2
+		}
+		// gUSDC: stablecoin is expected to be tighter
+		if address == "0xd3443ee1e91af28e5fb858fbd0d72a63ba8046e0" && blockchain == "Arbitrum" {
+			allowedCoingeckoDeviation = 0.01
 		}
 		cgPrice, err := getCoingeckoPrice(coingeckoName, coingeckoApiKey)
 		if err != nil {
@@ -452,10 +478,10 @@ func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, er
 	return &quotation, nil
 }
 
-// Special case for RDPX: Only query with liquidity >500k
-func getRdpxGraphqlAssetQuotationFromDia(blockchain, address string) (float64, string, error) {
-	log.Println("Entering Rdpx special case: Get price with minimum liquidity of 500k")
-	windowSize := 120
+// Special case for Assets with liq threshold: Only query with liquidity indicated in parameter
+func getLiqThreshGraphqlAssetQuotationFromDia(blockchain, address string, symbol string, liquidityThreshold float64) (float64, string, error) {
+	log.Println("Entering special case with liquidity threshold: Get price with minimum liquidity of 500k")
+	windowSize := 240
 	currentTime := time.Now()
 	starttime := currentTime.Add(time.Duration(-windowSize*2) * time.Second)
 	type Response struct {
@@ -478,7 +504,7 @@ func getRdpxGraphqlAssetQuotationFromDia(blockchain, address string) (float64, s
 				{
 					Address: "` + address + `", 
 					Blockchain: "` + blockchain + `",
-					LiquidityThreshold: 500000.0
+					LiquidityThreshold: ` + fmt.Sprintf("%.1f", liquidityThreshold)  + `,
 				}
 			]
 		)
@@ -497,7 +523,7 @@ func getRdpxGraphqlAssetQuotationFromDia(blockchain, address string) (float64, s
 	if len(r.GetFeed) == 0 {
 		return 0.0, "", errors.New("no results")
 	}
-	return r.GetFeed[len(r.GetFeed)-1].Value, "RDPX", nil
+	return r.GetFeed[len(r.GetFeed)-1].Value, symbol, nil
 }
 
 // Special case for DPX: Only query for ByBit or DEXes with >500k liquidity
