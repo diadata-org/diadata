@@ -66,6 +66,29 @@ func (reldb *RelDB) InsertLoopPaymentTransferProcessed(record LoopPaymentTransfe
 	return err
 }
 
+func (reldb *RelDB) GetLastPaymentByEndUser(endUser string) (LoopPaymentTransferProcessed, error) {
+	query := `
+    SELECT event, transaction, network_id, network_name, contract_address, email, company, parent, transfer_id, success, 
+           payment_token_address, payment_token_symbol, end_user, reason, invoice_id, amount_paid, agreement_id, ref_id, batch_id, usd_amount
+    FROM loop_payment_transfer_processed
+    WHERE end_user = $1
+    ORDER BY transaction DESC
+    LIMIT 1`
+
+	var record LoopPaymentTransferProcessed
+	err := reldb.postgresClient.QueryRow(context.Background(), query, endUser).Scan(
+		&record.Event, &record.Transaction, &record.NetworkID, &record.NetworkName, &record.ContractAddress,
+		&record.Email, &record.Company, &record.Parent, &record.TransferID, &record.Success,
+		&record.PaymentTokenAddress, &record.PaymentTokenSymbol, &record.EndUser, &record.Reason,
+		&record.InvoiceID, &record.AmountPaid, &record.AgreementID, &record.RefID, &record.BatchID, &record.UsdAmount)
+
+	if err != nil {
+		return record, err
+	}
+
+	return record, nil
+}
+
 // {
 //     "event": "TransferCreated",
 //     "transaction": "-",
