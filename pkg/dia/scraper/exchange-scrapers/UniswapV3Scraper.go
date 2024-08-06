@@ -58,6 +58,10 @@ type UniswapV3Scraper struct {
 	factoryContractAddress common.Address
 }
 
+var (
+	fullPoolsUniswapV3 *[]string
+)
+
 // NewUniswapV3Scraper returns a new UniswapV3Scraper
 func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *UniswapV3Scraper {
 	log.Info("NewUniswapScraper ", exchange.Name)
@@ -180,6 +184,11 @@ func (s *UniswapV3Scraper) mainLoop() {
 		log.Error("error getting quotetokens for which pairs should be reversed: ", err)
 	}
 	log.Infof("reverse the following quotetokens on %s: %v", s.exchangeName, reverseQuotetokens)
+	fullPoolsUniswapV3, err = getReverseTokensFromConfig("uniswapv3/fullPools/" + s.exchangeName + "FullPools")
+	if err != nil {
+		log.Error("error getting fullPools for which pairs should be reversed: ", err)
+	}
+	log.Infof("Take into account both directions of a trade on the following pools: %v", fullPoolsUniswapV3)
 
 	time.Sleep(4 * time.Second)
 	s.run = true
@@ -298,6 +307,16 @@ func (s *UniswapV3Scraper) sendTrade(swap UniswapV3Swap, pool *UniswapPair) {
 			t = &tSwapped
 		}
 	}
+
+	if utils.Contains(fullPoolsUniswapV3, pool.Address.Hex()) {
+		tSwapped, err := dia.SwapTrade(*t)
+		if err == nil {
+			if tSwapped.Price > 0 {
+				s.chanTrades <- &tSwapped
+			}
+		}
+	}
+
 	if price > 0 {
 		log.Infof("Got trade on pool %s: %v", pool.Address.Hex(), t)
 		s.chanTrades <- t
