@@ -109,6 +109,9 @@ func NewTraderJoeScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 		tjs = makeTraderJoeScraper(exchange, listenByAddress, "", "", "200")
 	case dia.TraderJoeExchangeV2_1BNB:
 		tjs = makeTraderJoeScraper(exchange, listenByAddress, "", "", "200")
+	case dia.TraderJoeExchangeV2_2Avalanche:
+		tjs = makeTraderJoeScraper(exchange, listenByAddress, "", "", "200")
+
 	}
 
 	tjs.relDB = relDB

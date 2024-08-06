@@ -46,6 +46,8 @@ func NewTraderJoeAssetSource(exchange dia.Exchange, relDB *models.RelDB) *Trader
 		tjas = makeTraderJoeAssetSource(exchange, "", "", relDB, "200", uint64(28371397))
 	case dia.TraderJoeExchangeV2_1BNB:
 		tjas = makeTraderJoeAssetSource(exchange, "", "", relDB, "200", uint64(27099340))
+	case dia.TraderJoeExchangeV2_2Avalanche:
+		tjas = makeTraderJoeAssetSource(exchange, "", "", relDB, "200", uint64(46536129))
 	}
 
 	go func() {

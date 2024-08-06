@@ -51,6 +51,8 @@ func NewTraderJoeLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, da
 		tjls = makeTraderJoeScraper(exchange, "", "", relDB, datastore, "200", uint64(28371397))
 	case dia.TraderJoeExchangeV2_1BNB:
 		tjls = makeTraderJoeScraper(exchange, "", "", relDB, datastore, "200", uint64(27099340))
+	case dia.TraderJoeExchangeV2_2Avalanche:
+		tjls = makeTraderJoeScraper(exchange, "", "", relDB, datastore, "200", uint64(46536129))
 	}
 
 	go func() {
