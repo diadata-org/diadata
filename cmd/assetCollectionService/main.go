@@ -28,6 +28,7 @@ var (
 var exchanges map[string]dia.Exchange
 
 func init() {
+	log.Info("Starting asset collection service")
 	assetSource = flag.String("source", "Uniswap", "Data source for asset collection")
 	secret = flag.String("secret", "", "secret for asset source")
 	caching = flag.Bool("caching", true, "caching assets in redis")
