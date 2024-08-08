@@ -7,6 +7,10 @@
     {
       "Address": "0xB0B195aEFA3650A6908f15CdaC7D92F8a5791B0B",
       "Symbol": "BOB"
+    },
+    {
+      "Address": "0xd3443ee1e91aF28e5FB858Fbd0D72A63bA8046E0",
+      "Symbol": "gUSDC"
     }
   ]
 }
