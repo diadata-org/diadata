@@ -194,6 +194,14 @@ type RelDatastore interface {
 	GetCustomerIDByWalletPublicKey(publicKey string) (int, error)
 	GetCustomerByPublicKey(publicKey string) (*Customer, error)
 	GetAccessLevel(publicKey string) (string, error)
+
+	GetAllChains() (chainconfigs []dia.ChainConfig, err error)
+	GetTotalGasSpend(address string, chainid string) (float64, error)
+	GetBalanceRemaining(address string, chainid string) (float64, error)
+	GetLastOracleUpdate(address string, chainid string) ([]dia.OracleUpdate, error)
+	GetLastPaymentByEndUser(endUser string) (LoopPaymentTransferProcessed, error)
+
+	InsertLoopPaymentTransferProcessed(record LoopPaymentTransferProcessed) error
 }
 
 const (
