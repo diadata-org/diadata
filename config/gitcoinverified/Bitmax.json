@@ -277,12 +277,6 @@
             "Address": "0x0000000000000000000000000000000000001010"
         },
         {
-            "Symbol": "MIM",
-            "Exchange": "Bitmax",
-            "Blockchain": "Ethereum",
-            "Address": "0x99D8a9C45b2ecA8864373A26D1459e3Dff1e17F3"
-        },
-        {
             "Symbol": "NEO",
             "Exchange": "Bitmax",
             "Blockchain": "NEO",
