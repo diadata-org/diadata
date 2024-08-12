@@ -23,6 +23,8 @@ func main() {
 	executionMode := utils.Getenv("EXEC_MODE", "")
 
 	if executionMode == "production" {
+		log.Println("Running server on port", port)
+
 		err := r.Run(port)
 		if err != nil {
 			log.Error(err)
@@ -40,6 +42,8 @@ func setupRouter() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
+	loopPaymentSecret := utils.Getenv("LOOP_PAYMENT_SECRET", "")
+
 	relStore, err := model.NewRelDataStore()
 	if err != nil {
 		log.Errorln("NewRelDataStore", err)
@@ -55,7 +59,7 @@ func setupRouter() *gin.Engine {
 	ring, _ := initializeKeyring()
 
 	rateLimitOracleCreation := initializeRateLimitOracleCreation()
-	oracle := NewEnv(relStore, ds, k8bridgeClient, ring, rateLimitOracleCreation)
+	oracle := NewEnv(relStore, ds, k8bridgeClient, ring, rateLimitOracleCreation, loopPaymentSecret)
 
 	// Setup CORS
 	r.Use(cors.New(cors.Config{
@@ -71,20 +75,25 @@ func setupRouter() *gin.Engine {
 	routerGroup.POST("create", oracle.Create)
 
 	routerGroup.POST("createAccount", authenticate("Verify its your address to create Account"), oracle.Auth, oracle.CreateAccount)
-	routerGroup.POST("/account/addWallet", authenticate("Verify its your address to Add Wallet"), oracle.Auth, oracle.AddWallet)
-	routerGroup.POST("/account/removeWallet", authenticate("Verify its your address to Remove Wallet"), oracle.Auth, oracle.RemoveWallet)
+	routerGroup.POST("/account/addWallet", authenticate("Verify its your address to Add Wallet"), oracle.Auth, oracle.CanWrite, oracle.AddWallet)
+	routerGroup.POST("/account/removeWallet", authenticate("Verify its your address to Remove Wallet"), oracle.Auth, oracle.CanWrite, oracle.RemoveWallet)
 
-	routerGroup.POST("/account/updateAccess", authenticate("Verify its your address to Update Access"), oracle.Auth, oracle.UpdateAccess)
+	routerGroup.POST("/account/updateAccess", authenticate("Verify its your address to Update Access"), oracle.Auth, oracle.CanWrite, oracle.UpdateAccess)
 
-	routerGroup.POST("/account/view", authenticate("Verify its your address to View Account"), oracle.Auth, oracle.ViewAccount)
+	routerGroup.POST("/account/view", authenticate("Verify its your address to View Account"), oracle.Auth, oracle.CanRead, oracle.ViewAccount)
 
 	routerGroup.GET("/list", authenticate("Verify its your address to List your oracles"), oracle.Auth, oracle.List)
 	routerGroup.GET("/view", authenticate("Verify its your address to List your oracles"), oracle.Auth, oracle.View)
 	routerGroup.DELETE("/delete", authenticate("Verify its your address to delete oracle"), oracle.Auth, oracle.Delete)
 	routerGroup.PATCH("/restart", authenticate("Verify its your address to restart oracle feeder"), oracle.Auth, oracle.Restart)
 	routerGroup.PATCH("/pause", authenticate("Verify its your address to pause oracle feeder"), oracle.Auth, oracle.Pause)
+
+	routerGroup.POST("/paymenthook", oracle.LoopWebHook)
+	routerGroup.GET("/paymentStatus", oracle.LoopPaymentStatus)
+
 	routerGroup.GET("/whitelist", oracle.Whitelist)
 	routerGroup.GET("/stats", oracle.Stats)
+	routerGroup.GET("/chains", oracle.SupportedChains)
 	routerGroup.GET("/dashboard", oracle.Dashboard)
 
 	// Middleware for basic authentication
