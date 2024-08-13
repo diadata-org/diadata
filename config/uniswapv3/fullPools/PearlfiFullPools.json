@@ -3,6 +3,10 @@
     {
       "Address": "0x72c20EBBffaE1fe4E9C759b326D97763E218F9F6",
       "Symbol": "UKRE-arcUSD"
+    },
+    {
+      "Address": "0xC6B3AaaAbf2f6eD6cF7fdFFfb0DaC45E10c4A5B3",
+      "Symbol": "USTB-arcUSD"
     }
   ]
 }
