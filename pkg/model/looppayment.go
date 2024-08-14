@@ -46,6 +46,7 @@ type LoopPaymentTransferProcessed struct {
 	RefID               string  `json:"refId"`
 	BatchID             string  `json:"batchId"`
 	UsdAmount           string  `json:"usdAmount"`
+	RedirectUrl         string  `json:"redirectURL"`
 }
 
 func (reldb *RelDB) InsertLoopPaymentTransferProcessed(record LoopPaymentTransferProcessed) error {
