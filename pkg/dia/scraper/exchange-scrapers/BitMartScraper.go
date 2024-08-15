@@ -309,7 +309,7 @@ func (s *BitMartScraper) mainLoop() {
 							return
 						}
 						if err := s.retryConnection(idx); err != nil || ws.IsCloseError(err, ws.CloseAbnormalClosure) {
-							continue
+							return
 						}
 					}
 
@@ -330,7 +330,7 @@ func (s *BitMartScraper) mainLoop() {
 					case ws.TextMessage:
 						if string(msg) == bitMartPongMessage {
 							s.errCount[idx] = 0
-							continue
+							return
 						}
 						output = msg
 					}
@@ -342,7 +342,7 @@ func (s *BitMartScraper) mainLoop() {
 						s.setError(err)
 						s.errCount[idx]++
 						if err := s.retryConnection(idx); err != nil {
-							continue
+							return
 						}
 					}
 					if subResults.ErrorCode != "" {
