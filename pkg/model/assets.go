@@ -586,6 +586,8 @@ func (rdb *RelDB) GetAllBlockchains(fullAsset bool) ([]dia.BlockChain, error) {
 		`, blockchainTable, assetTable)
 	}
 
+	println("Quering: ", query)
+
 	rows, err := rdb.postgresClient.Query(context.Background(), query)
 	if err != nil {
 		return []dia.BlockChain{}, err

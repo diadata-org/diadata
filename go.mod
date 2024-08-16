@@ -14,7 +14,7 @@ require (
 	github.com/cosmos/ibc-go/v3 v3.0.0
 	github.com/cryptwire/go-binance/v2 v2.2.3
 	github.com/davecgh/go-spew v1.1.1
-	github.com/ethereum/go-ethereum v1.10.10
+	github.com/ethereum/go-ethereum v1.10.12
 	github.com/fatih/structs v1.1.0
 	github.com/gagliardetto/binary v0.7.9
 	github.com/gagliardetto/gofuzz v1.2.2
@@ -59,7 +59,7 @@ require (
 require (
 	filippo.io/edwards25519 v1.0.0 // indirect
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
-	github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d // indirect
+	github.com/ChainSafe/go-schnorrkel v0.0.0-20210318173838-ccb5cd955283 // indirect
 	github.com/DataDog/zstd v1.4.5 // indirect
 	github.com/GeertJohan/go.rice v1.0.0 // indirect
 	github.com/StackExchange/wmi v1.2.1 // indirect
@@ -75,6 +75,7 @@ require (
 	github.com/btcsuite/btcd v0.22.0-beta // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/bytedance/sonic v1.10.2 // indirect
+	github.com/centrifuge/go-substrate-rpc-client/v4 v4.0.0 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/cheekybits/genny v1.0.0 // indirect
@@ -88,6 +89,8 @@ require (
 	github.com/cosmos/ledger-go v0.9.2 // indirect
 	github.com/daaku/go.zipexe v1.0.0 // indirect
 	github.com/danieljoos/wincred v1.1.2 // indirect
+	github.com/decred/base58 v1.0.3 // indirect
+	github.com/decred/dcrd/crypto/blake256 v1.0.0 // indirect
 	github.com/dgraph-io/badger/v2 v2.2007.3 // indirect
 	github.com/dgraph-io/ristretto v0.0.3 // indirect
 	github.com/dgryski/go-farm v0.0.0-20200201041132-a6ae2369ad13 // indirect
@@ -146,6 +149,7 @@ require (
 	github.com/leodido/go-urn v1.3.0 // indirect
 	github.com/libp2p/go-buffer-pool v0.0.2 // indirect
 	github.com/logrusorgru/aurora v2.0.3+incompatible // indirect
+	github.com/machinebox/graphql v0.2.2 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
@@ -165,6 +169,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.1.1 // indirect
 	github.com/petermattis/goid v0.0.0-20180202154549-b0b1615b78e5 // indirect
 	github.com/pierrec/lz4/v4 v4.1.15 // indirect
+	github.com/pierrec/xxHash v0.1.5 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.11.0 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
@@ -174,6 +179,7 @@ require (
 	github.com/regen-network/cosmos-proto v0.3.1 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
+	github.com/rs/cors v1.8.0 // indirect
 	github.com/sasha-s/go-deadlock v0.2.1-0.20190427202633-1595213edefa // indirect
 	github.com/segmentio/fasthash v1.0.3 // indirect
 	github.com/shirou/gopsutil v3.21.4-0.20210419000835-c7a38de76ee5+incompatible // indirect
@@ -197,6 +203,7 @@ require (
 	github.com/tklauser/numcpus v0.2.3 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
+	github.com/vedhavyas/go-subkey v1.0.2 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	github.com/ybbus/jsonrpc v2.1.2+incompatible // indirect
 	github.com/zondax/hid v0.9.0 // indirect

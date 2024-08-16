@@ -28,7 +28,7 @@ services:
       - "2181:2181"
     volumes:
       # TODO figure out how to have this without version number
-      - /home/srv/zoo:/opt/zookeeper-3.4.9/data
+      -  ~/infra/srv/zoo:/opt/zookeeper-3.4.9/data
     networks:
       - kafka-network
     deploy:
@@ -58,7 +58,7 @@ services:
       KAFKA_MESSAGE_MAX_BYTES: 500000000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /home/srv/kafka:/kafka
+      - ~/infra/srv/kafka:/kafka
     deploy:
       mode: global
       restart_policy:
@@ -73,7 +73,7 @@ services:
       - "27017:27017"
       - "5432:5432"
     environment:
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: 2
     volumes:
       - ../../config/pginit.sql:/docker-entrypoint-initdb.d/init.sql
 networks:
