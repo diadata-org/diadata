@@ -113,7 +113,7 @@
             "Exchange": "Binance2",
             "Blockchain": "BinanceSmartChain",
             "Address": "0xBdEAe1cA48894A1759A8374D63925f21f2Ee2639"
-        },   
+        },
         {
             "Symbol": "ENA",
             "Exchange": "Binance2",
@@ -341,6 +341,12 @@
             "Exchange": "Binance2",
             "Blockchain": "Ethereum",
             "Address": "0x163f8C2467924be0ae7B5347228CABF260318753"
+        },
+        {
+            "Symbol": "XAI",
+            "Exchange": "Binance2",
+            "Blockchain": "Arbitrum",
+            "Address": "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66"
         },
         {
             "Symbol": "XRP",

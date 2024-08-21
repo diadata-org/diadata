@@ -1075,6 +1075,12 @@
             "Address": "0x667088b212ce3d06a1b553a7221E1fD19000d9aF"
         },
         {
+            "Symbol": "XAI",
+            "Exchange": "GateIO",
+            "Blockchain": "Arbitrum",
+            "Address": "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66"
+        },
+        {
             "Symbol": "XVG",
             "Exchange": "GateIO",
             "Blockchain": "Verge",

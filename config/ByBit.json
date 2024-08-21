@@ -781,6 +781,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "XAI",
+            "ForeignName": "XAIUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "XEM",
             "ForeignName": "XEMUSDT",
             "Exchange": "ByBit",

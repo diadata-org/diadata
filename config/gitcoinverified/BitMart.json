@@ -517,6 +517,12 @@
       "Address": "0xbbEE07B3e8121227AfCFe1E2B82772246226128e"
     },
     {
+      "Symbol": "XAI",
+      "Exchange": "BitMart",
+      "Blockchain": "Arbitrum",
+      "Address": "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66"
+    },
+    {
       "Symbol": "XLM",
       "Exchange": "BitMart",
       "Blockchain": "Stellar",
