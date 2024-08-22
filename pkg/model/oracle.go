@@ -1166,7 +1166,7 @@ func (reldb *RelDB) AddWalletKeys(owner, username, accessLevel string, publicKey
 	return nil
 }
 
-func (reldb *RelDB) UpdateAccessLevel(accessLevel, publicKey string) error {
+func (reldb *RelDB) UpdateAccessLevel(username, accessLevel, publicKey string) error {
 	var err error
 
 	tx, err := reldb.postgresClient.BeginTx(context.Background(), pgx.TxOptions{})
@@ -1178,9 +1178,12 @@ func (reldb *RelDB) UpdateAccessLevel(accessLevel, publicKey string) error {
 
 	_, err = tx.Exec(context.Background(), `
 		UPDATE wallet_public_keys
-		SET access_level = $1
+		SET access_level = $1,
+			    username = $3
 		WHERE public_key = $2
-		`, accessLevel, publicKey)
+		AND ($1 IS NOT NULL AND $1 != '' OR $3 IS NOT NULL AND $3 != '');
+
+		`, accessLevel, publicKey, username)
 	if err != nil {
 		return err
 	}

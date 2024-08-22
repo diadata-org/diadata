@@ -25,6 +25,7 @@ type RemoveWalletInput struct {
 type UpdateAccessInput struct {
 	WalletPublicKey string `form:"wallet_public_key"`
 	AccessLevel     string `form:"access_level" binding:"required,oneof=read read_write"`
+	UserName        string `form:"username"`
 }
 
 type ViewInput struct {
@@ -88,17 +89,19 @@ func (ob *Env) AddWallet(context *gin.Context) {
 }
 
 func (ob *Env) UpdateAccess(context *gin.Context) {
+	requestId := context.GetString(REQUEST_ID)
+
 	var input UpdateAccessInput
 	if err := context.ShouldBind(&input); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	//TODO check permission, remove self key, check should not be self, min one key has to me read_write
-	log.Errorln("input", input)
+	log.Infoln("Request ID: %s, UpdateAccess input err %v ", requestId, input)
 
-	err := ob.RelDB.UpdateAccessLevel(input.AccessLevel, input.WalletPublicKey)
+	err := ob.RelDB.UpdateAccessLevel(input.UserName, input.AccessLevel, input.WalletPublicKey)
 	if err != nil {
-		log.Errorln("UpdateAccessLevel", err)
+		log.Errorf("Request ID: %s,  UpdateAccessLevel %v ", requestId, err)
 
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -191,7 +191,7 @@ type RelDatastore interface {
 
 	CreateCustomer(email string, customerPlan int, paymentStatus string, paymentSource string, numberOfDataFeeds int, walletPublicKeys []string) error
 	AddWalletKeys(owner, username, accessLevel string, publicKey []string) error
-	UpdateAccessLevel(accessLevel, publicKey string) error
+	UpdateAccessLevel(username, accessLevel, publicKey string) error
 	RemoveWalletKeys(publicKey []string) error
 	GetCustomerIDByWalletPublicKey(publicKey string) (int, error)
 	GetCustomerByPublicKey(publicKey string) (*Customer, error)
