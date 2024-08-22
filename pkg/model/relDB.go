@@ -170,6 +170,8 @@ type RelDatastore interface {
 	ChangeOracleState(feederID string, active bool) (err error)
 	DeleteOracle(feederID string) (err error)
 	GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleConfig, err error)
+	GetOraclesByCustomer(customerId string) (oracleconfigs []dia.OracleConfig, err error)
+
 	GetAllFeeders(bool, bool) (oracleconfigs []dia.OracleConfig, err error)
 	GetFeederResources() (addresses []string, err error)
 	GetOracleUpdates(address string, chainid string, offset int) ([]dia.OracleUpdate, error)
