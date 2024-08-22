@@ -31,6 +31,7 @@ type Customer struct {
 type PublicKey struct {
 	AccessLevel string `json:"access_level"`
 	PublicKey   string `json:"public_key"`
+	UserName    string `json:"username"`
 }
 
 func (rdb *RelDB) SetKeyPair(publickey string, privatekey string) error {
@@ -1310,7 +1311,7 @@ func (reldb *RelDB) GetCustomerByPublicKey(publicKey string) (*Customer, error) 
 		return nil, err
 	}
 	query = `
-		SELECT public_key, access_level
+		SELECT public_key, access_level,username
 		FROM wallet_public_keys
 		WHERE customer_id = $1
 	`
@@ -1320,10 +1321,15 @@ func (reldb *RelDB) GetCustomerByPublicKey(publicKey string) (*Customer, error) 
 	}
 	defer rows.Close()
 
+	var username sql.NullString
+
 	for rows.Next() {
 		var publicKey PublicKey
-		if err := rows.Scan(&publicKey.PublicKey, &publicKey.AccessLevel); err != nil {
+		if err := rows.Scan(&publicKey.PublicKey, &publicKey.AccessLevel, &username); err != nil {
 			return nil, err
+		}
+		if username.Valid {
+			publicKey.UserName = username.String
 		}
 		customer.PublicKeys = append(customer.PublicKeys, publicKey)
 	}
