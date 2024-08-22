@@ -1150,7 +1150,7 @@ func (reldb *RelDB) AddWalletKeys(owner, username, accessLevel string, publicKey
 	for _, publicKey := range publicKey {
 		_, err = tx.Exec(context.Background(), `
 			INSERT INTO wallet_public_keys (customer_id, public_key, access_level,username)
-			VALUES ($1, $2,$3)
+			VALUES ($1, $2,$3,$4)
 		`, customerID, publicKey, accessLevel, username)
 		if err != nil {
 			return err

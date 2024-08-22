@@ -75,7 +75,7 @@ func (ob *Env) AddWallet(context *gin.Context) {
 		return
 	}
 	//TODO check permission
-	err := ob.RelDB.AddWalletKeys(input.Creator, input.AccessLevel, input.WalletPublicKeys)
+	err := ob.RelDB.AddWalletKeys(input.Creator, input.UserName, input.AccessLevel, input.WalletPublicKeys)
 	if err != nil {
 		log.Errorf("Request ID: %s,  AddWalletKeys err %v ", requestId, err)
 
