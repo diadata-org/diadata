@@ -1207,16 +1207,21 @@ func (reldb *RelDB) GetCustomerByPublicKey(publicKey string) (*Customer, error) 
 		INNER JOIN wallet_public_keys wpk ON c.customer_id = wpk.customer_id
 		WHERE wpk.public_key = $1
 	`
-	var emailsql sql.NullString
+	var (
+		emailSql         sql.NullString
+		customerPlanSql  sql.NullInt16
+		paymentStatusSql sql.NullString
+		paymentSourceSql sql.NullString
+	)
 	err := reldb.postgresClient.QueryRow(context.Background(), query, publicKey).Scan(
 		&customer.CustomerID,
-		&emailsql,
+		&emailSql,
 		&customer.AccountCreationDate,
-		&customer.CustomerPlan,
+		&customerPlanSql,
 		&customer.DeployedOracles,
-		&customer.PaymentStatus,
+		&paymentStatusSql,
 		// &customer.LastPayment,
-		&customer.PaymentSource,
+		&paymentSourceSql,
 		&customer.NumberOfDataFeeds,
 		&customer.Active,
 	)
@@ -1242,8 +1247,17 @@ func (reldb *RelDB) GetCustomerByPublicKey(publicKey string) (*Customer, error) 
 		customer.PublicKeys = append(customer.PublicKeys, publicKey)
 	}
 
-	if emailsql.Valid {
-		customer.Email = emailsql.String
+	if emailSql.Valid {
+		customer.Email = emailSql.String
+	}
+	if paymentStatusSql.Valid {
+		customer.PaymentStatus = paymentStatusSql.String
+	}
+	if customerPlanSql.Valid {
+		customer.CustomerPlan = int(customerPlanSql.Int16)
+	}
+	if paymentSourceSql.Valid {
+		customer.PaymentSource = paymentSourceSql.String
 	}
 
 	if rows.Err() != nil {
