@@ -1207,9 +1207,10 @@ func (reldb *RelDB) GetCustomerByPublicKey(publicKey string) (*Customer, error) 
 		INNER JOIN wallet_public_keys wpk ON c.customer_id = wpk.customer_id
 		WHERE wpk.public_key = $1
 	`
+	var emailsql sql.NullString
 	err := reldb.postgresClient.QueryRow(context.Background(), query, publicKey).Scan(
 		&customer.CustomerID,
-		&customer.Email,
+		&emailsql,
 		&customer.AccountCreationDate,
 		&customer.CustomerPlan,
 		&customer.DeployedOracles,
@@ -1239,6 +1240,10 @@ func (reldb *RelDB) GetCustomerByPublicKey(publicKey string) (*Customer, error) 
 			return nil, err
 		}
 		customer.PublicKeys = append(customer.PublicKeys, publicKey)
+	}
+
+	if emailsql.Valid {
+		customer.Email = emailsql.String
 	}
 
 	if rows.Err() != nil {
