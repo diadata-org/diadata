@@ -16,6 +16,11 @@ type AddWalletInput struct {
 	WalletPublicKeys []string `form:"wallet_public_keys[]"`
 	Creator          string   `form:"creator"`
 	AccessLevel      string   `form:"access_level" binding:"required,oneof=read read_write"`
+	UserName         string   `form:"username"`
+}
+type RemoveWalletInput struct {
+	WalletPublicKeys []string `form:"wallet_public_keys[]"`
+	Creator          string   `form:"creator"`
 }
 type UpdateAccessInput struct {
 	WalletPublicKey string `form:"wallet_public_key"`
@@ -104,17 +109,19 @@ func (ob *Env) UpdateAccess(context *gin.Context) {
 }
 
 func (ob *Env) RemoveWallet(context *gin.Context) {
-	var input AddWalletInput
+	requestId := context.GetString(REQUEST_ID)
+
+	var input RemoveWalletInput
 	if err := context.ShouldBind(&input); err != nil {
-		log.Errorln("ShouldBind", err)
+		log.Errorf("Request ID: %s,  ShouldBind err %v ", requestId, err)
+
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	//TODO check permission, remove self key
 	err := ob.RelDB.RemoveWalletKeys(input.WalletPublicKeys)
 	if err != nil {
-		log.Errorln("RemoveWalletKeys", err)
-
+		log.Errorf("Request ID: %s,  RemoveWalletKeys err %v ", requestId, err)
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
