@@ -52,7 +52,7 @@ func NewCoinBaseScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB)
 		db:           relDB,
 	}
 	var wsDialer ws.Dialer
-	SwConn, _, err := wsDialer.Dial("wss://ws-feed.pro.coinbase.com", nil)
+	SwConn, _, err := wsDialer.Dial(utils.Getenv("WEBSOCKET_API_URL", "wss://ws-feed.exchange.coinbase.com"), nil)
 	if err != nil {
 		println(err.Error())
 	}
