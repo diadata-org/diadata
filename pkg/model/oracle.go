@@ -134,9 +134,9 @@ func (rdb *RelDB) GetFeederLimit(owner string) (limit int) {
 	return
 }
 
-func (rdb *RelDB) GetTotalFeeder(owner string) (total int) {
-	query := fmt.Sprintf(`SELECT count(*) FROM %s WHERE owner=$1 AND active=true`, oracleconfigTable)
-	err := rdb.postgresClient.QueryRow(context.Background(), query, owner).Scan(&total)
+func (rdb *RelDB) GetTotalOracles(customerId string) (total int) {
+	query := fmt.Sprintf(`SELECT count(*) FROM %s WHERE customer_id=$1 AND active=true`, oracleconfigTable)
+	err := rdb.postgresClient.QueryRow(context.Background(), query, customerId).Scan(&total)
 	if err != nil {
 		log.Error("Error getting results from db ", err)
 	}

@@ -165,7 +165,7 @@ type RelDatastore interface {
 	SetFeederConfig(feederid, oracleconfigid string) error
 	GetFeederID(address string) (feederId string)
 	GetFeederLimit(owner string) (limit int)
-	GetTotalFeeder(owner string) (total int)
+	GetTotalOracles(customerid string) (total int)
 	GetOracleConfig(address, chainid string) (oracleconfig dia.OracleConfig, err error)
 	ChangeOracleState(feederID string, active bool) (err error)
 	DeleteOracle(feederID string) (err error)

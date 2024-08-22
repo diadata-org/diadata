@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -42,6 +43,16 @@ func (ob *Env) ViewAccount(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	totalFeeds, err := ob.totalFeedsUsedByCustomer(strconv.Itoa(customer.CustomerID))
+	if err != nil {
+		log.Errorf("Request ID: %s,  ViewAccount err %v ", requestId, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "error while  getting totalFeedusedByCustomer"})
+		return
+	}
+	customer.NumberOfDataFeeds = totalFeeds
+
+	customer.DeployedOracles = ob.RelDB.GetTotalOracles(strconv.Itoa(customer.CustomerID))
 
 	context.JSON(http.StatusOK, customer)
 
