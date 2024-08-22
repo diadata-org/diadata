@@ -1132,7 +1132,7 @@ func (datastore *DB) GetOracleConfigCache(key string) (dia.OracleConfig, error) 
 	return oc, err
 }
 
-func (reldb *RelDB) AddWalletKeys(owner string, publicKey []string) error {
+func (reldb *RelDB) AddWalletKeys(owner, accessLevel string, publicKey []string) error {
 	var err error
 
 	customerID, err := reldb.GetCustomerIDByWalletPublicKey(owner)
@@ -1149,9 +1149,9 @@ func (reldb *RelDB) AddWalletKeys(owner string, publicKey []string) error {
 
 	for _, publicKey := range publicKey {
 		_, err = tx.Exec(context.Background(), `
-			INSERT INTO wallet_public_keys (customer_id, public_key)
-			VALUES ($1, $2)
-		`, customerID, publicKey)
+			INSERT INTO wallet_public_keys (customer_id, public_key, access_level)
+			VALUES ($1, $2,$3)
+		`, customerID, publicKey, accessLevel)
 		if err != nil {
 			return err
 		}

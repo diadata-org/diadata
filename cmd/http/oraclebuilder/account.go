@@ -15,6 +15,7 @@ type CustomerInput struct {
 type AddWalletInput struct {
 	WalletPublicKeys []string `form:"wallet_public_keys[]"`
 	Creator          string   `form:"creator"`
+	AccessLevel      string   `form:"access_level" binding:"required,oneof=read read_write"`
 }
 type UpdateAccessInput struct {
 	WalletPublicKey string `form:"wallet_public_key"`
@@ -59,16 +60,19 @@ func (ob *Env) ViewAccount(context *gin.Context) {
 }
 
 func (ob *Env) AddWallet(context *gin.Context) {
+	requestId := context.GetString(REQUEST_ID)
+
 	var input AddWalletInput
 	if err := context.ShouldBind(&input); err != nil {
-		log.Errorln("ShouldBind", err)
+		log.Errorf("Request ID: %s,  ShouldBind err %v ", requestId, err)
+
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	//TODO check permission
-	err := ob.RelDB.AddWalletKeys(input.Creator, input.WalletPublicKeys)
+	err := ob.RelDB.AddWalletKeys(input.Creator, input.AccessLevel, input.WalletPublicKeys)
 	if err != nil {
-		log.Errorln("AddWalletKeys", err)
+		log.Errorf("Request ID: %s,  AddWalletKeys err %v ", requestId, err)
 
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
