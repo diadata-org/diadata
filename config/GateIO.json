@@ -2534,6 +2534,12 @@
         },
         {
             "Exchange": "GateIO",
+            "ForeignName": "XAI_USDT",
+            "Ignore": false,
+            "Symbol": "XAI"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "XLM_BTC",
             "Ignore": false,
             "Symbol": "XLM"

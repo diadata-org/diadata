@@ -584,6 +584,12 @@
         },
         {
             "Exchange": "BitMart",
+            "ForeignName": "XAI_USDT",
+            "Ignore": false,
+            "Symbol": "XAI"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "XLM_USDT",
             "Ignore": false,
             "Symbol": "XLM"

@@ -272,6 +272,7 @@ func (s *BitMartScraper) mainLoop() {
 	defer s.cleanup(nil)
 	defer func() {
 		log.Printf("Shutting down main loop...\n")
+		return
 	}()
 	for i := 0; i < bitMartMaxConnections; i++ {
 		go func(idx int) {
@@ -290,6 +291,7 @@ func (s *BitMartScraper) mainLoop() {
 				s.rl.Take()
 				if err := s.wsClient[idx].WriteMessage(ws.TextMessage, []byte(bitMartPingMessage)); err != nil {
 					log.Errorf("Error sending ping: %s", err)
+					return
 				}
 			}
 		}(i)
@@ -307,7 +309,7 @@ func (s *BitMartScraper) mainLoop() {
 							return
 						}
 						if err := s.retryConnection(idx); err != nil || ws.IsCloseError(err, ws.CloseAbnormalClosure) {
-							continue
+							return
 						}
 					}
 
@@ -318,15 +320,17 @@ func (s *BitMartScraper) mainLoop() {
 						gzreader := flate.NewReader(reader)
 						if err != nil {
 							log.Error("flate reader: ", err)
+							return
 						}
 						output, err = ioutil.ReadAll(gzreader)
 						if err != nil {
 							log.Error("read all: ", err)
+							return
 						}
 					case ws.TextMessage:
 						if string(msg) == bitMartPongMessage {
 							s.errCount[idx] = 0
-							continue
+							return
 						}
 						output = msg
 					}
@@ -338,7 +342,7 @@ func (s *BitMartScraper) mainLoop() {
 						s.setError(err)
 						s.errCount[idx]++
 						if err := s.retryConnection(idx); err != nil {
-							continue
+							return
 						}
 					}
 					if subResults.ErrorCode != "" {

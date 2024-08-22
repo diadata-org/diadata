@@ -715,6 +715,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "XAI",
+      "ForeignName": "XAIUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "XFI",
       "ForeignName": "XFIUSDT",
       "Exchange": "MEXC",

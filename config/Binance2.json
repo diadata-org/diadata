@@ -404,6 +404,12 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "XAIUSDT",
+            "Ignore": false,
+            "Symbol": "XAI"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "XRPFDUSD",
             "Ignore": false,
             "Symbol": "XRP"

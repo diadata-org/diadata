@@ -691,6 +691,12 @@
       "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
     },
     {
+      "Symbol": "XAI",
+      "Exchange": "MEXC",
+      "Blockchain": "Arbitrum",
+      "Address": "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66"
+    },
+    {
       "Symbol": "XFI",
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",

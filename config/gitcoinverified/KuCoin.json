@@ -907,6 +907,12 @@
             "Address": "0xBd356a39BFf2cAda8E9248532DD879147221Cf76"
         },
         {
+            "Symbol": "XAI",
+            "Exchange": "KuCoin",
+            "Blockchain": "Arbitrum",
+            "Address": "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66"
+        },
+        {
             "Symbol": "XCUR",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
