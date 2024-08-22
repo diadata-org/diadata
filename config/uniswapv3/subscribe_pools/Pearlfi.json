@@ -15,6 +15,10 @@
         {
             "Address": "0x72c20EBBffaE1fe4E9C759b326D97763E218F9F6",
             "ForeignName": "UKRE-arcUSD"
+        },
+        {
+            "Address": "0x22aC4821bBb8d1AC42eA7F0f32ed415F52577Ca1",
+            "ForeignName": "arcUSD-USDC"
         }
     ]
 }
