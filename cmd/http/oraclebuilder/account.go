@@ -25,17 +25,20 @@ type ViewInput struct {
 }
 
 func (ob *Env) ViewAccount(context *gin.Context) {
+	requestId := context.GetString(REQUEST_ID)
+
 	var input ViewInput
 	if err := context.ShouldBind(&input); err != nil {
 		log.Errorln("ShouldBind", err)
+		log.Errorf("Request ID: %s,  ShouldBind err %v ", requestId, err)
+
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	//TODO check permission
 	customer, err := ob.RelDB.GetCustomerByPublicKey(input.Creator)
 	if err != nil {
-		log.Errorln("AddWalletKeys", err)
-
+		log.Errorf("Request ID: %s,  ViewAccount err %v ", requestId, err)
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
