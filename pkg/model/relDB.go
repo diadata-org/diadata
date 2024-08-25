@@ -203,6 +203,8 @@ type RelDatastore interface {
 	GetLastOracleUpdate(address string, chainid string) ([]dia.OracleUpdate, error)
 	GetLastPaymentByEndUser(endUser string) (LoopPaymentTransferProcessed, error)
 
+	GetPlan(ctx context.Context, planID int) (*Plan, error)
+
 	InsertLoopPaymentTransferProcessed(record LoopPaymentTransferProcessed) error
 }
 

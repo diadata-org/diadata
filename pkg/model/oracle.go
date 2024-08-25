@@ -28,6 +28,15 @@ type Customer struct {
 	Active            bool        `json:"active"`
 	PublicKeys        []PublicKey `json:"public_keys"`
 }
+
+type Plan struct {
+	PlanID      int    `json:"plan_id"`
+	Name        string `json:"plan_name"`
+	Description string `json:"plan_description"`
+	Price       int    `json:"plan_price"`
+	TotalFeeds  int    `json:"total_feeds"`
+}
+
 type PublicKey struct {
 	AccessLevel string `json:"access_level"`
 	PublicKey   string `json:"public_key"`
@@ -1281,6 +1290,25 @@ func addWalletPublicKeys(tx pgx.Tx, customerID int, walletPublicKeys []string) e
 	}
 
 	return nil
+}
+
+func (reldb *RelDB) GetPlan(ctx context.Context, planID int) (*Plan, error) {
+	var plan Plan
+	query := `SELECT plan_id, plan_name, plan_description, plan_price, total_feeds
+	       FROM plans
+		   WHERE plan_id = $1`
+	err := reldb.postgresClient.QueryRow(ctx, query, planID).Scan(
+		&plan.PlanID,
+		&plan.Name,
+		&plan.Description,
+		&plan.Price,
+		&plan.TotalFeeds,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &plan, err
+
 }
 
 func (reldb *RelDB) GetCustomerByPublicKey(publicKey string) (*Customer, error) {
