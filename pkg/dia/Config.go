@@ -118,7 +118,7 @@ const (
 	ThenaExchange                      = "Thena"
 	ThenaV3Exchange                    = "ThenaV3"
 	AyinExchange                       = "Ayin"
-	HydrationExchange                  = "Hydration"
+	BifrostExchange                    = "Bifrost"
 	// FinageForex        = "FinageForex"
 )
 

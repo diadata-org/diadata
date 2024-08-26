@@ -6,16 +6,16 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	hydrationhelper "github.com/diadata-org/diadata/pkg/dia/helpers/hydration-helper"
+	bifrosthelper "github.com/diadata-org/diadata/pkg/dia/helpers/bifrost-helper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/sirupsen/logrus"
 )
 
-// HydrationAssetSource asset collector object - which serves assetCollector command
-type HydrationAssetSource struct {
-	// client - interaction with hydration REST API services
-	hydrationClient *hydrationhelper.HydrationClient
+// BifrostAssetSource asset collector object - which serves assetCollector command
+type BifrostAssetSource struct {
+	// client - interaction with bifrost REST API services
+	bifrostClient *bifrosthelper.BifrostClient
 	// channel to store received asset info
 	assetChannel chan dia.Asset
 	// channel which informs about work is finished
@@ -26,7 +26,7 @@ type HydrationAssetSource struct {
 	relDB *models.RelDB
 	// logs all events here
 	logger *logrus.Entry
-	// swap contracts count limitation in hydration REST API
+	// swap contracts count limitation in bifrost REST API
 	swapContractsLimit int
 
 	sleepTimeout       time.Duration
@@ -34,21 +34,21 @@ type HydrationAssetSource struct {
 	targetSwapContract string
 }
 
-// NewHydrationAssetSource creates object to get hydration assets
+// NewBifrostAssetSource creates object to get bifrost assets
 // ENV values:
 //
-//	 	BIFROST_ASSETS_SLEEP_TIMEOUT - (optional,millisecond), make timeout between API calls, default "hydrationhelper.DefaultSleepBetweenContractCalls" value
-//		BIFROST_SWAP_CONTRACTS_LIMIT - (optional, int), limit to get swap contact addresses, default "hydrationhelper.DefaultSwapContractsLimit" value
+//	 	BIFROST_ASSETS_SLEEP_TIMEOUT - (optional,millisecond), make timeout between API calls, default "bifrosthelper.DefaultSleepBetweenContractCalls" value
+//		BIFROST_SWAP_CONTRACTS_LIMIT - (optional, int), limit to get swap contact addresses, default "bifrosthelper.DefaultSwapContractsLimit" value
 //		BIFROST_TARGET_SWAP_CONTRACT - (optional, string), useful for debug, default = ""
-//		BIFROST_DEBUG - (optional, bool), make stdout output with hydration client http call, default = false
-func NewHydrationAssetSource(exchange dia.Exchange, relDB *models.RelDB) *HydrationAssetSource {
-	println("assetService::source::hydration exchange: ", exchange.Name)
+//		BIFROST_DEBUG - (optional, bool), make stdout output with bifrost client http call, default = false
+func NewBifrostAssetSource(exchange dia.Exchange, relDB *models.RelDB) *BifrostAssetSource {
+	println("assetService::source::bifrost exchange: ", exchange.Name)
 	sleepBetweenContractCalls := utils.GetTimeDurationFromIntAsMilliseconds(
-		utils.GetenvInt(strings.ToUpper(exchange.Name)+"_SLEEP_TIMEOUT", hydrationhelper.DefaultSleepBetweenContractCalls),
+		utils.GetenvInt(strings.ToUpper(exchange.Name)+"_SLEEP_TIMEOUT", bifrosthelper.DefaultSleepBetweenContractCalls),
 	)
 	swapContractsLimit := utils.GetenvInt(
 		strings.ToUpper(exchange.Name)+"_SWAP_CONTRACTS_LIMIT",
-		hydrationhelper.DefaultSwapContractsLimit,
+		bifrosthelper.DefaultSwapContractsLimit,
 	)
 	targetSwapContract := utils.Getenv(strings.ToUpper(exchange.Name)+"_TARGET_SWAP_CONTRACT", "")
 	isDebug := utils.GetenvBool(strings.ToUpper(exchange.Name)+"_DEBUG", false)
@@ -58,22 +58,22 @@ func NewHydrationAssetSource(exchange dia.Exchange, relDB *models.RelDB) *Hydrat
 		doneChannel  = make(chan bool)
 	)
 
-	println("assetService::source::hydration connecting to Hydration RPC")
-	hydrationClient := hydrationhelper.NewHydrationClient(
-		log.WithContext(context.Background()).WithField("context", "HydrationClient"),
+	println("assetService::source::bifrost connecting to Bifrost RPC")
+	bifrostClient := bifrosthelper.NewBifrostClient(
+		log.WithContext(context.Background()).WithField("context", "BifrostClient"),
 		sleepBetweenContractCalls,
 		isDebug,
 	)
 
-	println("assetService::source::hydration connected to Hydration RPC with success!!")
+	println("assetService::source::bifrost connected to Bifrost RPC with success!!")
 	
 	logger := log.
 		WithContext(context.Background()).
 		WithField("service", "assetCollector").
 		WithField("network", exchange.BlockChain.Name)
 
-	scraper := &HydrationAssetSource{
-		hydrationClient:      hydrationClient,
+	scraper := &BifrostAssetSource{
+		bifrostClient:      bifrostClient,
 		assetChannel:       assetChannel,
 		doneChannel:        doneChannel,
 		blockchain:         exchange.BlockChain.Name,
@@ -90,11 +90,10 @@ func NewHydrationAssetSource(exchange dia.Exchange, relDB *models.RelDB) *Hydrat
 	return scraper
 }
 
-func (s *HydrationAssetSource) fetchAssets() {
+func (s *BifrostAssetSource) fetchAssets() {
 	s.logger.Info("Scraping assets...")
 
-	// fetch all assets to send in the channel
-	assets, err := s.hydrationClient.ScrapAssets()
+	assets, err := s.bifrostClient.ScrapAssets()
 	if err != nil {
 		s.logger.Error("Error when scraping assets: ", err)
 		return
@@ -106,10 +105,10 @@ func (s *HydrationAssetSource) fetchAssets() {
 	s.doneChannel <- true
 }
 
-func (s *HydrationAssetSource) Asset() chan dia.Asset {
+func (s *BifrostAssetSource) Asset() chan dia.Asset {
 	return s.assetChannel
 }
 
-func (s *HydrationAssetSource) Done() chan bool {
+func (s *BifrostAssetSource) Done() chan bool {
 	return s.doneChannel
 }
