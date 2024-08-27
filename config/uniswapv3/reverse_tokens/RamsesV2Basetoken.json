@@ -7,6 +7,10 @@
     {
      "Address": "0xd3443ee1e91aF28e5FB858Fbd0D72A63bA8046E0",
       "Symbol": "GUSDC"
+    },
+    {
+      "Address": "0x894134a25a5faC1c2C26F1d8fBf05111a3CB9487",
+      "Symbol": "GRAI"
     }
   ]
 }

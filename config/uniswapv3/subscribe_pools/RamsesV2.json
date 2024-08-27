@@ -23,6 +23,18 @@
         {
             "Address": "0xe9e3Ef12f1f9Dbaf7b7F57ab262c54117448884B",
             "ForeignName": "USDC-GUSDC"
+        },
+        {
+            "Address": "0x1A30F6C99FE9F9E1607fdA54e1C76DC03000F9d8",
+            "ForeignName": "GRAI-USDC"
+        },
+        {
+            "Address": "0xeaA52B3E3233A3683c2D9804f98682FeeCe4EcC9",
+            "ForeignName": "wstETH-GRAI"
+        },
+        {
+            "Address": "0x8f0e6d286CeE76F8866DFb2595D1c103Fd7B13D8",
+            "ForeignName": "WETH-GRAI"
         }
     ]
 }
