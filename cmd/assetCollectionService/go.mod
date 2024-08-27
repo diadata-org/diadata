@@ -3,7 +3,7 @@ module github.com/diadata-org/diadata/assetCollectionService
 go 1.20
 
 require (
-	github.com/diadata-org/diadata v1.4.510
+	github.com/diadata-org/diadata v1.4.522
 	github.com/sirupsen/logrus v1.9.3
 )
 

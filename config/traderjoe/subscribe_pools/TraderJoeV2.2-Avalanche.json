@@ -1,0 +1,32 @@
+{
+    "Pools": [
+        {
+            "Address": "0xcEC377285AbF370FDf872625D2742252656d631a",
+            "ForeignName": "AUSD-USDt"
+        },
+        {
+            "Address": "0xEA7309636E7025Fda0Ee2282733Ea248c3898495",
+            "ForeignName": "JOE-WAVAX"
+        },
+        {
+            "Address": "0x2823299af89285fF1a1abF58DB37cE57006FEf5D",
+            "ForeignName": "USDt-USDC"
+        },
+        {
+            "Address": "0x8573F98175D816d520248B5fACF40D309B1c9ceE",
+            "ForeignName": "AUSD-USDC"
+        },
+        {
+            "Address": "0x883eA72c2A46F7AcB3820855344C43666c6cc5c0",
+            "ForeignName": "sAVAX-WAVAX"
+        },
+        {
+            "Address": "0x934cf521743903D27e388d7E8517c636f3Cc4D54",
+            "ForeignName": "aUSD-USDC"
+        },
+        {
+            "Address": "0x70898cAa8ea8E9B2BA2e68708E2B761404dd07d6",
+            "ForeignName": "ggAVAX-WAVAX"
+        }
+    ]
+}
