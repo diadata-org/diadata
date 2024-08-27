@@ -205,7 +205,8 @@ type RelDatastore interface {
 
 	GetPlan(ctx context.Context, planID int) (*Plan, error)
 
-	InsertLoopPaymentTransferProcessed(record LoopPaymentTransferProcessed) error
+	InsertLoopPaymentTransferProcessed(ctx context.Context, record LoopPaymentTransferProcessed) error
+	InsertLoopPaymentResponse(ctx context.Context, response LoopPaymentResponse) error
 }
 
 const (
