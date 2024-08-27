@@ -127,12 +127,14 @@ func main() {
 		w = kafkaHelper.NewWriter(kafkaHelper.TopicTradesEstimation)
 	}
 
-	defer func() {
-		err := w.Close()
-		if err != nil {
-			log.Error(err)
-		}
-	}()
+	if *mode != "storeTrades" {
+		defer func() {
+			err := w.Close()
+			if err != nil {
+				log.Error(err)
+			}
+		}()
+	}
 
 	wg := sync.WaitGroup{}
 

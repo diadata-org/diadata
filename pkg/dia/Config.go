@@ -42,6 +42,7 @@ const (
 	TraderJoeExchangeV2_1Arbitrum      = "TraderJoeV2.1-Arbitrum"
 	TraderJoeExchangeV2_1Avalanche     = "TraderJoeV2.1-Avalanche"
 	TraderJoeExchangeV2_1BNB           = "TraderJoeV2.1-BNB"
+	TraderJoeExchangeV2_2Avalanche     = "TraderJoeV2.2-Avalanche"
 	PangolinExchange                   = "Pangolin"
 	PlatypusExchange                   = "PlatypusFinance"
 	SimexExchange                      = "Simex"

@@ -259,6 +259,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewTraderJoeScraper(Exchanges[dia.TraderJoeExchangeV2_1Avalanche], scrape, relDB)
 	case dia.TraderJoeExchangeV2_1BNB:
 		return NewTraderJoeScraper(Exchanges[dia.TraderJoeExchangeV2_1BNB], scrape, relDB)
+	case dia.TraderJoeExchangeV2_2Avalanche:
+		return NewTraderJoeScraper(Exchanges[dia.TraderJoeExchangeV2_2Avalanche], scrape, relDB)
 	case dia.OsmosisExchange:
 		return NewOsmosisScraper(Exchanges[dia.OsmosisExchange], scrape, relDB)
 	case dia.ZenlinkswapExchange:
