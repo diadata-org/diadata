@@ -195,6 +195,7 @@ type RelDatastore interface {
 	RemoveWalletKeys(publicKey []string) error
 	GetCustomerIDByWalletPublicKey(publicKey string) (int, error)
 	GetCustomerByPublicKey(publicKey string) (*Customer, error)
+	UpdateCustomerPlan(ctx context.Context, customerID int, customerPlan int, paymentSource string, lastPayment string) error
 	GetAccessLevel(publicKey string) (string, error)
 
 	GetAllChains() (chainconfigs []dia.ChainConfig, err error)
@@ -207,6 +208,7 @@ type RelDatastore interface {
 
 	InsertLoopPaymentTransferProcessed(ctx context.Context, record LoopPaymentTransferProcessed) error
 	InsertLoopPaymentResponse(ctx context.Context, response LoopPaymentResponse) error
+	GetLoopPaymentResponseByAgreementID(ctx context.Context, agreementID string) (*LoopPaymentResponse, error)
 }
 
 const (

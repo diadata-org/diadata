@@ -1,6 +1,9 @@
 package models
 
-import "context"
+import (
+	"context"
+	"encoding/json"
+)
 
 // {
 //     "event": "TransferProcessed",
@@ -226,4 +229,39 @@ func (reldb *RelDB) InsertLoopPaymentResponse(ctx context.Context, response Loop
 		response.EventDate, response.RefID, response.InvoiceID, response.Metadata,
 	)
 	return err
+}
+
+func (reldb *RelDB) GetLoopPaymentResponseByAgreementID(ctx context.Context, agreementID string) (*LoopPaymentResponse, error) {
+	query := `
+        SELECT event, transaction, network_id, network_name, contract_address, email, company,
+               parent, subscriber, item, item_id, agreement_id, agreement_amount, frequency_number,
+               frequency_unit, add_on_agreements, add_on_items, add_on_item_ids, add_on_total_amount,
+               payment_token_symbol, payment_token_address, event_date, ref_id, invoice_id, metadata
+        FROM loop_payment_responses
+        WHERE agreement_id = $1
+    `
+
+	row := reldb.postgresClient.QueryRow(ctx, query, agreementID)
+
+	var response LoopPaymentResponse
+	var metadataJSON []byte
+
+	err := row.Scan(
+		&response.Event, &response.Transaction, &response.NetworkID, &response.NetworkName,
+		&response.ContractAddress, &response.Email, &response.Company, &response.Parent,
+		&response.Subscriber, &response.Item, &response.ItemID, &response.AgreementID,
+		&response.AgreementAmount, &response.FrequencyNumber, &response.FrequencyUnit,
+		&response.AddOnAgreements, &response.AddOnItems, &response.AddOnItemIds,
+		&response.AddOnTotalAmount, &response.PaymentTokenSymbol, &response.PaymentTokenAddress,
+		&response.EventDate, &response.RefID, &response.InvoiceID, &metadataJSON,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := json.Unmarshal(metadataJSON, &response.Metadata); err != nil {
+		return nil, err
+	}
+
+	return &response, nil
 }

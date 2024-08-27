@@ -1277,6 +1277,22 @@ func (reldb *RelDB) CreateCustomer(email string, customerPlan int, paymentStatus
 	return nil
 }
 
+func (reldb *RelDB) UpdateCustomerPlan(ctx context.Context, customerID int, customerPlan int, paymentSource string, lastPayment string) error {
+
+	ut, err := strconv.ParseInt(lastPayment, 10, 64)
+	lastPaymentts := time.Unix(ut, 0)
+
+	query := `
+        UPDATE customers
+        SET customer_plan = $1,
+            payment_source = $2,
+            last_payment = $3
+        WHERE customer_id = $4
+    `
+	_, err = reldb.postgresClient.Exec(ctx, query, customerPlan, paymentSource, lastPaymentts, customerID)
+	return err
+}
+
 func addWalletPublicKeys(tx pgx.Tx, customerID int, walletPublicKeys []string) error {
 	insertWalletKeyQuery := `
         INSERT INTO wallet_public_keys (customer_id, public_key)
