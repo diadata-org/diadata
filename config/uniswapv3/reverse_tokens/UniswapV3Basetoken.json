@@ -63,6 +63,10 @@
     {
       "Address": "0xf951E335afb289353dc249e82926178EaC7DEd78",
       "Symbol": "swETH"
+    },
+    {
+      "Address": "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
+      "Symbol": "weETH"
     }
   ]
 }
