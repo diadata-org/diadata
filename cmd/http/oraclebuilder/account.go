@@ -61,7 +61,28 @@ func (ob *Env) ViewAccount(context *gin.Context) {
 
 	customer.DeployedOracles = ob.RelDB.GetTotalOracles(strconv.Itoa(customer.CustomerID))
 
-	context.JSON(http.StatusOK, customer)
+	plan, err := ob.RelDB.GetPlan(context, customer.CustomerPlan)
+	if err != nil {
+		log.Errorf("Request ID: %s,  ViewAccount GetPlan err %v ", requestId, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "error while  getting plan"})
+		return
+	}
+
+	combined := map[string]interface{}{
+		"plan":                  plan,
+		"customer_id":           customer.CustomerID,
+		"email":                 customer.Email,
+		"account_creation_date": customer.AccountCreationDate,
+		"customer_plan":         customer.CustomerPlan,
+		"deployed_oracles":      customer.DeployedOracles,
+		"payment_status":        customer.PaymentStatus,
+		"payment_source":        customer.PaymentSource,
+		"number_of_data_feeds":  customer.NumberOfDataFeeds,
+		"active":                customer.Active,
+		"public_keys":           customer.PublicKeys,
+	}
+
+	context.JSON(http.StatusOK, combined)
 
 }
 

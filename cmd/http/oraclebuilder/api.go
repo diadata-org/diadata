@@ -1,9 +1,16 @@
 package main
 
 import (
+	"crypto/hmac"
+	"crypto/rand"
+	"crypto/sha256"
+	"database/sql"
+	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 	"time"
@@ -29,29 +36,55 @@ Auth using EIP712 spec
 //goland:noinspection ALL
 type Env struct {
 	DataStore               models.Datastore
-	RelDB                   *models.RelDB
+	RelDB                   models.RelDatastore
 	k8sbridgeClient         k8sbridge.K8SHelperClient
 	Keyring                 kr.Keyring
 	RateLimitOracleCreation int
 	SupportedChain          []string
+	LoopPaymentSecret       string
+	RedirectURL             string
 }
 
-func NewEnv(relStore *models.RelDB, ds models.Datastore, kc k8sbridge.K8SHelperClient, ring kr.Keyring, rateLimitOracleCreation int) *Env {
+const REQUEST_ID = "REQUEST_ID"
 
+func NewEnv(relStore models.RelDatastore, ds models.Datastore, kc k8sbridge.K8SHelperClient, ring kr.Keyring, rateLimitOracleCreation int, lps string) *Env {
+
+	ru := utils.Getenv("PAYMENT_SUCCESS_URL", "")
 	return &Env{
+		RedirectURL:             ru,
 		DataStore:               ds,
 		RelDB:                   relStore,
 		Keyring:                 ring,
 		k8sbridgeClient:         kc,
 		RateLimitOracleCreation: rateLimitOracleCreation,
+		LoopPaymentSecret:       lps,
 		SupportedChain:          []string{"11155111", "421614", "123420111", "94204209", "88153591557", "80002"},
 	}
 }
 
-func handleError(context *gin.Context, status int, errorMsg, logMsg string, logArgs ...interface{}) {
-	context.JSON(status, errors.New(errorMsg))
-	log.Errorf(logMsg, logArgs...)
-	context.Abort() // Prevent further handlers from being called
+func (ob *Env) ViewLimit(context *gin.Context) {
+
+	response := make(map[string]interface{})
+	response["Count"] = 1
+	response["IsAllowed"] = true
+
+	context.JSON(http.StatusOK, response)
+}
+
+func (ob *Env) totalFeedsUsedByCustomer(customerId string) (int, error) {
+	// get all oracleconfig
+	var totalFeeds int
+	oracleConfig, err := ob.RelDB.GetOraclesByCustomer(customerId)
+	if err != nil {
+		return 0, err
+	}
+
+	for _, oracle := range oracleConfig {
+		var sf []SymbolFeed
+		json.Unmarshal([]byte(oracle.FeederSelection), &sf)
+		totalFeeds = totalFeeds + len(sf)
+	}
+	return totalFeeds, nil
 }
 
 // Create new oracle feeder if creator has resources
@@ -64,6 +97,9 @@ func (ob *Env) Create(context *gin.Context) {
 		isUpdate bool
 	)
 
+	requestId := GenerateRandString()
+
+	context.Set(REQUEST_ID, requestId)
 	isUpdate = false
 
 	oracleaddress := context.PostForm("oracleaddress")
@@ -86,13 +122,15 @@ func (ob *Env) Create(context *gin.Context) {
 
 	k := make(map[string]string)
 
-	log.Infof("Creating oracle: oracleAddress: %s, ChainID: %s, Creator: %s, Symbols: %s, frequency: %s, sleepSeconds: %s blockchainnode: %s, feedSelection %s", oracleaddress, chainID, creator, symbols, frequency, sleepSeconds, blockchainnode, feedSelection)
+	log.Infof("Request ID: %s Creating oracle: oracleAddress: %s, ChainID: %s, Creator: %s, Symbols: %s, frequency: %s, sleepSeconds: %s blockchainnode: %s, feedSelection %s", requestId, oracleaddress, chainID, creator, symbols, frequency, sleepSeconds, blockchainnode, feedSelection)
 
 	signer, err := utils.GetSigner(chainID, creator, oracleaddress, "Verify its your address to call oracle builder", signedData)
 	if err != nil {
 		handleError(context, http.StatusUnauthorized, "sign err", "Creating oracle: invalid signer")
+		return
+
 	}
-	log.Infoln("Creating oracle: signer", signer)
+	log.Infof("Request ID: %s Creating oracle: signer", requestId, signer)
 
 	if signer.Hex() != creator {
 		handleError(context, http.StatusUnauthorized, "sign err", "Creating oracle: invalid signer %v", signer)
@@ -105,6 +143,54 @@ func (ob *Env) Create(context *gin.Context) {
 		handleError(context, http.StatusBadRequest, "no symbols", "Creating oracle: no symbols or feedSelection %v", symbols)
 
 	}
+
+	// get customer id
+	customer, err := ob.RelDB.GetCustomerByPublicKey(signer.Hex())
+	if err != nil {
+		log.Errorf("Request ID: %s, GetCustomerByPublicKey %v ,", requestId, err)
+		handleError(context, http.StatusInternalServerError, "error getting customer", "Creating oracle: error getting customer")
+		return
+
+	}
+
+	customerID := customer.CustomerID
+
+	// Get Plan and allowed feeds
+
+	plan, err := ob.RelDB.GetPlan(context, customer.CustomerPlan)
+
+	if err != nil {
+		log.Errorf("Request ID: %s, GetPlan %v ,", requestId, err)
+
+		handleError(context, http.StatusInternalServerError, "plan err", "Creating oracle: invalid plan")
+		return
+
+	}
+
+	log.Infof("Request ID: %s, Plan %v ,", requestId, plan)
+
+	/* total Feeds used
+
+	 */
+	totalFeeds, err := ob.totalFeedsUsedByCustomer(strconv.Itoa(customerID))
+	if err != nil {
+		log.Errorf("Request ID: %s, Total feeds err %v ,", requestId, err)
+
+	}
+	if totalFeeds >= plan.TotalFeeds {
+		log.Errorf("Request ID: %s, totalFeeds exceeds plan Limit %v ,", requestId, err)
+		handleError(context, http.StatusInternalServerError, " totalFeeds exceeds plan Limit", "Creating oracle:  totalFeeds exceeds plan Limit")
+		return
+	}
+
+	log.Infof("Request ID: %s, Total feeds %d,", requestId, totalFeeds)
+
+	var sf []SymbolFeed
+
+	json.Unmarshal([]byte(feedSelection), &sf)
+
+	log.Infof("Request ID: %s, CustomerID: %d Creating oracle: total feeds", requestId, customerID, len(sf))
+
 	symbolsArray := strings.Split(symbols, ",")
 
 	if len(symbolsArray) > 10 {
@@ -209,6 +295,17 @@ func (ob *Env) Create(context *gin.Context) {
 	log.Infoln("public key", keypair.GetPublickey())
 	address = keypair.GetPublickey()
 
+	var symbolFeeds []SymbolFeed
+
+	if feedSelection != "" {
+		if err := json.Unmarshal([]byte(feedSelection), &symbolFeeds); err != nil {
+			return
+		}
+
+	}
+
+	log.Println("total feeds selected", len(symbolFeeds))
+
 	if !isUpdate {
 
 		fc := &k8sbridge.FeederConfig{
@@ -234,10 +331,10 @@ func (ob *Env) Create(context *gin.Context) {
 
 	}
 
-	err = ob.RelDB.SetOracleConfig(oracleaddress, feederID, creator, address, symbols, feedSelection, chainID, frequency, sleepSeconds, deviationPermille, blockchainnode, mandatoryFrequency)
+	err = ob.RelDB.SetOracleConfig(context, strconv.Itoa(customerID), oracleaddress, feederID, creator, address, symbols, feedSelection, chainID, frequency, sleepSeconds, deviationPermille, blockchainnode, mandatoryFrequency)
 	if err != nil {
-		log.Errorln("error SetOracleConfig ", err)
-		context.JSON(http.StatusInternalServerError, err)
+		log.Errorln("requestId: %s, error SetOracleConfig ", requestId, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "error creating new oracle config"})
 		return
 	}
 
@@ -287,7 +384,16 @@ func (ob *Env) Create(context *gin.Context) {
 func (ob *Env) List(context *gin.Context) {
 	creator := context.Query("creator")
 
-	oracles, err := ob.RelDB.GetOraclesByOwner(creator)
+	// get customer id, get oracles by customer
+
+	customerId, err := ob.RelDB.GetCustomerIDByWalletPublicKey(creator)
+	if err != nil {
+		errorMsg := "Error fetching customer id by key"
+		logMsg := "List Oracles: error on GetCustomerIDByWalletPublicKey"
+		handleError(context, http.StatusInternalServerError, errorMsg, logMsg, err)
+	}
+
+	oracles, err := ob.RelDB.GetOraclesByCustomer(strconv.Itoa(customerId))
 	if err != nil {
 		errorMsg := "Error fetching oracles by owner"
 		logMsg := "List Oracles: error on getOraclesByOwner"
@@ -298,6 +404,8 @@ func (ob *Env) List(context *gin.Context) {
 
 // List whitelisted addresses
 func (ob *Env) Whitelist(context *gin.Context) {
+	log.Errorln("Whitelist ")
+
 	addresses, err := ob.RelDB.GetFeederResources()
 	if err != nil {
 		log.Errorln("List Whitelist: error on GetFeederResources ", err)
@@ -875,6 +983,7 @@ func getAuthToken(req *http.Request) (string, error) {
 }
 
 func (ob *Env) CanRead(context *gin.Context) {
+	requestId := context.GetString(REQUEST_ID)
 	creator := context.Query("creator")
 	if creator == "" {
 		creator = context.PostForm("creator")
@@ -887,13 +996,15 @@ func (ob *Env) CanRead(context *gin.Context) {
 	if accessLevel == "read" || accessLevel == "read_write" {
 
 	} else {
-		context.JSON(http.StatusUnauthorized, errors.New("no read access"))
+		log.Errorf("Request ID: %s,  caller %s has no read access", requestId, creator)
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "no read access"})
 		context.Abort()
 		return
 	}
 
 }
 func (ob *Env) CanWrite(context *gin.Context) {
+	requestId := context.GetString(REQUEST_ID)
 	creator := context.Query("creator")
 	if creator == "" {
 		creator = context.PostForm("creator")
@@ -906,14 +1017,26 @@ func (ob *Env) CanWrite(context *gin.Context) {
 	if accessLevel == "read_write" {
 
 	} else {
-		context.JSON(http.StatusUnauthorized, errors.New("no write access"))
+		log.Errorf("Request ID: %s,  caller %s has no write access", requestId, creator)
+
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "no write access"})
 		context.Abort()
 		return
 	}
 
 }
 
+func GenerateRandString() string {
+	b := make([]byte, 10)
+	rand.Read(b)
+	return hex.EncodeToString(b)
+}
+
 func (ob *Env) Auth(context *gin.Context) {
+
+	requestId := GenerateRandString()
+
+	context.Set(REQUEST_ID, requestId)
 
 	chainID := context.Query("chainID")
 	creator := context.Query("creator")
@@ -935,29 +1058,27 @@ func (ob *Env) Auth(context *gin.Context) {
 	signedData, err := getAuthToken(context.Request)
 
 	if err != nil {
+
 		context.JSON(http.StatusUnauthorized, errors.New("sign err"))
 		log.Errorln("missing auth token", err)
 		context.Abort()
 		return
 	}
-	actionmessage := context.GetString("message")
-	log.Infoln("actionmessage", actionmessage)
-	log.Infoln("chainID", chainID)
-	log.Infoln("creator", creator)
-	log.Infoln("signedData", signedData)
-	log.Infoln("oracleaddress", oracleaddress)
+	actionMessage := context.GetString("message")
+	log.Infof("Request ID: %s, ActionMessage: %s, chainID: %s, creator: %s, signedData: %s, oracleaddress: %s", requestId, actionMessage, chainID, creator, signedData, oracleaddress)
 
-	signer, err := utils.GetSigner(chainID, creator, oracleaddress, actionmessage, signedData)
+	signer, err := utils.GetSigner(chainID, creator, oracleaddress, actionMessage, signedData)
 
 	if err != nil {
-		log.Errorf("error while signign %v", err)
+		log.Errorf("Request ID: %s, error GetSigner %v", requestId, err)
 	}
 
-	log.Infoln("signer", signer)
+	log.Infof("Request ID: %s signer: %s", requestId, signer)
 
 	if signer.Hex() != creator {
-		context.JSON(http.StatusUnauthorized, errors.New("sign err"))
-		log.Errorln("invalid signer", signer)
+
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "invalid signer"})
+		log.Errorf("Request ID: %s, invalid signer %s", requestId, signer)
 		context.Abort()
 		return
 
@@ -972,4 +1093,169 @@ func contains(arr []string, str string) bool {
 		}
 	}
 	return false
+}
+
+func (ob *Env) LoopPaymentStatus(context *gin.Context) {
+	walletAddress := context.Query("wallet")
+
+	status, err := ob.RelDB.GetLastPaymentByEndUser(walletAddress)
+	if err != nil {
+		context.JSON(http.StatusNotFound, nil)
+		return
+	}
+	status.RedirectUrl = ob.RedirectURL
+	context.JSON(http.StatusOK, status)
+
+}
+
+func (ob *Env) LoopWebHook(context *gin.Context) {
+	requestId := GenerateRandString()
+
+	signature := context.Request.Header.Get("loop-signature")
+
+	body, err := io.ReadAll(context.Request.Body)
+	if err != nil {
+		return
+	}
+	ldr := models.LoopPaymentResponse{}
+	err = json.Unmarshal(body, &ldr)
+	if err != nil {
+		context.JSON(http.StatusOK, nil)
+
+	}
+
+	l := verifyWebhook(body, ob.LoopPaymentSecret, signature)
+
+	if l {
+		log.Errorf("Request ID: %s,LoopWebHook verified ,", requestId)
+	} else {
+		log.Errorf("Request ID: %s,LoopWebHook not verified ,", requestId)
+
+		return
+
+	}
+
+	switch ldr.Event {
+	case "AgreementSignedUp":
+		{
+			// update user plan ldr.subscriber, plan name ldr.item
+			// 1) find customer
+			// 2) update plan
+			// 3) update email
+			//
+
+			customer, err := ob.RelDB.GetCustomerByPublicKey(common.HexToAddress(ldr.Subscriber).String())
+			if err != nil {
+				log.Errorf("Request ID: %s,AgreementSignedUp GetCustomerByPublicKey %v ,", requestId, err)
+				if err == sql.ErrNoRows {
+					err := ob.RelDB.CreateCustomer(ldr.Email, 0, "", "", 2, []string{common.HexToAddress(ldr.Subscriber).String()})
+					if err != nil {
+						context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+						return
+					}
+
+				}
+
+				//
+
+			}
+			log.Infof("Request ID: %s,AgreementSignedUp GetCustomerByPublicKey %v ,", requestId, customer)
+			log.Infof("Request ID: %s,ldr  %v ,", requestId, ldr)
+
+			ldr.Subscriber = common.HexToAddress(ldr.Subscriber).String()
+
+			err = ob.RelDB.InsertLoopPaymentResponse(context, ldr)
+			if err != nil {
+				log.Errorf("Request ID: %s,AgreementSignedUp InsertLoopPaymentResponse %v ,", requestId, err)
+
+			}
+
+		}
+	case "AgreementCancelled":
+
+		{
+
+			// cancel user plan
+			customer, err := ob.RelDB.GetCustomerByPublicKey(ldr.Subscriber)
+			if err != nil {
+				log.Errorf("Request ID: %s,AgreementCancelled GetCustomerByPublicKey %v ,", requestId, err)
+			}
+			log.Infof("Request ID: %s,AgreementCancelled customer %v ,", requestId, customer)
+			log.Infof("Request ID: %s,AgreementCancelled ldr %v ,", requestId, ldr)
+
+		}
+	case "TransferCreated":
+		{
+			// create agreement
+
+		}
+	case "TransferProcessed":
+		{
+
+			var lptp models.LoopPaymentTransferProcessed
+
+			err = json.Unmarshal(body, &lptp)
+			if err != nil {
+				context.JSON(http.StatusOK, nil)
+
+			}
+
+			err := ob.RelDB.InsertLoopPaymentTransferProcessed(context, lptp)
+			if err != nil {
+				log.Errorf("Request ID: %s, InsertLoopPaymentTransferProcessed %v ,", requestId, err)
+				return
+			}
+
+			// Get customer
+			customer, err := ob.RelDB.GetCustomerByPublicKey(lptp.EndUser)
+			if err != nil {
+				log.Errorf("Request ID: %s, GetCustomerByPublicKey %v ,", requestId, err)
+			}
+			log.Infof("Request ID: %s,TransferProcessed GetCustomerByPublicKey %v ,", requestId, customer)
+			log.Infof("Request ID: %s,ldr  %v ,", requestId, ldr)
+			log.Infof("Request ID: %s,AgreementID  %s ,", requestId, ldr.AgreementID)
+
+			// get agreement
+
+			lpr, err := ob.RelDB.GetLoopPaymentResponseByAgreementID(context, ldr.AgreementID)
+			if err != nil {
+				log.Errorf("Request ID: %s, GetLoopPaymentResponseByAgreementID %v ,", requestId, err)
+			}
+			log.Infof("Request ID: %s,lpr  %v ", requestId, lpr)
+			log.Infof("Request ID: %s,lpr ItemID  %v ", requestId, lpr.Item)
+
+			var planId = 0
+
+			switch lpr.Item {
+
+			case "Product 1":
+				planId = 1
+			case "Product 2":
+				planId = 2
+
+			}
+
+			err = ob.RelDB.UpdateCustomerPlan(context, customer.CustomerID, planId, lpr.PaymentTokenSymbol, strconv.Itoa(lpr.EventDate))
+
+			if err != nil {
+				log.Errorf("Request ID: %s, UpdateCustomerPlan %v, customerID %d,", requestId, err, customer.CustomerID)
+
+			} else {
+				log.Infof("Request ID: %s, UpdateCustomerPlan %v customerID %d, Plan ID %d,", requestId, err, customer.CustomerID)
+
+			}
+
+		}
+	}
+
+	context.JSON(http.StatusOK, nil)
+
+}
+
+func verifyWebhook(body []byte, loopSecret, signature string) bool {
+	// secret := "745c0448-6bb9-4927-9bcb-6556fb3bdd6e"
+	h := hmac.New(sha256.New, []byte(loopSecret))
+	h.Write(body)
+	expectedSignature := base64.StdEncoding.EncodeToString(h.Sum(nil))
+	return expectedSignature == signature
 }
