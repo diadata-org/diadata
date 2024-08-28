@@ -176,6 +176,8 @@ func (rdb *RelDB) GetExpiredFeeders() (oracleconfigs []dia.OracleConfig, err err
 		query          string
 	)
 
+	//    AND t1.deleted = false
+
 	query = fmt.Sprintf(`
 	SELECT 
     t1.address,  t1.feeder_id, t1.deleted, t1.owner, t1.symbols, t1.chainID, 
@@ -194,7 +196,6 @@ GROUP BY
     t1.lastupdate, t1.expired, t1.expired_time
 HAVING 
     EXTRACT(EPOCH FROM (NOW() - lastupdate)) / 86400 > 60
-    AND t1.deleted = false
     AND t1.expired = false
 	`, oracleconfigTable, feederupdatesTable)
 

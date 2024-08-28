@@ -179,7 +179,7 @@ func (ob *Env) Create(context *gin.Context) {
 	}
 	if totalFeeds >= plan.TotalFeeds {
 		log.Errorf("Request ID: %s, totalFeeds exceeds plan Limit %v ,", requestId, err)
-		handleError(context, http.StatusInternalServerError, " totalFeeds exceeds plan Limit", "Creating oracle:  totalFeeds exceeds plan Limit")
+		handleError(context, http.StatusPaymentRequired, "totalFeeds exceeds plan Limit", "Creating oracle:  totalFeeds exceeds plan Limit")
 		return
 	}
 
