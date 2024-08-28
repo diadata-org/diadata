@@ -161,15 +161,17 @@ type RelDatastore interface {
 	GetKeyPairID(publickey string) string
 	GetFeederAccessByID(id string) (owner string)
 	GetFeederByID(id string) (owner string)
-	SetOracleConfig(address, feederID, owner, feederAddress, symbols, feedSelection, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency string) error
+	SetOracleConfig(ctx context.Context, customerId, address, feederID, owner, feederAddress, symbols, feedSelection, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency string) error
 	SetFeederConfig(feederid, oracleconfigid string) error
 	GetFeederID(address string) (feederId string)
 	GetFeederLimit(owner string) (limit int)
-	GetTotalFeeder(owner string) (total int)
+	GetTotalOracles(customerid string) (total int)
 	GetOracleConfig(address, chainid string) (oracleconfig dia.OracleConfig, err error)
 	ChangeOracleState(feederID string, active bool) (err error)
 	DeleteOracle(feederID string) (err error)
 	GetOraclesByOwner(owner string) (oracleconfigs []dia.OracleConfig, err error)
+	GetOraclesByCustomer(customerId string) (oracleconfigs []dia.OracleConfig, err error)
+
 	GetAllFeeders(bool, bool) (oracleconfigs []dia.OracleConfig, err error)
 	GetFeederResources() (addresses []string, err error)
 	GetOracleUpdates(address string, chainid string, offset int) ([]dia.OracleUpdate, error)
@@ -188,11 +190,12 @@ type RelDatastore interface {
 	DeleteAssetList(sheetName string) error
 
 	CreateCustomer(email string, customerPlan int, paymentStatus string, paymentSource string, numberOfDataFeeds int, walletPublicKeys []string) error
-	AddWalletKeys(owner string, publicKey []string) error
-	UpdateAccessLevel(accessLevel, publicKey string) error
+	AddWalletKeys(owner, username, accessLevel string, publicKey []string) error
+	UpdateAccessLevel(username, accessLevel, publicKey string) error
 	RemoveWalletKeys(publicKey []string) error
 	GetCustomerIDByWalletPublicKey(publicKey string) (int, error)
 	GetCustomerByPublicKey(publicKey string) (*Customer, error)
+	UpdateCustomerPlan(ctx context.Context, customerID int, customerPlan int, paymentSource string, lastPayment string) error
 	GetAccessLevel(publicKey string) (string, error)
 
 	GetAllChains() (chainconfigs []dia.ChainConfig, err error)
@@ -201,7 +204,11 @@ type RelDatastore interface {
 	GetLastOracleUpdate(address string, chainid string) ([]dia.OracleUpdate, error)
 	GetLastPaymentByEndUser(endUser string) (LoopPaymentTransferProcessed, error)
 
-	InsertLoopPaymentTransferProcessed(record LoopPaymentTransferProcessed) error
+	GetPlan(ctx context.Context, planID int) (*Plan, error)
+
+	InsertLoopPaymentTransferProcessed(ctx context.Context, record LoopPaymentTransferProcessed) error
+	InsertLoopPaymentResponse(ctx context.Context, response LoopPaymentResponse) error
+	GetLoopPaymentResponseByAgreementID(ctx context.Context, agreementID string) (*LoopPaymentResponse, error)
 }
 
 const (

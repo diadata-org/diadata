@@ -73,6 +73,7 @@ func setupRouter() *gin.Engine {
 
 	// Define routes
 	routerGroup.POST("create", oracle.Create)
+	routerGroup.GET("/create", oracle.ViewLimit)
 
 	routerGroup.POST("createAccount", authenticate("Verify its your address to create Account"), oracle.Auth, oracle.CreateAccount)
 	routerGroup.POST("/account/addWallet", authenticate("Verify its your address to Add Wallet"), oracle.Auth, oracle.CanWrite, oracle.AddWallet)
