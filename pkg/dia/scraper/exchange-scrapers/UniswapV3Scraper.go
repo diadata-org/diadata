@@ -1,6 +1,7 @@
 package scrapers
 
 import (
+	"context"
 	"errors"
 	"math"
 	"math/big"
@@ -120,6 +121,14 @@ func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 	poolMap, err = s.makeUniV3PoolMap(liquidityThreshold, liquidityThresholdUSD)
 	if err != nil {
 		log.Fatal("build poolMap: ", err)
+	}
+
+	pingNodeInterval, err := strconv.ParseInt(utils.Getenv("PING_SERVER", "0"), 10, 64)
+	if err != nil {
+		log.Error("parse PING_SERVER: ", err)
+	}
+	if pingNodeInterval > 0 {
+		s.pingNode(pingNodeInterval)
 	}
 
 	if scrape {
@@ -540,6 +549,20 @@ func (s *UniswapV3Scraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error
 	}
 	s.pairScrapers[pair.ForeignName] = ps
 	return ps, nil
+}
+
+func (s *UniswapV3Scraper) pingNode(pingNodeInterval int64) {
+	ticker := time.NewTicker(time.Duration(pingNodeInterval) * time.Second)
+	go func() {
+		for range ticker.C {
+			blockNumber, err := s.WsClient.BlockNumber(context.Background())
+			if err != nil {
+				log.Error("pingNode: ", err)
+			} else {
+				log.Infof("%v -- blockNumber: %d", time.Now(), blockNumber)
+			}
+		}
+	}()
 }
 
 // UniswapPairScraper implements PairScraper for Uniswap
