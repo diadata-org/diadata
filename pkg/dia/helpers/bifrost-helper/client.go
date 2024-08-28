@@ -17,7 +17,7 @@ import (
 
 const (
 	AssetAddressURI = "AssetRegistry:Assets"
-	Blockchain      = "Polkadot"
+	Blockchain      = "polkadot"
 	DiaPolkadotApi  = "http://localhost:3000/bifrost/v1"
 	GetAssetsPath   = "assets"
 )
@@ -82,6 +82,51 @@ func (c *BifrostClient) GetAssetAllAssets() ([]BifrostAssetMetadata, error) {
 	return assets, nil
 }
 
+func (c *BifrostClient) GetAllPoolAssets() ([]BifrostPoolMetadata, error) {
+	
+	var wg sync.WaitGroup
+	wg.Add(1)
+	
+	getAllPoolAssetsURI := fmt.Sprintf("%s/%s", DiaPolkadotApi, "pools")
+
+	c.logger.Infof("Getting pool assets from: %s", getAllPoolAssetsURI)
+
+	var pools []BifrostPoolMetadata
+	var err error
+
+	go func() {
+		defer wg.Done()
+
+		response, err := http.Get(getAllPoolAssetsURI)
+		if err != nil {
+			c.logger.WithError(err).Error("Failed to get token pools")
+			return
+		}
+		defer response.Body.Close()
+
+		c.logger.Infof("Response: %d", response.Body)
+
+		if response.StatusCode != http.StatusOK {
+			c.logger.Errorf("Failed to get token pools, status code: %d", response.StatusCode)
+			err = fmt.Errorf("failed to get token pools, status code: %d", response.StatusCode)
+			return
+		}
+
+		if json.NewDecoder(response.Body).Decode(&pools) != nil {
+			c.logger.Error("Failed to decode token pools")
+			err = fmt.Errorf("failed to decode token pools")
+		}
+	}()
+
+	wg.Wait()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return pools, nil
+}
+
 func (c *BifrostClient) ScrapAssets() ([]*dia.Asset, error) {
 	bifrostAssets, err := c.GetAssetAllAssets()
 	if err != nil {
@@ -107,7 +152,7 @@ func (c *BifrostClient) MapFromBifrostAsset(bifrostAsset BifrostAssetMetadata) *
 		Symbol:     bifrostAsset.Symbol,
 		Decimals:   uint8(decimals),
 		Blockchain: Blockchain,
-		Address:    "",
+		Address:    "Bifrost:Asset:" + bifrostAsset.AssetKey,
 	}
 }
 
