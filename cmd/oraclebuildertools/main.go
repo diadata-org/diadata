@@ -6,6 +6,7 @@ import (
 	"math/big"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	k8sbridge "github.com/diadata-org/diadata/pkg/dia/helpers/k8sbridge/protoc"
@@ -271,7 +272,55 @@ func main() {
 		},
 	}
 
-	rootCmd.AddCommand(expireFeeder, updateAddressChecksum, refund)
+	var restartSpecificFeeder = &cobra.Command{
+		Use:   "restartspecific",
+		Short: "restart specific feeder",
+		Run: func(cmd *cobra.Command, args []string) {
+
+			idListStr := os.Getenv("ID_LIST")
+
+			// Split the string into a slice of strings based on the delimiter
+			ids := strings.Split(idListStr, ",")
+
+			// ids := []string{"feeder-accurate-olive-hertz", "feeder-affectionate-aquamarine-curie", "feeder-astonishing-citron-mendeleev", "feeder-awesome-vanilla-kepler", "feeder-beautiful-aqua-euclid", "feeder-beneficial-aquamarine-gauss", "feeder-big-lime-roentgen", "feeder-bold-cerulean-benz", "feeder-brave-zaffre-darwin", "feeder-capable-purple-hertz", "feeder-capable-red-einstein", "feeder-careful-mango-albattani", "feeder-caring-beige-merkle", "feeder-cultured-lemon-aslan", "feeder-cultured-navy-fermat", "feeder-curious-brown-kepler", "feeder-decisive-neon-albattani", "feeder-delicious-citron-albattani", "feeder-determined-mustard-gauss", "feeder-determined-navy-wozniak", "feeder-elastic-teal-ptolemy", "feeder-elegant-scarlet-archimedes", "feeder-enchanting-beige-hypatia", "feeder-epic-lavender-newton", "feeder-fixed-black-aslan", "feeder-flashy-rose-lovelace", "feeder-flowery-sienna-fermi", "feeder-fluffy-magenta-hertz", "feeder-fortunate-charcoal-einstein", "feeder-free-carmine-bell", "feeder-gainful-ivory-pascal", "feeder-gifted-apricot-edison", "feeder-glorious-navy-hopper", "feeder-great-ochre-newton", "feeder-groovy-bronze-lumiere", "feeder-handsome-azure-heisenberg", "feeder-helpful-black-heisenberg", "feeder-hilarious-khaki-swartz", "feeder-hospitable-citron-lovelace", "feeder-hospitable-ochre-mendel", "feeder-hushed-pink-fermat", "feeder-innocent-silver-franklin", "feeder-inspiring-aquamarine-roentgen", "feeder-judicious-charcoal-curie", "feeder-keen-gold-torvalds", "feeder-keen-mango-mendeleev", "feeder-large-sand-heisenberg", "feeder-legal-vermilion-kepler", "feeder-like-white-ptolemy", "feeder-loving-sapphire-dirac", "feeder-lucid-yellow-curie", "feeder-mighty-blond-heisenberg", "feeder-modern-zaffre-lovelace", "feeder-mysterious-charcoal-galileo", "feeder-neighborly-amber-lovelace", "feeder-numerous-fuchsia-wright", "feeder-nutritious-silver-aslan", "feeder-obtainable-vermilion-lovelace", "feeder-oceanic-amethyst-coanda", "feeder-optimistic-lavender-mendeleev", "feeder-overjoyed-aquamarine-lumiere", "feeder-overjoyed-mango-fermat", "feeder-parallel-cerulean-moore", "feeder-permissible-vanilla-hawking", "feeder-physical-rose-edison", "feeder-physical-salmon-pascal", "feeder-plucky-opal-fermi", "feeder-plucky-vermilion-feynman", "feeder-public-cyan-coanda", "feeder-quaint-sienna-hawking", "feeder-quiet-orchid-moore", "feeder-quizzical-mustard-euler", "feeder-rampant-lilac-nobel", "feeder-ready-olive-hawking", "feeder-relaxed-lemon-franklin", "feeder-reminiscent-opal-euclid", "feeder-reverent-white-franklin", "feeder-rightful-vanilla-mendeleev", "feeder-safe-lemon-heisenberg", "feeder-savory-scarlet-lumiere", "feeder-scintillating-fuchsia-wright", "feeder-shiny-sepia-maxwell", "feeder-silky-neon-newton", "feeder-skillful-carmine-albattani", "feeder-skinny-turquoise-franklin", "feeder-smart-beige-euler", "feeder-soft-brandy-tesla", "feeder-solid-purple-moore", "feeder-sophisticated-apricot-feynman", "feeder-spiffy-bronze-dijkstra", "feeder-spiritual-azure-ptolemy", "feeder-splendid-citron-fermat", "feeder-straight-vermilion-euclid", "feeder-succinct-carmine-roentgen", "feeder-succinct-ochre-lovelace", "feeder-superb-azure-hopper", "feeder-sweet-citron-wright", "feeder-sweet-red-morse", "feeder-talented-ultramarine-hypatia", "feeder-tasteful-orchid-gauss", "feeder-tested-orchid-faraday", "feeder-thoughtful-peach-maxwell", "feeder-tidy-purple-hertz", "feeder-tranquil-lavender-bohr", "feeder-ubiquitous-vermilion-albattani", "feeder-unique-carmine-gauss", "feeder-unusual-celeste-morse", "feeder-upbeat-mango-mendel", "feeder-valuable-burgundy-moore", "feeder-vast-blue-hawking", "feeder-vast-zaffre-euler", "feeder-versed-silver-franklin", "feeder-victorious-plum-maxwell", "feeder-watery-neon-franklin", "feeder-witty-amber-bose", "feeder-wonderful-sienna-edison", "feeder-yielding-salmon-darwin", "feeder-youthful-vermilion-merkle", "feeder-zany-neon-hopper", "feeder-kindhearted-cyan-hawking", "feeder-nappy-burgundy-roentgen"}
+			// ids := []string{"feeder-kindhearted-cyan-hawking", "feeder-nappy-burgundy-roentgen"}
+			for _, v := range ids {
+
+				oracleconfig, err := relStore.GetFeeder(v)
+				if err != nil {
+					log.Errorln("error getting feeder", err)
+					continue
+				}
+
+				log.Println("oracleconfig", oracleconfig)
+
+				fc := &k8sbridge.FeederConfig{
+					FeederID:           oracleconfig.FeederID,
+					Creator:            oracleconfig.Owner,
+					FeederAddress:      oracleconfig.FeederAddress,
+					Oracle:             oracleconfig.Address,
+					ChainID:            oracleconfig.ChainID,
+					Symbols:            strings.Join(oracleconfig.Symbols[:], ","),
+					FeedSelection:      oracleconfig.FeederSelection,
+					Blockchainnode:     oracleconfig.BlockchainNode,
+					Frequency:          oracleconfig.Frequency,
+					SleepSeconds:       oracleconfig.SleepSeconds,
+					DeviationPermille:  oracleconfig.DeviationPermille,
+					MandatoryFrequency: oracleconfig.MandatoryFrequency,
+				}
+				_, err = k8bridgeClient.RestartPod(cmd.Context(), fc)
+
+				if err != nil {
+					log.Errorln("error RestartOracleFeeder ", err)
+					continue
+				}
+				log.Println("restarted", oracleconfig.FeederID)
+
+			}
+
+		},
+	}
+	rootCmd.AddCommand(expireFeeder, updateAddressChecksum, refund, restartSpecificFeeder)
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
