@@ -1315,6 +1315,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "POL",
+            "ForeignName": "POL-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "POWR",
             "ForeignName": "POWR-BTC",
             "Exchange": "KuCoin",

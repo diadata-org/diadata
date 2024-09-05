@@ -349,6 +349,12 @@
       "Address": "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
     },
     {
+      "Symbol": "POL",
+      "Exchange": "BitMart",
+      "Blockchain": "Polygon",
+      "Address": "0x455e53CBB86018Ac2B8092FdCd39d8444aFFC3F6"
+    },
+    {
       "Symbol": "QNT",
       "Exchange": "BitMart",
       "Blockchain": "Ethereum",

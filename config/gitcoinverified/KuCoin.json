@@ -293,7 +293,7 @@
             "Exchange": "KuCoin",
             "Blockchain": "BinanceSmartChain",
             "Address": "0xBdEAe1cA48894A1759A8374D63925f21f2Ee2639"
-        },   
+        },
         {
             "Symbol": "ELF",
             "Exchange": "KuCoin",
@@ -603,8 +603,8 @@
         {
             "Symbol": "POL",
             "Exchange": "KuCoin",
-            "Blockchain": "Tron",
-            "Address": "TWcDDx1Q6QEoBrJi9qehtZnD4vcXXuVLer"
+            "Blockchain": "Polygon",
+            "Address": "0x455e53CBB86018Ac2B8092FdCd39d8444aFFC3F6"
         },
         {
             "Symbol": "POLK",

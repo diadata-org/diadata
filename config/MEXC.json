@@ -517,6 +517,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "POL",
+      "ForeignName": "POLUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "PSP",
       "ForeignName": "PSPUSDT",
       "Exchange": "MEXC",

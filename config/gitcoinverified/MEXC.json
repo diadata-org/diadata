@@ -481,6 +481,12 @@
       "Address": "0x60781C2586D68229fde47564546784ab3fACA982"
     },
     {
+      "Symbol": "POL",
+      "Exchange": "MEXC",
+      "Blockchain": "Polygon",
+      "Address": "0x455e53CBB86018Ac2B8092FdCd39d8444aFFC3F6"
+    },
+    {
       "Symbol": "PSP",
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",

@@ -2054,6 +2054,18 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "POL-USDT",
+      "Ignore": false,
+      "Symbol": "POL"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "POL-USDC",
+      "Ignore": false,
+      "Symbol": "POL"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "PPT-BTC",
       "Ignore": false,
       "Symbol": "PPT"

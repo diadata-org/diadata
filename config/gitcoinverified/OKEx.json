@@ -307,6 +307,12 @@
             "Address": "0x6c5bA91642F10282b576d91922Ae6448C9d52f4E"
         },
         {
+            "Symbol": "POL",
+            "Exchange": "OKEx",
+            "Blockchain": "Polygon",
+            "Address": "0x455e53CBB86018Ac2B8092FdCd39d8444aFFC3F6"
+        },
+        {
             "Symbol": "PPT",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",

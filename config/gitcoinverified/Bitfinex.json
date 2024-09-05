@@ -67,6 +67,12 @@
             "Address": "0x8E870D67F660D95d5be530380D0eC0bd388289E1"
         },
         {
+            "Symbol": "POL",
+            "Exchange": "Bitfinex",
+            "Blockchain": "Polygon",
+            "Address": "0x455e53CBB86018Ac2B8092FdCd39d8444aFFC3F6"
+        },
+        {
             "Symbol": "SOL",
             "Exchange": "Bitfinex",
             "Blockchain": "Solana",

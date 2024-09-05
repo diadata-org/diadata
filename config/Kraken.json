@@ -134,6 +134,12 @@
     },
     {
       "Exchange": "Kraken",
+      "ForeignName": "POLUSD",
+      "Ignore": false,
+      "Symbol": "POL"
+    },
+    {
+      "Exchange": "Kraken",
       "ForeignName": "QTUMUSD",
       "Ignore": false,
       "Symbol": "QTUM"

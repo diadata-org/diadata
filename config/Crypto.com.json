@@ -559,6 +559,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "POL",
+            "ForeignName": "POL_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
             "Symbol": "QTUM",
             "ForeignName": "QTUM_USDT",
             "Exchange": "Crypto.com",

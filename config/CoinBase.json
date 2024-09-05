@@ -218,6 +218,12 @@
         },
         {
             "Exchange": "CoinBase",
+            "ForeignName": "POL-USD",
+            "Ignore": false,
+            "Symbol": "POL"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "QUICK-USD",
             "Ignore": false,
             "Symbol": "QUICK"

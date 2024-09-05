@@ -91,6 +91,12 @@
       "Address": "0x45804880De22913dAFE09f4980848ECE6EcbAf78"
     },
     {
+      "Symbol": "POL",
+      "Exchange": "Kraken",
+      "Blockchain": "Polygon",
+      "Address": "0x455e53CBB86018Ac2B8092FdCd39d8444aFFC3F6"
+    },
+    {
       "Symbol": "REP",
       "Exchange": "Kraken",
       "Blockchain": "Ethereum",
