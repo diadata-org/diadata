@@ -22,23 +22,41 @@ const (
 )
 
 type BifrostScraper struct {
-	logger        *logrus.Entry
-	pairScrapers  map[string]*BifrostPairScraper // pc.ExchangePair -> pairScraperSet
-	shutdown      chan nothing
-	shutdownDone  chan nothing
-	errorLock     sync.RWMutex
-	error         error
-	closed        bool
-	ticker        *time.Ticker
-	chanTrades    chan *dia.Trade
-	db            *models.RelDB
-	api           string
-	currentHeight string
-	exchangeName  string
-	blockchain    string
+	logger       *logrus.Entry
+	pairScrapers map[string]*BifrostPairScraper // pc.ExchangePair -> pairScraperSet
+	shutdown     chan nothing
+	shutdownDone chan nothing
+	errorLock    sync.RWMutex
+	error        error
+	closed       bool
+	ticker       *time.Ticker
+	chanTrades   chan *dia.Trade
+	db           *models.RelDB
+	api          string
+	exchangeName string
+	blockchain   string
 }
 
-// NewBifrostScraper initializes a new BifrostScraper.
+// NewBifrostScraper initializes and returns a new BifrostScraper instance.
+// The scraper handles periodic polling of trade data from the specified exchange and stores it in a relational database.
+//
+// Parameters:
+//   - exchange: An instance of dia.Exchange representing the exchange to be scraped.
+//     The exchange name is used to fetch environment-specific configuration like refresh delay.
+//   - scrape: A boolean flag indicating whether to automatically start scraping upon initialization.
+//     If true, the scraping process is started in a separate goroutine.
+//   - relDB: A pointer to a RelDB instance (models.RelDB), representing the relational database where
+//     trade data will be stored.
+//
+// Returns:
+//   - *BifrostScraper: A pointer to the newly created BifrostScraper instance.
+//
+// Behavior:
+//   - The function calculates the refresh delay for polling trade data by checking an environment variable
+//     named "<EXCHANGE_NAME>_REFRESH_DELAY". If the variable is not set, it defaults to 10000 milliseconds (10 seconds).
+//   - It initializes the BifrostScraper with a shutdown mechanism, a ticker for periodic updates, a channel for trade data,
+//     and a logging mechanism.
+//   - If the 'scrape' flag is true, the scraper starts its main scraping loop in a separate goroutine.
 func NewBifrostScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BifrostScraper {
 	refreshDelay := utils.GetTimeDurationFromIntAsMilliseconds(
 		utils.GetenvInt(strings.ToUpper(exchange.Name)+"_REFRESH_DELAY", 10000),
@@ -47,15 +65,14 @@ func NewBifrostScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 	apiURL := "http://localhost:3000/bifrost/v1"
 
 	s := &BifrostScraper{
-		shutdown:      make(chan nothing),
-		shutdownDone:  make(chan nothing),
-		ticker:        time.NewTicker(refreshDelay),
-		chanTrades:    make(chan *dia.Trade),
-		db:            relDB,
-		api:           apiURL,
-		currentHeight: "0x5d184786631f977395636a98b231358b9a82b63c235c801c170fb7e532cb839b",
-		exchangeName:  exchange.Name,
-		blockchain:    Blockchain,
+		shutdown:     make(chan nothing),
+		shutdownDone: make(chan nothing),
+		ticker:       time.NewTicker(refreshDelay),
+		chanTrades:   make(chan *dia.Trade),
+		db:           relDB,
+		api:          apiURL,
+		exchangeName: exchange.Name,
+		blockchain:   Blockchain,
 	}
 
 	s.logger = logrus.
@@ -71,7 +88,24 @@ func NewBifrostScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 	return s
 }
 
-// mainLoop continuously fetches swap events from Bifrost API and processes them.
+// mainLoop is the core loop of the BifrostScraper that periodically fetches
+// trade data and handles graceful shutdown.
+//
+// This method runs an infinite loop where it performs two key actions:
+//   - Periodically triggers the Update function when the ticker ticks (based on
+//     the refresh interval).
+//   - Listens for a shutdown signal on the shutdown channel, at which point it
+//     cleans up resources and exits the loop.
+//
+// Behavior:
+//   - On each tick of the ticker (`s.ticker.C`), the Update method is called
+//     to fetch and process new trade data from the exchange.
+//   - If an error occurs during the Update call, it is logged using `s.logger`.
+//   - When a message is received on the `s.shutdown` channel, the method logs
+//     the shutdown event, calls the cleanup function, and exits.
+//
+// This method is designed to run as a goroutine and will keep looping until
+// explicitly stopped by sending a signal to the `shutdown` channel.
 func (s *BifrostScraper) mainLoop() {
 	for {
 		select {
@@ -88,69 +122,60 @@ func (s *BifrostScraper) mainLoop() {
 	}
 }
 
-// Update fetches the latest swap events from Bifrost API and processes them into dia.Trade objects.
+// Update fetches and processes the latest stable swap events from the Bifrost API.
+//
+// This method retrieves swap events from the Bifrost API, decodes them into
+// `StableSwapEvent` objects, and then processes the events by matching them to
+// pools retrieved from the database. For each matching pool, it generates a
+// `dia.Trade` object and sends it to the `chanTrades` channel for further handling.
+//
+// The function also includes retry logic when fetching data from the API and logs
+// any errors that occur during the process.
+//
+// Error Handling:
+//   - Returns an error if fetching swap events or decoding the API response fails.
+//   - Logs and skips any pools that do not have the required asset volumes.
+//   - Logs a warning if no events match a specific pool.
+//
+// Returns:
+//   - An error if the API request or pool retrieval fails, otherwise `nil`.
 func (s *BifrostScraper) Update() error {
-	endpoint := fmt.Sprintf("%s/events/stable/swap/%s", s.api, s.currentHeight)
+	// To test the scraper with a specific block
+	// endpoint := fmt.Sprintf("%s/events/stable/swap/0x5d184786631f977395636a98b231358b9a82b63c235c801c170fb7e532cb839b", s.api)
+	endpoint := fmt.Sprintf("%s/events/stable/swap", s.api)
 
 	resp, err := s.fetchWithRetry(endpoint, "application/json", 3)
 	if err != nil {
-		return fmt.Errorf("failed to fetch swap events after retries: %v", err)
+		return fmt.Errorf("failed to fetch swap events after retries: %w", err)
 	}
-
-	s.logger.WithField("status", resp.Status).Info("Fetched swap events")
 	defer resp.Body.Close()
 
 	var events []StableSwapEvent
 	if err := json.NewDecoder(resp.Body).Decode(&events); err != nil {
-		return fmt.Errorf("failed to decode swap events: %v", err)
+		return fmt.Errorf("failed to decode swap events: %w", err)
 	}
 
-	pools, err := s.getPools()
+	pools, err := s.getDBPools()
 	if err != nil {
-		s.logger.WithError(err).Error("failed to GetAllPoolsExchange")
+		s.logger.WithError(err).Error("Failed to get database pools")
 		return err
 	}
 
-	s.logger.WithField("pools", pools).Info("pools")
-
+	// Process each pool looking for matching events and processing
 	for _, pool := range pools {
 		if len(pool.Assetvolumes) != 2 {
-			s.logger.WithField("poolAddress", pool.Address).Error("pool is missing required asset volumes")
+			s.logger.WithField("poolAddress", pool.Address).Error("Pool is missing required asset volumes")
 			continue
 		}
 
-		poolEvents := make([]StableSwapEvent, 0)
-
-		for _, event := range events {
-			tokenAName := strings.ToLower(event.InputAsset)
-			tokenBName := strings.ToLower(event.OutputAsset)
-			eventAddressA := fmt.Sprintf("%s:%s:%s:%s", s.blockchain, s.exchangeName, tokenAName, tokenBName)
-			eventAddressB := fmt.Sprintf("%s:%s:%s:%s", s.blockchain, s.exchangeName, tokenBName, tokenAName)
-
-			
-			if eventAddressA == pool.Address {
-				s.logger.WithField("PoolAddress:   ", pool.Address).Info("PoolAddress")
-				s.logger.WithField("EventAddressA: ", eventAddressA).Info("EventAddress")
-				poolEvents = append(poolEvents, event)
-			}
-			if eventAddressB == pool.Address {
-				s.logger.WithField("PoolAddress:   ", pool.Address).Info("PoolAddress")
-				s.logger.WithField("EventAddressB: ", eventAddressB).Info("EventAddress")
-			}
-		}
-
+		poolEvents := s.filterPoolEvents(pool.Address, events)
 		if len(poolEvents) == 0 {
-			s.logger.WithField("poolAddress", pool.Address).Warn("no events match for pool")
+			s.logger.WithField("poolAddress", pool.Address).Warn("No matching events for pool")
 			continue
 		}
 
 		for _, event := range poolEvents {
-			s.logger.WithField("event", event).WithField("currentHeight", s.currentHeight).Info("event")
-			timestamp := time.Now()
-
-			diaTrade := s.handleTrade(pool, event, timestamp)
-			s.logger.WithField("diaTrade", diaTrade).Info("diaTrade")
-
+			diaTrade := s.handleTrade(pool, event, time.Now())
 			s.chanTrades <- diaTrade
 		}
 	}
@@ -158,7 +183,64 @@ func (s *BifrostScraper) Update() error {
 	return nil
 }
 
-// fetchWithRetry fetches data from the API with retry logic
+// filterPoolEvents filters swap events that match the specified pool address.
+//
+// This method compares each event's input and output assets to the provided
+// pool address and returns a list of events that match. It constructs two
+// possible event addresses (one for each direction of the swap) and checks if
+// either matches the given pool address. If a match is found, the event is
+// added to the result set.
+//
+// Logging is performed for each matching event, including both the pool address
+// and the constructed event addresses.
+//
+// Parameters:
+//   - poolAddress: The address of the pool to filter events for.
+//   - events: A slice of `StableSwapEvent` objects representing the swap events to be filtered.
+//
+// Returns:
+//   - A slice of `StableSwapEvent` objects that match the provided pool address.
+func (s *BifrostScraper) filterPoolEvents(poolAddress string, events []StableSwapEvent) []StableSwapEvent {
+	var matchedEvents []StableSwapEvent
+
+	for _, event := range events {
+		tokenAName := strings.ToLower(event.InputAsset)
+		tokenBName := strings.ToLower(event.OutputAsset)
+		eventAddressA := fmt.Sprintf("%s:%s:%s:%s", s.blockchain, s.exchangeName, tokenAName, tokenBName)
+		eventAddressB := fmt.Sprintf("%s:%s:%s:%s", s.blockchain, s.exchangeName, tokenBName, tokenAName)
+
+		if eventAddressA == poolAddress || eventAddressB == poolAddress {
+			s.logger.WithFields(logrus.Fields{
+				"poolAddress":   poolAddress,
+				"eventAddressA": eventAddressA,
+				"eventAddressB": eventAddressB,
+			}).Info("Event matches pool")
+			matchedEvents = append(matchedEvents, event)
+		}
+	}
+
+	return matchedEvents
+}
+
+// fetchWithRetry performs an HTTP GET request to the specified endpoint with retries.
+//
+// This function attempts to fetch data from the provided API endpoint, retrying
+// the request up to the specified number of times (`retries`) in case of failure.
+// The retry logic handles both network errors and server-side errors (HTTP 5xx).
+//
+// For each attempt, the function logs the attempt number and the endpoint being requested.
+// If a request fails due to a server-side error (HTTP 5xx), the function retries
+// after a short delay. Client-side errors (HTTP 4xx) and other non-retryable errors
+// are returned immediately.
+//
+// Parameters:
+//   - endpoint: The URL of the API endpoint to request data from.
+//   - contentType: The content type to set in the request header (e.g., "application/json").
+//   - retries: The number of retry attempts in case of failure.
+//
+// Returns:
+//   - *http.Response: The response object if the request is successful.
+//   - error: An error if all retry attempts fail, or if a non-retryable error occurs.
 func (s *BifrostScraper) fetchWithRetry(endpoint string, contentType string, retries int) (*http.Response, error) {
 	client := &http.Client{
 		Timeout: 20 * time.Second,
@@ -200,32 +282,39 @@ func (s *BifrostScraper) fetchWithRetry(endpoint string, contentType string, ret
 	return nil, err
 }
 
-// handleTrade processes a BifrostSwapEvent into a dia.Trade object.
+// handleTrade processes a swap event and converts it into a dia.Trade object.
+//
+// This function takes a pool and a corresponding stable swap event, calculates
+// the trade volume and price based on the asset amounts in the event, and returns
+// a `dia.Trade` object representing the processed trade. The price is calculated
+// as the ratio of the input to output amounts, and the volume is set as the
+// negative of the input amount to indicate the amount being swapped.
+//
+// The `dia.Trade` object includes metadata such as the trade timestamp, the trading pair,
+// the pool address, and the exchange source.
+//
+// Parameters:
+//   - pool: A `dia.Pool` object representing the liquidity pool where the swap occurred.
+//   - event: A `StableSwapEvent` containing the swap details such as asset amounts and transaction ID.
+//   - time: The timestamp for the trade event.
+//
+// Returns:
+//   - *dia.Trade: A pointer to the constructed `dia.Trade` object containing the trade details.
 func (s *BifrostScraper) handleTrade(pool dia.Pool, event StableSwapEvent, time time.Time) *dia.Trade {
 	var volume, price float64
 
 	decimals0 := int64(pool.Assetvolumes[0].Asset.Decimals)
-	s.logger.WithField("decimals0", decimals0).Info("decimals0")
-
 	decimals1 := int64(pool.Assetvolumes[1].Asset.Decimals)
-	s.logger.WithField("decimals1", decimals1).Info("decimals1")
 
 	amount0, _ := utils.StringToFloat64(event.InputAmount, decimals0)
-	s.logger.WithField("amount0", amount0).Info("amount0")
-
 	amount1, _ := utils.StringToFloat64(event.OutputAmount, decimals1)
-	s.logger.WithField("amount1", amount1).Info("amount1")
 
 	volume = -amount0
-	s.logger.WithField("volume", volume).Info("volume")
-
 	price = amount0 / amount1
-	s.logger.WithField("price", price).Info("price")
 
 	symbolPair := fmt.Sprintf("%s-%s", pool.Assetvolumes[0].Asset.Symbol, pool.Assetvolumes[1].Asset.Symbol)
-	s.logger.WithField("symbolPair", symbolPair).Info("symbolPair")
 
-	diaTrade := &dia.Trade{
+	return &dia.Trade{
 		Time:           time,
 		Symbol:         pool.Assetvolumes[0].Asset.Symbol,
 		Pair:           symbolPair,
@@ -238,10 +327,6 @@ func (s *BifrostScraper) handleTrade(pool dia.Pool, event StableSwapEvent, time 
 		BaseToken:      pool.Assetvolumes[1].Asset,
 		PoolAddress:    pool.Address,
 	}
-
-	s.logger.WithField("diaTrade", diaTrade).Info("diaTrade")
-
-	return diaTrade
 }
 
 // FetchAvailablePairs returns a list with all trading pairs available on
@@ -251,7 +336,12 @@ func (s *BifrostScraper) FetchAvailablePairs() ([]dia.ExchangePair, error) {
 	return []dia.ExchangePair{}, nil
 }
 
-func (s *BifrostScraper) getPools() ([]dia.Pool, error) {
+// getDBPools retrieves all pools from the database associated with the current exchange.
+//
+// Returns:
+//   - []dia.Pool: A slice of `dia.Pool` objects representing the pools retrieved from the database.
+//   - error: An error if the database query fails, otherwise `nil`.
+func (s *BifrostScraper) getDBPools() ([]dia.Pool, error) {
 	return s.db.GetAllPoolsExchange(s.exchangeName, 0)
 }
 
@@ -263,6 +353,14 @@ func (s *BifrostScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair,
 	return pair, nil
 }
 
+// ScrapePair initializes and returns a `BifrostPairScraper`.
+//
+// Parameters:
+//   - pair: The `dia.ExchangePair` representing the trading pair (e.g: `BifrostPairScraper`) to be scraped.
+//
+// Returns:
+//   - PairScraper: A `PairScraper` (specifically a `BifrostPairScraper`) for the given exchange pair.
+//   - error: An error if the scraper is closed or if an error has occurred, otherwise `nil`.
 func (s *BifrostScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
@@ -270,7 +368,7 @@ func (s *BifrostScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) 
 		return nil, s.error
 	}
 	if s.closed {
-		return nil, errors.New("AlephiumScraper: Call ScrapePair on closed scraper")
+		return nil, errors.New("BifrostScraper: Call ScrapePair on closed scraper")
 	}
 	ps := &BifrostPairScraper{
 		parent:     s,
