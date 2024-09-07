@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"sync"
 
 	"time"
@@ -152,7 +153,7 @@ func (c *BifrostClient) MapFromBifrostAsset(bifrostAsset BifrostAssetMetadata) *
 		Symbol:     bifrostAsset.Symbol,
 		Decimals:   uint8(decimals),
 		Blockchain: Blockchain,
-		Address:    "Bifrost:Asset:" + bifrostAsset.AssetKey,
+		Address:    "Bifrost:Asset:" + strings.ToLower(bifrostAsset.AssetKey),
 	}
 }
 

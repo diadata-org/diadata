@@ -140,7 +140,7 @@ func (s *BifrostLiquidityScraper) fetchPools() {
 	for _, bPool := range bifrostPoolAssets {
 		dbAssets := make([]dia.Asset, 0)
 		for _, assetId := range bPool.Assets {
-			assetKey := "Bifrost:Asset:" + assetId
+			assetKey := "Bifrost:Asset:" + strings.ToLower(assetId)
 			dbTokenInfo, err := s.relDB.GetAsset(assetKey, s.blockchain)
 			if err != nil {
 				logger.WithError(err).Error("Failed to GetAsset with key: ", assetKey)
@@ -176,6 +176,9 @@ func (s *BifrostLiquidityScraper) fetchPools() {
 			"BalanceB": tokenBBalance,
 		}).Info("Found balances")
 
+		tokenAName := strings.ToLower(strings.Split(dbAssets[0].Address, "Bifrost:Asset:")[1])
+		tokenBName := strings.ToLower(strings.Split(dbAssets[1].Address, "Bifrost:Asset:")[1])
+
 		tokenA := dia.AssetVolume{
 			Index:  0,
 			Asset:  dbAssets[0],
@@ -191,7 +194,7 @@ func (s *BifrostLiquidityScraper) fetchPools() {
 		pool := dia.Pool{
 			Exchange:     dia.Exchange{Name: s.exchangeName},
 			Blockchain:   dia.BlockChain{Name: s.blockchain},
-			Address:      "Polkadot:Bifrost:" + bPool.Assets[0] + ":" + bPool.Assets[1],
+			Address:      "Polkadot:Bifrost:" + tokenAName + ":" + tokenBName,
 			Time:         time.Now(),
 			Assetvolumes: []dia.AssetVolume{tokenA, tokenB},
 		}
