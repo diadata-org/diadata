@@ -1,6 +1,12 @@
 {
     "Coins": [
         {
+            "Symbol": "AI",
+            "ForeignName": "AI/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
             "Symbol": "ETHFI",
             "ForeignName": "ETHFI/USDT",
             "Exchange": "Bitmax",

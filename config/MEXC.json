@@ -7,6 +7,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "AI",
+      "ForeignName": "AIUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "ALPH",
       "ForeignName": "ALPHUSDT",
       "Exchange": "MEXC",
