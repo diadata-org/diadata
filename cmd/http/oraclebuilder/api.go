@@ -46,6 +46,8 @@ type Env struct {
 }
 
 const REQUEST_ID = "REQUEST_ID"
+const CUSTOMER_ID = "CUSTOMER_ID"
+const ACCESS_LEVEL = "ACCESS_LEVEL"
 
 func NewEnv(relStore models.RelDatastore, ds models.Datastore, kc k8sbridge.K8SHelperClient, ring kr.Keyring, rateLimitOracleCreation int, lps string) *Env {
 
@@ -80,9 +82,12 @@ func (ob *Env) totalFeedsUsedByCustomer(customerId string) (int, error) {
 	}
 
 	for _, oracle := range oracleConfig {
-		var sf []SymbolFeed
-		json.Unmarshal([]byte(oracle.FeederSelection), &sf)
-		totalFeeds = totalFeeds + len(sf)
+		if !oracle.Deleted {
+			var sf []SymbolFeed
+			json.Unmarshal([]byte(oracle.FeederSelection), &sf)
+			totalFeeds = totalFeeds + len(sf)
+		}
+
 	}
 	return totalFeeds, nil
 }
@@ -106,6 +111,8 @@ func (ob *Env) Create(context *gin.Context) {
 	oracleaddress = common.HexToAddress(oracleaddress).Hex()
 	chainID := context.PostForm("chainID")
 	creator := context.PostForm("creator")
+	oracleName := context.PostForm("name")
+
 	creator = common.HexToAddress(creator).Hex()
 
 	symbols := context.PostForm("symbols")
@@ -122,7 +129,7 @@ func (ob *Env) Create(context *gin.Context) {
 
 	k := make(map[string]string)
 
-	log.Infof("Request ID: %s Creating oracle: oracleAddress: %s, ChainID: %s, Creator: %s, Symbols: %s, frequency: %s, sleepSeconds: %s blockchainnode: %s, feedSelection %s", requestId, oracleaddress, chainID, creator, symbols, frequency, sleepSeconds, blockchainnode, feedSelection)
+	log.Infof("Request ID: %s Creating oracle: oracleAddress: %s, ChainID: %s, Creator: %s, Symbols: %s, frequency: %s, sleepSeconds: %s blockchainnode: %s, feedSelection %s name %s", requestId, oracleaddress, chainID, creator, symbols, frequency, sleepSeconds, blockchainnode, feedSelection, oracleName)
 
 	signer, err := utils.GetSigner(chainID, creator, oracleaddress, "Verify its your address to call oracle builder", signedData)
 	if err != nil {
@@ -148,7 +155,7 @@ func (ob *Env) Create(context *gin.Context) {
 	customer, err := ob.RelDB.GetCustomerByPublicKey(signer.Hex())
 	if err != nil {
 		log.Errorf("Request ID: %s, GetCustomerByPublicKey %v ,", requestId, err)
-		handleError(context, http.StatusInternalServerError, "error getting customer", "Creating oracle: error getting customer")
+		handleError(context, http.StatusNotFound, "error getting customer", "Creating oracle:account not found for this wallet")
 		return
 
 	}
@@ -179,7 +186,7 @@ func (ob *Env) Create(context *gin.Context) {
 	}
 	if totalFeeds >= plan.TotalFeeds {
 		log.Errorf("Request ID: %s, totalFeeds exceeds plan Limit %v ,", requestId, err)
-		handleError(context, http.StatusInternalServerError, " totalFeeds exceeds plan Limit", "Creating oracle:  totalFeeds exceeds plan Limit")
+		handleError(context, http.StatusPaymentRequired, "totalFeeds exceeds plan Limit", "Creating oracle:  totalFeeds exceeds plan Limit")
 		return
 	}
 
@@ -331,7 +338,7 @@ func (ob *Env) Create(context *gin.Context) {
 
 	}
 
-	err = ob.RelDB.SetOracleConfig(context, strconv.Itoa(customerID), oracleaddress, feederID, creator, address, symbols, feedSelection, chainID, frequency, sleepSeconds, deviationPermille, blockchainnode, mandatoryFrequency)
+	err = ob.RelDB.SetOracleConfig(context, strconv.Itoa(customerID), oracleaddress, feederID, creator, address, symbols, feedSelection, chainID, frequency, sleepSeconds, deviationPermille, blockchainnode, mandatoryFrequency, oracleName)
 	if err != nil {
 		log.Errorln("requestId: %s, error SetOracleConfig ", requestId, err)
 		context.JSON(http.StatusInternalServerError, gin.H{"error": "error creating new oracle config"})
@@ -380,6 +387,37 @@ func (ob *Env) Create(context *gin.Context) {
 	context.JSON(http.StatusCreated, k)
 }
 
+// combim list and view account to save signing extra extra endpoint on dashboard
+func (ob *Env) ListAndViewAccount(context *gin.Context) {
+	creator := context.Query("creator")
+
+	// get customer id, get oracles by customer
+
+	customerId, err := ob.RelDB.GetCustomerIDByWalletPublicKey(creator)
+	if err != nil {
+		errorMsg := "error fetching customer by this address " + creator
+		logMsg := "List Oracles: error on GetCustomerIDByWalletPublicKey"
+		handleError(context, http.StatusNotFound, errorMsg, logMsg, err)
+		return
+	}
+
+	oracles, err := ob.RelDB.GetOraclesByCustomer(strconv.Itoa(customerId))
+	if err != nil {
+		errorMsg := "error fetching oracles for this customer"
+		logMsg := "List Oracles: error on getOraclesByOwner"
+		handleError(context, http.StatusNotFound, errorMsg, logMsg, err)
+		return
+	}
+
+	account := ob.viewAccount(context, creator)
+
+	r := map[string]interface{}{
+		"account": account,
+		"oracles": oracles,
+	}
+	context.JSON(http.StatusOK, r)
+}
+
 // List: list owner oracles
 func (ob *Env) List(context *gin.Context) {
 	creator := context.Query("creator")
@@ -388,16 +426,18 @@ func (ob *Env) List(context *gin.Context) {
 
 	customerId, err := ob.RelDB.GetCustomerIDByWalletPublicKey(creator)
 	if err != nil {
-		errorMsg := "Error fetching customer id by key"
+		errorMsg := "error fetching customer by this address " + creator
 		logMsg := "List Oracles: error on GetCustomerIDByWalletPublicKey"
-		handleError(context, http.StatusInternalServerError, errorMsg, logMsg, err)
+		handleError(context, http.StatusNotFound, errorMsg, logMsg, err)
+		return
 	}
 
 	oracles, err := ob.RelDB.GetOraclesByCustomer(strconv.Itoa(customerId))
 	if err != nil {
-		errorMsg := "Error fetching oracles by owner"
+		errorMsg := "error fetching oracles for this customer"
 		logMsg := "List Oracles: error on getOraclesByOwner"
-		handleError(context, http.StatusInternalServerError, errorMsg, logMsg, err)
+		handleError(context, http.StatusNotFound, errorMsg, logMsg, err)
+		return
 	}
 	context.JSON(http.StatusOK, oracles)
 }
@@ -833,6 +873,8 @@ func (ob *Env) View(context *gin.Context) {
 
 }
 func (ob *Env) Pause(context *gin.Context) {
+	requestId := context.GetString(REQUEST_ID)
+	customerID := context.GetString(CUSTOMER_ID)
 	var (
 		// address string
 		err error
@@ -840,17 +882,22 @@ func (ob *Env) Pause(context *gin.Context) {
 	oracleaddress := context.Query("oracleaddress")
 	chainid := context.Query("oracleChainID")
 
-	creator := context.Query("creator")
-
 	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress, chainid)
 	if err != nil {
-		log.Errorln("error GetOracleConfig ", err)
-		context.JSON(http.StatusInternalServerError, err)
+		log.Errorf("Request ID: %s,  err GetOracleConfig %v ", requestId, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "error on pause"})
 		return
 	}
-	if oracleconfig.Owner != creator {
-		log.Errorln("not authorised to delete  ", err)
-		context.JSON(http.StatusInternalServerError, err)
+
+	if oracleconfig.CustomerID != customerID {
+		log.Errorf("Request ID: %s, not authorised to pause, customerID=%s, oracleconfig.CustomerID=%s %v ", requestId, customerID, oracleconfig.CustomerID, err)
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "not part of your team oracle"})
+		return
+	}
+
+	if oracleconfig.Deleted {
+		log.Errorf("Request ID: %s, pause cannot be done one  deleted oracle, customerID=%s, oracleconfig.CustomerID=%s %v ", requestId, customerID, oracleconfig.CustomerID, err)
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "this is deleted oracle"})
 		return
 	}
 
@@ -859,14 +906,14 @@ func (ob *Env) Pause(context *gin.Context) {
 	}
 	_, err = ob.k8sbridgeClient.DeletePod(context, fc)
 	if err != nil {
-		log.Errorln("error DeleteOracleFeeder ", err)
-		context.JSON(http.StatusInternalServerError, err)
+		log.Errorf("Request ID: %s,  err DeleteOracleFeeder %v ", requestId, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "error on pause"})
 		return
 	}
 	err = ob.RelDB.ChangeOracleState(oracleconfig.FeederID, false)
 	if err != nil {
-		log.Errorln("error ChangeOracleState ", err)
-		context.JSON(http.StatusInternalServerError, err)
+		log.Errorf("Request ID: %s,  err ChangeOracleState %v ", requestId, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "error on pause"})
 		return
 	}
 	context.JSON(http.StatusOK, oracleconfig)
@@ -877,22 +924,22 @@ func (ob *Env) Delete(context *gin.Context) {
 		// address string
 		err error
 	)
+	requestId := context.GetString(REQUEST_ID)
+	customerID := context.GetString(CUSTOMER_ID)
 	oracleaddress := context.Query("oracleaddress")
 	chainID := context.Query("oracleChainID")
 
 	oracleaddress = common.HexToAddress(oracleaddress).Hex()
 
-	creator := context.Query("creator")
-
 	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress, chainID)
 	if err != nil {
-		log.Errorln("error GetOracleConfig ", err)
-		context.JSON(http.StatusInternalServerError, err)
+		log.Errorf("Request ID: %s,  err GetOracleConfig %v ", requestId, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "error on delete"})
 		return
 	}
-	if oracleconfig.Owner != creator {
-		log.Errorln("not authorised to delete  ", err)
-		context.JSON(http.StatusInternalServerError, err)
+	if oracleconfig.CustomerID != customerID {
+		log.Errorf("Request ID: %s, not authorised to delete, customerID=%s, oracleconfig.CustomerID=%s %v ", requestId, customerID, oracleconfig.CustomerID, err)
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "not part of your team oracle"})
 		return
 	}
 	fc := &k8sbridge.FeederConfig{
@@ -900,20 +947,21 @@ func (ob *Env) Delete(context *gin.Context) {
 	}
 	_, err = ob.k8sbridgeClient.DeletePod(context, fc)
 	if err != nil {
-		log.Errorln("error DeleteOracleFeeder ", err)
-		context.JSON(http.StatusInternalServerError, err)
+		log.Errorf("Request ID: %s,  err DeleteOracleFeeder %v ", requestId, err)
+
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "error on delete"})
 		return
 	}
 	err = ob.RelDB.ChangeOracleState(oracleconfig.FeederID, false)
 	if err != nil {
-		log.Errorln("error ChangeOracleState ", err)
-		context.JSON(http.StatusInternalServerError, err)
+		log.Errorf("Request ID: %s,  err ChangeOracleState %v ", requestId, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "error on delete"})
 		return
 	}
 	err = ob.RelDB.DeleteOracle(oracleconfig.FeederID)
 	if err != nil {
-		log.Errorln("error DeleteOracle ", err)
-		context.JSON(http.StatusInternalServerError, err)
+		log.Errorf("Request ID: %s,  err DeleteOracle %v ", requestId, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "error on delete"})
 		return
 	}
 	context.JSON(http.StatusOK, oracleconfig)
@@ -923,22 +971,29 @@ func (ob *Env) Restart(context *gin.Context) {
 	var (
 		err error
 	)
+	requestId := context.GetString(REQUEST_ID)
+	customerID := context.GetString(CUSTOMER_ID)
+
 	oracleaddress := context.Query("oracleaddress")
 	chainid := context.Query("oracleChainID")
 
 	oracleaddress = common.HexToAddress(oracleaddress).Hex()
 
-	creator := context.Query("creator")
-
 	oracleconfig, err := ob.RelDB.GetOracleConfig(oracleaddress, chainid)
 	if err != nil {
-		log.Errorln("error GetOracleConfig ", err)
-		context.JSON(http.StatusInternalServerError, err)
+		log.Errorf("Request ID: %s,  err GetOracleConfig %v ", requestId, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "error on restart"})
 		return
 	}
-	if oracleconfig.Owner != creator {
-		log.Errorln("not authorised to delete  ", err)
-		context.JSON(http.StatusInternalServerError, err)
+	if oracleconfig.CustomerID != customerID {
+		log.Errorf("Request ID: %s, not authorised to Restart, customerID=%s, oracleconfig.CustomerID=%s %v ", requestId, customerID, oracleconfig.CustomerID, err)
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "not part of your team oracle"})
+		return
+	}
+
+	if oracleconfig.Deleted {
+		log.Errorf("Request ID: %s, restart cannot be done one  deleted oracle, customerID=%s, oracleconfig.CustomerID=%s %v ", requestId, customerID, oracleconfig.CustomerID, err)
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "this is deleted oracle"})
 		return
 	}
 
@@ -959,14 +1014,15 @@ func (ob *Env) Restart(context *gin.Context) {
 
 	_, err = ob.k8sbridgeClient.RestartPod(context, fc)
 	if err != nil {
-		log.Errorln("error RestartOracleFeeder ", err)
-		context.JSON(http.StatusInternalServerError, err)
+		log.Errorf("Request ID: %s,  err RestartOracleFeeder %v ", requestId, err)
+
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "error on restart"})
 		return
 	}
 	err = ob.RelDB.ChangeOracleState(oracleconfig.FeederID, true)
 	if err != nil {
-		log.Errorln("error ChangeOracleState ", err)
-		context.JSON(http.StatusInternalServerError, err)
+		log.Errorf("Request ID: %s,  err ChangeOracleState %v ", requestId, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "error on restart"})
 		return
 	}
 
@@ -1039,6 +1095,7 @@ func (ob *Env) Auth(context *gin.Context) {
 	context.Set(REQUEST_ID, requestId)
 
 	chainID := context.Query("chainID")
+
 	creator := context.Query("creator")
 	if creator == "" {
 		creator = context.PostForm("creator")
@@ -1083,6 +1140,28 @@ func (ob *Env) Auth(context *gin.Context) {
 		return
 
 	}
+
+	customer, err := ob.RelDB.GetCustomerByPublicKey(creator)
+	if err != nil {
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "address not associated with any team"})
+		log.Errorf("Request ID: %s, address not associated with any team %s", requestId, signer)
+		context.Abort()
+		return
+
+	}
+
+	accessLevel, err := ob.RelDB.GetAccessLevel(creator)
+
+	if err != nil {
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "address has invalid access level"})
+		log.Errorf("Request ID: %s, address has invalid access level %s", requestId, signer)
+		context.Abort()
+		return
+
+	}
+
+	context.Set(CUSTOMER_ID, customer.CustomerID)
+	context.Set(ACCESS_LEVEL, accessLevel)
 
 }
 
@@ -1147,12 +1226,26 @@ func (ob *Env) LoopWebHook(context *gin.Context) {
 			customer, err := ob.RelDB.GetCustomerByPublicKey(common.HexToAddress(ldr.Subscriber).String())
 			if err != nil {
 				log.Errorf("Request ID: %s,AgreementSignedUp GetCustomerByPublicKey %v ,", requestId, err)
-				if err == sql.ErrNoRows {
+				log.Errorf("Request ID: %s,sql.ErrNoRows %v ,", requestId, sql.ErrNoRows)
+				log.Errorf("Request ID: %s,err %v ,", requestId, err)
+
+				if err.Error() == "no rows in result set" {
 					err := ob.RelDB.CreateCustomer(ldr.Email, 0, "", "", 2, []string{common.HexToAddress(ldr.Subscriber).String()})
 					if err != nil {
+						log.Errorf("Request ID: %s,customer err %v", err)
+
 						context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 						return
 					}
+					log.Errorf("Request ID: %s,customer created ", requestId)
+					customer, err := ob.RelDB.GetCustomerByPublicKey(common.HexToAddress(ldr.Subscriber).String())
+					if err != nil {
+						log.Errorf("Request ID: %s,AgreementCancelled GetCustomerByPublicKey %v ,", requestId, err)
+					}
+					log.Errorf("Request ID: %s,customer created %v", customer)
+
+				} else {
+					log.Errorf("Request ID: %s,AgreementSignedUp err GetCustomerByPublicKey %v ,", requestId, err)
 
 				}
 
@@ -1176,7 +1269,7 @@ func (ob *Env) LoopWebHook(context *gin.Context) {
 		{
 
 			// cancel user plan
-			customer, err := ob.RelDB.GetCustomerByPublicKey(ldr.Subscriber)
+			customer, err := ob.RelDB.GetCustomerByPublicKey(common.HexToAddress(ldr.Subscriber).String())
 			if err != nil {
 				log.Errorf("Request ID: %s,AgreementCancelled GetCustomerByPublicKey %v ,", requestId, err)
 			}
@@ -1187,6 +1280,7 @@ func (ob *Env) LoopWebHook(context *gin.Context) {
 	case "TransferCreated":
 		{
 			// create agreement
+			log.Infof("Request ID: %s,TransferCreated ldr %v ,", requestId, ldr)
 
 		}
 	case "TransferProcessed":
@@ -1207,9 +1301,10 @@ func (ob *Env) LoopWebHook(context *gin.Context) {
 			}
 
 			// Get customer
-			customer, err := ob.RelDB.GetCustomerByPublicKey(lptp.EndUser)
+			customer, err := ob.RelDB.GetCustomerByPublicKey(common.HexToAddress(lptp.EndUser).String())
 			if err != nil {
-				log.Errorf("Request ID: %s, GetCustomerByPublicKey %v ,", requestId, err)
+				log.Errorf("Request ID: %s, TransferProcessed GetCustomerByPublicKey %v ,", requestId, err)
+				return
 			}
 			log.Infof("Request ID: %s,TransferProcessed GetCustomerByPublicKey %v ,", requestId, customer)
 			log.Infof("Request ID: %s,ldr  %v ,", requestId, ldr)
@@ -1234,6 +1329,11 @@ func (ob *Env) LoopWebHook(context *gin.Context) {
 				planId = 2
 
 			}
+
+			log.Infof("Request ID: %s, customerID %d,", requestId, customer.CustomerID)
+			log.Infof("Request ID: %s, planId %d,", requestId, planId)
+			log.Infof("Request ID: %s, lpr.PaymentTokenSymbol %s,", requestId, lpr.PaymentTokenSymbol)
+			log.Infof("Request ID: %s, lpr.EventDate %s,", requestId, lpr.EventDate)
 
 			err = ob.RelDB.UpdateCustomerPlan(context, customer.CustomerID, planId, lpr.PaymentTokenSymbol, strconv.Itoa(lpr.EventDate))
 

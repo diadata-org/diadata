@@ -76,19 +76,24 @@ func setupRouter() *gin.Engine {
 	routerGroup.GET("/create", oracle.ViewLimit)
 
 	routerGroup.POST("createAccount", authenticate("Verify its your address to create Account"), oracle.Auth, oracle.CreateAccount)
-	routerGroup.POST("/account/addWallet", authenticate("Verify its your address to Add Wallet"), oracle.Auth, oracle.CanWrite, oracle.AddWallet)
+	routerGroup.POST("/account/addWallet", authenticate("Verify its your address to Add Wallet"), oracle.Auth, oracle.CanWrite, oracle.AddTempWallet)
+	routerGroup.POST("/account/approveWallet", authenticate("Verify its your address to Approve Adding this Wallet to Team"), oracle.Auth, oracle.ApproveWallet)
 	routerGroup.POST("/account/removeWallet", authenticate("Verify its your address to Remove Wallet"), oracle.Auth, oracle.CanWrite, oracle.RemoveWallet)
 
 	routerGroup.POST("/account/updateAccess", authenticate("Verify its your address to Update Access"), oracle.Auth, oracle.CanWrite, oracle.UpdateAccess)
 
 	routerGroup.POST("/account/view", authenticate("Verify its your address to View Account"), oracle.Auth, oracle.CanRead, oracle.ViewAccount)
 
-	routerGroup.GET("/list", authenticate("Verify its your address to List your oracles"), oracle.Auth, oracle.List)
-	routerGroup.GET("/view", authenticate("Verify its your address to List your oracles"), oracle.Auth, oracle.View)
-	routerGroup.DELETE("/delete", authenticate("Verify its your address to delete oracle"), oracle.Auth, oracle.Delete)
-	routerGroup.PATCH("/restart", authenticate("Verify its your address to restart oracle feeder"), oracle.Auth, oracle.Restart)
-	routerGroup.PATCH("/pause", authenticate("Verify its your address to pause oracle feeder"), oracle.Auth, oracle.Pause)
+	// oracle actions
+	routerGroup.GET("/list", authenticate("Verify its your address to List your oracles"), oracle.Auth, oracle.CanRead, oracle.List)
+	routerGroup.GET("/account/dashboard", authenticate("Verify its your address to List your oracles and View Account"), oracle.Auth, oracle.CanRead, oracle.ListAndViewAccount)
 
+	routerGroup.GET("/view", authenticate("Verify its your address to List your oracles"), oracle.Auth, oracle.CanRead, oracle.View)
+	routerGroup.DELETE("/delete", authenticate("Verify its your address to delete oracle"), oracle.Auth, oracle.CanWrite, oracle.Delete)
+	routerGroup.PATCH("/restart", authenticate("Verify its your address to restart oracle feeder"), oracle.Auth, oracle.CanWrite, oracle.Restart)
+	routerGroup.PATCH("/pause", authenticate("Verify its your address to pause oracle feeder"), oracle.Auth, oracle.CanWrite, oracle.Pause)
+
+	//payment related endpoints
 	routerGroup.POST("/paymenthook", oracle.LoopWebHook)
 	routerGroup.GET("/paymentStatus", oracle.LoopPaymentStatus)
 

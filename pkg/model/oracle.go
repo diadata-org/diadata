@@ -41,6 +41,7 @@ type PublicKey struct {
 	AccessLevel string `json:"access_level"`
 	PublicKey   string `json:"public_key"`
 	UserName    string `json:"username"`
+	CustomerId  string `json:"customer_id"`
 }
 
 func (rdb *RelDB) SetKeyPair(publickey string, privatekey string) error {
@@ -71,18 +72,18 @@ func (rdb *RelDB) GetKeyPairID(publicKey string) string {
 	return keypairId
 }
 
-func (rdb *RelDB) SetOracleConfig(ctx context.Context, customerId, address, feederID, owner, feederAddress, symbols, feedSelection, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency string) error {
+func (rdb *RelDB) SetOracleConfig(ctx context.Context, customerId, address, feederID, owner, feederAddress, symbols, feedSelection, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency, name string) error {
 	currentTime := time.Now()
 	query := fmt.Sprintf(`
-		INSERT INTO %s (customer_id, address,feeder_id,owner,symbols,chainID,frequency,sleepseconds,deviationpermille,blockchainnode,mandatory_frequency,feeder_address,createddate,lastupdate,feedSelection) 
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+		INSERT INTO %s (customer_id, address,feeder_id,owner,symbols,chainID,frequency,sleepseconds,deviationpermille,blockchainnode,mandatory_frequency,feeder_address,createddate,lastupdate,feedSelection,name) 
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
 		ON CONFLICT(feeder_id)  
-		DO UPDATE SET symbols=$4,frequency=$6,sleepseconds=$7,deviationpermille=$8,blockchainnode=$9,mandatory_frequency=$10,feeder_address=$11,lastupdate=$13,feedSelection=$14`,
+		DO UPDATE SET symbols=$4,frequency=$6,sleepseconds=$7,deviationpermille=$8,blockchainnode=$9,mandatory_frequency=$10,feeder_address=$11,lastupdate=$13,feedSelection=$14,name=$16`,
 		oracleconfigTable,
 	)
 
 	log.Infoln("SetOracleConfig Query", query)
-	_, err := rdb.postgresClient.Exec(ctx, query, customerId, address, feederID, owner, symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency, feederAddress, currentTime, currentTime, feedSelection)
+	_, err := rdb.postgresClient.Exec(ctx, query, customerId, address, feederID, owner, symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency, feederAddress, currentTime, currentTime, feedSelection, name)
 	if err != nil {
 		return err
 	}
@@ -176,6 +177,8 @@ func (rdb *RelDB) GetExpiredFeeders() (oracleconfigs []dia.OracleConfig, err err
 		query          string
 	)
 
+	//    AND t1.deleted = false
+
 	query = fmt.Sprintf(`
 	SELECT 
     t1.address,  t1.feeder_id, t1.deleted, t1.owner, t1.symbols, t1.chainID, 
@@ -194,7 +197,6 @@ GROUP BY
     t1.lastupdate, t1.expired, t1.expired_time
 HAVING 
     EXTRACT(EPOCH FROM (NOW() - lastupdate)) / 86400 > 60
-    AND t1.deleted = false
     AND t1.expired = false
 	`, oracleconfigTable, feederupdatesTable)
 
@@ -446,7 +448,7 @@ func (rdb *RelDB) GetOraclesByCustomer(customerId string) (oracleconfigs []dia.O
 
 	query := fmt.Sprintf(`
 	SELECT 
-    	t1.address,  t1.feeder_id,t1.deleted,  t1.owner,  t1.symbols,  t1.chainID, 
+    	t1.name,t1.address,  t1.feeder_id,t1.deleted,  t1.owner,  t1.symbols,  t1.chainID, 
     	t1.frequency,  t1.sleepseconds,  t1.deviationpermille,  t1.blockchainnode,   t1.active, 
     	t1.mandatory_frequency,  t1.feeder_address,  t1.createddate,  t1.feedselection, 
     	COALESCE(t1.lastupdate, '0001-01-01 00:00:00'::timestamp) AS lastupdate, 
@@ -458,7 +460,7 @@ func (rdb *RelDB) GetOraclesByCustomer(customerId string) (oracleconfigs []dia.O
     AND t1.chainID = fu.chain_id
 	WHERE t1.customer_id = $1 
 	GROUP BY  
-		t1.address,  t1.feeder_id, t1.deleted, t1.owner,  t1.symbols,  t1.chainID, 
+		t1.name,t1.address,  t1.feeder_id, t1.deleted, t1.owner,  t1.symbols,  t1.chainID, 
    		t1.frequency,  t1.sleepseconds,  t1.deviationpermille,  t1.blockchainnode,  t1.active, 
 		t1.mandatory_frequency,  t1.feeder_address, t1.createddate, t1.feedselection, 
      	t1.lastupdate, t1.expired,t1.expired_time;`, oracleconfigTable, feederupdatesTable)
@@ -473,9 +475,10 @@ func (rdb *RelDB) GetOraclesByCustomer(customerId string) (oracleconfigs []dia.O
 			oracleconfig  dia.OracleConfig
 			symbols       string
 			feedSelection sql.NullString
+			name          sql.NullString
 		)
 
-		err := rows.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Deleted, &oracleconfig.Owner, &symbols,
+		err := rows.Scan(&name, &oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Deleted, &oracleconfig.Owner, &symbols,
 			&oracleconfig.ChainID, &oracleconfig.Frequency, &oracleconfig.SleepSeconds, &oracleconfig.DeviationPermille,
 			&oracleconfig.BlockchainNode, &oracleconfig.Active, &oracleconfig.MandatoryFrequency, &oracleconfig.FeederAddress,
 			&oracleconfig.CreatedDate, &feedSelection, &oracleconfig.LastUpdate, &oracleconfig.Expired, &oracleconfig.ExpiredDate, &oracleconfig.LastOracleUpdate)
@@ -495,6 +498,10 @@ func (rdb *RelDB) GetOraclesByCustomer(customerId string) (oracleconfigs []dia.O
 
 			}
 			oracleconfig.DeviationPermille = fmt.Sprintf("%.2f", deviationFloat/10)
+		}
+
+		if name.Valid {
+			oracleconfig.Name = name.String
 		}
 
 		lastupdate := oracleconfig.LastOracleUpdate
@@ -1140,6 +1147,7 @@ func (datastore *DB) GetOracleConfigCache(key string) (dia.OracleConfig, error) 
 	}
 
 	return oc, err
+
 }
 
 func (reldb *RelDB) AddWalletKeys(owner, username, accessLevel string, publicKey []string) error {
@@ -1159,7 +1167,7 @@ func (reldb *RelDB) AddWalletKeys(owner, username, accessLevel string, publicKey
 
 	for _, publicKey := range publicKey {
 		_, err = tx.Exec(context.Background(), `
-			INSERT INTO wallet_public_keys (customer_id, public_key, access_level,username)
+			INSERT INTO wallet_public_keys_temp (customer_id, public_key, access_level,username)
 			VALUES ($1, $2,$3,$4)
 		`, customerID, publicKey, accessLevel, username)
 		if err != nil {
@@ -1175,8 +1183,13 @@ func (reldb *RelDB) AddWalletKeys(owner, username, accessLevel string, publicKey
 	return nil
 }
 
-func (reldb *RelDB) UpdateAccessLevel(username, accessLevel, publicKey string) error {
+func (reldb *RelDB) AddTempWalletKeys(owner, username, accessLevel string, publicKey []string) error {
 	var err error
+
+	customerID, err := reldb.GetCustomerIDByWalletPublicKey(owner)
+	if err != nil {
+		return err
+	}
 
 	tx, err := reldb.postgresClient.BeginTx(context.Background(), pgx.TxOptions{})
 	if err != nil {
@@ -1185,21 +1198,114 @@ func (reldb *RelDB) UpdateAccessLevel(username, accessLevel, publicKey string) e
 	}
 	defer tx.Rollback(context.Background())
 
-	_, err = tx.Exec(context.Background(), `
-		UPDATE wallet_public_keys
-		SET access_level = $1,
-			    username = $3
-		WHERE public_key = $2
-		AND ($1 IS NOT NULL AND $1 != '' OR $3 IS NOT NULL AND $3 != '');
-
-		`, accessLevel, publicKey, username)
-	if err != nil {
-		return err
+	for _, publicKey := range publicKey {
+		_, err = tx.Exec(context.Background(), `
+			INSERT INTO wallet_public_keys_temp (customer_id, public_key, access_level,username)
+			VALUES ($1, $2,$3,$4)
+		`, customerID, publicKey, accessLevel, username)
+		if err != nil {
+			return err
+		}
 	}
 
 	err = tx.Commit(context.Background())
 	if err != nil {
 		return err
+	}
+
+	return nil
+
+}
+
+func (reldb *RelDB) DeleteTempWalletRequest(ctx context.Context, keyId string) (err error) {
+	query := `
+	DELETE FROM wallet_public_keys_temp
+	WHERE key_id = $1;
+`
+
+	result, err := reldb.postgresClient.Exec(ctx, query, keyId)
+	if err != nil {
+		return fmt.Errorf("failed to execute delete query: %v", err)
+	}
+
+	rowsAffected := result.RowsAffected()
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("no record found with key_id: %d", keyId)
+	}
+
+	return nil
+}
+
+func (reldb *RelDB) GetTempWalletRequest(ctx context.Context, publicKey, customerID string) (keyID, accessLevel, username string, err error) {
+	query := `
+		SELECT key_id, access_level, username
+		FROM wallet_public_keys_temp
+		WHERE public_key = $1 AND customer_id = $2;
+	`
+
+	err = reldb.postgresClient.QueryRow(ctx, query, publicKey, customerID).Scan(
+		&keyID,
+		&accessLevel,
+		&username,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			err = fmt.Errorf("no wallet public key found for public_key: %s and username: %s", publicKey, username)
+		}
+	}
+
+	return
+
+}
+
+func (reldb *RelDB) UpdateAccessLevel(username, accessLevel, publicKey string) error {
+	// Start building the SQL query
+	query := "UPDATE wallet_public_keys SET"
+	var fields []string
+	var args []interface{}
+	argID := 1
+
+	if accessLevel != "" {
+		fields = append(fields, fmt.Sprintf(" access_level = $%d", argID))
+		args = append(args, accessLevel)
+		argID++
+	}
+
+	username = strings.TrimSpace(username)
+
+	// Conditionally add username if it's not nil or empty
+	if username != "" {
+		fields = append(fields, fmt.Sprintf(" username = $%d", argID))
+		args = append(args, username)
+		argID++
+	}
+
+	// If no fields are provided to update, return an error
+	if len(fields) == 0 {
+		return fmt.Errorf("no fields provided to update")
+	}
+
+	// Add the WHERE clause to target the correct public_key
+	query += strings.Join(fields, ",") + fmt.Sprintf(" WHERE public_key = $%d", argID)
+	args = append(args, publicKey)
+
+	tx, err := reldb.postgresClient.BeginTx(context.Background(), pgx.TxOptions{})
+	if err != nil {
+		return err
+
+	}
+
+	_, err = tx.Exec(context.Background(), query, args...)
+	if err != nil {
+		return fmt.Errorf("failed to prepare statement: %w", err)
+	}
+
+	err = tx.Commit(context.Background())
+
+	if err != nil {
+		return fmt.Errorf("failed to execute update: %w", err)
 	}
 
 	return nil
@@ -1324,6 +1430,64 @@ func (reldb *RelDB) GetPlan(ctx context.Context, planID int) (*Plan, error) {
 		return nil, err
 	}
 	return &plan, err
+
+}
+
+func (reldb *RelDB) GetPendingRequestByPublicKey(owner string) (pk []PublicKey, err error) {
+
+	query := `
+		SELECT customer_id, access_level,username
+		FROM wallet_public_keys_temp
+		WHERE public_key = $1
+	`
+	rows, err := reldb.postgresClient.Query(context.Background(), query, owner)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var username sql.NullString
+
+	for rows.Next() {
+		var publicKey PublicKey
+		if err := rows.Scan(&publicKey.CustomerId, &publicKey.AccessLevel, &username); err != nil {
+			return nil, err
+		}
+		if username.Valid {
+			publicKey.UserName = username.String
+		}
+		pk = append(pk, publicKey)
+	}
+	return
+
+}
+
+func (reldb *RelDB) GetPendingPublicKeyByCustomer(ctx context.Context, customerId string) (pk []PublicKey, err error) {
+
+	query := `
+		SELECT public_key, access_level,username
+		FROM wallet_public_keys_temp
+		WHERE customer_id = $1
+	`
+	rows, err := reldb.postgresClient.Query(ctx, query, customerId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var username sql.NullString
+
+	for rows.Next() {
+		var publicKey PublicKey
+		if err := rows.Scan(&publicKey.PublicKey, &publicKey.AccessLevel, &username); err != nil {
+			return nil, err
+		}
+		if username.Valid {
+			publicKey.UserName = username.String
+		}
+		pk = append(pk, publicKey)
+	}
+	return
 
 }
 

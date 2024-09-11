@@ -2,11 +2,16 @@ FROM us.icr.io/dia-registry/devops/build-119:latest as build
 
 WORKDIR $GOPATH/src/
 COPY ./cmd/oraclebuildertools ./
-RUN go install
+ 
+RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go install -ldflags "-X google.golang.org/protobuf/reflect/protoregistry.conflictPolicy=warn" 
+
 
 FROM gcr.io/distroless/base
 
-COPY --from=build /go/bin/oraclebuildertools /bin/oraclebuildertools
+COPY --from=build /go/bin/oraclebuildertool /bin/oraclebuildertool
 COPY --from=build /config/ /config/
 
-CMD ["oraclebuildertools"]
+CMD ["oraclebuildertool"]
+
+
+ 
