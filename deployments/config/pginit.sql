@@ -307,6 +307,10 @@ CREATE TABLE oracleconfig (
     expired_time timestamp without time zone DEFAULT '1970-01-01 00:00:00'::timestamp without time zone
 );
 
+ALTER TABLE oracleconfig  ADD COLUMN name VARCHAR(255);
+
+ALTER TABLE oracleconfig
+ADD CONSTRAINT unique_feeder_id UNIQUE (feeder_id);
 
 
 -- CREATE TABLE oracleconfig (
@@ -390,10 +394,25 @@ CREATE TABLE wallet_public_keys (
     customer_id INTEGER REFERENCES customers(customer_id) ON DELETE CASCADE,
     public_key TEXT NOT NULL,
     access_level VARCHAR(50) NOT NULL DEFAULT 'read_write',
-    UNIQUE (public_key)
+    UNIQUE (public_key),
+    CONSTRAINT check_access_level CHECK (access_level IN ('read', 'read_write'))
+
 );
 
+
+
 ALTER TABLE wallet_public_keys ADD COLUMN username VARCHAR(255) UNIQUE;
+
+CREATE TABLE wallet_public_keys_temp (
+    key_id SERIAL PRIMARY KEY,
+    customer_id INTEGER REFERENCES customers(customer_id) ON DELETE CASCADE,
+    public_key TEXT NOT NULL,
+    access_level VARCHAR(50) NOT NULL DEFAULT 'read_write',
+    username VARCHAR(255)
+ );
+
+ ALTER TABLE wallet_public_keys_temp
+ADD CONSTRAINT unique_customer_public_key UNIQUE (customer_id, public_key);
 
 
 CREATE TABLE transfer_created (

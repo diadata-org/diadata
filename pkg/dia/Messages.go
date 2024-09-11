@@ -797,6 +797,8 @@ type OracleConfig struct {
 	ExpiredDate        time.Time
 	ExpiringDate       time.Time
 	LastOracleUpdate   time.Time
+	CustomerID         string
+	Name               string
 }
 
 func (e *OracleConfig) MarshalBinary() ([]byte, error) {

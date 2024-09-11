@@ -286,7 +286,7 @@ func main() {
 
 				oracleconfig, err := relStore.GetFeeder(v)
 				if err != nil {
-					log.Errorln("error getting feeder", err)
+					log.Errorf("error getting feeder %s err %v", v, err)
 					continue
 				}
 
