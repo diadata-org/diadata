@@ -648,6 +648,13 @@ func buildBridge(t dia.Trade) dia.Asset {
 				Blockchain: dia.ETHEREUM,
 			}
 		}
+		if basetoken.Address == "0xAEC9e50e3397f9ddC635C6c429C8C7eca418a143" {
+			basetoken = dia.Asset{
+				Symbol:     "USDC",
+				Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+				Blockchain: dia.ETHEREUM,
+			}
+		}
 	}
 	if basetoken.Blockchain == dia.BINANCESMARTCHAIN && t.Source == dia.PanCakeSwapExchangeV3 {
 		if basetoken.Address == "0x55d398326f99059fF775485246999027B3197955" {
