@@ -3,6 +3,14 @@
     {
       "Address": "0x7a27c7b7e2536e452C57d3E8B909d9ecbA2E2eEe",
       "Symbol": "wstETH-rsETH"
+    },
+    {
+      "Address": "0x15aA01580ae866f9FF4DBe45E06e307941d90C7b",
+      "Symbol": "WETH-cbBTC"
+    },
+    {
+      "Address": "0x0da6253560822973185297d5f32fF8fA38243Afe",
+      "Symbol": "WBTC-cbBTC"
     }
   ]
 }
