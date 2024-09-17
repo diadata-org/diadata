@@ -21,6 +21,8 @@ import (
 const (
 	velodromeRestDial = ""
 	velodromeWsDial   = ""
+	baseRestDial      = ""
+	baseWsDial        = ""
 )
 
 type VelodromeSwap struct {
@@ -57,6 +59,8 @@ func NewVelodromeScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 	switch exchange.Name {
 	case dia.VelodromeExchange:
 		s = makeVelodromeScraper(exchange, velodromeRestDial, velodromeWsDial, relDB)
+	case dia.AerodromeV1Exchange:
+		s = makeVelodromeScraper(exchange, baseRestDial, baseWsDial, relDB)
 	}
 
 	// Only include pools with (minimum) liquidity bigger than given env var.

@@ -269,6 +269,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewZenlinkScraper(Exchanges[dia.ZenlinkswapExchangeBifrostPolkadot], scrape)
 	case dia.VelodromeExchange:
 		return NewVelodromeScraper(Exchanges[dia.VelodromeExchange], scrape, relDB)
+	case dia.AerodromeV1Exchange:
+		return NewVelodromeScraper(Exchanges[dia.AerodromeV1Exchange], scrape, relDB)
 	case dia.MaverickExchange:
 		return NewMaverickScraper(Exchanges[dia.MaverickExchange], scrape, relDB)
 	case dia.PearlfiExchangeTestnet:
@@ -279,6 +281,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapScraper(Exchanges[dia.ThenaExchange], scrape, relDB)
 	case dia.ThenaV3Exchange:
 		return NewUniswapV3Scraper(Exchanges[dia.ThenaV3Exchange], scrape, relDB)
+	case dia.AerodromeSlipstreamExchange:
+		return NewUniswapV3Scraper(Exchanges[dia.AerodromeSlipstreamExchange], scrape, relDB)
 		// case dia.FinageForex:
 		// 	return NewFinageForexScraper(Exchanges[dia.FinageForex], scrape, relDB, key, secret)
 
