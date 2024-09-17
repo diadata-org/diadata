@@ -12,18 +12,15 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	hydrationhelper "github.com/diadata-org/diadata/pkg/dia/helpers/hydration-helper"
 	models "github.com/diadata-org/diadata/pkg/model"
-	"github.com/diadata-org/diadata/pkg/utils"
+	"github.com/diadata-org/diadata/pkg/utils" 
 	"github.com/sirupsen/logrus"
 )
 
-const (
-	Blockchain = "Polkadot"
-)
-
-type BifrostScraper struct {
+type HydrationScraper struct {
 	logger       *logrus.Entry
-	pairScrapers map[string]*BifrostPairScraper // pc.ExchangePair -> pairScraperSet
+	pairScrapers map[string]*HydrationPairScraper // pc.ExchangePair -> pairScraperSet
 	shutdown     chan nothing
 	shutdownDone chan nothing
 	errorLock    sync.RWMutex
@@ -37,7 +34,7 @@ type BifrostScraper struct {
 	blockchain   string
 }
 
-// NewBifrostScraper initializes and returns a new BifrostScraper instance.
+// NewHydrationScraper initializes and returns a new HydrationScraper instance.
 // The scraper handles periodic polling of trade data from the specified exchange and stores it in a relational database.
 //
 // Parameters:
@@ -49,38 +46,38 @@ type BifrostScraper struct {
 //     trade data will be stored.
 //
 // Returns:
-//   - *BifrostScraper: A pointer to the newly created BifrostScraper instance.
+//   - *HydrationScraper: A pointer to the newly created HydrationScraper instance.
 //
 // Behavior:
 //   - The function calculates the refresh delay for polling trade data by checking an environment variable
 //     named "<EXCHANGE_NAME>_REFRESH_DELAY". If the variable is not set, it defaults to 10000 milliseconds (10 seconds).
-//   - It initializes the BifrostScraper with a shutdown mechanism, a ticker for periodic updates, a channel for trade data,
+//   - It initializes the HydrationScraper with a shutdown mechanism, a ticker for periodic updates, a channel for trade data,
 //     and a logging mechanism.
 //   - If the 'scrape' flag is true, the scraper starts its main scraping loop in a separate goroutine.
-func NewBifrostScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BifrostScraper {
+func NewHydrationScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *HydrationScraper {
 	refreshDelay := utils.GetTimeDurationFromIntAsMilliseconds(
 		utils.GetenvInt(strings.ToUpper(exchange.Name)+"_REFRESH_DELAY", 10000),
 	)
 
-	apiURL := "http://localhost:3000/bifrost/v1"
+	apiURL := "http://localhost:3000/hydration/v1"
 
-	s := &BifrostScraper{
+	s := &HydrationScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		ticker:       time.NewTicker(refreshDelay),
 		chanTrades:   make(chan *dia.Trade),
 		db:           relDB,
 		api:          apiURL,
-		exchangeName: exchange.Name,
-		blockchain:   Blockchain,
+		exchangeName: "Hydration",
+		blockchain:   "Polkadot",
 	}
 
 	s.logger = logrus.
 		New().
 		WithContext(context.Background()).
-		WithField("context", "BifrostScraper")
+		WithField("context", "HydrationScraper")
 
-	s.logger.Info("Initialized BifrostScraper")
+	s.logger.Info("Initialized HydrationScraper")
 
 	if scrape {
 		go s.mainLoop()
@@ -88,7 +85,7 @@ func NewBifrostScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 	return s
 }
 
-// mainLoop is the core loop of the BifrostScraper that periodically fetches
+// mainLoop is the core loop of the HydrationScraper that periodically fetches
 // trade data and handles graceful shutdown.
 //
 // This method runs an infinite loop where it performs two key actions:
@@ -106,7 +103,8 @@ func NewBifrostScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 //
 // This method is designed to run as a goroutine and will keep looping until
 // explicitly stopped by sending a signal to the `shutdown` channel.
-func (s *BifrostScraper) mainLoop() {
+func (s *HydrationScraper) mainLoop() {
+	s.logger.Info("Starting main loop %v", s.ticker)
 	for {
 		select {
 		case <-s.ticker.C:
@@ -122,9 +120,9 @@ func (s *BifrostScraper) mainLoop() {
 	}
 }
 
-// Update fetches and processes the latest stable swap events from the Bifrost API.
+// Update fetches and processes the latest stable swap events from the Hydration API.
 //
-// This method retrieves swap events from the Bifrost API, decodes them into
+// This method retrieves swap events from the Hydration API, decodes them into
 // `StableSwapEvent` objects, and then processes the events by matching them to
 // pools retrieved from the database. For each matching pool, it generates a
 // `dia.Trade` object and sends it to the `chanTrades` channel for further handling.
@@ -139,9 +137,10 @@ func (s *BifrostScraper) mainLoop() {
 //
 // Returns:
 //   - An error if the API request or pool retrieval fails, otherwise `nil`.
-func (s *BifrostScraper) Update() error {
+func (s *HydrationScraper) Update() error {
+	s.logger.Info("Fetching swap events...")
 	// To test the scraper with a specific block
-	endpoint := fmt.Sprintf("%s/events/swap/0x5d184786631f977395636a98b231358b9a82b63c235c801c170fb7e532cb839b", s.api)
+	endpoint := fmt.Sprintf("%s/events/swap/0x4b4d1d9db6336fd124b7df7d54962137e70f60693633692b6e0b54d71650e4af", s.api)
 	// endpoint := fmt.Sprintf("%s/events/swap", s.api)
 
 	resp, err := s.fetchWithRetry(endpoint, "application/json", 3)
@@ -150,7 +149,7 @@ func (s *BifrostScraper) Update() error {
 	}
 	defer resp.Body.Close()
 
-	var events []StableSwapEvent
+	var events []hydrationhelper.HydrationSwapEvent
 	if err := json.NewDecoder(resp.Body).Decode(&events); err != nil {
 		return fmt.Errorf("failed to decode swap events: %w", err)
 	}
@@ -161,12 +160,6 @@ func (s *BifrostScraper) Update() error {
 		return err
 	}
 
-	if len(pools) == 0 {
-		s.logger.Warn("No pools found in the database")
-		return nil
-	}
-
-	// Process each pool looking for matching events and processing
 	for _, pool := range pools {
 		if len(pool.Assetvolumes) != 2 {
 			s.logger.WithField("poolAddress", pool.Address).Error("Pool is missing required asset volumes")
@@ -201,25 +194,18 @@ func (s *BifrostScraper) Update() error {
 //
 // Parameters:
 //   - poolAddress: The address of the pool to filter events for.
-//   - events: A slice of `StableSwapEvent` objects representing the swap events to be filtered.
+//   - events: A slice of `HydrationSwapEvent` objects representing the swap events to be filtered.
 //
 // Returns:
-//   - A slice of `StableSwapEvent` objects that match the provided pool address.
-func (s *BifrostScraper) filterPoolEvents(poolAddress string, events []StableSwapEvent) []StableSwapEvent {
-	var matchedEvents []StableSwapEvent
+//   - A slice of `HydrationSwapEvent` objects that match the provided pool address.
+func (s *HydrationScraper) filterPoolEvents(poolAddress string, events []hydrationhelper.HydrationSwapEvent) []hydrationhelper.HydrationSwapEvent {
+	var matchedEvents []hydrationhelper.HydrationSwapEvent
 
 	for _, event := range events {
-		tokenAName := strings.ToLower(event.InputAsset)
-		tokenBName := strings.ToLower(event.OutputAsset)
-		eventAddressA := fmt.Sprintf("%s:%s:%s:%s", s.blockchain, s.exchangeName, tokenAName, tokenBName)
-		eventAddressB := fmt.Sprintf("%s:%s:%s:%s", s.blockchain, s.exchangeName, tokenBName, tokenAName)
+		eventAddressA := fmt.Sprintf("%s:%s:%s%s", s.blockchain, s.exchangeName, event.AssetIn, event.AssetOut)
+		eventAddressB := fmt.Sprintf("%s:%s:%s%s", s.blockchain, s.exchangeName, event.AssetOut, event.AssetIn)
 
 		if eventAddressA == poolAddress || eventAddressB == poolAddress {
-			s.logger.WithFields(logrus.Fields{
-				"poolAddress":   poolAddress,
-				"eventAddressA": eventAddressA,
-				"eventAddressB": eventAddressB,
-			}).Info("Event matches pool")
 			matchedEvents = append(matchedEvents, event)
 		}
 	}
@@ -246,7 +232,7 @@ func (s *BifrostScraper) filterPoolEvents(poolAddress string, events []StableSwa
 // Returns:
 //   - *http.Response: The response object if the request is successful.
 //   - error: An error if all retry attempts fail, or if a non-retryable error occurs.
-func (s *BifrostScraper) fetchWithRetry(endpoint string, contentType string, retries int) (*http.Response, error) {
+func (s *HydrationScraper) fetchWithRetry(endpoint string, contentType string, retries int) (*http.Response, error) {
 	client := &http.Client{
 		Timeout: 20 * time.Second,
 	}
@@ -305,17 +291,35 @@ func (s *BifrostScraper) fetchWithRetry(endpoint string, contentType string, ret
 //
 // Returns:
 //   - *dia.Trade: A pointer to the constructed `dia.Trade` object containing the trade details.
-func (s *BifrostScraper) handleTrade(pool dia.Pool, event StableSwapEvent, time time.Time) *dia.Trade {
+func (s *HydrationScraper) handleTrade(pool dia.Pool, event hydrationhelper.HydrationSwapEvent, time time.Time) *dia.Trade {
 	var volume, price float64
+	var decimalsIn, decimalsOut int64
 
-	decimals0 := int64(pool.Assetvolumes[0].Asset.Decimals)
-	decimals1 := int64(pool.Assetvolumes[1].Asset.Decimals)
+	var quoteToken dia.Asset
+	var baseToken dia.Asset
 
-	amount0, _ := utils.StringToFloat64(event.InputAmount, decimals0)
-	amount1, _ := utils.StringToFloat64(event.OutputAmount, decimals1)
+	var indexIn, indexOut int
 
-	volume = -amount0
-	price = amount0 / amount1
+	assetInAddress := fmt.Sprintf("%s:Asset:%s", s.exchangeName, event.AmountIn)
+	if pool.Assetvolumes[0].Asset.Address == assetInAddress {
+		indexIn = 0
+		indexOut = 1
+	} else {
+		indexIn = 1
+		indexOut = 0
+	}
+
+	quoteToken = pool.Assetvolumes[indexIn].Asset
+	baseToken = pool.Assetvolumes[indexOut].Asset
+
+	decimalsIn = int64(pool.Assetvolumes[1].Asset.Decimals)
+	decimalsOut = int64(pool.Assetvolumes[0].Asset.Decimals)
+
+	amountIn, _ := utils.StringToFloat64(event.AmountIn, decimalsIn)
+	amountOut, _ := utils.StringToFloat64(event.AmountOut, decimalsOut)
+
+	volume = -amountIn
+	price = amountIn / amountOut
 
 	symbolPair := fmt.Sprintf("%s-%s", pool.Assetvolumes[0].Asset.Symbol, pool.Assetvolumes[1].Asset.Symbol)
 
@@ -328,8 +332,8 @@ func (s *BifrostScraper) handleTrade(pool dia.Pool, event StableSwapEvent, time 
 		Price:          price,
 		Volume:         volume,
 		VerifiedPair:   true,
-		QuoteToken:     pool.Assetvolumes[0].Asset,
-		BaseToken:      pool.Assetvolumes[1].Asset,
+		QuoteToken:     quoteToken,
+		BaseToken:      baseToken,
 		PoolAddress:    pool.Address,
 	}
 }
@@ -337,7 +341,7 @@ func (s *BifrostScraper) handleTrade(pool dia.Pool, event StableSwapEvent, time 
 // FetchAvailablePairs returns a list with all trading pairs available on
 // the exchange associated to the APIScraper. The format is such that it can
 // be used by the corr. pairScraper in order to fetch trades.
-func (s *BifrostScraper) FetchAvailablePairs() ([]dia.ExchangePair, error) {
+func (s *HydrationScraper) FetchAvailablePairs() ([]dia.ExchangePair, error) {
 	return []dia.ExchangePair{}, nil
 }
 
@@ -346,36 +350,36 @@ func (s *BifrostScraper) FetchAvailablePairs() ([]dia.ExchangePair, error) {
 // Returns:
 //   - []dia.Pool: A slice of `dia.Pool` objects representing the pools retrieved from the database.
 //   - error: An error if the database query fails, otherwise `nil`.
-func (s *BifrostScraper) getDBPools() ([]dia.Pool, error) {
+func (s *HydrationScraper) getDBPools() ([]dia.Pool, error) {
 	return s.db.GetAllPoolsExchange(s.exchangeName, 0)
 }
 
-func (s *BifrostScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+func (s *HydrationScraper) FillSymbolData(symbol string) (dia.Asset, error) {
 	return dia.Asset{Symbol: symbol}, nil
 }
 
-func (s *BifrostScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+func (s *HydrationScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	return pair, nil
 }
 
-// ScrapePair initializes and returns a `BifrostPairScraper`.
+// ScrapePair initializes and returns a `HydrationPairScraper`.
 //
 // Parameters:
-//   - pair: The `dia.ExchangePair` representing the trading pair (e.g: `BifrostPairScraper`) to be scraped.
+//   - pair: The `dia.ExchangePair` representing the trading pair (e.g: `HydrationPairScraper`) to be scraped.
 //
 // Returns:
-//   - PairScraper: A `PairScraper` (specifically a `BifrostPairScraper`) for the given exchange pair.
+//   - PairScraper: A `PairScraper` (specifically a `HydrationPairScraper`) for the given exchange pair.
 //   - error: An error if the scraper is closed or if an error has occurred, otherwise `nil`.
-func (s *BifrostScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
+func (s *HydrationScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 	if s.error != nil {
 		return nil, s.error
 	}
 	if s.closed {
-		return nil, errors.New("BifrostScraper: Call ScrapePair on closed scraper")
+		return nil, errors.New("HydrationScraper: Call ScrapePair on closed scraper")
 	}
-	ps := &BifrostPairScraper{
+	ps := &HydrationPairScraper{
 		parent:     s,
 		pair:       pair,
 		lastRecord: 0,
@@ -387,7 +391,7 @@ func (s *BifrostScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) 
 }
 
 // cleanup handles the shutdown procedure.
-func (s *BifrostScraper) cleanup(err error) {
+func (s *HydrationScraper) cleanup(err error) {
 	s.errorLock.Lock()
 	defer s.errorLock.Unlock()
 
@@ -400,10 +404,10 @@ func (s *BifrostScraper) cleanup(err error) {
 	close(s.shutdownDone)
 }
 
-// Close gracefully shuts down the BifrostScraper.
-func (s *BifrostScraper) Close() error {
+// Close gracefully shuts down the HydrationScraper.
+func (s *HydrationScraper) Close() error {
 	if s.closed {
-		return errors.New("BifrostScraper: Already closed")
+		return errors.New("HydrationScraper: Already closed")
 	}
 	close(s.shutdown)
 	<-s.shutdownDone
@@ -413,47 +417,31 @@ func (s *BifrostScraper) Close() error {
 }
 
 // Channel returns the channel used to receive trades/pricing information.
-func (s *BifrostScraper) Channel() chan *dia.Trade {
+func (s *HydrationScraper) Channel() chan *dia.Trade {
 	return s.chanTrades
 }
 
-type BifrostPairScraper struct {
-	parent     *BifrostScraper
+type HydrationPairScraper struct {
+	parent     *HydrationScraper
 	pair       dia.ExchangePair
 	closed     bool
 	lastRecord int64
 }
 
-func (ps *BifrostPairScraper) Pair() dia.ExchangePair {
+func (ps *HydrationPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }
 
-func (ps *BifrostPairScraper) Close() error {
+func (ps *HydrationPairScraper) Close() error {
 	ps.closed = true
 	return nil
 }
 
 // Error returns an error when the channel Channel() is closed
 // and nil otherwise
-func (ps *BifrostPairScraper) Error() error {
+func (ps *HydrationPairScraper) Error() error {
 	s := ps.parent
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 	return s.error
-}
-
-type StableSwapEvent struct {
-	TxID            string   `json:"txId"`
-	Timestamp       int64    `json:"timestamp"`
-	BlockHash       string   `json:"blockHash"`
-	Swapper         string   `json:"swapper"`
-	PoolID          string   `json:"poolId"`
-	A               string   `json:"a"`
-	InputAsset      string   `json:"inputAsset"`
-	OutputAsset     string   `json:"outputAsset"`
-	InputAmount     string   `json:"inputAmount"`
-	MinOutputAmount string   `json:"minOutputAmount"`
-	Balances        []string `json:"balances"`
-	TotalSupply     string   `json:"totalSupply"`
-	OutputAmount    string   `json:"outputAmount"`
 }

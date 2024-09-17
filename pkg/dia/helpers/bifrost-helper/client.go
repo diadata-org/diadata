@@ -135,13 +135,13 @@ func (c *BifrostClient) ScrapAssets() ([]*dia.Asset, error) {
 		return nil, err
 	}
 
-	diaAssets := c.MapFromBifrostAssetsArray(bifrostAssets)
+	diaAssets := c.parseAssets(bifrostAssets)
 	c.logger.Infof("Scraped (%d) assets.", len(diaAssets))
 
 	return diaAssets, nil
 }
 
-func (c *BifrostClient) MapFromBifrostAsset(bifrostAsset BifrostAssetMetadata) *dia.Asset {
+func (c *BifrostClient) parseAsset(bifrostAsset BifrostAssetMetadata) *dia.Asset {
 	decimals, err := strconv.ParseUint(bifrostAsset.Decimals, 10, 8)
 	if err != nil {
 		c.logger.WithError(err).Errorf("Failed to parse decimals: %s", bifrostAsset.Decimals)
@@ -157,10 +157,10 @@ func (c *BifrostClient) MapFromBifrostAsset(bifrostAsset BifrostAssetMetadata) *
 	}
 }
 
-func (c *BifrostClient) MapFromBifrostAssetsArray(bifrostAssets []BifrostAssetMetadata) []*dia.Asset {
+func (c *BifrostClient) parseAssets(bifrostAssets []BifrostAssetMetadata) []*dia.Asset {
 	diaAssets := make([]*dia.Asset, 0, len(bifrostAssets))
 	for _, asset := range bifrostAssets {
-		diaAssets = append(diaAssets, c.MapFromBifrostAsset(asset))
+		diaAssets = append(diaAssets, c.parseAsset(asset))
 	}
 
 	return diaAssets
