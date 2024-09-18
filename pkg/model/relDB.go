@@ -161,7 +161,7 @@ type RelDatastore interface {
 	GetKeyPairID(publickey string) string
 	GetFeederAccessByID(id string) (owner string)
 	GetFeederByID(id string) (owner string)
-	SetOracleConfig(ctx context.Context, customerId, address, feederID, owner, feederAddress, symbols, feedSelection, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency, name string) error
+	SetOracleConfig(ctx context.Context, customerId, address, feederID, owner, feederAddress, symbols, feedSelection, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency, name string, draft bool) error
 	SetFeederConfig(feederid, oracleconfigid string) error
 	GetFeederID(address string) (feederId string)
 	GetFeederLimit(owner string) (limit int)
@@ -190,9 +190,9 @@ type RelDatastore interface {
 	DeleteAssetList(sheetName string) error
 
 	CreateCustomer(email string, customerPlan int, paymentStatus string, paymentSource string, numberOfDataFeeds int, walletPublicKeys []string) error
-	AddWalletKeys(owner, username, accessLevel string, publicKey []string) error
+	AddWalletKeys(owner, username, accessLevel string, publicKey []string, customerId string) error
 
-	GetTempWalletRequest(ctx context.Context, publicKey, customerId string) (keyId, accessLevel, username string, err error)
+	GetTempWalletRequest(ctx context.Context, publicKey, customerId string) (keyId int, accessLevel, username string, err error)
 	DeleteTempWalletRequest(ctx context.Context, keyId string) (err error)
 
 	AddTempWalletKeys(owner, username, accessLevel string, publicKey []string) error
@@ -202,6 +202,8 @@ type RelDatastore interface {
 	GetCustomerIDByWalletPublicKey(publicKey string) (int, error)
 	GetCustomerByPublicKey(publicKey string) (*Customer, error)
 	GetPendingPublicKeyByCustomer(ctx context.Context, customerId string) (pk []PublicKey, err error)
+
+	GetPendingInvites(ctx context.Context, publicKey string) (pk []PublicKey, err error)
 
 	UpdateCustomerPlan(ctx context.Context, customerID int, customerPlan int, paymentSource string, lastPayment string) error
 	GetAccessLevel(publicKey string) (string, error)

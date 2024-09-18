@@ -45,9 +45,13 @@ type Env struct {
 	RedirectURL             string
 }
 
-const REQUEST_ID = "REQUEST_ID"
-const CUSTOMER_ID = "CUSTOMER_ID"
-const ACCESS_LEVEL = "ACCESS_LEVEL"
+const (
+	REQUEST_ID      = "REQUEST_ID"
+	CUSTOMER_ID     = "CUSTOMER_ID"
+	ACCESS_LEVEL    = "ACCESS_LEVEL"
+	CUSTOMER_PLAN   = "CUSTOMER_PLAN"
+	CREATOR_ADDRESS = "CREATOR_ADDRESS"
+)
 
 func NewEnv(relStore models.RelDatastore, ds models.Datastore, kc k8sbridge.K8SHelperClient, ring kr.Keyring, rateLimitOracleCreation int, lps string) *Env {
 
@@ -93,18 +97,21 @@ func (ob *Env) totalFeedsUsedByCustomer(customerId string) (int, error) {
 }
 
 // Create new oracle feeder if creator has resources
-func (ob *Env) Create(context *gin.Context) {
+func (ob *Env) CreateOneStep(context *gin.Context) {
 
+	log.Infoln("Create New Oracle")
 	var (
 		address  string
 		err      error
 		keypair  *k8sbridge.KeyPair
 		isUpdate bool
+		response map[string]string
 	)
+	response = make(map[string]string)
 
 	requestId := GenerateRandString()
-
 	context.Set(REQUEST_ID, requestId)
+
 	isUpdate = false
 
 	oracleaddress := context.PostForm("oracleaddress")
@@ -126,8 +133,6 @@ func (ob *Env) Create(context *gin.Context) {
 	feedSelection := context.PostForm("feedselection")
 
 	mandatoryFrequency := context.PostForm("mandatoryfrequency")
-
-	k := make(map[string]string)
 
 	log.Infof("Request ID: %s Creating oracle: oracleAddress: %s, ChainID: %s, Creator: %s, Symbols: %s, frequency: %s, sleepSeconds: %s blockchainnode: %s, feedSelection %s name %s", requestId, oracleaddress, chainID, creator, symbols, frequency, sleepSeconds, blockchainnode, feedSelection, oracleName)
 
@@ -338,7 +343,7 @@ func (ob *Env) Create(context *gin.Context) {
 
 	}
 
-	err = ob.RelDB.SetOracleConfig(context, strconv.Itoa(customerID), oracleaddress, feederID, creator, address, symbols, feedSelection, chainID, frequency, sleepSeconds, deviationPermille, blockchainnode, mandatoryFrequency, oracleName)
+	err = ob.RelDB.SetOracleConfig(context, strconv.Itoa(customerID), oracleaddress, feederID, creator, address, symbols, feedSelection, chainID, frequency, sleepSeconds, deviationPermille, blockchainnode, mandatoryFrequency, oracleName, false)
 	if err != nil {
 		log.Errorln("requestId: %s, error SetOracleConfig ", requestId, err)
 		context.JSON(http.StatusInternalServerError, gin.H{"error": "error creating new oracle config"})
@@ -378,38 +383,56 @@ func (ob *Env) Create(context *gin.Context) {
 
 	log.Infof("Created oracle: oracleAddress: %s, ChainID: %s, Creator: %s, Symbols: %s, frequency: %s, sleepSeconds: %s, Feeder ID :%s,", oracleaddress, chainID, creator, symbols, frequency, sleepSeconds, feederID)
 
-	k["oracleaddress"] = oracleaddress
-	k["chainId"] = chainID
-	k["creator"] = creator
-	k["symbols"] = symbols
-	k["publicKey"] = address
+	response["oracleaddress"] = oracleaddress
+	response["chainId"] = chainID
+	response["creator"] = creator
+	response["symbols"] = symbols
+	response["publicKey"] = address
 
-	context.JSON(http.StatusCreated, k)
+	context.JSON(http.StatusCreated, response)
 }
 
 // combim list and view account to save signing extra extra endpoint on dashboard
 func (ob *Env) ListAndViewAccount(context *gin.Context) {
 	creator := context.Query("creator")
+	requestId := context.GetString(REQUEST_ID)
+
+	var (
+		oracles []dia.OracleConfig
+		account map[string]interface{}
+	)
 
 	// get customer id, get oracles by customer
 
 	customerId, err := ob.RelDB.GetCustomerIDByWalletPublicKey(creator)
-	if err != nil {
-		errorMsg := "error fetching customer by this address " + creator
-		logMsg := "List Oracles: error on GetCustomerIDByWalletPublicKey"
-		handleError(context, http.StatusNotFound, errorMsg, logMsg, err)
-		return
-	}
+	if err != nil && err.Error() == "no rows in result set" {
+		// get pending requests
 
-	oracles, err := ob.RelDB.GetOraclesByCustomer(strconv.Itoa(customerId))
-	if err != nil {
-		errorMsg := "error fetching oracles for this customer"
-		logMsg := "List Oracles: error on getOraclesByOwner"
-		handleError(context, http.StatusNotFound, errorMsg, logMsg, err)
-		return
-	}
+		pending, err := ob.RelDB.GetPendingInvites(context, creator)
+		if err != nil {
 
-	account := ob.viewAccount(context, creator)
+			// new wallet
+			log.Errorf("Request ID: %s,  err GetPendingInvites %v ", requestId, err)
+
+		}
+		account = map[string]interface{}{
+
+			"pending_public_keys": pending,
+		}
+
+	} else {
+		// check if 0 oracles
+		oracles, err = ob.RelDB.GetOraclesByCustomer(strconv.Itoa(customerId))
+		if err != nil {
+			errorMsg := "error fetching oracles for this customer"
+			logMsg := "List Oracles: error on getOraclesByOwner"
+			handleError(context, http.StatusNotFound, errorMsg, logMsg, err)
+			return
+		}
+
+		account = ob.viewAccount(context, creator)
+
+	}
 
 	r := map[string]interface{}{
 		"account": account,
@@ -942,6 +965,12 @@ func (ob *Env) Delete(context *gin.Context) {
 		context.JSON(http.StatusUnauthorized, gin.H{"error": "not part of your team oracle"})
 		return
 	}
+
+	if oracleconfig.Deleted {
+		log.Errorf("Request ID: %s,already deleted oracle, customerID=%s, oracleconfig.CustomerID=%s %v ", requestId, customerID, oracleconfig.CustomerID, err)
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "already deleted oracle"})
+		return
+	}
 	fc := &k8sbridge.FeederConfig{
 		FeederID: oracleconfig.FeederID,
 	}
@@ -1088,80 +1117,97 @@ func GenerateRandString() string {
 	return hex.EncodeToString(b)
 }
 
-func (ob *Env) Auth(context *gin.Context) {
+func (ob *Env) Auth(isCustomer bool) gin.HandlerFunc {
 
-	requestId := GenerateRandString()
+	return func(context *gin.Context) {
 
-	context.Set(REQUEST_ID, requestId)
+		requestId := GenerateRandString()
 
-	chainID := context.Query("chainID")
+		context.Set(REQUEST_ID, requestId)
 
-	creator := context.Query("creator")
-	if creator == "" {
-		creator = context.PostForm("creator")
+		chainID := context.Query("chainID")
+
+		creator := context.Query("creator")
+		if creator == "" {
+			creator = context.PostForm("creator")
+		}
+
+		if chainID == "" {
+			chainID = context.PostForm("chainId")
+			if chainID == "" {
+				chainID = context.PostForm("chainID")
+
+			}
+		}
+		oracleaddress := context.Query("oracleaddress")
+
+		if oracleaddress == "" {
+			oracleaddress = context.PostForm("oracleaddress")
+
+		}
+
+		if oracleaddress == "" {
+			oracleaddress = creator
+		} else {
+			oracleaddress = common.HexToAddress(oracleaddress).Hex()
+		}
+
+		signedData, err := getAuthToken(context.Request)
+
+		if err != nil {
+
+			context.JSON(http.StatusUnauthorized, errors.New("sign err"))
+			log.Errorln("missing auth token", err)
+			context.Abort()
+			return
+		}
+		actionMessage := context.GetString("message")
+		log.Infof("Request ID: %s, ActionMessage: %s, chainID: %s, creator: %s, signedData: %s, oracleaddress: %s", requestId, actionMessage, chainID, creator, signedData, oracleaddress)
+
+		signer, err := utils.GetSigner(chainID, creator, oracleaddress, actionMessage, signedData)
+
+		if err != nil {
+			log.Errorf("Request ID: %s, error GetSigner %v", requestId, err)
+		}
+
+		log.Infof("Request ID: %s signer: %s", requestId, signer)
+
+		if signer.Hex() != creator {
+
+			context.JSON(http.StatusUnauthorized, gin.H{"error": "invalid signer"})
+			log.Errorf("Request ID: %s, invalid signer %s", requestId, signer)
+			context.Abort()
+			return
+
+		}
+		context.Set(CREATOR_ADDRESS, signer.Hex())
+
+		if isCustomer {
+
+			customer, err := ob.RelDB.GetCustomerByPublicKey(creator)
+			if err != nil {
+				context.JSON(http.StatusUnauthorized, gin.H{"error": "address not associated with any team"})
+				log.Errorf("Request ID: %s, address not associated with any team %s", requestId, signer)
+
+			}
+
+			accessLevel, err := ob.RelDB.GetAccessLevel(creator)
+
+			if err != nil {
+				context.JSON(http.StatusUnauthorized, gin.H{"error": "address has invalid access level"})
+				log.Errorf("Request ID: %s, address has invalid access level %s", requestId, signer)
+				context.Abort()
+				return
+
+			}
+			log.Infof("Request ID: %s, setting customer details %s customer id %s", requestId, CUSTOMER_ID, customer.CustomerID)
+
+			context.Set(CUSTOMER_ID, customer.CustomerID)
+			context.Set(CUSTOMER_PLAN, customer.CustomerPlan)
+			context.Set(ACCESS_LEVEL, accessLevel)
+		}
+
 	}
-
-	if chainID == "" {
-		chainID = context.PostForm("chainId")
-	}
-	oracleaddress := context.Query("oracleaddress")
-
-	if oracleaddress == "" {
-		oracleaddress = creator
-	} else {
-		oracleaddress = common.HexToAddress(oracleaddress).Hex()
-	}
-
-	signedData, err := getAuthToken(context.Request)
-
-	if err != nil {
-
-		context.JSON(http.StatusUnauthorized, errors.New("sign err"))
-		log.Errorln("missing auth token", err)
-		context.Abort()
-		return
-	}
-	actionMessage := context.GetString("message")
-	log.Infof("Request ID: %s, ActionMessage: %s, chainID: %s, creator: %s, signedData: %s, oracleaddress: %s", requestId, actionMessage, chainID, creator, signedData, oracleaddress)
-
-	signer, err := utils.GetSigner(chainID, creator, oracleaddress, actionMessage, signedData)
-
-	if err != nil {
-		log.Errorf("Request ID: %s, error GetSigner %v", requestId, err)
-	}
-
-	log.Infof("Request ID: %s signer: %s", requestId, signer)
-
-	if signer.Hex() != creator {
-
-		context.JSON(http.StatusUnauthorized, gin.H{"error": "invalid signer"})
-		log.Errorf("Request ID: %s, invalid signer %s", requestId, signer)
-		context.Abort()
-		return
-
-	}
-
-	customer, err := ob.RelDB.GetCustomerByPublicKey(creator)
-	if err != nil {
-		context.JSON(http.StatusUnauthorized, gin.H{"error": "address not associated with any team"})
-		log.Errorf("Request ID: %s, address not associated with any team %s", requestId, signer)
-		context.Abort()
-		return
-
-	}
-
-	accessLevel, err := ob.RelDB.GetAccessLevel(creator)
-
-	if err != nil {
-		context.JSON(http.StatusUnauthorized, gin.H{"error": "address has invalid access level"})
-		log.Errorf("Request ID: %s, address has invalid access level %s", requestId, signer)
-		context.Abort()
-		return
-
-	}
-
-	context.Set(CUSTOMER_ID, customer.CustomerID)
-	context.Set(ACCESS_LEVEL, accessLevel)
 
 }
 

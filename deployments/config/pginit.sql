@@ -308,6 +308,8 @@ CREATE TABLE oracleconfig (
 );
 
 ALTER TABLE oracleconfig  ADD COLUMN name VARCHAR(255);
+ALTER TABLE oracleconfig  ADD COLUMN draft boolean DEFAULT true;
+
 
 ALTER TABLE oracleconfig
 ADD CONSTRAINT unique_feeder_id UNIQUE (feeder_id);

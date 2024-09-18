@@ -127,6 +127,7 @@ func (ob *Env) AddTempWallet(context *gin.Context) {
 }
 func (ob *Env) ApproveWallet(context *gin.Context) {
 	requestId := context.GetString(REQUEST_ID)
+	creator := context.GetString(CREATOR_ADDRESS)
 
 	/*
 		get request to add wallet
@@ -142,24 +143,24 @@ func (ob *Env) ApproveWallet(context *gin.Context) {
 		return
 	}
 
-	keyId, accessLevel, username, err := ob.RelDB.GetTempWalletRequest(context, input.WalletPublicKey, input.CustomerID)
+	keyId, accessLevel, username, err := ob.RelDB.GetTempWalletRequest(context, creator, input.CustomerID)
 	if err != nil {
 		log.Errorf("Request ID: %s,  GetTempWalletRequest err %v ", requestId, err)
 		context.JSON(http.StatusInternalServerError, gin.H{"error": "no request pending"})
 		return
 	}
 
-	err = ob.RelDB.AddWalletKeys(input.Creator, username, accessLevel, []string{input.WalletPublicKey})
+	err = ob.RelDB.AddWalletKeys(creator, username, accessLevel, []string{creator}, input.CustomerID)
 	if err != nil {
-		log.Errorf("Request ID: %s,  AddTempWalletKeys err %v ", requestId, err)
+		log.Errorf("Request ID: %s,  AddWalletKeys err %v ", requestId, err)
 
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	ob.RelDB.DeleteTempWalletRequest(context, keyId)
+	ob.RelDB.DeleteTempWalletRequest(context, strconv.Itoa(keyId))
 
-	context.JSON(http.StatusOK, gin.H{"message": "Wallet Added successfully, waiting for approval from wallet"})
+	context.JSON(http.StatusOK, gin.H{"message": "Wallet Added successfully"})
 
 }
 
@@ -210,17 +211,35 @@ func (ob *Env) RemoveWallet(context *gin.Context) {
 }
 
 func (ob *Env) CreateAccount(context *gin.Context) {
+	requestId := context.GetString(REQUEST_ID)
+	signer := context.GetString(CREATOR_ADDRESS)
+
 	var input CustomerInput
 	if err := context.ShouldBind(&input); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": gin.H{"error": "error creating account"}})
 		return
 	}
-	err := ob.RelDB.CreateCustomer("", 0, "", "", 2, input.WalletPublicKeys)
-	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"error": gin.H{"error": "error creating account"}})
+
+	log.Errorf("Request ID: %s,  CreateCustomer with wallet key   %s ", requestId, signer)
+
+	customer, err := ob.RelDB.GetCustomerByPublicKey(signer)
+	if err != nil && err.Error() == "no rows in result set" {
+		log.Errorf("Request ID: %s,  New customer create one   %s ", requestId, signer)
+		err = ob.RelDB.CreateCustomer("", 0, "", "", 2, input.WalletPublicKeys)
+		if err != nil {
+			log.Errorf("Request ID: %s,  CreateCustomer  %v ", requestId, err)
+
+			context.JSON(http.StatusInternalServerError, gin.H{"error": gin.H{"error": "error creating account"}})
+			return
+		}
+
+		context.JSON(http.StatusOK, gin.H{"message": "Customer created successfully"})
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{"message": "Customer created successfully"})
+	if customer != nil {
+		context.JSON(http.StatusOK, gin.H{"message": "Customer Already exists"})
+		return
+	}
 
 }

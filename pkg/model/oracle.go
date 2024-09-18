@@ -72,18 +72,17 @@ func (rdb *RelDB) GetKeyPairID(publicKey string) string {
 	return keypairId
 }
 
-func (rdb *RelDB) SetOracleConfig(ctx context.Context, customerId, address, feederID, owner, feederAddress, symbols, feedSelection, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency, name string) error {
+func (rdb *RelDB) SetOracleConfig(ctx context.Context, customerId, address, feederID, owner, feederAddress, symbols, feedSelection, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency, name string, draft bool) error {
 	currentTime := time.Now()
 	query := fmt.Sprintf(`
-		INSERT INTO %s (customer_id, address,feeder_id,owner,symbols,chainID,frequency,sleepseconds,deviationpermille,blockchainnode,mandatory_frequency,feeder_address,createddate,lastupdate,feedSelection,name) 
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
+		INSERT INTO %s (customer_id, address,feeder_id,owner,symbols,chainID,frequency,sleepseconds,deviationpermille,blockchainnode,mandatory_frequency,feeder_address,createddate,lastupdate,feedSelection,name,draft) 
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
 		ON CONFLICT(feeder_id)  
-		DO UPDATE SET symbols=$4,frequency=$6,sleepseconds=$7,deviationpermille=$8,blockchainnode=$9,mandatory_frequency=$10,feeder_address=$11,lastupdate=$13,feedSelection=$14,name=$16`,
+		DO UPDATE SET symbols=$4,frequency=$6,sleepseconds=$7,deviationpermille=$8,blockchainnode=$9,mandatory_frequency=$10,feeder_address=$11,lastupdate=$13,feedSelection=$14,name=$16,draft=$17`,
 		oracleconfigTable,
 	)
 
-	log.Infoln("SetOracleConfig Query", query)
-	_, err := rdb.postgresClient.Exec(ctx, query, customerId, address, feederID, owner, symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency, feederAddress, currentTime, currentTime, feedSelection, name)
+	_, err := rdb.postgresClient.Exec(ctx, query, customerId, address, feederID, owner, symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency, feederAddress, currentTime, currentTime, feedSelection, name, draft)
 	if err != nil {
 		return err
 	}
@@ -263,7 +262,8 @@ func (rdb *RelDB) GetFeeder(feederID string) (oracleconfig dia.OracleConfig, err
 	)
 
 	query = fmt.Sprintf(`
-	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address, createddate, COALESCE(lastupdate, '0001-01-01 00:00:00'::timestamp),deleted,feedselection,expired,expired_time
+	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address, createddate, COALESCE(lastupdate, '0001-01-01 00:00:00'::timestamp),
+	deleted,feedselection,expired,expired_time, draft,customer_id
 	FROM %s  WHERE feeder_id=$1
 	`, oracleconfigTable)
 	row = rdb.postgresClient.QueryRow(context.Background(), query, feederID)
@@ -277,8 +277,10 @@ func (rdb *RelDB) GetFeeder(feederID string) (oracleconfig dia.OracleConfig, err
 		frequencynull    sql.NullString
 		sleepsecondsnull sql.NullString
 		feedSelection    sql.NullString
+		customerID       int
 	)
-	err = row.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &frequencynull, &sleepsecondsnull, &oracleconfig.DeviationPermille, &oracleconfig.BlockchainNode, &oracleconfig.Active, &oracleconfig.MandatoryFrequency, &oracleconfig.FeederAddress, &oracleconfig.CreatedDate, &oracleconfig.LastUpdate, &oracleconfig.Deleted, &feedSelection, &oracleconfig.Expired, &oracleconfig.ExpiredDate)
+	err = row.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &frequencynull, &sleepsecondsnull, &oracleconfig.DeviationPermille, &oracleconfig.BlockchainNode, &oracleconfig.Active, &oracleconfig.MandatoryFrequency, &oracleconfig.FeederAddress, &oracleconfig.CreatedDate, &oracleconfig.LastUpdate, &oracleconfig.Deleted,
+		&feedSelection, &oracleconfig.Expired, &oracleconfig.ExpiredDate, &oracleconfig.Draft, &customerID)
 	if err != nil {
 
 		log.Error("GetFeeder scan", err, oracleconfig.FeederID)
@@ -288,6 +290,8 @@ func (rdb *RelDB) GetFeeder(feederID string) (oracleconfig dia.OracleConfig, err
 		oracleconfig.Frequency = frequencynull.String
 
 	}
+
+	oracleconfig.CustomerID = strconv.Itoa(customerID)
 
 	if feedSelection.Valid {
 		oracleconfig.FeederSelection = feedSelection.String
@@ -606,11 +610,11 @@ func (rdb *RelDB) GetOracleConfig(address, chainid string) (oracleconfig dia.Ora
 		feedSelection sql.NullString
 	)
 	query := fmt.Sprintf(`
-	SELECT address, feeder_id, owner,feeder_address,symbols, chainid, feedSelection,deviationpermille, sleepseconds,frequency, blockchainnode, mandatory_frequency
+	SELECT address, feeder_id, owner,feeder_address,symbols, chainid, feedSelection,deviationpermille, sleepseconds,frequency, blockchainnode, mandatory_frequency, deleted, draft
 	FROM %s 
 	WHERE address=$1 and chainid=$2`, oracleconfigTable)
 	fmt.Println(query)
-	err = rdb.postgresClient.QueryRow(context.Background(), query, address, chainid).Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &oracleconfig.FeederAddress, &symbols, &oracleconfig.ChainID, &feedSelection, &oracleconfig.DeviationPermille, &oracleconfig.SleepSeconds, &oracleconfig.Frequency, &oracleconfig.BlockchainNode, &oracleconfig.MandatoryFrequency)
+	err = rdb.postgresClient.QueryRow(context.Background(), query, address, chainid).Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &oracleconfig.FeederAddress, &symbols, &oracleconfig.ChainID, &feedSelection, &oracleconfig.DeviationPermille, &oracleconfig.SleepSeconds, &oracleconfig.Frequency, &oracleconfig.BlockchainNode, &oracleconfig.MandatoryFrequency, &oracleconfig.Deleted, &oracleconfig.Draft)
 	if err != nil {
 		return
 	}
@@ -1150,13 +1154,13 @@ func (datastore *DB) GetOracleConfigCache(key string) (dia.OracleConfig, error) 
 
 }
 
-func (reldb *RelDB) AddWalletKeys(owner, username, accessLevel string, publicKey []string) error {
+func (reldb *RelDB) AddWalletKeys(owner, username, accessLevel string, publicKey []string, customerId string) error {
 	var err error
 
-	customerID, err := reldb.GetCustomerIDByWalletPublicKey(owner)
-	if err != nil {
-		return err
-	}
+	// customerID, err := reldb.GetCustomerIDByWalletPublicKey(owner)
+	// if err != nil {
+	// 	return err
+	// }
 
 	tx, err := reldb.postgresClient.BeginTx(context.Background(), pgx.TxOptions{})
 	if err != nil {
@@ -1167,9 +1171,9 @@ func (reldb *RelDB) AddWalletKeys(owner, username, accessLevel string, publicKey
 
 	for _, publicKey := range publicKey {
 		_, err = tx.Exec(context.Background(), `
-			INSERT INTO wallet_public_keys_temp (customer_id, public_key, access_level,username)
+			INSERT INTO wallet_public_keys (customer_id, public_key, access_level,username)
 			VALUES ($1, $2,$3,$4)
-		`, customerID, publicKey, accessLevel, username)
+		`, customerId, publicKey, accessLevel, username)
 		if err != nil {
 			return err
 		}
@@ -1237,7 +1241,7 @@ func (reldb *RelDB) DeleteTempWalletRequest(ctx context.Context, keyId string) (
 	return nil
 }
 
-func (reldb *RelDB) GetTempWalletRequest(ctx context.Context, publicKey, customerID string) (keyID, accessLevel, username string, err error) {
+func (reldb *RelDB) GetTempWalletRequest(ctx context.Context, publicKey, customerID string) (keyID int, accessLevel, username string, err error) {
 	query := `
 		SELECT key_id, access_level, username
 		FROM wallet_public_keys_temp
@@ -1456,6 +1460,37 @@ func (reldb *RelDB) GetPendingRequestByPublicKey(owner string) (pk []PublicKey, 
 		if username.Valid {
 			publicKey.UserName = username.String
 		}
+		pk = append(pk, publicKey)
+	}
+	return
+
+}
+
+func (reldb *RelDB) GetPendingInvites(ctx context.Context, publicKey string) (pk []PublicKey, err error) {
+
+	query := `
+	SELECT customer_id, access_level,username
+	FROM wallet_public_keys_temp
+	WHERE public_key = $1
+`
+	rows, err := reldb.postgresClient.Query(ctx, query, publicKey)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var username sql.NullString
+	var customerId int
+
+	for rows.Next() {
+		var publicKey PublicKey
+		if err := rows.Scan(&customerId, &publicKey.AccessLevel, &username); err != nil {
+			return nil, err
+		}
+		if username.Valid {
+			publicKey.UserName = username.String
+		}
+		publicKey.CustomerId = strconv.Itoa(customerId)
 		pk = append(pk, publicKey)
 	}
 	return

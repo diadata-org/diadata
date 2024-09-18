@@ -792,13 +792,15 @@ type OracleConfig struct {
 	CreatedDate        time.Time
 	LastUpdate         time.Time
 	Deleted            bool
+	Draft              bool
 	FeederSelection    string
 	Expired            bool
 	ExpiredDate        time.Time
 	ExpiringDate       time.Time
 	LastOracleUpdate   time.Time
 	CustomerID         string
-	Name               string
+
+	Name string
 }
 
 func (e *OracleConfig) MarshalBinary() ([]byte, error) {
