@@ -1,0 +1,70 @@
+{
+    "Tokens": [
+        {
+            "Symbol": "ALPH",
+            "Exchange": "Bitget",
+            "Blockchain": "Alephium",
+            "Address": "tgx7VNFoP9DJiFMFgXXtafQZkUvyEdDHT9ryamHJYrjq"
+        },
+        {
+            "Symbol": "BTC",
+            "Exchange": "Bitget",
+            "Blockchain": "Bitcoin",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "DAI",
+            "Exchange": "Bitget",
+            "Blockchain": "Ethereum",
+            "Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+        },
+        {
+            "Symbol": "DOT",
+            "Exchange": "Bitget",
+            "Blockchain": "Polkadot",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "ETH",
+            "Exchange": "Bitget",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "EUR",
+            "Exchange": "Bitget",
+            "Blockchain": "Fiat",
+            "Address": "978"
+        },
+        {
+            "Symbol": "SOL",
+            "Exchange": "Bitget",
+            "Blockchain": "Solana",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "SYK",
+            "Exchange": "Bitget",
+            "Blockchain": "Arbitrum",
+            "Address": "0xACC51FFDeF63fB0c014c882267C3A17261A5eD50"
+        },
+        {
+            "Symbol": "USDC",
+            "Exchange": "Bitget",
+            "Blockchain": "Ethereum",
+            "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+        },
+        {
+            "Symbol": "USDT",
+            "Exchange": "Bitget",
+            "Blockchain": "Ethereum",
+            "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+        },
+        {
+            "Symbol": "XRP",
+            "Exchange": "Bitget",
+            "Blockchain": "Ripple",
+            "Address": "0x0000000000000000000000000000000000000000"
+        }
+    ]
+}

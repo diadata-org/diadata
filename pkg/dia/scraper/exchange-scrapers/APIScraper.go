@@ -279,8 +279,10 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapScraper(Exchanges[dia.ThenaExchange], scrape, relDB)
 	case dia.ThenaV3Exchange:
 		return NewUniswapV3Scraper(Exchanges[dia.ThenaV3Exchange], scrape, relDB)
-		// case dia.FinageForex:
-		// 	return NewFinageForexScraper(Exchanges[dia.FinageForex], scrape, relDB, key, secret)
+	// case dia.FinageForex:
+	// 	return NewFinageForexScraper(Exchanges[dia.FinageForex], scrape, relDB, key, secret)
+	case dia.BitgetExchange:
+		return NewBitgetScraper(Exchanges[dia.BitgetExchange], scrape, relDB)
 
 	case dia.MultiChain:
 		return NewBridgeSwapScraper(Exchanges[dia.MultiChain], scrape, relDB)

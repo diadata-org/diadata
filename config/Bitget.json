@@ -1,0 +1,70 @@
+{
+    "Coins": [
+        {
+            "Symbol": "ALPH",
+            "ForeignName": "ALPHUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTCUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAIUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOT",
+            "ForeignName": "DOTUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOT",
+            "ForeignName": "DOTUSDC",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETHUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SOL",
+            "ForeignName": "SOLUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SYK",
+            "ForeignName": "SYKUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDCEUR",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDTEUR",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XRP",
+            "ForeignName": "XRPUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        }
+    ]
+}
