@@ -75,10 +75,14 @@ func (rdb *RelDB) GetKeyPairID(publicKey string) string {
 func (rdb *RelDB) SetOracleConfig(ctx context.Context, customerId, address, feederID, owner, feederAddress, symbols, feedSelection, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency, name string, draft bool) error {
 	currentTime := time.Now()
 	query := fmt.Sprintf(`
-		INSERT INTO %s ( address,feeder_id,owner,symbols,chainID,frequency,sleepseconds,deviationpermille,blockchainnode,mandatory_frequency,feeder_address,createddate,lastupdate,feedSelection,name,draft,customer_id) 
+		INSERT INTO %s ( address,feeder_id,owner,symbols,chainID,
+						frequency,sleepseconds,deviationpermille,blockchainnode,mandatory_frequency,
+						feeder_address,createddate,lastupdate,feedSelection,name,
+						draft,customer_id) 
 		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
 		ON CONFLICT(feeder_id)  
-		DO UPDATE SET symbols=$4,frequency=$6,sleepseconds=$7,deviationpermille=$8,blockchainnode=$9,mandatory_frequency=$10,feeder_address=$11,lastupdate=$13,feedSelection=$14,name=$16,draft=$17`,
+		DO UPDATE SET symbols=$4,frequency=$6,sleepseconds=$7,deviationpermille=$8,blockchainnode=$9,mandatory_frequency=$10,
+					  feeder_address=$11,lastupdate=$13,feedSelection=$14,name=$15,draft=$16`,
 		oracleconfigTable,
 	)
 
