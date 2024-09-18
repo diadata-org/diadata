@@ -156,16 +156,15 @@ func (ob *Env) CreateNewOracle(context *gin.Context) {
 
 		if err != nil {
 			log.Errorf("RequestId: %s, error GetOracleConfig %v ", requestId, err)
-			context.JSON(http.StatusInternalServerError, errors.New("no access to feederID"))
+			context.JSON(http.StatusUnauthorized, gin.H{"error": "no access to feederID"})
 		}
 
-		if oc.CustomerID == strconv.Itoa(customerID) {
+		if oc.CustomerID != strconv.Itoa(customerID) {
 			log.Errorf("RequestId: %s, invalid feeder id %v ", requestId, err)
-			context.JSON(http.StatusUnauthorized, errors.New("no access to feederID"))
+			context.JSON(http.StatusUnauthorized, gin.H{"error": "no access to feederID"})
+
 		}
 	}
-
-	// check if user is owner of this feederID
 
 	feederAddress := common.HexToAddress("0x000000000000000000000000000000000000dead").String()
 
