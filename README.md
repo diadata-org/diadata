@@ -16,7 +16,7 @@ Links: [Homepage](https://diadata.org/) | [Medium Blog](https://medium.com/dia-i
 
 DIA is an open-source ecosystem for financial data. The aim of DIA is to make transparent, accurate and verifiable data accessible for Web3, by bringing together data providers, users and DAO community members.
 
-![architecure](https://user-images.githubusercontent.com/103409771/231812128-bb1d2fd0-5946-418b-a82c-641bf586a3d5.png)
+![architecture](https://user-images.githubusercontent.com/103409771/231812128-bb1d2fd0-5946-418b-a82c-641bf586a3d5.png)
 
 <mark style="color:blue;">**Data sources:**</mark> every second, thousands of trade level data points from multiple on-chain and off-chain sources (CEXs, DEXs, DeFi, NFT, Metaverse, etc) are aggregated into the DIA Platform.
 
