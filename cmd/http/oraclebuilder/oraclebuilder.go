@@ -79,7 +79,7 @@ func setupRouter() *gin.Engine {
 	routerGroup.GET("/account/dashboard", authenticate("Verify its your address to List your oracles and View Account"), oracle.Auth(false), oracle.ListAndViewAccount)
 
 	// Oracle Create By steps
-	routerGroup.POST("/oracle/new", authenticate("Verify its your address to create new oracle"), oracle.Auth(true), oracle.CanWrite, oracle.CreateNewOracle)
+	routerGroup.POST("/oracle/feeder", authenticate("Verify its your address to create and update oracle"), oracle.Auth(true), oracle.CanWrite, oracle.CreateUpdateOracle)
 	routerGroup.POST("/oracle/deploy", authenticate("Verify its your address to start feeder"), oracle.Auth(true), oracle.CanWrite, oracle.InitFeeder)
 
 	// Define routes

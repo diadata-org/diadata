@@ -47,7 +47,7 @@ func (ob *Env) viewAccount(context *gin.Context, publicKey string) (combined map
 		return
 	}
 
-	totalFeeds, err := ob.totalFeedsUsedByCustomer(strconv.Itoa(customer.CustomerID))
+	totalFeeds, totalOracles, err := ob.billableResource(strconv.Itoa(customer.CustomerID))
 	if err != nil {
 		log.Errorf("Request ID: %s,  ViewAccount err %v ", requestId, err)
 		context.JSON(http.StatusInternalServerError, gin.H{"error": "error while  getting totalFeedusedByCustomer"})
@@ -55,7 +55,7 @@ func (ob *Env) viewAccount(context *gin.Context, publicKey string) (combined map
 	}
 	customer.NumberOfDataFeeds = totalFeeds
 
-	customer.DeployedOracles = ob.RelDB.GetTotalOracles(strconv.Itoa(customer.CustomerID))
+	customer.DeployedOracles = totalOracles
 
 	plan, err := ob.RelDB.GetPlan(context, customer.CustomerPlan)
 	if err != nil {

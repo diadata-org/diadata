@@ -309,6 +309,14 @@ CREATE TABLE oracleconfig (
 
 ALTER TABLE oracleconfig  ADD COLUMN name VARCHAR(255);
 ALTER TABLE oracleconfig  ADD COLUMN draft boolean DEFAULT true;
+ALTER TABLE oracleconfig  ADD COLUMN customer_id int ;
+ALTER TABLE oracleconfig  ADD COLUMN billable boolean DEFAULT false ;
+
+
+ALTER TABLE oracleconfig
+ADD CONSTRAINT unique_customer_chainid_address 
+UNIQUE (customer_id, chainid, address);
+
 
 
 ALTER TABLE oracleconfig
@@ -340,6 +348,8 @@ ADD CONSTRAINT unique_feeder_id UNIQUE (feeder_id);
 -- ALTER TABLE oracleconfig  ADD COLUMN feedSelection TEXT ;
 -- ALTER TABLE oracleconfig  ADD COLUMN expired boolean default false ;
 -- ALTER TABLE oracleconfig  ADD COLUMN expired_time TIMESTAMP DEFAULT 'epoch'::timestamp;
+
+
 
 
 CREATE TABLE feederresource (
@@ -507,6 +517,10 @@ CREATE TABLE plans (
 );
 
 ALTER TABLE plans ADD COLUMN total_feeds integer default 3;
+ALTER TABLE plans ADD COLUMN total_oracles integer default 3;
+
+
+
 
 
 INSERT INTO  "plans"("plan_id","plan_name","plan_description","plan_price","plan_features","total_feeds")

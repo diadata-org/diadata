@@ -30,11 +30,12 @@ type Customer struct {
 }
 
 type Plan struct {
-	PlanID      int    `json:"plan_id"`
-	Name        string `json:"plan_name"`
-	Description string `json:"plan_description"`
-	Price       int    `json:"plan_price"`
-	TotalFeeds  int    `json:"total_feeds"`
+	PlanID       int    `json:"plan_id"`
+	Name         string `json:"plan_name"`
+	Description  string `json:"plan_description"`
+	Price        int    `json:"plan_price"`
+	TotalFeeds   int    `json:"total_feeds"`
+	TotalOracles int    `json:"total_oracles"`
 }
 
 type PublicKey struct {
@@ -72,17 +73,17 @@ func (rdb *RelDB) GetKeyPairID(publicKey string) string {
 	return keypairId
 }
 
-func (rdb *RelDB) SetOracleConfig(ctx context.Context, customerId, address, feederID, owner, feederAddress, symbols, feedSelection, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency, name string, draft bool) error {
+func (rdb *RelDB) SetOracleConfig(ctx context.Context, customerId, address, feederID, owner, feederAddress, symbols, feedSelection, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency, name string, draft, billable bool) error {
 	currentTime := time.Now()
 	query := fmt.Sprintf(`
 		INSERT INTO %s ( address,feeder_id,owner,symbols,chainID,
 						frequency,sleepseconds,deviationpermille,blockchainnode,mandatory_frequency,
 						feeder_address,createddate,lastupdate,feedSelection,name,
-						draft,customer_id) 
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
+						draft,customer_id,billable) 
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)
 		ON CONFLICT(feeder_id)  
 		DO UPDATE SET symbols=$4,frequency=$6,sleepseconds=$7,deviationpermille=$8,blockchainnode=$9,mandatory_frequency=$10,
-					  feeder_address=$11,lastupdate=$13,feedSelection=$14,name=$15,draft=$16,address=$1`,
+					  feeder_address=$11,lastupdate=$13,feedSelection=$14,name=$15,draft=$16,address=$1,billable=$18`,
 		oracleconfigTable,
 	)
 
@@ -461,7 +462,8 @@ func (rdb *RelDB) GetOraclesByCustomer(customerId string) (oracleconfigs []dia.O
     	t1.mandatory_frequency,  t1.feeder_address,  t1.createddate,  t1.feedselection, 
     	COALESCE(t1.lastupdate, '0001-01-01 00:00:00'::timestamp) AS lastupdate, 
 		t1.expired, t1.expired_time,
-    	COALESCE(MAX(fu.update_time), '0001-01-01 00:00:00'::timestamp) AS max_update_time
+    	COALESCE(MAX(fu.update_time), '0001-01-01 00:00:00'::timestamp) AS max_update_time,
+		t1.billable
 	FROM %s AS t1
 	LEFT JOIN %s AS fu 
     ON t1.address = fu.oracle_address 
@@ -471,7 +473,7 @@ func (rdb *RelDB) GetOraclesByCustomer(customerId string) (oracleconfigs []dia.O
 		t1.name,t1.address,  t1.feeder_id, t1.deleted, t1.owner,  t1.symbols,  t1.chainID, 
    		t1.frequency,  t1.sleepseconds,  t1.deviationpermille,  t1.blockchainnode,  t1.active, 
 		t1.mandatory_frequency,  t1.feeder_address, t1.createddate, t1.feedselection, 
-     	t1.lastupdate, t1.expired,t1.expired_time;`, oracleconfigTable, feederupdatesTable)
+     	t1.lastupdate, t1.expired,t1.expired_time,t1.billable;`, oracleconfigTable, feederupdatesTable)
 	rows, err = rdb.postgresClient.Query(context.Background(), query, customerId)
 	if err != nil {
 		return
@@ -489,7 +491,7 @@ func (rdb *RelDB) GetOraclesByCustomer(customerId string) (oracleconfigs []dia.O
 		err := rows.Scan(&name, &oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Deleted, &oracleconfig.Owner, &symbols,
 			&oracleconfig.ChainID, &oracleconfig.Frequency, &oracleconfig.SleepSeconds, &oracleconfig.DeviationPermille,
 			&oracleconfig.BlockchainNode, &oracleconfig.Active, &oracleconfig.MandatoryFrequency, &oracleconfig.FeederAddress,
-			&oracleconfig.CreatedDate, &feedSelection, &oracleconfig.LastUpdate, &oracleconfig.Expired, &oracleconfig.ExpiredDate, &oracleconfig.LastOracleUpdate)
+			&oracleconfig.CreatedDate, &feedSelection, &oracleconfig.LastUpdate, &oracleconfig.Expired, &oracleconfig.ExpiredDate, &oracleconfig.LastOracleUpdate, &oracleconfig.Billable)
 		if err != nil {
 			log.Error(err)
 		}
@@ -1424,7 +1426,7 @@ func addWalletPublicKeys(tx pgx.Tx, customerID int, walletPublicKeys []string) e
 
 func (reldb *RelDB) GetPlan(ctx context.Context, planID int) (*Plan, error) {
 	var plan Plan
-	query := `SELECT plan_id, plan_name, plan_description, plan_price, total_feeds
+	query := `SELECT plan_id, plan_name, plan_description, plan_price, total_feeds,total_oracles
 	       FROM plans
 		   WHERE plan_id = $1`
 	err := reldb.postgresClient.QueryRow(ctx, query, planID).Scan(
@@ -1433,6 +1435,7 @@ func (reldb *RelDB) GetPlan(ctx context.Context, planID int) (*Plan, error) {
 		&plan.Description,
 		&plan.Price,
 		&plan.TotalFeeds,
+		&plan.TotalOracles,
 	)
 	if err != nil {
 		return nil, err
