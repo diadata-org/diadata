@@ -37,6 +37,12 @@
             "Address": "0x8BEc47865aDe3B172A928df8f990Bc7f2A3b9f79"
         },
         {
+            "Symbol": "AVAX",
+            "Exchange": "Bitget",
+            "Blockchain": "Avalanche",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "AZERO",
             "Exchange": "Bitget",
             "Blockchain": "AlephZero",
@@ -54,7 +60,7 @@
             "Blockchain": "Bitcoin",
             "Address": "0x0000000000000000000000000000000000000000"
         },
-        {
+        {   
             "Symbol": "CELO",
             "Exchange": "Bitget",
             "Blockchain": "Celo",

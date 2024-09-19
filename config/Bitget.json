@@ -242,7 +242,7 @@
         },
         {
             "Symbol": "POL",
-            "ForeignName": "POLUSDTg",
+            "ForeignName": "POLUSDT",
             "Exchange": "Bitget",
             "Ignore": false
         },
