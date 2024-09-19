@@ -151,10 +151,22 @@
             "Address": "0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409"
         },
         {
+            "Symbol": "FXS",
+            "Exchange": "Binance2",
+            "Blockchain": "Ethereum",
+            "Address": "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0"
+        },
+        {
             "Symbol": "GMX",
             "Exchange": "Binance2",
             "Blockchain": "Arbitrum",
             "Address": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"
+        },
+        {
+            "Symbol": "GNO",
+            "Exchange": "Binance2",
+            "Blockchain": "Gnosis",
+            "Address": "0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb"
         },
         {
             "Symbol": "GNS",

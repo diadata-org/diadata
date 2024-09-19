@@ -158,9 +158,21 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "FXSUSDT",
+            "Ignore": false,
+            "Symbol": "FXS"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "GMXUSDT",
             "Ignore": false,
             "Symbol": "GMX"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "GNOUSDT",
+            "Ignore": false,
+            "Symbol": "GNO"
         },
         {
             "Exchange": "Binance",

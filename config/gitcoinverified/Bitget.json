@@ -1,16 +1,76 @@
 {
     "Tokens": [
         {
+            "Symbol": "ACA",
+            "Exchange": "Bitget",
+            "Blockchain": "Acala",
+            "Address": "Token:ACA"
+        },
+        {
+            "Symbol": "ADA",
+            "Exchange": "Bitget",
+            "Blockchain": "Cardano",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "ALPH",
             "Exchange": "Bitget",
             "Blockchain": "Alephium",
             "Address": "tgx7VNFoP9DJiFMFgXXtafQZkUvyEdDHT9ryamHJYrjq"
         },
         {
+            "Symbol": "ARB",
+            "Exchange": "Bitget",
+            "Blockchain": "Arbitrum",
+            "Address": "0x912CE59144191C1204E64559FE8253a0e49E6548"
+        },
+        {
+            "Symbol": "ASTR",
+            "Exchange": "Bitget",
+            "Blockchain": "Astar",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "AURORA",
+            "Exchange": "Bitget",
+            "Blockchain": "Aurora",
+            "Address": "0x8BEc47865aDe3B172A928df8f990Bc7f2A3b9f79"
+        },
+        {
+            "Symbol": "AVAX",
+            "Exchange": "Bitget",
+            "Blockchain": "Avalanche",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "AZERO",
+            "Exchange": "Bitget",
+            "Blockchain": "AlephZero",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "BNB",
+            "Exchange": "Bitget",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "BTC",
             "Exchange": "Bitget",
             "Blockchain": "Bitcoin",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {   
+            "Symbol": "CELO",
+            "Exchange": "Bitget",
+            "Blockchain": "Celo",
+            "Address": "0x471EcE3750Da237f93B8E339c536989b8978a438"
+        },
+        {
+            "Symbol": "CUSD",
+            "Exchange": "Bitget",
+            "Blockchain": "Celo",
+            "Address": "0x765DE816845861e75A25fCA122bb6898B8B1282a"
         },
         {
             "Symbol": "DAI",
@@ -19,10 +79,22 @@
             "Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
         },
         {
+            "Symbol": "DOGE",
+            "Exchange": "Bitget",
+            "Blockchain": "Dogechain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "DOT",
             "Exchange": "Bitget",
             "Blockchain": "Polkadot",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "ENA",
+            "Exchange": "Bitget",
+            "Blockchain": "Ethereum",
+            "Address": "0x57e114B691Db790C35207b2e685D4A43181e6061"
         },
         {
             "Symbol": "ETH",
@@ -37,16 +109,148 @@
             "Address": "978"
         },
         {
+            "Symbol": "FTM",
+            "Exchange": "Bitget",
+            "Blockchain": "Fantom",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "FXS",
+            "Exchange": "Bitget",
+            "Blockchain": "Ethereum",
+            "Address": "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0"
+        },
+        {
+            "Symbol": "GLMR",
+            "Exchange": "Bitget",
+            "Blockchain": "Moonbeam",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "GNO",
+            "Exchange": "Bitget",
+            "Blockchain": "Gnosis",
+            "Address": "0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb"
+        },
+        {
+            "Symbol": "GNS",
+            "Exchange": "Bitget",
+            "Blockchain": "Arbitrum",
+            "Address": "0x18c11FD286C5EC11c3b683Caa813B77f5163A122"
+        },
+        {
+            "Symbol": "GRAIL",
+            "Exchange": "Bitget",
+            "Blockchain": "Arbitrum",
+            "Address": "0x3d9907F9a368ad0a51Be60f7Da3b97cf940982D8"
+        },
+        {
+            "Symbol": "KDA",
+            "Exchange": "Bitget",
+            "Blockchain": "Kadena",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "KSM",
+            "Exchange": "Bitget",
+            "Blockchain": "Kusama",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "LDO",
+            "Exchange": "Bitget",
+            "Blockchain": "Ethereum",
+            "Address": "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32"
+        },
+        {
+            "Symbol": "LINK",
+            "Exchange": "Bitget",
+            "Blockchain": "Ethereum",
+            "Address": "0x514910771AF9Ca656af840dff83E8264EcF986CA"
+        },
+        {
+            "Symbol": "LYX",
+            "Exchange": "Bitget",
+            "Blockchain": "Lukso",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "MOVR",
+            "Exchange": "Bitget",
+            "Blockchain": "Moonriver",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "NEAR",
+            "Exchange": "Bitget",
+            "Blockchain": "NEAR",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "OP",
+            "Exchange": "Bitget",
+            "Blockchain": "Optimism",
+            "Address": "0x4200000000000000000000000000000000000042"
+        },
+        {
+            "Symbol": "ORDI",
+            "Exchange": "Bitget",
+            "Blockchain": "Bitcoin",
+            "Address": "b61b0172d95e266c18aea0c624db987e971a5d6d4ebc2aaed85da4642d635735i0"
+        },
+        {
+            "Symbol": "PEPE",
+            "Exchange": "Bitget",
+            "Blockchain": "Ethereum",
+            "Address": "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
+        },
+        {
+            "Symbol": "POL",
+            "Exchange": "Bitget",
+            "Blockchain": "Polygon",
+            "Address": "0x0000000000000000000000000000000000001010"
+        },
+        {
+            "Symbol": "SATS",
+            "Exchange": "Bitget",
+            "Blockchain": "Bitcoin",
+            "Address": "9b664bdd6f5ed80d8d88957b63364c41f3ad4efb8eee11366aa16435974d9333i0"
+        },
+        {
             "Symbol": "SOL",
             "Exchange": "Bitget",
             "Blockchain": "Solana",
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "STETH",
+            "Exchange": "Bitget",
+            "Blockchain": "Ethereum",
+            "Address": "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84"
+        },
+        {
+            "Symbol": "STORJ",
+            "Exchange": "Bitget",
+            "Blockchain": "Ethereum",
+            "Address": "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC"
+        },
+        {
             "Symbol": "SYK",
             "Exchange": "Bitget",
             "Blockchain": "Arbitrum",
             "Address": "0xACC51FFDeF63fB0c014c882267C3A17261A5eD50"
+        },
+        {
+            "Symbol": "TLOS",
+            "Exchange": "Bitget",
+            "Blockchain": "Telos",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "TON",
+            "Exchange": "Bitget",
+            "Blockchain": "Ton",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "USDC",
@@ -65,6 +269,12 @@
             "Exchange": "Bitget",
             "Blockchain": "Ripple",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "ZK",
+            "Exchange": "Bitget",
+            "Blockchain": "ZKsync",
+            "Address": "0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E"
         }
     ]
 }

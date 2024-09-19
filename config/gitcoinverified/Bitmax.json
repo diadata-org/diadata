@@ -69,8 +69,8 @@
         {
             "Symbol": "BNB",
             "Exchange": "Bitmax",
-            "Blockchain": "Ethereum",
-            "Address": "0xB8c77482e45F1F44dE1745F52C74426C631bDD52"
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "BSV",
