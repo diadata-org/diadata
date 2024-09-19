@@ -77,9 +77,9 @@ func (rdb *RelDB) SetOracleConfig(ctx context.Context, customerId, address, feed
 	currentTime := time.Now()
 	query := fmt.Sprintf(`
 		INSERT INTO %s ( address,feeder_id,owner,symbols,chainID,
-						frequency,sleepseconds,deviationpermille,blockchainnode,mandatory_frequency,
-						feeder_address,createddate,lastupdate,feedSelection,name,
-						draft,customer_id,billable) 
+						frequency,sleepseconds,deviationpermille,blockchainnode,
+						mandatory_frequency,feeder_address,createddate,lastupdate,feedSelection,
+						name,draft,customer_id,billable) 
 		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)
 		ON CONFLICT(feeder_id)  
 		DO UPDATE SET symbols=$4,frequency=$6,sleepseconds=$7,deviationpermille=$8,blockchainnode=$9,mandatory_frequency=$10,
@@ -87,7 +87,7 @@ func (rdb *RelDB) SetOracleConfig(ctx context.Context, customerId, address, feed
 		oracleconfigTable,
 	)
 
-	_, err := rdb.postgresClient.Exec(ctx, query, address, feederID, owner, symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency, feederAddress, currentTime, currentTime, feedSelection, name, draft, customerId)
+	_, err := rdb.postgresClient.Exec(ctx, query, address, feederID, owner, symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, mandatoryFrequency, feederAddress, currentTime, currentTime, feedSelection, name, draft, customerId, billable)
 	if err != nil {
 		return err
 	}
