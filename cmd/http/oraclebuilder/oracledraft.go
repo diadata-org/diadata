@@ -171,7 +171,7 @@ func (ob *Env) CreateNewOracle(context *gin.Context) {
 	err = ob.RelDB.SetOracleConfig(context, strconv.Itoa(customerID), oracleaddress, feederID, creator, feederAddress, symbols, feedSelection, chainID, frequency, sleepSeconds, deviationPermille, blockchainnode, mandatoryFrequency, oracleName, true)
 	if err != nil {
 		log.Errorf("RequestId: %s, error SetOracleConfig %v", requestId, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": "error creating new oracle config"})
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "error creating/updating new oracle config"})
 		return
 	}
 
@@ -252,6 +252,12 @@ func (ob *Env) InitFeeder(context *gin.Context) {
 		return
 	}
 
+	if oracleconfig.Deleted {
+		log.Errorf("Request ID: %s,   deploy cannot be done one  deleted oracle, customerID=%s, oracleconfig.CustomerID=%s %v ", requestId, customerID, oracleconfig.CustomerID, err)
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "this is deleted oracle"})
+		return
+	}
+
 	customer, err := ob.RelDB.GetCustomerByPublicKey(creator)
 	if err != nil {
 		log.Errorf("Request ID: %s, GetCustomerByPublicKey %v ,", requestId, err)
@@ -274,18 +280,29 @@ func (ob *Env) InitFeeder(context *gin.Context) {
 
 	// create new feeder wallet
 
-	err = ob.Keyring.Set(kr.Item{
-		Key: oracleconfig.FeederID,
-	})
-	if err != nil {
-		log.Errorf("Request ID: %s, error generating key  %v ,", requestId, err)
-		context.JSON(http.StatusInternalServerError, errors.New("error generating key"))
-		return
+	// check if it was already deployed
+
+	item, _ := ob.Keyring.Get(oracleconfig.FeederID)
+
+	isRestart := true
+
+	if item.Data == nil {
+		isRestart = false
+		// create new
+		err = ob.Keyring.Set(kr.Item{
+			Key: oracleconfig.FeederID,
+		})
+		if err != nil {
+			log.Errorf("Request ID: %s, error generating key  %v ,", requestId, err)
+			context.JSON(http.StatusInternalServerError, errors.New("error generating key"))
+			return
+		}
+
 	}
 
 	// Get public key
 
-	item, err := ob.Keyring.Get(oracleconfig.FeederID)
+	item, err = ob.Keyring.Get(oracleconfig.FeederID)
 	if err != nil {
 		log.Errorf("Request ID: %s, error getting key  %v ,", requestId, err)
 		context.JSON(http.StatusInternalServerError, errors.New("error getting key"))
@@ -315,17 +332,28 @@ func (ob *Env) InitFeeder(context *gin.Context) {
 		DeviationPermille:  oracleconfig.DeviationPermille,
 		MandatoryFrequency: oracleconfig.MandatoryFrequency,
 	}
-	_, err = ob.k8sbridgeClient.CreatePod(context, fc)
-	if err != nil {
-		log.Errorln("error CreateOracleFeeder ", err)
-		context.JSON(http.StatusInternalServerError, errors.New("error creating oraclefeeder"))
-		return
+
+	if isRestart {
+		_, err = ob.k8sbridgeClient.RestartPod(context, fc)
+		if err != nil {
+			log.Errorln("error RestartPod ", err)
+			context.JSON(http.StatusInternalServerError, errors.New("error creating oraclefeeder"))
+			return
+		}
+
+	} else {
+		_, err = ob.k8sbridgeClient.CreatePod(context, fc)
+		if err != nil {
+			log.Errorln("error CreateOracleFeeder ", err)
+			context.JSON(http.StatusInternalServerError, errors.New("error creating oraclefeeder"))
+			return
+		}
 	}
 
 	err = ob.RelDB.SetOracleConfig(context, strconv.Itoa(customer.CustomerID), oracleconfig.Address, oracleconfig.FeederID, creator, publicKey, "", oracleconfig.FeederSelection, oracleconfig.ChainID, oracleconfig.Frequency, oracleconfig.SleepSeconds, oracleconfig.DeviationPermille, oracleconfig.BlockchainNode, oracleconfig.MandatoryFrequency, oracleconfig.Name, false)
 	if err != nil {
 		log.Errorln("requestId: %s, error SetOracleConfig ", requestId, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": "error creating new oracle config"})
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "error starting new feeder"})
 		return
 	}
 

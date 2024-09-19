@@ -82,7 +82,7 @@ func (rdb *RelDB) SetOracleConfig(ctx context.Context, customerId, address, feed
 		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
 		ON CONFLICT(feeder_id)  
 		DO UPDATE SET symbols=$4,frequency=$6,sleepseconds=$7,deviationpermille=$8,blockchainnode=$9,mandatory_frequency=$10,
-					  feeder_address=$11,lastupdate=$13,feedSelection=$14,name=$15,draft=$16`,
+					  feeder_address=$11,lastupdate=$13,feedSelection=$14,name=$15,draft=$16,address=$1`,
 		oracleconfigTable,
 	)
 
