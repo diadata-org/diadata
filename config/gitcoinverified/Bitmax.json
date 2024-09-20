@@ -13,6 +13,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "AI",
+            "Exchange": "Bitmax",
+            "Blockchain": "Ethereum",
+            "Address": "0x2598c30330D5771AE9F983979209486aE26dE875"
+        },
+        {
             "Symbol": "AKRO",
             "Exchange": "Bitmax",
             "Blockchain": "Ethereum",
@@ -63,8 +69,8 @@
         {
             "Symbol": "BNB",
             "Exchange": "Bitmax",
-            "Blockchain": "Ethereum",
-            "Address": "0xB8c77482e45F1F44dE1745F52C74426C631bDD52"
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "BSV",

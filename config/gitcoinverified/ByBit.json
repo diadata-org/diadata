@@ -1,6 +1,18 @@
 {
     "Tokens": [
         {
+            "Symbol": "AZERO",
+            "Exchange": "ByBit",
+            "Blockchain": "AlephZero",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "POL",
+            "Exchange": "ByBit",
+            "Blockchain": "Polygon",
+            "Address": "0x0000000000000000000000000000000000001010"
+        },
+        {
             "Symbol": "XAI",
             "Exchange": "ByBit",
             "Blockchain": "Arbitrum",

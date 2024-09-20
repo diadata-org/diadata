@@ -94,8 +94,9 @@ func getCGCoinInfo(id string) (coin CGCoin, status int, err error) {
 }
 
 func getAllIDsCG() (IDs []string, err error) {
-	resp, _, err := utils.GetRequest("https://api.coingecko.com/api/v3/coins/list")
+	resp, _, err := utils.GetRequest("https://pro-api.coingecko.com/api/v3/coins/list?x_cg_pro_api_key=" + apiKey)
 	if err != nil {
+		log.Error("getAllIDsCG: ", err)
 		return
 	}
 	var data []interface{}

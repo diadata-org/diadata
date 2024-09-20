@@ -93,10 +93,13 @@ func main() {
 
 func (s *server) CreateKeypair(_ context.Context, request *pb.K8SHelperRequest) (*pb.KeyPair, error) {
 	publickey, err := s.kb.GenerateKey(request.Keyname)
+
 	if err != nil {
+		log.Errorf("err  CreateKeypair: %v", err)
 		return &pb.KeyPair{}, err
 
 	}
+	log.Infof("CreateKeypair: name %s, publicKey %s", request.Keyname, publickey)
 
 	return &pb.KeyPair{Publickey: publickey}, nil
 }
@@ -104,6 +107,8 @@ func (s *server) CreateKeypair(_ context.Context, request *pb.K8SHelperRequest) 
 func (s *server) GetKey(ctx context.Context, request *pb.K8SHelperRequest) (*pb.KeyPair, error) {
 	publickey, err := s.kb.GetKeys(request.Keyname)
 	if err != nil {
+		log.Errorf("err  GetKeys: %v", err)
+
 		return &pb.KeyPair{}, err
 
 	}
@@ -122,7 +127,7 @@ func (s *server) CreatePod(ctx context.Context, request *pb.FeederConfig) (*pb.C
 }
 
 func (s *server) RestartPod(ctx context.Context, request *pb.FeederConfig) (*pb.RestartPodResult, error) {
-	err := s.kb.CreateOracleFeeder(ctx, request.FeederID, request.Creator, request.FeederAddress, request.Oracle, request.ChainID, request.Symbols, request.FeedSelection, request.Blockchainnode, request.Frequency, request.SleepSeconds, request.DeviationPermille, request.MandatoryFrequency)
+	err := s.kb.RestartOracleFeeder(ctx, request.FeederID, request.Creator, request.FeederAddress, request.Oracle, request.ChainID, request.Symbols, request.FeedSelection, request.Blockchainnode, request.Frequency, request.SleepSeconds, request.DeviationPermille, request.MandatoryFrequency)
 	if err != nil {
 		return &pb.RestartPodResult{}, err
 

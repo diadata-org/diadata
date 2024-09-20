@@ -50,6 +50,12 @@
         },
         {
             "Exchange": "BitMart",
+            "ForeignName": "AZERO_USDT",
+            "Ignore": false,
+            "Symbol": "AZERO"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "BAL_USDT",
             "Ignore": false,
             "Symbol": "BAL"
@@ -395,6 +401,12 @@
             "ForeignName": "PEPE_USDT",
             "Ignore": false,
             "Symbol": "PEPE"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "POL_USDT",
+            "Ignore": false,
+            "Symbol": "POL"
         },
         {
             "Exchange": "BitMart",

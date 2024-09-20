@@ -109,6 +109,12 @@
             "Address": "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a"
         },
         {
+            "Symbol": "POL",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Polygon",
+            "Address": "0x0000000000000000000000000000000000001010"
+        },
+        {
             "Symbol": "SOL",
             "Exchange": "Crypto.com",
             "Blockchain": "Solana",

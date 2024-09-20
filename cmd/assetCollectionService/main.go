@@ -58,6 +58,8 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 		return source.NewUniswapAssetSource(exchanges[dia.SushiSwapExchangeArbitrum], relDB)
 	case dia.SushiSwapExchangeFantom:
 		return source.NewUniswapAssetSource(exchanges[dia.SushiSwapExchangeFantom], relDB)
+	case dia.SushiSwapExchangePolygon:
+		return source.NewUniswapAssetSource(exchanges[dia.SushiSwapExchangePolygon], relDB)
 	case dia.CamelotExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.CamelotExchange], relDB)
 	case dia.CamelotExchangeV3:

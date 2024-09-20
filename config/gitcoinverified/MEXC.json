@@ -7,6 +7,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "AINU",
+      "Exchange": "MEXC",
+      "Blockchain": "Ethereum",
+      "Address": "0x2598c30330D5771AE9F983979209486aE26dE875"
+    },
+    {
       "Symbol": "ALPH",
       "Exchange": "MEXC",
       "Blockchain": "Alephium",
@@ -479,6 +485,12 @@
       "Exchange": "MEXC",
       "Blockchain": "Avalanche",
       "Address": "0x60781C2586D68229fde47564546784ab3fACA982"
+    },
+    {
+      "Symbol": "POL",
+      "Exchange": "MEXC",
+      "Blockchain": "Polygon",
+      "Address": "0x0000000000000000000000000000000000001010"
     },
     {
       "Symbol": "PSP",

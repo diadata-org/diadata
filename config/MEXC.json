@@ -7,6 +7,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "AINU",
+      "ForeignName": "AINUUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "ALPH",
       "ForeignName": "ALPHUSDT",
       "Exchange": "MEXC",
@@ -513,6 +519,12 @@
     {
       "Symbol": "PNG",
       "ForeignName": "PNGUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "POL",
+      "ForeignName": "POLUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     },

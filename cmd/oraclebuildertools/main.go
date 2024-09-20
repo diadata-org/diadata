@@ -6,9 +6,11 @@ import (
 	"math/big"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
-	builderUtils "github.com/diadata-org/diadata/cmd/oraclebuildertool/utils"
+	k8sbridge "github.com/diadata-org/diadata/pkg/dia/helpers/k8sbridge/protoc"
+
 	signer "github.com/diadata-org/diadata/pkg/dia/helpers/signer/protoc"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -37,10 +39,9 @@ func main() {
 	if err != nil {
 		log.Errorln("NewPostgresDataStore", err)
 	}
-	oraclebaseimage := utils.Getenv("ORACLE_BASE_IMAGE", "us.icr.io/dia-registry/oracles/oracle-baseimage:latest")
-	oraclenamespace := utils.Getenv("ORACLE_NAMESPACE", "dia-oracle-feeder")
 
 	signerservice := os.Getenv("SIGNER")
+	k8bridgeClient := initializeKubernetesBridgeClient()
 
 	log.Println("signerservice", signerservice)
 
@@ -83,7 +84,6 @@ func main() {
 				log.Errorln("error getting feeders", err)
 				return
 			}
-			ph := builderUtils.NewPodHelper(oraclebaseimage, oraclenamespace)
 
 			sixtyDaysAgo := time.Now().Add(-60 * 24 * time.Hour) // 60 days = 60 * 24 hours
 
@@ -91,21 +91,25 @@ func main() {
 				//double check if created date is greater than 60 days
 				if oracleconfig.CreatedDate.Before(sixtyDaysAgo) {
 
-					log.Println("oracleconfig.FeederID", oracleconfig.FeederID)
+					log.Infof("FeederId %s", oracleconfig.FeederID)
 
-					err = ph.DeleteOracleFeeder(cmd.Context(), oracleconfig.FeederID)
+					fc := &k8sbridge.FeederConfig{
+						FeederID: oracleconfig.FeederID,
+					}
+
+					_, err = k8bridgeClient.DeletePod(cmd.Context(), fc)
 					if err != nil {
-						log.Errorln("error DeleteOracleFeeder ", err)
+						log.Errorf("FeederId %s, DeletePod, error %v", oracleconfig.FeederID, err)
 						continue
 					}
 					err = relStore.ChangeOracleState(oracleconfig.FeederID, false)
 					if err != nil {
-						log.Errorln("error ChangeOracleState ", err)
+						log.Errorf("FeederId %s, ChangeOracleState, error %v", oracleconfig.FeederID, err)
 						continue
 					}
 					err = relStore.ExpireOracle(oracleconfig.FeederID)
 					if err != nil {
-						log.Errorln("error DeleteOracle ", err)
+						log.Errorf("FeederId %s, ExpireOracle, error %v", oracleconfig.FeederID, err)
 						continue
 					}
 				}
@@ -268,7 +272,53 @@ func main() {
 		},
 	}
 
-	rootCmd.AddCommand(expireFeeder, updateAddressChecksum, refund)
+	var restartSpecificFeeder = &cobra.Command{
+		Use:   "restartspecific",
+		Short: "restart specific feeder",
+		Run: func(cmd *cobra.Command, args []string) {
+
+			idListStr := os.Getenv("ID_LIST")
+
+			// Split the string into a slice of strings based on the delimiter
+			ids := strings.Split(idListStr, ",")
+
+			for _, v := range ids {
+
+				oracleconfig, err := relStore.GetFeeder(v)
+				if err != nil {
+					log.Errorf("error getting feeder %s err %v", v, err)
+					continue
+				}
+
+				log.Println("oracleconfig", oracleconfig)
+
+				fc := &k8sbridge.FeederConfig{
+					FeederID:           oracleconfig.FeederID,
+					Creator:            oracleconfig.Owner,
+					FeederAddress:      oracleconfig.FeederAddress,
+					Oracle:             oracleconfig.Address,
+					ChainID:            oracleconfig.ChainID,
+					Symbols:            strings.Join(oracleconfig.Symbols[:], ","),
+					FeedSelection:      oracleconfig.FeederSelection,
+					Blockchainnode:     oracleconfig.BlockchainNode,
+					Frequency:          oracleconfig.Frequency,
+					SleepSeconds:       oracleconfig.SleepSeconds,
+					DeviationPermille:  oracleconfig.DeviationPermille,
+					MandatoryFrequency: oracleconfig.MandatoryFrequency,
+				}
+				_, err = k8bridgeClient.RestartPod(cmd.Context(), fc)
+
+				if err != nil {
+					log.Errorln("error RestartOracleFeeder ", err)
+					continue
+				}
+				log.Println("restarted", oracleconfig.FeederID)
+
+			}
+
+		},
+	}
+	rootCmd.AddCommand(expireFeeder, updateAddressChecksum, refund, restartSpecificFeeder)
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
@@ -300,4 +350,14 @@ func getSignedDATA(signerclient signer.SignerClient, nonce uint64, to common.Add
 
 	return
 
+}
+
+func initializeKubernetesBridgeClient() k8sbridge.K8SHelperClient {
+	k8bridgeurl := utils.Getenv("K8SBRIDGE_URL", "127.0.0.1:50051")
+	conn, err := grpc.Dial(k8bridgeurl, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Errorf("Error while connecting to the signer service: %v", err)
+		panic("signer connection error")
+	}
+	return k8sbridge.NewK8SHelperClient(conn)
 }

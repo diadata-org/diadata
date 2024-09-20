@@ -307,6 +307,20 @@ CREATE TABLE oracleconfig (
     expired_time timestamp without time zone DEFAULT '1970-01-01 00:00:00'::timestamp without time zone
 );
 
+ALTER TABLE oracleconfig  ADD COLUMN name VARCHAR(255);
+ALTER TABLE oracleconfig  ADD COLUMN draft boolean DEFAULT true;
+ALTER TABLE oracleconfig  ADD COLUMN customer_id int ;
+ALTER TABLE oracleconfig  ADD COLUMN billable boolean DEFAULT false ;
+
+
+ALTER TABLE oracleconfig
+ADD CONSTRAINT unique_customer_chainid_address 
+UNIQUE (customer_id, chainid, address);
+
+
+
+ALTER TABLE oracleconfig
+ADD CONSTRAINT unique_feeder_id UNIQUE (feeder_id);
 
 
 -- CREATE TABLE oracleconfig (
@@ -334,6 +348,8 @@ CREATE TABLE oracleconfig (
 -- ALTER TABLE oracleconfig  ADD COLUMN feedSelection TEXT ;
 -- ALTER TABLE oracleconfig  ADD COLUMN expired boolean default false ;
 -- ALTER TABLE oracleconfig  ADD COLUMN expired_time TIMESTAMP DEFAULT 'epoch'::timestamp;
+
+
 
 
 CREATE TABLE feederresource (
@@ -390,10 +406,25 @@ CREATE TABLE wallet_public_keys (
     customer_id INTEGER REFERENCES customers(customer_id) ON DELETE CASCADE,
     public_key TEXT NOT NULL,
     access_level VARCHAR(50) NOT NULL DEFAULT 'read_write',
-    UNIQUE (public_key)
+    UNIQUE (public_key),
+    CONSTRAINT check_access_level CHECK (access_level IN ('read', 'read_write'))
+
 );
 
+
+
 ALTER TABLE wallet_public_keys ADD COLUMN username VARCHAR(255) UNIQUE;
+
+CREATE TABLE wallet_public_keys_temp (
+    key_id SERIAL PRIMARY KEY,
+    customer_id INTEGER REFERENCES customers(customer_id) ON DELETE CASCADE,
+    public_key TEXT NOT NULL,
+    access_level VARCHAR(50) NOT NULL DEFAULT 'read_write',
+    username VARCHAR(255)
+ );
+
+ ALTER TABLE wallet_public_keys_temp
+ADD CONSTRAINT unique_customer_public_key UNIQUE (customer_id, public_key);
 
 
 CREATE TABLE transfer_created (
@@ -486,6 +517,10 @@ CREATE TABLE plans (
 );
 
 ALTER TABLE plans ADD COLUMN total_feeds integer default 3;
+ALTER TABLE plans ADD COLUMN total_oracles integer default 3;
+
+
+
 
 
 INSERT INTO  "plans"("plan_id","plan_name","plan_description","plan_price","plan_features","total_feeds")

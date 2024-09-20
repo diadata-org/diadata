@@ -1,0 +1,316 @@
+{
+    "Coins": [
+        {
+            "Symbol": "ACA",
+            "ForeignName": "ACAUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ADA",
+            "ForeignName": "ADAUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ALPH",
+            "ForeignName": "ALPHUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ARB",
+            "ForeignName": "ARBUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ASTR",
+            "ForeignName": "ASTRUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AURORA",
+            "ForeignName": "AURORAUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AVAX",
+            "ForeignName": "AVAXBTC",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AVAX",
+            "ForeignName": "AVAXEUR",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AVAX",
+            "ForeignName": "AVAXUSDC",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AVAX",
+            "ForeignName": "AVAXUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "AZERO",
+            "ForeignName": "AZEROUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BNB",
+            "ForeignName": "BNBUSDC",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BNB",
+            "ForeignName": "BNBUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTCEUR",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BTC",
+            "ForeignName": "BTCUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CELO",
+            "ForeignName": "CELOUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "CUSD",
+            "ForeignName": "CUSDUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DAI",
+            "ForeignName": "DAIUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOGE",
+            "ForeignName": "DOGEEUR",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOGE",
+            "ForeignName": "DOGEUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOT",
+            "ForeignName": "DOTUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DOT",
+            "ForeignName": "DOTUSDC",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ENA",
+            "ForeignName": "ENAUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ETH",
+            "ForeignName": "ETHUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FTM",
+            "ForeignName": "FTMUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "FXS",
+            "ForeignName": "FXSUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GLMR",
+            "ForeignName": "GLMRUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GNO",
+            "ForeignName": "GNOUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GNS",
+            "ForeignName": "GNSUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "GRAIL",
+            "ForeignName": "GRAILUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "KDA",
+            "ForeignName": "KDAUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "KSM",
+            "ForeignName": "KSMUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LDO",
+            "ForeignName": "LDOUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LINK",
+            "ForeignName": "LINKUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "LYX",
+            "ForeignName": "LYXUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MOVR",
+            "ForeignName": "MOVRUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "NEAR",
+            "ForeignName": "NEARUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OP",
+            "ForeignName": "OPUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ORDI",
+            "ForeignName": "ORDIUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "PEPE",
+            "ForeignName": "PEPEUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "POL",
+            "ForeignName": "POLUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SATS",
+            "ForeignName": "SATSUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SOL",
+            "ForeignName": "SOLUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "STETH",
+            "ForeignName": "STETHUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "STORJ",
+            "ForeignName": "STORJUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "SYK",
+            "ForeignName": "SYKUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TLOS",
+            "ForeignName": "TLOSUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TON",
+            "ForeignName": "TONUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDC",
+            "ForeignName": "USDCEUR",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDT",
+            "ForeignName": "USDTEUR",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XRP",
+            "ForeignName": "XRPUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "ZK",
+            "ForeignName": "ZKUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        }
+    ]
+}

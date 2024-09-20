@@ -49,6 +49,12 @@
       "Address": "0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b"
     },
     {
+      "Symbol": "AZERO",
+      "Exchange": "BitMart",
+      "Blockchain": "AlephZero",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "BAL",
       "Exchange": "BitMart",
       "Blockchain": "Ethereum",
@@ -347,6 +353,12 @@
       "Exchange": "BitMart",
       "Blockchain": "Ethereum",
       "Address": "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
+    },
+    {
+      "Symbol": "POL",
+      "Exchange": "BitMart",
+      "Blockchain": "Polygon",
+      "Address": "0x0000000000000000000000000000000000001010"
     },
     {
       "Symbol": "QNT",

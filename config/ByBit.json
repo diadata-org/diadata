@@ -553,6 +553,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "POL",
+            "ForeignName": "POLUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "PSP",
             "ForeignName": "PSPUSDT",
             "Exchange": "ByBit",

@@ -146,6 +146,8 @@ func (kh *K8Bridge) RestartOracleFeeder(ctx context.Context, feederID, creator, 
 
 	_, err = kh.clientSet.CoreV1().Pods(kh.namespace).Get(ctx, feederID, metav1.GetOptions{})
 	if err != nil {
+		log.Infof("Pod  RestartOracleFeeder %s process %v \n", feederID, err)
+
 		if errors.IsNotFound(err) {
 			log.Infof("Pod %s not found, no need to delete\n", feederID)
 		} else {

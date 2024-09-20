@@ -84,6 +84,8 @@ func NewUniswapAssetSource(exchange dia.Exchange, relDB *models.RelDB) (uas *Uni
 		uas = makeUniswapAssetSource(exchange, restDialArbitrum, relDB, sushiswapWaitMilliseconds)
 	case dia.SushiSwapExchangeFantom:
 		uas = makeUniswapAssetSource(exchange, restDialFantom, relDB, sushiswapWaitMilliseconds)
+	case dia.SushiSwapExchangePolygon:
+		uas = makeUniswapAssetSource(exchange, restDialPolygon, relDB, sushiswapWaitMilliseconds)
 	case dia.ApeswapExchange:
 		uas = makeUniswapAssetSource(exchange, restDialBSC, relDB, sushiswapWaitMilliseconds)
 	case dia.CamelotExchange:

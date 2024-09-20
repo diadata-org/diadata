@@ -793,6 +793,12 @@
             "Address": "0x60781C2586D68229fde47564546784ab3fACA982"
         },
         {
+            "Symbol": "POL",
+            "Exchange": "GateIO",
+            "Blockchain": "Polygon",
+            "Address": "0x0000000000000000000000000000000000001010"
+        },
+        {
             "Symbol": "POWR",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",

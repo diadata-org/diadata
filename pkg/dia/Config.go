@@ -120,6 +120,7 @@ const (
 	ThenaV3Exchange                    = "ThenaV3"
 	AyinExchange                       = "Ayin"
 	BitflowExchange                    = "Bitflow"
+	BitgetExchange                     = "Bitget"
 	// FinageForex        = "FinageForex"
 )
 

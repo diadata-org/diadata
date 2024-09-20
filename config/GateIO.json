@@ -1850,6 +1850,12 @@
         },
         {
             "Exchange": "GateIO",
+            "ForeignName": "POL_USDT",
+            "Ignore": false,
+            "Symbol": "POL"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "POWR_BTC",
             "Ignore": false,
             "Symbol": "POWR"

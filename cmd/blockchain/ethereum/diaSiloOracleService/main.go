@@ -182,16 +182,16 @@ func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *dia
 	} else {
 		// Special case: RAM with liq threshold
 		if address == "0xaaa6c1e32c55a7bfa8066a6fae9b42650f262418" && blockchain == "Arbitrum" {
-			price, symbol, err := getLiqThreshGraphqlAssetQuotationFromDia(blockchain, address, "RAM", 500000)
+			price, symbol, err := getLiqThreshGraphqlAssetQuotationFromDia(blockchain, address, "RAM", 200000)
 			if err != nil {
 				log.Printf("Failed to retrieve %s (RAM) quotation data from Graphql on DIA: %v", address, err)
 				return oldPrice, err
 			}
 			rawQ.Symbol = symbol
 			rawQ.Price = price
-		// Special case: gUSDC with liq threshold
+			// Special case: gUSDC with liq threshold
 		} else if address == "0xd3443ee1e91af28e5fb858fbd0d72a63ba8046e0" && blockchain == "Arbitrum" {
-			price, symbol, err := getLiqThreshGraphqlAssetQuotationFromDia(blockchain, address, "gUSDC", 500000)
+			price, symbol, err := getLiqThreshGraphqlAssetQuotationFromDia(blockchain, address, "gUSDC", 200000)
 			if err != nil {
 				log.Printf("Failed to retrieve %s (gUSDC) quotation data from Graphql on DIA: %v", address, err)
 				return oldPrice, err
@@ -255,8 +255,8 @@ func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *dia
 		log.Printf("Error! Coingecko API returned price 0.0.")
 		return oldPrice, nil
 	}
-	log.Printf("Deviation from coingecko: %f\n", math.Abs(cgPrice - rawQ.Price) / cgPrice)
-	if (math.Abs(cgPrice - rawQ.Price) / cgPrice) > allowedCoingeckoDeviation {
+	log.Printf("Deviation from coingecko: %f\n", math.Abs(cgPrice-rawQ.Price)/cgPrice)
+	if (math.Abs(cgPrice-rawQ.Price) / cgPrice) > allowedCoingeckoDeviation {
 		// Error case, stop transaction from happening
 		log.Printf("Error! Price %f for asset %s-%s out of coingecko range %f.", rawQ.Price, blockchain, address, cgPrice)
 		return oldPrice, nil
@@ -291,16 +291,16 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 	} else {
 		// Special case: RAM with liq threshold
 		if address == "0xaaa6c1e32c55a7bfa8066a6fae9b42650f262418" && blockchain == "Arbitrum" {
-			price, symbol, err := getLiqThreshGraphqlAssetQuotationFromDia(blockchain, address, "RAM", 500000)
+			price, symbol, err := getLiqThreshGraphqlAssetQuotationFromDia(blockchain, address, "RAM", 200000)
 			if err != nil {
 				log.Printf("Failed to retrieve %s (RAM) quotation data from Graphql on DIA: %v", address, err)
 				return oldPrice, err
 			}
 			rawQ.Symbol = symbol
 			rawQ.Price = price
-		// Special case: gUSDC with liq threshold
+			// Special case: gUSDC with liq threshold
 		} else if address == "0xd3443ee1e91af28e5fb858fbd0d72a63ba8046e0" && blockchain == "Arbitrum" {
-			price, symbol, err := getLiqThreshGraphqlAssetQuotationFromDia(blockchain, address, "gUSDC", 500000)
+			price, symbol, err := getLiqThreshGraphqlAssetQuotationFromDia(blockchain, address, "gUSDC", 200000)
 			if err != nil {
 				log.Printf("Failed to retrieve %s (gUSDC) quotation data from Graphql on DIA: %v", address, err)
 				return oldPrice, err
@@ -345,7 +345,7 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 
 	if (newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))) {
 		log.Println("Entering deviation based update zone")
-		
+
 		// check coingecko before sending out an update transaction
 		allowedCoingeckoDeviation := 0.075
 		// Exception for RDPX: CG data is not super reliable, high deviations expected
@@ -364,14 +364,14 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 			log.Printf("Error! Coingecko API returned price 0.0.")
 			return oldPrice, nil
 		}
-		log.Printf("Deviation from coingecko: %f\n", math.Abs(cgPrice - rawQ.Price) / cgPrice)
-		if (math.Abs(cgPrice - rawQ.Price) / cgPrice) > allowedCoingeckoDeviation {
+		log.Printf("Deviation from coingecko: %f\n", math.Abs(cgPrice-rawQ.Price)/cgPrice)
+		if (math.Abs(cgPrice-rawQ.Price) / cgPrice) > allowedCoingeckoDeviation {
 			// Error case, stop transaction from happening
 			log.Printf("Error! Price %f for asset %s-%s out of coingecko range %f.", rawQ.Price, blockchain, address, cgPrice)
 			return oldPrice, nil
 		}
 		log.Printf("Price %f for asset %s-%s in coingecko range %f.", rawQ.Price, blockchain, address, cgPrice)
-		
+
 		err = updateQuotation(rawQ, auth, contract, conn)
 		if err != nil {
 			log.Fatalf("Failed to update DIA Oracle: %v", err)
@@ -480,15 +480,15 @@ func getAssetQuotationFromDia(blockchain, address string) (*models.Quotation, er
 
 // Special case for Assets with liq threshold: Only query with liquidity indicated in parameter
 func getLiqThreshGraphqlAssetQuotationFromDia(blockchain, address string, symbol string, liquidityThreshold float64) (float64, string, error) {
-	log.Println("Entering special case with liquidity threshold: Get price with minimum liquidity of 500k")
+	log.Println("Entering special case with liquidity threshold: Get price with minimum liquidity of 200k")
 	windowSize := 240
 	currentTime := time.Now()
 	starttime := currentTime.Add(time.Duration(-windowSize*2) * time.Second)
 	type Response struct {
 		GetFeed []struct {
-			Name   string    `json:"Name"`
-			Time   time.Time `json:"Time"`
-			Value  float64   `json:"Value"`
+			Name  string    `json:"Name"`
+			Time  time.Time `json:"Time"`
+			Value float64   `json:"Value"`
 		} `json:"GetFeed"`
 	}
 	client := gql.NewClient(diaBaseUrl + "/graphql/query")
@@ -504,7 +504,7 @@ func getLiqThreshGraphqlAssetQuotationFromDia(blockchain, address string, symbol
 				{
 					Address: "` + address + `", 
 					Blockchain: "` + blockchain + `",
-					LiquidityThreshold: ` + fmt.Sprintf("%.1f", liquidityThreshold)  + `,
+					LiquidityThreshold: ` + fmt.Sprintf("%.1f", liquidityThreshold) + `,
 				}
 			]
 		)
@@ -534,9 +534,9 @@ func getDpxGraphqlAssetQuotationFromDia(blockchain, address string) (float64, st
 	starttime := currentTime.Add(time.Duration(-windowSize*2) * time.Second)
 	type Response struct {
 		GetFeed []struct {
-			Name   string    `json:"Name"`
-			Time   time.Time `json:"Time"`
-			Value  float64   `json:"Value"`
+			Name  string    `json:"Name"`
+			Time  time.Time `json:"Time"`
+			Value float64   `json:"Value"`
 		} `json:"GetFeed"`
 	}
 	client := gql.NewClient(diaBaseUrl + "/graphql/query")
@@ -628,16 +628,16 @@ func getGraphqlXcAssetQuotationFromDia(blockchains, addresses []string, windowSi
 	quoteAssetsArrayStr := ""
 	for i, address := range addresses {
 		quoteAssetsArrayStr += "{Address:\"" + address + "\",BlockChain:\"" + blockchains[i] + "\"}"
-		if i < len(addresses) - 1 {
+		if i < len(addresses)-1 {
 			quoteAssetsArrayStr += ","
 		}
 		quoteAssetsArrayStr += "\n"
 	}
 	type Response struct {
 		GetxcFeed []struct {
-			Name   string    `json:"Name"`
-			Time   time.Time `json:"Time"`
-			Value  float64   `json:"Value"`
+			Name  string    `json:"Name"`
+			Time  time.Time `json:"Time"`
+			Value float64   `json:"Value"`
 		} `json:"GetxcFeed"`
 	}
 	client := gql.NewClient(diaBaseUrl + "/graphql/query")
@@ -651,7 +651,7 @@ func getGraphqlXcAssetQuotationFromDia(blockchains, addresses []string, windowSi
 			EndTime: ` + strconv.FormatInt(currentTime.Unix(), 10) + `, 
 			Exchanges: [],
 			QuoteAssets: [` + quoteAssetsArrayStr +
-			`])
+		`])
 			{
 				Name
 				Time
@@ -675,9 +675,9 @@ func getGraphqlLiquidityThresholdAssetQuotationFromDia(blockchain, address, symb
 	starttime := currentTime.Add(time.Duration(-windowSize*2) * time.Second)
 	type Response struct {
 		GetFeed []struct {
-			Name   string    `json:"Name"`
-			Time   time.Time `json:"Time"`
-			Value  float64   `json:"Value"`
+			Name  string    `json:"Name"`
+			Time  time.Time `json:"Time"`
+			Value float64   `json:"Value"`
 		} `json:"GetFeed"`
 	}
 	client := gql.NewClient(diaBaseUrl + "/graphql/query")
@@ -721,7 +721,7 @@ func getCoingeckoPrice(assetName, coingeckoApiKey string) (float64, error) {
 	if err != nil {
 		return 0.0, err
 	}
-	
+
 	defer response.Body.Close()
 	if 200 != response.StatusCode {
 		return 0.0, fmt.Errorf("Error on coingecko API call with return code %d", response.StatusCode)
@@ -731,6 +731,6 @@ func getCoingeckoPrice(assetName, coingeckoApiKey string) (float64, error) {
 	if err != nil {
 		return 0.0, err
 	}
-	price := gjson.Get(string(contents), assetName + ".usd").Float()
+	price := gjson.Get(string(contents), assetName+".usd").Float()
 	return price, nil
 }

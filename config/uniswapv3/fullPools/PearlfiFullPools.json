@@ -7,6 +7,10 @@
     {
       "Address": "0xC6B3AaaAbf2f6eD6cF7fdFFfb0DaC45E10c4A5B3",
       "Symbol": "USTB-arcUSD"
+    },
+    {
+      "Address": "0x22aC4821bBb8d1AC42eA7F0f32ed415F52577Ca1",
+      "Symbol": "arcUSD-USDC"
     }
   ]
 }

@@ -679,6 +679,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "POL",
+            "ForeignName": "POLUSD",
+            "Exchange": "Bitfinex",
+            "Ignore": false
+        },
+        {
             "Symbol": "RBT",
             "ForeignName": "RBTUSD",
             "Exchange": "Bitfinex",
