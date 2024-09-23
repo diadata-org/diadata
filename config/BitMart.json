@@ -86,7 +86,7 @@
         },
         {
             "Exchange": "BitMart",
-            "ForeignName": "BRETT_BTC",
+            "ForeignName": "BRETT_USDT",
             "Ignore": false,
             "Symbol": "BRETT"
         },
@@ -113,18 +113,6 @@
             "ForeignName": "BTC_DAI",
             "Ignore": false,
             "Symbol": "BTC"
-        },
-        {
-            "Exchange": "BitMart",
-            "ForeignName": "BUSD_USDT",
-            "Ignore": false,
-            "Symbol": "BUSD"
-        },
-        {
-            "Exchange": "BitMart",
-            "ForeignName": "BUSD_USDC",
-            "Ignore": false,
-            "Symbol": "BUSD"
         },
         {
             "Exchange": "BitMart",
@@ -350,9 +338,9 @@
         },
         {
             "Exchange": "BitMart",
-            "ForeignName": "MATIC_USDT",
+            "ForeignName": "POL_USDT",
             "Ignore": false,
-            "Symbol": "MATIC"
+            "Symbol": "POL"
         },
         {
             "Exchange": "BitMart",
