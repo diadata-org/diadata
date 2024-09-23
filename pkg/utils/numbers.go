@@ -14,3 +14,10 @@ func StringToFloat64(value string, decimals int64) (float64, bool) {
 	result := num.Div(mul)
 	return result.Float64()
 }
+
+func Min(n1 uint64, n2 uint64) uint64 {
+	if n1 <= n2 {
+		return n1
+	}
+	return n2
+}
