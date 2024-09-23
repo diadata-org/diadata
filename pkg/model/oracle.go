@@ -18,6 +18,7 @@ import (
 type Customer struct {
 	CustomerID          int       `json:"customer_id"`
 	Email               string    `json:"email"`
+	Name                string    `json:"name"`
 	AccountCreationDate time.Time `json:"account_creation_date"`
 	CustomerPlan        int       `json:"customer_plan"`
 	DeployedOracles     int       `json:"deployed_oracles"`
@@ -43,6 +44,7 @@ type PublicKey struct {
 	PublicKey   string `json:"public_key"`
 	UserName    string `json:"username"`
 	CustomerId  string `json:"customer_id"`
+	Invitor     string `json:"invitor"`
 }
 
 func (rdb *RelDB) SetKeyPair(publickey string, privatekey string) error {
@@ -1210,9 +1212,9 @@ func (reldb *RelDB) AddTempWalletKeys(owner, username, accessLevel string, publi
 
 	for _, publicKey := range publicKey {
 		_, err = tx.Exec(context.Background(), `
-			INSERT INTO wallet_public_keys_temp (customer_id, public_key, access_level,username)
-			VALUES ($1, $2,$3,$4)
-		`, customerID, publicKey, accessLevel, username)
+			INSERT INTO wallet_public_keys_temp (customer_id, public_key, access_level,username,invitor)
+			VALUES ($1, $2,$3,$4,$5)
+		`, customerID, publicKey, accessLevel, username, owner)
 		if err != nil {
 			return err
 		}
@@ -1361,7 +1363,7 @@ func (reldb *RelDB) GetCustomerIDByWalletPublicKey(publicKey string) (int, error
 	return customerID, nil
 }
 
-func (reldb *RelDB) CreateCustomer(email string, customerPlan int, paymentStatus string, paymentSource string, numberOfDataFeeds int, walletPublicKeys []string) error {
+func (reldb *RelDB) CreateCustomer(email string, name string, customerPlan int, paymentStatus string, paymentSource string, numberOfDataFeeds int, walletPublicKeys []string) error {
 	tx, err := reldb.postgresClient.Begin(context.Background())
 	if err != nil {
 		return fmt.Errorf("unable to start a transaction: %v", err)
@@ -1371,11 +1373,11 @@ func (reldb *RelDB) CreateCustomer(email string, customerPlan int, paymentStatus
 	// Insert the new customer
 	var customerID int
 	insertCustomerQuery := `
-        INSERT INTO customers (email, customer_plan, payment_status, payment_source, number_of_data_feeds)
-        VALUES ($1, $2, $3, $4, $5)
+        INSERT INTO customers (email, customer_plan, payment_status, payment_source, number_of_data_feeds,name)
+        VALUES ($1, $2, $3, $4, $5,$6)
         RETURNING customer_id`
 
-	err = tx.QueryRow(context.Background(), insertCustomerQuery, email, customerPlan, paymentStatus, paymentSource, numberOfDataFeeds).Scan(&customerID)
+	err = tx.QueryRow(context.Background(), insertCustomerQuery, email, customerPlan, paymentStatus, paymentSource, numberOfDataFeeds, name).Scan(&customerID)
 	if err != nil {
 		return fmt.Errorf("unable to insert customer: %v", err)
 	}
@@ -1473,31 +1475,37 @@ func (reldb *RelDB) GetPendingRequestByPublicKey(owner string) (pk []PublicKey, 
 
 }
 
-func (reldb *RelDB) GetPendingInvites(ctx context.Context, publicKey string) (pk []PublicKey, err error) {
+func (reldb *RelDB) GetPendingInvites(ctx context.Context, publicKeyAddress string) (pk []PublicKey, err error) {
 
 	query := `
-	SELECT customer_id, access_level,username
+	SELECT customer_id, access_level,username,invitor
 	FROM wallet_public_keys_temp
 	WHERE public_key = $1
 `
-	rows, err := reldb.postgresClient.Query(ctx, query, publicKey)
+	rows, err := reldb.postgresClient.Query(ctx, query, publicKeyAddress)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
 	var username sql.NullString
+	var invitor sql.NullString
+
 	var customerId int
 
 	for rows.Next() {
 		var publicKey PublicKey
-		if err := rows.Scan(&customerId, &publicKey.AccessLevel, &username); err != nil {
+		if err := rows.Scan(&customerId, &publicKey.AccessLevel, &username, &invitor); err != nil {
 			return nil, err
+		}
+		if invitor.Valid {
+			publicKey.Invitor = invitor.String
 		}
 		if username.Valid {
 			publicKey.UserName = username.String
 		}
 		publicKey.CustomerId = strconv.Itoa(customerId)
+		publicKey.PublicKey = publicKeyAddress
 		pk = append(pk, publicKey)
 	}
 	return
