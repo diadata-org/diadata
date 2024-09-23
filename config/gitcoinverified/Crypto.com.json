@@ -73,6 +73,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "AERO",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Base",
+            "Address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631"
+        },
+        {
             "Symbol": "BCH",
             "Exchange": "Crypto.com",
             "Blockchain": "BitcoinCash",

@@ -56,6 +56,12 @@
         },
         {
             "Exchange": "GateIO",
+            "ForeignName": "AERO_USDT",
+            "Ignore": false,
+            "Symbol": "AERO"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "AKRO_USDT",
             "Ignore": false,
             "Symbol": "AKRO"
@@ -221,6 +227,12 @@
             "ForeignName": "BCX_USDT",
             "Ignore": false,
             "Symbol": "BCX"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "BENJI_USDT",
+            "Ignore": false,
+            "Symbol": "BENJI"
         },
         {
             "Exchange": "GateIO",
@@ -599,6 +611,12 @@
             "ForeignName": "DDD_USDT",
             "Ignore": false,
             "Symbol": "DDD"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "DEGEN_USDT",
+            "Ignore": false,
+            "Symbol": "DEGEN"
         },
         {
             "Exchange": "GateIO",
@@ -1532,6 +1550,12 @@
         },
         {
             "Exchange": "GateIO",
+            "ForeignName": "MIGGLES_USDT",
+            "Ignore": false,
+            "Symbol": "MIGGLES"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "IOTA_BTC",
             "Ignore": false,
             "Symbol": "MIOTA"
@@ -2429,6 +2453,12 @@
             "ForeignName": "TON_USDT",
             "Ignore": false,
             "Symbol": "TON"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "TOSHI_USDT",
+            "Ignore": false,
+            "Symbol": "TOSHI"
         },
         {
             "Exchange": "GateIO",

@@ -61,6 +61,12 @@
             "Address": "0x532f27101965dd16442E59d40670FaF5eBB142E4"
         },
         {
+            "Symbol": "DEGEN",
+            "Exchange": "ByBit",
+            "Blockchain": "Base",
+            "Address": "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"
+        },
+        {
             "Symbol": "WLD",
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",

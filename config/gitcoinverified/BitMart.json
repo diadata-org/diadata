@@ -13,6 +13,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "AERO",
+      "Exchange": "BitMart",
+      "Blockchain": "Base",
+      "Address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631"
+    },
+    {
       "Symbol": "ALPH",
       "Exchange": "BitMart",
       "Blockchain": "Alephium",
@@ -71,6 +77,12 @@
       "Exchange": "BitMart",
       "Blockchain": "BitcoinCash",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "BENJI",
+      "Exchange": "BitMart",
+      "Blockchain": "Base",
+      "Address": "0xBC45647eA894030a4E9801Ec03479739FA2485F0"
     },
     {
       "Symbol": "BEPRO",
@@ -319,6 +331,12 @@
       "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
     },
     {
+      "Symbol": "MIGGLES",
+      "Exchange": "BitMart",
+      "Blockchain": "Base",
+      "Address": "0xB1a03EdA10342529bBF8EB700a06C60441fEf25d"
+    },
+    {
       "Symbol": "MOG",
       "Exchange": "BitMart",
       "Blockchain": "Ethereum",
@@ -455,6 +473,12 @@
       "Exchange": "BitMart",
       "Blockchain": "Ton",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "TOSHI",
+      "Exchange": "BitMart",
+      "Blockchain": "Base",
+      "Address": "0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4"
     },
     {
       "Symbol": "TRUMP",

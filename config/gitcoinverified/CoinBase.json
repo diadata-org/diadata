@@ -289,6 +289,12 @@
             "Address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
         },
         {
+            "Symbol": "AERO",
+            "Exchange": "CoinBase",
+            "Blockchain": "Base",
+            "Address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631"
+        },
+        {
             "Symbol": "PNG",
             "Exchange": "CoinBase",
             "Blockchain": "Avalanche",

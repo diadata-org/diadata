@@ -7,6 +7,12 @@
             "Address": "Token:ACA"
         },
         {
+            "Symbol": "AERO",
+            "Exchange": "GateIO",
+            "Blockchain": "Base",
+            "Address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631"
+        },
+        {
             "Symbol": "ANGLE",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -53,6 +59,12 @@
             "Exchange": "GateIO",
             "Blockchain": "AlephZero",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "BENJI",
+            "Exchange": "GateIO",
+            "Blockchain": "Base",
+            "Address": "0xBC45647eA894030a4E9801Ec03479739FA2485F0"
         },
         {
             "Symbol": "BEPRO",
@@ -385,6 +397,12 @@
             "Address": "0x9F5F3CFD7a32700C93F971637407ff17b91c7342"
         },
         {
+            "Symbol": "DEGEN",
+            "Exchange": "GateIO",
+            "Blockchain": "Base",
+            "Address": "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"
+        },
+        {
             "Symbol": "DGD",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -665,6 +683,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Metis",
             "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
+        },
+        {
+            "Symbol": "MIGGLES",
+            "Exchange": "GateIO",
+            "Blockchain": "Base",
+            "Address": "0xB1a03EdA10342529bBF8EB700a06C60441fEf25d"
         },
         {
             "Symbol": "MCO",
@@ -1013,6 +1037,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ton",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "TOSHI",
+            "Exchange": "GateIO",
+            "Blockchain": "Base",
+            "Address": "0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4"
         },
         {
             "Symbol": "UNI",

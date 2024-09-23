@@ -14,6 +14,12 @@
         },
         {
             "Exchange": "BitMart",
+            "ForeignName": "AERO_USDT",
+            "Ignore": false,
+            "Symbol": "AERO"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "ALPH_USDT",
             "Ignore": false,
             "Symbol": "ALPH"
@@ -71,6 +77,12 @@
             "ForeignName": "BCH_BTC",
             "Ignore": false,
             "Symbol": "BCH"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "BENJI_USDT",
+            "Ignore": false,
+            "Symbol": "BENJI"
         },
         {
             "Exchange": "BitMart",
@@ -356,6 +368,12 @@
         },
         {
             "Exchange": "BitMart",
+            "ForeignName": "MIGGLES_USDT",
+            "Ignore": false,
+            "Symbol": "MIGGLES"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "MKR_BTC",
             "Ignore": false,
             "Symbol": "MKR"
@@ -497,6 +515,12 @@
             "ForeignName": "TON_USDT",
             "Ignore": false,
             "Symbol": "TON"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "TOSHI_USDT",
+            "Ignore": false,
+            "Symbol": "TOSHI"
         },
         {
             "Exchange": "BitMart",

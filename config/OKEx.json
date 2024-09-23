@@ -776,6 +776,12 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "DEGEN-USDT",
+      "Ignore": false,
+      "Symbol": "DEGEN"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "DENT-BTC",
       "Ignore": false,
       "Symbol": "DENT"
