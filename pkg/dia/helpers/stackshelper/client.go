@@ -195,11 +195,13 @@ func (c *StacksClient) callStacksAPI(request *http.Request, target interface{}) 
 
 	if resp.StatusCode != http.StatusOK {
 		err = fmt.Errorf("failed to call Hiro API, status code: %d", resp.StatusCode)
-		c.logger.
-			WithField("status", resp.StatusCode).
-			WithField("body", string(data)).
-			WithField("url", request.URL).
-			Error(err.Error())
+		if resp.StatusCode != http.StatusNotFound {
+			c.logger.
+				WithField("status", resp.StatusCode).
+				WithField("body", string(data)).
+				WithField("url", request.URL).
+				Error(err.Error())
+		}
 		return err
 	}
 
