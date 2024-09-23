@@ -25,6 +25,7 @@ type UniswapPair struct {
 
 const (
 	restDial              = ""
+	restDialBase          = ""
 	restDialBSC           = ""
 	restDialPolygon       = ""
 	restDialCelo          = ""
@@ -44,6 +45,7 @@ const (
 	restDialLinea         = ""
 
 	uniswapWaitMilliseconds     = "25"
+	baseWaitMilliseconds        = "200"
 	sushiswapWaitMilliseconds   = "100"
 	pancakeswapWaitMilliseconds = "100"
 	dfynWaitMilliseconds        = "100"
@@ -138,6 +140,8 @@ func NewUniswapAssetSource(exchange dia.Exchange, relDB *models.RelDB) (uas *Uni
 		uas = makeUniswapAssetSource(exchange, restDialLinea, relDB, wanchainWaitMilliseconds)
 	case dia.ThenaExchange:
 		uas = makeUniswapAssetSource(exchange, restDialBSC, relDB, sushiswapWaitMilliseconds)
+	case dia.UniswapExchangeBase:
+		uas = makeUniswapAssetSource(exchange, restDialBase, relDB, baseWaitMilliseconds)
 	}
 
 	exchangeFactoryContractAddress = exchange.Contract

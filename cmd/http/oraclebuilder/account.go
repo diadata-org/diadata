@@ -9,6 +9,7 @@ import (
 
 type CustomerInput struct {
 	Email            string   `form:"email"`
+	Name             string   `form:"name"`
 	WalletPublicKeys []string `form:"wallet_public_keys[]"`
 }
 
@@ -220,12 +221,12 @@ func (ob *Env) CreateAccount(context *gin.Context) {
 		return
 	}
 
-	log.Errorf("Request ID: %s,  CreateCustomer with wallet key   %s ", requestId, signer)
+	log.Infof("Request ID: %s,  CreateCustomer with wallet key   %s ", requestId, signer)
 
 	customer, err := ob.RelDB.GetCustomerByPublicKey(signer)
 	if err != nil && err.Error() == "no rows in result set" {
-		log.Errorf("Request ID: %s,  New customer create one   %s ", requestId, signer)
-		err = ob.RelDB.CreateCustomer("", 0, "", "", 2, input.WalletPublicKeys)
+		log.Infof("Request ID: %s,  New customer create one   %s ", requestId, signer)
+		err = ob.RelDB.CreateCustomer("", input.Name, 0, "", "", 2, []string{signer})
 		if err != nil {
 			log.Errorf("Request ID: %s,  CreateCustomer  %v ", requestId, err)
 

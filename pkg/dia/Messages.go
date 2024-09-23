@@ -52,6 +52,7 @@ const (
 	LINEA                                   = "Linea"
 	OPTIMISM                                = "Optimism"
 	ALEPHIUM                                = "Alephium"
+	BASE                                    = "Base"
 )
 
 var CRYPTO_ZERO_UNIX_TIME = time.Unix(1230768000, 0)

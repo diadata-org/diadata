@@ -189,7 +189,7 @@ type RelDatastore interface {
 	GetAssetListBySymbol(symbol string, listname string) ([]dia.AssetList, error)
 	DeleteAssetList(sheetName string) error
 
-	CreateCustomer(email string, customerPlan int, paymentStatus string, paymentSource string, numberOfDataFeeds int, walletPublicKeys []string) error
+	CreateCustomer(email string, name string, customerPlan int, paymentStatus string, paymentSource string, numberOfDataFeeds int, walletPublicKeys []string) error
 	AddWalletKeys(owner, username, accessLevel string, publicKey []string, customerId string) error
 
 	GetTempWalletRequest(ctx context.Context, publicKey, customerId string) (keyId int, accessLevel, username string, err error)

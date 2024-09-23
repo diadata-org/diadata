@@ -1,0 +1,21 @@
+{
+    "Pools": [
+        {
+            "Address": "0x4b0Aaf3EBb163dd45F663b38b6d93f6093EBC2d3",
+            "ForeignName": "WETH-TOSHI"
+        },
+        {
+            "Address": "0xadAd4ce0C68F50A19CF5063E0B91d701Daab1df1",
+            "ForeignName": "WETH-MIGGLES"
+        },
+        {
+            "Address": "0x3d5D143381916280ff91407FeBEB52f2b60f33Cf",
+            "ForeignName": "WETH-AERO"
+        },
+        {
+            "Address": "0xc9034c3E7F58003E6ae0C8438e7c8f4598d5ACAA",
+            "ForeignName": "WETH-DEGEN"
+        }
+       
+    ]
+}

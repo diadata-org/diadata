@@ -1,0 +1,12 @@
+{
+    "Pools": [
+        {
+            "Address": "0x16905890A1D02b6F824387419319Bf4188B961b0",
+            "ForeignName": "WETH-BENJI"
+        },
+        {
+            "Address": "0x17A3Ad8c74c4947005aFEDa9965305ae2EB2518a",
+            "ForeignName": "WETH-MIGGLES"
+        }       
+    ]
+}

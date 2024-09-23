@@ -1,6 +1,7 @@
 package source
 
 import (
+	"context"
 	"math/big"
 	"strconv"
 	"strings"
@@ -17,6 +18,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
+
+var numBlocksQuery = uint64(1000)
 
 type UniswapV3AssetSource struct {
 	RestClient *ethclient.Client
@@ -45,6 +48,8 @@ func NewUniswapV3AssetSource(exchange dia.Exchange, relDB *models.RelDB) *Uniswa
 		uas = makeUniswapV3AssetSource(exchange, "", "", relDB, "200", uint64(22757913))
 	case dia.UniswapExchangeV3Arbitrum:
 		uas = makeUniswapV3AssetSource(exchange, "", "", relDB, "200", uint64(165))
+	case dia.UniswapExchangeV3Base:
+		uas = makeUniswapV3AssetSource(exchange, "", "", relDB, "200", uint64(1371680))
 	case dia.PanCakeSwapExchangeV3:
 		uas = makeUniswapV3AssetSource(exchange, "", "", relDB, "200", uint64(26956207))
 	case dia.RamsesV2Exchange:
@@ -124,42 +129,55 @@ func (uas *UniswapV3AssetSource) fetchAssets() {
 		log.Error(err)
 	}
 
-	poolCreated, err := contract.FilterPoolCreated(
-		&bind.FilterOpts{Start: uas.startBlock},
-		[]common.Address{},
-		[]common.Address{},
-		[]*big.Int{},
-	)
+	currentBlockNumber, err := uas.RestClient.BlockNumber(context.Background())
 	if err != nil {
-		log.Error("filter pool created: ", err)
+		log.Error("GetBlockNumber: ", err)
 	}
-	for poolCreated.Next() {
-		time.Sleep(time.Duration(uas.waitTime) * time.Millisecond)
-		poolsCount++
-		log.Info("pools count: ", poolsCount)
-		blocknumber = int64(poolCreated.Event.Raw.BlockNumber)
-		// Don't repeat sending already sent assets
-		if _, ok := checkMap[poolCreated.Event.Token0.Hex()]; !ok {
-			checkMap[poolCreated.Event.Token0.Hex()] = struct{}{}
-			asset, err := uas.GetAssetFromAddress(poolCreated.Event.Token0)
-			if err != nil {
-				log.Warnf("cannot fetch asset from address %s: %v", poolCreated.Event.Token0.Hex(), err)
-			}
-			uas.assetChannel <- asset
+
+	endblock := utils.Min(uint64(uas.startBlock)+numBlocksQuery, currentBlockNumber)
+	log.Infof("startblock -- endblock: %v -- %v", uas.startBlock, endblock)
+
+	for uas.startBlock <= currentBlockNumber {
+		poolCreated, err := contract.FilterPoolCreated(
+			&bind.FilterOpts{Start: uas.startBlock, End: &endblock},
+			[]common.Address{},
+			[]common.Address{},
+			[]*big.Int{},
+		)
+		if err != nil {
+			log.Error("filter pool created: ", err)
 		}
-		if _, ok := checkMap[poolCreated.Event.Token1.Hex()]; !ok {
-			checkMap[poolCreated.Event.Token1.Hex()] = struct{}{}
-			asset, err := uas.GetAssetFromAddress(poolCreated.Event.Token1)
-			if err != nil {
-				log.Warnf("cannot fetch asset from address %s: %v", poolCreated.Event.Token1.Hex(), err)
+		for poolCreated.Next() {
+			time.Sleep(time.Duration(uas.waitTime) * time.Millisecond)
+			poolsCount++
+			log.Info("pools count: ", poolsCount)
+			blocknumber = int64(poolCreated.Event.Raw.BlockNumber)
+			// Don't repeat sending already sent assets
+			if _, ok := checkMap[poolCreated.Event.Token0.Hex()]; !ok {
+				checkMap[poolCreated.Event.Token0.Hex()] = struct{}{}
+				asset, err := uas.GetAssetFromAddress(poolCreated.Event.Token0)
+				if err != nil {
+					log.Warnf("cannot fetch asset from address %s: %v", poolCreated.Event.Token0.Hex(), err)
+				}
+				uas.assetChannel <- asset
 			}
-			uas.assetChannel <- asset
+			if _, ok := checkMap[poolCreated.Event.Token1.Hex()]; !ok {
+				checkMap[poolCreated.Event.Token1.Hex()] = struct{}{}
+				asset, err := uas.GetAssetFromAddress(poolCreated.Event.Token1)
+				if err != nil {
+					log.Warnf("cannot fetch asset from address %s: %v", poolCreated.Event.Token1.Hex(), err)
+				}
+				uas.assetChannel <- asset
+			}
 		}
+		err = uas.relDB.SetScraperIndex(uas.exchange.Name, dia.SCRAPER_TYPE_ASSETCOLLECTOR, dia.INDEX_TYPE_BLOCKNUMBER, blocknumber)
+		if err != nil {
+			log.Error("SetScraperIndex: ", err)
+		}
+		endblock += numBlocksQuery
+		uas.startBlock += numBlocksQuery
 	}
-	err = uas.relDB.SetScraperIndex(uas.exchange.Name, dia.SCRAPER_TYPE_ASSETCOLLECTOR, dia.INDEX_TYPE_BLOCKNUMBER, blocknumber)
-	if err != nil {
-		log.Error("SetScraperIndex: ", err)
-	}
+
 	uas.doneChannel <- true
 }
 
