@@ -26,7 +26,7 @@ type BitflowAssetSource struct {
 //
 //	BITFLOW_API_HOST - (required, string), bitflow private REST API host, required to fetch assets
 //	BITFLOW_API_KEY - (required, string), bitflow private API key, required to acess the REST API
-//	BIFROST_DEBUG - (optional, bool), make stdout output with bitflow client http call, default = false
+//	BITFLOW_DEBUG - (optional, bool), make stdout output with bitflow client http call, default = false
 func NewBitflowAssetSource(exchange dia.Exchange, relDB *models.RelDB) *BitflowAssetSource {
 	envPrefix := strings.ToUpper(exchange.Name)
 

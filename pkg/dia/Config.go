@@ -123,6 +123,7 @@ const (
 	AyinExchange                       = "Ayin"
 	BitflowExchange                    = "Bitflow"
 	BitgetExchange                     = "Bitget"
+	VelarExchange                      = "Velar"
 	// FinageForex        = "FinageForex"
 )
 

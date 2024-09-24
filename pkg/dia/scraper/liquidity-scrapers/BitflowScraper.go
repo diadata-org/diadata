@@ -96,7 +96,7 @@ func (s *BitflowLiquidityScraper) fetchPools() {
 			}
 
 			total = resp.Total
-			filtered := filterPoolTransactions(resp.Results)
+			filtered := s.filterPoolTransactions(resp.Results)
 			poolTxs = append(poolTxs, filtered...)
 		}
 	}
@@ -107,7 +107,7 @@ func (s *BitflowLiquidityScraper) fetchPools() {
 			args[item.Name] = item
 		}
 
-		tokens := []string{args["x-token"].Repr[1:], args["y-token"].Repr[1:]}
+		tokens := [...]string{args["x-token"].Repr[1:], args["y-token"].Repr[1:]}
 		dbAssets := make([]dia.Asset, 0, len(tokens))
 
 		for _, address := range tokens {
@@ -203,15 +203,7 @@ func (s *BitflowLiquidityScraper) fetchPoolBalances(stableSwapContract, xToken, 
 	return balances, nil
 }
 
-func (s *BitflowLiquidityScraper) Pool() chan dia.Pool {
-	return s.poolChannel
-}
-
-func (s *BitflowLiquidityScraper) Done() chan bool {
-	return s.doneChannel
-}
-
-func filterPoolTransactions(txs []stackshelper.AddressTransaction) []stackshelper.Transaction {
+func (s *BitflowLiquidityScraper) filterPoolTransactions(txs []stackshelper.AddressTransaction) []stackshelper.Transaction {
 	poolTxs := make([]stackshelper.Transaction, 0)
 
 	for _, item := range txs {
@@ -224,4 +216,12 @@ func filterPoolTransactions(txs []stackshelper.AddressTransaction) []stackshelpe
 	}
 
 	return poolTxs
+}
+
+func (s *BitflowLiquidityScraper) Pool() chan dia.Pool {
+	return s.poolChannel
+}
+
+func (s *BitflowLiquidityScraper) Done() chan bool {
+	return s.doneChannel
 }

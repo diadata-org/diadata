@@ -9,17 +9,16 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/bitflowhelper"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/stackshelper"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/velarhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/sirupsen/logrus"
 )
 
-type BitflowScraper struct {
+type VelarScraper struct {
 	logger             *logrus.Entry
-	pairScrapers       map[string]*BitflowPairScraper // pc.ExchangePair -> pairScraperSet
-	swapContracts      map[string]nothing
+	pairScrapers       map[string]*VelarPairScraper // pc.ExchangePair -> pairScraperSet
 	shutdown           chan nothing
 	shutdownDone       chan nothing
 	errorLock          sync.RWMutex
@@ -35,16 +34,16 @@ type BitflowScraper struct {
 	initialBlockHeight int
 }
 
-// NewBitflowScraper returns a new BitflowScraper initialized with default values.
+// NewVelarScraper returns a new VelarScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
 // ENV values:
 //
-//	 	BITFLOW_SLEEP_TIMEOUT - (optional, millisecond), make timeout between API calls, default "stackshelper.DefaultSleepBetweenCalls" value
-//		BITFLOW_REFRESH_DELAY - (optional, millisecond) refresh data after each poll, default "stackshelper.DefaultRefreshDelay" value
-//		BITFLOW_HIRO_API_KEY - (optional, string), Hiro Stacks API key, improves scraping performance, default = ""
-//		BITFLOW_INITIAL_BLOCK_HEIGHT (optional, int), useful for debug, default = 0
-//		BITFLOW_DEBUG - (optional, bool), make stdout output with alephium client http call, default = false
-func NewBitflowScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BitflowScraper {
+//	 	VELAR_SLEEP_TIMEOUT - (optional, millisecond), make timeout between API calls, default "stackshelper.DefaultSleepBetweenCalls" value
+//		VELAR_REFRESH_DELAY - (optional, millisecond) refresh data after each poll, default "stackshelper.DefaultRefreshDelay" value
+//		VELAR_HIRO_API_KEY - (optional, string), Hiro Stacks API key, improves scraping performance, default = ""
+//		VELAR_INITIAL_BLOCK_HEIGHT (optional, int), useful for debug, default = 0
+//		VELAR_DEBUG - (optional, bool), make stdout output with alephium client http call, default = false
+func NewVelarScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *VelarScraper {
 	envPrefix := strings.ToUpper(exchange.Name)
 
 	sleepBetweenCalls := utils.GetTimeDurationFromIntAsMilliseconds(
@@ -67,18 +66,10 @@ func NewBitflowScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		isDebug,
 	)
 
-	swapContracts := make(map[string]nothing, len(bitflowhelper.StableSwapContracts))
-
-	for _, contractName := range bitflowhelper.StableSwapContracts {
-		contractId := fmt.Sprintf("%s.%s", bitflowhelper.DeployerAddress, contractName)
-		swapContracts[contractId] = nothing{}
-	}
-
-	s := &BitflowScraper{
+	s := &VelarScraper{
 		shutdown:           make(chan nothing),
 		shutdownDone:       make(chan nothing),
-		pairScrapers:       make(map[string]*BitflowPairScraper),
-		swapContracts:      swapContracts,
+		pairScrapers:       make(map[string]*VelarPairScraper),
 		ticker:             time.NewTicker(refreshDelay),
 		chanTrades:         make(chan *dia.Trade),
 		api:                stacksClient,
@@ -91,7 +82,7 @@ func NewBitflowScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 	s.logger = logrus.
 		New().
 		WithContext(context.Background()).
-		WithField("context", "BitflowDEXScraper")
+		WithField("context", "VelarDEXScraper")
 
 	if scrape {
 		go s.mainLoop()
@@ -99,7 +90,7 @@ func NewBitflowScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 	return s
 }
 
-func (s *BitflowScraper) mainLoop() {
+func (s *VelarScraper) mainLoop() {
 	if s.initialBlockHeight <= 0 {
 		latestBlock, err := s.api.GetLatestBlock()
 		if err != nil {
@@ -127,7 +118,7 @@ func (s *BitflowScraper) mainLoop() {
 	}
 }
 
-func (s *BitflowScraper) Update() error {
+func (s *VelarScraper) Update() error {
 	txs, err := s.api.GetAllBlockTransactions(s.currentHeight)
 	if err != nil {
 		s.logger.WithError(err).Error("failed to GetBlockTransactions")
@@ -139,15 +130,11 @@ func (s *BitflowScraper) Update() error {
 	}
 	s.currentHeight += 1
 
-	swapTxs, err := s.fetchSwapTransactions(txs)
-	if err != nil {
-		s.logger.WithError(err).Error("failed to fetchSwapTransactions")
-		return err
-	}
-
+	swapTxs := s.filterSwapTransactions(txs)
 	if len(swapTxs) == 0 {
 		return nil
 	}
+	// TODO: deserialize swap events (tx_result)
 
 	pools, err := s.getPools()
 	if err != nil {
@@ -162,16 +149,7 @@ func (s *BitflowScraper) Update() error {
 		}
 
 		for _, tx := range swapTxs {
-			lpToken := ""
-			for _, arg := range tx.ContractCall.FunctionArgs {
-				if arg.Name == "lp-token" {
-					lpToken = arg.Repr[1:]
-				}
-			}
-
-			if lpToken != pool.Address {
-				continue
-			}
+			// TODO: filter transactions by pool
 
 			diaTrade := s.handleTrade(&pool, &tx)
 			s.logger.
@@ -186,53 +164,38 @@ func (s *BitflowScraper) Update() error {
 	return nil
 }
 
-func (s *BitflowScraper) getPools() ([]dia.Pool, error) {
+func (s *VelarScraper) getPools() ([]dia.Pool, error) {
 	return s.db.GetAllPoolsExchange(s.exchangeName, 0)
 }
 
-func (s *BitflowScraper) fetchSwapTransactions(txs []stackshelper.Transaction) ([]stackshelper.Transaction, error) {
+func (s *VelarScraper) filterSwapTransactions(txs []stackshelper.Transaction) []stackshelper.Transaction {
 	swapTxs := make([]stackshelper.Transaction, 0)
 
 	for _, tx := range txs {
 		isSwapTx := tx.TxType == "contract_call" &&
-			(tx.ContractCall.FunctionName == "swap-x-for-y" || tx.ContractCall.FunctionName == "swap-y-for-x")
+			strings.HasPrefix(tx.ContractCall.ContractID, velarhelper.DeployerAddress) &&
+			strings.Contains(tx.ContractCall.FunctionName, "swap")
 
 		if isSwapTx && tx.TxStatus == "success" {
-			if _, ok := s.swapContracts[tx.ContractCall.ContractID]; !ok {
-				continue
-			}
-
-			// This is a temporary workaround introduced due to a bug in hiro stacks API.
-			// Results returned from /blocks/{block_height}/transactions route have empty
-			// `name` field in `contract_call.function_args` list.
-			// TODO: remove this as soon as the issue is fixed.
-			normalizedTx, err := s.api.GetTransactionAt(tx.TxID)
-			if err != nil {
-				return nil, err
-			}
-			swapTxs = append(swapTxs, normalizedTx)
+			swapTxs = append(swapTxs, tx)
 		}
 	}
 
-	return swapTxs, nil
+	return swapTxs
 }
 
-func (s *BitflowScraper) handleTrade(pool *dia.Pool, tx *stackshelper.Transaction) *dia.Trade {
+func (s *VelarScraper) handleTrade(pool *dia.Pool, tx *stackshelper.Transaction) *dia.Trade {
 	var volume, price float64
 
 	decimals0 := int64(pool.Assetvolumes[0].Asset.Decimals)
 	decimals1 := int64(pool.Assetvolumes[1].Asset.Decimals)
 
+	// TODO: extract in/out amounts from tx swap event
 	amountIn := "0"
-	amountOut := tx.TxResult.Repr[5 : len(tx.TxResult.Repr)-1]
+	amountOut := "0"
 
-	for _, arg := range tx.ContractCall.FunctionArgs {
-		if arg.Name == "x-amount" || arg.Name == "y-amount" {
-			amountIn = arg.Repr[1:]
-		}
-	}
-
-	if tx.ContractCall.FunctionName == "swap-x-for-y" {
+	// TODO: detect swap direction (token0->token1 / token1->token0)
+	if true {
 		amount0In, _ := utils.StringToFloat64(amountIn, decimals0)
 		amount1Out, _ := utils.StringToFloat64(amountOut, decimals1)
 		volume = amount0In
@@ -261,28 +224,28 @@ func (s *BitflowScraper) handleTrade(pool *dia.Pool, tx *stackshelper.Transactio
 	}
 }
 
-func (s *BitflowScraper) FetchAvailablePairs() ([]dia.ExchangePair, error) {
+func (s *VelarScraper) FetchAvailablePairs() ([]dia.ExchangePair, error) {
 	return []dia.ExchangePair{}, nil
 }
 
-func (s *BitflowScraper) FillSymbolData(symbol string) (dia.Asset, error) {
+func (s *VelarScraper) FillSymbolData(symbol string) (dia.Asset, error) {
 	return dia.Asset{Symbol: symbol}, nil
 }
 
-func (s *BitflowScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+func (s *VelarScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	return pair, nil
 }
 
-func (s *BitflowScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
+func (s *VelarScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 	if s.error != nil {
 		return nil, s.error
 	}
 	if s.closed {
-		return nil, errors.New("BitflowScraper: Call ScrapePair on closed scraper")
+		return nil, errors.New("VelarScraper: Call ScrapePair on closed scraper")
 	}
-	ps := &BitflowPairScraper{
+	ps := &VelarPairScraper{
 		parent:     s,
 		pair:       pair,
 		lastRecord: 0,
@@ -293,7 +256,7 @@ func (s *BitflowScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) 
 	return ps, nil
 }
 
-func (s *BitflowScraper) cleanup(err error) {
+func (s *VelarScraper) cleanup(err error) {
 	s.errorLock.Lock()
 	defer s.errorLock.Unlock()
 
@@ -306,10 +269,10 @@ func (s *BitflowScraper) cleanup(err error) {
 	close(s.shutdownDone)
 }
 
-// Close gracefully shuts down the BitflowScraper.
-func (s *BitflowScraper) Close() error {
+// Close gracefully shuts down the VelarScraper.
+func (s *VelarScraper) Close() error {
 	if s.closed {
-		return errors.New("BitflowScraper: Already closed")
+		return errors.New("VelarScraper: Already closed")
 	}
 	close(s.shutdown)
 	<-s.shutdownDone
@@ -319,29 +282,29 @@ func (s *BitflowScraper) Close() error {
 }
 
 // Channel returns the channel used to receive trades/pricing information.
-func (s *BitflowScraper) Channel() chan *dia.Trade {
+func (s *VelarScraper) Channel() chan *dia.Trade {
 	return s.chanTrades
 }
 
-type BitflowPairScraper struct {
-	parent     *BitflowScraper
+type VelarPairScraper struct {
+	parent     *VelarScraper
 	pair       dia.ExchangePair
 	closed     bool
 	lastRecord int64
 }
 
-func (ps *BitflowPairScraper) Pair() dia.ExchangePair {
+func (ps *VelarPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }
 
-func (ps *BitflowPairScraper) Close() error {
+func (ps *VelarPairScraper) Close() error {
 	ps.closed = true
 	return nil
 }
 
 // Error returns an error when the channel Channel() is closed
 // and nil otherwise
-func (ps *BitflowPairScraper) Error() error {
+func (ps *VelarPairScraper) Error() error {
 	s := ps.parent
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()

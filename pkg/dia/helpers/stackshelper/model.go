@@ -9,22 +9,33 @@ type Block struct {
 	TxCount        int    `json:"tx_count"`
 }
 
-type TxResult struct {
+type ClarityValue struct {
 	Hex  string `json:"hex"`
 	Repr string `json:"repr"`
 }
 
 type FunctionArg struct {
+	ClarityValue
 	Name string `json:"name"`
 	Type string `json:"type"`
-	Hex  string `json:"hex"`
-	Repr string `json:"repr"`
 }
 
 type ContractCall struct {
 	ContractID   string        `json:"contract_id"`
 	FunctionName string        `json:"function_name"`
 	FunctionArgs []FunctionArg `json:"function_args"`
+}
+
+type ContractLog struct {
+	ContractID string       `json:"contract_id"`
+	Topic      string       `json:"topic"`
+	Value      ClarityValue `json:"value"`
+}
+
+type Event struct {
+	Index       int         `json:"event_index"`
+	Type        string      `json:"event_type"`
+	ContractLog ContractLog `json:"contract_log"`
 }
 
 type Transaction struct {
@@ -35,8 +46,9 @@ type Transaction struct {
 	BlockTime     int          `json:"block_time"`
 	TxStatus      string       `json:"tx_status"`
 	TxType        string       `json:"tx_type"`
-	TxResult      TxResult     `json:"tx_result"`
+	TxResult      ClarityValue `json:"tx_result"`
 	ContractCall  ContractCall `json:"contract_call"`
+	Events        []Event      `json:"events"`
 }
 
 type GetBlockTransactionsResponse struct {
