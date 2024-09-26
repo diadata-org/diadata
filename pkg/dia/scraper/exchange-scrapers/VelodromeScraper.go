@@ -42,10 +42,14 @@ type VelodromeScraper struct {
 	relDB      *models.RelDB
 	// error handling; to read error or closed, first acquire read lock
 	// only cleanup method should hold write lock
-	errorLock sync.RWMutex
-	error     error
-	closed    bool
-	pools     []dia.Pool
+	errorLock          sync.RWMutex
+	error              error
+	closed             bool
+	pools              []dia.Pool
+	listenByAddress    bool
+	reverseQuotetokens *[]string
+	reverseBasetokens  *[]string
+	fullPools          *[]string
 	// used to keep track of trading pairs that we subscribed to
 	pairScrapers map[string]*VelodromePairScraper
 	exchangeName string
@@ -54,7 +58,11 @@ type VelodromeScraper struct {
 
 func NewVelodromeScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *VelodromeScraper {
 	log.Info("NewVelodromeScraper: ", exchange.Name)
-	var s *VelodromeScraper
+	var (
+		s               *VelodromeScraper
+		listenByAddress bool
+		err             error
+	)
 
 	switch exchange.Name {
 	case dia.VelodromeExchange:
@@ -76,6 +84,30 @@ func NewVelodromeScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 		liquidityThresholdUSD = float64(0)
 		log.Warnf("parse liquidity threshold:  %v. Set to default %v", err, liquidityThresholdUSD)
 	}
+
+	listenByAddress, err = strconv.ParseBool(utils.Getenv("LISTEN_BY_ADDRESS", ""))
+	if err != nil {
+		log.Fatal("parse LISTEN_BY_ADDRESS: ", err)
+	}
+	s.listenByAddress = listenByAddress
+
+	s.reverseBasetokens, err = getReverseTokensFromConfig("velodrome/reverse_tokens/" + s.exchangeName + "Basetoken")
+	if err != nil {
+		log.Error("error getting basetokens for which pairs should be reversed: ", err)
+	}
+	log.Infof("reverse the following basetokens on %s: %v", s.exchangeName, s.reverseBasetokens)
+
+	s.reverseQuotetokens, err = getReverseTokensFromConfig("velodrome/reverse_tokens/" + s.exchangeName + "Quotetoken")
+	if err != nil {
+		log.Error("error getting quotetokens for which pairs should be reversed: ", err)
+	}
+	log.Infof("reverse the following quotetokens on %s: %v", s.exchangeName, s.reverseQuotetokens)
+
+	s.fullPools, err = getReverseTokensFromConfig("velodrome/fullPools/" + s.exchangeName + "FullPools")
+	if err != nil {
+		log.Error("error getting fullPools for which pairs should be reversed: ", err)
+	}
+	log.Infof("Take into account both directions of a trade on the following pools: %v", s.fullPools)
 
 	err = s.loadPools(liquidityThreshold, liquidityThresholdUSD)
 	if err != nil {
@@ -155,6 +187,30 @@ func (s *VelodromeScraper) WatchSwaps(pool dia.Pool) {
 					ForeignTradeID: swap.ID,
 					Source:         s.exchangeName,
 					VerifiedPair:   true,
+				}
+
+				switch {
+				case utils.Contains(s.reverseBasetokens, token1.Address):
+					// If we need quotation of a base token, reverse pair
+					tSwapped, err := dia.SwapTrade(*t)
+					if err == nil {
+						t = &tSwapped
+					}
+				case utils.Contains(s.reverseQuotetokens, token0.Address):
+					// If we need quotation of a base token, reverse pair
+					tSwapped, err := dia.SwapTrade(*t)
+					if err == nil {
+						t = &tSwapped
+					}
+				}
+
+				if utils.Contains(s.fullPools, pool.Address) {
+					tSwapped, err := dia.SwapTrade(*t)
+					if err == nil {
+						if tSwapped.Price > 0 {
+							s.chanTrades <- &tSwapped
+						}
+					}
 				}
 
 				if price > 0 {
@@ -296,33 +352,51 @@ func (ps *VelodromePairScraper) Pair() dia.ExchangePair {
 func (s *VelodromeScraper) loadPools(liquiThreshold float64, liquidityThresholdUSD float64) (err error) {
 	var pools []dia.Pool
 
-	// Load all pools above liqui threshold.
-	pools, err = s.relDB.GetAllPoolsExchange(s.exchangeName, liquiThreshold)
-	if err != nil {
-		return
+	if s.listenByAddress {
+
+		// Only load pool info for addresses from json file.
+		poolAddresses, errAddr := getAddressesFromConfig("velodrome/subscribe_pools/" + s.exchangeName)
+		if errAddr != nil {
+			log.Error("fetch pool addresses from config file: ", errAddr)
+		}
+		for _, address := range poolAddresses {
+			pool, errPool := s.relDB.GetPoolByAddress(Exchanges[s.exchangeName].BlockChain.Name, address.Hex())
+			if errPool != nil {
+				log.Fatalf("Get pool with address %s: %v", address.Hex(), errPool)
+			}
+			s.pools = append(s.pools, pool)
+		}
+
+	} else {
+
+		// Load all pools above liqui threshold.
+		pools, err = s.relDB.GetAllPoolsExchange(s.exchangeName, liquiThreshold)
+		if err != nil {
+			return
+		}
+
+		log.Info("Found ", len(pools), " pools.")
+		log.Info("make pool map...")
+		lowerBoundCount := 0
+		for _, pool := range pools {
+			if len(pool.Assetvolumes) != 2 {
+				log.Warn("not enough assets in pool with address: ", pool.Address)
+				continue
+			}
+
+			liquidity, lowerBound := pool.GetPoolLiquidityUSD()
+			// Discard pool if complete USD liquidity is below threshold.
+			if !lowerBound && liquidity < liquidityThresholdUSD {
+				continue
+			}
+			if lowerBound {
+				lowerBoundCount++
+			}
+			s.pools = append(s.pools, pool)
+		}
+		log.Infof("found %v subscribable pools.", len(s.pools))
+		log.Infof("%v pools with lowerBound=true.", lowerBoundCount)
 	}
 
-	log.Info("Found ", len(pools), " pools.")
-	log.Info("make pool map...")
-	lowerBoundCount := 0
-	for _, pool := range pools {
-		if len(pool.Assetvolumes) != 2 {
-			log.Warn("not enough assets in pool with address: ", pool.Address)
-			continue
-		}
-
-		liquidity, lowerBound := pool.GetPoolLiquidityUSD()
-		// Discard pool if complete USD liquidity is below threshold.
-		if !lowerBound && liquidity < liquidityThresholdUSD {
-			continue
-		}
-		if lowerBound {
-			lowerBoundCount++
-		}
-		s.pools = append(s.pools, pool)
-	}
-
-	log.Infof("found %v subscribable pools.", len(s.pools))
-	log.Infof("%v pools with lowerBound=true.", lowerBoundCount)
 	return
 }

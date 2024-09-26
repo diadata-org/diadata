@@ -18,6 +18,9 @@ func UniqueStrings(s []string) []string {
 
 // Contains takes a slice of strings and a string and checks if it is contained in the slice.
 func Contains(s *[]string, str string) bool {
+	if s == nil {
+		return false
+	}
 	for _, a := range *s {
 		if a == str {
 			return true
