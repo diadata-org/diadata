@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	Blockchain = "Polkadot"
+	Blockchain = "Bifrost"
 )
 
 type BifrostScraper struct {

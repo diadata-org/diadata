@@ -65,7 +65,7 @@ func NewBifrostAssetSource(exchange dia.Exchange, relDB *models.RelDB) *BifrostA
 	logger := log.
 		WithContext(context.Background()).
 		WithField("service", "assetCollector").
-		WithField("network", exchange.BlockChain.Name)
+		WithField("network", "Bifrost")
 
 	scraper := &BifrostAssetSource{
 		bifrostClient:      bifrostClient,
@@ -75,7 +75,7 @@ func NewBifrostAssetSource(exchange dia.Exchange, relDB *models.RelDB) *BifrostA
 		relDB:              relDB,
 		logger:             logger,
 		swapContractsLimit: swapContractsLimit,
-		exchangeName:       exchange.Name,
+		exchangeName:       "Bifrost",
 		sleepTimeout:       sleepBetweenContractCalls,
 		targetSwapContract: targetSwapContract,
 	}

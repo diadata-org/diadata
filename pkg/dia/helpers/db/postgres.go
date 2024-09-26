@@ -87,7 +87,6 @@ func getPostgresKeyFromSecrets() string {
 			log.Fatal(err)
 		}
 	} else {
-		log.Info("current directory: ", os.Getenv("GOPATH"))
 		file, err = os.Open(os.Getenv("GOPATH") + "/src/github.com/diadata-org/diadata/secrets/" + postgresKey)
 		if err != nil {
 			log.Fatal(err)

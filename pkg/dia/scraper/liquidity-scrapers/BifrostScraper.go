@@ -72,7 +72,7 @@ func NewBifrostLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, data
 		poolChannel:               poolChannel,
 		doneChannel:               doneChannel,
 		exchangeName:              exchange.Name,
-		blockchain:                exchange.BlockChain.Name,
+		blockchain:                "Bifrost",
 		relDB:                     relDB,
 		datastore:                 datastore,
 		targetSwapContract:        targetSwapContract,
