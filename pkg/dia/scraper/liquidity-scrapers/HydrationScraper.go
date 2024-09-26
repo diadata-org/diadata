@@ -64,7 +64,7 @@ func NewHydrationLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, da
 		poolChannel:               poolChannel,
 		doneChannel:               doneChannel,
 		exchangeName:              "Hydration",
-		blockchain:                "Polkadot",
+		blockchain:                "Hydration",
 		relDB:                     relDB,
 		datastore:                 datastore,
 		targetSwapContract:        targetSwapContract,
@@ -137,7 +137,7 @@ func (s *HydrationLiquidityScraper) parseAssets(poolMetadata []hydrationhelper.H
 		var tokenABNames string
 
 		for _, token := range metadataPair.Tokens {
-			assetKey := "Hydration:Asset:" + strings.ToLower(token.ID)
+			assetKey := token.ID
 			dbAsset, err := s.relDB.GetAsset(assetKey, s.blockchain)
 			if err != nil {
 				s.logger.WithError(err).Warn("Failed to GetAsset with key: ", assetKey)
@@ -164,12 +164,9 @@ func (s *HydrationLiquidityScraper) parseAssets(poolMetadata []hydrationhelper.H
 			continue
 		}
 
-		pair.Address = "Polkadot:Hydration:" + tokenABNames
+		pair.Address = tokenABNames
 		pair.Exchange = dia.Exchange{Name: s.exchangeName}
 		pair.Blockchain = dia.BlockChain{Name: s.blockchain}
-
-		s.logger.Info("pair Exchange: ", pair.Exchange)
-		s.logger.Info("Scraper Exchange: ", s.exchangeName)
 
 		pools = append(pools, pair)
 

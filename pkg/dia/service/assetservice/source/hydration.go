@@ -73,7 +73,7 @@ func NewHydrationAssetSource(exchange dia.Exchange, relDB *models.RelDB) *Hydrat
 	logger := log.
 		WithContext(context.Background()).
 		WithField("service", "assetCollector").
-		WithField("network", "Polkadot")
+		WithField("network", "Hydration")
 
 	apiURL := "http://localhost:3000/hydration/v1"
 
@@ -81,7 +81,7 @@ func NewHydrationAssetSource(exchange dia.Exchange, relDB *models.RelDB) *Hydrat
 		hydrationClient:    hydrationClient,
 		assetChannel:       assetChannel,
 		doneChannel:        doneChannel,
-		blockchain:         "Polkadot",
+		blockchain:         "Hydration",
 		exchange:           "Hydration",
 		relDB:              relDB,
 		logger:             logger,
@@ -243,7 +243,7 @@ func (s *HydrationAssetSource) parseAsset(assetMetadata hydrationhelper.Hydratio
 		Name:       assetMetadata.Name,
 		Symbol:     assetMetadata.Symbol,
 		Decimals:   uint8(assetMetadata.Decimals),
-		Blockchain: "Polkadot",
-		Address:    "Hydration:Asset:" + strings.ToLower(assetMetadata.Id),
+		Blockchain: "Hydration",
+		Address:    assetMetadata.Id,
 	}
 }

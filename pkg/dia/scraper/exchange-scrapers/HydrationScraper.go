@@ -14,7 +14,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	hydrationhelper "github.com/diadata-org/diadata/pkg/dia/helpers/hydration-helper"
 	models "github.com/diadata-org/diadata/pkg/model"
-	"github.com/diadata-org/diadata/pkg/utils" 
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -69,7 +69,7 @@ func NewHydrationScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 		db:           relDB,
 		api:          apiURL,
 		exchangeName: "Hydration",
-		blockchain:   "Polkadot",
+		blockchain:   "Hydration",
 	}
 
 	s.logger = logrus.
@@ -202,8 +202,8 @@ func (s *HydrationScraper) filterPoolEvents(poolAddress string, events []hydrati
 	var matchedEvents []hydrationhelper.HydrationSwapEvent
 
 	for _, event := range events {
-		eventAddressA := fmt.Sprintf("%s:%s:%s%s", s.blockchain, s.exchangeName, event.AssetIn, event.AssetOut)
-		eventAddressB := fmt.Sprintf("%s:%s:%s%s", s.blockchain, s.exchangeName, event.AssetOut, event.AssetIn)
+		eventAddressA := fmt.Sprintf("%s%s", event.AssetIn, event.AssetOut)
+		eventAddressB := fmt.Sprintf("%s%s", event.AssetOut, event.AssetIn)
 
 		if eventAddressA == poolAddress || eventAddressB == poolAddress {
 			matchedEvents = append(matchedEvents, event)
