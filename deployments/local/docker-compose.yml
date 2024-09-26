@@ -28,7 +28,7 @@ services:
       - "2181:2181"
     volumes:
       # TODO figure out how to have this without version number
-      -  /home/srv/zoo:/opt/zookeeper-3.4.9/data
+      - /home/srv/zoo:/opt/zookeeper-3.4.9/data
     networks:
       - kafka-network
     deploy:

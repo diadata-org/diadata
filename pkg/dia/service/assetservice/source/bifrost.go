@@ -42,7 +42,6 @@ type BifrostAssetSource struct {
 //		BIFROST_TARGET_SWAP_CONTRACT - (optional, string), useful for debug, default = ""
 //		BIFROST_DEBUG - (optional, bool), make stdout output with bifrost client http call, default = false
 func NewBifrostAssetSource(exchange dia.Exchange, relDB *models.RelDB) *BifrostAssetSource {
-	println("assetService::source::bifrost exchange: ", exchange.Name)
 	sleepBetweenContractCalls := utils.GetTimeDurationFromIntAsMilliseconds(
 		utils.GetenvInt(strings.ToUpper(exchange.Name)+"_SLEEP_TIMEOUT", bifrosthelper.DefaultSleepBetweenContractCalls),
 	)
@@ -57,15 +56,11 @@ func NewBifrostAssetSource(exchange dia.Exchange, relDB *models.RelDB) *BifrostA
 		assetChannel = make(chan dia.Asset)
 		doneChannel  = make(chan bool)
 	)
-
-	println("assetService::source::bifrost connecting to Bifrost RPC")
 	bifrostClient := bifrosthelper.NewBifrostClient(
 		log.WithContext(context.Background()).WithField("context", "BifrostClient"),
 		sleepBetweenContractCalls,
 		isDebug,
 	)
-
-	println("assetService::source::bifrost connected to Bifrost RPC with success!!")
 	
 	logger := log.
 		WithContext(context.Background()).

@@ -28,7 +28,6 @@ var (
 var exchanges map[string]dia.Exchange
 
 func init() {
-	log.Info("Starting asset collection service")
 	assetSource = flag.String("source", "Uniswap", "Data source for asset collection")
 	secret = flag.String("secret", "", "secret for asset source")
 	caching = flag.Bool("caching", true, "caching assets in redis")
@@ -44,7 +43,6 @@ func init() {
 // NewAssetScraper returns a scraper for assets on @exchange.
 // For NewJSONReader @exchange is the folder in the config folder and @secret the filename.
 func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source.AssetSource {
-	println("assetCollectionService::NewAssetScraper exchange: ", exchange)
 	switch exchange {
 	case dia.UniswapExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.UniswapExchange], relDB)

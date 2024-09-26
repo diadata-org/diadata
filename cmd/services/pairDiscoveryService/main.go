@@ -180,8 +180,6 @@ func fetchFromExchangeAndStore(relDB *models.RelDB) error {
 		log.Info("No valid API config for exchange: ", exchange, " Error: ", err.Error())
 		log.Info("Proceeding with no API secrets")
 		scraper = scrapers.NewAPIScraper(exchange, false, "", "", relDB)
-		log.Info("Scraper initialized")
-		log.Info(scraper)
 	}
 
 	// Fetch pairs from exchange's API.
