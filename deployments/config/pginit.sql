@@ -312,6 +312,9 @@ ALTER TABLE oracleconfig  ADD COLUMN draft boolean DEFAULT true;
 ALTER TABLE oracleconfig  ADD COLUMN customer_id int ;
 ALTER TABLE oracleconfig  ADD COLUMN billable boolean DEFAULT false ;
 
+ALTER TABLE oracleconfig  ADD COLUMN ecosystem boolean DEFAULT false;
+
+
 
 ALTER TABLE oracleconfig
 ADD CONSTRAINT unique_customer_chainid_address 

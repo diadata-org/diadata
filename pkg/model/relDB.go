@@ -219,6 +219,8 @@ type RelDatastore interface {
 	InsertLoopPaymentTransferProcessed(ctx context.Context, record LoopPaymentTransferProcessed) error
 	InsertLoopPaymentResponse(ctx context.Context, response LoopPaymentResponse) error
 	GetLoopPaymentResponseByAgreementID(ctx context.Context, agreementID string) (*LoopPaymentResponse, error)
+
+	ChangeEcosystemConfig(oracleAddress string, enable bool) (err error)
 }
 
 const (

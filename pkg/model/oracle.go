@@ -465,7 +465,8 @@ func (rdb *RelDB) GetOraclesByCustomer(customerId string) (oracleconfigs []dia.O
     	COALESCE(t1.lastupdate, '0001-01-01 00:00:00'::timestamp) AS lastupdate, 
 		t1.expired, t1.expired_time,
     	COALESCE(MAX(fu.update_time), '0001-01-01 00:00:00'::timestamp) AS max_update_time,
-		t1.billable
+		t1.billable,
+		t1.ecosystem
 	FROM %s AS t1
 	LEFT JOIN %s AS fu 
     ON t1.address = fu.oracle_address 
@@ -475,7 +476,7 @@ func (rdb *RelDB) GetOraclesByCustomer(customerId string) (oracleconfigs []dia.O
 		t1.name,t1.address,  t1.feeder_id, t1.deleted, t1.owner,  t1.symbols,  t1.chainID, 
    		t1.frequency,  t1.sleepseconds,  t1.deviationpermille,  t1.blockchainnode,  t1.active, 
 		t1.mandatory_frequency,  t1.feeder_address, t1.createddate, t1.feedselection, 
-     	t1.lastupdate, t1.expired,t1.expired_time,t1.billable;`, oracleconfigTable, feederupdatesTable)
+     	t1.lastupdate, t1.expired,t1.expired_time,t1.billable,t1.ecosystem;`, oracleconfigTable, feederupdatesTable)
 	rows, err = rdb.postgresClient.Query(context.Background(), query, customerId)
 	if err != nil {
 		return
@@ -493,7 +494,8 @@ func (rdb *RelDB) GetOraclesByCustomer(customerId string) (oracleconfigs []dia.O
 		err := rows.Scan(&name, &oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Deleted, &oracleconfig.Owner, &symbols,
 			&oracleconfig.ChainID, &oracleconfig.Frequency, &oracleconfig.SleepSeconds, &oracleconfig.DeviationPermille,
 			&oracleconfig.BlockchainNode, &oracleconfig.Active, &oracleconfig.MandatoryFrequency, &oracleconfig.FeederAddress,
-			&oracleconfig.CreatedDate, &feedSelection, &oracleconfig.LastUpdate, &oracleconfig.Expired, &oracleconfig.ExpiredDate, &oracleconfig.LastOracleUpdate, &oracleconfig.Billable)
+			&oracleconfig.CreatedDate, &feedSelection, &oracleconfig.LastUpdate, &oracleconfig.Expired, &oracleconfig.ExpiredDate, &oracleconfig.LastOracleUpdate, &oracleconfig.Billable,
+			&oracleconfig.Ecosystem)
 		if err != nil {
 			log.Error(err)
 		}
@@ -644,6 +646,21 @@ func (rdb *RelDB) ChangeOracleState(feederID string, active bool) (err error) {
 	SET active=$1, lastupdate=$3
 	WHERE feeder_id=$2`, oracleconfigTable)
 	_, err = rdb.postgresClient.Exec(context.Background(), query, active, feederID, currentTime)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (rdb *RelDB) ChangeEcosystemConfig(feederId string, enable bool) (err error) {
+	currentTime := time.Now()
+
+	query := fmt.Sprintf(`
+	UPDATE %s 
+	SET ecosystem=$1, lastupdate=$3
+	WHERE feeder_id=$2`, oracleconfigTable)
+	_, err = rdb.postgresClient.Exec(context.Background(), query, enable, feederId, currentTime)
 	if err != nil {
 		return
 	}
