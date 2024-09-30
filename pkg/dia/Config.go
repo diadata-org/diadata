@@ -122,6 +122,8 @@ const (
 	ThenaV3Exchange                    = "ThenaV3"
 	AyinExchange                       = "Ayin"
 	BitgetExchange                     = "Bitget"
+	AerodromeSlipstreamExchange        = "AerodromeSlipstream"
+	AerodromeV1Exchange                = "AerodromeV1"
 	// FinageForex        = "FinageForex"
 )
 

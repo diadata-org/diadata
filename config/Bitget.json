@@ -19,6 +19,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "AERO",
+            "ForeignName": "AEROUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
             "Symbol": "ARB",
             "ForeignName": "ARBUSDT",
             "Exchange": "Bitget",
@@ -75,6 +81,12 @@
         {
             "Symbol": "BNB",
             "ForeignName": "BNBUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "BRETT",
+            "ForeignName": "BRETTUSDT",
             "Exchange": "Bitget",
             "Ignore": false
         },
@@ -207,6 +219,12 @@
         {
             "Symbol": "LYX",
             "ForeignName": "LYXUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MIGGLES",
+            "ForeignName": "MIGGLESUSDT",
             "Exchange": "Bitget",
             "Ignore": false
         },

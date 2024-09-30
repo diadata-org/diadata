@@ -61,6 +61,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "AERO",
+            "ForeignName": "AERO-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "AKRO",
             "ForeignName": "AKRO-BTC",
             "Exchange": "KuCoin",
@@ -513,6 +519,12 @@
         {
             "Symbol": "DCR",
             "ForeignName": "DCR-BTC",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DEGEN",
+            "ForeignName": "DEGEN-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
         },

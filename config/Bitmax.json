@@ -7,6 +7,30 @@
             "Ignore": false
         },
         {
+            "Symbol": "BRETT",
+            "ForeignName": "BRETT/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DEGEN",
+            "ForeignName": "DEGEN/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MIGGLES",
+            "ForeignName": "MIGGLES/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
+            "Symbol": "TOSHI",
+            "ForeignName": "TOSHI/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
             "Symbol": "ETHFI",
             "ForeignName": "ETHFI/USDT",
             "Exchange": "Bitmax",

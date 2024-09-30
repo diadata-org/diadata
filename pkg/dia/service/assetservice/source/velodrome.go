@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/velodrome"
+	models "github.com/diadata-org/diadata/pkg/model"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -24,22 +25,29 @@ type VelodromePair struct {
 
 const (
 	velodromeWaitMilliseconds = "500"
+	restDialOptimism          = ""
 )
 
 var velodromeExchangeFactoryContractAddress string
 
 type VelodromeAssetSource struct {
 	RestClient   *ethclient.Client
+	relDB        *models.RelDB
 	assetChannel chan dia.Asset
 	doneChannel  chan bool
+	exchange     dia.Exchange
 	blockchain   string
 	waitTime     int
 }
 
-func NewVelodromeAssetSource(exchange dia.Exchange) (uas *VelodromeAssetSource) {
+func NewVelodromeAssetSource(exchange dia.Exchange, relDB *models.RelDB) (uas *VelodromeAssetSource) {
 	switch exchange.Name {
 	case dia.VelodromeExchange:
-		uas = makeVelodromeAssetSource(exchange, exchange.RestAPI, velodromeWaitMilliseconds)
+		uas = makeVelodromeAssetSource(exchange, restDialOptimism, relDB, velodromeWaitMilliseconds)
+	case dia.AerodromeSlipstreamExchange:
+		uas = makeVelodromeAssetSource(exchange, restDialBase, relDB, velodromeWaitMilliseconds)
+	case dia.AerodromeV1Exchange:
+		uas = makeVelodromeAssetSource(exchange, restDialBase, relDB, velodromeWaitMilliseconds)
 	}
 
 	velodromeExchangeFactoryContractAddress = exchange.Contract
@@ -52,7 +60,7 @@ func NewVelodromeAssetSource(exchange dia.Exchange) (uas *VelodromeAssetSource) 
 }
 
 // makeVelodromeAssetSource returns an asset source as used in NewVelodromeAssetSource.
-func makeVelodromeAssetSource(exchange dia.Exchange, restDial string, waitMilliseconds string) *VelodromeAssetSource {
+func makeVelodromeAssetSource(exchange dia.Exchange, restDial string, relDB *models.RelDB, waitMilliseconds string) *VelodromeAssetSource {
 	var (
 		restClient   *ethclient.Client
 		err          error
@@ -75,8 +83,10 @@ func makeVelodromeAssetSource(exchange dia.Exchange, restDial string, waitMillis
 	}
 	uas = &VelodromeAssetSource{
 		RestClient:   restClient,
+		relDB:        relDB,
 		assetChannel: assetChannel,
 		doneChannel:  doneChannel,
+		exchange:     exchange,
 		blockchain:   exchange.BlockChain.Name,
 		waitTime:     waitTime,
 	}
@@ -95,7 +105,7 @@ func (uas *VelodromeAssetSource) getNumPairs() (int, error) {
 	var contract *velodrome.PoolFactoryCaller
 	contract, err := velodrome.NewPoolFactoryCaller(common.HexToAddress(velodromeExchangeFactoryContractAddress), uas.RestClient)
 	if err != nil {
-		log.Error(err)
+		log.Error("getNumPairs: ", err)
 	}
 
 	numPairs, err := contract.AllPoolsLength(&bind.CallOpts{})
@@ -111,11 +121,18 @@ func (uas *VelodromeAssetSource) fetchAssets() {
 	log.Info("Found ", numPairs, " pairs")
 	checkMap := make(map[string]struct{})
 
-	for i := 0; i < numPairs; i++ {
+	_, index, err := uas.relDB.GetScraperIndex(uas.exchange.Name, dia.SCRAPER_TYPE_ASSETCOLLECTOR)
+	if err != nil {
+		log.Error("GetScraperIndex: ", err)
+	}
+	log.Info("Start at index ", index)
+
+	for index < int64(numPairs) {
+		log.Info("index: ", index)
 		time.Sleep(time.Duration(uas.waitTime) * time.Millisecond)
-		pair, err := uas.GetPairByID(int64(numPairs - 1 - i))
+		pair, err := uas.GetPairByID(int64(numPairs) - 1 - index)
 		if err != nil {
-			log.Errorln("Error getting pair with ID ", numPairs-1-i)
+			log.Errorln("Error getting pair with ID ", numPairs-1-int(index))
 		}
 		asset0 := pair.Token0
 		asset1 := pair.Token1
@@ -134,6 +151,7 @@ func (uas *VelodromeAssetSource) fetchAssets() {
 				uas.assetChannel <- asset1
 			}
 		}
+		index++
 	}
 	uas.doneChannel <- true
 }

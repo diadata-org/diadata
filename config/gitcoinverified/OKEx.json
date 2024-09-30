@@ -97,6 +97,12 @@
             "Address": "0xBe428c3867F05deA2A89Fc76a102b544eaC7f772"
         },
         {
+            "Symbol": "DEGEN",
+            "Exchange": "OKEx",
+            "Blockchain": "Base",
+            "Address": "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"
+        },
+        {
             "Symbol": "DIA",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",

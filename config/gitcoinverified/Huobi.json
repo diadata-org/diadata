@@ -151,6 +151,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "DEGEN",
+      "Exchange": "Huobi",
+      "Blockchain": "Base",
+      "Address": "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"
+    },
+    {
       "Symbol": "DOGE",
       "Exchange": "Huobi",
       "Blockchain": "Dogechain",

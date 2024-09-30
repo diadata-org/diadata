@@ -31,6 +31,7 @@ type UniswapPair struct {
 
 const (
 	restDialEthereum  = ""
+	restDialBase      = ""
 	restDialBSC       = ""
 	restDialPolygon   = ""
 	restDialCelo      = ""
@@ -87,6 +88,8 @@ func NewUniswapScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *mo
 	switch exchange.Name {
 	case dia.UniswapExchange:
 		us = makeUniswapPoolScraper(exchange, pathToPools, restDialEthereum, relDB, datastore, uniswapWaitMilliseconds)
+	case dia.UniswapExchangeBase:
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialBase, relDB, datastore, uniswapWaitMilliseconds)
 	case dia.SushiSwapExchange:
 		us = makeUniswapPoolScraper(exchange, pathToPools, restDialEthereum, relDB, datastore, sushiswapWaitMilliseconds)
 	case dia.SushiSwapExchangePolygon:
