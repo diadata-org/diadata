@@ -98,6 +98,12 @@
         },
         {
             "Exchange": "CoinBase",
+            "ForeignName": "COMP-USD",
+            "Ignore": false,
+            "Symbol": "COMP"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "DAI-USD",
             "Ignore": false,
             "Symbol": "DAI"
@@ -287,6 +293,12 @@
             "ForeignName": "TIA-USD",
             "Ignore": false,
             "Symbol": "TIA"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "UNI-USD",
+            "Ignore": false,
+            "Symbol": "UNI"
         },
         {
             "Exchange": "CoinBase",

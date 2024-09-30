@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "Kraken",
+      "ForeignName": "AAVEUSD",
+      "Ignore": false,
+      "Symbol": "AAVE"
+    },
+    {
+      "Exchange": "Kraken",
       "ForeignName": "ADAETH",
       "Ignore": false,
       "Symbol": "ADA"
