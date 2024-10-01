@@ -2,6 +2,12 @@
     "Coins": [
         {
             "Exchange": "GateIO",
+            "ForeignName": "AAVE_USDT",
+            "Ignore": false,
+            "Symbol": "AAVE"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "ABT_ETH",
             "Ignore": false,
             "Symbol": "ABT"

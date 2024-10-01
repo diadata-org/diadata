@@ -2,6 +2,12 @@
   "Coins": [
     {
       "Exchange": "OKEx",
+      "ForeignName": "AAVE-USDC",
+      "Ignore": false,
+      "Symbol": "AAVE"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "AAVE-USDT",
       "Ignore": false,
       "Symbol": "AAVE"
@@ -29,6 +35,18 @@
       "ForeignName": "ATOM-USDC",
       "Ignore": false,
       "Symbol": "ATOM"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "COMP-USDT",
+      "Ignore": false,
+      "Symbol": "COMP"
+    },
+    {
+      "Exchange": "OKEx",
+      "ForeignName": "UNI-USDT",
+      "Ignore": false,
+      "Symbol": "UNI"
     },
     {
       "Exchange": "OKEx",
