@@ -1567,7 +1567,7 @@ func (reldb *RelDB) GetCustomerByPublicKey(publicKey string) (*Customer, error) 
 	var customer Customer
 	query := `
 		SELECT c.customer_id, c.email, c.account_creation_date, c.customer_plan, c.deployed_oracles,
-		       c.payment_status, c.payment_source, c.number_of_data_feeds, c.active
+		       c.payment_status, c.payment_source, c.number_of_data_feeds, c.active,c.payer_address
 		FROM customers c
 		INNER JOIN wallet_public_keys wpk ON c.customer_id = wpk.customer_id
 		WHERE wpk.public_key = $1
@@ -1577,6 +1577,7 @@ func (reldb *RelDB) GetCustomerByPublicKey(publicKey string) (*Customer, error) 
 		customerPlanSql  sql.NullInt16
 		paymentStatusSql sql.NullString
 		paymentSourceSql sql.NullString
+		payerAddress     sql.NullString
 	)
 	err := reldb.postgresClient.QueryRow(context.Background(), query, publicKey).Scan(
 		&customer.CustomerID,
@@ -1588,7 +1589,7 @@ func (reldb *RelDB) GetCustomerByPublicKey(publicKey string) (*Customer, error) 
 		// &customer.LastPayment,
 		&paymentSourceSql,
 		&customer.NumberOfDataFeeds,
-		&customer.Active,
+		&payerAddress,
 	)
 	if err != nil {
 		return nil, err
@@ -1619,6 +1620,9 @@ func (reldb *RelDB) GetCustomerByPublicKey(publicKey string) (*Customer, error) 
 
 	if emailSql.Valid {
 		customer.Email = emailSql.String
+	}
+	if payerAddress.Valid {
+		customer.PayerAddress = payerAddress.String
 	}
 	if paymentStatusSql.Valid {
 		customer.PaymentStatus = paymentStatusSql.String
