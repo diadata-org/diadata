@@ -312,6 +312,9 @@ ALTER TABLE oracleconfig  ADD COLUMN draft boolean DEFAULT true;
 ALTER TABLE oracleconfig  ADD COLUMN customer_id int ;
 ALTER TABLE oracleconfig  ADD COLUMN billable boolean DEFAULT false ;
 
+
+
+
 ALTER TABLE oracleconfig  ADD COLUMN ecosystem boolean DEFAULT false;
 
 
@@ -404,7 +407,11 @@ CREATE TABLE exchange_pairs (
     active BOOLEAN DEFAULT TRUE
 );
 
+
+
 ALTER TABLE customers ADD COLUMN name VARCHAR(255);
+ALTER TABLE customers ADD COLUMN payer_address text;
+
 
 
 CREATE TABLE wallet_public_keys (

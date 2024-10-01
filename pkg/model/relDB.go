@@ -205,7 +205,7 @@ type RelDatastore interface {
 
 	GetPendingInvites(ctx context.Context, publicKey string) (pk []PublicKey, err error)
 
-	UpdateCustomerPlan(ctx context.Context, customerID int, customerPlan int, paymentSource string, lastPayment string) error
+	UpdateCustomerPlan(ctx context.Context, customerID int, customerPlan int, paymentSource string, lastPayment string, payerAddress string) error
 	GetAccessLevel(publicKey string) (string, error)
 
 	GetAllChains() (chainconfigs []dia.ChainConfig, err error)

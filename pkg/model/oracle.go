@@ -28,6 +28,7 @@ type Customer struct {
 	NumberOfDataFeeds int         `json:"number_of_data_feeds"`
 	Active            bool        `json:"active"`
 	PublicKeys        []PublicKey `json:"public_keys"`
+	PayerAddress      string      `json:"payer_address"`
 }
 
 type Plan struct {
@@ -1412,19 +1413,23 @@ func (reldb *RelDB) CreateCustomer(email string, name string, customerPlan int, 
 	return nil
 }
 
-func (reldb *RelDB) UpdateCustomerPlan(ctx context.Context, customerID int, customerPlan int, paymentSource string, lastPayment string) error {
+func (reldb *RelDB) UpdateCustomerPlan(ctx context.Context, customerID int, customerPlan int, paymentSource string, lastPayment string, payerAddress string) error {
 
 	ut, err := strconv.ParseInt(lastPayment, 10, 64)
+	if err != nil {
+		return err
+	}
 	lastPaymentts := time.Unix(ut, 0)
 
 	query := `
         UPDATE customers
         SET customer_plan = $1,
             payment_source = $2,
-            last_payment = $3
+            last_payment = $3,
+			payer_address = $5
         WHERE customer_id = $4
     `
-	_, err = reldb.postgresClient.Exec(ctx, query, customerPlan, paymentSource, lastPaymentts, customerID)
+	_, err = reldb.postgresClient.Exec(ctx, query, customerPlan, paymentSource, lastPaymentts, customerID, payerAddress)
 	return err
 }
 

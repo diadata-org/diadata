@@ -74,6 +74,7 @@ func (ob *Env) viewAccount(context *gin.Context, publicKey string) (combined map
 
 	combined = map[string]interface{}{
 		"plan":                  plan,
+		"payer_address":         customer.PayerAddress,
 		"customer_id":           customer.CustomerID,
 		"email":                 customer.Email,
 		"account_creation_date": customer.AccountCreationDate,

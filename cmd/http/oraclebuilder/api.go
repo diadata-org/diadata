@@ -441,6 +441,7 @@ func (ob *Env) ListAndViewAccount(context *gin.Context) {
 	}
 
 	r := map[string]interface{}{
+		"owner":   creator,
 		"account": account,
 		"oracles": oracles,
 	}
@@ -1494,7 +1495,7 @@ func (ob *Env) LoopWebHook(context *gin.Context) {
 			log.Infof("Request ID: %s, lpr.PaymentTokenSymbol %s,", requestId, lpr.PaymentTokenSymbol)
 			log.Infof("Request ID: %s, lpr.EventDate %s,", requestId, lpr.EventDate)
 
-			err = ob.RelDB.UpdateCustomerPlan(context, customer.CustomerID, planId, lpr.PaymentTokenSymbol, strconv.Itoa(lpr.EventDate))
+			err = ob.RelDB.UpdateCustomerPlan(context, customer.CustomerID, planId, lpr.PaymentTokenSymbol, strconv.Itoa(lpr.EventDate), common.HexToAddress(lptp.EndUser).String())
 
 			if err != nil {
 				log.Errorf("Request ID: %s, UpdateCustomerPlan %v, customerID %d,", requestId, err, customer.CustomerID)
