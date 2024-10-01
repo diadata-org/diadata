@@ -1589,6 +1589,7 @@ func (reldb *RelDB) GetCustomerByPublicKey(publicKey string) (*Customer, error) 
 		// &customer.LastPayment,
 		&paymentSourceSql,
 		&customer.NumberOfDataFeeds,
+		&customer.Active,
 		&payerAddress,
 	)
 	if err != nil {
