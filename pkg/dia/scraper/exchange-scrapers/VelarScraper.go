@@ -134,8 +134,6 @@ func (s *VelarScraper) Update() error {
 	if len(swapTxs) == 0 {
 		return nil
 	}
-	// TODO: deserialize swap events (tx_result)
-
 	pools, err := s.getPools()
 	if err != nil {
 		s.logger.WithError(err).Error("failed to GetAllPoolsExchange")
@@ -149,9 +147,14 @@ func (s *VelarScraper) Update() error {
 		}
 
 		for _, tx := range swapTxs {
-			// TODO: filter transactions by pool
+			swapInfo := velarhelper.ExtractSwapInfo(tx.TxResult.Repr)
 
-			diaTrade := s.handleTrade(&pool, &tx)
+			swapPoolAddress := fmt.Sprintf("%s_%s", swapInfo.TokenIn, swapInfo.TokenOut)
+			if pool.Address != swapPoolAddress {
+				continue
+			}
+
+			diaTrade := s.handleTrade(&pool, swapInfo, tx)
 			s.logger.
 				WithField("parentAddress", pool.Address).
 				WithField("height", s.currentHeight).
@@ -184,30 +187,34 @@ func (s *VelarScraper) filterSwapTransactions(txs []stackshelper.Transaction) []
 	return swapTxs
 }
 
-func (s *VelarScraper) handleTrade(pool *dia.Pool, tx *stackshelper.Transaction) *dia.Trade {
+func (s *VelarScraper) handleTrade(pool *dia.Pool, swapInfo velarhelper.SwapInfo, tx stackshelper.Transaction) *dia.Trade {
 	var volume, price float64
+	var baseToken, quoteToken dia.Asset
 
-	decimals0 := int64(pool.Assetvolumes[0].Asset.Decimals)
-	decimals1 := int64(pool.Assetvolumes[1].Asset.Decimals)
+	token0 := pool.Assetvolumes[0].Asset
+	token1 := pool.Assetvolumes[1].Asset
 
-	// TODO: extract in/out amounts from tx swap event
-	amountIn := "0"
-	amountOut := "0"
+	amountIn := fmt.Sprintf("%d", swapInfo.AmountIn)
+	amountOut := fmt.Sprintf("%d", swapInfo.AmountOut)
 
-	// TODO: detect swap direction (token0->token1 / token1->token0)
-	if true {
-		amount0In, _ := utils.StringToFloat64(amountIn, decimals0)
-		amount1Out, _ := utils.StringToFloat64(amountOut, decimals1)
+	isToken0ToToken1 := swapInfo.TokenIn == token0.Address && swapInfo.TokenOut == token1.Address
+	if isToken0ToToken1 {
+		amount0In, _ := utils.StringToFloat64(amountIn, int64(token0.Decimals))
+		amount1Out, _ := utils.StringToFloat64(amountOut, int64(token1.Decimals))
 		volume = amount0In
 		price = amount1Out / amount0In
+		baseToken = token0
+		quoteToken = token1
 	} else {
-		amount1In, _ := utils.StringToFloat64(amountIn, decimals1)
-		amount0Out, _ := utils.StringToFloat64(amountOut, decimals0)
-		volume = -amount0Out
+		amount1In, _ := utils.StringToFloat64(amountIn, int64(token1.Decimals))
+		amount0Out, _ := utils.StringToFloat64(amountOut, int64(token0.Decimals))
+		volume = amount1In
 		price = amount1In / amount0Out
+		baseToken = token1
+		quoteToken = token0
 	}
 
-	symbolPair := fmt.Sprintf("%s-%s", pool.Assetvolumes[0].Asset.Symbol, pool.Assetvolumes[1].Asset.Symbol)
+	symbolPair := fmt.Sprintf("%s-%s", baseToken.Symbol, quoteToken.Symbol)
 
 	return &dia.Trade{
 		Time:           time.Unix(int64(tx.BlockTime), 0),
@@ -218,8 +225,8 @@ func (s *VelarScraper) handleTrade(pool *dia.Pool, tx *stackshelper.Transaction)
 		Price:          price,
 		Volume:         volume,
 		VerifiedPair:   true,
-		BaseToken:      pool.Assetvolumes[0].Asset,
-		QuoteToken:     pool.Assetvolumes[1].Asset,
+		BaseToken:      baseToken,
+		QuoteToken:     quoteToken,
 		PoolAddress:    pool.Address,
 	}
 }

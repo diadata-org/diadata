@@ -16,3 +16,22 @@ type Ticker struct {
 	BaseVolume     float64 `json:"base_volume"`
 	TargetVolume   float64 `json:"target_volume"`
 }
+
+type SwapInfo struct {
+	AmountIn    uint64
+	AmountOut   uint64
+	TokenIn     string
+	TokenOut    string
+	Symbol      string
+	LpToken     string
+	Token0      string
+	Token1      string
+	ProtocolFee Fee
+	ShareFee    Fee
+	SwapFee     Fee
+}
+
+type Fee struct {
+	Denominator uint64
+	Numerator   uint64
+}
