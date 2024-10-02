@@ -140,8 +140,8 @@ func (s *HydrationScraper) mainLoop() {
 func (s *HydrationScraper) Update() error {
 	s.logger.Info("Fetching swap events...")
 	// To test the scraper with a specific block
-	// endpoint := fmt.Sprintf("%s/events/swap/0x4b4d1d9db6336fd124b7df7d54962137e70f60693633692b6e0b54d71650e4af", s.api)
-	endpoint := fmt.Sprintf("%s/events/swap", s.api)
+	endpoint := fmt.Sprintf("%s/events/swap/0x4b4d1d9db6336fd124b7df7d54962137e70f60693633692b6e0b54d71650e4af", s.api)
+	// endpoint := fmt.Sprintf("%s/events/swap", s.api)
 
 	resp, err := s.fetchWithRetry(endpoint, "application/json", 3)
 	if err != nil {
@@ -310,32 +310,26 @@ func (s *HydrationScraper) handleTrade(pool dia.Pool, event hydrationhelper.Hydr
 	var volume, price float64
 	var decimalsIn, decimalsOut int64
 
-	var quoteToken dia.Asset
-	var baseToken dia.Asset
+	var quoteToken, baseToken dia.Asset
 
-	var indexIn, indexOut int
-
-	// Use the simple token ID instead of concatenated address
-	assetInAddress := event.AssetIn
-	if pool.Assetvolumes[0].Asset.Address == assetInAddress {
-		indexIn = 0
-		indexOut = 1
+	// Determine which asset is being sold (this is the base asset)
+	if event.AssetIn == pool.Assetvolumes[0].Asset.Address {
+		baseToken = pool.Assetvolumes[0].Asset
+		quoteToken = pool.Assetvolumes[1].Asset
+		decimalsIn = int64(baseToken.Decimals)
+		decimalsOut = int64(quoteToken.Decimals)
 	} else {
-		indexIn = 1
-		indexOut = 0
+		baseToken = pool.Assetvolumes[1].Asset
+		quoteToken = pool.Assetvolumes[0].Asset
+		decimalsIn = int64(baseToken.Decimals)
+		decimalsOut = int64(quoteToken.Decimals)
 	}
-
-	quoteToken = pool.Assetvolumes[indexIn].Asset
-	baseToken = pool.Assetvolumes[indexOut].Asset
-
-	decimalsIn = int64(pool.Assetvolumes[indexIn].Asset.Decimals)
-	decimalsOut = int64(pool.Assetvolumes[indexOut].Asset.Decimals)
 
 	amountIn, _ := utils.StringToFloat64(event.AmountIn, decimalsIn)
 	amountOut, _ := utils.StringToFloat64(event.AmountOut, decimalsOut)
 
-	volume = -amountIn
-	price = amountIn / amountOut
+	volume = amountIn
+	price = amountOut / amountIn
 
 	symbolPair := fmt.Sprintf("%s-%s", baseToken.Symbol, quoteToken.Symbol)
 
