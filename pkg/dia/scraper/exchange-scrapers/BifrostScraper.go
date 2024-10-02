@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	Blockchain = "Bifrost"
+	Blockchain = "bifrost"
 )
 
 type BifrostScraper struct {
@@ -62,7 +62,7 @@ func NewBifrostScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		utils.GetenvInt(strings.ToUpper(exchange.Name)+"_REFRESH_DELAY", 10000),
 	)
 
-	apiURL := "http://localhost:3000/bifrost/v1"
+	apiURL := utils.Getenv(strings.ToUpper(exchange.Name)+"_API_URL", "http://localhost:3000/bifrost/v1")
 
 	s := &BifrostScraper{
 		shutdown:     make(chan nothing),
@@ -141,8 +141,8 @@ func (s *BifrostScraper) mainLoop() {
 //   - An error if the API request or pool retrieval fails, otherwise `nil`.
 func (s *BifrostScraper) Update() error {
 	// To test the scraper with a specific block
-	endpoint := fmt.Sprintf("%s/events/swap/0x5d184786631f977395636a98b231358b9a82b63c235c801c170fb7e532cb839b", s.api)
-	// endpoint := fmt.Sprintf("%s/events/swap", s.api)
+	// endpoint := fmt.Sprintf("%s/events/swap/0x5d184786631f977395636a98b231358b9a82b63c235c801c170fb7e532cb839b", s.api)
+	endpoint := fmt.Sprintf("%s/events/swap", s.api)
 
 	resp, err := s.fetchWithRetry(endpoint, "application/json", 3)
 	if err != nil {

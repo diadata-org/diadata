@@ -71,7 +71,7 @@ func NewBifrostAssetSource(exchange dia.Exchange, relDB *models.RelDB) *BifrostA
 		bifrostClient:      bifrostClient,
 		assetChannel:       assetChannel,
 		doneChannel:        doneChannel,
-		blockchain:         exchange.BlockChain.Name,
+		blockchain:         "bifrost",
 		relDB:              relDB,
 		logger:             logger,
 		swapContractsLimit: swapContractsLimit,

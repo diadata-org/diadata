@@ -60,6 +60,8 @@ func NewHydrationLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, da
 		scraper     *HydrationLiquidityScraper
 	)
 
+	apiURL := utils.Getenv(strings.ToUpper(exchange.Name)+"_API_URL", "http://localhost:3000/hydration/v1")
+
 	scraper = &HydrationLiquidityScraper{
 		poolChannel:               poolChannel,
 		doneChannel:               doneChannel,
@@ -71,7 +73,7 @@ func NewHydrationLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, da
 		swapContractsLimit:        swapContractsLimit,
 		handlerType:               "liquidity",
 		sleepBetweenContractCalls: sleepBetweenContractCalls,
-		apiURL:                    "http://localhost:3000/hydration/v1",
+		apiURL:                    apiURL,
 	}
 	scraper.logger = logrus.
 		New().
@@ -128,13 +130,12 @@ func (s *HydrationLiquidityScraper) parseAssets(poolMetadata []hydrationhelper.H
 	pools := make([]*dia.Pool, 0)
 
 	for _, metadataPair := range poolMetadata {
-		assets := make([]dia.Asset, 0)
 		pair := &dia.Pool{
 			Assetvolumes: []dia.AssetVolume{},
 			Time:         time.Now(),
 		}
 
-		var tokenABNames string
+		var tokenNames []string
 
 		for _, token := range metadataPair.Tokens {
 			assetKey := token.ID
@@ -143,8 +144,6 @@ func (s *HydrationLiquidityScraper) parseAssets(poolMetadata []hydrationhelper.H
 				s.logger.WithError(err).Warn("Failed to GetAsset with key: ", assetKey)
 				continue
 			}
-
-			assets = append(assets, dbAsset)
 
 			balance, _ := utils.StringToFloat64(token.Balance, int64(token.Decimals))
 			usdBalance, _ := utils.StringToFloat64(token.UsdBalance, int64(6))
@@ -156,15 +155,15 @@ func (s *HydrationLiquidityScraper) parseAssets(poolMetadata []hydrationhelper.H
 				VolumeUSD: usdBalance,
 			})
 
-			tokenABNames += strings.ToLower(token.ID)
+			tokenNames = append(tokenNames, strings.ToLower(token.ID))
 		}
 
-		if len(assets) != 2 {
-			s.logger.Error("found more than 2 asset types for the pool pair")
+		if len(pair.Assetvolumes) < 2 {
+			s.logger.Warn("Found less than 2 asset types for the pool")
 			continue
 		}
 
-		pair.Address = tokenABNames
+		pair.Address = strings.Join(tokenNames, "_")
 		pair.Exchange = dia.Exchange{Name: s.exchangeName}
 		pair.Blockchain = dia.BlockChain{Name: s.blockchain}
 

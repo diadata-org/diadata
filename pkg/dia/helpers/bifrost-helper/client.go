@@ -13,14 +13,15 @@ import (
 	"unicode/utf8"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/sirupsen/logrus"
 )
 
 const (
 	AssetAddressURI = "AssetRegistry:Assets"
-	Blockchain      = "polkadot"
-	DiaPolkadotApi  = "http://localhost:3000/bifrost/v1"
+	Blockchain      = "bifrost"
 	GetAssetsPath   = "assets"
+	ExchangeName    = "Bifrost"	
 )
 
 type BifrostClient struct {
@@ -44,8 +45,9 @@ func (c *BifrostClient) waiting() {
 func (c *BifrostClient) GetAssetAllAssets() ([]BifrostAssetMetadata, error) {
 	var wg sync.WaitGroup
 	wg.Add(1)
-
-	getAllAssetsURI := fmt.Sprintf("%s/%s", DiaPolkadotApi, GetAssetsPath)
+	
+	apiURL := utils.Getenv(strings.ToUpper(ExchangeName)+"_API_URL", "http://localhost:3000/bifrost/v1")
+	getAllAssetsURI := fmt.Sprintf("%s/%s", apiURL, GetAssetsPath)
 
 	c.logger.Infof("Getting assets from: %s", getAllAssetsURI)
 
@@ -88,7 +90,8 @@ func (c *BifrostClient) GetAllPoolAssets() ([]BifrostPoolMetadata, error) {
 	var wg sync.WaitGroup
 	wg.Add(1)
 	
-	getAllPoolAssetsURI := fmt.Sprintf("%s/%s", DiaPolkadotApi, "pools")
+	apiURL := utils.Getenv(strings.ToUpper(ExchangeName)+"_API_URL", "http://localhost:3000/bifrost/v1")
+	getAllPoolAssetsURI := fmt.Sprintf("%s/%s", apiURL, "pools")
 
 	c.logger.Infof("Getting pool assets from: %s", getAllPoolAssetsURI)
 

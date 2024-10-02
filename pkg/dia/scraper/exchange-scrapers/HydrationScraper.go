@@ -59,7 +59,7 @@ func NewHydrationScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 		utils.GetenvInt(strings.ToUpper(exchange.Name)+"_REFRESH_DELAY", 10000),
 	)
 
-	apiURL := "http://localhost:3000/hydration/v1"
+	apiURL := utils.Getenv(strings.ToUpper(exchange.Name)+"_API_URL", "http://localhost:3000/hydration/v1")
 
 	s := &HydrationScraper{
 		shutdown:     make(chan nothing),
@@ -140,8 +140,8 @@ func (s *HydrationScraper) mainLoop() {
 func (s *HydrationScraper) Update() error {
 	s.logger.Info("Fetching swap events...")
 	// To test the scraper with a specific block
-	endpoint := fmt.Sprintf("%s/events/swap/0x4b4d1d9db6336fd124b7df7d54962137e70f60693633692b6e0b54d71650e4af", s.api)
-	// endpoint := fmt.Sprintf("%s/events/swap", s.api)
+	// endpoint := fmt.Sprintf("%s/events/swap/0x4b4d1d9db6336fd124b7df7d54962137e70f60693633692b6e0b54d71650e4af", s.api)
+	endpoint := fmt.Sprintf("%s/events/swap", s.api)
 
 	resp, err := s.fetchWithRetry(endpoint, "application/json", 3)
 	if err != nil {
@@ -161,8 +161,8 @@ func (s *HydrationScraper) Update() error {
 	}
 
 	for _, pool := range pools {
-		if len(pool.Assetvolumes) != 2 {
-			s.logger.WithField("poolAddress", pool.Address).Error("Pool is missing required asset volumes")
+		if len(pool.Assetvolumes) < 2 {
+			s.logger.WithField("poolAddress", pool.Address).Error("Pool has fewer than 2 asset volumes")
 			continue
 		}
 
@@ -172,7 +172,6 @@ func (s *HydrationScraper) Update() error {
 		}
 
 		for _, event := range poolEvents {
-			s.logger.WithField("poolAddress", pool.Address).Info("Processing event for pool")
 			diaTrade := s.handleTrade(pool, event, time.Now())
 			s.chanTrades <- diaTrade
 		}
@@ -201,16 +200,32 @@ func (s *HydrationScraper) Update() error {
 func (s *HydrationScraper) filterPoolEvents(poolAddress string, events []hydrationhelper.HydrationSwapEvent) []hydrationhelper.HydrationSwapEvent {
 	var matchedEvents []hydrationhelper.HydrationSwapEvent
 
-	for _, event := range events {
-		eventAddressA := fmt.Sprintf("%s%s", event.AssetIn, event.AssetOut)
-		eventAddressB := fmt.Sprintf("%s%s", event.AssetOut, event.AssetIn)
+	// Split the poolAddress into its component asset IDs
+	poolAssets := strings.Split(poolAddress, "_")
 
-		if eventAddressA == poolAddress || eventAddressB == poolAddress {
+	for _, event := range events {
+		// Check if both assetIn and assetOut are in the poolAssets slice
+		if containsAsset(poolAssets, event.AssetIn) && containsAsset(poolAssets, event.AssetOut) {
 			matchedEvents = append(matchedEvents, event)
+			s.logger.WithFields(logrus.Fields{
+				"poolAddress": poolAddress,
+				"assetIn":     event.AssetIn,
+				"assetOut":    event.AssetOut,
+			}).Info("Matched event for pool")
 		}
 	}
 
 	return matchedEvents
+}
+
+// Helper function to check if an asset is in the pool assets slice
+func containsAsset(poolAssets []string, asset string) bool {
+	for _, a := range poolAssets {
+		if a == asset {
+			return true
+		}
+	}
+	return false
 }
 
 // fetchWithRetry performs an HTTP GET request to the specified endpoint with retries.
@@ -300,7 +315,8 @@ func (s *HydrationScraper) handleTrade(pool dia.Pool, event hydrationhelper.Hydr
 
 	var indexIn, indexOut int
 
-	assetInAddress := fmt.Sprintf("%s:Asset:%s", s.exchangeName, event.AmountIn)
+	// Use the simple token ID instead of concatenated address
+	assetInAddress := event.AssetIn
 	if pool.Assetvolumes[0].Asset.Address == assetInAddress {
 		indexIn = 0
 		indexOut = 1
@@ -312,8 +328,8 @@ func (s *HydrationScraper) handleTrade(pool dia.Pool, event hydrationhelper.Hydr
 	quoteToken = pool.Assetvolumes[indexIn].Asset
 	baseToken = pool.Assetvolumes[indexOut].Asset
 
-	decimalsIn = int64(pool.Assetvolumes[1].Asset.Decimals)
-	decimalsOut = int64(pool.Assetvolumes[0].Asset.Decimals)
+	decimalsIn = int64(pool.Assetvolumes[indexIn].Asset.Decimals)
+	decimalsOut = int64(pool.Assetvolumes[indexOut].Asset.Decimals)
 
 	amountIn, _ := utils.StringToFloat64(event.AmountIn, decimalsIn)
 	amountOut, _ := utils.StringToFloat64(event.AmountOut, decimalsOut)
@@ -321,11 +337,11 @@ func (s *HydrationScraper) handleTrade(pool dia.Pool, event hydrationhelper.Hydr
 	volume = -amountIn
 	price = amountIn / amountOut
 
-	symbolPair := fmt.Sprintf("%s-%s", pool.Assetvolumes[0].Asset.Symbol, pool.Assetvolumes[1].Asset.Symbol)
+	symbolPair := fmt.Sprintf("%s-%s", baseToken.Symbol, quoteToken.Symbol)
 
 	return &dia.Trade{
 		Time:           time,
-		Symbol:         pool.Assetvolumes[0].Asset.Symbol,
+		Symbol:         baseToken.Symbol,
 		Pair:           symbolPair,
 		ForeignTradeID: event.TxID,
 		Source:         s.exchangeName,

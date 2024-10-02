@@ -75,7 +75,7 @@ func NewHydrationAssetSource(exchange dia.Exchange, relDB *models.RelDB) *Hydrat
 		WithField("service", "assetCollector").
 		WithField("network", "Hydration")
 
-	apiURL := "http://localhost:3000/hydration/v1"
+	apiURL := utils.Getenv(strings.ToUpper(exchange.Name)+"_API_URL", "http://localhost:3000/hydration/v1")
 
 	scraper := &HydrationAssetSource{
 		hydrationClient:    hydrationClient,
