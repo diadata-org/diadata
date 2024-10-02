@@ -43,6 +43,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "AERO",
+            "ForeignName": "AERO_USDT",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
             "Symbol": "ADA",
             "ForeignName": "ADA_USDT",
             "Exchange": "Crypto.com",

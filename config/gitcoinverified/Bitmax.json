@@ -73,6 +73,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "BRETT",
+            "Exchange": "Bitmax",
+            "Blockchain": "Base",
+            "Address": "0x532f27101965dd16442E59d40670FaF5eBB142E4"
+        },
+        {
             "Symbol": "BSV",
             "Exchange": "Bitmax",
             "Blockchain": "BitcoinSV",
@@ -131,6 +137,12 @@
             "Exchange": "Bitmax",
             "Blockchain": "Dash",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "DEGEN",
+            "Exchange": "Bitmax",
+            "Blockchain": "Base",
+            "Address": "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"
         },
         {
             "Symbol": "DIA",
@@ -283,6 +295,12 @@
             "Address": "0x0000000000000000000000000000000000001010"
         },
         {
+            "Symbol": "MIGGLES",
+            "Exchange": "Bitmax",
+            "Blockchain": "Base",
+            "Address": "0xB1a03EdA10342529bBF8EB700a06C60441fEf25d"
+        },
+        {
             "Symbol": "NEO",
             "Exchange": "Bitmax",
             "Blockchain": "NEO",
@@ -377,6 +395,12 @@
             "Exchange": "Bitmax",
             "Blockchain": "Osmosis",
             "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877"
+        },
+        {
+            "Symbol": "TOSHI",
+            "Exchange": "Bitmax",
+            "Blockchain": "Base",
+            "Address": "0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4"
         },
         {
             "Symbol": "TRX",

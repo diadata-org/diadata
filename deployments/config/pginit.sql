@@ -313,6 +313,12 @@ ALTER TABLE oracleconfig  ADD COLUMN customer_id int ;
 ALTER TABLE oracleconfig  ADD COLUMN billable boolean DEFAULT false ;
 
 
+
+
+ALTER TABLE oracleconfig  ADD COLUMN ecosystem boolean DEFAULT false;
+
+
+
 ALTER TABLE oracleconfig
 ADD CONSTRAINT unique_customer_chainid_address 
 UNIQUE (customer_id, chainid, address);
@@ -401,6 +407,13 @@ CREATE TABLE exchange_pairs (
     active BOOLEAN DEFAULT TRUE
 );
 
+
+
+ALTER TABLE customers ADD COLUMN name VARCHAR(255);
+ALTER TABLE customers ADD COLUMN payer_address text;
+
+
+
 CREATE TABLE wallet_public_keys (
     key_id SERIAL PRIMARY KEY,
     customer_id INTEGER REFERENCES customers(customer_id) ON DELETE CASCADE,
@@ -422,6 +435,8 @@ CREATE TABLE wallet_public_keys_temp (
     access_level VARCHAR(50) NOT NULL DEFAULT 'read_write',
     username VARCHAR(255)
  );
+
+ ALTER TABLE wallet_public_keys_temp add invitor TEXT;
 
  ALTER TABLE wallet_public_keys_temp
 ADD CONSTRAINT unique_customer_public_key UNIQUE (customer_id, public_key);

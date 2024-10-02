@@ -45,6 +45,8 @@ func NewUniswapV3Scraper(exchange dia.Exchange, relDB *models.RelDB, datastore *
 	switch exchange.Name {
 	case dia.UniswapExchangeV3:
 		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(12369621))
+	case dia.UniswapExchangeV3Base:
+		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(1371680))
 	case dia.UniswapExchangeV3Polygon:
 		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(22757913))
 	case dia.UniswapExchangeV3Arbitrum:

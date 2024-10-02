@@ -176,6 +176,12 @@
     },
     {
       "Exchange": "Huobi",
+      "ForeignName": "DEGENUSDT",
+      "Ignore": false,
+      "Symbol": "DEGEN"
+    },
+    {
+      "Exchange": "Huobi",
       "ForeignName": "DGBBTC",
       "Ignore": false,
       "Symbol": "DGB"

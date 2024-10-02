@@ -288,7 +288,7 @@ func (ob *Env) InitFeeder(context *gin.Context) {
 
 	if !ob.isValidPlan(context, customer, requestId) {
 		log.Errorf("Request ID: %s, isValidPlan  %v ,", requestId, err)
-		handleError(context, http.StatusNotFound, "plan exhausted or not subscribed", "subscribe for plan")
+		handleError(context, http.StatusPaymentRequired, "plan exhausted or not subscribed", "subscribe for plan")
 		return
 	}
 

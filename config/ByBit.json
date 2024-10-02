@@ -127,6 +127,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "BRETT",
+            "ForeignName": "BRETTUSDC",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "BSV",
             "ForeignName": "BSVUSDT",
             "Exchange": "ByBit",
@@ -219,6 +225,12 @@
         {
             "Symbol": "DASH",
             "ForeignName": "DASHUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "DEGEN",
+            "ForeignName": "DEGENUSDT",
             "Exchange": "ByBit",
             "Ignore": false
         },

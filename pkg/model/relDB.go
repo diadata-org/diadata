@@ -189,7 +189,7 @@ type RelDatastore interface {
 	GetAssetListBySymbol(symbol string, listname string) ([]dia.AssetList, error)
 	DeleteAssetList(sheetName string) error
 
-	CreateCustomer(email string, customerPlan int, paymentStatus string, paymentSource string, numberOfDataFeeds int, walletPublicKeys []string) error
+	CreateCustomer(email string, name string, customerPlan int, paymentStatus string, paymentSource string, numberOfDataFeeds int, walletPublicKeys []string) error
 	AddWalletKeys(owner, username, accessLevel string, publicKey []string, customerId string) error
 
 	GetTempWalletRequest(ctx context.Context, publicKey, customerId string) (keyId int, accessLevel, username string, err error)
@@ -205,7 +205,7 @@ type RelDatastore interface {
 
 	GetPendingInvites(ctx context.Context, publicKey string) (pk []PublicKey, err error)
 
-	UpdateCustomerPlan(ctx context.Context, customerID int, customerPlan int, paymentSource string, lastPayment string) error
+	UpdateCustomerPlan(ctx context.Context, customerID int, customerPlan int, paymentSource string, lastPayment string, payerAddress string) error
 	GetAccessLevel(publicKey string) (string, error)
 
 	GetAllChains() (chainconfigs []dia.ChainConfig, err error)
@@ -219,6 +219,8 @@ type RelDatastore interface {
 	InsertLoopPaymentTransferProcessed(ctx context.Context, record LoopPaymentTransferProcessed) error
 	InsertLoopPaymentResponse(ctx context.Context, response LoopPaymentResponse) error
 	GetLoopPaymentResponseByAgreementID(ctx context.Context, agreementID string) (*LoopPaymentResponse, error)
+
+	ChangeEcosystemConfig(oracleAddress string, enable bool) (err error)
 }
 
 const (

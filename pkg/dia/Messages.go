@@ -52,6 +52,7 @@ const (
 	LINEA                                   = "Linea"
 	OPTIMISM                                = "Optimism"
 	ALEPHIUM                                = "Alephium"
+	BASE                                    = "Base"
 )
 
 var CRYPTO_ZERO_UNIX_TIME = time.Unix(1230768000, 0)
@@ -801,6 +802,7 @@ type OracleConfig struct {
 	CustomerID         string
 	Billable           bool
 	Name               string
+	Ecosystem          bool
 }
 
 func (e *OracleConfig) MarshalBinary() ([]byte, error) {

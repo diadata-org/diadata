@@ -38,6 +38,9 @@ const (
 	restDialEth = ""
 	wsDialEth   = ""
 
+	restDialBase = ""
+	wsDialBase   = ""
+
 	restDialBSC = ""
 	wsDialBSC   = ""
 
@@ -174,6 +177,8 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 	switch exchange.Name {
 	case dia.UniswapExchange:
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialEth, wsDialEth, uniswapWaitMilliseconds)
+	case dia.UniswapExchangeBase:
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialBase, wsDialBase, uniswapWaitMilliseconds)
 	case dia.SushiSwapExchange:
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialEth, wsDialEth, sushiswapWaitMilliseconds)
 	case dia.SushiSwapExchangePolygon:

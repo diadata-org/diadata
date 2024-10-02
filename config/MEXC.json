@@ -169,6 +169,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "DEGEN",
+      "ForeignName": "DEGENUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "DAI",
       "ForeignName": "DAIUSDT",
       "Exchange": "MEXC",
@@ -435,6 +441,12 @@
     {
       "Symbol": "MCRT",
       "ForeignName": "MCRTUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "MIGGLES",
+      "ForeignName": "MIGGLESUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     },

@@ -420,6 +420,7 @@ func (ob *Env) ListAndViewAccount(context *gin.Context) {
 			log.Errorf("Request ID: %s,  err GetPendingInvites %v ", requestId, err)
 
 		}
+
 		account = map[string]interface{}{
 
 			"pending_public_keys": pending,
@@ -440,6 +441,7 @@ func (ob *Env) ListAndViewAccount(context *gin.Context) {
 	}
 
 	r := map[string]interface{}{
+		"owner":   creator,
 		"account": account,
 		"oracles": oracles,
 	}
@@ -964,6 +966,56 @@ func (ob *Env) Pause(context *gin.Context) {
 	context.JSON(http.StatusOK, oracleconfig)
 }
 
+func (ob *Env) SetEcosystem(context *gin.Context) {
+	requestId := context.GetString(REQUEST_ID)
+	creator := context.GetString(CREATOR_ADDRESS)
+
+	feederID := context.PostForm("feederID")
+	enable := context.PostForm("enable")
+
+	// customerID := context.GetString(CUSTOMER_ID)
+
+	customer, err := ob.RelDB.GetCustomerByPublicKey(creator)
+	if err != nil {
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "address not associated with any team"})
+		context.Abort()
+		return
+	}
+
+	log.Infof("Request ID: %s,  , customerID=%d, enable=%s %v ", requestId, customer.CustomerID, enable, feederID)
+
+	enableBool, err := strconv.ParseBool(enable)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid boolean query parameter",
+		})
+		return
+	}
+
+	oracleconfig, err := ob.RelDB.GetFeeder(feederID)
+	if err != nil {
+		log.Errorf("Request ID: %s,  err GetOracleConfig %v ", requestId, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "error on pause"})
+		return
+	}
+
+	if oracleconfig.CustomerID != strconv.Itoa(customer.CustomerID) {
+		log.Errorf("Request ID: %s, not authorised to SetEcosystem, customerID=%s, oracleconfig.CustomerID=%s %v ", requestId, customer.CustomerID, oracleconfig.CustomerID, err)
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "not part of your team oracle"})
+		return
+	}
+
+	err = ob.RelDB.ChangeEcosystemConfig(feederID, enableBool)
+	if err != nil {
+		log.Errorf("Request ID: %s,  ChangeEcosystemConfig err %v ", requestId, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "error changing ecosystem state wallet"})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message": "ecosystem state changed"})
+
+}
+
 func (ob *Env) Delete(context *gin.Context) {
 	var (
 		// address string
@@ -1261,11 +1313,12 @@ func (ob *Env) Auth(isCustomer bool) gin.HandlerFunc {
 				return
 
 			}
-			log.Infof("Request ID: %s, setting customer details %s customer id %s", requestId, CUSTOMER_ID, customer.CustomerID)
+			log.Infof("Request ID: %s, setting customer details %s customer id %d", requestId, CUSTOMER_ID, customer.CustomerID)
 
 			context.Set(CUSTOMER_ID, customer.CustomerID)
 			context.Set(CUSTOMER_PLAN, customer.CustomerPlan)
 			context.Set(ACCESS_LEVEL, accessLevel)
+			return
 		}
 
 	}
@@ -1337,7 +1390,7 @@ func (ob *Env) LoopWebHook(context *gin.Context) {
 				log.Errorf("Request ID: %s,err %v ,", requestId, err)
 
 				if err.Error() == "no rows in result set" {
-					err := ob.RelDB.CreateCustomer(ldr.Email, 0, "", "", 2, []string{common.HexToAddress(ldr.Subscriber).String()})
+					err := ob.RelDB.CreateCustomer(ldr.Email, "", 0, "", "", 2, []string{common.HexToAddress(ldr.Subscriber).String()})
 					if err != nil {
 						log.Errorf("Request ID: %s,customer err %v", err)
 
@@ -1442,7 +1495,7 @@ func (ob *Env) LoopWebHook(context *gin.Context) {
 			log.Infof("Request ID: %s, lpr.PaymentTokenSymbol %s,", requestId, lpr.PaymentTokenSymbol)
 			log.Infof("Request ID: %s, lpr.EventDate %s,", requestId, lpr.EventDate)
 
-			err = ob.RelDB.UpdateCustomerPlan(context, customer.CustomerID, planId, lpr.PaymentTokenSymbol, strconv.Itoa(lpr.EventDate))
+			err = ob.RelDB.UpdateCustomerPlan(context, customer.CustomerID, planId, lpr.PaymentTokenSymbol, strconv.Itoa(lpr.EventDate), common.HexToAddress(lptp.EndUser).String())
 
 			if err != nil {
 				log.Errorf("Request ID: %s, UpdateCustomerPlan %v, customerID %d,", requestId, err, customer.CustomerID)

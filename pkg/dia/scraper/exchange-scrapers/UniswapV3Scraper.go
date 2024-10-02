@@ -86,6 +86,8 @@ func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 		s = makeUniswapV3Scraper(exchange, listenByAddress, "", "", "200", uint64(22757913))
 	case dia.UniswapExchangeV3Arbitrum:
 		s = makeUniswapV3Scraper(exchange, listenByAddress, "", "", "200", uint64(165))
+	case dia.UniswapExchangeV3Base:
+		s = makeUniswapV3Scraper(exchange, listenByAddress, "", "", "200", uint64(1371680))
 	case dia.PanCakeSwapExchangeV3:
 		s = makeUniswapV3Scraper(exchange, listenByAddress, "", "", "200", uint64(26956207))
 	case dia.CamelotExchangeV3:
@@ -101,6 +103,8 @@ func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 		s = makeUniswapV3Scraper(exchange, listenByAddress, "", "", "200", uint64(90593047))
 	case dia.NileV2Exchange:
 		s = makeUniswapV3Scraper(exchange, listenByAddress, "", "", "2000", uint64(1768866))
+	case dia.AerodromeSlipstreamExchange:
+		s = makeUniswapV3Scraper(exchange, listenByAddress, "", "", "2000", uint64(0))
 	}
 
 	s.relDB = relDB

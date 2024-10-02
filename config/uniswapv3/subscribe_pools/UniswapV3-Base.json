@@ -1,0 +1,40 @@
+{
+    "Pools": [
+        {
+            "Address": "0x4b0Aaf3EBb163dd45F663b38b6d93f6093EBC2d3",
+            "ForeignName": "WETH-TOSHI"
+        },
+        {
+            "Address": "0xadAd4ce0C68F50A19CF5063E0B91d701Daab1df1",
+            "ForeignName": "WETH-MIGGLES"
+        },
+        {
+            "Address": "0x3d5D143381916280ff91407FeBEB52f2b60f33Cf",
+            "ForeignName": "WETH-AERO"
+        },
+        {
+            "Address": "0xc9034c3E7F58003E6ae0C8438e7c8f4598d5ACAA",
+            "ForeignName": "WETH-DEGEN"
+        },
+        {
+            "Address": "0xA9DaFa443a02FBc907Cb0093276B3E6F4ef02A46",
+            "ForeignName": "cbETH-WETH"
+        },
+        {
+            "Address": "0x10648BA41B8565907Cfa1496765fA4D95390aa0d",
+            "ForeignName": "cbETH-WETH"
+        },
+        {
+            "Address": "0x7AeA2E8A3843516afa07293a10Ac8E49906dabD1",
+            "ForeignName": "WETH-cbBTC"
+        },
+        {
+            "Address": "0x8c7080564B5A792A33Ef2FD473fbA6364d5495e5",
+            "ForeignName": "WETH-cbBTC"
+        },
+        {
+            "Address": "0x3e7586D52A9D07F8611B8ecf6CCc8a689c34a659",
+            "ForeignName": "USDC-cbBTC"
+        }       
+    ]
+}

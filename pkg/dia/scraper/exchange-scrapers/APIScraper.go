@@ -141,6 +141,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewBancorScraper(Exchanges[dia.BancorExchange], scrape)
 	case dia.UniswapExchange:
 		return NewUniswapScraper(Exchanges[dia.UniswapExchange], scrape, relDB)
+	case dia.UniswapExchangeBase:
+		return NewUniswapScraper(Exchanges[dia.UniswapExchangeBase], scrape, relDB)
 	case dia.PanCakeSwap:
 		return NewUniswapScraper(Exchanges[dia.PanCakeSwap], scrape, relDB)
 	case dia.PanCakeSwapExchangeV3:
@@ -189,6 +191,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewBKEXScraper(Exchanges[dia.BKEXExchange], dia.BKEX2Exchange, scrape, relDB)
 	case dia.UniswapExchangeV3:
 		return NewUniswapV3Scraper(Exchanges[dia.UniswapExchangeV3], scrape, relDB)
+	case dia.UniswapExchangeV3Base:
+		return NewUniswapV3Scraper(Exchanges[dia.UniswapExchangeV3Base], scrape, relDB)
 	case dia.DfynNetwork:
 		return NewUniswapScraper(Exchanges[dia.DfynNetwork], scrape, relDB)
 	case dia.UbeswapExchange:
@@ -269,6 +273,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewZenlinkScraper(Exchanges[dia.ZenlinkswapExchangeBifrostPolkadot], scrape)
 	case dia.VelodromeExchange:
 		return NewVelodromeScraper(Exchanges[dia.VelodromeExchange], scrape, relDB)
+	case dia.AerodromeV1Exchange:
+		return NewVelodromeScraper(Exchanges[dia.AerodromeV1Exchange], scrape, relDB)
 	case dia.MaverickExchange:
 		return NewMaverickScraper(Exchanges[dia.MaverickExchange], scrape, relDB)
 	case dia.PearlfiExchangeTestnet:
@@ -283,6 +289,10 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 	// 	return NewFinageForexScraper(Exchanges[dia.FinageForex], scrape, relDB, key, secret)
 	case dia.BitgetExchange:
 		return NewBitgetScraper(Exchanges[dia.BitgetExchange], scrape, relDB)
+	case dia.AerodromeSlipstreamExchange:
+		return NewUniswapV3Scraper(Exchanges[dia.AerodromeSlipstreamExchange], scrape, relDB)
+		// case dia.FinageForex:
+		// 	return NewFinageForexScraper(Exchanges[dia.FinageForex], scrape, relDB, key, secret)
 
 	case dia.MultiChain:
 		return NewBridgeSwapScraper(Exchanges[dia.MultiChain], scrape, relDB)

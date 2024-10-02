@@ -8,6 +8,12 @@
         },
         {
             "Exchange": "CoinBase",
+            "ForeignName": "AERO-USD",
+            "Ignore": false,
+            "Symbol": "AERO"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "AKT-USD",
             "Ignore": false,
             "Symbol": "AKT"
@@ -89,6 +95,12 @@
             "ForeignName": "CBETH-ETH",
             "Ignore": false,
             "Symbol": "CBETH"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "COMP-USD",
+            "Ignore": false,
+            "Symbol": "COMP"
         },
         {
             "Exchange": "CoinBase",
@@ -281,6 +293,12 @@
             "ForeignName": "TIA-USD",
             "Ignore": false,
             "Symbol": "TIA"
+        },
+        {
+            "Exchange": "CoinBase",
+            "ForeignName": "UNI-USD",
+            "Ignore": false,
+            "Symbol": "UNI"
         },
         {
             "Exchange": "CoinBase",

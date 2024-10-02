@@ -46,6 +46,8 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 	switch exchange {
 	case dia.UniswapExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.UniswapExchange], relDB)
+	case dia.UniswapExchangeBase:
+		return source.NewUniswapAssetSource(exchanges[dia.UniswapExchangeBase], relDB)
 	case dia.PanCakeSwap:
 		return source.NewUniswapAssetSource(exchanges[dia.PanCakeSwap], relDB)
 	case dia.PanCakeSwapExchangeV3:
@@ -116,6 +118,8 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 		return source.NewUniswapAssetSource(exchanges[dia.NileV1Exchange], relDB)
 	case dia.UniswapExchangeV3:
 		return source.NewUniswapV3AssetSource(exchanges[dia.UniswapExchangeV3], relDB)
+	case dia.UniswapExchangeV3Base:
+		return source.NewUniswapV3AssetSource(exchanges[dia.UniswapExchangeV3Base], relDB)
 	case dia.UniswapExchangeV3Polygon:
 		return source.NewUniswapV3AssetSource(exchanges[dia.UniswapExchangeV3Polygon], relDB)
 	case dia.UniswapExchangeV3Arbitrum:
@@ -145,7 +149,7 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 	case dia.OsmosisExchange:
 		return source.NewOsmosisScraper(exchanges[dia.OsmosisExchange])
 	case dia.VelodromeExchange:
-		return source.NewVelodromeAssetSource(exchanges[dia.VelodromeExchange])
+		return source.NewVelodromeAssetSource(exchanges[dia.VelodromeExchange], relDB)
 	case dia.TraderJoeExchangeV2_1:
 		return source.NewTraderJoeAssetSource(exchanges[dia.TraderJoeExchangeV2_1], relDB)
 	case dia.TraderJoeExchangeV2_1Arbitrum:
@@ -168,6 +172,10 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 		return source.NewAyinAssetSource(exchanges[dia.AyinExchange], relDB)
 	case dia.BitflowExchange:
 		return source.NewBitflowAssetSource(exchanges[dia.BitflowExchange], relDB)
+	case dia.AerodromeSlipstreamExchange:
+		return source.NewVelodromeAssetSource(exchanges[dia.AerodromeSlipstreamExchange], relDB)
+	case dia.AerodromeV1Exchange:
+		return source.NewVelodromeAssetSource(exchanges[dia.AerodromeV1Exchange], relDB)
 	default:
 		return nil
 	}
