@@ -82,6 +82,8 @@ func setupRouter() *gin.Engine {
 	routerGroup.POST("/oracle/feeder", authenticate("Verify its your address to create and update oracle"), oracle.Auth(true), oracle.CanWrite, oracle.CreateUpdateOracle)
 	routerGroup.POST("/oracle/deploy", authenticate("Verify its your address to start feeder"), oracle.Auth(true), oracle.CanWrite, oracle.InitFeeder)
 
+	routerGroup.POST("/oracle/ecosystem", authenticate("Verify its your address to update ecosystem config"), oracle.Auth(true), oracle.CanWrite, oracle.SetEcosystem)
+
 	// Define routes
 	routerGroup.POST("create", oracle.CreateOneStep)
 	routerGroup.GET("/create", oracle.ViewLimit)

@@ -28,6 +28,7 @@ type RemoveWalletInput struct {
 	WalletPublicKeys []string `form:"wallet_public_keys[]"`
 	Creator          string   `form:"creator"`
 }
+
 type UpdateAccessInput struct {
 	WalletPublicKey string `form:"wallet_public_key"`
 	AccessLevel     string `form:"access_level" binding:"required,oneof=read read_write"`
@@ -64,15 +65,16 @@ func (ob *Env) viewAccount(context *gin.Context, publicKey string) (combined map
 		context.JSON(http.StatusInternalServerError, gin.H{"error": "error while  getting plan"})
 		return
 	}
-	pendingPk, err := ob.RelDB.GetPendingPublicKeyByCustomer(context, strconv.Itoa(customer.CustomerID))
-	if err != nil {
-		log.Errorf("Request ID: %s,  ViewAccount GetPlan err %v ", requestId, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": "error while  getting plan"})
-		return
-	}
+	// pendingPk, err := ob.RelDB.GetPendingPublicKeyByCustomer(context, strconv.Itoa(customer.CustomerID))
+	// if err != nil {
+	// 	log.Errorf("Request ID: %s,  ViewAccount GetPlan err %v ", requestId, err)
+	// 	context.JSON(http.StatusInternalServerError, gin.H{"error": "error while  getting plan"})
+	// 	return
+	// }
 
 	combined = map[string]interface{}{
 		"plan":                  plan,
+		"payer_address":         customer.PayerAddress,
 		"customer_id":           customer.CustomerID,
 		"email":                 customer.Email,
 		"account_creation_date": customer.AccountCreationDate,
@@ -83,7 +85,7 @@ func (ob *Env) viewAccount(context *gin.Context, publicKey string) (combined map
 		"number_of_data_feeds":  customer.NumberOfDataFeeds,
 		"active":                customer.Active,
 		"public_keys":           customer.PublicKeys,
-		"pending_public_keys":   pendingPk,
+		// "pending_public_keys":   pendingPk,
 	}
 	return
 }

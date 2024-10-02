@@ -1,0 +1,16 @@
+{
+    "Tokens": [
+        {
+            "Address": "0x6cDcb1C4A4D1C3C6d054b27AC5B77e89eAFb971d",
+            "ForeignName": "USDC-AERO"
+        },
+        {
+            "Address": "0x7818B53F423457151407103321d8F961773815D1",
+            "ForeignName": "USDz-sUSDz"
+        },
+        {
+            "Address": "0x6d0b9C9E92a3De30081563c3657B5258b3fFa38B",
+            "ForeignName": "USDz-USDC"
+        }
+    ]
+}

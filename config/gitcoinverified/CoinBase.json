@@ -55,6 +55,12 @@
             "Address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"
         },
         {
+            "Symbol": "COMP",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xc00e94Cb662C3520282E6f5717214004A7f26888"
+        },
+        {
             "Symbol": "DOT",
             "Exchange": "CoinBase",
             "Blockchain": "Polkadot",
@@ -131,6 +137,12 @@
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
             "Address": "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC"
+        },
+        {
+            "Symbol": "UNI",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
         },
         {
             "Symbol": "QUICK",

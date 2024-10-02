@@ -802,6 +802,7 @@ type OracleConfig struct {
 	CustomerID         string
 	Billable           bool
 	Name               string
+	Ecosystem          bool
 }
 
 func (e *OracleConfig) MarshalBinary() ([]byte, error) {

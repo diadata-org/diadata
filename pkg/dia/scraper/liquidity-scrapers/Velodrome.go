@@ -31,14 +31,18 @@ type VelodromePoolScraper struct {
 
 var (
 	velodromeWaitMilliseconds = "500"
-	velodromeRestDial         = ""
+	restDialOptimism          = ""
 )
 
 func NewVelodromePoolScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *models.DB) (us *VelodromePoolScraper) {
 
 	switch exchange.Name {
 	case dia.VelodromeExchange:
-		us = makeVelodromePoolScraper(exchange, relDB, datastore, velodromeRestDial, velodromeWaitMilliseconds)
+		us = makeVelodromePoolScraper(exchange, relDB, datastore, restDialOptimism, velodromeWaitMilliseconds)
+	case dia.AerodromeV1Exchange:
+		us = makeVelodromePoolScraper(exchange, relDB, datastore, restDialBase, velodromeWaitMilliseconds)
+	case dia.AerodromeSlipstreamExchange:
+		us = makeVelodromePoolScraper(exchange, relDB, datastore, restDialBase, velodromeWaitMilliseconds)
 	}
 
 	go func() {
@@ -111,19 +115,20 @@ func (us *VelodromePoolScraper) GetPoolByID(num int64) (dia.Pool, error) {
 
 	contract, err := velodrome.NewPoolFactoryCaller(common.HexToAddress(us.exchange.Contract), us.RestClient)
 	if err != nil {
-		log.Error(err)
+		log.Error("NewPoolFactoryCaller: ", err)
 		return dia.Pool{}, err
 	}
 
 	pairAddress, err := contract.AllPools(&bind.CallOpts{}, big.NewInt(num))
 	if err != nil {
-		log.Error(err)
+		log.Error("AllPools: ", err)
 		return dia.Pool{}, err
 	}
+	log.Info("pool: ", pairAddress.Hex())
 
 	pool, err := us.GetPoolByAddress(pairAddress)
 	if err != nil {
-		log.Error(err)
+		log.Error("GetPoolByAddress: ", err)
 		return dia.Pool{}, err
 	}
 
@@ -165,7 +170,20 @@ func (us *VelodromePoolScraper) GetPoolByAddress(pairAddress common.Address) (po
 		}
 	}
 
-	// Getting liquidity
+	if us.exchange.Name == dia.AerodromeSlipstreamExchange {
+		us.GetLiquidityUniV3Type(token0, token1, pairAddress, &pool)
+	} else {
+		us.GetLiquidityUniV2Type(token0, token1, pairContract, &pool)
+	}
+
+	pool.Address = pairAddress.Hex()
+	pool.Blockchain = dia.BlockChain{Name: us.blockchain}
+	pool.Exchange = dia.Exchange{Name: us.exchange.Name}
+
+	return pool, nil
+}
+
+func (us *VelodromePoolScraper) GetLiquidityUniV2Type(token0 dia.Asset, token1 dia.Asset, pairContract *velodrome.IPoolCaller, pool *dia.Pool) {
 	liquidity, err := pairContract.GetReserves(&bind.CallOpts{})
 	if err != nil {
 		log.Error("get reserves: ", err)
@@ -191,14 +209,30 @@ func (us *VelodromePoolScraper) GetPoolByAddress(pairAddress common.Address) (po
 
 	// Determine USD liquidity
 	if pool.SufficientNativeBalance(GLOBAL_NATIVE_LIQUIDITY_THRESHOLD) {
-		us.datastore.GetPoolLiquiditiesUSD(&pool, priceCache)
+		us.datastore.GetPoolLiquiditiesUSD(pool, priceCache)
 	}
+}
 
-	pool.Address = pairAddress.Hex()
-	pool.Blockchain = dia.BlockChain{Name: us.blockchain}
-	pool.Exchange = dia.Exchange{Name: us.exchange.Name}
+func (us *VelodromePoolScraper) GetLiquidityUniV3Type(token0 dia.Asset, token1 dia.Asset, pairAddress common.Address, pool *dia.Pool) {
+	balance0Big, err := ethhelper.GetBalanceOf(common.HexToAddress(token0.Address), pairAddress, us.RestClient)
+	if err != nil {
+		log.Error("GetBalanceOf: ", err)
+	}
+	balance1Big, err := ethhelper.GetBalanceOf(common.HexToAddress(token1.Address), pairAddress, us.RestClient)
+	if err != nil {
+		log.Error("GetBalanceOf: ", err)
+	}
+	log.Infof("balance0 -- balance1 -- pool: %v -- %v -- %s ", balance0Big, balance1Big, pairAddress)
+	balance0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance0Big), new(big.Float).SetFloat64(math.Pow10(int(token0.Decimals)))).Float64()
+	balance1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance1Big), new(big.Float).SetFloat64(math.Pow10(int(token1.Decimals)))).Float64()
 
-	return pool, nil
+	pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: token0, Volume: balance0, Index: uint8(0)})
+	pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: token1, Volume: balance1, Index: uint8(1)})
+
+	// Determine USD liquidity
+	if balance0 > GLOBAL_NATIVE_LIQUIDITY_THRESHOLD && balance1 > GLOBAL_NATIVE_LIQUIDITY_THRESHOLD {
+		us.datastore.GetPoolLiquiditiesUSD(pool, priceCache)
+	}
 }
 
 // GetDecimals returns the decimals of the token with address @tokenAddress

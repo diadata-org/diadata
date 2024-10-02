@@ -313,6 +313,12 @@ ALTER TABLE oracleconfig  ADD COLUMN customer_id int ;
 ALTER TABLE oracleconfig  ADD COLUMN billable boolean DEFAULT false ;
 
 
+
+
+ALTER TABLE oracleconfig  ADD COLUMN ecosystem boolean DEFAULT false;
+
+
+
 ALTER TABLE oracleconfig
 ADD CONSTRAINT unique_customer_chainid_address 
 UNIQUE (customer_id, chainid, address);
@@ -401,7 +407,11 @@ CREATE TABLE exchange_pairs (
     active BOOLEAN DEFAULT TRUE
 );
 
+
+
 ALTER TABLE customers ADD COLUMN name VARCHAR(255);
+ALTER TABLE customers ADD COLUMN payer_address text;
+
 
 
 CREATE TABLE wallet_public_keys (

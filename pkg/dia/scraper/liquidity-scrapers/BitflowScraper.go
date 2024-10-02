@@ -96,7 +96,7 @@ func (s *BitflowLiquidityScraper) fetchPools() {
 			}
 
 			total = resp.Total
-			filtered := s.filterPoolTransactions(resp.Results)
+			filtered := s.fetchPoolTransactions(resp.Results)
 			poolTxs = append(poolTxs, filtered...)
 		}
 	}
@@ -203,7 +203,7 @@ func (s *BitflowLiquidityScraper) fetchPoolBalances(stableSwapContract, xToken, 
 	return balances, nil
 }
 
-func (s *BitflowLiquidityScraper) filterPoolTransactions(txs []stackshelper.AddressTransaction) []stackshelper.Transaction {
+func (s *BitflowLiquidityScraper) fetchPoolTransactions(txs []stackshelper.AddressTransaction) []stackshelper.Transaction {
 	poolTxs := make([]stackshelper.Transaction, 0)
 
 	for _, item := range txs {
@@ -211,7 +211,16 @@ func (s *BitflowLiquidityScraper) filterPoolTransactions(txs []stackshelper.Addr
 			item.Tx.ContractCall.FunctionName == "create-pair"
 
 		if isCreatePairCall && item.Tx.TxStatus == "success" {
-			poolTxs = append(poolTxs, item.Tx)
+			// This is a temporary workaround introduced due to a bug in hiro stacks API.
+			// Results returned from /addresses/{address}/transactions route have empty
+			// `name` field in `contract_call.function_args` list.
+			// TODO: remove this as soon as the issue is fixed.
+			normalizedTx, err := s.api.GetTransactionAt(item.Tx.TxID)
+			if err != nil {
+				s.logger.WithError(err).Error("failed to GetTransactionAt")
+				continue
+			}
+			poolTxs = append(poolTxs, normalizedTx)
 		}
 	}
 

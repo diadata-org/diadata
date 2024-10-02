@@ -683,7 +683,10 @@ func buildBridge(t dia.Trade) dia.Asset {
 			}
 		}
 	}
-	if basetoken.Blockchain == dia.BASE && t.Source == dia.UniswapExchangeV3Base {
+	if basetoken.Blockchain == dia.BASE && (t.Source == dia.UniswapExchangeV3Base ||
+		t.Source == dia.UniswapExchangeBase ||
+		t.Source == dia.AerodromeSlipstreamExchange ||
+		t.Source == dia.AerodromeV1Exchange) {
 		if basetoken.Address == "0x4200000000000000000000000000000000000006" {
 			basetoken = dia.Asset{
 				Symbol:     "WETH",

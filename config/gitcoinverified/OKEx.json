@@ -85,6 +85,12 @@
             "Address": "0x442Bc47357919446eAbC18C7211E57a13d983469"
         },
         {
+            "Symbol": "COMP",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0xc00e94Cb662C3520282E6f5717214004A7f26888"
+        },
+        {
             "Symbol": "CVC",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
@@ -425,6 +431,12 @@
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
             "Address": "0x8B40761142B9aa6dc8964e61D0585995425C3D94"
+        },
+        {
+            "Symbol": "UNI",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
         },
         {
             "Symbol": "UST",

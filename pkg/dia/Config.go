@@ -124,6 +124,8 @@ const (
 	BitflowExchange                    = "Bitflow"
 	BitgetExchange                     = "Bitget"
 	VelarExchange                      = "Velar"
+	AerodromeSlipstreamExchange        = "AerodromeSlipstream"
+	AerodromeV1Exchange                = "AerodromeV1"
 	// FinageForex        = "FinageForex"
 )
 
