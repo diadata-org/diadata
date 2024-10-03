@@ -19,9 +19,9 @@ import (
 
 const (
 	AssetAddressURI = "AssetRegistry:Assets"
-	Blockchain      = "bifrost"
-	GetAssetsPath   = "assets"
+	Blockchain      = "Bifrost"
 	ExchangeName    = "Bifrost"	
+	GetAssetsPath   = "assets"
 )
 
 type BifrostClient struct {
@@ -156,7 +156,7 @@ func (c *BifrostClient) parseAsset(bifrostAsset BifrostAssetMetadata) *dia.Asset
 		Symbol:     bifrostAsset.Symbol,
 		Decimals:   uint8(decimals),
 		Blockchain: Blockchain,
-		Address:    "Bifrost:Asset:" + strings.ToLower(bifrostAsset.AssetKey),
+		Address:    strings.ToLower(bifrostAsset.AssetKey),
 	}
 }
 

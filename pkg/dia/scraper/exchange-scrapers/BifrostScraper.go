@@ -209,19 +209,11 @@ func (s *BifrostScraper) filterPoolEvents(poolAddress string, events []StableSwa
 	var matchedEvents []StableSwapEvent
 
 	for _, event := range events {
-		tokenAName := strings.ToLower(event.InputAsset)
-		tokenBName := strings.ToLower(event.OutputAsset)
-		eventAddressA := fmt.Sprintf("%s:%s:%s:%s", s.blockchain, s.exchangeName, tokenAName, tokenBName)
-		eventAddressB := fmt.Sprintf("%s:%s:%s:%s", s.blockchain, s.exchangeName, tokenBName, tokenAName)
-
-		if eventAddressA == poolAddress || eventAddressB == poolAddress {
-			s.logger.WithFields(logrus.Fields{
-				"poolAddress":   poolAddress,
-				"eventAddressA": eventAddressA,
-				"eventAddressB": eventAddressB,
-			}).Info("Event matches pool")
-			matchedEvents = append(matchedEvents, event)
+		if event.PoolID != poolAddress {
+			continue
 		}
+
+		matchedEvents = append(matchedEvents, event)
 	}
 
 	return matchedEvents
@@ -307,29 +299,41 @@ func (s *BifrostScraper) fetchWithRetry(endpoint string, contentType string, ret
 //   - *dia.Trade: A pointer to the constructed `dia.Trade` object containing the trade details.
 func (s *BifrostScraper) handleTrade(pool dia.Pool, event StableSwapEvent, time time.Time) *dia.Trade {
 	var volume, price float64
+	var baseToken, quoteToken dia.Asset
+	var decimalsIn, decimalsOut int64
 
-	decimals0 := int64(pool.Assetvolumes[0].Asset.Decimals)
-	decimals1 := int64(pool.Assetvolumes[1].Asset.Decimals)
+	if event.InputAsset == pool.Assetvolumes[0].Asset.Symbol {
+		baseToken = pool.Assetvolumes[0].Asset
+		quoteToken = pool.Assetvolumes[1].Asset
+		decimalsIn = int64(baseToken.Decimals)
+		decimalsOut = int64(quoteToken.Decimals)
+	} else {
+		baseToken = pool.Assetvolumes[1].Asset
+		quoteToken = pool.Assetvolumes[0].Asset
+		decimalsIn = int64(baseToken.Decimals)
+		decimalsOut = int64(quoteToken.Decimals)
+	}
 
-	amount0, _ := utils.StringToFloat64(event.InputAmount, decimals0)
-	amount1, _ := utils.StringToFloat64(event.OutputAmount, decimals1)
+	amountIn, _ := utils.StringToFloat64(event.InputAmount, decimalsIn)
+	amountOut, _ := utils.StringToFloat64(event.OutputAmount, decimalsOut)
 
-	volume = -amount0
-	price = amount0 / amount1
+	volume = amountIn
 
-	symbolPair := fmt.Sprintf("%s-%s", pool.Assetvolumes[0].Asset.Symbol, pool.Assetvolumes[1].Asset.Symbol)
+	price = amountOut / amountIn
+
+	symbolPair := fmt.Sprintf("%s-%s", baseToken.Symbol, quoteToken.Symbol)
 
 	return &dia.Trade{
 		Time:           time,
-		Symbol:         pool.Assetvolumes[0].Asset.Symbol,
+		Symbol:         baseToken.Symbol,
 		Pair:           symbolPair,
 		ForeignTradeID: event.TxID,
 		Source:         s.exchangeName,
 		Price:          price,
 		Volume:         volume,
 		VerifiedPair:   true,
-		QuoteToken:     pool.Assetvolumes[0].Asset,
-		BaseToken:      pool.Assetvolumes[1].Asset,
+		QuoteToken:     quoteToken,
+		BaseToken:      baseToken,
 		PoolAddress:    pool.Address,
 	}
 }

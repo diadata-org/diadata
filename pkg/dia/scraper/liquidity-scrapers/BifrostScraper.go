@@ -16,6 +16,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const (
+	Blockchain = "Bifrost"
+)
+
 type BifrostLiquidityScraper struct {
 	logger                    *logrus.Entry
 	api                       *bifrosthelper.BifrostClient
@@ -72,7 +76,7 @@ func NewBifrostLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, data
 		poolChannel:               poolChannel,
 		doneChannel:               doneChannel,
 		exchangeName:              exchange.Name,
-		blockchain:                "bifrost",
+		blockchain:                Blockchain,
 		relDB:                     relDB,
 		datastore:                 datastore,
 		targetSwapContract:        targetSwapContract,
@@ -140,10 +144,11 @@ func (s *BifrostLiquidityScraper) fetchPools() {
 	for _, bPool := range bifrostPoolAssets {
 		dbAssets := make([]dia.Asset, 0)
 		for _, assetId := range bPool.Assets {
-			assetKey := "Bifrost:Asset:" + strings.ToLower(assetId)
+			assetKey := strings.ToLower(assetId)
 			dbTokenInfo, err := s.relDB.GetAsset(assetKey, s.blockchain)
 			if err != nil {
-				logger.WithError(err).Error("Failed to GetAsset with key: ", assetKey)
+				logger.WithError(err).Error("Failed to GetAsset with address:%s, blockchain:%s", assetKey, s.blockchain)
+				continue
 			}
 
 			dbAssets = append(dbAssets, dbTokenInfo)
@@ -176,9 +181,6 @@ func (s *BifrostLiquidityScraper) fetchPools() {
 			"BalanceB": tokenBBalance,
 		}).Info("Found balances")
 
-		tokenAName := strings.ToLower(strings.Split(dbAssets[0].Address, "Bifrost:Asset:")[1])
-		tokenBName := strings.ToLower(strings.Split(dbAssets[1].Address, "Bifrost:Asset:")[1])
-
 		tokenA := dia.AssetVolume{
 			Index:  0,
 			Asset:  dbAssets[0],
@@ -194,7 +196,7 @@ func (s *BifrostLiquidityScraper) fetchPools() {
 		pool := dia.Pool{
 			Exchange:     dia.Exchange{Name: s.exchangeName},
 			Blockchain:   dia.BlockChain{Name: s.blockchain},
-			Address:      "Polkadot:Bifrost:" + tokenAName + ":" + tokenBName,
+			Address:      bPool.PoolId,
 			Time:         time.Now(),
 			Assetvolumes: []dia.AssetVolume{tokenA, tokenB},
 		}

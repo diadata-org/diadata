@@ -12,6 +12,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const (
+	Blockchain = "Bifrost"
+)
+
 // BifrostAssetSource asset collector object - which serves assetCollector command
 type BifrostAssetSource struct {
 	// client - interaction with bifrost REST API services
@@ -71,7 +75,7 @@ func NewBifrostAssetSource(exchange dia.Exchange, relDB *models.RelDB) *BifrostA
 		bifrostClient:      bifrostClient,
 		assetChannel:       assetChannel,
 		doneChannel:        doneChannel,
-		blockchain:         "bifrost",
+		blockchain:         Blockchain,
 		relDB:              relDB,
 		logger:             logger,
 		swapContractsLimit: swapContractsLimit,
