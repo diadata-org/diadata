@@ -607,6 +607,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "SOV",
+      "ForeignName": "SOVUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "SPA",
       "ForeignName": "SPAUSDT",
       "Exchange": "MEXC",
