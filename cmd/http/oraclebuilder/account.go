@@ -44,14 +44,14 @@ func (ob *Env) viewAccount(context *gin.Context, publicKey string) (combined map
 
 	customer, err := ob.RelDB.GetCustomerByPublicKey(publicKey)
 	if err != nil {
-		log.Errorf("Request ID: %s,  ViewAccount err %v ", requestId, err)
+		log.Errorf("Request ID: %s,  ViewAccount err GetCustomerByPublicKey %v ", requestId, err)
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	totalFeeds, totalOracles, err := ob.billableResource(strconv.Itoa(customer.CustomerID))
 	if err != nil {
-		log.Errorf("Request ID: %s,  ViewAccount err %v ", requestId, err)
+		log.Errorf("Request ID: %s,  ViewAccount err billableResource %v ", requestId, err)
 		context.JSON(http.StatusInternalServerError, gin.H{"error": "error while  getting totalFeedusedByCustomer"})
 		return
 	}
@@ -238,6 +238,9 @@ func (ob *Env) CreateAccount(context *gin.Context) {
 
 		context.JSON(http.StatusOK, gin.H{"message": "Customer created successfully"})
 		return
+	} else if err != nil {
+		log.Infof("Request ID: %s,  CreateCustomer with wallet key   %s err %v ", requestId, signer, err)
+
 	}
 
 	if customer != nil {

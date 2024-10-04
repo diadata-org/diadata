@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"encoding/json"
+	"strconv"
 )
 
 // {
@@ -93,6 +94,29 @@ func (reldb *RelDB) GetLastPaymentByEndUser(endUser string) (LoopPaymentTransfer
 	return record, nil
 }
 
+func (reldb *RelDB) GetLastPaymentByAgreementID(agreementID string) (*LoopPaymentTransferProcessed, error) {
+	query := `
+    SELECT event, transaction, network_id, network_name, contract_address, email, company, parent, transfer_id, success, 
+           payment_token_address, payment_token_symbol, end_user, reason, invoice_id, amount_paid, agreement_id, ref_id, batch_id, usd_amount
+    FROM loop_payment_transfer_processed
+    WHERE agreement_id = $1
+    ORDER BY transaction DESC
+    LIMIT 1`
+
+	var record LoopPaymentTransferProcessed
+	err := reldb.postgresClient.QueryRow(context.Background(), query, agreementID).Scan(
+		&record.Event, &record.Transaction, &record.NetworkID, &record.NetworkName, &record.ContractAddress,
+		&record.Email, &record.Company, &record.Parent, &record.TransferID, &record.Success,
+		&record.PaymentTokenAddress, &record.PaymentTokenSymbol, &record.EndUser, &record.Reason,
+		&record.InvoiceID, &record.AmountPaid, &record.AgreementID, &record.RefID, &record.BatchID, &record.UsdAmount)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &record, nil
+}
+
 type LoopPaymentTransferCreated struct {
 	Event           string `json:"event"`
 	Transaction     string `json:"transaction"`
@@ -172,7 +196,9 @@ type LoopPaymentAgreementSignedUp struct {
 	PaymentTokenAddress string `json:"paymentTokenAddress"`
 	EventDate           int    `json:"eventDate"`
 	RefID               string `json:"refId"`
-	Metadata            struct {
+	CustomerID          string `json:"customerId"`
+
+	Metadata struct {
 	} `json:"metadata"`
 }
 
@@ -202,6 +228,7 @@ type LoopPaymentResponse struct {
 	EventDate           int    `json:"eventDate"`
 	RefID               string `json:"refId"`
 	InvoiceID           string `json:"invoiceId"`
+	CustomerID          string `json:"customerId"`
 
 	Metadata struct {
 	} `json:"metadata"`
@@ -213,10 +240,10 @@ func (reldb *RelDB) InsertLoopPaymentResponse(ctx context.Context, response Loop
             event, transaction, network_id, network_name, contract_address, email, company,
             parent, subscriber, item, item_id, agreement_id, agreement_amount, frequency_number,
             frequency_unit, add_on_agreements, add_on_items, add_on_item_ids, add_on_total_amount,
-            payment_token_symbol, payment_token_address, event_date, ref_id, invoice_id, metadata
+            payment_token_symbol, payment_token_address, event_date, ref_id, invoice_id, metadata, customer_id
         ) VALUES (
             $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, 
-            $20, $21, $22, $23, $24, $25
+            $20, $21, $22, $23, $24, $25, $26
         )
     `
 	_, err := reldb.postgresClient.Exec(ctx, query,
@@ -226,7 +253,7 @@ func (reldb *RelDB) InsertLoopPaymentResponse(ctx context.Context, response Loop
 		response.AgreementAmount, response.FrequencyNumber, response.FrequencyUnit,
 		response.AddOnAgreements, response.AddOnItems, response.AddOnItemIds,
 		response.AddOnTotalAmount, response.PaymentTokenSymbol, response.PaymentTokenAddress,
-		response.EventDate, response.RefID, response.InvoiceID, response.Metadata,
+		response.EventDate, response.RefID, response.InvoiceID, response.Metadata, response.CustomerID,
 	)
 	return err
 }
@@ -236,15 +263,18 @@ func (reldb *RelDB) GetLoopPaymentResponseByAgreementID(ctx context.Context, agr
         SELECT event, transaction, network_id, network_name, contract_address, email, company,
                parent, subscriber, item, item_id, agreement_id, agreement_amount, frequency_number,
                frequency_unit, add_on_agreements, add_on_items, add_on_item_ids, add_on_total_amount,
-               payment_token_symbol, payment_token_address, event_date, ref_id, invoice_id, metadata
+               payment_token_symbol, payment_token_address, event_date, ref_id, invoice_id, metadata, customer_id
         FROM loop_payment_responses
         WHERE agreement_id = $1
     `
 
 	row := reldb.postgresClient.QueryRow(ctx, query, agreementID)
 
-	var response LoopPaymentResponse
-	var metadataJSON []byte
+	var (
+		response     LoopPaymentResponse
+		metadataJSON []byte
+		custID       int
+	)
 
 	err := row.Scan(
 		&response.Event, &response.Transaction, &response.NetworkID, &response.NetworkName,
@@ -253,11 +283,53 @@ func (reldb *RelDB) GetLoopPaymentResponseByAgreementID(ctx context.Context, agr
 		&response.AgreementAmount, &response.FrequencyNumber, &response.FrequencyUnit,
 		&response.AddOnAgreements, &response.AddOnItems, &response.AddOnItemIds,
 		&response.AddOnTotalAmount, &response.PaymentTokenSymbol, &response.PaymentTokenAddress,
-		&response.EventDate, &response.RefID, &response.InvoiceID, &metadataJSON,
+		&response.EventDate, &response.RefID, &response.InvoiceID, &metadataJSON, &custID,
 	)
 	if err != nil {
 		return nil, err
 	}
+
+	response.CustomerID = strconv.Itoa(custID)
+
+	if err := json.Unmarshal(metadataJSON, &response.Metadata); err != nil {
+		return nil, err
+	}
+
+	return &response, nil
+}
+
+func (reldb *RelDB) GetLoopPaymentResponseByCustomerID(ctx context.Context, customerID string) (*LoopPaymentResponse, error) {
+	query := `
+        SELECT event, transaction, network_id, network_name, contract_address, email, company,
+               parent, subscriber, item, item_id, agreement_id, agreement_amount, frequency_number,
+               frequency_unit, add_on_agreements, add_on_items, add_on_item_ids, add_on_total_amount,
+               payment_token_symbol, payment_token_address, event_date, ref_id, invoice_id, metadata, customer_id
+        FROM loop_payment_responses
+        WHERE customer_id = $1 ORDER BY event_date DESC LIMIT 1
+    `
+
+	row := reldb.postgresClient.QueryRow(ctx, query, customerID)
+
+	var (
+		response     LoopPaymentResponse
+		metadataJSON []byte
+		custID       int
+	)
+
+	err := row.Scan(
+		&response.Event, &response.Transaction, &response.NetworkID, &response.NetworkName,
+		&response.ContractAddress, &response.Email, &response.Company, &response.Parent,
+		&response.Subscriber, &response.Item, &response.ItemID, &response.AgreementID,
+		&response.AgreementAmount, &response.FrequencyNumber, &response.FrequencyUnit,
+		&response.AddOnAgreements, &response.AddOnItems, &response.AddOnItemIds,
+		&response.AddOnTotalAmount, &response.PaymentTokenSymbol, &response.PaymentTokenAddress,
+		&response.EventDate, &response.RefID, &response.InvoiceID, &metadataJSON, &custID,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	response.CustomerID = strconv.Itoa(custID)
 
 	if err := json.Unmarshal(metadataJSON, &response.Metadata); err != nil {
 		return nil, err

@@ -403,8 +403,10 @@ func (ob *Env) ListAndViewAccount(context *gin.Context) {
 	requestId := context.GetString(REQUEST_ID)
 
 	var (
-		oracles []dia.OracleConfig
-		account map[string]interface{}
+		oracles    []dia.OracleConfig
+		account    map[string]interface{}
+		loopEvent  *models.LoopPaymentResponse
+		paidStatus *models.LoopPaymentTransferProcessed
 	)
 
 	// get customer id, get oracles by customer
@@ -438,9 +440,27 @@ func (ob *Env) ListAndViewAccount(context *gin.Context) {
 
 		account = ob.viewAccount(context, creator)
 
+		loopEvent, err = ob.RelDB.GetLoopPaymentResponseByCustomerID(context, strconv.Itoa(customerId))
+		if err != nil {
+			log.Errorf("Error getting loop status %v", err)
+		} else {
+
+			paidStatus, err = ob.RelDB.GetLastPaymentByAgreementID(loopEvent.AgreementID)
+			if err != nil {
+				log.Errorf("Error getting loop status by agreementid %v", err)
+			}
+
+		}
+
+	}
+
+	payment := map[string]interface{}{
+		"AgreementSignedUp": loopEvent,
+		"TransferProcessed": paidStatus,
 	}
 
 	r := map[string]interface{}{
+		"payment": payment,
 		"owner":   creator,
 		"account": account,
 		"oracles": oracles,
@@ -549,6 +569,11 @@ type SymbolFeed struct {
 	Methodology        string          `json:"Methodology"`
 	Symbol             string          `json:"Symbol"`
 	FeedSelection      []FeedSelection `json:"FeedSelection"`
+}
+
+type Adaptor struct {
+	LiquidityThreshold string `json:"Address"`
+	Symbol             string `json:"Symbol"`
 }
 
 func generateFeedSelectionQuery(feedSelections []FeedSelection) string {
@@ -1364,15 +1389,17 @@ func (ob *Env) LoopWebHook(context *gin.Context) {
 	}
 
 	l := verifyWebhook(body, ob.LoopPaymentSecret, signature)
-
+	// l = true
 	if l {
-		log.Errorf("Request ID: %s,LoopWebHook verified ,", requestId)
+		log.Infoln("Request ID: %s,LoopWebHook verified ,", requestId)
 	} else {
 		log.Errorf("Request ID: %s,LoopWebHook not verified ,", requestId)
 
 		return
 
 	}
+
+	log.Errorf("Request ID: %s,LoopWebHook %v ,", requestId, ldr)
 
 	switch ldr.Event {
 	case "AgreementSignedUp":
@@ -1382,6 +1409,7 @@ func (ob *Env) LoopWebHook(context *gin.Context) {
 			// 2) update plan
 			// 3) update email
 			//
+			log.Infoln("Request ID: %s,LoopWebHook AgreementSignedUp start ,", requestId)
 
 			customer, err := ob.RelDB.GetCustomerByPublicKey(common.HexToAddress(ldr.Subscriber).String())
 			if err != nil {
@@ -1415,6 +1443,8 @@ func (ob *Env) LoopWebHook(context *gin.Context) {
 			log.Infof("Request ID: %s,AgreementSignedUp GetCustomerByPublicKey %v ,", requestId, customer)
 			log.Infof("Request ID: %s,ldr  %v ,", requestId, ldr)
 
+			ldr.CustomerID = strconv.Itoa(customer.CustomerID)
+
 			ldr.Subscriber = common.HexToAddress(ldr.Subscriber).String()
 
 			err = ob.RelDB.InsertLoopPaymentResponse(context, ldr)
@@ -1446,6 +1476,8 @@ func (ob *Env) LoopWebHook(context *gin.Context) {
 	case "TransferProcessed":
 		{
 
+			log.Infof("Request ID: %s,TransferProcessed started ldr %v ,", requestId, ldr)
+
 			var lptp models.LoopPaymentTransferProcessed
 
 			err = json.Unmarshal(body, &lptp)
@@ -1474,7 +1506,8 @@ func (ob *Env) LoopWebHook(context *gin.Context) {
 
 			lpr, err := ob.RelDB.GetLoopPaymentResponseByAgreementID(context, ldr.AgreementID)
 			if err != nil {
-				log.Errorf("Request ID: %s, GetLoopPaymentResponseByAgreementID %v ,", requestId, err)
+				log.Errorf("Request ID: %s,TransferProcessed GetLoopPaymentResponseByAgreementID %v ,", requestId, err)
+				return
 			}
 			log.Infof("Request ID: %s,lpr  %v ", requestId, lpr)
 			log.Infof("Request ID: %s,lpr ItemID  %v ", requestId, lpr.Item)
