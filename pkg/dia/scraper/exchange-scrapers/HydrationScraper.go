@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strings"
 	"sync"
 	"time"
 
@@ -15,6 +14,7 @@ import (
 	hydrationhelper "github.com/diadata-org/diadata/pkg/dia/helpers/hydration-helper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
+	"github.com/gorilla/websocket"
 	"github.com/sirupsen/logrus"
 )
 
@@ -26,12 +26,12 @@ type HydrationScraper struct {
 	errorLock    sync.RWMutex
 	error        error
 	closed       bool
-	ticker       *time.Ticker
 	chanTrades   chan *dia.Trade
 	db           *models.RelDB
-	api          string
+	wsApi        string
 	exchangeName string
 	blockchain   string
+	wsClient     *websocket.Conn
 }
 
 // NewHydrationScraper initializes and returns a new HydrationScraper instance.
@@ -55,19 +55,12 @@ type HydrationScraper struct {
 //     and a logging mechanism.
 //   - If the 'scrape' flag is true, the scraper starts its main scraping loop in a separate goroutine.
 func NewHydrationScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *HydrationScraper {
-	refreshDelay := utils.GetTimeDurationFromIntAsMilliseconds(
-		utils.GetenvInt(strings.ToUpper(exchange.Name)+"_REFRESH_DELAY", 10000),
-	)
-
-	apiURL := utils.Getenv(strings.ToUpper(exchange.Name)+"_API_URL", "http://localhost:3000/hydration/v1")
-
 	s := &HydrationScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
-		ticker:       time.NewTicker(refreshDelay),
 		chanTrades:   make(chan *dia.Trade),
 		db:           relDB,
-		api:          apiURL,
+		wsApi:        exchange.WsAPI,
 		exchangeName: "Hydration",
 		blockchain:   "Hydration",
 	}
@@ -85,105 +78,123 @@ func NewHydrationScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 	return s
 }
 
-// mainLoop is the core loop of the HydrationScraper that periodically fetches
-// trade data and handles graceful shutdown.
-//
-// This method runs an infinite loop where it performs two key actions:
-//   - Periodically triggers the Update function when the ticker ticks (based on
-//     the refresh interval).
-//   - Listens for a shutdown signal on the shutdown channel, at which point it
-//     cleans up resources and exits the loop.
-//
-// Behavior:
-//   - On each tick of the ticker (`s.ticker.C`), the Update method is called
-//     to fetch and process new trade data from the exchange.
-//   - If an error occurs during the Update call, it is logged using `s.logger`.
-//   - When a message is received on the `s.shutdown` channel, the method logs
-//     the shutdown event, calls the cleanup function, and exits.
-//
-// This method is designed to run as a goroutine and will keep looping until
-// explicitly stopped by sending a signal to the `shutdown` channel.
+func (s *HydrationScraper) connectWebSocket() error {
+	var err error
+	s.wsClient, _, err = websocket.DefaultDialer.Dial(s.wsApi, nil)
+	if err != nil {
+		return fmt.Errorf("failed to connect to websocket: %w", err)
+	}
+	s.logger.Info("Connected to Hydration WebSocket")
+	return nil
+}
+
 func (s *HydrationScraper) mainLoop() {
-	s.logger.Info("Starting main loop %v", s.ticker)
+	if err := s.connectWebSocket(); err != nil {
+		s.logger.Error(err)
+		return
+	}
+	defer s.wsClient.Close()
+
 	for {
 		select {
-		case <-s.ticker.C:
-			err := s.Update()
-			if err != nil {
-				s.logger.Error(err)
-			}
 		case <-s.shutdown:
 			s.logger.Println("shutting down")
 			s.cleanup(nil)
 			return
+		default:
+			s.listenForTrades()
 		}
 	}
 }
 
-// Update fetches and processes the latest stable swap events from the Hydration API.
-//
-// This method retrieves swap events from the Hydration API, decodes them into
-// `StableSwapEvent` objects, and then processes the events by matching them to
-// pools retrieved from the database. For each matching pool, it generates a
-// `dia.Trade` object and sends it to the `chanTrades` channel for further handling.
-//
-// The function also includes retry logic when fetching data from the API and logs
-// any errors that occur during the process.
-//
-// Error Handling:
-//   - Returns an error if fetching swap events or decoding the API response fails.
-//   - Logs and skips any pools that do not have the required asset volumes.
-//   - Logs a warning if no events match a specific pool.
-//
-// Returns:
-//   - An error if the API request or pool retrieval fails, otherwise `nil`.
-func (s *HydrationScraper) Update() error {
-	s.logger.Info("Fetching swap events...")
-	// To test the scraper with a specific block
-	endpoint := fmt.Sprintf("%s/events/swap/0x4b4d1d9db6336fd124b7df7d54962137e70f60693633692b6e0b54d71650e4af", s.api)
-	// endpoint := fmt.Sprintf("%s/events/swap", s.api)
-
-	resp, err := s.fetchWithRetry(endpoint, "application/json", 3)
+func (s *HydrationScraper) listenForTrades() {
+	_, message, err := s.wsClient.ReadMessage()
 	if err != nil {
-		return fmt.Errorf("failed to fetch swap events after retries: %w", err)
-	}
-	defer resp.Body.Close()
-
-	var events []hydrationhelper.HydrationSwapEvent
-	if err := json.NewDecoder(resp.Body).Decode(&events); err != nil {
-		return fmt.Errorf("failed to decode swap events: %w", err)
+		s.logger.Error("Error reading message from websocket: ", err)
+		return
 	}
 
-	for _, event := range events {
-		pools, err := s.db.GetPoolsByAssetPair(event.AssetIn, event.AssetOut, s.exchangeName)
-		if err != nil {
-			s.logger.WithError(err).WithFields(logrus.Fields{
-				"assetIn":  event.AssetIn,
-				"assetOut": event.AssetOut,
-			}).Error("Failed to get pools for asset pair")
+	var event hydrationhelper.HydrationSwapEvent
+	if err := json.Unmarshal(message, &event); err != nil {
+		s.logger.Error("Error unmarshalling websocket message: ", err)
+		return
+	}
+
+	// Check if the event is a Hydration-specific event
+	if event.Type != "SellExecuted" || event.PoolID != 101 { // Example checks
+		return
+	}
+
+	pools, err := s.db.GetPoolsByAssetPair(event.AssetIn, event.AssetOut, s.exchangeName)
+	if err != nil {
+		s.logger.WithError(err).WithFields(logrus.Fields{
+			"assetIn":  event.AssetIn,
+			"assetOut": event.AssetOut,
+		}).Error("Failed to get pools for asset pair")
+		return
+	}
+
+	for _, pool := range pools {
+		if len(pool.Assetvolumes) < 2 {
+			s.logger.WithField("poolAddress", pool.Address).Error("Pool has fewer than 2 asset volumes")
 			continue
 		}
 
-		if len(pools) == 0 {
-			s.logger.WithFields(logrus.Fields{
-				"assetIn":  event.AssetIn,
-				"assetOut": event.AssetOut,
-			}).Debug("No matching pool found for event, skipping")
-			continue
-		}
-
-		for _, pool := range pools {
-			if len(pool.Assetvolumes) < 2 {
-				s.logger.WithField("poolAddress", pool.Address).Error("Pool has fewer than 2 asset volumes")
-				continue
-			}
-
-			diaTrade := s.handleTrade(pool, event, time.Now())
-			s.chanTrades <- diaTrade
-		}
+		diaTrade := s.handleTrade(pool, event, time.Now())
+		s.chanTrades <- diaTrade
 	}
+}
 
+func (s *HydrationScraper) cleanup(err error) {
+	s.errorLock.Lock()
+	defer s.errorLock.Unlock()
+
+	if err != nil {
+		s.error = err
+	}
+	s.closed = true
+	close(s.shutdownDone)
+}
+
+func (s *HydrationScraper) Close() error {
+	if s.closed {
+		return errors.New("HydrationScraper: Already closed")
+	}
+	close(s.shutdown)
+	<-s.shutdownDone
+	s.errorLock.RLock()
+	defer s.errorLock.RUnlock()
+	return s.error
+}
+
+// Channel returns the channel used to receive trades/pricing information.
+func (s *HydrationScraper) Channel() chan *dia.Trade {
+	return s.chanTrades
+}
+
+type HydrationPairScraper struct {
+	parent     *HydrationScraper
+	pair       dia.ExchangePair
+	closed     bool
+	lastRecord int64
+}
+
+func (ps *HydrationPairScraper) Pair() dia.ExchangePair {
+	return ps.pair
+}
+
+func (ps *HydrationPairScraper) Close() error {
+	ps.closed = true
 	return nil
+}
+
+// Error returns an error when the channel Channel() is closed
+// and nil otherwise
+func (ps *HydrationPairScraper) Error() error {
+	s := ps.parent
+	s.errorLock.RLock()
+	defer s.errorLock.RUnlock()
+	return s.error
 }
 
 // fetchWithRetry performs an HTTP GET request to the specified endpoint with retries.
@@ -347,60 +358,4 @@ func (s *HydrationScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error
 	s.pairScrapers[pair.Symbol] = ps
 
 	return ps, nil
-}
-
-// cleanup handles the shutdown procedure.
-func (s *HydrationScraper) cleanup(err error) {
-	s.errorLock.Lock()
-	defer s.errorLock.Unlock()
-
-	s.ticker.Stop()
-
-	if err != nil {
-		s.error = err
-	}
-	s.closed = true
-	close(s.shutdownDone)
-}
-
-// Close gracefully shuts down the HydrationScraper.
-func (s *HydrationScraper) Close() error {
-	if s.closed {
-		return errors.New("HydrationScraper: Already closed")
-	}
-	close(s.shutdown)
-	<-s.shutdownDone
-	s.errorLock.RLock()
-	defer s.errorLock.RUnlock()
-	return s.error
-}
-
-// Channel returns the channel used to receive trades/pricing information.
-func (s *HydrationScraper) Channel() chan *dia.Trade {
-	return s.chanTrades
-}
-
-type HydrationPairScraper struct {
-	parent     *HydrationScraper
-	pair       dia.ExchangePair
-	closed     bool
-	lastRecord int64
-}
-
-func (ps *HydrationPairScraper) Pair() dia.ExchangePair {
-	return ps.pair
-}
-
-func (ps *HydrationPairScraper) Close() error {
-	ps.closed = true
-	return nil
-}
-
-// Error returns an error when the channel Channel() is closed
-// and nil otherwise
-func (ps *HydrationPairScraper) Error() error {
-	s := ps.parent
-	s.errorLock.RLock()
-	defer s.errorLock.RUnlock()
-	return s.error
 }
