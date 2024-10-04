@@ -48,7 +48,6 @@ type HydrationAssetSource struct {
 //		HYDRATION_TARGET_SWAP_CONTRACT - (optional, string), useful for debug, default = ""
 //		HYDRATION_DEBUG - (optional, bool), make stdout output with hydration client http call, default = false
 func NewHydrationAssetSource(exchange dia.Exchange, relDB *models.RelDB) *HydrationAssetSource {
-	println("assetService::source::hydration exchange: ", exchange.Name)
 	sleepBetweenContractCalls := utils.GetTimeDurationFromIntAsMilliseconds(
 		utils.GetenvInt(strings.ToUpper(exchange.Name)+"_SLEEP_TIMEOUT", hydrationhelper.DefaultSleepBetweenContractCalls),
 	)

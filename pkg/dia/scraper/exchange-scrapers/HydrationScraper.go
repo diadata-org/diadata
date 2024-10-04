@@ -154,78 +154,36 @@ func (s *HydrationScraper) Update() error {
 		return fmt.Errorf("failed to decode swap events: %w", err)
 	}
 
-	pools, err := s.getDBPools()
-	if err != nil {
-		s.logger.WithError(err).Error("Failed to get database pools")
-		return err
-	}
-
-	for _, pool := range pools {
-		if len(pool.Assetvolumes) < 2 {
-			s.logger.WithField("poolAddress", pool.Address).Error("Pool has fewer than 2 asset volumes")
+	for _, event := range events {
+		pools, err := s.db.GetPoolsByAssetPair(event.AssetIn, event.AssetOut, s.exchangeName)
+		if err != nil {
+			s.logger.WithError(err).WithFields(logrus.Fields{
+				"assetIn":  event.AssetIn,
+				"assetOut": event.AssetOut,
+			}).Error("Failed to get pools for asset pair")
 			continue
 		}
 
-		poolEvents := s.filterPoolEvents(pool.Address, events)
-		if len(poolEvents) == 0 {
+		if len(pools) == 0 {
+			s.logger.WithFields(logrus.Fields{
+				"assetIn":  event.AssetIn,
+				"assetOut": event.AssetOut,
+			}).Debug("No matching pool found for event, skipping")
 			continue
 		}
 
-		for _, event := range poolEvents {
+		for _, pool := range pools {
+			if len(pool.Assetvolumes) < 2 {
+				s.logger.WithField("poolAddress", pool.Address).Error("Pool has fewer than 2 asset volumes")
+				continue
+			}
+
 			diaTrade := s.handleTrade(pool, event, time.Now())
 			s.chanTrades <- diaTrade
 		}
 	}
 
 	return nil
-}
-
-// filterPoolEvents filters swap events that match the specified pool address.
-//
-// This method compares each event's input and output assets to the provided
-// pool address and returns a list of events that match. It constructs two
-// possible event addresses (one for each direction of the swap) and checks if
-// either matches the given pool address. If a match is found, the event is
-// added to the result set.
-//
-// Logging is performed for each matching event, including both the pool address
-// and the constructed event addresses.
-//
-// Parameters:
-//   - poolAddress: The address of the pool to filter events for.
-//   - events: A slice of `HydrationSwapEvent` objects representing the swap events to be filtered.
-//
-// Returns:
-//   - A slice of `HydrationSwapEvent` objects that match the provided pool address.
-func (s *HydrationScraper) filterPoolEvents(poolAddress string, events []hydrationhelper.HydrationSwapEvent) []hydrationhelper.HydrationSwapEvent {
-	var matchedEvents []hydrationhelper.HydrationSwapEvent
-
-	// Split the poolAddress into its component asset IDs
-	poolAssets := strings.Split(poolAddress, "_")
-
-	for _, event := range events {
-		// Check if both assetIn and assetOut are in the poolAssets slice
-		if containsAsset(poolAssets, event.AssetIn) && containsAsset(poolAssets, event.AssetOut) {
-			matchedEvents = append(matchedEvents, event)
-			s.logger.WithFields(logrus.Fields{
-				"poolAddress": poolAddress,
-				"assetIn":     event.AssetIn,
-				"assetOut":    event.AssetOut,
-			}).Info("Matched event for pool")
-		}
-	}
-
-	return matchedEvents
-}
-
-// Helper function to check if an asset is in the pool assets slice
-func containsAsset(poolAssets []string, asset string) bool {
-	for _, a := range poolAssets {
-		if a == asset {
-			return true
-		}
-	}
-	return false
 }
 
 // fetchWithRetry performs an HTTP GET request to the specified endpoint with retries.
@@ -353,15 +311,6 @@ func (s *HydrationScraper) handleTrade(pool dia.Pool, event hydrationhelper.Hydr
 // be used by the corr. pairScraper in order to fetch trades.
 func (s *HydrationScraper) FetchAvailablePairs() ([]dia.ExchangePair, error) {
 	return []dia.ExchangePair{}, nil
-}
-
-// getDBPools retrieves all pools from the database associated with the current exchange.
-//
-// Returns:
-//   - []dia.Pool: A slice of `dia.Pool` objects representing the pools retrieved from the database.
-//   - error: An error if the database query fails, otherwise `nil`.
-func (s *HydrationScraper) getDBPools() ([]dia.Pool, error) {
-	return s.db.GetAllPoolsExchange(s.exchangeName, 0)
 }
 
 func (s *HydrationScraper) FillSymbolData(symbol string) (dia.Asset, error) {

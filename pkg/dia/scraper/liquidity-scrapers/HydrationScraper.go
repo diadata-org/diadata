@@ -65,7 +65,7 @@ func NewHydrationLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, da
 	scraper = &HydrationLiquidityScraper{
 		poolChannel:               poolChannel,
 		doneChannel:               doneChannel,
-		exchangeName:              "Hydration",
+		exchangeName:              exchange.Name,
 		blockchain:                "Hydration",
 		relDB:                     relDB,
 		datastore:                 datastore,
@@ -92,7 +92,6 @@ func NewHydrationLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, da
 // It retries the request up to 3 times in case of failure. Once the response is successfully
 // fetched, it decodes the JSON response into a slice of `HydrationPoolMetadata` objects and
 // processes them into `dia.Pool` objects using the `parseAssets` method.
-//
 //
 // Returns:
 //   - []*dia.Pool: A slice of pointers to `dia.Pool` objects representing the parsed liquidity pools.
@@ -163,7 +162,7 @@ func (s *HydrationLiquidityScraper) parseAssets(poolMetadata []hydrationhelper.H
 			continue
 		}
 
-		pair.Address = strings.Join(tokenNames, "_")
+		pair.Address = metadataPair.Address
 		pair.Exchange = dia.Exchange{Name: s.exchangeName}
 		pair.Blockchain = dia.BlockChain{Name: s.blockchain}
 
