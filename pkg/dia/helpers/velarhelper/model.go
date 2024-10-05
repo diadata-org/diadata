@@ -1,5 +1,7 @@
 package velarhelper
 
+import "math/big"
+
 type TokenMetadata struct {
 	ContractAddress string `json:"contractAddress"`
 	Name            string `json:"name"`
@@ -18,8 +20,8 @@ type Ticker struct {
 }
 
 type SwapInfo struct {
-	AmountIn    uint64
-	AmountOut   uint64
+	AmountIn    *big.Int
+	AmountOut   *big.Int
 	TokenIn     string
 	TokenOut    string
 	Symbol      string
@@ -32,6 +34,6 @@ type SwapInfo struct {
 }
 
 type Fee struct {
-	Denominator uint64
-	Numerator   uint64
+	Denominator *big.Int
+	Numerator   *big.Int
 }

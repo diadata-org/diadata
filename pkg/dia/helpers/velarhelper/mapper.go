@@ -1,10 +1,9 @@
 package velarhelper
 
 import (
-	"fmt"
+	"math/big"
 	"strings"
 )
-
 
 func ExtractSwapInfo(response string) SwapInfo {
 	swapInfo := SwapInfo{}
@@ -25,20 +24,21 @@ func ExtractSwapInfo(response string) SwapInfo {
 	return swapInfo
 }
 
-func extractUint(response, prefix string) uint64 {
+func extractUint(response, prefix string) *big.Int {
+	result := big.NewInt(0)
+
 	start := strings.Index(response, prefix)
 	if start == -1 {
-		return 0
+		return result
 	}
 	start += len(prefix)
 
 	end := strings.IndexAny(response[start:], " )")
 	if end == -1 {
-		return 0
+		return result
 	}
 
-	var result uint64
-	fmt.Sscanf(response[start:start+end], "%d", &result)
+	result.SetString(response[start:start+end], 10)
 	return result
 }
 

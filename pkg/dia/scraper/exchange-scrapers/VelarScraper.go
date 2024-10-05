@@ -149,7 +149,7 @@ func (s *VelarScraper) Update() error {
 		for _, tx := range swapTxs {
 			swapInfo := velarhelper.ExtractSwapInfo(tx.TxResult.Repr)
 
-			swapPoolAddress := fmt.Sprintf("%s_%s", swapInfo.TokenIn, swapInfo.TokenOut)
+			swapPoolAddress := fmt.Sprintf("%s_%s", swapInfo.Token0, swapInfo.Token1)
 			if pool.Address != swapPoolAddress {
 				continue
 			}
@@ -177,7 +177,7 @@ func (s *VelarScraper) filterSwapTransactions(txs []stackshelper.Transaction) []
 	for _, tx := range txs {
 		isSwapTx := tx.TxType == "contract_call" &&
 			strings.HasPrefix(tx.ContractCall.ContractID, velarhelper.DeployerAddress) &&
-			strings.Contains(tx.ContractCall.FunctionName, "swap")
+			strings.HasPrefix(tx.ContractCall.FunctionName, "swap")
 
 		if isSwapTx && tx.TxStatus == "success" {
 			swapTxs = append(swapTxs, tx)
@@ -189,29 +189,23 @@ func (s *VelarScraper) filterSwapTransactions(txs []stackshelper.Transaction) []
 
 func (s *VelarScraper) handleTrade(pool *dia.Pool, swapInfo velarhelper.SwapInfo, tx stackshelper.Transaction) *dia.Trade {
 	var volume, price float64
-	var baseToken, quoteToken dia.Asset
 
-	token0 := pool.Assetvolumes[0].Asset
-	token1 := pool.Assetvolumes[1].Asset
+	baseToken := pool.Assetvolumes[0].Asset
+	quoteToken := pool.Assetvolumes[1].Asset
 
-	amountIn := fmt.Sprintf("%d", swapInfo.AmountIn)
-	amountOut := fmt.Sprintf("%d", swapInfo.AmountOut)
+	amountIn := swapInfo.AmountIn.String()
+	amountOut := swapInfo.AmountOut.String()
 
-	isToken0ToToken1 := swapInfo.TokenIn == token0.Address && swapInfo.TokenOut == token1.Address
-	if isToken0ToToken1 {
-		amount0In, _ := utils.StringToFloat64(amountIn, int64(token0.Decimals))
-		amount1Out, _ := utils.StringToFloat64(amountOut, int64(token1.Decimals))
+	if swapInfo.TokenIn == baseToken.Address {
+		amount0In, _ := utils.StringToFloat64(amountIn, int64(baseToken.Decimals))
+		amount1Out, _ := utils.StringToFloat64(amountOut, int64(quoteToken.Decimals))
 		volume = amount0In
 		price = amount1Out / amount0In
-		baseToken = token0
-		quoteToken = token1
 	} else {
-		amount1In, _ := utils.StringToFloat64(amountIn, int64(token1.Decimals))
-		amount0Out, _ := utils.StringToFloat64(amountOut, int64(token0.Decimals))
-		volume = amount1In
+		amount1In, _ := utils.StringToFloat64(amountIn, int64(quoteToken.Decimals))
+		amount0Out, _ := utils.StringToFloat64(amountOut, int64(baseToken.Decimals))
+		volume = -amount0Out
 		price = amount1In / amount0Out
-		baseToken = token1
-		quoteToken = token0
 	}
 
 	symbolPair := fmt.Sprintf("%s-%s", baseToken.Symbol, quoteToken.Symbol)
