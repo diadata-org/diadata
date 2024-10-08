@@ -467,6 +467,7 @@ func (rdb *RelDB) GetOraclesByCustomer(customerId string) (oracleconfigs []dia.O
 		t1.expired, t1.expired_time,
     	COALESCE(MAX(fu.update_time), '0001-01-01 00:00:00'::timestamp) AS max_update_time,
 		t1.billable,
+		t1.draft,
 		t1.ecosystem
 	FROM %s AS t1
 	LEFT JOIN %s AS fu 
@@ -477,7 +478,7 @@ func (rdb *RelDB) GetOraclesByCustomer(customerId string) (oracleconfigs []dia.O
 		t1.name,t1.address,  t1.feeder_id, t1.deleted, t1.owner,  t1.symbols,  t1.chainID, 
    		t1.frequency,  t1.sleepseconds,  t1.deviationpermille,  t1.blockchainnode,  t1.active, 
 		t1.mandatory_frequency,  t1.feeder_address, t1.createddate, t1.feedselection, 
-     	t1.lastupdate, t1.expired,t1.expired_time,t1.billable,t1.ecosystem;`, oracleconfigTable, feederupdatesTable)
+     	t1.lastupdate, t1.expired,t1.expired_time,t1.billable,t1.draft,t1.ecosystem;`, oracleconfigTable, feederupdatesTable)
 	rows, err = rdb.postgresClient.Query(context.Background(), query, customerId)
 	if err != nil {
 		return
@@ -496,6 +497,7 @@ func (rdb *RelDB) GetOraclesByCustomer(customerId string) (oracleconfigs []dia.O
 			&oracleconfig.ChainID, &oracleconfig.Frequency, &oracleconfig.SleepSeconds, &oracleconfig.DeviationPermille,
 			&oracleconfig.BlockchainNode, &oracleconfig.Active, &oracleconfig.MandatoryFrequency, &oracleconfig.FeederAddress,
 			&oracleconfig.CreatedDate, &feedSelection, &oracleconfig.LastUpdate, &oracleconfig.Expired, &oracleconfig.ExpiredDate, &oracleconfig.LastOracleUpdate, &oracleconfig.Billable,
+			&oracleconfig.Draft,
 			&oracleconfig.Ecosystem)
 		if err != nil {
 			log.Error(err)
