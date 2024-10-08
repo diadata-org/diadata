@@ -510,30 +510,33 @@ func (datastore *DB) GetPoolLiquiditiesUSD(p *dia.Pool, priceCache map[string]fl
 	}
 }
 
-// GetPoolsByAssetPair retrieves pools that contain a specific pair of assets for a given exchange.
-func (rdb *RelDB) GetPoolsByAssetPair(assetInAddress, assetOutAddress, exchange string) ([]dia.Pool, error) {
+// GetPoolByAssetPair retrieves pools that contain a specific pair of assets for a given exchange.
+func (rdb *RelDB) GetPoolByAssetPair(assetInAddress, assetOutAddress, exchange string) (dia.Pool, error) {
 	query := `
 		SELECT DISTINCT p.exchange, p.blockchain, p.address AS pool_address,
-			   a1.symbol AS asset_in_symbol, a2.symbol AS asset_out_symbol
+			a1.symbol AS asset_in_symbol, a2.symbol AS asset_out_symbol
 		FROM pool p
 		JOIN poolasset pa1 ON p.pool_id = pa1.pool_id
 		JOIN poolasset pa2 ON p.pool_id = pa2.pool_id
 		JOIN asset a1 ON pa1.asset_id = a1.asset_id
 		JOIN asset a2 ON pa2.asset_id = a2.asset_id
-		WHERE a1.address = $1
-		  AND a2.address = $2
-		  AND p.exchange = $3
-		  AND pa1.asset_id != pa2.asset_id;
+		WHERE 
+			(
+				(a1.address = $1 AND a2.address = $2)
+				OR
+				(a1.address = $2 AND a2.address = $1)
+			)
+		AND p.exchange = $3
+		AND pa1.asset_id != pa2.asset_id;
 	`
 
 	rows, err := rdb.postgresClient.Query(context.Background(), query, assetInAddress, assetOutAddress, exchange)
 	if err != nil {
-		return nil, fmt.Errorf("error executing query: %w", err)
+		return dia.Pool{}, fmt.Errorf("error executing query: %w", err)
 	}
 	defer rows.Close()
 
-	var pools []dia.Pool
-	for rows.Next() {
+	if rows.Next() {
 		var pool dia.Pool
 		var assetInSymbol, assetOutSymbol string
 		err := rows.Scan(
@@ -544,7 +547,7 @@ func (rdb *RelDB) GetPoolsByAssetPair(assetInAddress, assetOutAddress, exchange 
 			&assetOutSymbol,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("error scanning row: %w", err)
+			return dia.Pool{}, fmt.Errorf("error scanning row: %w", err)
 		}
 
 		pool.Assetvolumes = []dia.AssetVolume{
@@ -552,12 +555,12 @@ func (rdb *RelDB) GetPoolsByAssetPair(assetInAddress, assetOutAddress, exchange 
 			{Asset: dia.Asset{Symbol: assetOutSymbol, Address: assetOutAddress}},
 		}
 
-		pools = append(pools, pool)
+		return pool, nil
 	}
 
 	if err = rows.Err(); err != nil {
-		return nil, fmt.Errorf("error iterating rows: %w", err)
+		return dia.Pool{}, fmt.Errorf("error iterating rows: %w", err)
 	}
 
-	return pools, nil
+	return dia.Pool{}, errors.New("no pool found")
 }
