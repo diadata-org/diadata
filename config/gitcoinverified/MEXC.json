@@ -565,6 +565,12 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "SOV",
+      "Exchange": "MEXC",
+      "Blockchain": "Rootstock",
+      "Address": "0xEFc78fc7d48b64958315949279Ba181c2114ABBd"
+    },
+    {
       "Symbol": "SPA",
       "Exchange": "MEXC",
       "Blockchain": "Ethereum",
