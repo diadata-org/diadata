@@ -8,7 +8,6 @@ import (
 const (
 	AssetAddressURI = "AssetRegistry:Assets"
 	Blockchain      = "polkadot"
-	DiaPolkadotApi  = "http://localhost:3000/hydration/v1"
 	GetAssetsPath   = "assets"
 )
 

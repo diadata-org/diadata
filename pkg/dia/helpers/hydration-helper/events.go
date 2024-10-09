@@ -15,34 +15,24 @@ type EventSellExecuted struct {
 	AmountOut types.U128 `json:"amount_out"`
 }
 
-// handles SellExecuted events for multiple pool types.
-type CustomEventRecords struct {
-	types.EventRecords
-	Omnipool_SellExecuted   []EventSellExecuted // For Omnipool
-	Stableswap_SellExecuted []EventSellExecuted // For Stableswap
-	LBP_SellExecuted        []EventSellExecuted // For LBP
-	XYK_SellExecuted        []EventSellExecuted // For XYK
-}
-
 type SubstrateEventHelper struct {
 	logger *logrus.Entry
 	API    *gsrpc.SubstrateAPI
 }
 
 // NewSubstrateEventHelper creates a new SubstrateEventHelper and connects to the node.
-func NewSubstrateEventHelper(nodeURL string) (*SubstrateEventHelper, error) {
+func NewSubstrateEventHelper(logger *logrus.Entry, nodeURL string) (*SubstrateEventHelper, error) {
 	api, err := gsrpc.NewSubstrateAPI(nodeURL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to Substrate node: %v", err)
 	}
-	return &SubstrateEventHelper{API: api}, nil
+	return &SubstrateEventHelper{API: api, logger: logger}, nil
 }
 
 // DecodeEvents fetches and decodes events for a specific block hash using CustomEventRecords
-func (s *SubstrateEventHelper) DecodeEvents(blockHash types.Hash) (*CustomEventRecords, error) {
+func (s *SubstrateEventHelper) DecodeEvents(blockHash types.Hash) (*[]EventSellExecuted, error) {
 	meta, err := s.API.RPC.State.GetMetadataLatest()
 	if err != nil {
-
 		return nil, fmt.Errorf("failed to get latest metadata: %v", err)
 	}
 
@@ -51,36 +41,24 @@ func (s *SubstrateEventHelper) DecodeEvents(blockHash types.Hash) (*CustomEventR
 		return nil, fmt.Errorf("failed to create storage key for events: %v", err)
 	}
 
-	events := CustomEventRecords{} // Use the extended CustomEventRecords
+	events := []EventSellExecuted{}
 	ok, err := s.API.RPC.State.GetStorage(key, &events, blockHash)
 	if err != nil || !ok {
+		s.logger.Info(err)
 		return nil, fmt.Errorf("failed to get events from block: %v", err)
 	}
+
+	if err != nil || !ok {
+		s.logger.WithError(err).Info("Error:")
+		return nil, fmt.Errorf("failed to get events from block: %v", err)
+	}
+
+	s.logger.Info("Events: ", events)
 
 	return &events, nil
 }
 
-// FilterSellExecuted filters and prints SellExecuted event details.
-func (s *SubstrateEventHelper) FilterSellExecuted(events *CustomEventRecords, newEvents []EventSellExecuted) {
-
-	for _, event := range events.XYK_SellExecuted {
-		newEvents = append(newEvents, event)
-	}
-
-	for _, event := range events.LBP_SellExecuted {
-		newEvents = append(newEvents, event)
-	}
-
-	for _, event := range events.Omnipool_SellExecuted {
-		newEvents = append(newEvents, event)
-	}
-
-	for _, event := range events.Stableswap_SellExecuted {
-		newEvents = append(newEvents, event)
-	}
-}
-
-func (s *SubstrateEventHelper) ListenForSpecificBlock(blockNumber uint64, callback func([]EventSellExecuted)) error {
+func (s *SubstrateEventHelper) ListenForSpecificBlock(blockNumber uint64, callback func(*[]EventSellExecuted)) error {
 	blockHash, err := s.API.RPC.Chain.GetBlockHash(blockNumber)
 	if err != nil {
 		message := fmt.Sprintf("Failed to fetch block hash: %v", err)
@@ -88,24 +66,14 @@ func (s *SubstrateEventHelper) ListenForSpecificBlock(blockNumber uint64, callba
 		return fmt.Errorf(message)
 	}
 
-	block, err := s.API.RPC.Chain.GetBlock(blockHash)
-	if err != nil {
-		message := fmt.Sprintf("Failed to fetch block details: %v", err)
-		s.logger.Errorf(message, err)
-		return err
-	}
-
-	events, err := s.DecodeEvents(block.Block.Header.ExtrinsicsRoot)
+	events, err := s.DecodeEvents(blockHash)
 	if err != nil {
 		message := fmt.Sprintf("Failed to decode events: %v", err)
 		s.logger.Errorf(message, err)
 		return err
 	}
 
-	newEvents := []EventSellExecuted{}
-	s.FilterSellExecuted(events, newEvents)
-
-	callback(newEvents)
+	callback(events)
 
 	return nil
 }
@@ -116,7 +84,6 @@ func (s *SubstrateEventHelper) ListenForNewBlocks(callback func([]EventSellExecu
 	if err != nil {
 		return fmt.Errorf("failed to subscribe to new heads: %v", err)
 	}
-	fmt.Println("Listening for new blocks...")
 
 	for {
 		head := <-sub.Chan()
@@ -140,9 +107,6 @@ func (s *SubstrateEventHelper) ListenForNewBlocks(callback func([]EventSellExecu
 			continue
 		}
 
-		newEvents := []EventSellExecuted{}
-		s.FilterSellExecuted(events, newEvents)
-
-		callback(newEvents)
+		callback(*events)
 	}
 }

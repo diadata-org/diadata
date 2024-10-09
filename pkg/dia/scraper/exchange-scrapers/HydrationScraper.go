@@ -32,30 +32,29 @@ type HydrationScraper struct {
 }
 
 func NewHydrationScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *HydrationScraper {
+	logger := logrus.
+		New().
+		WithContext(context.Background()).
+		WithField("context", "HydrationScraper")
 
-	wsApi, err := hydrationhelper.NewSubstrateEventHelper(hydrationhelper.DiaPolkadotApi)
+	wsApi, err := hydrationhelper.NewSubstrateEventHelper(logger, exchange.WsAPI)
 	if err != nil {
 		logrus.WithError(err).Error("Failed to create Hydration Substrate event helper")
 		return nil
 	}
 
 	s := &HydrationScraper{
+		logger:       logger, // Ensure logger is initialized
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		chanTrades:   make(chan *dia.Trade),
 		db:           relDB,
-		wsApi: wsApi,
-		exchangeName: "Hydration",
-		blockchain:   "Hydration",
+		wsApi:        wsApi,
+		exchangeName: exchange.Name,
+		blockchain:   exchange.BlockChain.Name,
 	}
 
-	s.logger = logrus.
-		New().
-		WithContext(context.Background()).
-		WithField("context", "HydrationScraper")
-
-	s.logger.Info("Initialized HydrationScraper")
-
+	s.logger.Info("WS API", s.wsApi)
 	if scrape {
 		go s.mainLoop()
 	}
@@ -66,10 +65,9 @@ func NewHydrationScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 // https://hydration.subscan.io/event?block=6148977&page=1&time_dimension=date&module=xyk&event_id=sellexecuted
 // pool = 7KKXieLDbfJPUaVohYTbbib97LdC1URmZuMNFq9rvTudmDMv
 // block = 0xfd38c9dc2c95278fd3015f73b48a01e804320865a1a6153e31471cb782be92f0
-// blocknumber = 
+// blocknumber = 6148977
 func (s *HydrationScraper) mainLoop() {
 	//go s.wsApi.ListenForNewBlocks(s.processEvents)
-	s.logger.Info("Listening for new blocks")
 	go s.wsApi.ListenForSpecificBlock(6149553, s.processEvents)
 	defer s.cleanup(nil)
 
@@ -83,16 +81,19 @@ func (s *HydrationScraper) mainLoop() {
 	}
 }
 
-func (s *HydrationScraper) processEvents(events []hydrationhelper.EventSellExecuted) {
+func (s *HydrationScraper) processEvents(events *[]hydrationhelper.EventSellExecuted) {
 	s.logger.Info("Processing events")
-	for _, event := range events {
+	for _, event := range *events {
 
 		assetIn := fmt.Sprint(event.AssetIn)
 		assetOut := fmt.Sprint(event.AssetOut)
-		pool, err := s.db.GetPoolByAssetPair(assetIn, assetOut, s.exchangeName)
+		pool, err := s.db.GetPoolByAssetPair(assetIn, assetOut, "Hydration")
 		if err != nil {
+			s.logger.WithError(err).WithField("exchangeName", "Hydration").WithField("assetIn", assetIn).WithField("assetOut", assetOut).Error("Failed to get pool by asset pair")
 			continue
 		}
+
+		s.logger.WithField("assetIn", assetIn).WithField("assetOut", assetOut).Info("Processing event")
 
 		if len(pool.Assetvolumes) < 2 {
 			s.logger.WithField("poolAddress", pool.Address).Error("Pool has fewer than 2 asset volumes")
@@ -185,17 +186,17 @@ func (s *HydrationScraper) handleTrade(pool dia.Pool, event hydrationhelper.Even
 	symbolPair := fmt.Sprintf("%s-%s", baseToken.Symbol, quoteToken.Symbol)
 
 	return &dia.Trade{
-		Time:           time,
-		Symbol:         baseToken.Symbol,
-		Pair:           symbolPair,
+		Time:   time,
+		Symbol: baseToken.Symbol,
+		Pair:   symbolPair,
 		// ForeignTradeID: event.Who, //TODO:Hydration change it to the actual trade ID
-		Source:         s.exchangeName,
-		Price:          price,
-		Volume:         volume,
-		VerifiedPair:   true,
-		QuoteToken:     quoteToken,
-		BaseToken:      baseToken,
-		PoolAddress:    pool.Address,
+		Source:       s.exchangeName,
+		Price:        price,
+		Volume:       volume,
+		VerifiedPair: true,
+		QuoteToken:   quoteToken,
+		BaseToken:    baseToken,
+		PoolAddress:  pool.Address,
 	}
 }
 
