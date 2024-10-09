@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	hydrationhelper "github.com/diadata-org/diadata/pkg/dia/helpers/hydration-helper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gorilla/websocket"
@@ -25,7 +24,7 @@ type HydrationScraper struct {
 	closed       bool
 	chanTrades   chan *dia.Trade
 	db           *models.RelDB
-	wsApi        *hydrationhelper.SubstrateEventHelper
+	wsApi        *helper.SubstrateEventHelper
 	exchangeName string
 	blockchain   string
 	wsClient     *websocket.Conn
@@ -37,7 +36,7 @@ func NewHydrationScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 		WithContext(context.Background()).
 		WithField("context", "HydrationScraper")
 
-	wsApi, err := hydrationhelper.NewSubstrateEventHelper(logger, exchange.WsAPI)
+	wsApi, err := helper.NewSubstrateEventHelper(logger, exchange.WsAPI)
 	if err != nil {
 		logrus.WithError(err).Error("Failed to create Hydration Substrate event helper")
 		return nil

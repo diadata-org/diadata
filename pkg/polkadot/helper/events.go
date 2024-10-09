@@ -1,11 +1,13 @@
-package hydrationhelper
+package helper
 
 import (
-	"bytes"
 	"fmt"
+	"log"
+	"reflect"
 
 	gsrpc "github.com/centrifuge/go-substrate-rpc-client/v4"
-	"github.com/centrifuge/go-substrate-rpc-client/v4/scale"
+	"github.com/centrifuge/go-substrate-rpc-client/v4/registry/retriever"
+	"github.com/centrifuge/go-substrate-rpc-client/v4/registry/state"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 	"github.com/sirupsen/logrus"
 )
@@ -40,58 +42,29 @@ type Event struct {
 
 // DecodeEvents fetches and decodes events for a specific block hash using CustomEventRecords
 func (s *SubstrateEventHelper) DecodeEvents(blockHash types.Hash) (*[]EventSellExecuted, error) {
-	meta, err := s.API.RPC.State.GetMetadataLatest()
+	retriever, err := retriever.NewDefaultEventRetriever(state.NewEventProvider(s.API.RPC.State), s.API.RPC.State)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get latest metadata: %v", err)
+		log.Printf("Couldn't create event retriever: %s", err)
+		return nil, fmt.Errorf("failed to create event retriever: %v", err)
 	}
 
-	key, err := types.CreateStorageKey(meta, "System", "Events", nil, nil)
+	events, err := retriever.GetEvents(blockHash)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create storage key for events: %v", err)
+		return nil, fmt.Errorf("failed to retrieve events: %v", err)
 	}
 
-	rawData, err := s.API.RPC.State.GetStorageRaw(key, blockHash)
-	if err != nil {
-		s.logger.Info(err)
-		return nil, fmt.Errorf("failed to get events from block: %v", err)
-	}
+	log.Printf("Found %d events'%s'", len(events))
 
-	decoder := scale.NewDecoder(bytes.NewReader(*rawData))
-	eventsCount, err := decoder.DecodeUintCompact()
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode events count: %v", err)
-	}
-
-	s.logger.Info("Events count: ", eventsCount.Uint64())
-
-	for i := uint64(0); i < eventsCount.Uint64(); i++ {
-
-		// Event Phase
-		var phase types.Phase
-		if err := decoder.Decode(&phase); err != nil {
-			return nil, fmt.Errorf("failed to decode phase: %v", err)
+	// Example of the events returned structure
+	for _, event := range events {
+		log.Printf("Event ID: %x \n", event.EventID)
+		log.Printf("Event Name: %s \n", event.Name)
+		log.Printf("Event Fields Count: %d \n", len(event.Fields))
+		for k, v := range event.Fields {
+			log.Printf("Field Name: %s \n", k)
+			log.Printf("Field Type: %v \n", reflect.TypeOf(v))
+			log.Printf("Field Value: %v \n", v)
 		}
-
-		if !phase.IsApplyExtrinsic {
-			continue
-		}
-		s.logger.Info("Phase: ", phase)
-
-		// Event Id\
-		var eventID types.EventID
-		if err := decoder.Decode(&eventID); err != nil {
-			return nil, fmt.Errorf("failed to decode event id: %v", err)
-		}
-
-		s.logger.Info("Event ID: ", string(eventID[:]))
-
-		// Event fields
-		eventFields, err := eventDecoder.Decode(decoder)
-
-		if err != nil {
-			return nil, fmt.Errorf("failed to decode event fields: %v", err)
-		}
-
 	}
 
 	return nil, nil
