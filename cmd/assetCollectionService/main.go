@@ -170,6 +170,8 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 		return source.NewJSONReader(exchange, secret)
 	case dia.AyinExchange:
 		return source.NewAyinAssetSource(exchanges[dia.AyinExchange], relDB)
+	case dia.BitflowExchange:
+		return source.NewBitflowAssetSource(exchanges[dia.BitflowExchange], relDB)
 	case dia.AerodromeSlipstreamExchange:
 		return source.NewVelodromeAssetSource(exchanges[dia.AerodromeSlipstreamExchange], relDB)
 	case dia.AerodromeV1Exchange:
