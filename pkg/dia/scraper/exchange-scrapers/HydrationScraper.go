@@ -10,6 +10,8 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	hydrationhelper "github.com/diadata-org/diadata/pkg/dia/helpers/hydration-helper"
 	models "github.com/diadata-org/diadata/pkg/model"
+
+	//helper "github.com/diadata-org/diadata/pkg/polkadot"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/gorilla/websocket"
 	"github.com/sirupsen/logrus"
@@ -68,7 +70,8 @@ func NewHydrationScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 // blocknumber = 6148977
 func (s *HydrationScraper) mainLoop() {
 	//go s.wsApi.ListenForNewBlocks(s.processEvents)
-	go s.wsApi.ListenForSpecificBlock(6149553, s.processEvents)
+	//go s.wsApi.ListenForSpecificBlock(6149553, s.processEvents)
+	//go s.wsApi.ListenForSpecificBlock(6149553, s.processEvents)
 	defer s.cleanup(nil)
 
 	for {
