@@ -21,7 +21,7 @@ type CVTuple map[string][]byte
 // DeserializeCVUint converts a clarity 128-bit uint value into a `big.Int`.
 func DeserializeCVUint(src []byte) (*big.Int, error) {
 	if src[0] != uintCV {
-		err := errors.New("value is not a CV tuple")
+		err := errors.New("value is not a CV uint")
 		return nil, err
 	}
 
