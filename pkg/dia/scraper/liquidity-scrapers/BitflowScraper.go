@@ -107,13 +107,23 @@ func (s *BitflowLiquidityScraper) fetchPools() {
 			args[item.Name] = item
 		}
 
-		tokens := [...]string{args["x-token"].Repr[1:], args["y-token"].Repr[1:]}
+		tokens := [...]string{"", args["y-token"].Repr[1:]}
+		if xToken, ok := args["x-token"]; ok {
+			tokens[0] = xToken.Repr[1:]
+		}
+
 		dbAssets := make([]dia.Asset, 0, len(tokens))
 
 		for _, address := range tokens {
-			assset, err := s.relDB.GetAsset(address, s.blockchain)
+			// Workaround to fetch the native STX token data from DB
+			key := address
+			if address == "" {
+				key = "null"
+			}
+
+			assset, err := s.relDB.GetAsset(key, s.blockchain)
 			if err != nil {
-				s.logger.WithError(err).Errorf("failed to GetAsset with key: %s", address)
+				s.logger.WithError(err).Errorf("failed to GetAsset with key: %s", key)
 				continue
 			}
 			dbAssets = append(dbAssets, assset)
@@ -124,9 +134,8 @@ func (s *BitflowLiquidityScraper) fetchPools() {
 			continue
 		}
 
-		contractId := tx.ContractCall.ContractID
 		balances, err := s.fetchPoolBalances(
-			contractId,
+			tx.ContractCall.ContractID,
 			args["x-token"].Hex,
 			args["y-token"].Hex,
 			args["lp-token"].Hex,
@@ -167,15 +176,15 @@ func (s *BitflowLiquidityScraper) fetchPools() {
 }
 
 func (s *BitflowLiquidityScraper) fetchPoolBalances(stableSwapContract, xToken, yToken, lpToken string) ([]float64, error) {
-	xTokenBytes, _ := hex.DecodeString(xToken[2:])
 	yTokenBytes, _ := hex.DecodeString(yToken[2:])
 	lpTokenBytes, _ := hex.DecodeString(lpToken[2:])
+	pairKey := stackshelper.CVTuple{"lp-token": lpTokenBytes, "y-token": yTokenBytes}
 
-	pairKey := stackshelper.CVTuple{
-		"lp-token": lpTokenBytes,
-		"x-token":  xTokenBytes,
-		"y-token":  yTokenBytes,
+	if xToken != "" {
+		xTokenBytes, _ := hex.DecodeString(xToken[2:])
+		pairKey["x-token"] = xTokenBytes
 	}
+
 	encodedKey := "0x" + hex.EncodeToString(stackshelper.SerializeCVTuple(pairKey))
 
 	entry, err := s.api.GetDataMapEntry(stableSwapContract, "PairsDataMap", encodedKey)
