@@ -86,7 +86,7 @@ func (s *SubstrateEventHelper) DecodeEvents(blockHash types.Hash) (*[]EventSellE
 		s.logger.Info("Event ID: ", string(eventID[:]))
 
 		// Event fields
-		eventFields, err := eventDecoder.Decode(decoder)
+		//eventFields, err := eventDecoder.Decode(decoder)
 
 		if err != nil {
 			return nil, fmt.Errorf("failed to decode event fields: %v", err)
