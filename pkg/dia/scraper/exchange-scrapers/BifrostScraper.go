@@ -12,8 +12,10 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	bifrosthelper "github.com/diadata-org/diadata/pkg/dia/helpers/bifrost-helper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
+	"github.com/gorilla/websocket"
 	"github.com/sirupsen/logrus"
 )
 
@@ -32,9 +34,11 @@ type BifrostScraper struct {
 	ticker       *time.Ticker
 	chanTrades   chan *dia.Trade
 	db           *models.RelDB
-	api          string
+	//todo: move common code to a common helper
+	wsApi        *bifrosthelper.SubstrateEventHelper
 	exchangeName string
 	blockchain   string
+	wsClient     *websocket.Conn
 }
 
 // NewBifrostScraper initializes and returns a new BifrostScraper instance.
@@ -58,27 +62,34 @@ type BifrostScraper struct {
 //     and a logging mechanism.
 //   - If the 'scrape' flag is true, the scraper starts its main scraping loop in a separate goroutine.
 func NewBifrostScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BifrostScraper {
+	//todo remove this
 	refreshDelay := utils.GetTimeDurationFromIntAsMilliseconds(
 		utils.GetenvInt(strings.ToUpper(exchange.Name)+"_REFRESH_DELAY", 10000),
 	)
+	logger := logrus.
+		New().
+		WithContext(context.Background()).
+		WithField("context", "BifrostScraper")
 
-	apiURL := utils.Getenv(strings.ToUpper(exchange.Name)+"_API_URL", "http://localhost:3000/bifrost/v1")
+	wsApi, err := bifrosthelper.NewSubstrateEventHelper("wss://bifrost-polkadot.api.onfinality.io/public-ws", logger)
+	if err != nil {
+		logrus.WithError(err).Error("Failed to create Bifrost Substrate event helper")
+		return nil
+	}
 
 	s := &BifrostScraper{
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
+		//todo: remove this
 		ticker:       time.NewTicker(refreshDelay),
 		chanTrades:   make(chan *dia.Trade),
 		db:           relDB,
-		api:          apiURL,
+		wsApi:        wsApi,
 		exchangeName: exchange.Name,
 		blockchain:   Blockchain,
 	}
 
-	s.logger = logrus.
-		New().
-		WithContext(context.Background()).
-		WithField("context", "BifrostScraper")
+	s.logger = logger
 
 	s.logger.Info("Initialized BifrostScraper")
 
@@ -88,38 +99,172 @@ func NewBifrostScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 	return s
 }
 
-// mainLoop is the core loop of the BifrostScraper that periodically fetches
-// trade data and handles graceful shutdown.
-//
-// This method runs an infinite loop where it performs two key actions:
-//   - Periodically triggers the Update function when the ticker ticks (based on
-//     the refresh interval).
-//   - Listens for a shutdown signal on the shutdown channel, at which point it
-//     cleans up resources and exits the loop.
-//
-// Behavior:
-//   - On each tick of the ticker (`s.ticker.C`), the Update method is called
-//     to fetch and process new trade data from the exchange.
-//   - If an error occurs during the Update call, it is logged using `s.logger`.
-//   - When a message is received on the `s.shutdown` channel, the method logs
-//     the shutdown event, calls the cleanup function, and exits.
-//
-// This method is designed to run as a goroutine and will keep looping until
-// explicitly stopped by sending a signal to the `shutdown` channel.
+// func (s *BifrostScraper) connectWebSocket() error {
+// 	var err error
+// 	s.wsClient, _, err = websocket.DefaultDialer.Dial(s.wsApi, nil)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to connect to websocket: %w", err)
+// 	}
+// 	s.logger.Info("Connected to Bifrost WebSocket")
+// 	return nil
+// }
+
+// func (s *BifrostScraper) connectWebSocket() error {
+// 	// Parse the base WebSocket URL
+// 	u, err := url.Parse(s.wsApi)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to parse WebSocket URL: %w", err)
+// 	}
+
+// 	// Add query parameters
+// 	query := u.Query()
+// 	query.Set("method", "TokenSwapped")
+// 	query.Set("section", "stableAsset")
+// 	u.RawQuery = query.Encode()
+
+// 	// Connect to the WebSocket with the updated URL
+// 	s.wsClient, _, err = websocket.DefaultDialer.Dial(u.String(), nil)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to connect to websocket: %w", err)
+// 	}
+// 	s.logger.Info("Connected to Bifrost WebSocket")
+// 	return nil
+// }
+
+// func (s *BifrostScraper) mainLoop() {
+// 	if err := s.connectWebSocket(); err != nil {
+// 		s.logger.Error(err)
+// 		return
+// 	}
+// 	defer s.wsClient.Close()
+
+// 	for {
+// 		select {
+// 		case <-s.shutdown:
+// 			s.logger.Println("shutting down")
+// 			s.cleanup(nil)
+// 			return
+// 		default:
+// 			s.listenForTrades()
+// 		}
+// 	}
+// }
+
 func (s *BifrostScraper) mainLoop() {
+	//go s.wsApi.ListenForNewBlocks(s.processEvents)
+	s.logger.Info("Listening for new blocks")
+	go s.wsApi.ListenForSpecificBlock(5697382, s.processEvents)
+	//go s.wsApi.ListenForNewBlocks(s.processEvents)
+	defer s.cleanup(nil)
+
 	for {
 		select {
-		case <-s.ticker.C:
-			err := s.Update()
-			if err != nil {
-				s.logger.Error(err)
-			}
 		case <-s.shutdown:
 			s.logger.Println("shutting down")
 			s.cleanup(nil)
 			return
 		}
 	}
+}
+
+func (s *BifrostScraper) processEvents(events *[]bifrosthelper.EventSellExecuted) {
+	s.logger.Info("Processing events")
+	for _, event := range *events {
+
+		assetIn := fmt.Sprint(event.InputAsset)
+		assetOut := fmt.Sprint(event.OutputAsset)
+		pool, err := s.db.GetPoolByAssetPair(assetIn, assetOut, s.exchangeName)
+		if err != nil {
+			continue
+		}
+
+		if len(pool.Assetvolumes) < 2 {
+			s.logger.WithField("poolAddress", pool.Address).Error("Pool has fewer than 2 asset volumes")
+			continue
+		}
+
+		diaTrade := s.handleTrade(pool, event, time.Now())
+		s.chanTrades <- diaTrade
+	}
+	s.logger.Fatal("No more events")
+}
+
+type TestJson struct {
+	Method  string `json:"method"`
+	Section string `json:"section"`
+}
+
+// new update
+func (s *BifrostScraper) listenForTrades() {
+	// jsontest := TestJson{Method: "TokenSwapped", Section: "stableAsset"}
+	// err := s.wsClient.WriteJSON(jsontest)
+	// err := s.wsClient.WriteMessage(websocket.TextMessage, []byte(`{"method":"TokenSwapped","section":"stableAsset"}`))
+	// s.logger.Info(err)
+	// _, message, err := s.wsClient.ReadMessage()
+	// if err != nil {
+	// 	s.logger.Error("Error reading message from websocket: ", err)
+	// 	return
+	// }
+
+	// var events []bifrosthelper.StableSwapEvent
+	// // message := &StableSwapEvent{}
+	// // err := s.wsClient.ReadJSON(&message)
+	// // if err != nil {
+	// // 	s.logger.Error("Error reading message from websocket: ", err)
+	// // 	// break
+	// // }
+	// if err := json.Unmarshal(message, &events); err != nil {
+	// 	s.logger.Error("Error unmarshalling websocket message: ", err)
+	// 	return
+	// }
+
+	// // Check if the event is a Bifrost-specific event
+	// // if event.Type != "SellExecuted" || event.PoolID != 101 { // Example checks
+	// // 	return
+	// // }
+	// //pools, err := s.db.GetPoolsByAssetPair(event.AssetIn, event.AssetOut, s.exchangeName)
+	// // pools, err := s.getDBPools()
+	// // if err != nil {
+	// // 	s.logger.WithError(err).Error("Failed to get database pools")
+	// // 	return
+	// // }
+
+	// if err != nil {
+	// 	s.logger.WithField("events", events).Debug("Fetched swap events")
+	// 	return
+	// }
+
+	// for _, event := range events {
+	// 	diaTrade := s.handleTrade(pool, event, time.Now())
+	// 	s.chanTrades <- diaTrade
+	// }
+	// // for _, pool := range pools {
+	// // 	if len(pool.Assetvolumes) < 2 {
+	// // 		s.logger.WithField("poolAddress", pool.Address).Error("Pool has fewer than 2 asset volumes")
+	// // 		continue
+	// // 	}
+
+	// // 	diaTrade := s.handleTrade(pool, event, time.Now())
+	// // 	s.chanTrades <- diaTrade
+	// // }
+
+	// for _, pool := range pools {
+	// 	if len(pool.Assetvolumes) != 2 {
+	// 		s.logger.WithField("poolAddress", pool.Address).Error("Pool is missing required asset volumes")
+	// 		continue
+	// 	}
+
+	// 	poolEvents := s.filterPoolEvents(pool.Address, events)
+	// 	if len(poolEvents) == 0 {
+	// 		continue
+	// 	}
+
+	// 	for _, event := range poolEvents {
+	// 		s.logger.WithField("poolAddress", pool.Address).Info("Processing event for pool")
+	// 		diaTrade := s.handleTrade(pool, event, time.Now())
+	// 		s.chanTrades <- diaTrade
+	// 	}
+	// }
 }
 
 // Update fetches and processes the latest stable swap events from the Bifrost API.
@@ -141,20 +286,23 @@ func (s *BifrostScraper) mainLoop() {
 //   - An error if the API request or pool retrieval fails, otherwise `nil`.
 func (s *BifrostScraper) Update() error {
 	// To test the scraper with a specific block
-	// endpoint := fmt.Sprintf("%s/events/swap/0x5d184786631f977395636a98b231358b9a82b63c235c801c170fb7e532cb839b", s.api)
-	endpoint := fmt.Sprintf("%s/events/swap", s.api)
+	endpoint := fmt.Sprintf("%s/events/swap/0x5d184786631f977395636a98b231358b9a82b63c235c801c170fb7e532cb839b")
+	//endpoint := fmt.Sprintf("%s/events/swap/0x5d184786631f977395636a98b231358b9a82b63c235c801c170fb7e532cb839b", s.api)
+	//endpoint := fmt.Sprintf("%s/events/swap", s.api)
 
 	resp, err := s.fetchWithRetry(endpoint, "application/json", 3)
 	if err != nil {
 		return fmt.Errorf("failed to fetch swap events after retries: %w", err)
 	}
 	defer resp.Body.Close()
-
-	var events []StableSwapEvent
+	fmt.Println("Resp.body", resp.Body)
+	s.logger.Debug("Resp.body", resp.Body)
+	var events []bifrosthelper.StableSwapEvent
 	if err := json.NewDecoder(resp.Body).Decode(&events); err != nil {
 		return fmt.Errorf("failed to decode swap events: %w", err)
 	}
-
+	fmt.Println("Events", events)
+	s.logger.WithField("events", events).Debug("Fetched swap events")
 	pools, err := s.getDBPools()
 	if err != nil {
 		s.logger.WithError(err).Error("Failed to get database pools")
@@ -166,24 +314,24 @@ func (s *BifrostScraper) Update() error {
 		return nil
 	}
 
-	// Process each pool looking for matching events and processing
-	for _, pool := range pools {
-		if len(pool.Assetvolumes) != 2 {
-			s.logger.WithField("poolAddress", pool.Address).Error("Pool is missing required asset volumes")
-			continue
-		}
+	// // Process each pool looking for matching events and processing
+	// for _, pool := range pools {
+	// 	if len(pool.Assetvolumes) != 2 {
+	// 		s.logger.WithField("poolAddress", pool.Address).Error("Pool is missing required asset volumes")
+	// 		continue
+	// 	}
 
-		poolEvents := s.filterPoolEvents(pool.Address, events)
-		if len(poolEvents) == 0 {
-			continue
-		}
+	// 	poolEvents := s.filterPoolEvents(pool.Address, events)
+	// 	if len(poolEvents) == 0 {
+	// 		continue
+	// 	}
 
-		for _, event := range poolEvents {
-			s.logger.WithField("poolAddress", pool.Address).Info("Processing event for pool")
-			diaTrade := s.handleTrade(pool, event, time.Now())
-			s.chanTrades <- diaTrade
-		}
-	}
+	// 	for _, event := range poolEvents {
+	// 		s.logger.WithField("poolAddress", pool.Address).Info("Processing event for pool")
+	// 		diaTrade := s.handleTrade(pool, event, time.Now())
+	// 		s.chanTrades <- diaTrade
+	// 	}
+	// }
 
 	return nil
 }
@@ -205,8 +353,8 @@ func (s *BifrostScraper) Update() error {
 //
 // Returns:
 //   - A slice of `StableSwapEvent` objects that match the provided pool address.
-func (s *BifrostScraper) filterPoolEvents(poolAddress string, events []StableSwapEvent) []StableSwapEvent {
-	var matchedEvents []StableSwapEvent
+func (s *BifrostScraper) filterPoolEvents(poolAddress string, events []bifrosthelper.StableSwapEvent) []bifrosthelper.StableSwapEvent {
+	var matchedEvents []bifrosthelper.StableSwapEvent
 
 	for _, event := range events {
 		if event.PoolID != poolAddress {
@@ -297,12 +445,14 @@ func (s *BifrostScraper) fetchWithRetry(endpoint string, contentType string, ret
 //
 // Returns:
 //   - *dia.Trade: A pointer to the constructed `dia.Trade` object containing the trade details.
-func (s *BifrostScraper) handleTrade(pool dia.Pool, event StableSwapEvent, time time.Time) *dia.Trade {
+
+func (s *BifrostScraper) handleTrade(pool dia.Pool, event bifrosthelper.EventSellExecuted, time time.Time) *dia.Trade {
 	var volume, price float64
 	var baseToken, quoteToken dia.Asset
 	var decimalsIn, decimalsOut int64
 
-	if event.InputAsset == pool.Assetvolumes[0].Asset.Symbol {
+	//if fmt.Sprint(event.InputAsset) == pool.Assetvolumes[0].Asset.Symbol {
+	if fmt.Sprint(event.InputAsset) == pool.Assetvolumes[0].Asset.Address {
 		baseToken = pool.Assetvolumes[0].Asset
 		quoteToken = pool.Assetvolumes[1].Asset
 		decimalsIn = int64(baseToken.Decimals)
@@ -314,8 +464,8 @@ func (s *BifrostScraper) handleTrade(pool dia.Pool, event StableSwapEvent, time 
 		decimalsOut = int64(quoteToken.Decimals)
 	}
 
-	amountIn, _ := utils.StringToFloat64(event.InputAmount, decimalsIn)
-	amountOut, _ := utils.StringToFloat64(event.OutputAmount, decimalsOut)
+	amountIn, _ := utils.StringToFloat64(fmt.Sprint(event.InputAmount), decimalsIn)
+	amountOut, _ := utils.StringToFloat64(fmt.Sprint(event.OutputAmount), decimalsOut)
 
 	volume = amountIn
 
@@ -324,17 +474,17 @@ func (s *BifrostScraper) handleTrade(pool dia.Pool, event StableSwapEvent, time 
 	symbolPair := fmt.Sprintf("%s-%s", baseToken.Symbol, quoteToken.Symbol)
 
 	return &dia.Trade{
-		Time:           time,
-		Symbol:         baseToken.Symbol,
-		Pair:           symbolPair,
-		ForeignTradeID: event.TxID,
-		Source:         s.exchangeName,
-		Price:          price,
-		Volume:         volume,
-		VerifiedPair:   true,
-		QuoteToken:     quoteToken,
-		BaseToken:      baseToken,
-		PoolAddress:    pool.Address,
+		Time:   time,
+		Symbol: baseToken.Symbol,
+		Pair:   symbolPair,
+		//ForeignTradeID: event.TxID,
+		Source:       s.exchangeName,
+		Price:        price,
+		Volume:       volume,
+		VerifiedPair: true,
+		QuoteToken:   quoteToken,
+		BaseToken:    baseToken,
+		PoolAddress:  pool.Address,
 	}
 }
 
@@ -444,20 +594,4 @@ func (ps *BifrostPairScraper) Error() error {
 	s.errorLock.RLock()
 	defer s.errorLock.RUnlock()
 	return s.error
-}
-
-type StableSwapEvent struct {
-	TxID            string   `json:"txId"`
-	Timestamp       int64    `json:"timestamp"`
-	BlockHash       string   `json:"blockHash"`
-	Swapper         string   `json:"swapper"`
-	PoolID          string   `json:"poolId"`
-	A               string   `json:"a"`
-	InputAsset      string   `json:"inputAsset"`
-	OutputAsset     string   `json:"outputAsset"`
-	InputAmount     string   `json:"inputAmount"`
-	MinOutputAmount string   `json:"minOutputAmount"`
-	Balances        []string `json:"balances"`
-	TotalSupply     string   `json:"totalSupply"`
-	OutputAmount    string   `json:"outputAmount"`
 }
