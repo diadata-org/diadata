@@ -91,12 +91,6 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
-      "Symbol": "BFC",
-      "Exchange": "MEXC",
-      "Blockchain": "Ethereum",
-      "Address": "0x0c7D5ae016f806603CB1782bEa29AC69471CAb9c"
-    },
-    {
       "Symbol": "BFR",
       "Exchange": "MEXC",
       "Blockchain": "Arbitrum",
@@ -563,12 +557,6 @@
       "Exchange": "MEXC",
       "Blockchain": "Solana",
       "Address": "0x0000000000000000000000000000000000000000"
-    },
-    {
-      "Symbol": "SOV",
-      "Exchange": "MEXC",
-      "Blockchain": "Rootstock",
-      "Address": "0xEFc78fc7d48b64958315949279Ba181c2114ABBd"
     },
     {
       "Symbol": "SPA",
