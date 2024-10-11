@@ -2,10 +2,13 @@ package liquidityscrapers
 
 import (
 	"context"
+	"encoding/hex"
+	"math/big"
 	"strings"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/stackshelper"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/velarhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
@@ -14,7 +17,8 @@ import (
 
 type VelarLiquidityScraper struct {
 	logger       *logrus.Entry
-	api          *velarhelper.VelarClient
+	api          *stackshelper.StacksClient
+	velarClient  *velarhelper.VelarClient
 	poolChannel  chan dia.Pool
 	doneChannel  chan bool
 	blockchain   string
@@ -28,10 +32,22 @@ type VelarLiquidityScraper struct {
 // The instance is asynchronously scraping as soon as it is created.
 // ENV values:
 //
-//	VELAR_DEBUG - (optional, bool), make stdout output with velar client http call, default = false
+//	 	VELAR_SLEEP_TIMEOUT - (optional, millisecond), make timeout between API calls, default "stackshelper.DefaultSleepBetweenCalls" value
+//		VELAR_HIRO_API_KEY - (optional, string), Hiro Stacks API key, improves scraping performance, default = ""
+//		VELAR_DEBUG - (optional, bool), make stdout output with velar client http call, default = false
 func NewVelarLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *models.DB) *VelarLiquidityScraper {
 	envPrefix := strings.ToUpper(exchange.Name)
+
+	sleepBetweenCalls := utils.GetenvInt(envPrefix+"_SLEEP_TIMEOUT", stackshelper.DefaultSleepBetweenCalls)
+	hiroAPIKey := utils.Getenv(envPrefix+"_HIRO_API_KEY", "")
 	isDebug := utils.GetenvBool(envPrefix+"_DEBUG", false)
+
+	stacksClient := stackshelper.NewStacksClient(
+		log.WithContext(context.Background()).WithField("context", "StacksClient"),
+		utils.GetTimeDurationFromIntAsMilliseconds(sleepBetweenCalls),
+		hiroAPIKey,
+		isDebug,
+	)
 
 	velarClient := velarhelper.NewVelarClient(
 		log.WithContext(context.Background()).WithField("context", "VelarClient"),
@@ -43,7 +59,8 @@ func NewVelarLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, datast
 		doneChannel:  make(chan bool),
 		exchangeName: exchange.Name,
 		blockchain:   exchange.BlockChain.Name,
-		api:          velarClient,
+		api:          stacksClient,
+		velarClient:  velarClient,
 		relDB:        relDB,
 		datastore:    datastore,
 		handlerType:  "liquidity",
@@ -61,13 +78,19 @@ func NewVelarLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, datast
 }
 
 func (s *VelarLiquidityScraper) fetchPools() {
-	tickers, err := s.api.GetAllTickers()
+	tickers, err := s.velarClient.GetAllTickers()
 	if err != nil {
 		s.logger.WithError(err).Error("failed to fetch velar tickers")
 		return
 	}
 
 	for _, t := range tickers {
+		balances, err := s.fetchPoolBalances(t.PoolID)
+		if err != nil {
+			s.logger.WithError(err).Error("failed to fetch velar pool balances")
+			continue
+		}
+
 		tokens := [...]string{t.BaseCurrency, t.TargetCurrency}
 		dbAssets := make([]dia.Asset, 0, len(tokens))
 
@@ -85,14 +108,16 @@ func (s *VelarLiquidityScraper) fetchPools() {
 			continue
 		}
 
-		balances := [...]float64{t.BaseVolume, t.TargetVolume}
 		assetVolumes := make([]dia.AssetVolume, len(balances))
 
-		for i, a := range dbAssets {
+		for i, b := range balances {
+			asset := dbAssets[i]
+			volume, _ := utils.StringToFloat64(b.String(), int64(asset.Decimals))
+
 			assetVolumes[i] = dia.AssetVolume{
 				Index:  uint8(i),
-				Asset:  a,
-				Volume: balances[i],
+				Asset:  asset,
+				Volume: volume,
 			}
 		}
 
@@ -113,6 +138,36 @@ func (s *VelarLiquidityScraper) fetchPools() {
 	}
 
 	s.doneChannel <- true
+}
+
+func (s *VelarLiquidityScraper) fetchPoolBalances(poolID string) ([]*big.Int, error) {
+	value := new(big.Int)
+	value.SetString(poolID, 10)
+	key := hex.EncodeToString(stackshelper.SerializeCVUint(value))
+
+	entry, err := s.api.GetDataMapEntry(velarhelper.VelarCoreAddress, "pools", key)
+	if err != nil {
+		s.logger.WithError(err).Error("failed to GetDataMapEntry")
+		return nil, err
+	}
+
+	tuple, err := stackshelper.DeserializeCVTuple(entry)
+	if err != nil {
+		s.logger.WithError(err).Error("failed to deserialize cv tuple")
+		return nil, err
+	}
+
+	balance0, err := stackshelper.DeserializeCVUint(tuple["reserve0"])
+	if err != nil {
+		return nil, err
+	}
+
+	balance1, err := stackshelper.DeserializeCVUint(tuple["reserve1"])
+	if err != nil {
+		return nil, err
+	}
+
+	return []*big.Int{balance0, balance1}, nil
 }
 
 func (s *VelarLiquidityScraper) Pool() chan dia.Pool {
