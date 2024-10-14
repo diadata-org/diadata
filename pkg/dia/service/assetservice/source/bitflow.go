@@ -70,7 +70,7 @@ func (s *BitflowAssetSource) fetchAssets() {
 	}
 
 	for _, token := range tokens {
-		if token.Symbol == "STX" {
+		if token.Symbol == "STX" && token.TokenContract == "null" {
 			token.TokenContract = "0x0000000000000000000000000000000000000000"
 		}
 		s.assetChannel <- dia.Asset{
