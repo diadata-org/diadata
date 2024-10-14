@@ -18,7 +18,8 @@ import (
 
 const (
 	StacksURL                = "https://api.mainnet.hiro.so"
-	DefaultSleepBetweenCalls = 1000 // ms
+	DefaultSleepBetweenCalls = 1000  // ms
+	DefaultRefreshDelay      = 10000 // ms
 	MaxPageLimit             = 50
 )
 
@@ -99,7 +100,7 @@ func (c *StacksClient) GetAllBlockTransactions(height int) ([]Transaction, error
 		err := c.callStacksAPI(req, &resp)
 		if err != nil {
 			if strings.Contains(err.Error(), "404") {
-				return txs, nil
+				break
 			}
 			return nil, err
 		}

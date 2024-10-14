@@ -17,24 +17,23 @@ import (
 	"github.com/zekroTJA/timedmap"
 )
 
-const DefaultRefreshDelay = 10000 // ms
-
 type BitflowScraper struct {
-	logger        *logrus.Entry
-	pairScrapers  map[string]*BitflowPairScraper // pc.ExchangePair -> pairScraperSet
-	swapContracts map[string]nothing
-	shutdown      chan nothing
-	shutdownDone  chan nothing
-	errorLock     sync.RWMutex
-	error         error
-	closed        bool
-	ticker        *time.Ticker
-	exchangeName  string
-	blockchain    string
-	chanTrades    chan *dia.Trade
-	api           *stackshelper.StacksClient
-	db            *models.RelDB
-	currentHeight int
+	logger             *logrus.Entry
+	pairScrapers       map[string]*BitflowPairScraper // pc.ExchangePair -> pairScraperSet
+	swapContracts      map[string]nothing
+	shutdown           chan nothing
+	shutdownDone       chan nothing
+	errorLock          sync.RWMutex
+	error              error
+	closed             bool
+	ticker             *time.Ticker
+	exchangeName       string
+	blockchain         string
+	chanTrades         chan *dia.Trade
+	api                *stackshelper.StacksClient
+	db                 *models.RelDB
+	currentHeight      int
+	initialBlockHeight int
 }
 
 // NewBitflowScraper returns a new BitflowScraper initialized with default values.
@@ -42,8 +41,9 @@ type BitflowScraper struct {
 // ENV values:
 //
 //	 	BITFLOW_SLEEP_TIMEOUT - (optional, millisecond), make timeout between API calls, default "stackshelper.DefaultSleepBetweenCalls" value
-//		BITFLOW_REFRESH_DELAY - (optional, millisecond) refresh data after each poll, default "DefaultRefreshDelay" value
+//		BITFLOW_REFRESH_DELAY - (optional, millisecond) refresh data after each poll, default "stackshelper.DefaultRefreshDelay" value
 //		BITFLOW_HIRO_API_KEY - (optional, string), Hiro Stacks API key, improves scraping performance, default = ""
+//		BITFLOW_INITIAL_BLOCK_HEIGHT (optional, int), useful for debug, default = 0
 //		BITFLOW_DEBUG - (optional, bool), make stdout output with alephium client http call, default = false
 func NewBitflowScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *BitflowScraper {
 	envPrefix := strings.ToUpper(exchange.Name)
@@ -55,9 +55,10 @@ func NewBitflowScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		),
 	)
 	refreshDelay := utils.GetTimeDurationFromIntAsMilliseconds(
-		utils.GetenvInt(envPrefix+"_REFRESH_DELAY", DefaultRefreshDelay),
+		utils.GetenvInt(envPrefix+"_REFRESH_DELAY", stackshelper.DefaultRefreshDelay),
 	)
 	hiroAPIKey := utils.Getenv(envPrefix+"_HIRO_API_KEY", "")
+	initialBlockHeight := utils.GetenvInt(envPrefix+"_INITIAL_BLOCK_HEIGHT", 0)
 	isDebug := utils.GetenvBool(envPrefix+"_DEBUG", false)
 
 	stacksClient := stackshelper.NewStacksClient(
@@ -75,16 +76,17 @@ func NewBitflowScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 	}
 
 	s := &BitflowScraper{
-		shutdown:      make(chan nothing),
-		shutdownDone:  make(chan nothing),
-		pairScrapers:  make(map[string]*BitflowPairScraper),
-		swapContracts: swapContracts,
-		ticker:        time.NewTicker(refreshDelay),
-		chanTrades:    make(chan *dia.Trade),
-		api:           stacksClient,
-		db:            relDB,
-		exchangeName:  exchange.Name,
-		blockchain:    exchange.BlockChain.Name,
+		shutdown:           make(chan nothing),
+		shutdownDone:       make(chan nothing),
+		pairScrapers:       make(map[string]*BitflowPairScraper),
+		swapContracts:      swapContracts,
+		ticker:             time.NewTicker(refreshDelay),
+		chanTrades:         make(chan *dia.Trade),
+		api:                stacksClient,
+		db:                 relDB,
+		exchangeName:       exchange.Name,
+		blockchain:         exchange.BlockChain.Name,
+		initialBlockHeight: initialBlockHeight,
 	}
 
 	s.logger = logrus.
@@ -99,18 +101,22 @@ func NewBitflowScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 }
 
 func (s *BitflowScraper) mainLoop() {
-	latestBlock, err := s.api.GetLatestBlock()
-	if err != nil {
-		s.logger.WithError(err).Error("failed to GetLatestBlock")
-		s.cleanup(err)
-		return
+	if s.initialBlockHeight <= 0 {
+		latestBlock, err := s.api.GetLatestBlock()
+		if err != nil {
+			s.logger.WithError(err).Error("failed to GetLatestBlock")
+			s.cleanup(err)
+			return
+		}
+		s.currentHeight = latestBlock.Height
+	} else {
+		s.currentHeight = s.initialBlockHeight
 	}
-	s.currentHeight = latestBlock.Height
 
 	for {
 		select {
 		case <-s.ticker.C:
-			err = s.Update()
+			err := s.Update()
 			if err != nil {
 				s.logger.Error(err)
 			}

@@ -8,15 +8,32 @@ import (
 )
 
 const (
-	uintCV       = 0x01
-	boolTrueCV   = 0x03
-	boolFalseCV  = 0x04
-	optionNoneCV = 0x09
-	optionSomeCV = 0x0a
-	tupleCV      = 0x0c
+	clarityIntByteSize       = 16
+	clarityPrincipalByteSize = 20
+)
+
+const (
+	uintCV            = 0x01
+	boolTrueCV        = 0x03
+	boolFalseCV       = 0x04
+	principalStandard = 0x05
+	principalContract = 0x06
+	optionNoneCV      = 0x09
+	optionSomeCV      = 0x0a
+	tupleCV           = 0x0c
+	stringASCII       = 0x0d
 )
 
 type CVTuple map[string][]byte
+
+// SerializeCVUint converts a `big.Int` instance into Clarity value
+// binary representation.
+func SerializeCVUint(value *big.Int) []byte {
+	result := make([]byte, clarityIntByteSize+1)
+	result[0] = uintCV
+	value.FillBytes(result[1:])
+	return result
+}
 
 // DeserializeCVUint converts a clarity 128-bit uint value into a `big.Int`.
 func DeserializeCVUint(src []byte) (*big.Int, error) {
@@ -57,18 +74,17 @@ func SerializeCVTuple(tuple CVTuple) []byte {
 
 // DeserializeCVTuple converts binary representation of a clarity value tuple
 // into a `CVTuple` map.
-// IMPORTANT: this function only supports uint and bool values at the moment,
-// therefore it should NOT be used as a complete solution to deserialize any
-// arbitrary clarity tuple.
+// IMPORTANT: this function supports a limited amount of Clarity types at the
+// moment, therefore it should NOT be used as a complete solution to
+// deserialize any arbitrary Clarity tuple.
 func DeserializeCVTuple(src []byte) (CVTuple, error) {
 	if src[0] != tupleCV {
 		err := errors.New("value is not a CV tuple")
 		return nil, err
 	}
 
-	length := binary.BigEndian.Uint32(src[1:5])
+	length := readClarityTypeSize(src[1:])
 	result := make(CVTuple, length)
-
 	offset := 5
 
 	for i := 0; i < int(length); i++ {
@@ -76,8 +92,30 @@ func DeserializeCVTuple(src []byte) (CVTuple, error) {
 		offset += keySize + 1
 
 		valueSize := 1
-		if src[offset] == uintCV {
-			valueSize += 16
+
+		switch src[offset] {
+		case uintCV:
+			valueSize += clarityIntByteSize
+		case principalStandard:
+			valueSize += clarityPrincipalByteSize + 1
+		case principalContract:
+			principalSize := clarityPrincipalByteSize + 1
+			valueSize += principalSize + int(src[offset+principalSize+1]) + 1
+		case tupleCV:
+			tuple, err := DeserializeCVTuple(src[offset:])
+			if err != nil {
+				return nil, err
+			}
+			valueSize += 4
+
+			for k, v := range tuple {
+				entrySize := len(serializeLPString(k)) + len(v)
+				valueSize += entrySize
+			}
+		case stringASCII:
+			size := readClarityTypeSize(src[offset+1:])
+			valueSize += 4 + int(size)
+		default:
 		}
 
 		result[key] = src[offset : offset+valueSize]
@@ -107,4 +145,8 @@ func serializeLPString(val string) []byte {
 func deserializeLPString(val []byte) (string, int) {
 	size := int(val[0])
 	return string(val[1 : size+1]), size
+}
+
+func readClarityTypeSize(src []byte) uint32 {
+	return binary.BigEndian.Uint32(src[0:4])
 }
