@@ -118,7 +118,7 @@ func (s *BitflowLiquidityScraper) fetchPools() {
 			// Workaround to fetch the native STX token data from DB
 			key := address
 			if address == "" {
-				key = "null"
+				key = "0x0000000000000000000000000000000000000000"
 			}
 
 			assset, err := s.relDB.GetAsset(key, s.blockchain)

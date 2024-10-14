@@ -42,6 +42,7 @@ var (
 		dia.ZenlinkswapExchangeBifrostPolkadot,
 		dia.PearlfiExchangeTestnet,
 		dia.PanCakeSwapExchangeV3,
+		dia.BitflowExchange,
 	}
 
 	exchange = flag.String("exchange", "", "which exchange")

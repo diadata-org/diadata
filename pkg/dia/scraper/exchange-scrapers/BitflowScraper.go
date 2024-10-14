@@ -14,6 +14,7 @@ import (
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/sirupsen/logrus"
+	"github.com/zekroTJA/timedmap"
 )
 
 const DefaultRefreshDelay = 10000 // ms
@@ -36,7 +37,7 @@ type BitflowScraper struct {
 	currentHeight int
 }
 
-// NewAyinScraper returns a new AyinScraper initialized with default values.
+// NewBitflowScraper returns a new BitflowScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
 // ENV values:
 //
@@ -150,6 +151,8 @@ func (s *BitflowScraper) Update() error {
 	}
 
 	for _, pool := range pools {
+		tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+		tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
 		if len(pool.Assetvolumes) != 2 {
 			s.logger.WithField("poolAddress", pool.Address).Error("pool is missing required asset volumes")
 			continue
@@ -168,12 +171,16 @@ func (s *BitflowScraper) Update() error {
 			}
 
 			diaTrade := s.handleTrade(&pool, &tx)
-			s.logger.
-				WithField("parentAddress", pool.Address).
-				WithField("height", s.currentHeight).
-				WithField("diaTrade", diaTrade).
-				Info("trade")
-			s.chanTrades <- diaTrade
+			log.Infof("got trade at height %v: %v -- %s -- %v --%v -- %s", s.currentHeight, diaTrade.Time, diaTrade.Pair, diaTrade.Price, diaTrade.Volume, diaTrade.ForeignTradeID)
+			discardTrade := diaTrade.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+			if discardTrade {
+				log.Warn("Identical trade already scraped: ", diaTrade)
+				continue
+			} else {
+				diaTrade.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+				s.chanTrades <- diaTrade
+			}
+
 		}
 	}
 
@@ -242,15 +249,15 @@ func (s *BitflowScraper) handleTrade(pool *dia.Pool, tx *stackshelper.Transactio
 
 	return &dia.Trade{
 		Time:           time.Unix(int64(tx.BlockTime), 0),
-		Symbol:         symbolPair,
+		Symbol:         pool.Assetvolumes[0].Asset.Symbol,
 		Pair:           symbolPair,
 		ForeignTradeID: tx.TxID,
 		Source:         s.exchangeName,
 		Price:          price,
 		Volume:         volume,
 		VerifiedPair:   true,
-		BaseToken:      pool.Assetvolumes[0].Asset,
-		QuoteToken:     pool.Assetvolumes[1].Asset,
+		BaseToken:      pool.Assetvolumes[1].Asset,
+		QuoteToken:     pool.Assetvolumes[0].Asset,
 		PoolAddress:    pool.Address,
 	}
 }
