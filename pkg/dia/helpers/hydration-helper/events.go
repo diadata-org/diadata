@@ -8,6 +8,36 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+type BaseEventRecords struct {
+	types.EventRecords
+}
+
+type CustomEventRecords struct {
+	types.EventRecords
+	Treasury_UpdatedInactive []EventTreasuryUpdatedInactive //nolint:stylecheck,golint
+	DCA_ExecutionStarted     []EventDCAExecutionStarted     //nolint:stylecheck,golint
+	DCA_ExecutionPlanned     []EventDCAExecutionPlanned     //nolint:stylecheck,golint
+	// OmnipolSellExecuted      []EventSellExecuted
+	// XYKSellExecuted          []EventSellExecuted
+}
+
+type EventTreasuryUpdatedInactive struct {
+	Phase       types.Phase  `json:"phase"`
+	Reactivated types.U128   `json:"reactivated"`
+	Deactivated types.U128   `json:"deactivated"`
+	Topics      []types.Hash `json:"topics"`
+}
+
+type EventDCAExecutionStarted struct {
+	Phase  types.Phase  `json:"phase"`
+	Topics []types.Hash `json:"topics"`
+}
+
+type EventDCAExecutionPlanned struct {
+	Phase  types.Phase  `json:"phase"`
+	Topics []types.Hash `json:"topics"`
+}
+
 type EventSellExecuted struct {
 	AssetIn   types.U32  `json:"asset_in"`
 	AssetOut  types.U32  `json:"asset_out"`
@@ -41,21 +71,26 @@ func (s *SubstrateEventHelper) DecodeEvents(blockHash types.Hash) (*[]EventSellE
 		return nil, fmt.Errorf("failed to create storage key for events: %v", err)
 	}
 
-	events := []EventSellExecuted{}
-	ok, err := s.API.RPC.State.GetStorage(key, &events, blockHash)
-	if err != nil || !ok {
-		s.logger.Info(err)
-		return nil, fmt.Errorf("failed to get events from block: %v", err)
+	s.logger.Info("BlockHash: ", blockHash.Hex())
+	rawData, err := s.API.RPC.State.GetStorageRaw(key, blockHash)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get storage raw data: %v", err)
 	}
 
-	if err != nil || !ok {
-		s.logger.WithError(err).Info("Error:")
-		return nil, fmt.Errorf("failed to get events from block: %v", err)
+	events := CustomEventRecords{}
+	if err = types.EventRecordsRaw(*rawData).DecodeEventRecords(meta, &events); err != nil {
+		return nil, fmt.Errorf("failed to decode event records: %v", err)
 	}
+
+	// var er CustomEventRecords
+	// _, err = s.API.RPC.State.GetStorage(key, &er, blockHash)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	s.logger.Info("Events: ", events)
 
-	return &events, nil
+	return nil, nil
 }
 
 func (s *SubstrateEventHelper) ListenForSpecificBlock(blockNumber uint64, callback func(*[]EventSellExecuted)) error {
