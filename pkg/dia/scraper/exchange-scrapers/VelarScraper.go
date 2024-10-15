@@ -190,39 +190,48 @@ func (s *VelarScraper) filterSwapTransactions(txs []stackshelper.Transaction) []
 func (s *VelarScraper) handleTrade(pool *dia.Pool, swapInfo velarhelper.SwapInfo, tx stackshelper.Transaction) *dia.Trade {
 	var volume, price float64
 
-	baseToken := pool.Assetvolumes[0].Asset
-	quoteToken := pool.Assetvolumes[1].Asset
+	token0 := pool.Assetvolumes[0].Asset
+	token1 := pool.Assetvolumes[1].Asset
 
 	amountIn := swapInfo.AmountIn.String()
 	amountOut := swapInfo.AmountOut.String()
 
-	if swapInfo.TokenIn == baseToken.Address {
-		amount0In, _ := utils.StringToFloat64(amountIn, int64(baseToken.Decimals))
-		amount1Out, _ := utils.StringToFloat64(amountOut, int64(quoteToken.Decimals))
-		volume = amount0In
-		price = amount1Out / amount0In
+	var trade dia.Trade
+
+	if swapInfo.TokenIn == token0.Address {
+		log.Info("here")
+		trade.Pair = fmt.Sprintf("%s-%s", token1.Symbol, token0.Symbol)
+		trade.Symbol = token1.Symbol
+		trade.BaseToken = token0
+		trade.QuoteToken = token1
+
+		amount0In, _ := utils.StringToFloat64(amountIn, int64(token0.Decimals))
+		amount1Out, _ := utils.StringToFloat64(amountOut, int64(token1.Decimals))
+		volume = amount1Out
+		price = amount0In / amount1Out
+
 	} else {
-		amount1In, _ := utils.StringToFloat64(amountIn, int64(quoteToken.Decimals))
-		amount0Out, _ := utils.StringToFloat64(amountOut, int64(baseToken.Decimals))
-		volume = -amount0Out
+		log.Info("there")
+		trade.Pair = fmt.Sprintf("%s-%s", token0.Symbol, token1.Symbol)
+		trade.Symbol = token0.Symbol
+		trade.BaseToken = token1
+		trade.QuoteToken = token0
+
+		amount1In, _ := utils.StringToFloat64(amountIn, int64(token1.Decimals))
+		amount0Out, _ := utils.StringToFloat64(amountOut, int64(token0.Decimals))
+		volume = amount0Out
 		price = amount1In / amount0Out
 	}
 
-	symbolPair := fmt.Sprintf("%s-%s", baseToken.Symbol, quoteToken.Symbol)
+	trade.Time = time.Unix(int64(tx.BlockTime), 0)
+	trade.ForeignTradeID = tx.TxID
+	trade.Source = s.exchangeName
+	trade.Price = price
+	trade.Volume = volume
+	trade.VerifiedPair = true
 
-	return &dia.Trade{
-		Time:           time.Unix(int64(tx.BlockTime), 0),
-		Symbol:         symbolPair,
-		Pair:           symbolPair,
-		ForeignTradeID: tx.TxID,
-		Source:         s.exchangeName,
-		Price:          price,
-		Volume:         volume,
-		VerifiedPair:   true,
-		BaseToken:      baseToken,
-		QuoteToken:     quoteToken,
-		PoolAddress:    pool.Address,
-	}
+	trade.PoolAddress = pool.Address
+	return &trade
 }
 
 func (s *VelarScraper) FetchAvailablePairs() ([]dia.ExchangePair, error) {
