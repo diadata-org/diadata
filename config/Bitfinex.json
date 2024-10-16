@@ -487,36 +487,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "LEO",
-            "ForeignName": "LEOUSD",
-            "Exchange": "Bitfinex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LEO",
-            "ForeignName": "LEOBTC",
-            "Exchange": "Bitfinex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LEO",
-            "ForeignName": "LEOUST",
-            "Exchange": "Bitfinex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LEO",
-            "ForeignName": "LEOEOS",
-            "Exchange": "Bitfinex",
-            "Ignore": false
-        },
-        {
-            "Symbol": "LEO",
-            "ForeignName": "LEOETH",
-            "Exchange": "Bitfinex",
-            "Ignore": false
-        },
-        {
             "Symbol": "LRC",
             "ForeignName": "LRCUSD",
             "Exchange": "Bitfinex",
