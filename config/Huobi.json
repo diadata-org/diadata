@@ -1,610 +1,622 @@
 {
-  "Coins": [
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "AAVEUSDT",
-      "Ignore": false,
-      "Symbol": "AAVE"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ADABTC",
-      "Ignore": false,
-      "Symbol": "ADA"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ADAETH",
-      "Ignore": false,
-      "Symbol": "ADA"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ADAUSDT",
-      "Ignore": false,
-      "Symbol": "ADA"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "AKROUSDT",
-      "Ignore": false,
-      "Symbol": "AKRO"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "AKTUSDT",
-      "Ignore": false,
-      "Symbol": "AKT"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ANKRUSDT",
-      "Ignore": false,
-      "Symbol": "ANKR"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ANTUSDT",
-      "Ignore": false,
-      "Symbol": "ANT"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "APTUSDT",
-      "Ignore": false,
-      "Symbol": "APT"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ARUSDT",
-      "Ignore": false,
-      "Symbol": "AR"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ARBUSDT",
-      "Ignore": false,
-      "Symbol": "ARB"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ASTRUSDT",
-      "Ignore": false,
-      "Symbol": "ASTR"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ATOMUSDT",
-      "Ignore": false,
-      "Symbol": "ATOM"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "AURORAUSDT",
-      "Ignore": false,
-      "Symbol": "AURORA"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "AXSUSDT",
-      "Ignore": false,
-      "Symbol": "AXS"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "AZEROUSDT",
-      "Ignore": false,
-      "Symbol": "AZERO"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "BALUSDT",
-      "Ignore": false,
-      "Symbol": "BAL"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "BCHBTC",
-      "Ignore": false,
-      "Symbol": "BCH"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "BCHUSDT",
-      "Ignore": false,
-      "Symbol": "BCH"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "BTGBTC",
-      "Ignore": false,
-      "Symbol": "BTG"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "CHRUSDT",
-      "Ignore": false,
-      "Symbol": "CHR"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "CKBUSDT",
-      "Ignore": false,
-      "Symbol": "CKB"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "CRVUSDT",
-      "Ignore": false,
-      "Symbol": "CRV"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "CUSDUSDT",
-      "Ignore": false,
-      "Symbol": "CUSD"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "CVXUSDT",
-      "Ignore": false,
-      "Symbol": "CVX"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "DASHBTC",
-      "Ignore": false,
-      "Symbol": "DASH"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "DASHUSDT",
-      "Ignore": false,
-      "Symbol": "DASH"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "DCRBTC",
-      "Ignore": false,
-      "Symbol": "DCR"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "DCRETH",
-      "Ignore": false,
-      "Symbol": "DCR"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "DEGENUSDT",
-      "Ignore": false,
-      "Symbol": "DEGEN"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "DGBBTC",
-      "Ignore": false,
-      "Symbol": "DGB"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "DOGEUSDT",
-      "Ignore": false,
-      "Symbol": "DOGE"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "DOTUSDT",
-      "Ignore": false,
-      "Symbol": "DOT"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ENAUSDT",
-      "Ignore": false,
-      "Symbol": "ENA"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "EOSBTC",
-      "Ignore": false,
-      "Symbol": "EOS"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "EOSETH",
-      "Ignore": false,
-      "Symbol": "EOS"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "EOSUSDT",
-      "Ignore": false,
-      "Symbol": "EOS"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ETCBTC",
-      "Ignore": false,
-      "Symbol": "ETC"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ETCUSDT",
-      "Ignore": false,
-      "Symbol": "ETC"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "EUROCUSDT",
-      "Ignore": false,
-      "Symbol": "EUROC"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "FLOWUSDT",
-      "Ignore": false,
-      "Symbol": "FLOW"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "FUSEUSDT",
-      "Ignore": false,
-      "Symbol": "FUSE"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "GLMUSDT",
-      "Ignore": false,
-      "Symbol": "GLM"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "GMXUSDT",
-      "Ignore": false,
-      "Symbol": "GMX"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "GRAILUSDT",
-      "Ignore": false,
-      "Symbol": "GRAIL"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "GRTUSDT",
-      "Ignore": false,
-      "Symbol": "GRT"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "KAVAUSDT",
-      "Ignore": false,
-      "Symbol": "KAVA"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "KNCUSDT",
-      "Ignore": false,
-      "Symbol": "KNC"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "KSMUSDT",
-      "Ignore": false,
-      "Symbol": "KSM"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "LSKBTC",
-      "Ignore": false,
-      "Symbol": "LSK"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "LSKETH",
-      "Ignore": false,
-      "Symbol": "LSK"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "LTCBTC",
-      "Ignore": false,
-      "Symbol": "LTC"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "LTCUSDT",
-      "Ignore": false,
-      "Symbol": "LTC"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "LUNAUSDT",
-      "Ignore": false,
-      "Symbol": "LUNA"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "MCRTUSDT",
-      "Ignore": false,
-      "Symbol": "MCRT"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "IOTABTC",
-      "Ignore": false,
-      "Symbol": "MIOTA"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "IOTAETH",
-      "Ignore": false,
-      "Symbol": "MIOTA"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "IOTAUSDT",
-      "Ignore": false,
-      "Symbol": "MIOTA"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "MOGUSDT",
-      "Ignore": false,
-      "Symbol": "MOG"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "NEARUSDT",
-      "Ignore": false,
-      "Symbol": "NEAR"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "OMGBTC",
-      "Ignore": false,
-      "Symbol": "OMG"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "OMGETH",
-      "Ignore": false,
-      "Symbol": "OMG"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "OMGUSDT",
-      "Ignore": false,
-      "Symbol": "OMG"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ONDOUSDT",
-      "Ignore": false,
-      "Symbol": "ONDO"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ONTUSDT",
-      "Ignore": false,
-      "Symbol": "ONT"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ORDIUSDT",
-      "Ignore": false,
-      "Symbol": "ORDI"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "PENDLEUSDT",
-      "Ignore": false,
-      "Symbol": "PENDLE"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "PEPEUSDT",
-      "Ignore": false,
-      "Symbol": "PEPE"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "QTUMBTC",
-      "Ignore": false,
-      "Symbol": "QTUM"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "QTUMETH",
-      "Ignore": false,
-      "Symbol": "QTUM"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "QTUMUSDT",
-      "Ignore": false,
-      "Symbol": "QTUM"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "QUICKUSDT",
-      "Ignore": false,
-      "Symbol": "QUICK"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "RDNTUSDT",
-      "Ignore": false,
-      "Symbol": "RDNT"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "SANDUSDT",
-      "Ignore": false,
-      "Symbol": "SAND"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "SDNUSDT",
-      "Ignore": false,
-      "Symbol": "SDN"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "SEIUSDT",
-      "Ignore": false,
-      "Symbol": "SEI"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "SNTBTC",
-      "Ignore": false,
-      "Symbol": "SNT"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "SNTUSDT",
-      "Ignore": false,
-      "Symbol": "SNT"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "SPAUSDT",
-      "Ignore": false,
-      "Symbol": "SPA"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "STEEMBTC",
-      "Ignore": false,
-      "Symbol": "STEEM"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "STEEMETH",
-      "Ignore": false,
-      "Symbol": "STEEM"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "STGUSDT",
-      "Ignore": false,
-      "Symbol": "STG"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "STRKUSDT",
-      "Ignore": false,
-      "Symbol": "STRK"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "SUIUSDT",
-      "Ignore": false,
-      "Symbol": "SUI"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "TIAUSDT",
-      "Ignore": false,
-      "Symbol": "TIA"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "TLOSUSDT",
-      "Ignore": false,
-      "Symbol": "TLOS"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "TONUSDT",
-      "Ignore": false,
-      "Symbol": "TON"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "VLXUSDT",
-      "Ignore": false,
-      "Symbol": "VLX"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "VRTXUSDT",
-      "Ignore": false,
-      "Symbol": "VRTX"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "WELLUSDT",
-      "Ignore": false,
-      "Symbol": "WELL"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "WIFUSDT",
-      "Ignore": false,
-      "Symbol": "WIF"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "WLDUSDT",
-      "Ignore": false,
-      "Symbol": "WLD"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "XAUTUSDT",
-      "Ignore": false,
-      "Symbol": "XAUT"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "XMRBTC",
-      "Ignore": false,
-      "Symbol": "XMR"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "XMRETH",
-      "Ignore": false,
-      "Symbol": "XMR"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "XRPBTC",
-      "Ignore": false,
-      "Symbol": "XRP"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "XRPUSDT",
-      "Ignore": false,
-      "Symbol": "XRP"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "XFIUSDT",
-      "Ignore": false,
-      "Symbol": "XFI"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "YFIUSDT",
-      "Ignore": false,
-      "Symbol": "YFI"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ZECBTC",
-      "Ignore": false,
-      "Symbol": "ZEC"
-    },
-    {
-      "Exchange": "Huobi",
-      "ForeignName": "ZRXBTC",
-      "Ignore": false,
-      "Symbol": "ZRX"
-    }
-  ]
+    "Coins": [
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "AAVEUSDT",
+            "Ignore": false,
+            "Symbol": "AAVE"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "ADABTC",
+            "Ignore": false,
+            "Symbol": "ADA"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "ADAETH",
+            "Ignore": false,
+            "Symbol": "ADA"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "ADAUSDT",
+            "Ignore": false,
+            "Symbol": "ADA"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "AKROUSDT",
+            "Ignore": false,
+            "Symbol": "AKRO"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "AKTUSDT",
+            "Ignore": false,
+            "Symbol": "AKT"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "ANKRUSDT",
+            "Ignore": false,
+            "Symbol": "ANKR"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "ANTUSDT",
+            "Ignore": false,
+            "Symbol": "ANT"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "APTUSDT",
+            "Ignore": false,
+            "Symbol": "APT"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "ARUSDT",
+            "Ignore": false,
+            "Symbol": "AR"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "ARBUSDT",
+            "Ignore": false,
+            "Symbol": "ARB"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "ASTRUSDT",
+            "Ignore": false,
+            "Symbol": "ASTR"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "ATOMUSDT",
+            "Ignore": false,
+            "Symbol": "ATOM"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "AURORAUSDT",
+            "Ignore": false,
+            "Symbol": "AURORA"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "AXSUSDT",
+            "Ignore": false,
+            "Symbol": "AXS"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "AZEROUSDT",
+            "Ignore": false,
+            "Symbol": "AZERO"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "BALUSDT",
+            "Ignore": false,
+            "Symbol": "BAL"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "BCHBTC",
+            "Ignore": false,
+            "Symbol": "BCH"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "BCHUSDT",
+            "Ignore": false,
+            "Symbol": "BCH"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "BTGBTC",
+            "Ignore": false,
+            "Symbol": "BTG"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "CHRUSDT",
+            "Ignore": false,
+            "Symbol": "CHR"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "CKBUSDT",
+            "Ignore": false,
+            "Symbol": "CKB"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "CRVUSDT",
+            "Ignore": false,
+            "Symbol": "CRV"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "CUSDUSDT",
+            "Ignore": false,
+            "Symbol": "CUSD"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "CVXUSDT",
+            "Ignore": false,
+            "Symbol": "CVX"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "DASHBTC",
+            "Ignore": false,
+            "Symbol": "DASH"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "DASHUSDT",
+            "Ignore": false,
+            "Symbol": "DASH"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "DCRBTC",
+            "Ignore": false,
+            "Symbol": "DCR"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "DCRETH",
+            "Ignore": false,
+            "Symbol": "DCR"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "DEGENUSDT",
+            "Ignore": false,
+            "Symbol": "DEGEN"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "DGBBTC",
+            "Ignore": false,
+            "Symbol": "DGB"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "DOGEUSDT",
+            "Ignore": false,
+            "Symbol": "DOGE"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "DOTUSDT",
+            "Ignore": false,
+            "Symbol": "DOT"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "ENAUSDT",
+            "Ignore": false,
+            "Symbol": "ENA"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "EOSBTC",
+            "Ignore": false,
+            "Symbol": "EOS"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "EOSETH",
+            "Ignore": false,
+            "Symbol": "EOS"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "EOSUSDT",
+            "Ignore": false,
+            "Symbol": "EOS"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "ETCBTC",
+            "Ignore": false,
+            "Symbol": "ETC"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "ETCUSDT",
+            "Ignore": false,
+            "Symbol": "ETC"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "EUROCUSDT",
+            "Ignore": false,
+            "Symbol": "EUROC"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "FLOWUSDT",
+            "Ignore": false,
+            "Symbol": "FLOW"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "FUSEUSDT",
+            "Ignore": false,
+            "Symbol": "FUSE"
+        },
+        {
+            "Exchange": "Huobi",
+            "Ignore": false,
+            "ForeignName": "GALAUSDT",
+            "Symbol": "GALA"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "GLMUSDT",
+            "Ignore": false,
+            "Symbol": "GLM"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "GMXUSDT",
+            "Ignore": false,
+            "Symbol": "GMX"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "GRAILUSDT",
+            "Ignore": false,
+            "Symbol": "GRAIL"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "GRTUSDT",
+            "Ignore": false,
+            "Symbol": "GRT"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "KAVAUSDT",
+            "Ignore": false,
+            "Symbol": "KAVA"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "KNCUSDT",
+            "Ignore": false,
+            "Symbol": "KNC"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "KSMUSDT",
+            "Ignore": false,
+            "Symbol": "KSM"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "LSKBTC",
+            "Ignore": false,
+            "Symbol": "LSK"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "LSKETH",
+            "Ignore": false,
+            "Symbol": "LSK"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "LTCBTC",
+            "Ignore": false,
+            "Symbol": "LTC"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "LTCUSDT",
+            "Ignore": false,
+            "Symbol": "LTC"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "LUNAUSDT",
+            "Ignore": false,
+            "Symbol": "LUNA"
+        },
+        {
+            "Exchange": "Huobi",
+            "Ignore": false,
+            "ForeignName": "MAVIAUSDT",
+            "Symbol": "MAVIA"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "MCRTUSDT",
+            "Ignore": false,
+            "Symbol": "MCRT"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "IOTABTC",
+            "Ignore": false,
+            "Symbol": "MIOTA"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "IOTAETH",
+            "Ignore": false,
+            "Symbol": "MIOTA"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "IOTAUSDT",
+            "Ignore": false,
+            "Symbol": "MIOTA"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "MOGUSDT",
+            "Ignore": false,
+            "Symbol": "MOG"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "NEARUSDT",
+            "Ignore": false,
+            "Symbol": "NEAR"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "OMGBTC",
+            "Ignore": false,
+            "Symbol": "OMG"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "OMGETH",
+            "Ignore": false,
+            "Symbol": "OMG"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "OMGUSDT",
+            "Ignore": false,
+            "Symbol": "OMG"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "ONDOUSDT",
+            "Ignore": false,
+            "Symbol": "ONDO"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "ONTUSDT",
+            "Ignore": false,
+            "Symbol": "ONT"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "ORDIUSDT",
+            "Ignore": false,
+            "Symbol": "ORDI"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "PENDLEUSDT",
+            "Ignore": false,
+            "Symbol": "PENDLE"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "PEPEUSDT",
+            "Ignore": false,
+            "Symbol": "PEPE"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "QTUMBTC",
+            "Ignore": false,
+            "Symbol": "QTUM"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "QTUMETH",
+            "Ignore": false,
+            "Symbol": "QTUM"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "QTUMUSDT",
+            "Ignore": false,
+            "Symbol": "QTUM"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "QUICKUSDT",
+            "Ignore": false,
+            "Symbol": "QUICK"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "RDNTUSDT",
+            "Ignore": false,
+            "Symbol": "RDNT"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "SANDUSDT",
+            "Ignore": false,
+            "Symbol": "SAND"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "SDNUSDT",
+            "Ignore": false,
+            "Symbol": "SDN"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "SEIUSDT",
+            "Ignore": false,
+            "Symbol": "SEI"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "SNTBTC",
+            "Ignore": false,
+            "Symbol": "SNT"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "SNTUSDT",
+            "Ignore": false,
+            "Symbol": "SNT"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "SPAUSDT",
+            "Ignore": false,
+            "Symbol": "SPA"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "STEEMBTC",
+            "Ignore": false,
+            "Symbol": "STEEM"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "STEEMETH",
+            "Ignore": false,
+            "Symbol": "STEEM"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "STGUSDT",
+            "Ignore": false,
+            "Symbol": "STG"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "STRKUSDT",
+            "Ignore": false,
+            "Symbol": "STRK"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "SUIUSDT",
+            "Ignore": false,
+            "Symbol": "SUI"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "TIAUSDT",
+            "Ignore": false,
+            "Symbol": "TIA"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "TLOSUSDT",
+            "Ignore": false,
+            "Symbol": "TLOS"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "TONUSDT",
+            "Ignore": false,
+            "Symbol": "TON"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "VLXUSDT",
+            "Ignore": false,
+            "Symbol": "VLX"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "VRTXUSDT",
+            "Ignore": false,
+            "Symbol": "VRTX"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "WELLUSDT",
+            "Ignore": false,
+            "Symbol": "WELL"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "WIFUSDT",
+            "Ignore": false,
+            "Symbol": "WIF"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "WLDUSDT",
+            "Ignore": false,
+            "Symbol": "WLD"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "XAUTUSDT",
+            "Ignore": false,
+            "Symbol": "XAUT"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "XFIUSDT",
+            "Ignore": false,
+            "Symbol": "XFI"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "XMRBTC",
+            "Ignore": false,
+            "Symbol": "XMR"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "XMRETH",
+            "Ignore": false,
+            "Symbol": "XMR"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "XRPBTC",
+            "Ignore": false,
+            "Symbol": "XRP"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "XRPUSDT",
+            "Ignore": false,
+            "Symbol": "XRP"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "YFIUSDT",
+            "Ignore": false,
+            "Symbol": "YFI"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "ZECBTC",
+            "Ignore": false,
+            "Symbol": "ZEC"
+        },
+        {
+            "Exchange": "Huobi",
+            "ForeignName": "ZRXBTC",
+            "Ignore": false,
+            "Symbol": "ZRX"
+        }
+    ]
 }

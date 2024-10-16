@@ -43,14 +43,14 @@
             "Ignore": false
         },
         {
-            "Symbol": "AERO",
-            "ForeignName": "AERO_USDT",
+            "Symbol": "ADA",
+            "ForeignName": "ADA_USDT",
             "Exchange": "Crypto.com",
             "Ignore": false
         },
         {
-            "Symbol": "ADA",
-            "ForeignName": "ADA_USDT",
+            "Symbol": "AERO",
+            "ForeignName": "AERO_USDT",
             "Exchange": "Crypto.com",
             "Ignore": false
         },
@@ -385,6 +385,18 @@
             "Ignore": false
         },
         {
+            "Exchange": "Crypto.com",
+            "Ignore": false,
+            "ForeignName": "GALA_USDT",
+            "Symbol": "GALA"
+        },
+        {
+            "Exchange": "Crypto.com",
+            "Ignore": false,
+            "ForeignName": "GALA_USD",
+            "Symbol": "GALA"
+        },
+        {
             "Symbol": "GEL",
             "ForeignName": "GEL_USD",
             "Exchange": "Crypto.com",
@@ -703,6 +715,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "WBTC",
+            "ForeignName": "WBTC_BTC",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
             "Symbol": "XLM",
             "ForeignName": "XLM_BTC",
             "Exchange": "Crypto.com",
@@ -711,12 +729,6 @@
         {
             "Symbol": "XLM",
             "ForeignName": "XLM_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "WBTC",
-            "ForeignName": "WBTC_BTC",
             "Exchange": "Crypto.com",
             "Ignore": false
         },

@@ -164,6 +164,12 @@
         },
         {
             "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "GALAUSDT",
+            "Symbol": "GALA"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "GMXUSDT",
             "Ignore": false,
             "Symbol": "GMX"
@@ -326,6 +332,24 @@
         },
         {
             "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "STXUSDT",
+            "Symbol": "STX"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "STXBTC",
+            "Symbol": "STX"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "STXUSDC",
+            "Symbol": "STX"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "SUIUSDT",
             "Ignore": false,
             "Symbol": "SUI"
@@ -392,18 +416,6 @@
         },
         {
             "Exchange": "Binance",
-            "ForeignName": "wBETHETH",
-            "Ignore": false,
-            "Symbol": "wBETH"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "wBETHUSDT",
-            "Ignore": false,
-            "Symbol": "wBETH"
-        },
-        {
-            "Exchange": "Binance",
             "ForeignName": "WIFUSDT",
             "Ignore": false,
             "Symbol": "WIF"
@@ -449,6 +461,18 @@
             "ForeignName": "ZROFDUSD",
             "Ignore": false,
             "Symbol": "ZRO"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "wBETHETH",
+            "Ignore": false,
+            "Symbol": "wBETH"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "wBETHUSDT",
+            "Ignore": false,
+            "Symbol": "wBETH"
         }
     ]
 }

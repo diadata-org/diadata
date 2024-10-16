@@ -13,6 +13,12 @@
       "Ignore": false
     },
     {
+      "Exchange": "MEXC",
+      "Ignore": false,
+      "ForeignName": "ALEXUSDT",
+      "Symbol": "ALEX"
+    },
+    {
       "Symbol": "ALPH",
       "ForeignName": "ALPHUSDT",
       "Exchange": "MEXC",
@@ -163,14 +169,20 @@
       "Ignore": false
     },
     {
+      "Symbol": "DAI",
+      "ForeignName": "DAIUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "DEGEN",
       "ForeignName": "DEGENUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     },
     {
-      "Symbol": "DAI",
-      "ForeignName": "DAIUSDT",
+      "Symbol": "DIKO",
+      "ForeignName": "DIKOUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     },
@@ -367,6 +379,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "KLIMA",
+      "ForeignName": "KLIMAUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "KNC",
       "ForeignName": "KNCUSDT",
       "Exchange": "MEXC",
@@ -387,6 +405,12 @@
     {
       "Symbol": "KWENTA",
       "ForeignName": "KWENTAUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "LEO",
+      "ForeignName": "LEOUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     },
@@ -427,6 +451,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "MAVIA",
+      "ForeignName": "MAVIAUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "MCB",
       "ForeignName": "MCBUSDT",
       "Exchange": "MEXC",
@@ -439,14 +469,14 @@
       "Ignore": false
     },
     {
-      "Symbol": "MIGGLES",
-      "ForeignName": "MIGGLESUSDT",
+      "Symbol": "METIS",
+      "ForeignName": "METISUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     },
     {
-      "Symbol": "METIS",
-      "ForeignName": "METISUSDT",
+      "Symbol": "MIGGLES",
+      "ForeignName": "MIGGLESUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     },
@@ -625,6 +655,12 @@
       "Ignore": false
     },
     {
+      "Exchange": "MEXC",
+      "Ignore": false,
+      "ForeignName": "STXUSDT",
+      "Symbol": "STX"
+    },
+    {
       "Symbol": "SYN",
       "ForeignName": "SYNUSDT",
       "Exchange": "MEXC",
@@ -733,8 +769,8 @@
       "Ignore": false
     },
     {
-      "Symbol": "YFI",
-      "ForeignName": "YFIUSDT",
+      "Symbol": "WELSH",
+      "ForeignName": "WELSHUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     },
@@ -753,6 +789,12 @@
     {
       "Symbol": "XRP",
       "ForeignName": "XRPUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
+      "Symbol": "YFI",
+      "ForeignName": "YFIUSDT",
       "Exchange": "MEXC",
       "Ignore": false
     },

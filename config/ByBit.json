@@ -109,14 +109,14 @@
             "Ignore": false
         },
         {
-            "Symbol": "BONK",
-            "ForeignName": "BONKUSDT",
+            "Symbol": "BNB",
+            "ForeignName": "BNBUSDT",
             "Exchange": "ByBit",
             "Ignore": false
         },
         {
-            "Symbol": "BNB",
-            "ForeignName": "BNBUSDT",
+            "Symbol": "BONK",
+            "ForeignName": "BONKUSDT",
             "Exchange": "ByBit",
             "Ignore": false
         },
@@ -505,6 +505,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "MAVIAUSDT",
+            "Symbol": "MAVIA"
+        },
+        {
             "Symbol": "MCRT",
             "ForeignName": "MCRTUSDT",
             "Exchange": "ByBit",
@@ -541,14 +547,14 @@
             "Ignore": false
         },
         {
-            "Symbol": "ORDI",
-            "ForeignName": "ORDIUSDT",
+            "Symbol": "ONDO",
+            "ForeignName": "ONDOUSDT",
             "Exchange": "ByBit",
             "Ignore": false
         },
         {
-            "Symbol": "ONDO",
-            "ForeignName": "ONDOUSDT",
+            "Symbol": "ORDI",
+            "ForeignName": "ORDIUSDT",
             "Exchange": "ByBit",
             "Ignore": false
         },
@@ -569,6 +575,12 @@
             "ForeignName": "POLUSDT",
             "Exchange": "ByBit",
             "Ignore": false
+        },
+        {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "PRIMEUSDT",
+            "Symbol": "PRIME"
         },
         {
             "Symbol": "PSP",
@@ -767,6 +779,12 @@
             "ForeignName": "VELAUSDT",
             "Exchange": "ByBit",
             "Ignore": false
+        },
+        {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "VELARUSDT",
+            "Symbol": "VELAR"
         },
         {
             "Symbol": "VET",

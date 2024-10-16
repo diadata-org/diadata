@@ -13,14 +13,20 @@
             "Ignore": false
         },
         {
-            "Symbol": "ALPH",
-            "ForeignName": "ALPHUSDT",
+            "Symbol": "AERO",
+            "ForeignName": "AEROUSDT",
             "Exchange": "Bitget",
             "Ignore": false
         },
         {
-            "Symbol": "AERO",
-            "ForeignName": "AEROUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "ALEXUSDT",
+            "Symbol": "ALEX"
+        },
+        {
+            "Symbol": "ALPH",
+            "ForeignName": "ALPHUSDT",
             "Exchange": "Bitget",
             "Ignore": false
         },
@@ -169,6 +175,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "GALAUSDT",
+            "Symbol": "GALA"
+        },
+        {
             "Symbol": "GLMR",
             "ForeignName": "GLMRUSDT",
             "Exchange": "Bitget",
@@ -221,6 +233,12 @@
             "ForeignName": "LYXUSDT",
             "Exchange": "Bitget",
             "Ignore": false
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "MAVIAUSDT",
+            "Symbol": "MAVIA"
         },
         {
             "Symbol": "MIGGLES",
@@ -287,6 +305,18 @@
             "ForeignName": "STORJUSDT",
             "Exchange": "Bitget",
             "Ignore": false
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "STXUSDT",
+            "Symbol": "STX"
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "STXUSDC",
+            "Symbol": "STX"
         },
         {
             "Symbol": "SYK",

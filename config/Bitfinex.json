@@ -865,6 +865,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "VELAR",
+            "ForeignName": "VELARUSD",
+            "Exchange": "Bitfinex",
+            "Ignore": false
+        },
+        {
             "Symbol": "WAX",
             "ForeignName": "WAXUSD",
             "Exchange": "Bitfinex",

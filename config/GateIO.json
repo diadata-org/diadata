@@ -80,6 +80,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "ALEX_USDT",
+            "Symbol": "ALEX"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "ALPH_USDT",
             "Ignore": false,
             "Symbol": "ALPH"
@@ -902,6 +908,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "GALA_USDT",
+            "Symbol": "GALA"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "GARD_ETH",
             "Ignore": false,
             "Symbol": "GARD"
@@ -1226,6 +1238,12 @@
         },
         {
             "Exchange": "GateIO",
+            "ForeignName": "KLIMA_USDT",
+            "Ignore": false,
+            "Symbol": "KLIMA"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "KSM_USDT",
             "Ignore": false,
             "Symbol": "KSM"
@@ -1439,6 +1457,12 @@
             "ForeignName": "MATIC_USDT",
             "Ignore": false,
             "Symbol": "MATIC"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "MAVIA_USDT",
+            "Symbol": "MAVIA"
         },
         {
             "Exchange": "GateIO",
@@ -1901,6 +1925,12 @@
             "ForeignName": "POWR_USDT",
             "Ignore": false,
             "Symbol": "POWR"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "PRIME_USDT",
+            "Symbol": "PRIME"
         },
         {
             "Exchange": "GateIO",
@@ -2525,6 +2555,12 @@
             "ForeignName": "VELA_USDT",
             "Ignore": false,
             "Symbol": "VELA"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "VELAR_USDT",
+            "Symbol": "VELAR"
         },
         {
             "Exchange": "GateIO",

@@ -7,6 +7,18 @@
             "Address": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9"
         },
         {
+            "Symbol": "AERO",
+            "Exchange": "CoinBase",
+            "Blockchain": "Base",
+            "Address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631"
+        },
+        {
+            "Symbol": "AKT",
+            "Exchange": "CoinBase",
+            "Blockchain": "Osmosis",
+            "Address": "ibc/C2CFB1C37C146CF95B0784FD518F8030FEFC76C5800105B1742FB65FFE65F873"
+        },
+        {
             "Symbol": "ANKR",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
@@ -19,12 +31,6 @@
             "Address": "0x912CE59144191C1204E64559FE8253a0e49E6548"
         },
         {
-            "Symbol": "AKT",
-            "Exchange": "CoinBase",
-            "Blockchain": "Osmosis",
-            "Address": "ibc/C2CFB1C37C146CF95B0784FD518F8030FEFC76C5800105B1742FB65FFE65F873"
-        },
-        {
             "Symbol": "ATOM",
             "Exchange": "CoinBase",
             "Blockchain": "Cosmos",
@@ -35,6 +41,12 @@
             "Exchange": "CoinBase",
             "Blockchain": "Avalanche",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "AXS",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b"
         },
         {
             "Symbol": "BNT",
@@ -55,10 +67,40 @@
             "Address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"
         },
         {
+            "Symbol": "BUSD",
+            "Exchange": "CoinBase",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+        },
+        {
+            "Symbol": "CBETH",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xBe9895146f7AF43049ca1c1AE358B0541Ea49704"
+        },
+        {
             "Symbol": "COMP",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
             "Address": "0xc00e94Cb662C3520282E6f5717214004A7f26888"
+        },
+        {
+            "Symbol": "DAI",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+        },
+        {
+            "Symbol": "DIA",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"
+        },
+        {
+            "Symbol": "DOGE",
+            "Exchange": "CoinBase",
+            "Blockchain": "Dogechain",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "DOT",
@@ -73,106 +115,28 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
-            "Symbol": "EUROC",
+            "Symbol": "ETH",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
-            "Address": "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c"
-        },
-        {
-            "Symbol": "DOGE",
-            "Exchange": "CoinBase",
-            "Blockchain": "Dogechain",
             "Address": "0x0000000000000000000000000000000000000000"
-        },
-        {
-            "Symbol": "ICP",
-            "Exchange": "CoinBase",
-            "Blockchain": "InternetComputer",
-            "Address": "ryjl3-tyaaa-aaaaa-aaaba-cai"
-        },
-        {
-            "Symbol": "KAVA",
-            "Exchange": "CoinBase",
-            "Blockchain": "Osmosis",
-            "Address": "ibc/57AA1A70A4BC9769C525EBF6386F7A21536E04A79D62E1981EFCEF9428EBB205"
-        },
-        {
-            "Symbol": "ONDO",
-            "Exchange": "CoinBase",
-            "Blockchain": "Ethereum",
-            "Address": "0xfAbA6f8e4a5E8Ab82F62fe7C39859FA577269BE3"
-        },
-        {
-            "Symbol": "OP",
-            "Exchange": "CoinBase",
-            "Blockchain": "Optimism",
-            "Address": "0x4200000000000000000000000000000000000042"
-        },
-        {
-            "Symbol": "YFI",
-            "Exchange": "CoinBase",
-            "Blockchain": "Ethereum",
-            "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
-        },
-        {
-            "Symbol": "SPA",
-            "Exchange": "CoinBase",
-            "Blockchain": "Ethereum",
-            "Address": "0xB4A3B0Faf0Ab53df58001804DdA5Bfc6a3D59008"
-        },
-        {
-            "Symbol": "SEI",
-            "Exchange": "CoinBase",
-            "Blockchain": "Sei",
-            "Address": "0x0000000000000000000000000000000000000000"
-        },
-        {
-            "Symbol": "SHIB",
-            "Exchange": "CoinBase",
-            "Blockchain": "Ethereum",
-            "Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
-        },
-        {
-            "Symbol": "STORJ",
-            "Exchange": "CoinBase",
-            "Blockchain": "Ethereum",
-            "Address": "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC"
-        },
-        {
-            "Symbol": "UNI",
-            "Exchange": "CoinBase",
-            "Blockchain": "Ethereum",
-            "Address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
-        },
-        {
-            "Symbol": "QUICK",
-            "Exchange": "CoinBase",
-            "Blockchain": "Polygon",
-            "Address": "0x831753DD7087CaC61aB5644b308642cc1c33Dc13"
-        },
-        {
-            "Symbol": "WBTC",
-            "Exchange": "CoinBase",
-            "Blockchain": "Ethereum",
-            "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
-        },
-        {
-            "Symbol": "USD",
-            "Exchange": "CoinBase",
-            "Blockchain": "Fiat",
-            "Address": "840"
-        },
-        {
-            "Symbol": "DAI",
-            "Exchange": "CoinBase",
-            "Blockchain": "Ethereum",
-            "Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
         },
         {
             "Symbol": "EUR",
             "Exchange": "CoinBase",
             "Blockchain": "Fiat",
             "Address": "978"
+        },
+        {
+            "Symbol": "EUROC",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c"
+        },
+        {
+            "Symbol": "FET",
+            "Exchange": "CoinBase",
+            "Blockchain": "Fetch",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "GBP",
@@ -187,10 +151,10 @@
             "Address": "0x3F382DbD960E3a9bbCeaE22651E88158d2791550"
         },
         {
-            "Symbol": "GTC",
+            "Symbol": "GLM",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
-            "Address": "0xDe30da39c46104798bB5aA3fe8B9e0e1F348163F"
+            "Address": "0x7DD9c5Cba05E151C895FDe1CF355C9A1D5DA6429"
         },
         {
             "Symbol": "GRT",
@@ -199,58 +163,16 @@
             "Address": "0xc944E90C64B2c07662A292be6244BDf05Cda44a7"
         },
         {
-            "Symbol": "USDT",
+            "Symbol": "GTC",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
-            "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+            "Address": "0xDe30da39c46104798bB5aA3fe8B9e0e1F348163F"
         },
         {
-            "Symbol": "RARI",
+            "Symbol": "ICP",
             "Exchange": "CoinBase",
-            "Blockchain": "Ethereum",
-            "Address": "0xFca59Cd816aB1eaD66534D82bc21E7515cE441CF"
-        },
-        {
-            "Symbol": "KNC",
-            "Exchange": "CoinBase",
-            "Blockchain": "Ethereum",
-            "Address": "0xdeFA4e8a7bcBA345F687a2f1456F5Edd9CE97202"
-        },
-        {
-            "Symbol": "SPELL",
-            "Exchange": "CoinBase",
-            "Blockchain": "Ethereum",
-            "Address": "0x090185f2135308BaD17527004364eBcC2D37e5F6"
-        },
-        {
-            "Symbol": "STG",
-            "Exchange": "CoinBase",
-            "Blockchain": "Ethereum",
-            "Address": "0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6"
-        },
-        {
-            "Symbol": "SYN",
-            "Exchange": "CoinBase",
-            "Blockchain": "Ethereum",
-            "Address": "0x0f2D719407FdBeFF09D87557AbB7232601FD9F29"
-        },
-        {
-            "Symbol": "TIA",
-            "Exchange": "CoinBase",
-            "Blockchain": "Osmosis",
-            "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877"
-        },
-        {
-            "Symbol": "AXS",
-            "Exchange": "CoinBase",
-            "Blockchain": "Ethereum",
-            "Address": "0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b"
-        },
-        {
-            "Symbol": "FET",
-            "Exchange": "CoinBase",
-            "Blockchain": "Fetch",
-            "Address": "0x0000000000000000000000000000000000000000"
+            "Blockchain": "InternetComputer",
+            "Address": "ryjl3-tyaaa-aaaaa-aaaba-cai"
         },
         {
             "Symbol": "INJ",
@@ -259,34 +181,16 @@
             "Address": "0xe28b3B32B6c345A34Ff64674606124Dd5Aceca30"
         },
         {
-            "Symbol": "CBETH",
+            "Symbol": "KAVA",
             "Exchange": "CoinBase",
-            "Blockchain": "Ethereum",
-            "Address": "0xBe9895146f7AF43049ca1c1AE358B0541Ea49704"
+            "Blockchain": "Osmosis",
+            "Address": "ibc/57AA1A70A4BC9769C525EBF6386F7A21536E04A79D62E1981EFCEF9428EBB205"
         },
         {
-            "Symbol": "ETH",
+            "Symbol": "KNC",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
-            "Address": "0x0000000000000000000000000000000000000000"
-        },
-        {
-            "Symbol": "DIA",
-            "Exchange": "CoinBase",
-            "Blockchain": "Ethereum",
-            "Address": "0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"
-        },
-        {
-            "Symbol": "GLM",
-            "Exchange": "CoinBase",
-            "Blockchain": "Ethereum",
-            "Address": "0x7DD9c5Cba05E151C895FDe1CF355C9A1D5DA6429"
-        },
-        {
-            "Symbol": "UST",
-            "Exchange": "CoinBase",
-            "Blockchain": "Ethereum",
-            "Address": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD"
+            "Address": "0xdeFA4e8a7bcBA345F687a2f1456F5Edd9CE97202"
         },
         {
             "Symbol": "MANA",
@@ -295,16 +199,16 @@
             "Address": "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942"
         },
         {
-            "Symbol": "BUSD",
+            "Symbol": "ONDO",
             "Exchange": "CoinBase",
-            "Blockchain": "BinanceSmartChain",
-            "Address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+            "Blockchain": "Ethereum",
+            "Address": "0xfAbA6f8e4a5E8Ab82F62fe7C39859FA577269BE3"
         },
         {
-            "Symbol": "AERO",
+            "Symbol": "OP",
             "Exchange": "CoinBase",
-            "Blockchain": "Base",
-            "Address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631"
+            "Blockchain": "Optimism",
+            "Address": "0x4200000000000000000000000000000000000042"
         },
         {
             "Symbol": "PNG",
@@ -319,10 +223,124 @@
             "Address": "0x0000000000000000000000000000000000001010"
         },
         {
+            "Symbol": "PRIME",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xb23d80f5FefcDDaa212212F028021B41DEd428CF"
+        },
+        {
+            "Symbol": "QUICK",
+            "Exchange": "CoinBase",
+            "Blockchain": "Polygon",
+            "Address": "0x831753DD7087CaC61aB5644b308642cc1c33Dc13"
+        },
+        {
+            "Symbol": "RARI",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xFca59Cd816aB1eaD66534D82bc21E7515cE441CF"
+        },
+        {
+            "Symbol": "SAND",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x3845badAde8e6dFF049820680d1F14bD3903a5d0"
+        },
+        {
+            "Symbol": "SEI",
+            "Exchange": "CoinBase",
+            "Blockchain": "Sei",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "SHIB",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
+        },
+        {
+            "Symbol": "SPA",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xB4A3B0Faf0Ab53df58001804DdA5Bfc6a3D59008"
+        },
+        {
+            "Symbol": "SPELL",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x090185f2135308BaD17527004364eBcC2D37e5F6"
+        },
+        {
+            "Symbol": "STG",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6"
+        },
+        {
+            "Symbol": "STORJ",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "STX",
+            "Blockchain": "Stacks",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "SYN",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x0f2D719407FdBeFF09D87557AbB7232601FD9F29"
+        },
+        {
+            "Symbol": "TIA",
+            "Exchange": "CoinBase",
+            "Blockchain": "Osmosis",
+            "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877"
+        },
+        {
+            "Symbol": "UNI",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
+        },
+        {
+            "Symbol": "USD",
+            "Exchange": "CoinBase",
+            "Blockchain": "Fiat",
+            "Address": "840"
+        },
+        {
+            "Symbol": "USDT",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+        },
+        {
+            "Symbol": "UST",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD"
+        },
+        {
             "Symbol": "VELO",
             "Exchange": "CoinBase",
             "Blockchain": "Optimism",
             "Address": "0x9560e827aF36c94D2Ac33a39bCE1Fe78631088Db"
+        },
+        {
+            "Symbol": "WBTC",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
+        },
+        {
+            "Symbol": "YFI",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
         },
         {
             "Symbol": "ZRO",

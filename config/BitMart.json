@@ -20,6 +20,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "ALEX_USDT",
+            "Symbol": "ALEX"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "ALPH_USDT",
             "Ignore": false,
             "Symbol": "ALPH"
@@ -314,6 +320,12 @@
         },
         {
             "Exchange": "BitMart",
+            "ForeignName": "KLIMA_USDT",
+            "Ignore": false,
+            "Symbol": "KLIMA"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "KSM_USDT",
             "Ignore": false,
             "Symbol": "KSM"
@@ -350,9 +362,9 @@
         },
         {
             "Exchange": "BitMart",
-            "ForeignName": "POL_USDT",
             "Ignore": false,
-            "Symbol": "POL"
+            "ForeignName": "MAVIA_USDT",
+            "Symbol": "MAVIA"
         },
         {
             "Exchange": "BitMart",
@@ -413,6 +425,18 @@
             "ForeignName": "POL_USDT",
             "Ignore": false,
             "Symbol": "POL"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "POL_USDT",
+            "Ignore": false,
+            "Symbol": "POL"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "PRIME_USDT",
+            "Symbol": "PRIME"
         },
         {
             "Exchange": "BitMart",

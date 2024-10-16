@@ -19,6 +19,12 @@
             "Address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631"
         },
         {
+            "Exchange": "Bitget",
+            "Symbol": "ALEX",
+            "Blockchain": "Stacks",
+            "Address": "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.age000-governance-token"
+        },
+        {
             "Symbol": "ALPH",
             "Exchange": "Bitget",
             "Blockchain": "Alephium",
@@ -72,7 +78,7 @@
             "Blockchain": "Bitcoin",
             "Address": "0x0000000000000000000000000000000000000000"
         },
-        {   
+        {
             "Symbol": "CELO",
             "Exchange": "Bitget",
             "Blockchain": "Celo",
@@ -133,6 +139,12 @@
             "Address": "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0"
         },
         {
+            "Exchange": "Bitget",
+            "Symbol": "GALA",
+            "Blockchain": "Ethereum",
+            "Address": "0xd1d2Eb1B1e90B638588728b4130137D262C87cae"
+        },
+        {
             "Symbol": "GLMR",
             "Exchange": "Bitget",
             "Blockchain": "Moonbeam",
@@ -185,6 +197,12 @@
             "Exchange": "Bitget",
             "Blockchain": "Lukso",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Bitget",
+            "Symbol": "MAVIA",
+            "Blockchain": "Ethereum",
+            "Address": "0x24fcFC492C1393274B6bcd568ac9e225BEc93584"
         },
         {
             "Symbol": "MIGGLES",
@@ -251,6 +269,12 @@
             "Exchange": "Bitget",
             "Blockchain": "Ethereum",
             "Address": "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC"
+        },
+        {
+            "Exchange": "Bitget",
+            "Symbol": "STX",
+            "Blockchain": "Stacks",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "SYK",

@@ -19,6 +19,12 @@
       "Address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631"
     },
     {
+      "Exchange": "BitMart",
+      "Symbol": "ALEX",
+      "Blockchain": "Stacks",
+      "Address": "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.age000-governance-token"
+    },
+    {
       "Symbol": "ALPH",
       "Exchange": "BitMart",
       "Blockchain": "Alephium",
@@ -277,6 +283,12 @@
       "Address": "ibc/57AA1A70A4BC9769C525EBF6386F7A21536E04A79D62E1981EFCEF9428EBB205"
     },
     {
+      "Symbol": "KLIMA",
+      "Exchange": "BitMart",
+      "Blockchain": "Polygon",
+      "Address": "0x4e78011Ce80ee02d2c3e649Fb657E45898257815"
+    },
+    {
       "Symbol": "KSM",
       "Exchange": "BitMart",
       "Blockchain": "Kusama",
@@ -319,6 +331,12 @@
       "Address": "0x0000000000000000000000000000000000001010"
     },
     {
+      "Exchange": "BitMart",
+      "Symbol": "MAVIA",
+      "Blockchain": "Ethereum",
+      "Address": "0x24fcFC492C1393274B6bcd568ac9e225BEc93584"
+    },
+    {
       "Symbol": "MCRT",
       "Exchange": "BitMart",
       "Blockchain": "BinanceSmartChain",
@@ -337,16 +355,16 @@
       "Address": "0xB1a03EdA10342529bBF8EB700a06C60441fEf25d"
     },
     {
-      "Symbol": "MOG",
-      "Exchange": "BitMart",
-      "Blockchain": "Ethereum",
-      "Address": "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a"
-    },
-    {
       "Symbol": "MKR",
       "Exchange": "BitMart",
       "Blockchain": "Ethereum",
       "Address": "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"
+    },
+    {
+      "Symbol": "MOG",
+      "Exchange": "BitMart",
+      "Blockchain": "Ethereum",
+      "Address": "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a"
     },
     {
       "Symbol": "NEAR",
@@ -377,6 +395,12 @@
       "Exchange": "BitMart",
       "Blockchain": "Polygon",
       "Address": "0x0000000000000000000000000000000000001010"
+    },
+    {
+      "Symbol": "PRIME",
+      "Exchange": "BitMart",
+      "Blockchain": "Ethereum",
+      "Address": "0xb23d80f5FefcDDaa212212F028021B41DEd428CF"
     },
     {
       "Symbol": "QNT",
@@ -553,6 +577,12 @@
       "Address": "0xbbEE07B3e8121227AfCFe1E2B82772246226128e"
     },
     {
+      "Symbol": "WBTC",
+      "Exchange": "BitMart",
+      "Blockchain": "Ethereum",
+      "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
+    },
+    {
       "Symbol": "XAI",
       "Exchange": "BitMart",
       "Blockchain": "Arbitrum",
@@ -563,12 +593,6 @@
       "Exchange": "BitMart",
       "Blockchain": "Stellar",
       "Address": "0x0000000000000000000000000000000000000000"
-    },
-    {
-      "Symbol": "WBTC",
-      "Exchange": "BitMart",
-      "Blockchain": "Ethereum",
-      "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
     },
     {
       "Symbol": "YFI",

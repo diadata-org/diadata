@@ -37,6 +37,12 @@
             "Address": "0x27702a26126e0B3702af63Ee09aC4d1A084EF628"
         },
         {
+            "Exchange": "KuCoin",
+            "Symbol": "ALEX",
+            "Blockchain": "Stacks",
+            "Address": "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.age000-governance-token"
+        },
+        {
             "Symbol": "AMPL",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
@@ -473,6 +479,12 @@
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
             "Address": "0x69af81e73A73B40adF4f3d4223Cd9b1ECE623074"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Symbol": "MAVIA",
+            "Blockchain": "Ethereum",
+            "Address": "0x24fcFC492C1393274B6bcd568ac9e225BEc93584"
         },
         {
             "Symbol": "METIS",

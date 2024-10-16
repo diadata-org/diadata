@@ -236,6 +236,12 @@
         },
         {
             "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "PRIME-USD",
+            "Symbol": "PRIME"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "QUICK-USD",
             "Ignore": false,
             "Symbol": "QUICK"
@@ -245,6 +251,12 @@
             "ForeignName": "RARI-USD",
             "Ignore": false,
             "Symbol": "RARI"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "SAND-USD",
+            "Symbol": "SAND"
         },
         {
             "Exchange": "CoinBase",
@@ -281,6 +293,12 @@
             "ForeignName": "STORJ-USD",
             "Ignore": false,
             "Symbol": "STORJ"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "STX-USD",
+            "Symbol": "STX"
         },
         {
             "Exchange": "CoinBase",

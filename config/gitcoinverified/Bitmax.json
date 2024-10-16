@@ -223,15 +223,15 @@
             "Address": "0xE5CAeF4Af8780E59Df925470b050Fb23C43CA68C"
         },
         {
-            "Symbol": "FUSE",
-            "Exchange": "Bitmax",
-            "Blockchain": "Fuse",
-            "Address": "0x0000000000000000000000000000000000000000"
-        },
-        {
             "Symbol": "FTM",
             "Exchange": "Bitmax",
             "Blockchain": "Fantom",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "FUSE",
+            "Exchange": "Bitmax",
+            "Blockchain": "Fuse",
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
@@ -295,6 +295,12 @@
             "Address": "0x0000000000000000000000000000000000001010"
         },
         {
+            "Exchange": "Bitmax",
+            "Symbol": "MAVIA",
+            "Blockchain": "Ethereum",
+            "Address": "0x24fcFC492C1393274B6bcd568ac9e225BEc93584"
+        },
+        {
             "Symbol": "MIGGLES",
             "Exchange": "Bitmax",
             "Blockchain": "Base",
@@ -349,16 +355,16 @@
             "Address": "0xbC396689893D065F41bc2C6EcbeE5e0085233447"
         },
         {
-            "Symbol": "QUICK",
-            "Exchange": "Bitmax",
-            "Blockchain": "Polygon",
-            "Address": "0xB5C064F955D8e7F38fE0460C556a72987494eE17"
-        },
-        {
             "Symbol": "QTUM",
             "Exchange": "Bitmax",
             "Blockchain": "Qtum",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "QUICK",
+            "Exchange": "Bitmax",
+            "Blockchain": "Polygon",
+            "Address": "0xB5C064F955D8e7F38fE0460C556a72987494eE17"
         },
         {
             "Symbol": "RDNT",

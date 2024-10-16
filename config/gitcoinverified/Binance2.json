@@ -157,6 +157,12 @@
             "Address": "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0"
         },
         {
+            "Exchange": "Binance2",
+            "Symbol": "GALA",
+            "Blockchain": "Ethereum",
+            "Address": "0xd1d2Eb1B1e90B638588728b4130137D262C87cae"
+        },
+        {
             "Symbol": "GMX",
             "Exchange": "Binance2",
             "Blockchain": "Arbitrum",
@@ -283,6 +289,12 @@
             "Address": "0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d"
         },
         {
+            "Exchange": "Binance2",
+            "Symbol": "STX",
+            "Blockchain": "Stacks",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "SUI",
             "Exchange": "Binance2",
             "Blockchain": "Sui",
@@ -301,16 +313,16 @@
             "Address": "0x0f2D719407FdBeFF09D87557AbB7232601FD9F29"
         },
         {
-            "Symbol": "TIA",
-            "Exchange": "Binance2",
-            "Blockchain": "Osmosis",
-            "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877"
-        },
-        {
             "Symbol": "TAO",
             "Exchange": "Binance2",
             "Blockchain": "Bittensor",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "TIA",
+            "Exchange": "Binance2",
+            "Blockchain": "Osmosis",
+            "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877"
         },
         {
             "Symbol": "UNI",
@@ -335,12 +347,6 @@
             "Exchange": "Binance2",
             "Blockchain": "Ethereum",
             "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
-        },
-        {
-            "Symbol": "wBETH",
-            "Exchange": "Binance2",
-            "Blockchain": "BinanceSmartChain",
-            "Address": "0xa2E3356610840701BDf5611a53974510Ae27E2e1"
         },
         {
             "Symbol": "WIF",
@@ -377,6 +383,12 @@
             "Exchange": "Binance2",
             "Blockchain": "Ethereum",
             "Address": "0x6985884C4392D348587B19cb9eAAf157F13271cd"
+        },
+        {
+            "Symbol": "wBETH",
+            "Exchange": "Binance2",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xa2E3356610840701BDf5611a53974510Ae27E2e1"
         }
     ]
 }

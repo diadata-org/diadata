@@ -127,18 +127,6 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
-            "Symbol": "GLM",
-            "Exchange": "OKEx",
-            "Blockchain": "Ethereum",
-            "Address": "0x7DD9c5Cba05E151C895FDe1CF355C9A1D5DA6429"
-        },
-        {
-            "Symbol": "GMT",
-            "Exchange": "OKEx",
-            "Blockchain": "Solana",
-            "Address": "7i5KKsX2weiTkry7jA4ZwSuXGhs5eJBEjY8vVxR4pfRx"
-        },
-        {
             "Symbol": "EGT",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
@@ -157,12 +145,6 @@
             "Address": "0xFe0c30065B384F05761f15d0CC899D4F9F9Cc0eB"
         },
         {
-            "Symbol": "JOE",
-            "Exchange": "OKEx",
-            "Blockchain": "Avalanche",
-            "Address": "0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd"
-        },
-        {
             "Symbol": "FLOW",
             "Exchange": "OKEx",
             "Blockchain": "Flow",
@@ -175,10 +157,28 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "OKEx",
+            "Symbol": "GALA",
+            "Blockchain": "Ethereum",
+            "Address": "0xd1d2Eb1B1e90B638588728b4130137D262C87cae"
+        },
+        {
             "Symbol": "GHST",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
             "Address": "0x3F382DbD960E3a9bbCeaE22651E88158d2791550"
+        },
+        {
+            "Symbol": "GLM",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x7DD9c5Cba05E151C895FDe1CF355C9A1D5DA6429"
+        },
+        {
+            "Symbol": "GMT",
+            "Exchange": "OKEx",
+            "Blockchain": "Solana",
+            "Address": "7i5KKsX2weiTkry7jA4ZwSuXGhs5eJBEjY8vVxR4pfRx"
         },
         {
             "Symbol": "GMX",
@@ -209,6 +209,12 @@
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
             "Address": "0xe28b3B32B6c345A34Ff64674606124Dd5Aceca30"
+        },
+        {
+            "Symbol": "JOE",
+            "Exchange": "OKEx",
+            "Blockchain": "Avalanche",
+            "Address": "0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd"
         },
         {
             "Symbol": "KAN",
@@ -263,6 +269,12 @@
             "Exchange": "OKEx",
             "Blockchain": "Terra",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "OKEx",
+            "Symbol": "MAVIA",
+            "Blockchain": "Ethereum",
+            "Address": "0x24fcFC492C1393274B6bcd568ac9e225BEc93584"
         },
         {
             "Symbol": "METIS",
@@ -403,6 +415,12 @@
             "Address": "0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d"
         },
         {
+            "Exchange": "OKEx",
+            "Symbol": "STX",
+            "Blockchain": "Stacks",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "SUI",
             "Exchange": "OKEx",
             "Blockchain": "Sui",
@@ -445,12 +463,6 @@
             "Address": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD"
         },
         {
-            "Symbol": "VIB",
-            "Exchange": "OKEx",
-            "Blockchain": "Ethereum",
-            "Address": "0x2C974B2d0BA1716E644c1FC59982a89DDD2fF724"
-        },
-        {
             "Symbol": "VELA",
             "Exchange": "OKEx",
             "Blockchain": "Arbitrum",
@@ -461,6 +473,12 @@
             "Exchange": "OKEx",
             "Blockchain": "Optimism",
             "Address": "0x9560e827aF36c94D2Ac33a39bCE1Fe78631088Db"
+        },
+        {
+            "Symbol": "VIB",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x2C974B2d0BA1716E644c1FC59982a89DDD2fF724"
         },
         {
             "Symbol": "WBTC",

@@ -121,6 +121,12 @@
             "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877"
         },
         {
+            "Symbol": "VELAR",
+            "Exchange": "Bitfinex",
+            "Blockchain": "Stacks",
+            "Address": "SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1.velar-token"
+        },
+        {
             "Symbol": "XAUT",
             "Exchange": "Bitfinex",
             "Blockchain": "Ethereum",

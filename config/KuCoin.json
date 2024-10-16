@@ -85,6 +85,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "ALEX-USDT",
+            "Symbol": "ALEX"
+        },
+        {
             "Symbol": "ALGO",
             "ForeignName": "ALGO-BTC",
             "Exchange": "KuCoin",
@@ -1111,6 +1117,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "MAVIA",
+            "ForeignName": "MAVIA-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "METIS",
             "ForeignName": "METIS-USDT",
             "Exchange": "KuCoin",
@@ -1273,12 +1285,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "OUSD",
-            "ForeignName": "OUSD-USDT",
-            "Exchange": "KuCoin",
-            "Ignore": false
-        },
-        {
             "Symbol": "ORBS",
             "ForeignName": "ORBS-USDT",
             "Exchange": "KuCoin",
@@ -1299,6 +1305,12 @@
         {
             "Symbol": "ORN",
             "ForeignName": "ORN-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OUSD",
+            "ForeignName": "OUSD-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
         },
@@ -1645,6 +1657,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "USDP",
+            "ForeignName": "USDP-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "USDT",
             "ForeignName": "USDT-PAX",
             "Exchange": "KuCoin",
@@ -1653,12 +1671,6 @@
         {
             "Symbol": "USDT",
             "ForeignName": "USDT-TUSD",
-            "Exchange": "KuCoin",
-            "Ignore": false
-        },
-        {
-            "Symbol": "USDP",
-            "ForeignName": "USDP-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
         },
