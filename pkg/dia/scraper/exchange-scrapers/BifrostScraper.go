@@ -70,6 +70,7 @@ func NewBifrostScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		wsApi:        wsApi,
 		exchangeName: exchange.Name,
 		blockchain:   Blockchain,
+		currentBlock: startBlockUint64,
 	}
 
 	s.logger = logger
@@ -84,18 +85,33 @@ func NewBifrostScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 
 func (s *BifrostScraper) mainLoop() {
 	s.logger.Info("Listening for new blocks")
-	// Bifrost Kusama block for testing
-	go s.wsApi.ListenForSpecificBlock(7560993, s.processEvents)
-	//go s.wsApi.ListenForNewBlocks(s.processEvents)
-
 	defer s.cleanup(nil)
 
 	for {
 		select {
 		case <-s.shutdown:
 			s.logger.Println("shutting down")
-			s.cleanup(nil)
 			return
+		default:
+			s.logger.Info("Processing block:", s.currentBlock)
+
+			if s.currentBlock == 0 {
+				s.wsApi.ListenForNewBlocks(s.processEvents)
+			} else {
+				s.wsApi.ListenForSpecificBlock(s.currentBlock, s.processEvents)
+				s.currentBlock++
+				time.Sleep(time.Second)
+				latestBlock, err := s.wsApi.API.RPC.Chain.GetBlockLatest()
+				if err != nil {
+					s.logger.WithError(err).Error("Failed to get latest block")
+					return
+				}
+
+				if s.currentBlock > uint64(latestBlock.Block.Header.Number) {
+					s.logger.Info("Reached the latest block")
+					return
+				}
+			}
 		}
 	}
 }
@@ -106,9 +122,8 @@ func (s *BifrostScraper) processEvents(events []*parser.Event) {
 	for _, e := range events {
 		if e.Name == "StableAsset.TokenSwapped" {
 			parsedEvent := parseFields(e)
-
+			parsedEvent.EventID = fmt.Sprintf("%x%x", e.EventID[0], e.EventID[1])
 			pool, err := s.db.GetPoolByAssetPair(parsedEvent.InputAsset, parsedEvent.OutputAsset, s.exchangeName)
-			//pool, err := s.db.GetPoolById(parsedEvent.PoolId, s.exchangeName)
 
 			if len(pool.Assetvolumes) < 2 {
 				s.logger.WithField("poolAddress", pool.Address).Error("Pool has fewer than 2 asset volumes")
@@ -119,6 +134,12 @@ func (s *BifrostScraper) processEvents(events []*parser.Event) {
 			}
 
 			diaTrade := s.handleTrade(pool, parsedEvent, time.Now())
+
+			s.logger.WithFields(logrus.Fields{
+				"Pair":   diaTrade.Pair,
+				"Price":  diaTrade.Price,
+				"Volume": diaTrade.Volume,
+			}).Info("Trade processed")
 
 			s.chanTrades <- diaTrade
 		}
@@ -131,12 +152,7 @@ type ParsedEvent struct {
 	InputAmount  string
 	OutputAmount string
 	PoolId       string
-}
-
-// AssetValue represents the value of the asset (could be Token, VToken, etc.)
-type AssetValue struct {
-	Token  *string `json:"Token,omitempty"`  // Token variant, e.g., "KSM"
-	VToken *string `json:"VToken,omitempty"` // Optional VToken variant (if applicable)
+	EventID      string
 }
 
 type TokenValue struct {
@@ -219,7 +235,7 @@ func parseFields(event *parser.Event) ParsedEvent {
 //
 // Parameters:
 //   - pool: A `dia.Pool` object representing the liquidity pool where the swap occurred.
-//   - event: A `StableSwapEvent` containing the swap details such as asset amounts and transaction ID.
+//   - event: A `ParsedEvent` containing the swap details such as asset amounts and event ID.
 //   - time: The timestamp for the trade event.
 //
 // Returns:
@@ -252,17 +268,17 @@ func (s *BifrostScraper) handleTrade(pool dia.Pool, event ParsedEvent, time time
 	symbolPair := fmt.Sprintf("%s-%s", baseToken.Symbol, quoteToken.Symbol)
 
 	return &dia.Trade{
-		Time:   time,
-		Symbol: baseToken.Symbol,
-		Pair:   symbolPair,
-		//ForeignTradeID: event.TxID,
-		Source:       s.exchangeName,
-		Price:        price,
-		Volume:       volume,
-		VerifiedPair: true,
-		QuoteToken:   quoteToken,
-		BaseToken:    baseToken,
-		PoolAddress:  pool.Address,
+		Time:           time,
+		Symbol:         baseToken.Symbol,
+		Pair:           symbolPair,
+		ForeignTradeID: event.EventID,
+		Source:         s.exchangeName,
+		Price:          price,
+		Volume:         volume,
+		VerifiedPair:   true,
+		QuoteToken:     quoteToken,
+		BaseToken:      baseToken,
+		PoolAddress:    pool.Address,
 	}
 }
 
@@ -271,15 +287,6 @@ func (s *BifrostScraper) handleTrade(pool dia.Pool, event ParsedEvent, time time
 // be used by the corr. pairScraper in order to fetch trades.
 func (s *BifrostScraper) FetchAvailablePairs() ([]dia.ExchangePair, error) {
 	return []dia.ExchangePair{}, nil
-}
-
-// getDBPools retrieves all pools from the database associated with the current exchange.
-//
-// Returns:
-//   - []dia.Pool: A slice of `dia.Pool` objects representing the pools retrieved from the database.
-//   - error: An error if the database query fails, otherwise `nil`.
-func (s *BifrostScraper) getDBPools() ([]dia.Pool, error) {
-	return s.db.GetAllPoolsExchange(s.exchangeName, 0)
 }
 
 func (s *BifrostScraper) FillSymbolData(symbol string) (dia.Asset, error) {
