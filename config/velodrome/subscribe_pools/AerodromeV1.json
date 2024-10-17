@@ -1,6 +1,18 @@
 {
     "Pools": [
         {
+            "Address": "0xC90E88d30b99442B6994915F3b146cE3D55982D9",
+            "ForeignName": "MAVIA-WETH"
+        },
+        {
+            "Address": "0xB37642E87613d8569Fd8Ec80888eA6c63684E79e",
+            "ForeignName": "WETH-KLIMA"
+        },
+        {
+            "Address": "0x958682eC6282BC7E939FA8Ba9397805C214c3A09",
+            "ForeignName": "USDC-KLIMA"
+        },
+        {
             "Address": "0x2C4909355b0C036840819484c3A882A95659aBf3",
             "ForeignName": "WETH-DEGEN"
         },

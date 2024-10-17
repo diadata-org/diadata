@@ -43,7 +43,18 @@
         {
             "Address": "0x70aCDF2Ad0bf2402C957154f944c19Ef4e1cbAE1",
             "ForeignName": "WETH-cbBTC"
+        },
+        {
+            "Address": "0x861A2922bE165a5Bd41b1E482B49216b465e1B5F",
+            "ForeignName": "WETH-wstETH"
+        },
+        {
+            "Address": "0x87Cd18069B6547a0E88b6155DD657E71779500eA",
+            "ForeignName": "WETH-PRIME"
+        },
+        {
+            "Address": "0x7f770A81811B58094b75CeA1dE76304aa8EAE72c",
+            "ForeignName": "USDz-cbBTC"
         }
-       
     ]
 }

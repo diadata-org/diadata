@@ -7,6 +7,10 @@
         {
             "Address": "0xb2cc224c1c9feE385f8ad6a55b4d94E92359DC59",
             "ForeignName": "USDC-WETH"
-        }  
+        },
+        {
+            "Address": "0xdE5Ff829fEF54d1BdEc957D9538A306f0EAD1368",
+            "ForeignName": "USDz-USDC"
+        }
     ]
 }

@@ -11,6 +11,10 @@
         {
             "Address": "0x6d0b9C9E92a3De30081563c3657B5258b3fFa38B",
             "ForeignName": "USDz-USDC"
+        },
+        {
+            "Address": "0x958682eC6282BC7E939FA8Ba9397805C214c3A09",
+            "ForeignName": "USDC-KLIMA"
         }
     ]
 }
