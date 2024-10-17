@@ -17,7 +17,6 @@ require (
 	github.com/cosmos/ibc-go/v3 v3.0.0
 	github.com/cryptwire/go-binance/v2 v2.2.3
 	github.com/davecgh/go-spew v1.1.1
-	github.com/didaunesp/no-signature-go-substrate-rpc-client-v4 v0.0.0-20241017002110-b0f86fdbf830
 	github.com/ethereum/go-ethereum v1.10.26
 	github.com/fatih/structs v1.1.0
 	github.com/gagliardetto/binary v0.7.9
@@ -29,6 +28,7 @@ require (
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gocolly/colly v1.2.0
+	github.com/google/gofuzz v1.2.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/graph-gophers/graphql-go v1.3.0
 	github.com/influxdata/influxdb1-client v0.0.0-20220302092344-a9ab5670611c
@@ -40,9 +40,11 @@ require (
 	github.com/onflow/flow-go-sdk v0.20.0
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/osmosis-labs/osmosis/v6 v6.4.1
+	github.com/pierrec/xxHash v0.1.5
 	github.com/pkg/errors v0.9.1
 	github.com/portto/solana-go-sdk v1.22.0
 	github.com/preichenberger/go-coinbasepro/v2 v2.0.5
+	github.com/rs/cors v1.8.2
 	github.com/segmentio/kafka-go v0.4.35
 	github.com/shopspring/decimal v1.4.0
 	github.com/sirupsen/logrus v1.9.3
@@ -59,6 +61,7 @@ require (
 	golang.org/x/sync v0.8.0
 	google.golang.org/grpc v1.44.0
 	google.golang.org/protobuf v1.34.2
+	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce
 )
 
 require (
@@ -176,7 +179,6 @@ require (
 	github.com/pelletier/go-toml/v2 v2.1.1 // indirect
 	github.com/petermattis/goid v0.0.0-20180202154549-b0b1615b78e5 // indirect
 	github.com/pierrec/lz4/v4 v4.1.15 // indirect
-	github.com/pierrec/xxHash v0.1.5 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.12.0 // indirect
 	github.com/prometheus/client_model v0.2.1-0.20210607210712-147c58e9608a // indirect
@@ -187,7 +189,6 @@ require (
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/rjeczalik/notify v0.9.1 // indirect
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
-	github.com/rs/cors v1.8.2 // indirect
 	github.com/sasha-s/go-deadlock v0.2.1-0.20190427202633-1595213edefa // indirect
 	github.com/segmentio/fasthash v1.0.3 // indirect
 	github.com/shirou/gopsutil v3.21.4-0.20210419000835-c7a38de76ee5+incompatible // indirect
@@ -229,7 +230,6 @@ require (
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa // indirect
 	gopkg.in/ini.v1 v1.66.2 // indirect
-	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
@@ -240,7 +240,7 @@ require (
 	github.com/adshao/go-binance/v2 v2.3.6
 	github.com/antchfx/htmlquery v1.2.5 // indirect
 	github.com/antchfx/xmlquery v1.3.13 // indirect
-	github.com/deckarep/golang-set v1.8.0 // indirect
+	github.com/deckarep/golang-set v1.8.0
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
 	github.com/hdevalence/ed25519consensus v0.1.0 // indirect
 	github.com/kennygrant/sanitize v1.2.4 // indirect

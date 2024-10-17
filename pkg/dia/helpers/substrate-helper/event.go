@@ -3,12 +3,12 @@ package substratehelper
 import (
 	"fmt"
 
-	gsrpc "github.com/didaunesp/no-signature-go-substrate-rpc-client-v4"
-	"github.com/didaunesp/no-signature-go-substrate-rpc-client-v4/registry/parser"
-	"github.com/didaunesp/no-signature-go-substrate-rpc-client-v4/registry/retriever"
-	"github.com/didaunesp/no-signature-go-substrate-rpc-client-v4/registry/state"
+	gsrpc "github.com/diadata-org/diadata/pkg/dia/helpers/substrate-helper/gsrpc"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/substrate-helper/gsrpc/registry/parser"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/substrate-helper/gsrpc/registry/retriever"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/substrate-helper/gsrpc/registry/state"
 
-	"github.com/didaunesp/no-signature-go-substrate-rpc-client-v4/types"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/substrate-helper/gsrpc/types"
 
 	"github.com/sirupsen/logrus"
 )

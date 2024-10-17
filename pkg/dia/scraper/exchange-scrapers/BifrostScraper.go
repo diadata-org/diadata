@@ -11,8 +11,8 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	substratehelper "github.com/diadata-org/diadata/pkg/dia/helpers/substrate-helper"
-	"github.com/didaunesp/no-signature-go-substrate-rpc-client-v4/registry"
-	"github.com/didaunesp/no-signature-go-substrate-rpc-client-v4/registry/parser"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/substrate-helper/gsrpc/registry"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/substrate-helper/gsrpc/registry/parser"
 
 	models "github.com/diadata-org/diadata/pkg/model"
 
@@ -47,8 +47,6 @@ func NewBifrostScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		WithContext(context.Background()).
 		WithField("context", "BifrostScraper")
 
-	//wsApi, err := substratehelper.NewSubstrateEventHelper("wss://bifrost-polkadot.api.onfinality.io/public-ws", logger)
-	//wsApi, err := substratehelper.NewSubstrateEventHelper("wss://bifrost-rpc.liebi.com/ws", logger)
 	wsApi, err := substratehelper.NewSubstrateEventHelper(exchange.WsAPI, logger)
 	if err != nil {
 		logrus.WithError(err).Error("Failed to create Bifrost Substrate event helper")
