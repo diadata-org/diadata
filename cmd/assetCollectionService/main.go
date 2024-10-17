@@ -164,11 +164,9 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 		return source.NewAyinAssetSource(exchanges[dia.AyinExchange], relDB)
 	case dia.BifrostExchange:
 		return source.NewBifrostAssetSource(exchanges[dia.BifrostExchange], relDB)
-	case dia.HydrationExchange:
-		return source.NewHydrationAssetSource(exchanges[dia.HydrationExchange], relDB)
 	default:
 		return nil
-	}	
+	}
 }
 
 func main() {
