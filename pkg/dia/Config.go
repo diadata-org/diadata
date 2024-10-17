@@ -121,6 +121,7 @@ const (
 	ThenaExchange                      = "Thena"
 	ThenaV3Exchange                    = "ThenaV3"
 	AyinExchange                       = "Ayin"
+	HydrationExchange                  = "Hydration"
 	BitflowExchange                    = "Bitflow"
 	BitgetExchange                     = "Bitget"
 	VelarExchange                      = "Velar"
