@@ -270,7 +270,7 @@ func (rdb *RelDB) GetFeeder(feederID string) (oracleconfig dia.OracleConfig, err
 	)
 
 	query = fmt.Sprintf(`
-	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address, name createddate, COALESCE(lastupdate, '0001-01-01 00:00:00'::timestamp),
+	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address, name, createddate, COALESCE(lastupdate, '0001-01-01 00:00:00'::timestamp),
 	deleted,feedselection,expired,expired_time, draft,customer_id
 	FROM %s  WHERE feeder_id=$1
 	`, oracleconfigTable)
