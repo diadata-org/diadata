@@ -21,7 +21,6 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia/helpers/substrate-helper/gsrpc/rpc/author"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/substrate-helper/gsrpc/rpc/beefy"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/substrate-helper/gsrpc/rpc/chain"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/substrate-helper/gsrpc/rpc/mmr"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/substrate-helper/gsrpc/rpc/offchain"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/substrate-helper/gsrpc/rpc/state"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/substrate-helper/gsrpc/rpc/system"
@@ -32,7 +31,6 @@ type RPC struct {
 	Author   author.Author
 	Beefy    beefy.Beefy
 	Chain    chain.Chain
-	MMR      mmr.MMR
 	Offchain offchain.Offchain
 	State    state.State
 	System   system.System
@@ -53,7 +51,6 @@ func NewRPC(cl client.Client) (*RPC, error) {
 		Author:   author.NewAuthor(cl),
 		Beefy:    beefy.NewBeefy(cl),
 		Chain:    chain.NewChain(cl),
-		MMR:      mmr.NewMMR(cl),
 		Offchain: offchain.NewOffchain(cl),
 		State:    st,
 		System:   system.NewSystem(cl),
