@@ -270,7 +270,7 @@ func (rdb *RelDB) GetFeeder(feederID string) (oracleconfig dia.OracleConfig, err
 	)
 
 	query = fmt.Sprintf(`
-	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address, createddate, COALESCE(lastupdate, '0001-01-01 00:00:00'::timestamp),
+	SELECT address, feeder_id, owner,symbols, chainID, frequency, sleepseconds, deviationpermille, blockchainnode, active,mandatory_frequency, feeder_address, name createddate, COALESCE(lastupdate, '0001-01-01 00:00:00'::timestamp),
 	deleted,feedselection,expired,expired_time, draft,customer_id
 	FROM %s  WHERE feeder_id=$1
 	`, oracleconfigTable)
@@ -287,7 +287,7 @@ func (rdb *RelDB) GetFeeder(feederID string) (oracleconfig dia.OracleConfig, err
 		feedSelection    sql.NullString
 		customerID       int
 	)
-	err = row.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &frequencynull, &sleepsecondsnull, &oracleconfig.DeviationPermille, &oracleconfig.BlockchainNode, &oracleconfig.Active, &oracleconfig.MandatoryFrequency, &oracleconfig.FeederAddress, &oracleconfig.CreatedDate, &oracleconfig.LastUpdate, &oracleconfig.Deleted,
+	err = row.Scan(&oracleconfig.Address, &oracleconfig.FeederID, &oracleconfig.Owner, &symbols, &oracleconfig.ChainID, &frequencynull, &sleepsecondsnull, &oracleconfig.DeviationPermille, &oracleconfig.BlockchainNode, &oracleconfig.Active, &oracleconfig.MandatoryFrequency, &oracleconfig.FeederAddress, &oracleconfig.Name, &oracleconfig.CreatedDate, &oracleconfig.LastUpdate, &oracleconfig.Deleted,
 		&feedSelection, &oracleconfig.Expired, &oracleconfig.ExpiredDate, &oracleconfig.Draft, &customerID)
 	if err != nil {
 

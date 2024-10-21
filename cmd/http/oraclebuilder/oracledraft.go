@@ -40,25 +40,27 @@ func (ob *Env) CreateUpdateOracle(context *gin.Context) {
 
 	mandatoryFrequency := context.PostForm("mandatoryfrequency")
 
-	log.Infof("Request ID: %s Creating  draft oracle: oracleAddress: %s, ChainID: %s, Creator: %s, Symbols: %s, frequency: %s, sleepSeconds: %s blockchainnode: %s, feedSelection %s name %s", requestId, oracleaddress, chainID, creator, symbols, frequency, sleepSeconds, blockchainnode, feedSelection, oracleName)
+	adaptors := context.PostForm("adaptors")
+
+	log.Infof("Request ID: %s Creating/Update  draft oracle: oracleAddress: %s, ChainID: %s, Creator: %s, Symbols: %s, frequency: %s, mandatoryfrequency %s, deviationpermille %s, sleepSeconds: %s blockchainnode: %s, feedSelection %s name %s, adaptor %s", requestId, oracleaddress, chainID, creator, symbols, frequency, mandatoryFrequency, deviationPermille, sleepSeconds, blockchainnode, feedSelection, oracleName, adaptors)
 
 	signer, err := utils.GetSigner(chainID, creator, oracleaddress, "Verify its your address to create and update oracle", signedData)
 	if err != nil {
-		handleError(context, http.StatusUnauthorized, "sign err", "Creating oracle: invalid signer")
+		handleError(context, http.StatusUnauthorized, "sign err", "CreateUpdateOracle  : invalid signer")
 		return
 
 	}
-	log.Infof("Request ID: %s Creating oracle: signer %v", requestId, signer.Hex())
+	log.Infof("Request ID: %s CreateUpdateOracle: signer %v", requestId, signer.Hex())
 
 	if signer.Hex() != creator {
-		handleError(context, http.StatusUnauthorized, "sign err", "Creating oracle: invalid signer %v", signer)
+		handleError(context, http.StatusUnauthorized, "sign err", "CreateUpdateOracle: invalid signer %v", signer)
 	}
 
 	// validations
 	// check for  symbols and feedSelection
 
 	if feedSelection == "" {
-		handleError(context, http.StatusBadRequest, "no feedSelection", "Creating oracle: no symbols or feedSelection %v", symbols)
+		handleError(context, http.StatusBadRequest, "no feedSelection", "CreateUpdateOracle: no symbols or feedSelection %v", symbols)
 		log.Errorf("Request ID: %s, empty feedSelection %v ,", requestId, err)
 		return
 
@@ -68,9 +70,17 @@ func (ob *Env) CreateUpdateOracle(context *gin.Context) {
 	customer, err := ob.RelDB.GetCustomerByPublicKey(signer.Hex())
 	if err != nil {
 		log.Errorf("Request ID: %s, GetCustomerByPublicKey %v ,", requestId, err)
-		handleError(context, http.StatusNotFound, "error getting customer", "Creating oracle:account not found for this wallet")
+		handleError(context, http.StatusNotFound, "error getting customer", "CreateUpdateOracle:account not found for this wallet")
 		return
 
+	}
+
+	if adaptors != "" {
+		var ad []Adaptor
+		err = json.Unmarshal([]byte(adaptors), &ad)
+		if err != nil {
+			adaptors = ""
+		}
 	}
 
 	customerID := customer.CustomerID
@@ -79,18 +89,21 @@ func (ob *Env) CreateUpdateOracle(context *gin.Context) {
 
 	json.Unmarshal([]byte(feedSelection), &sf)
 
-	log.Infof("Request ID: %s, CustomerID: %d Creating oracle: total feeds", requestId, customerID, len(sf))
+	log.Infof("Request ID: %s, CustomerID: %d CreateUpdateOracle: total feeds", requestId, customerID, len(sf))
 
 	symbolsArray := strings.Split(symbols, ",")
 
 	if len(symbolsArray) > 10 {
-		handleError(context, http.StatusBadRequest, "max symbols exceed", "Creating oracle: max symbols exceed %d", len(symbols))
+		handleError(context, http.StatusBadRequest, "max symbols exceed", "CreateUpdateOracle: max symbols exceed %d", len(symbolsArray))
+		log.Errorf("Request ID: %s, CustomerID: %d CreateUpdateOracle: symbol lenght exceeded", requestId, customerID, len(symbolsArray))
+
 	}
 
 	// check for duplicate symbol
 
 	if utils.CheckDuplicates(symbolsArray) {
-		handleError(context, http.StatusBadRequest, "duplicate symbols", "Creating oracle: duplicate symbols %v", symbols)
+		handleError(context, http.StatusBadRequest, "duplicate symbols", "CreateUpdateOracle: duplicate symbols %v", symbols)
+		log.Errorf("Request ID: %s, CustomerID: %d CreateUpdateOracle: symbol duplicate", requestId, customerID, len(symbolsArray))
 
 	}
 
@@ -98,27 +111,27 @@ func (ob *Env) CreateUpdateOracle(context *gin.Context) {
 
 	frequencyInt, err := strconv.Atoi(frequency)
 	if err != nil {
-		handleError(context, http.StatusBadRequest, "invalid frequency", "Creating oracle: invalid frequency %v", err)
-		return
+		// handleError(context, http.StatusBadRequest, "invalid frequency", "CreateUpdateOracle: invalid frequency %v", err)
+		frequencyInt = 0
 	}
 
 	mandatoryFrequencyInt, err := strconv.Atoi(mandatoryFrequency)
 	if err != nil {
 		mandatoryFrequencyInt = 0
-		// handleError(context, http.StatusBadRequest, "invalid mandatoryFrequencyInt", "Creating oracle: invalid mandatoryFrequencyInt", err)
+		// handleError(context, http.StatusBadRequest, "invalid mandatoryFrequencyInt", "CreateUpdateOracle: invalid mandatoryFrequencyInt", err)
 	}
 
 	if frequencyInt != 0 || mandatoryFrequencyInt == 0 {
 		if frequencyInt < 120 || frequencyInt > 2630000 {
-			handleError(context, http.StatusBadRequest, "invalid frequency, out of range 120 - 2630000", "Creating oracle: out of range frequency %v", err)
-			log.Errorln("Creating oracle: invalid frequency, out of range", frequencyInt)
+			handleError(context, http.StatusBadRequest, "invalid frequency, out of range 120 - 2630000", "CreateUpdateOracle: out of range frequency %v", err)
+			log.Errorln("CreateUpdateOracle: invalid frequency, out of range", frequencyInt)
 			return
 		}
 	}
 
 	if frequencyInt == 0 || mandatoryFrequencyInt > 0 {
 		if mandatoryFrequencyInt < 120 || mandatoryFrequencyInt > 2630000 {
-			handleError(context, http.StatusBadRequest, "invalid mandatoryFrequencyInt, out of range", "Creating oracle: invalid mandatoryFrequencyInt, out of range %v", err)
+			handleError(context, http.StatusBadRequest, "invalid mandatoryFrequencyInt, out of range", "CreateUpdateOracle: invalid mandatoryFrequencyInt, out of range %v", err)
 		}
 
 	}
@@ -133,7 +146,7 @@ func (ob *Env) CreateUpdateOracle(context *gin.Context) {
 		if deviationPermilleFloat < 0.1 && deviationPermilleFloat > 10000 {
 			if err != nil {
 				context.JSON(http.StatusBadRequest, errors.New("invalid deviationPermille"))
-				log.Errorln("Creating oracle: invalid deviationPermille", err)
+				log.Errorln("CreateUpdateOracle: invalid deviationPermille", err)
 				return
 			}
 
@@ -143,6 +156,8 @@ func (ob *Env) CreateUpdateOracle(context *gin.Context) {
 		deviationPermille = fmt.Sprintf("%.2f", deviationPermilleFloat)
 
 	}
+
+	log.Infof("Request ID: %s, CustomerID: %d CreateUpdateOracle: frequency %d mandatoryfrequency %d deviationpermille %f", requestId, customerID, frequencyInt, mandatoryFrequencyInt, deviationPermilleFloat)
 
 	feederAddress := common.HexToAddress("0x000000000000000000000000000000000000dead").String()
 
@@ -182,15 +197,18 @@ func (ob *Env) CreateUpdateOracle(context *gin.Context) {
 		return
 	}
 
-	log.Infof("Created oracle: oracleAddress: %s, ChainID: %s, Creator: %s, Symbols: %s, frequency: %s, sleepSeconds: %s, Feeder ID :%s,", oracleaddress, chainID, creator, symbols, frequency, sleepSeconds, feederID)
-
 	if isNewFeeder {
+		log.Infof("Created oracle: oracleAddress: %s, ChainID: %s, Creator: %s, Symbols: %s, frequency: %s, sleepSeconds: %s, Feeder ID :%s,", oracleaddress, chainID, creator, symbols, frequency, sleepSeconds, feederID)
+
 		err = ob.RelDB.ChangeOracleState(feederID, false)
 		if err != nil {
 			log.Errorf("RequestId: %s, error ChangeOracleState %v", requestId, err)
 			context.JSON(http.StatusInternalServerError, gin.H{"error": "error creating/updating new oracle config"})
 			return
 		}
+	} else {
+		log.Infof("Updated Existing oracle: oracleAddress: %s, ChainID: %s, Creator: %s, Symbols: %s, frequency: %s, sleepSeconds: %s, Feeder ID :%s, Oracle Name :%s,", oracleaddress, chainID, creator, symbols, frequency, sleepSeconds, feederID, oracleName)
+
 	}
 	response := make(map[string]string)
 
@@ -227,12 +245,12 @@ func (ob *Env) isValidPlan(context *gin.Context, customer *models.Customer, requ
 	}
 	if totalFeeds >= plan.TotalFeeds {
 		log.Errorf("Request ID: %s, totalFeeds exceeds plan Limit %v ,", requestId, err)
-		// handleError(context, http.StatusPaymentRequired, "totalFeeds exceeds plan Limit", "Creating oracle:  totalFeeds exceeds plan Limit")
+		// handleError(context, http.StatusPaymentRequired, "totalFeeds exceeds plan Limit", "CreateUpdateOracle:  totalFeeds exceeds plan Limit")
 		return false
 	}
 	if totalOracles >= plan.TotalOracles {
 		log.Errorf("Request ID: %s, totalOracles exceeds plan Limit %v ,", requestId, err)
-		// handleError(context, http.StatusPaymentRequired, "totalFeeds exceeds plan Limit", "Creating oracle:  totalFeeds exceeds plan Limit")
+		// handleError(context, http.StatusPaymentRequired, "totalFeeds exceeds plan Limit", "CreateUpdateOracle:  totalFeeds exceeds plan Limit")
 		return false
 	}
 
@@ -275,7 +293,7 @@ func (ob *Env) InitFeeder(context *gin.Context) {
 	customer, err := ob.RelDB.GetCustomerByPublicKey(creator)
 	if err != nil {
 		log.Errorf("Request ID: %s, GetCustomerByPublicKey %v ,", requestId, err)
-		handleError(context, http.StatusNotFound, "error getting customer", "Creating oracle:account not found for this wallet")
+		handleError(context, http.StatusNotFound, "error getting customer", "InitFeeder:account not found for this wallet")
 		return
 
 	}
@@ -325,7 +343,7 @@ func (ob *Env) InitFeeder(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, errors.New("error generating key"))
 		return
 	}
-	log.Infof("Request ID: %s, creating keys ob.Keyring.Set feederId: %s err  %v ,", requestId, oracleconfig.FeederID, err)
+	log.Infof("Request ID: %s, Getting keys ob.Keyring.Set feederId: %s err  %v ,", requestId, oracleconfig.FeederID, err)
 
 	// Get public key
 
