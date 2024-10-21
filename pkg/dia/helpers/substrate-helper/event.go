@@ -70,7 +70,7 @@ func (s *SubstrateEventHelper) ListenForNewBlocks(callback func([]*parser.Event)
 	if err != nil {
 		return fmt.Errorf("failed to subscribe to new heads: %v", err)
 	}
-	fmt.Println("Listening for new blocks...")
+	s.logger.Info("Listening for new blocks...")
 
 	for {
 		head := <-sub.Chan()
@@ -80,7 +80,7 @@ func (s *SubstrateEventHelper) ListenForNewBlocks(callback func([]*parser.Event)
 			s.logger.Errorf("Failed to fetch block hash: %v\n", err)
 			continue
 		}
-		fmt.Printf("\nNew block detected! Block number: %v, Block hash: %v\n", head.Number, blockHash.Hex())
+		s.logger.Infof("\nNew block detected! Block number: %v, Block hash: %v\n", head.Number, blockHash.Hex())
 
 		events, err := s.DecodeEvents(blockHash)
 		if err != nil {
