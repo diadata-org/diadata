@@ -190,10 +190,7 @@ func parseFields(event *parser.Event) ParsedEvent {
 			if result, ok := v.Value.(registry.VariantDecoderResult); ok {
 				if decodedFields, ok := result.Value.(registry.DecodedFields); ok {
 					if len(decodedFields) > 0 {
-						if enumValue, ok := decodedFields[0].Value.(uint8); ok {
-							tokenSymbol := TokenSymbol(enumValue).String()
-							parsedEvent.InputAsset = strings.ToLower(result.FieldName) + "-" + strings.ToLower(tokenSymbol)
-						}
+						parsedEvent.InputAsset = strings.ToLower(result.FieldName) + "-" + strings.ToLower(fmt.Sprint(decodedFields[0].Value))
 					}
 				}
 			}
@@ -201,9 +198,8 @@ func parseFields(event *parser.Event) ParsedEvent {
 			if result, ok := v.Value.(registry.VariantDecoderResult); ok {
 				if decodedFields, ok := result.Value.(registry.DecodedFields); ok {
 					if len(decodedFields) > 0 {
-						if enumValue, ok := decodedFields[0].Value.(uint8); ok {
-							tokenSymbol := TokenSymbol(enumValue).String()
-							parsedEvent.OutputAsset = strings.ToLower(result.FieldName) + "-" + strings.ToLower(tokenSymbol)
+						if len(decodedFields) > 0 {
+							parsedEvent.OutputAsset = strings.ToLower(result.FieldName) + "-" + strings.ToLower(fmt.Sprint(decodedFields[0].Value))
 						}
 					}
 				}
