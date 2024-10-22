@@ -413,7 +413,7 @@ func oracleUpdateExecutor(
 
 	// Update prices
 	// check if we can do the multiupdate or use compatibility mode
-	if compatibilityMode {
+	if compatibilityMode || len(keys) == 1 {
 		for keyIndex := range keys {
 			oracleUpdateMutex.Lock()
 			timestamp := time.Now().Unix()
