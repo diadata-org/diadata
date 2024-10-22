@@ -53,7 +53,7 @@ func NewBifrostScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		return nil
 	}
 
-	startBlock := utils.Getenv(strings.ToUpper(exchange.Name)+"_START_BLOCK", "10")
+	startBlock := utils.Getenv(strings.ToUpper(exchange.Name)+"_START_BLOCK", "0")
 	startBlockUint64, err := strconv.ParseUint(startBlock, 10, 64)
 	if err != nil {
 		logrus.WithError(err).Error("Failed to parse start block, using default value of 10")
