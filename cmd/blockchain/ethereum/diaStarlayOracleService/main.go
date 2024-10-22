@@ -174,6 +174,12 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 	}
 	rawQ.Name = rawQ.Symbol
 
+	// Special case Polygon: Use old symbol MATIC
+	if rawQ.Symbol == "POL" {
+		rawQ.Name = "MATIC"
+		rawQ.Symbol= "MATIC"
+	}
+
 	// Check for deviation
 	newPrice := rawQ.Price
 
