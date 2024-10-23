@@ -14,9 +14,8 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia/helpers/substrate-helper/gsrpc/registry/parser"
 	models "github.com/diadata-org/diadata/pkg/model"
 
-	//helper "github.com/diadata-org/diadata/pkg/polkadot"
+	"github.com/diadata-org/diadata/pkg/dia/helpers/substrate-helper/gsrpc/registry/parser"
 	"github.com/diadata-org/diadata/pkg/utils"
-	"github.com/gorilla/websocket"
 	"github.com/sirupsen/logrus"
 )
 
@@ -34,7 +33,6 @@ type HydrationScraper struct {
 	exchangeName string
 	blockchain   string
 	currentBlock uint64
-	wsClient     *websocket.Conn
 }
 
 func NewHydrationScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *HydrationScraper {
@@ -49,11 +47,11 @@ func NewHydrationScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 		return nil
 	}
 
-	startBlock := utils.Getenv(strings.ToUpper(exchange.Name)+"_START_BLOCK", "10")
+	startBlock := utils.Getenv(strings.ToUpper(exchange.Name)+"_START_BLOCK", "0")
 	startBlockUint64, err := strconv.ParseUint(startBlock, 10, 64)
 	if err != nil {
-		logrus.WithError(err).Error("Failed to parse start block, using default value of 10")
-		startBlockUint64 = 10
+		logrus.WithError(err).Error("Failed to parse start block, using default value of 0")
+		startBlockUint64 = 0
 	}
 
 	s := &HydrationScraper{
