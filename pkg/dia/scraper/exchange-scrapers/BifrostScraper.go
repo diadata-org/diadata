@@ -107,7 +107,7 @@ func (s *BifrostScraper) mainLoop() {
 
 				if s.currentBlock > uint64(latestBlock.Block.Header.Number) {
 					s.logger.Info("Reached the latest block")
-					return
+					s.wsApi.ListenForNewBlocks(s.processEvents)
 				}
 			}
 		}
@@ -121,7 +121,7 @@ func (s *BifrostScraper) processEvents(events []*parser.Event) {
 		if e.Name == "StableAsset.TokenSwapped" {
 			parsedEvent := parseFields(e)
 			parsedEvent.EventID = fmt.Sprintf("%x%x", e.EventID[0], e.EventID[1])
-			pool, err := s.db.GetPoolByAssetPair(parsedEvent.InputAsset, parsedEvent.OutputAsset, s.exchangeName)
+			pool, err := s.db.GetPoolByAddressExchangeAssetPair(parsedEvent.PoolId, s.exchangeName, parsedEvent.InputAsset, parsedEvent.OutputAsset)
 
 			if len(pool.Assetvolumes) < 2 {
 				s.logger.WithField("poolAddress", pool.Address).Error("Pool has fewer than 2 asset volumes")
@@ -243,8 +243,8 @@ func (s *BifrostScraper) handleTrade(pool dia.Pool, event ParsedEvent, time time
 	if fmt.Sprint(event.InputAsset) == pool.Assetvolumes[0].Asset.Address {
 		baseToken = pool.Assetvolumes[0].Asset
 		quoteToken = pool.Assetvolumes[1].Asset
-		decimalsIn = int64(baseToken.Decimals)
-		decimalsOut = int64(quoteToken.Decimals)
+		decimalsIn = int64(pool.Assetvolumes[0].Asset.Decimals)
+		decimalsOut = int64(pool.Assetvolumes[1].Asset.Decimals)
 	} else {
 		baseToken = pool.Assetvolumes[1].Asset
 		quoteToken = pool.Assetvolumes[0].Asset
