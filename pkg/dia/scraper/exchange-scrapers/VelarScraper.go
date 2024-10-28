@@ -129,10 +129,7 @@ func (s *VelarScraper) Update() error {
 	}
 	s.currentHeight += 1
 
-	swapTxs, err := s.fetchSwapTransactions(txs)
-	if err != nil {
-		return err
-	}
+	swapTxs := s.filterSwapTransactions(txs)
 	if len(swapTxs) == 0 {
 		return nil
 	}
@@ -158,7 +155,17 @@ func (s *VelarScraper) Update() error {
 			}
 
 			if swapInfo.TokenIn == "" || swapInfo.TokenOut == "" {
-				for _, arg := range tx.ContractCall.FunctionArgs {
+				// This is a temporary workaround introduced due to a bug in hiro stacks API.
+				// Results returned from /blocks/{block_height}/transactions route have empty
+				// `name` field in `contract_call.function_args` list.
+				// TODO: remove this as soon as the issue is fixed.
+				normalizedTx, err := s.api.GetTransactionAt(tx.TxID)
+				if err != nil {
+					s.logger.WithError(err).Error("failed to GetTransactionAt")
+					continue
+				}
+
+				for _, arg := range normalizedTx.ContractCall.FunctionArgs {
 					switch arg.Name {
 					case "token-in":
 						swapInfo.TokenIn = arg.Repr[1:]
@@ -185,7 +192,7 @@ func (s *VelarScraper) getPools() ([]dia.Pool, error) {
 	return s.db.GetAllPoolsExchange(s.exchangeName, 0)
 }
 
-func (s *VelarScraper) fetchSwapTransactions(txs []stackshelper.Transaction) ([]stackshelper.Transaction, error) {
+func (s *VelarScraper) filterSwapTransactions(txs []stackshelper.Transaction) []stackshelper.Transaction {
 	swapTxs := make([]stackshelper.Transaction, 0)
 
 	for _, tx := range txs {
@@ -194,20 +201,11 @@ func (s *VelarScraper) fetchSwapTransactions(txs []stackshelper.Transaction) ([]
 			strings.HasPrefix(tx.ContractCall.FunctionName, "swap")
 
 		if isSwapTx && tx.TxStatus == "success" {
-			// This is a temporary workaround introduced due to a bug in hiro stacks API.
-			// Results returned from /blocks/{block_height}/transactions route have empty
-			// `name` field in `contract_call.function_args` list.
-			// TODO: remove this as soon as the issue is fixed.
-			normalizedTx, err := s.api.GetTransactionAt(tx.TxID)
-			if err != nil {
-				return nil, err
-			}
-
-			swapTxs = append(swapTxs, normalizedTx)
+			swapTxs = append(swapTxs, tx)
 		}
 	}
 
-	return swapTxs, nil
+	return swapTxs
 }
 
 func (s *VelarScraper) handleTrade(pool *dia.Pool, swapInfo velarhelper.SwapInfo, tx stackshelper.Transaction) *dia.Trade {
