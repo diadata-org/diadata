@@ -246,7 +246,7 @@ func (rdb *RelDB) GetPoolByAddress(blockchain string, address string) (pool dia.
 	return
 }
 
-func (rdb *RelDB) GetPoolByAddressExchangeAssetPair(address, exchange, assetIn, assetOut string) (pool dia.Pool, err error) {
+func (rdb *RelDB) GetPoolByAddressAssetPair(address, blockchain, assetIn, assetOut string) (pool dia.Pool, err error) {
 	var assetInSymbol, assetOutSymbol, assetInDecimals, assetOutDecimals, assetInName, assetOutName string
 
 	query := fmt.Sprintf(`
@@ -259,7 +259,7 @@ func (rdb *RelDB) GetPoolByAddressExchangeAssetPair(address, exchange, assetIn, 
 	INNER JOIN %s a1 ON pa1.asset_id = a1.asset_id
 	INNER JOIN %s pa2 ON p.pool_id = pa2.pool_id
 	INNER JOIN %s a2 ON pa2.asset_id = a2.asset_id
-	WHERE p.exchange = $1
+	WHERE p.blockchain = $1
 		AND p.address = $2
 		AND a1.address = $3
 		AND a2.address = $4
@@ -272,7 +272,7 @@ func (rdb *RelDB) GetPoolByAddressExchangeAssetPair(address, exchange, assetIn, 
 		assetTable,
 	)
 
-	err = rdb.postgresClient.QueryRow(context.Background(), query, exchange, address, assetIn, assetOut).Scan(
+	err = rdb.postgresClient.QueryRow(context.Background(), query, blockchain, address, assetIn, assetOut).Scan(
 		&pool.Exchange.Name,
 		&pool.Blockchain.Name,
 		&pool.Address,
