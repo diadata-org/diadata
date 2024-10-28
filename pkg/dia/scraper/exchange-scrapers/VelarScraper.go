@@ -129,7 +129,10 @@ func (s *VelarScraper) Update() error {
 	}
 	s.currentHeight += 1
 
-	swapTxs := s.filterSwapTransactions(txs)
+	swapTxs, err := s.fetchSwapTransactions(txs)
+	if err != nil {
+		return err
+	}
 	if len(swapTxs) == 0 {
 		return nil
 	}
@@ -192,7 +195,7 @@ func (s *VelarScraper) getPools() ([]dia.Pool, error) {
 	return s.db.GetAllPoolsExchange(s.exchangeName, 0)
 }
 
-func (s *VelarScraper) filterSwapTransactions(txs []stackshelper.Transaction) []stackshelper.Transaction {
+func (s *VelarScraper) fetchSwapTransactions(txs []stackshelper.Transaction) ([]stackshelper.Transaction, error) {
 	swapTxs := make([]stackshelper.Transaction, 0)
 
 	for _, tx := range txs {
@@ -201,11 +204,20 @@ func (s *VelarScraper) filterSwapTransactions(txs []stackshelper.Transaction) []
 			strings.HasPrefix(tx.ContractCall.FunctionName, "swap")
 
 		if isSwapTx && tx.TxStatus == "success" {
-			swapTxs = append(swapTxs, tx)
+			// This is a temporary workaround introduced due to a bug in hiro stacks API.
+			// Results returned from /blocks/{block_height}/transactions route have empty
+			// `name` field in `contract_call.function_args` list.
+			// TODO: remove this as soon as the issue is fixed.
+			normalizedTx, err := s.api.GetTransactionAt(tx.TxID)
+			if err != nil {
+				return nil, err
+			}
+
+			swapTxs = append(swapTxs, normalizedTx)
 		}
 	}
 
-	return swapTxs
+	return swapTxs, nil
 }
 
 func (s *VelarScraper) handleTrade(pool *dia.Pool, swapInfo velarhelper.SwapInfo, tx stackshelper.Transaction) *dia.Trade {
