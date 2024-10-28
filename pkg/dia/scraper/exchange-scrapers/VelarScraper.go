@@ -108,7 +108,7 @@ func (s *VelarScraper) mainLoop() {
 		case <-s.ticker.C:
 			err := s.Update()
 			if err != nil {
-				s.logger.Error(err)
+				s.logger.WithError(err).Error("failed to run Update")
 			}
 		case <-s.shutdown:
 			s.logger.Println("shutting down")
@@ -121,7 +121,6 @@ func (s *VelarScraper) mainLoop() {
 func (s *VelarScraper) Update() error {
 	txs, err := s.api.GetAllBlockTransactions(s.currentHeight)
 	if err != nil {
-		s.logger.WithError(err).Error("failed to GetBlockTransactions")
 		return err
 	}
 
@@ -130,10 +129,14 @@ func (s *VelarScraper) Update() error {
 	}
 	s.currentHeight += 1
 
-	swapTxs := s.filterSwapTransactions(txs)
+	swapTxs, err := s.fetchSwapTransactions(txs)
+	if err != nil {
+		return err
+	}
 	if len(swapTxs) == 0 {
 		return nil
 	}
+
 	pools, err := s.getPools()
 	if err != nil {
 		s.logger.WithError(err).Error("failed to GetAllPoolsExchange")
@@ -154,6 +157,17 @@ func (s *VelarScraper) Update() error {
 				continue
 			}
 
+			if swapInfo.TokenIn == "" || swapInfo.TokenOut == "" {
+				for _, arg := range tx.ContractCall.FunctionArgs {
+					switch arg.Name {
+					case "token-in":
+						swapInfo.TokenIn = arg.Repr[1:]
+					case "token-out":
+						swapInfo.TokenOut = arg.Repr[1:]
+					}
+				}
+			}
+
 			diaTrade := s.handleTrade(&pool, swapInfo, tx)
 			s.logger.
 				WithField("parentAddress", pool.Address).
@@ -171,7 +185,7 @@ func (s *VelarScraper) getPools() ([]dia.Pool, error) {
 	return s.db.GetAllPoolsExchange(s.exchangeName, 0)
 }
 
-func (s *VelarScraper) filterSwapTransactions(txs []stackshelper.Transaction) []stackshelper.Transaction {
+func (s *VelarScraper) fetchSwapTransactions(txs []stackshelper.Transaction) ([]stackshelper.Transaction, error) {
 	swapTxs := make([]stackshelper.Transaction, 0)
 
 	for _, tx := range txs {
@@ -180,11 +194,20 @@ func (s *VelarScraper) filterSwapTransactions(txs []stackshelper.Transaction) []
 			strings.HasPrefix(tx.ContractCall.FunctionName, "swap")
 
 		if isSwapTx && tx.TxStatus == "success" {
-			swapTxs = append(swapTxs, tx)
+			// This is a temporary workaround introduced due to a bug in hiro stacks API.
+			// Results returned from /blocks/{block_height}/transactions route have empty
+			// `name` field in `contract_call.function_args` list.
+			// TODO: remove this as soon as the issue is fixed.
+			normalizedTx, err := s.api.GetTransactionAt(tx.TxID)
+			if err != nil {
+				return nil, err
+			}
+
+			swapTxs = append(swapTxs, normalizedTx)
 		}
 	}
 
-	return swapTxs
+	return swapTxs, nil
 }
 
 func (s *VelarScraper) handleTrade(pool *dia.Pool, swapInfo velarhelper.SwapInfo, tx stackshelper.Transaction) *dia.Trade {
@@ -199,7 +222,6 @@ func (s *VelarScraper) handleTrade(pool *dia.Pool, swapInfo velarhelper.SwapInfo
 	var trade dia.Trade
 
 	if swapInfo.TokenIn == token0.Address {
-		log.Info("here")
 		trade.Pair = fmt.Sprintf("%s-%s", token1.Symbol, token0.Symbol)
 		trade.Symbol = token1.Symbol
 		trade.BaseToken = token0
@@ -209,9 +231,7 @@ func (s *VelarScraper) handleTrade(pool *dia.Pool, swapInfo velarhelper.SwapInfo
 		amount1Out, _ := utils.StringToFloat64(amountOut, int64(token1.Decimals))
 		volume = amount1Out
 		price = amount0In / amount1Out
-
 	} else {
-		log.Info("there")
 		trade.Pair = fmt.Sprintf("%s-%s", token0.Symbol, token1.Symbol)
 		trade.Symbol = token0.Symbol
 		trade.BaseToken = token1
