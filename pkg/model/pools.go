@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
 
@@ -244,64 +243,6 @@ func (rdb *RelDB) GetPoolByAddress(blockchain string, address string) (pool dia.
 	pool.Address = address
 
 	return
-}
-
-func (rdb *RelDB) GetPoolByAddressAssetPair(address, blockchain, assetIn, assetOut string) (pool dia.Pool, err error) {
-	var assetInSymbol, assetOutSymbol, assetInDecimals, assetOutDecimals, assetInName, assetOutName string
-
-	query := fmt.Sprintf(`
-	SELECT p.exchange, p.blockchain, p.address AS pool_address,
-    	a1.symbol AS asset_in_symbol, a2.symbol AS asset_out_symbol,
-		a1.decimals as asset_in_decimals, a2.decimals as asset_out_decimals,
-		a1.name as asset_in_name, a2.name as asset_out_name
-	FROM %s p
-	INNER JOIN %s pa1 ON p.pool_id = pa1.pool_id
-	INNER JOIN %s a1 ON pa1.asset_id = a1.asset_id
-	INNER JOIN %s pa2 ON p.pool_id = pa2.pool_id
-	INNER JOIN %s a2 ON pa2.asset_id = a2.asset_id
-	WHERE p.blockchain = $1
-		AND p.address = $2
-		AND a1.address = $3
-		AND a2.address = $4
-		AND pa1.asset_id != pa2.asset_id
-	`,
-		poolTable,
-		poolassetTable,
-		assetTable,
-		poolassetTable,
-		assetTable,
-	)
-
-	err = rdb.postgresClient.QueryRow(context.Background(), query, blockchain, address, assetIn, assetOut).Scan(
-		&pool.Exchange.Name,
-		&pool.Blockchain.Name,
-		&pool.Address,
-		&assetInSymbol,
-		&assetOutSymbol,
-		&assetInDecimals,
-		&assetOutDecimals,
-		&assetInName,
-		&assetOutName,
-	)
-	if err != nil {
-		return dia.Pool{}, fmt.Errorf("error scanning row: %w", err)
-	}
-
-	aid, err := strconv.ParseUint(assetInDecimals, 10, 8)
-	if err != nil {
-		return dia.Pool{}, fmt.Errorf("error parsing asset in decimals")
-	}
-	aod, err := strconv.ParseUint(assetOutDecimals, 10, 8)
-	if err != nil {
-		return dia.Pool{}, fmt.Errorf("error parsing asset out decimals")
-	}
-
-	pool.Assetvolumes = []dia.AssetVolume{
-		{Asset: dia.Asset{Symbol: assetInSymbol, Address: assetIn, Decimals: uint8(aid), Name: assetInName, Blockchain: pool.Blockchain.Name}},
-		{Asset: dia.Asset{Symbol: assetOutSymbol, Address: assetOut, Decimals: uint8(aod), Name: assetOutName, Blockchain: pool.Blockchain.Name}},
-	}
-
-	return pool, nil
 }
 
 // GetAllPoolAddrsExchange returns all pool addresses available for @exchange.

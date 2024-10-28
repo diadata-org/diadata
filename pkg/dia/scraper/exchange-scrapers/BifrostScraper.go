@@ -121,7 +121,7 @@ func (s *BifrostScraper) processEvents(events []*parser.Event) {
 		if e.Name == "StableAsset.TokenSwapped" {
 			parsedEvent := parseFields(e)
 			parsedEvent.EventID = fmt.Sprintf("%x%x", e.EventID[0], e.EventID[1])
-			pool, err := s.db.GetPoolByAddressAssetPair(parsedEvent.PoolId, s.blockchain, parsedEvent.InputAsset, parsedEvent.OutputAsset)
+			pool, err := s.db.GetPoolByAddress(s.blockchain, parsedEvent.PoolId)
 
 			if len(pool.Assetvolumes) < 2 {
 				s.logger.WithField("poolAddress", pool.Address).Error("Pool has fewer than 2 asset volumes")
