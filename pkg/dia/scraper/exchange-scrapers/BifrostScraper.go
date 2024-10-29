@@ -114,13 +114,13 @@ func (s *BifrostScraper) mainLoop() {
 	}
 }
 
-func (s *BifrostScraper) processEvents(events []*parser.Event) {
+func (s *BifrostScraper) processEvents(events []*parser.Event, blockNumber uint64) {
 	s.logger.Info("Processing events")
 
 	for _, e := range events {
 		if e.Name == "StableAsset.TokenSwapped" {
 			parsedEvent := parseFields(e)
-			parsedEvent.EventID = fmt.Sprintf("%x%x", e.EventID[0], e.EventID[1])
+			parsedEvent.ExtrinsicID = fmt.Sprintf("%d-%d", blockNumber, e.Phase.AsApplyExtrinsic)
 			pool, err := s.db.GetPoolByAddress(s.blockchain, parsedEvent.PoolId)
 
 			if len(pool.Assetvolumes) < 2 {
@@ -150,7 +150,7 @@ type ParsedEvent struct {
 	InputAmount  string
 	OutputAmount string
 	PoolId       string
-	EventID      string
+	ExtrinsicID  string
 }
 
 type TokenValue struct {
@@ -243,15 +243,13 @@ func (s *BifrostScraper) handleTrade(pool dia.Pool, event ParsedEvent, time time
 	if fmt.Sprint(event.InputAsset) == pool.Assetvolumes[0].Asset.Address {
 		baseToken = pool.Assetvolumes[0].Asset
 		quoteToken = pool.Assetvolumes[1].Asset
-		decimalsIn = int64(pool.Assetvolumes[0].Asset.Decimals)
-		decimalsOut = int64(pool.Assetvolumes[1].Asset.Decimals)
 	} else {
 		baseToken = pool.Assetvolumes[1].Asset
 		quoteToken = pool.Assetvolumes[0].Asset
-		decimalsIn = int64(baseToken.Decimals)
-		decimalsOut = int64(quoteToken.Decimals)
 	}
 
+	decimalsIn = int64(baseToken.Decimals)
+	decimalsOut = int64(quoteToken.Decimals)
 	amountIn, _ := utils.StringToFloat64(event.InputAmount, decimalsIn)
 	amountOut, _ := utils.StringToFloat64(event.OutputAmount, decimalsOut)
 
@@ -259,13 +257,13 @@ func (s *BifrostScraper) handleTrade(pool dia.Pool, event ParsedEvent, time time
 
 	price = amountIn / amountOut
 
-	symbolPair := fmt.Sprintf("%s-%s", baseToken.Symbol, quoteToken.Symbol)
+	symbolPair := fmt.Sprintf("%s-%s", quoteToken.Symbol, baseToken.Symbol)
 
 	return &dia.Trade{
 		Time:           time,
-		Symbol:         baseToken.Symbol,
+		Symbol:         quoteToken.Symbol,
 		Pair:           symbolPair,
-		ForeignTradeID: event.EventID,
+		ForeignTradeID: event.ExtrinsicID,
 		Source:         s.exchangeName,
 		Price:          price,
 		Volume:         volume,

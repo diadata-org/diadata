@@ -1,6 +1,7 @@
 package substratehelper
 
 import (
+	"errors"
 	"fmt"
 
 	gsrpc "github.com/diadata-org/diadata/pkg/dia/helpers/substrate-helper/gsrpc"
@@ -26,12 +27,12 @@ func NewSubstrateEventHelper(nodeURL string, logger *logrus.Entry) (*SubstrateEv
 	return &SubstrateEventHelper{API: api, logger: logger}, nil
 }
 
-func (s *SubstrateEventHelper) ListenForSpecificBlock(blockNumber uint64, callback func([]*parser.Event)) error {
+func (s *SubstrateEventHelper) ListenForSpecificBlock(blockNumber uint64, callback func([]*parser.Event, uint64)) error {
 	blockHash, err := s.API.RPC.Chain.GetBlockHash(blockNumber)
 	if err != nil {
 		message := fmt.Sprintf("Failed to fetch block hash: %v", err)
 		s.logger.Errorf(message, err)
-		return fmt.Errorf(message)
+		return errors.New(message)
 	}
 
 	events, err := s.DecodeEvents(blockHash)
@@ -41,7 +42,7 @@ func (s *SubstrateEventHelper) ListenForSpecificBlock(blockNumber uint64, callba
 		return err
 	}
 
-	callback(events)
+	callback(events, blockNumber)
 
 	return nil
 }
@@ -50,13 +51,13 @@ func (s *SubstrateEventHelper) DecodeEvents(blockHash types.Hash) ([]*parser.Eve
 	r, err := retriever.NewDefaultEventRetriever(state.NewEventProvider(s.API.RPC.State), s.API.RPC.State)
 
 	if err != nil {
-		return nil, fmt.Errorf("Couldn't create event retriever: %s", err)
+		return nil, fmt.Errorf("couldn't create event retriever: %s", err)
 	}
 
 	events, err := r.GetEvents(blockHash)
 
 	if err != nil {
-		return nil, fmt.Errorf("Couldn't retrieve events for block hash %d: %s\n", blockHash, err)
+		return nil, fmt.Errorf("couldn't retrieve events for block hash %d: %s", blockHash, err)
 	}
 
 	s.logger.Infof("Found %d events\n", len(events))
@@ -65,7 +66,7 @@ func (s *SubstrateEventHelper) DecodeEvents(blockHash types.Hash) ([]*parser.Eve
 }
 
 // ListenForNewBlocks listens for new blocks and continuously decodes events.
-func (s *SubstrateEventHelper) ListenForNewBlocks(callback func([]*parser.Event)) error {
+func (s *SubstrateEventHelper) ListenForNewBlocks(callback func([]*parser.Event, uint64)) error {
 	sub, err := s.API.RPC.Chain.SubscribeNewHeads()
 	if err != nil {
 		return fmt.Errorf("failed to subscribe to new heads: %v", err)
@@ -74,8 +75,8 @@ func (s *SubstrateEventHelper) ListenForNewBlocks(callback func([]*parser.Event)
 
 	for {
 		head := <-sub.Chan()
-
-		blockHash, err := s.API.RPC.Chain.GetBlockHash(uint64(head.Number))
+		blockNumber := uint64(head.Number)
+		blockHash, err := s.API.RPC.Chain.GetBlockHash(blockNumber)
 		if err != nil {
 			s.logger.Errorf("Failed to fetch block hash: %v\n", err)
 			continue
@@ -88,6 +89,6 @@ func (s *SubstrateEventHelper) ListenForNewBlocks(callback func([]*parser.Event)
 			continue
 		}
 
-		callback(events)
+		callback(events, blockNumber)
 	}
 }
