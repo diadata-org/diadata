@@ -170,6 +170,8 @@ func NewLiquidityScraper(source string, relDB *models.RelDB, datastore *models.D
 		return NewBitflowLiquidityScraper(exchanges[dia.BitflowExchange], relDB, datastore)
 	case dia.VelarExchange:
 		return NewVelarLiquidityScraper(exchanges[dia.VelarExchange], relDB, datastore)
+	case dia.BifrostExchange:
+		return NewBifrostLiquidityScraper(exchanges[dia.BifrostExchange], relDB, datastore)
 	default:
 		return nil
 	}
