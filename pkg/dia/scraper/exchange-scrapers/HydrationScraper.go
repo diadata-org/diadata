@@ -104,7 +104,7 @@ func (s *HydrationScraper) mainLoop() {
 
 				if s.currentBlock > uint64(latestBlock.Block.Header.Number) {
 					s.logger.Info("Reached the latest block")
-					return
+					s.wsApi.ListenForNewBlocks(s.processEvents)
 				}
 			}
 		}
