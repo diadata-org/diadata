@@ -19,6 +19,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const (
+	Blockchain = "Hydration"
+)
+
 type HydrationScraper struct {
 	logger       *logrus.Entry
 	pairScrapers map[string]*HydrationPairScraper // pc.ExchangePair -> pairScraperSet
@@ -62,7 +66,7 @@ func NewHydrationScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 		db:           relDB,
 		wsApi:        wsApi,
 		exchangeName: exchange.Name,
-		blockchain:   exchange.BlockChain.Name,
+		blockchain:   Blockchain,
 		currentBlock: startBlockUint64,
 	}
 
@@ -117,16 +121,44 @@ func (s *HydrationScraper) processEvents(events []*parser.Event, blockNumber uin
 		if parsedEvent == nil {
 			continue
 		}
-		parsedEvent.ExtrinsicID = fmt.Sprintf("%d-%d", blockNumber, e.Phase.AsApplyExtrinsic)
+		if e.Phase.IsApplyExtrinsic {
+			parsedEvent.ExtrinsicID = fmt.Sprintf("%d-%d", blockNumber, e.Phase.AsApplyExtrinsic)
+		}
 
 		pool, err := s.db.GetPoolByAssetPair(parsedEvent.AssetIn, parsedEvent.AssetOut, s.exchangeName)
-		if err != nil {
+		if err != nil && err != models.ErrNoPool {
 			continue
 		}
 
 		if len(pool.Assetvolumes) < 2 {
-			s.logger.WithField("poolAddress", pool.Address).Error("Pool has fewer than 2 asset volumes")
-			continue
+			// if cant find pool look for omnipool event
+			omniParsedEvent := s.parseOmniPoolEvent(events, parsedEvent, blockNumber)
+			pool, err = s.db.GetPoolByAssetPair(omniParsedEvent.AssetIn, omniParsedEvent.AssetOut, s.exchangeName)
+			if err != nil {
+				s.logger.Debug("Failed to get omnipool")
+				continue
+			}
+			// Manually fill asset in and assetout since omnipool has double assets entries
+			assetIn, err := s.db.GetAsset(parsedEvent.AssetIn, s.blockchain)
+			if err != nil {
+				s.logger.Debug("Failed to get assetIn")
+			}
+			assetOut, err := s.db.GetAsset(parsedEvent.AssetOut, s.blockchain)
+			if err != nil {
+				s.logger.Debug("Failed to get assetOut")
+			}
+			pool.Assetvolumes = []dia.AssetVolume{
+				{Asset: assetIn},
+				{Asset: assetOut},
+			}
+			if err != nil {
+				continue
+			}
+
+			if len(pool.Assetvolumes) < 2 {
+				s.logger.WithField("poolAddress", pool.Address).Error("Pool has fewer than 2 asset volumes")
+				continue
+			}
 		}
 
 		diaTrade := s.handleTrade(pool, *parsedEvent, time.Now())
@@ -139,6 +171,26 @@ func (s *HydrationScraper) processEvents(events []*parser.Event, blockNumber uin
 
 		s.chanTrades <- diaTrade
 	}
+}
+
+func (s *HydrationScraper) parseOmniPoolEvent(events []*parser.Event, routerEvent *HydrationParsedEvent, blockNumber uint64) *HydrationParsedEvent {
+	parsedEvent := &HydrationParsedEvent{}
+	for _, e := range events {
+		if strings.EqualFold(e.Name, "Omnipool.SellExecuted") || strings.EqualFold(e.Name, "Omnipool.BuyExecuted") {
+			var extrinsicId string
+			if e.Phase.IsApplyExtrinsic {
+				extrinsicId = fmt.Sprintf("%d-%d", blockNumber, e.Phase.AsApplyExtrinsic)
+			}
+			if extrinsicId == routerEvent.ExtrinsicID {
+				parsedEvent = s.parseRouterEvent(e)
+				parsedEvent.AmountIn = routerEvent.AmountIn
+				parsedEvent.AmountOut = routerEvent.AmountOut
+				parsedEvent.ExtrinsicID = extrinsicId
+			}
+		}
+	}
+
+	return parsedEvent
 }
 
 func (s *HydrationScraper) parseFields(event *parser.Event) *HydrationParsedEvent {
@@ -167,18 +219,6 @@ func (s *HydrationScraper) parseRouterEvent(event *parser.Event) *HydrationParse
 }
 
 func (s *HydrationScraper) parseStableSwapEvent(event *parser.Event) *HydrationParsedEvent {
-	parsedEvent := &HydrationParsedEvent{}
-	s.logger.Warn(event.Name)
-	for _, v := range event.Fields {
-		s.logger.WithFields(logrus.Fields{
-			"Name":  v.Name,
-			"Value": v.Value,
-		}).Info("Event fields")
-	}
-	return parsedEvent
-}
-
-func (s *HydrationScraper) parseOmniPoolEvent(event *parser.Event) *HydrationParsedEvent {
 	parsedEvent := &HydrationParsedEvent{}
 	s.logger.Warn(event.Name)
 	for _, v := range event.Fields {
