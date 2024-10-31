@@ -2,6 +2,7 @@ package liquidityscrapers
 
 import (
 	"context"
+	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -184,13 +185,13 @@ func (s *BifrostLiquidityScraper) fetchPools() {
 		tokenA := dia.AssetVolume{
 			Index:  0,
 			Asset:  dbAssets[0],
-			Volume: tokenABalance,
+			Volume: tokenABalance / math.Pow10(int(dbAssets[0].Decimals)),
 		}
 
 		tokenB := dia.AssetVolume{
 			Index:  1,
 			Asset:  dbAssets[1],
-			Volume: tokenBBalance,
+			Volume: tokenBBalance / math.Pow10(int(dbAssets[1].Decimals)),
 		}
 
 		pool := dia.Pool{

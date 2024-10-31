@@ -1,9 +1,9 @@
-FROM us.icr.io/dia-registry/devops/build-120:latest as build
+FROM us.icr.io/dia-registry/devops/build-122:latest as build
 
 WORKDIR $GOPATH/src/
 
 COPY ./cmd/liquidityScraper ./
-RUN go mod tidy -go=1.20 && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go install
+RUN go mod tidy && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go install
 
 FROM gcr.io/distroless/base
 
