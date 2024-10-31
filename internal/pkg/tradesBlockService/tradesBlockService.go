@@ -599,24 +599,37 @@ func buildBridge(t dia.Trade) dia.Asset {
 			}
 		}
 	}
-	if basetoken.Blockchain == dia.BIFROST && t.Source == dia.ZenlinkswapExchange {
-		if basetoken.Address == "516" {
-			basetoken = dia.Asset{
-				Symbol:     "KSM",
-				Address:    "0x0000000000000000000000000000000000000000",
-				Blockchain: dia.KUSAMA,
-			}
-		}
-	}
-	if basetoken.Blockchain == dia.BIFROST_POLKADOT && t.Source == dia.ZenlinkswapExchangeBifrostPolkadot {
-		if basetoken.Address == "2048" {
+	if basetoken.Blockchain == dia.BIFROST && t.Source == dia.BifrostExchange {
+		if basetoken.Address == "token2-0" {
 			basetoken = dia.Asset{
 				Symbol:     "DOT",
 				Address:    "0x0000000000000000000000000000000000000000",
 				Blockchain: dia.POLKADOT,
 			}
 		}
+		if basetoken.Address == "token2-1" {
+			basetoken = dia.Asset{
+				Symbol:     "GLMR",
+				Address:    "0x0000000000000000000000000000000000000000",
+				Blockchain: dia.MOONBEAM,
+			}
+		}
+		if basetoken.Address == "token2-3" {
+			basetoken = dia.Asset{
+				Symbol:     "ASTR",
+				Address:    "0x0000000000000000000000000000000000000000",
+				Blockchain: dia.FILECOIN,
+			}
+		}
+		if basetoken.Address == "token2-4" {
+			basetoken = dia.Asset{
+				Symbol:     "ASTR",
+				Address:    "0x0000000000000000000000000000000000000000",
+				Blockchain: dia.ASTAR,
+			}
+		}
 	}
+
 	if basetoken.Blockchain == dia.UNREAL_TESTNET && t.Source == dia.PearlfiExchangeTestnet {
 		if basetoken.Address == "0x0C68a3C11FB3550e50a4ed8403e873D367A8E361" {
 			basetoken = dia.Asset{
