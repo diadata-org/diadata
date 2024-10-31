@@ -304,15 +304,12 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapHistoryScraper(Exchanges[dia.UniswapExchange], scrape, relDB)
 	case dia.AyinExchange:
 		return NewAyinScraper(Exchanges[dia.AyinExchange], scrape, relDB)
-<<<<<<< HEAD
 	case dia.BitflowExchange:
 		return NewBitflowScraper(Exchanges[dia.BitflowExchange], scrape, relDB)
 	case dia.VelarExchange:
 		return NewVelarScraper(Exchanges[dia.VelarExchange], scrape, relDB)
-=======
 	case dia.BifrostExchange:
 		return NewBifrostScraper(Exchanges[dia.BifrostExchange], scrape, relDB)
->>>>>>> cd7e3ff50b351adef5c2999645e18ccd225ead0e
 	default:
 		return nil
 	}
