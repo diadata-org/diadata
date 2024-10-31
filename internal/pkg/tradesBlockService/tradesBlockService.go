@@ -618,14 +618,14 @@ func buildBridge(t dia.Trade) dia.Asset {
 			basetoken = dia.Asset{
 				Symbol:     "ASTR",
 				Address:    "0x0000000000000000000000000000000000000000",
-				Blockchain: dia.FILECOIN,
+				Blockchain: dia.ASTAR,
 			}
 		}
 		if basetoken.Address == "token2-4" {
 			basetoken = dia.Asset{
-				Symbol:     "ASTR",
+				Symbol:     "FIL",
 				Address:    "0x0000000000000000000000000000000000000000",
-				Blockchain: dia.ASTAR,
+				Blockchain: dia.FILECOIN,
 			}
 		}
 	}
