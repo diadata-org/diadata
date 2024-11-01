@@ -14,8 +14,6 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-var ErrNoPool = errors.New("no pool found")
-
 // SavePoolInflux stores a DEX pool in influx.
 func (datastore *DB) SavePoolInflux(p dia.Pool) error {
 

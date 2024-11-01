@@ -117,7 +117,7 @@ func (s *HydrationScraper) mainLoop() {
 
 func (s *HydrationScraper) processEvents(events []*parser.Event, blockNumber uint64) {
 	for _, e := range events {
-		parsedEvent := s.parseFields(e)
+		parsedEvent := s.parseRouterEvent(e)
 		if parsedEvent == nil {
 			continue
 		}
@@ -125,36 +125,36 @@ func (s *HydrationScraper) processEvents(events []*parser.Event, blockNumber uin
 			parsedEvent.ExtrinsicID = fmt.Sprintf("%d-%d", blockNumber, e.Phase.AsApplyExtrinsic)
 		}
 
-		pool, err := s.db.GetPoolByAssetPair(parsedEvent.AssetIn, parsedEvent.AssetOut, s.exchangeName)
-		if err != nil && err != models.ErrNoPool {
+		pools, err := s.db.GetAllPoolsExchange(s.exchangeName, 0)
+		if err != nil {
+			s.logger.Error("Failed to get pools from database")
 			continue
 		}
 
+		pool := s.filterPools(pools, parsedEvent)
+
 		if len(pool.Assetvolumes) < 2 {
-			// if cant find pool look for omnipool event
-			omniParsedEvent := s.parseOmniPoolEvent(events, parsedEvent, blockNumber)
-			pool, err = s.db.GetPoolByAssetPair(omniParsedEvent.AssetIn, omniParsedEvent.AssetOut, s.exchangeName)
-			if err != nil {
-				s.logger.Debug("Failed to get omnipool")
-				continue
-			}
-			// Manually fill asset in and assetout since omnipool has double assets entries
+			// look for pool address in other events
+			secundaryEvent := s.parseSecundaryEvent(events, parsedEvent, blockNumber)
+			secundaryPool := s.filterPools(pools, secundaryEvent)
+
+			// Manually fill asset from routerEvent
 			assetIn, err := s.db.GetAsset(parsedEvent.AssetIn, s.blockchain)
 			if err != nil {
-				s.logger.Debug("Failed to get assetIn")
+				s.logger.Errorf("Failed to get assetIn for asset address %s", parsedEvent.AssetIn)
+				continue
+
 			}
 			assetOut, err := s.db.GetAsset(parsedEvent.AssetOut, s.blockchain)
 			if err != nil {
-				s.logger.Debug("Failed to get assetOut")
+				s.logger.Errorf("Failed to get assetOut for asset address %s", parsedEvent.AssetOut)
+				continue
 			}
+			pool.Address = secundaryPool.Address
 			pool.Assetvolumes = []dia.AssetVolume{
 				{Asset: assetIn},
 				{Asset: assetOut},
 			}
-			if err != nil {
-				continue
-			}
-
 			if len(pool.Assetvolumes) < 2 {
 				s.logger.WithField("poolAddress", pool.Address).Error("Pool has fewer than 2 asset volumes")
 				continue
@@ -173,19 +173,43 @@ func (s *HydrationScraper) processEvents(events []*parser.Event, blockNumber uin
 	}
 }
 
-func (s *HydrationScraper) parseOmniPoolEvent(events []*parser.Event, routerEvent *HydrationParsedEvent, blockNumber uint64) *HydrationParsedEvent {
+func (s *HydrationScraper) filterPools(pools []dia.Pool, event *HydrationParsedEvent) dia.Pool {
+	for _, pool := range pools {
+		assetInFound := false
+		assetOutFound := false
+
+		for _, assetVolume := range pool.Assetvolumes {
+			if assetVolume.Asset.Address == event.AssetIn {
+				assetInFound = true
+			}
+			if assetVolume.Asset.Address == event.AssetOut {
+				assetOutFound = true
+			}
+			if assetInFound && assetOutFound {
+				return pool
+			}
+		}
+	}
+	return dia.Pool{}
+}
+
+func (s *HydrationScraper) parseSecundaryEvent(events []*parser.Event, routerEvent *HydrationParsedEvent, blockNumber uint64) *HydrationParsedEvent {
 	parsedEvent := &HydrationParsedEvent{}
 	for _, e := range events {
-		if strings.EqualFold(e.Name, "Omnipool.SellExecuted") || strings.EqualFold(e.Name, "Omnipool.BuyExecuted") {
-			var extrinsicId string
+		if strings.EqualFold(e.Name, "Omnipool.SellExecuted") ||
+			strings.EqualFold(e.Name, "Omnipool.BuyExecuted") ||
+			strings.EqualFold(e.Name, "Stableswap.BuyExecuted") ||
+			strings.EqualFold(e.Name, "Stableswap.SellExecuted") {
 			if e.Phase.IsApplyExtrinsic {
-				extrinsicId = fmt.Sprintf("%d-%d", blockNumber, e.Phase.AsApplyExtrinsic)
-			}
-			if extrinsicId == routerEvent.ExtrinsicID {
-				parsedEvent = s.parseRouterEvent(e)
-				parsedEvent.AmountIn = routerEvent.AmountIn
-				parsedEvent.AmountOut = routerEvent.AmountOut
-				parsedEvent.ExtrinsicID = extrinsicId
+				extrinsicId := fmt.Sprintf("%d-%d", blockNumber, e.Phase.AsApplyExtrinsic)
+				if extrinsicId == routerEvent.ExtrinsicID {
+					parsedEvent := &HydrationParsedEvent{}
+					parsedEvent = s.parseFields(e)
+					parsedEvent.AmountIn = routerEvent.AmountIn
+					parsedEvent.AmountOut = routerEvent.AmountOut
+					parsedEvent.ExtrinsicID = extrinsicId
+					return parsedEvent
+				}
 			}
 		}
 	}
@@ -193,15 +217,15 @@ func (s *HydrationScraper) parseOmniPoolEvent(events []*parser.Event, routerEven
 	return parsedEvent
 }
 
-func (s *HydrationScraper) parseFields(event *parser.Event) *HydrationParsedEvent {
-	if strings.ToUpper(event.Name) == strings.ToUpper("Router.Executed") {
-		return s.parseRouterEvent(event)
+func (s *HydrationScraper) parseRouterEvent(event *parser.Event) *HydrationParsedEvent {
+	if strings.EqualFold(event.Name, "Router.Executed") {
+		return s.parseFields(event)
 	}
 
 	return nil
 }
 
-func (s *HydrationScraper) parseRouterEvent(event *parser.Event) *HydrationParsedEvent {
+func (s *HydrationScraper) parseFields(event *parser.Event) *HydrationParsedEvent {
 	parsedEvent := &HydrationParsedEvent{}
 	for _, v := range event.Fields {
 		switch v.Name {
@@ -214,18 +238,6 @@ func (s *HydrationScraper) parseRouterEvent(event *parser.Event) *HydrationParse
 		case "amount_out":
 			parsedEvent.AmountOut = fmt.Sprint(v.Value)
 		}
-	}
-	return parsedEvent
-}
-
-func (s *HydrationScraper) parseStableSwapEvent(event *parser.Event) *HydrationParsedEvent {
-	parsedEvent := &HydrationParsedEvent{}
-	s.logger.Warn(event.Name)
-	for _, v := range event.Fields {
-		s.logger.WithFields(logrus.Fields{
-			"Name":  v.Name,
-			"Value": v.Value,
-		}).Info("Event fields")
 	}
 	return parsedEvent
 }
