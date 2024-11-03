@@ -20,10 +20,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const (
-	Blockchain = "Bifrost"
-)
-
 type BifrostScraper struct {
 	logger       *logrus.Entry
 	pairScrapers map[string]*BifrostPairScraper // pc.ExchangePair -> pairScraperSet
@@ -67,7 +63,7 @@ func NewBifrostScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		db:           relDB,
 		wsApi:        wsApi,
 		exchangeName: exchange.Name,
-		blockchain:   Blockchain,
+		blockchain:   "Bifrost",
 		currentBlock: startBlockUint64,
 	}
 

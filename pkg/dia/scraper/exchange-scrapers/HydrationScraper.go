@@ -10,17 +10,12 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	hydrationhelper "github.com/diadata-org/diadata/pkg/dia/helpers/hydration-helper"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/substrate-helper/gsrpc/registry/parser"
 	models "github.com/diadata-org/diadata/pkg/model"
 
+	substratehelper "github.com/diadata-org/diadata/pkg/dia/helpers/substrate-helper"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/substrate-helper/gsrpc/registry/parser"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/sirupsen/logrus"
-)
-
-const (
-	Blockchain = "Hydration"
 )
 
 type HydrationScraper struct {
@@ -33,7 +28,7 @@ type HydrationScraper struct {
 	closed       bool
 	chanTrades   chan *dia.Trade
 	db           *models.RelDB
-	wsApi        *hydrationhelper.SubstrateEventHelper
+	wsApi        *substratehelper.SubstrateEventHelper
 	exchangeName string
 	blockchain   string
 	currentBlock uint64
@@ -45,7 +40,7 @@ func NewHydrationScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 		WithContext(context.Background()).
 		WithField("context", "HydrationScraper")
 
-	wsApi, err := hydrationhelper.NewSubstrateEventHelper(logger, exchange.WsAPI)
+	wsApi, err := substratehelper.NewSubstrateEventHelper(exchange.WsAPI, logger)
 	if err != nil {
 		logrus.WithError(err).Error("Failed to create Hydration Substrate event helper")
 		return nil
@@ -66,7 +61,7 @@ func NewHydrationScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 		db:           relDB,
 		wsApi:        wsApi,
 		exchangeName: exchange.Name,
-		blockchain:   Blockchain,
+		blockchain:   "Hydration",
 		currentBlock: startBlockUint64,
 	}
 
@@ -294,7 +289,7 @@ func (ps *HydrationPairScraper) Error() error {
 }
 
 // Channel returns the channel used to receive trades/pricing information.
-func (s *HydrationScraper) handleTrade(pool dia.Pool, event hydrationhelper.EventSellExecuted, time time.Time) *dia.Trade {
+func (s *HydrationScraper) handleTrade(pool dia.Pool, event HydrationParsedEvent, time time.Time) *dia.Trade {
 	var volume, price float64
 	var decimalsIn, decimalsOut int64
 	var quoteToken, baseToken dia.Asset
