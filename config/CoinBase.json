@@ -8,6 +8,12 @@
         },
         {
             "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "ADA-USD",
+            "Symbol": "ADA"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "AERO-USD",
             "Ignore": false,
             "Symbol": "AERO"
@@ -23,6 +29,12 @@
             "ForeignName": "ANKR-USD",
             "Ignore": false,
             "Symbol": "ANKR"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "APT-USD",
+            "Symbol": "APT"
         },
         {
             "Exchange": "CoinBase",
@@ -80,6 +92,18 @@
         },
         {
             "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "BTC-USDT",
+            "Symbol": "BTC"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "BTC-USDC",
+            "Symbol": "BTC"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "BUSD-USD",
             "Ignore": false,
             "Symbol": "BUSD"
@@ -104,6 +128,12 @@
         },
         {
             "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "CRV-USD",
+            "Symbol": "CRV"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "DAI-USD",
             "Ignore": false,
             "Symbol": "DAI"
@@ -122,9 +152,27 @@
         },
         {
             "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "DOGE-USDT",
+            "Symbol": "DOGE"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "DOT-USD",
             "Ignore": false,
             "Symbol": "DOT"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "ENS-USDT",
+            "Symbol": "ENS"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "ENS-USD",
+            "Symbol": "ENS"
         },
         {
             "Exchange": "CoinBase",
@@ -140,6 +188,18 @@
         },
         {
             "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "ETH-USD",
+            "Symbol": "ETH"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "ETH-USDT",
+            "Symbol": "ETH"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "EUROC-USD",
             "Ignore": false,
             "Symbol": "EUROC"
@@ -149,6 +209,24 @@
             "ForeignName": "FET-USD",
             "Ignore": false,
             "Symbol": "FET"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "FET-USDT",
+            "Symbol": "FET"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "FIL-USD",
+            "Symbol": "FIL"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "FLOW-USD",
+            "Symbol": "FLOW"
         },
         {
             "Exchange": "CoinBase",
@@ -182,6 +260,12 @@
         },
         {
             "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "ICP-USDT",
+            "Symbol": "ICP"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "INJ-USD",
             "Ignore": false,
             "Symbol": "INJ"
@@ -200,6 +284,12 @@
         },
         {
             "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "LDO-USD",
+            "Symbol": "LDO"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "LTC-USD",
             "Ignore": false,
             "Symbol": "LTC"
@@ -212,6 +302,18 @@
         },
         {
             "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "MKR-USD",
+            "Symbol": "MKR"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "NEAR-USD",
+            "Symbol": "NEAR"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "ONDO-USD",
             "Ignore": false,
             "Symbol": "ONDO"
@@ -220,6 +322,12 @@
             "Exchange": "CoinBase",
             "ForeignName": "OP-USD",
             "Ignore": false,
+            "Symbol": "OP"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "OP-USDT",
             "Symbol": "OP"
         },
         {
@@ -255,7 +363,19 @@
         {
             "Exchange": "CoinBase",
             "Ignore": false,
+            "ForeignName": "RENDER-USD",
+            "Symbol": "RENDER"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
             "ForeignName": "SAND-USD",
+            "Symbol": "SAND"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "SAND-USDT",
             "Symbol": "SAND"
         },
         {
@@ -269,6 +389,30 @@
             "ForeignName": "SHIB-USD",
             "Ignore": false,
             "Symbol": "SHIB"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "SHIB-USDT",
+            "Symbol": "SHIB"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "SNX-USD",
+            "Symbol": "SNX"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "SOL-USDT",
+            "Symbol": "SOL"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "SOL-USD",
+            "Symbol": "SOL"
         },
         {
             "Exchange": "CoinBase",
@@ -297,8 +441,26 @@
         {
             "Exchange": "CoinBase",
             "Ignore": false,
+            "ForeignName": "STRK-USD",
+            "Symbol": "STRK"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
             "ForeignName": "STX-USD",
             "Symbol": "STX"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "SUI-USD",
+            "Symbol": "SUI"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "SUSHI-USD",
+            "Symbol": "SUSHI"
         },
         {
             "Exchange": "CoinBase",
@@ -326,6 +488,12 @@
         },
         {
             "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "USDT-USDC",
+            "Symbol": "USDT"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "UST-USD",
             "Ignore": false,
             "Symbol": "UST"
@@ -341,6 +509,24 @@
             "ForeignName": "WBTC-BTC",
             "Ignore": false,
             "Symbol": "WBTC"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "XLM-USD",
+            "Symbol": "XLM"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "XRP-USDT",
+            "Symbol": "XRP"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "XRP-USD",
+            "Symbol": "XRP"
         },
         {
             "Exchange": "CoinBase",

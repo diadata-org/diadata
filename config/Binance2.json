@@ -50,6 +50,12 @@
         },
         {
             "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "AVAXUSDT",
+            "Symbol": "AVAX"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "BANDUSDT",
             "Ignore": false,
             "Symbol": "BAND"
@@ -140,6 +146,12 @@
         },
         {
             "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "ETHUSDC",
+            "Symbol": "ETH"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "ETHFIUSDT",
             "Ignore": false,
             "Symbol": "ETHFI"
@@ -224,6 +236,12 @@
         },
         {
             "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "LDOUSDT",
+            "Symbol": "LDO"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "MATICFDUSD",
             "Ignore": false,
             "Symbol": "MATIC"
@@ -233,6 +251,12 @@
             "ForeignName": "MATICUSDT",
             "Ignore": false,
             "Symbol": "MATIC"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "MKRUSDT",
+            "Symbol": "MKR"
         },
         {
             "Exchange": "Binance",
@@ -290,9 +314,21 @@
         },
         {
             "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "POLUSDT",
+            "Symbol": "POL"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "RDNTUSDT",
             "Ignore": false,
             "Symbol": "RDNT"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "RENDERUSDT",
+            "Symbol": "RENDER"
         },
         {
             "Exchange": "Binance",
@@ -308,8 +344,26 @@
         },
         {
             "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "SNXUSDT",
+            "Symbol": "SNX"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "SOLFDUSD",
             "Ignore": false,
+            "Symbol": "SOL"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "SOLUSDT",
+            "Symbol": "SOL"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "SOLUSDC",
             "Symbol": "SOL"
         },
         {
@@ -323,6 +377,12 @@
             "ForeignName": "STGUSDT",
             "Ignore": false,
             "Symbol": "STG"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "STORJUSDT",
+            "Symbol": "STORJ"
         },
         {
             "Exchange": "Binance",
@@ -352,6 +412,12 @@
             "Exchange": "Binance",
             "ForeignName": "SUIUSDT",
             "Ignore": false,
+            "Symbol": "SUI"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "SUIUSDC",
             "Symbol": "SUI"
         },
         {
@@ -398,6 +464,18 @@
         },
         {
             "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "TIAUSDC",
+            "Symbol": "TIA"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "TONUSDT",
+            "Symbol": "TON"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "UNIUSDT",
             "Ignore": false,
             "Symbol": "UNI"
@@ -428,6 +506,12 @@
         },
         {
             "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "WLDUSDC",
+            "Symbol": "WLD"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "XAIUSDT",
             "Ignore": false,
             "Symbol": "XAI"
@@ -436,6 +520,12 @@
             "Exchange": "Binance",
             "ForeignName": "XRPFDUSD",
             "Ignore": false,
+            "Symbol": "XRP"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "XRPUSDC",
             "Symbol": "XRP"
         },
         {
