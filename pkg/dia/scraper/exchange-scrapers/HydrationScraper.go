@@ -156,7 +156,11 @@ func (s *HydrationScraper) processEvents(events []*parser.Event, blockNumber uin
 			}
 		}
 
-		diaTrade := s.handleTrade(pool, *parsedEvent, time.Now())
+		diaTrade, err := s.handleTrade(pool, *parsedEvent, time.Now())
+		if err != nil {
+			s.logger.WithError(err).Error("Failed to handle trade")
+			continue
+		}
 
 		s.logger.WithFields(logrus.Fields{
 			"Pair":   diaTrade.Pair,
@@ -289,18 +293,26 @@ func (ps *HydrationPairScraper) Error() error {
 }
 
 // Channel returns the channel used to receive trades/pricing information.
-func (s *HydrationScraper) handleTrade(pool dia.Pool, event HydrationParsedEvent, time time.Time) *dia.Trade {
+func (s *HydrationScraper) handleTrade(pool dia.Pool, event HydrationParsedEvent, time time.Time) (*dia.Trade, error) {
 	var volume, price float64
 	var decimalsIn, decimalsOut int64
 	var quoteToken, baseToken dia.Asset
 
 	// Determine which asset is being sold (this is the base asset)
-	if fmt.Sprint(event.AssetIn) == pool.Assetvolumes[0].Asset.Address {
-		baseToken = pool.Assetvolumes[0].Asset
-		quoteToken = pool.Assetvolumes[1].Asset
-	} else {
-		baseToken = pool.Assetvolumes[1].Asset
-		quoteToken = pool.Assetvolumes[0].Asset
+	for _, assetVolume := range pool.Assetvolumes {
+		if event.AssetIn == assetVolume.Asset.Address {
+			baseToken = assetVolume.Asset
+		}
+		if event.AssetOut == assetVolume.Asset.Address {
+			quoteToken = assetVolume.Asset
+		}
+		if baseToken.Address != "" && quoteToken.Address != "" {
+			break
+		}
+	}
+	// Check if both baseToken and quoteToken have been assigned
+	if baseToken.Address == "" || quoteToken.Address == "" {
+		return &dia.Trade{}, errors.New("Failed to determine baseToken or quoteToken")
 	}
 
 	decimalsIn = int64(baseToken.Decimals)
@@ -326,7 +338,7 @@ func (s *HydrationScraper) handleTrade(pool dia.Pool, event HydrationParsedEvent
 		QuoteToken:     quoteToken,
 		BaseToken:      baseToken,
 		PoolAddress:    pool.Address,
-	}
+	}, nil
 }
 
 func (s *HydrationScraper) FetchAvailablePairs() ([]dia.ExchangePair, error) {
