@@ -178,6 +178,8 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 		return source.NewVelodromeAssetSource(exchanges[dia.AerodromeSlipstreamExchange], relDB)
 	case dia.AerodromeV1Exchange:
 		return source.NewVelodromeAssetSource(exchanges[dia.AerodromeV1Exchange], relDB)
+	case dia.HydrationExchange:
+		return source.NewHydrationAssetSource(exchanges[dia.HydrationExchange], relDB)
 	case dia.BifrostExchange:
 		return source.NewBifrostAssetSource(exchanges[dia.BifrostExchange], relDB)
 	default:
