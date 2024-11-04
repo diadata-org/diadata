@@ -1,6 +1,6 @@
 module github.com/diadata-org/diadata/services/pairDiscoveryService
 
-go 1.19
+go 1.22
 
 require (
 	github.com/diadata-org/diadata v1.4.192
