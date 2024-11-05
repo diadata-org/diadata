@@ -111,19 +111,13 @@
         {
             "Exchange": "Kraken",
             "Ignore": false,
-            "ForeignName": "BTCUSD",
+            "ForeignName": "XBTCUSDT",
             "Symbol": "BTC"
         },
         {
             "Exchange": "Kraken",
             "Ignore": false,
-            "ForeignName": "BTCUSDT",
-            "Symbol": "BTC"
-        },
-        {
-            "Exchange": "Kraken",
-            "Ignore": false,
-            "ForeignName": "BTCUSDC",
+            "ForeignName": "XBTCUSDC",
             "Symbol": "BTC"
         },
         {
@@ -147,13 +141,13 @@
         {
             "Exchange": "Kraken",
             "Ignore": false,
-            "ForeignName": "DOGEUSDT",
+            "ForeignName": "XDGUSDT",
             "Symbol": "DOGE"
         },
         {
             "Exchange": "Kraken",
             "Ignore": false,
-            "ForeignName": "DOGEUSD",
+            "ForeignName": "XDGUSD",
             "Symbol": "DOGE"
         },
         {
@@ -225,19 +219,13 @@
         {
             "Exchange": "Kraken",
             "Ignore": false,
-            "ForeignName": "ETHUSD",
+            "ForeignName": "XETHZUSD",
             "Symbol": "ETH"
         },
         {
             "Exchange": "Kraken",
             "Ignore": false,
             "ForeignName": "ETHUSDT",
-            "Symbol": "ETH"
-        },
-        {
-            "Exchange": "Kraken",
-            "Ignore": false,
-            "ForeignName": "ETHUSDC",
             "Symbol": "ETH"
         },
         {
@@ -387,12 +375,6 @@
         {
             "Exchange": "Kraken",
             "Ignore": false,
-            "ForeignName": "SANDUSDT",
-            "Symbol": "SAND"
-        },
-        {
-            "Exchange": "Kraken",
-            "Ignore": false,
             "ForeignName": "SANDUSD",
             "Symbol": "SAND"
         },
@@ -524,12 +506,6 @@
         },
         {
             "Exchange": "Kraken",
-            "Ignore": false,
-            "ForeignName": "USDTUSD",
-            "Symbol": "USDT"
-        },
-        {
-            "Exchange": "Kraken",
             "ForeignName": "WBTCUSD",
             "Ignore": false,
             "Symbol": "WBTC"
@@ -555,7 +531,7 @@
         {
             "Exchange": "Kraken",
             "Ignore": false,
-            "ForeignName": "XLMUSD",
+            "ForeignName": "XXLMZUSD",
             "Symbol": "XLM"
         },
         {
@@ -579,7 +555,7 @@
         {
             "Exchange": "Kraken",
             "Ignore": false,
-            "ForeignName": "XRPUSD",
+            "ForeignName": "XXRPZUSD",
             "Symbol": "XRP"
         },
         {
