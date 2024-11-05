@@ -127,6 +127,7 @@ const (
 	AerodromeSlipstreamExchange        = "AerodromeSlipstream"
 	AerodromeV1Exchange                = "AerodromeV1"
 	BifrostExchange                    = "Bifrost"
+	HydrationExchange                  = "Hydration"
 	// FinageForex        = "FinageForex"
 )
 
