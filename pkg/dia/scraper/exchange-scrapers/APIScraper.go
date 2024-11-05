@@ -281,6 +281,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapV3Scraper(Exchanges[dia.PearlfiExchangeTestnet], scrape, relDB)
 	case dia.PearlfiExchange:
 		return NewUniswapV3Scraper(Exchanges[dia.PearlfiExchange], scrape, relDB)
+	case dia.PearlfiStableswapExchange:
+		return NewUniswapScraper(Exchanges[dia.PearlfiStableswapExchange], scrape, relDB)
 	case dia.ThenaExchange:
 		return NewUniswapScraper(Exchanges[dia.ThenaExchange], scrape, relDB)
 	case dia.ThenaV3Exchange:
