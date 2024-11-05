@@ -708,6 +708,22 @@ func buildBridge(t dia.Trade) dia.Asset {
 			}
 		}
 	}
+	if basetoken.Blockchain == dia.HYDRATION && t.Source == dia.HydrationExchange {
+		if basetoken.Address == "18" {
+			basetoken = dia.Asset{
+				Symbol:     "DAI",
+				Address:    "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+				Blockchain: dia.ETHEREUM,
+			}
+		}
+		if basetoken.Address == "10" {
+			basetoken = dia.Asset{
+				Symbol:     "USDT",
+				Address:    "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+				Blockchain: dia.ETHEREUM,
+			}
+		}
+	}
 
 	return basetoken
 }
