@@ -17,7 +17,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/utils"
 )
 
-var ByBitSocketURL string = "wss://stream.bybit.com/spot/public/v3"
+var ByBitSocketURL string = utils.Getenv("BYBIT_WS_URL", "wss://stream.bybit.com/spot/public/v5")
 
 type ByBitMarket struct {
 	Name           string `json:"name"`
@@ -135,7 +135,7 @@ func NewByBitScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *B
 
 	SwConn, _, err := wsDialer.Dial(ByBitSocketURL, nil)
 	if err != nil {
-		println(err.Error())
+		log.Error("Connect to websocket server: ", err.Error())
 	}
 
 	s.wsClient = SwConn
