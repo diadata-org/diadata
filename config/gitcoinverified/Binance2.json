@@ -13,6 +13,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "Binance2",
+            "Symbol": "AERO",
+            "Blockchain": "Base",
+            "Address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631"
+        },
+        {
             "Symbol": "APE",
             "Exchange": "Binance2",
             "Blockchain": "Ethereum",
@@ -79,6 +85,12 @@
             "Address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
         },
         {
+            "Exchange": "Binance2",
+            "Symbol": "CRV",
+            "Blockchain": "Ethereum",
+            "Address": "0xD533a949740bb3306d119CC777fa900bA034cd52"
+        },
+        {
             "Symbol": "CVX",
             "Exchange": "Binance2",
             "Blockchain": "Ethereum",
@@ -89,6 +101,12 @@
             "Exchange": "Binance2",
             "Blockchain": "Dash",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Binance2",
+            "Symbol": "DIA",
+            "Blockchain": "Ethereum",
+            "Address": "0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"
         },
         {
             "Symbol": "DOGE",
@@ -151,6 +169,30 @@
             "Address": "0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409"
         },
         {
+            "Exchange": "Binance2",
+            "Symbol": "FET",
+            "Blockchain": "Fetch",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Binance2",
+            "Symbol": "FIL",
+            "Blockchain": "Filecoin",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Binance2",
+            "Symbol": "FLOW",
+            "Blockchain": "Flow",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Binance2",
+            "Symbol": "FTM",
+            "Blockchain": "Fantom",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "FXS",
             "Exchange": "Binance2",
             "Blockchain": "Ethereum",
@@ -179,6 +221,12 @@
             "Exchange": "Binance2",
             "Blockchain": "Arbitrum",
             "Address": "0x18c11FD286C5EC11c3b683Caa813B77f5163A122"
+        },
+        {
+            "Exchange": "Binance2",
+            "Symbol": "GRT",
+            "Blockchain": "Ethereum",
+            "Address": "0xc944E90C64B2c07662A292be6244BDf05Cda44a7"
         },
         {
             "Symbol": "ICP",
@@ -211,10 +259,52 @@
             "Address": "0xdeFA4e8a7bcBA345F687a2f1456F5Edd9CE97202"
         },
         {
+            "Exchange": "Binance2",
+            "Symbol": "LDO",
+            "Blockchain": "Ethereum",
+            "Address": "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32"
+        },
+        {
             "Symbol": "MATIC",
             "Exchange": "Binance2",
             "Blockchain": "Polygon",
             "Address": "0x0000000000000000000000000000000000001010"
+        },
+        {
+            "Exchange": "Binance2",
+            "Symbol": "MKR",
+            "Blockchain": "Ethereum",
+            "Address": "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"
+        },
+        {
+            "Exchange": "Binance2",
+            "Symbol": "MNT",
+            "Blockchain": "Mantle",
+            "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
+        },
+        {
+            "Exchange": "Binance2",
+            "Symbol": "MOVR",
+            "Blockchain": "Moonriver",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Binance2",
+            "Symbol": "NEAR",
+            "Blockchain": "NEAR",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Binance2",
+            "Symbol": "OMG",
+            "Blockchain": "Ethereum",
+            "Address": "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07"
+        },
+        {
+            "Exchange": "Binance2",
+            "Symbol": "ONDO",
+            "Blockchain": "Ethereum",
+            "Address": "0xfAbA6f8e4a5E8Ab82F62fe7C39859FA577269BE3"
         },
         {
             "Symbol": "OP",
@@ -247,10 +337,34 @@
             "Address": "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
         },
         {
+            "Exchange": "Binance2",
+            "Symbol": "POL",
+            "Blockchain": "Polygon",
+            "Address": "0x0000000000000000000000000000000000001010"
+        },
+        {
+            "Exchange": "Binance2",
+            "Symbol": "PRIME",
+            "Blockchain": "Ethereum",
+            "Address": "0xb23d80f5FefcDDaa212212F028021B41DEd428CF"
+        },
+        {
             "Symbol": "RDNT",
             "Exchange": "Binance2",
             "Blockchain": "Arbitrum",
             "Address": "0x3082CC23568eA640225c2467653dB90e9250AaA0"
+        },
+        {
+            "Exchange": "Binance2",
+            "Symbol": "RENDER",
+            "Blockchain": "Ethereum",
+            "Address": "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24"
+        },
+        {
+            "Exchange": "Binance2",
+            "Symbol": "SAND",
+            "Blockchain": "Ethereum",
+            "Address": "0x3845badAde8e6dFF049820680d1F14bD3903a5d0"
         },
         {
             "Symbol": "SEI",
@@ -263,6 +377,12 @@
             "Exchange": "Binance2",
             "Blockchain": "Ethereum",
             "Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
+        },
+        {
+            "Exchange": "Binance2",
+            "Symbol": "SNX",
+            "Blockchain": "Ethereum",
+            "Address": "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F"
         },
         {
             "Symbol": "SOL",
@@ -281,6 +401,12 @@
             "Exchange": "Binance2",
             "Blockchain": "Ethereum",
             "Address": "0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6"
+        },
+        {
+            "Exchange": "Binance2",
+            "Symbol": "STORJ",
+            "Blockchain": "Ethereum",
+            "Address": "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC"
         },
         {
             "Symbol": "STRK",
@@ -325,6 +451,18 @@
             "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877"
         },
         {
+            "Exchange": "Binance2",
+            "Symbol": "TON",
+            "Blockchain": "Ton",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Binance2",
+            "Symbol": "TRX",
+            "Blockchain": "Tron",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "UNI",
             "Exchange": "Binance2",
             "Blockchain": "Ethereum",
@@ -367,10 +505,22 @@
             "Address": "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66"
         },
         {
+            "Exchange": "Binance2",
+            "Symbol": "XLM",
+            "Blockchain": "Stellar",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "XRP",
             "Exchange": "Binance2",
             "Blockchain": "Ripple",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Binance2",
+            "Symbol": "YFI",
+            "Blockchain": "Ethereum",
+            "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
         },
         {
             "Symbol": "ZK",

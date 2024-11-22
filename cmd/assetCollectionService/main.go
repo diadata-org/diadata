@@ -164,6 +164,8 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 		return source.NewUniswapAssetSource(exchanges[dia.PearlfiExchangeTestnet], relDB)
 	case dia.PearlfiExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.PearlfiExchange], relDB)
+	case dia.PearlfiStableswapExchange:
+		return source.NewUniswapAssetSource(exchanges[dia.PearlfiStableswapExchange], relDB)
 	case dia.ThenaExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.ThenaExchange], relDB)
 	case "assetlists":
@@ -178,6 +180,10 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 		return source.NewVelodromeAssetSource(exchanges[dia.AerodromeSlipstreamExchange], relDB)
 	case dia.AerodromeV1Exchange:
 		return source.NewVelodromeAssetSource(exchanges[dia.AerodromeV1Exchange], relDB)
+	case dia.HydrationExchange:
+		return source.NewHydrationAssetSource(exchanges[dia.HydrationExchange], relDB)
+	case dia.BifrostExchange:
+		return source.NewBifrostAssetSource(exchanges[dia.BifrostExchange], relDB)
 	default:
 		return nil
 	}

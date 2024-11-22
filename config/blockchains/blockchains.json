@@ -287,6 +287,15 @@
             "ChainID": "Polkadot2032"
         },
         {
+            "Name": "Optimism",
+            "GenesisDate": 1636622199,
+            "NativeToken": {
+                "Address": "0x4200000000000000000000000000000000000042"
+            },
+            "VerificationMechanism": "pos",
+            "ChainID": "Ethereum10"
+        },
+        {
             "Name": "Osmosis",
             "GenesisDate": 1622548800,
             "NativeToken": {

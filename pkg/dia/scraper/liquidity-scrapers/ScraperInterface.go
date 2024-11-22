@@ -164,12 +164,19 @@ func NewLiquidityScraper(source string, relDB *models.RelDB, datastore *models.D
 		return NewUniswapV3Scraper(exchanges[dia.PearlfiExchangeTestnet], relDB, datastore)
 	case dia.PearlfiExchange:
 		return NewUniswapV3Scraper(exchanges[dia.PearlfiExchange], relDB, datastore)
+	case dia.PearlfiStableswapExchange:
+		return NewUniswapScraper(exchanges[dia.PearlfiStableswapExchange], relDB, datastore)
+
 	case dia.AyinExchange:
 		return NewAyinLiquidityScraper(exchanges[dia.AyinExchange], relDB, datastore)
 	case dia.BitflowExchange:
 		return NewBitflowLiquidityScraper(exchanges[dia.BitflowExchange], relDB, datastore)
 	case dia.VelarExchange:
 		return NewVelarLiquidityScraper(exchanges[dia.VelarExchange], relDB, datastore)
+	case dia.BifrostExchange:
+		return NewBifrostLiquidityScraper(exchanges[dia.BifrostExchange], relDB, datastore)
+	case dia.HydrationExchange:
+		return NewHydrationLiquidityScraper(exchanges[dia.HydrationExchange], relDB, datastore)
 	default:
 		return nil
 	}

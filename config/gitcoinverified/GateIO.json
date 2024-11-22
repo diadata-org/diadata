@@ -19,6 +19,12 @@
             "Address": "Token:ACA"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "ADA",
+            "Blockchain": "Cardano",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "AE",
             "Exchange": "GateIO",
             "Blockchain": "Aeternity",
@@ -65,6 +71,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0xa117000000f279D81A1D3cc75430fAA017FA5A2e"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "APT",
+            "Blockchain": "Aptos",
+            "Address": "0x1::aptos_coin::AptosCoin"
         },
         {
             "Symbol": "AR",
@@ -223,6 +235,12 @@
             "Address": "0x3136eF851592aCf49CA4C825131E364170FA32b3"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "CRV",
+            "Blockchain": "Ethereum",
+            "Address": "0xD533a949740bb3306d119CC777fa900bA034cd52"
+        },
+        {
             "Symbol": "CUSD",
             "Exchange": "GateIO",
             "Blockchain": "Celo",
@@ -277,10 +295,22 @@
             "Address": "0xE0B7927c4aF23765Cb51314A0E0521A9645F0E2A"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "DIA",
+            "Blockchain": "Ethereum",
+            "Address": "0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"
+        },
+        {
             "Symbol": "DNT",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x0AbdAce70D3790235af448C88547603b945604ea"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "DOGE",
+            "Blockchain": "Dogechain",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "DOT",
@@ -319,6 +349,12 @@
             "Address": "0x973e52691176d36453868D9d86572788d27041A9"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "DYDX",
+            "Blockchain": "Ethereum",
+            "Address": "0x92D6C1e31e14520e676a687F0a93788B716BEff5"
+        },
+        {
             "Symbol": "EDU",
             "Exchange": "GateIO",
             "Blockchain": "BinanceSmartChain",
@@ -343,6 +379,12 @@
             "Address": "0x57e114B691Db790C35207b2e685D4A43181e6061"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "ENS",
+            "Blockchain": "Ethereum",
+            "Address": "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72"
+        },
+        {
             "Symbol": "ETHFI",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -353,6 +395,18 @@
             "Exchange": "GateIO",
             "Blockchain": "BinanceSmartChain",
             "Address": "0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "FET",
+            "Blockchain": "Fetch",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "FIL",
+            "Blockchain": "Filecoin",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "FLOW",
@@ -449,6 +503,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Arbitrum",
             "Address": "0x3d9907F9a368ad0a51Be60f7Da3b97cf940982D8"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "GRT",
+            "Blockchain": "Ethereum",
+            "Address": "0xc944E90C64B2c07662A292be6244BDf05Cda44a7"
         },
         {
             "Symbol": "GSE",
@@ -551,6 +611,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0xfe5F141Bf94fE84bC28deD0AB966c16B17490657"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "LDO",
+            "Blockchain": "Ethereum",
+            "Address": "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32"
         },
         {
             "Symbol": "LEDU",
@@ -697,6 +763,18 @@
             "Address": "0x3893b9422Cd5D70a81eDeFfe3d5A1c6A978310BB"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "MKR",
+            "Blockchain": "Ethereum",
+            "Address": "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "MNT",
+            "Blockchain": "Mantle",
+            "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
+        },
+        {
             "Symbol": "MOBI",
             "Exchange": "GateIO",
             "Blockchain": "Stellar",
@@ -727,6 +805,12 @@
             "Address": "0x41dBECc1cdC5517C6f76f6a6E836aDbEe2754DE3"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "NEAR",
+            "Blockchain": "NEAR",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "NFTY",
             "Exchange": "GateIO",
             "Blockchain": "BinanceSmartChain",
@@ -749,6 +833,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x4092678e4E78230F46A1534C0fbc8fA39780892B"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "OMG",
+            "Blockchain": "Ethereum",
+            "Address": "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07"
         },
         {
             "Symbol": "ONDO",
@@ -871,6 +961,12 @@
             "Address": "0x83984d6142934bb535793A82ADB0a46EF0F66B6d"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "RENDER",
+            "Blockchain": "Ethereum",
+            "Address": "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24"
+        },
+        {
             "Symbol": "REP",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -911,6 +1007,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Solana",
             "Address": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "SAND",
+            "Blockchain": "Ethereum",
+            "Address": "0x3845badAde8e6dFF049820680d1F14bD3903a5d0"
         },
         {
             "Symbol": "SATS",
@@ -967,6 +1069,18 @@
             "Address": "0x744d70FDBE2Ba4CF95131626614a1763DF805B9E"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "SNX",
+            "Blockchain": "Ethereum",
+            "Address": "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "SOL",
+            "Blockchain": "Solana",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "SOP",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -1009,10 +1123,28 @@
             "Address": "0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "STX",
+            "Blockchain": "Stacks",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "SUI",
+            "Blockchain": "Sui",
+            "Address": "0x2::sui::SUI"
+        },
+        {
             "Symbol": "SUPER",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0xe53EC727dbDEB9E2d5456c3be40cFF031AB40A55"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "SUSHI",
+            "Blockchain": "Ethereum",
+            "Address": "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2"
         },
         {
             "Symbol": "SWTH",
@@ -1081,6 +1213,12 @@
             "Address": "0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "TRX",
+            "Blockchain": "Tron",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "UNI",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -1091,6 +1229,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Fiat",
             "Address": "840"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "USDC",
+            "Blockchain": "Ethereum",
+            "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
         },
         {
             "Symbol": "USDD",
@@ -1153,16 +1297,40 @@
             "Address": "0x667088b212ce3d06a1b553a7221E1fD19000d9aF"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "WLD",
+            "Blockchain": "Ethereum",
+            "Address": "0x163f8C2467924be0ae7B5347228CABF260318753"
+        },
+        {
             "Symbol": "XAI",
             "Exchange": "GateIO",
             "Blockchain": "Arbitrum",
             "Address": "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "XLM",
+            "Blockchain": "Stellar",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "XRP",
+            "Blockchain": "Ripple",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "XVG",
             "Exchange": "GateIO",
             "Blockchain": "Verge",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "YFI",
+            "Blockchain": "Ethereum",
+            "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
         },
         {
             "Symbol": "ZK",

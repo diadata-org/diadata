@@ -281,6 +281,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapV3Scraper(Exchanges[dia.PearlfiExchangeTestnet], scrape, relDB)
 	case dia.PearlfiExchange:
 		return NewUniswapV3Scraper(Exchanges[dia.PearlfiExchange], scrape, relDB)
+	case dia.PearlfiStableswapExchange:
+		return NewUniswapScraper(Exchanges[dia.PearlfiStableswapExchange], scrape, relDB)
 	case dia.ThenaExchange:
 		return NewUniswapScraper(Exchanges[dia.ThenaExchange], scrape, relDB)
 	case dia.ThenaV3Exchange:
@@ -308,6 +310,10 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewBitflowScraper(Exchanges[dia.BitflowExchange], scrape, relDB)
 	case dia.VelarExchange:
 		return NewVelarScraper(Exchanges[dia.VelarExchange], scrape, relDB)
+	case dia.BifrostExchange:
+		return NewBifrostScraper(Exchanges[dia.BifrostExchange], scrape, relDB)
+	case dia.HydrationExchange:
+		return NewHydrationScraper(Exchanges[dia.HydrationExchange], scrape, relDB)
 	default:
 		return nil
 	}

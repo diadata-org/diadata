@@ -114,6 +114,7 @@ const (
 	MaverickExchangeBNB                = "Maverick-bnb"
 	PearlfiExchangeTestnet             = "Pearlfi-Testnet"
 	PearlfiExchange                    = "Pearlfi"
+	PearlfiStableswapExchange          = "PearlfiStableswap"
 	RamsesV1Exchange                   = "RamsesV1"
 	RamsesV2Exchange                   = "RamsesV2"
 	NileV1Exchange                     = "NileV1"
@@ -126,6 +127,8 @@ const (
 	VelarExchange                      = "Velar"
 	AerodromeSlipstreamExchange        = "AerodromeSlipstream"
 	AerodromeV1Exchange                = "AerodromeV1"
+	BifrostExchange                    = "Bifrost"
+	HydrationExchange                  = "Hydration"
 	// FinageForex        = "FinageForex"
 )
 

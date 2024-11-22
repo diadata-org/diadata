@@ -191,7 +191,7 @@ func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *dia
 			rawQ.Price = price
 			// Special case: gUSDC with liq threshold
 		} else if address == "0xd3443ee1e91af28e5fb858fbd0d72a63ba8046e0" && blockchain == "Arbitrum" {
-			price, symbol, err := getLiqThreshGraphqlAssetQuotationFromDia(blockchain, address, "gUSDC", 200000)
+			price, symbol, err := getLiqThreshGraphqlAssetQuotationFromDia(blockchain, address, "gUSDC", 50000)
 			if err != nil {
 				log.Printf("Failed to retrieve %s (gUSDC) quotation data from Graphql on DIA: %v", address, err)
 				return oldPrice, err
@@ -310,7 +310,7 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 			rawQ.Price = price
 			// Special case: gUSDC with liq threshold
 		} else if address == "0xd3443ee1e91af28e5fb858fbd0d72a63ba8046e0" && blockchain == "Arbitrum" {
-			price, symbol, err := getLiqThreshGraphqlAssetQuotationFromDia(blockchain, address, "gUSDC", 200000)
+			price, symbol, err := getLiqThreshGraphqlAssetQuotationFromDia(blockchain, address, "gUSDC", 50000)
 			if err != nil {
 				log.Printf("Failed to retrieve %s (gUSDC) quotation data from Graphql on DIA: %v", address, err)
 				return oldPrice, err

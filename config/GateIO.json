@@ -104,6 +104,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "APT_USDT",
+            "Symbol": "APT"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "AR_USDT",
             "Ignore": false,
             "Symbol": "AR"
@@ -494,6 +500,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "CRV_USDT",
+            "Symbol": "CRV"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "CS_ETH",
             "Ignore": false,
             "Symbol": "CS"
@@ -650,6 +662,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "DIA_USDT",
+            "Symbol": "DIA"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "DNT_ETH",
             "Ignore": false,
             "Symbol": "DNT"
@@ -740,6 +758,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "DYDX_USDT",
+            "Symbol": "DYDX"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "EDU_USDT",
             "Ignore": false,
             "Symbol": "EDU"
@@ -773,6 +797,12 @@
             "ForeignName": "ENA_USDT",
             "Ignore": false,
             "Symbol": "ENA"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "ENS_USDT",
+            "Symbol": "ENS"
         },
         {
             "Exchange": "GateIO",
@@ -845,6 +875,12 @@
             "ForeignName": "FDUSD_USDT",
             "Ignore": false,
             "Symbol": "FDUSD"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "FET_USDT",
+            "Symbol": "FET"
         },
         {
             "Exchange": "GateIO",
@@ -1031,6 +1067,12 @@
             "ForeignName": "GRAIL_USDT",
             "Ignore": false,
             "Symbol": "GRAIL"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "GRT_USDT",
+            "Symbol": "GRT"
         },
         {
             "Exchange": "GateIO",
@@ -1259,6 +1301,12 @@
             "ForeignName": "LBA_USDT",
             "Ignore": false,
             "Symbol": "LBA"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "LDO_USDT",
+            "Symbol": "LDO"
         },
         {
             "Exchange": "GateIO",
@@ -1619,6 +1667,12 @@
             "ForeignName": "MKR_USDT",
             "Ignore": false,
             "Symbol": "MKR"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "MNT_USDT",
+            "Symbol": "MNT"
         },
         {
             "Exchange": "GateIO",
@@ -2072,6 +2126,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "RENDER_USDT",
+            "Symbol": "RENDER"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "REP_ETH",
             "Ignore": false,
             "Symbol": "REP"
@@ -2153,6 +2213,12 @@
             "ForeignName": "SAMO_ETH",
             "Ignore": false,
             "Symbol": "SAMO"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "SAND_USDT",
+            "Symbol": "SAND"
         },
         {
             "Exchange": "GateIO",
@@ -2270,6 +2336,18 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "SNX_USDT",
+            "Symbol": "SNX"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "SOL_USDT",
+            "Symbol": "SOL"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "SOP_ETH",
             "Ignore": false,
             "Symbol": "SOP"
@@ -2354,9 +2432,21 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "SUI_USDT",
+            "Symbol": "SUI"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "SUPER_USDT",
             "Ignore": false,
             "Symbol": "SUPER"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "SUSHI_USDT",
+            "Symbol": "SUSHI"
         },
         {
             "Exchange": "GateIO",
@@ -2612,6 +2702,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "WLD_USDT",
+            "Symbol": "WLD"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "XAI_USDT",
             "Ignore": false,
             "Symbol": "XAI"
@@ -2699,6 +2795,12 @@
             "ForeignName": "XVG_USDT",
             "Ignore": false,
             "Symbol": "XVG"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "YFI_USDT",
+            "Symbol": "YFI"
         },
         {
             "Exchange": "GateIO",

@@ -7,6 +7,12 @@
             "Address": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9"
         },
         {
+            "Exchange": "CoinBase",
+            "Symbol": "ADA",
+            "Blockchain": "Cardano",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "AERO",
             "Exchange": "CoinBase",
             "Blockchain": "Base",
@@ -23,6 +29,18 @@
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
             "Address": "0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "APT",
+            "Blockchain": "Aptos",
+            "Address": "0x1::aptos_coin::AptosCoin"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "AR",
+            "Blockchain": "Arweave",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "ARB",
@@ -47,6 +65,12 @@
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
             "Address": "0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "BNB",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "BNT",
@@ -85,6 +109,12 @@
             "Address": "0xc00e94Cb662C3520282E6f5717214004A7f26888"
         },
         {
+            "Exchange": "CoinBase",
+            "Symbol": "CRV",
+            "Blockchain": "Ethereum",
+            "Address": "0xD533a949740bb3306d119CC777fa900bA034cd52"
+        },
+        {
             "Symbol": "DAI",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
@@ -107,6 +137,24 @@
             "Exchange": "CoinBase",
             "Blockchain": "Polkadot",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "DYDX",
+            "Blockchain": "Ethereum",
+            "Address": "0x92D6C1e31e14520e676a687F0a93788B716BEff5"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "ENA",
+            "Blockchain": "Ethereum",
+            "Address": "0x57e114B691Db790C35207b2e685D4A43181e6061"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "ENS",
+            "Blockchain": "Ethereum",
+            "Address": "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72"
         },
         {
             "Symbol": "ETC",
@@ -136,6 +184,24 @@
             "Symbol": "FET",
             "Exchange": "CoinBase",
             "Blockchain": "Fetch",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "FIL",
+            "Blockchain": "Filecoin",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "FLOW",
+            "Blockchain": "Flow",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "FTM",
+            "Blockchain": "Fantom",
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
@@ -193,10 +259,46 @@
             "Address": "0xdeFA4e8a7bcBA345F687a2f1456F5Edd9CE97202"
         },
         {
+            "Exchange": "CoinBase",
+            "Symbol": "LDO",
+            "Blockchain": "Ethereum",
+            "Address": "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32"
+        },
+        {
             "Symbol": "MANA",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
             "Address": "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "MKR",
+            "Blockchain": "Ethereum",
+            "Address": "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "MNT",
+            "Blockchain": "Mantle",
+            "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "MOVR",
+            "Blockchain": "Moonriver",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "NEAR",
+            "Blockchain": "NEAR",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "OMG",
+            "Blockchain": "Ethereum",
+            "Address": "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07"
         },
         {
             "Symbol": "ONDO",
@@ -209,6 +311,12 @@
             "Exchange": "CoinBase",
             "Blockchain": "Optimism",
             "Address": "0x4200000000000000000000000000000000000042"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "PENDLE",
+            "Blockchain": "Arbitrum",
+            "Address": "0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8"
         },
         {
             "Symbol": "PNG",
@@ -241,6 +349,12 @@
             "Address": "0xFca59Cd816aB1eaD66534D82bc21E7515cE441CF"
         },
         {
+            "Exchange": "CoinBase",
+            "Symbol": "RENDER",
+            "Blockchain": "Ethereum",
+            "Address": "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24"
+        },
+        {
             "Symbol": "SAND",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
@@ -257,6 +371,18 @@
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
             "Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "SNX",
+            "Blockchain": "Ethereum",
+            "Address": "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "SOL",
+            "Blockchain": "Solana",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "SPA",
@@ -284,9 +410,27 @@
         },
         {
             "Exchange": "CoinBase",
+            "Symbol": "STRK",
+            "Blockchain": "Starknet",
+            "Address": "0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d"
+        },
+        {
+            "Exchange": "CoinBase",
             "Symbol": "STX",
             "Blockchain": "Stacks",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "SUI",
+            "Blockchain": "Sui",
+            "Address": "0x2::sui::SUI"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "SUSHI",
+            "Blockchain": "Ethereum",
+            "Address": "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2"
         },
         {
             "Symbol": "SYN",
@@ -295,10 +439,28 @@
             "Address": "0x0f2D719407FdBeFF09D87557AbB7232601FD9F29"
         },
         {
+            "Exchange": "CoinBase",
+            "Symbol": "TAO",
+            "Blockchain": "Bittensor",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "TIA",
             "Exchange": "CoinBase",
             "Blockchain": "Osmosis",
             "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "TON",
+            "Blockchain": "Ton",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "TRX",
+            "Blockchain": "Tron",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "UNI",
@@ -311,6 +473,12 @@
             "Exchange": "CoinBase",
             "Blockchain": "Fiat",
             "Address": "840"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "USDC",
+            "Blockchain": "Ethereum",
+            "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
         },
         {
             "Symbol": "USDT",
@@ -335,6 +503,30 @@
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
             "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "WIF",
+            "Blockchain": "Solana",
+            "Address": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "WLD",
+            "Blockchain": "Ethereum",
+            "Address": "0x163f8C2467924be0ae7B5347228CABF260318753"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "XLM",
+            "Blockchain": "Stellar",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "XRP",
+            "Blockchain": "Ripple",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "YFI",

@@ -11,6 +11,10 @@
     {
       "Address": "0xd3443ee1e91aF28e5FB858Fbd0D72A63bA8046E0",
       "Symbol": "gUSDC"
+    },
+    {
+      "Address": "0xC760F9782F8ceA5B06D862574464729537159966",
+      "Symbol": "TANGO"
     }
   ]
 }
