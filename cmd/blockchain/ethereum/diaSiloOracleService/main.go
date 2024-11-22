@@ -225,6 +225,16 @@ func oracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contract *dia
 			}
 			rawQ.Symbol = symbol
 			rawQ.Price = price
+		} else if address == "0x3d9907f9a368ad0a51be60f7da3b97cf940982d8" && blockchain == "Arbitrum" {
+			// Special case: GRAIL with liquidity threshold
+			price, symbol, err := getGraphqlLiquidityThresholdAssetQuotationFromDia(blockchain, address, "GRAIL", 120, "vwapir", 250000.0)
+			if err != nil {
+				log.Printf("Failed to retrieve %s quotation with liquidity threshold from GraphQL on DIA: %v", symbol, err)
+				return oldPrice, err
+			}
+			rawQ.Symbol = symbol
+			rawQ.Price = price
+
 		} else {
 			rawQ, err = getAssetQuotationFromDia(blockchain, address)
 			if err != nil {
@@ -319,6 +329,24 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 		} else if address == "0x51fC0f6660482Ea73330E414eFd7808811a57Fa2" && blockchain == "Arbitrum" {
 			// Special case: PREMIA with liquidity threshold
 			price, symbol, err := getGraphqlLiquidityThresholdAssetQuotationFromDia(blockchain, address, "PREMIA", 120, "vwapir", 500000.0)
+			if err != nil {
+				log.Printf("Failed to retrieve %s quotation with liquidity threshold from GraphQL on DIA: %v", symbol, err)
+				return oldPrice, err
+			}
+			rawQ.Symbol = symbol
+			rawQ.Price = price
+		} else if address == "0xACC51FFDeF63fB0c014c882267C3A17261A5eD50" && blockchain == "Arbitrum" {
+			// Special case: SYK with liquidity threshold
+			price, symbol, err := getGraphqlLiquidityThresholdAssetQuotationFromDia(blockchain, address, "SYK", 120, "vwapir", 500000.0)
+			if err != nil {
+				log.Printf("Failed to retrieve %s quotation with liquidity threshold from GraphQL on DIA: %v", symbol, err)
+				return oldPrice, err
+			}
+			rawQ.Symbol = symbol
+			rawQ.Price = price
+		} else if address == "0x3d9907f9a368ad0a51be60f7da3b97cf940982d8" && blockchain == "Arbitrum" {
+			// Special case: GRAIL with liquidity threshold
+			price, symbol, err := getGraphqlLiquidityThresholdAssetQuotationFromDia(blockchain, address, "GRAIL", 120, "vwapir", 250000.0)
 			if err != nil {
 				log.Printf("Failed to retrieve %s quotation with liquidity threshold from GraphQL on DIA: %v", symbol, err)
 				return oldPrice, err
