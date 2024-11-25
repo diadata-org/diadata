@@ -158,7 +158,17 @@ func (s *VelarScraper) Update() error {
 			}
 
 			if swapInfo.TokenIn == "" || swapInfo.TokenOut == "" {
-				for _, arg := range tx.ContractCall.FunctionArgs {
+				// This is a temporary workaround introduced due to a bug in hiro stacks API.
+				// Results returned from /blocks/{block_height}/transactions route have empty
+				// `name` field in `contract_call.function_args` list.
+				// TODO: remove this as soon as the issue is fixed.
+				normalizedTx, err := s.api.GetTransactionAt(tx.TxID)
+				if err != nil {
+					s.logger.WithError(err).Error("failed to GetTransactionAt")
+					continue
+				}
+
+				for _, arg := range normalizedTx.ContractCall.FunctionArgs {
 					switch arg.Name {
 					case "token-in":
 						swapInfo.TokenIn = arg.Repr[1:]
