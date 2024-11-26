@@ -111,13 +111,13 @@
         {
             "Exchange": "Kraken",
             "Ignore": false,
-            "ForeignName": "XBTCUSDT",
+            "ForeignName": "XBTUSDT",
             "Symbol": "BTC"
         },
         {
             "Exchange": "Kraken",
             "Ignore": false,
-            "ForeignName": "XBTCUSDC",
+            "ForeignName": "XBTUSDC",
             "Symbol": "BTC"
         },
         {
@@ -365,12 +365,6 @@
             "ForeignName": "QTUMUSD",
             "Ignore": false,
             "Symbol": "QTUM"
-        },
-        {
-            "Exchange": "Kraken",
-            "ForeignName": "XREPXXBT",
-            "Ignore": false,
-            "Symbol": "REP"
         },
         {
             "Exchange": "Kraken",
