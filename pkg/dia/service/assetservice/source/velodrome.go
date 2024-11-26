@@ -44,6 +44,8 @@ func NewVelodromeAssetSource(exchange dia.Exchange, relDB *models.RelDB) (uas *V
 	switch exchange.Name {
 	case dia.VelodromeExchange:
 		uas = makeVelodromeAssetSource(exchange, restDialOptimism, relDB, velodromeWaitMilliseconds)
+	case dia.VelodromeSlipstreamExchange:
+		uas = makeVelodromeAssetSource(exchange, restDialOptimism, relDB, velodromeWaitMilliseconds)
 	case dia.AerodromeSlipstreamExchange:
 		uas = makeVelodromeAssetSource(exchange, restDialBase, relDB, velodromeWaitMilliseconds)
 	case dia.AerodromeV1Exchange:

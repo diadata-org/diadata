@@ -39,6 +39,8 @@ func NewVelodromePoolScraper(exchange dia.Exchange, relDB *models.RelDB, datasto
 	switch exchange.Name {
 	case dia.VelodromeExchange:
 		us = makeVelodromePoolScraper(exchange, relDB, datastore, restDialOptimism, velodromeWaitMilliseconds)
+	case dia.VelodromeSlipstreamExchange:
+		us = makeVelodromePoolScraper(exchange, relDB, datastore, restDialOptimism, velodromeWaitMilliseconds)
 	case dia.AerodromeV1Exchange:
 		us = makeVelodromePoolScraper(exchange, relDB, datastore, restDialBase, velodromeWaitMilliseconds)
 	case dia.AerodromeSlipstreamExchange:
@@ -170,7 +172,7 @@ func (us *VelodromePoolScraper) GetPoolByAddress(pairAddress common.Address) (po
 		}
 	}
 
-	if us.exchange.Name == dia.AerodromeSlipstreamExchange {
+	if us.exchange.Name == dia.AerodromeSlipstreamExchange || us.exchange.Name == dia.VelodromeSlipstreamExchange {
 		us.GetLiquidityUniV3Type(token0, token1, pairAddress, &pool)
 	} else {
 		us.GetLiquidityUniV2Type(token0, token1, pairContract, &pool)

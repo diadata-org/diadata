@@ -109,6 +109,7 @@ const (
 	ZenlinkswapExchange                = "Zenlink"
 	ZenlinkswapExchangeBifrostPolkadot = "Zenlink-bifrost-polkadot"
 	VelodromeExchange                  = "Velodrome"
+	VelodromeSlipstreamExchange        = "VelodromeSlipstream"
 	MaverickExchange                   = "Maverick"
 	MaverickExchangeZKSync             = "Maverick-zksync"
 	MaverickExchangeBNB                = "Maverick-bnb"
