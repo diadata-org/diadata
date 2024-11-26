@@ -99,6 +99,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse compatibilityMode: %v", err)
 	}
+	gasMultiplier, err := strconv.ParseFloat(utils.Getenv("GAS_MULTIPLIER", "1.1"), 64)
+	if err != nil {
+		log.Fatalf("Failed to parse gasMultiplier: %v", err)
+	}
 
 	assets := []Asset{}
 	conditionalPairs := []ConditionalPair{}
@@ -228,12 +232,12 @@ func main() {
 					}
 					log.Println(newAssetPrices)
 					// update all prices
-					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, cmcApiKey, auth, contract, conn, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
+					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, cmcApiKey, auth, contract, conn, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
 					if err != nil {
 						log.Printf("Failed to execute oracle update using primary connection: %v. Retrying with backup connection...", err)
 
 						// Attempt using the backup connection
-						publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, cmcApiKey, auth, contractBackup, connBackup, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
+						publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, cmcApiKey, auth, contractBackup, connBackup, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
 						if err != nil {
 							log.Fatalf("Failed to execute oracle update using backup connection: %v", err)
 						}
@@ -258,12 +262,12 @@ func main() {
 					}
 					// update all prices, regardless of deviation
 					emptyMap := make(map[string]float64)
-					publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, deviationPermille, coingeckoApiKey, cmcApiKey, auth, contract, conn, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
+					publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, deviationPermille, coingeckoApiKey, cmcApiKey, auth, contract, conn, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
 					if err != nil {
 						log.Printf("Failed to execute oracle update using primary connection: %v. Retrying with backup connection...", err)
 
 						// Attempt using the backup connection
-						publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, deviationPermille, coingeckoApiKey, cmcApiKey, auth, contractBackup, connBackup, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
+						publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, deviationPermille, coingeckoApiKey, cmcApiKey, auth, contractBackup, connBackup, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
 						if err != nil {
 							log.Fatalf("Failed to execute oracle update using backup connection: %v", err)
 						}
@@ -283,12 +287,12 @@ func main() {
 						newAssetPrices[asset.symbol] = newAssetPrice
 					}
 					// update all prices
-					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, cmcApiKey, auth, contract, conn, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
+					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, cmcApiKey, auth, contract, conn, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
 					if err != nil {
 						log.Printf("Failed to execute oracle update using primary connection: %v. Retrying with backup connection...", err)
 
 						// Attempt using the backup connection
-						publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, cmcApiKey, auth, contractBackup, connBackup, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
+						publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, cmcApiKey, auth, contractBackup, connBackup, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
 						if err != nil {
 							log.Fatalf("Failed to execute oracle update using backup connection: %v", err)
 						}
@@ -310,6 +314,7 @@ func oracleUpdateExecutor(
 	auth *bind.TransactOpts,
 	contract *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService,
 	conn *ethclient.Client,
+	gasMultiplier float64,
 	chainId int64,
 	compatibilityMode bool,
 	assets []Asset,
@@ -417,7 +422,7 @@ func oracleUpdateExecutor(
 		for keyIndex := range keys {
 			oracleUpdateMutex.Lock()
 			timestamp := time.Now().Unix()
-			err := updateOracleCompatibilityMode(conn, contract, auth, chainId, keys[keyIndex], prices[keyIndex], timestamp)
+			err := updateOracleCompatibilityMode(conn, contract, auth, gasMultiplier, chainId, keys[keyIndex], prices[keyIndex], timestamp)
 			time.Sleep(time.Duration(mutexSeconds) * time.Second)
 			oracleUpdateMutex.Unlock()
 			if err != nil {
@@ -428,7 +433,7 @@ func oracleUpdateExecutor(
 	} else {
 		oracleUpdateMutex.Lock()
 		timestamp := time.Now().Unix()
-		err := updateOracleMultiValues(conn, contract, auth, chainId, keys, prices, timestamp)
+		err := updateOracleMultiValues(conn, contract, auth, gasMultiplier, chainId, keys, prices, timestamp)
 		time.Sleep(time.Duration(mutexSeconds) * time.Second)
 		oracleUpdateMutex.Unlock()
 		if err != nil {
@@ -444,6 +449,14 @@ func retrieveAssetPrice(asset Asset, useGql bool, gqlWindowSize int, gqlMethodol
 	var err error
 	var price float64
 
+	// Check if the asset is an RWA
+	if strings.ToLower(strings.TrimSpace(asset.blockchain)) == "rwa-equity" {
+		price, err = getRwaEquityPriceFromDia(asset.address)
+		if err != nil {
+			log.Printf("Failed to retrieve %s rwa price from DIA: %v", asset.address, err)
+		}
+		return price, nil
+	} 
 	// Get quotation for token and update Oracle
 	if useGql {
 		price, err = getGraphqlAssetQuotationFromDia(asset.blockchain, asset.address, gqlWindowSize, gqlMethodology, gqlLiquidityParameters)
@@ -504,6 +517,7 @@ func updateOracleCompatibilityMode(
 	client *ethclient.Client,
 	contract *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService,
 	auth *bind.TransactOpts,
+	gasMultiplier float64,
 	chainId int64,
 	key string,
 	value int64,
@@ -543,7 +557,7 @@ func updateOracleCompatibilityMode(
 
 		// Get 110% of the gas price
 		fGas := new(big.Float).SetInt(gasPrice)
-		fGas.Mul(fGas, big.NewFloat(1.1))
+		fGas.Mul(fGas, big.NewFloat(gasMultiplier))
 		gasPrice, _ = fGas.Int(nil)
 	}
 
@@ -570,6 +584,7 @@ func updateOracleMultiValues(
 	client *ethclient.Client,
 	contract *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService,
 	auth *bind.TransactOpts,
+	gasMultiplier float64,
 	chainId int64,
 	keys []string,
 	values []int64,
@@ -610,7 +625,7 @@ func updateOracleMultiValues(
 
 		// Get 110% of the gas price
 		fGas := new(big.Float).SetInt(gasPrice)
-		fGas.Mul(fGas, big.NewFloat(1.1))
+		fGas.Mul(fGas, big.NewFloat(gasMultiplier))
 		gasPrice, _ = fGas.Int(nil)
 	}
 
@@ -757,6 +772,29 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int,
 		return 0.0, errors.New("no results")
 	}
 	return r.GetFeed[len(r.GetFeed)-1].Value, nil
+}
+
+func getRwaEquityPriceFromDia(address string) (float64, error) {
+	// Execute the query
+	response, err := http.Get(diaBaseUrl + "/v1/rwa/Equities/" + address)
+	if err != nil {
+		return 0.0, err
+	}
+
+	defer response.Body.Close()
+	if 200 != response.StatusCode {
+		return 0.0, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	}
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return 0.0, err
+	}
+	var quotation models.ForeignQuotation
+	err = quotation.UnmarshalBinary(contents)
+	if err != nil {
+		return 0.0, err
+	}
+	return quotation.Price, nil
 }
 
 func getCoingeckoPrice(assetName, coingeckoApiKey string) (float64, error) {
