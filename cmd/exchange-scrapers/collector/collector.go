@@ -38,6 +38,7 @@ var (
 		dia.TraderJoeExchangeV2_1Avalanche,
 		dia.WanswapExchange,
 		dia.VelodromeExchange,
+		dia.VelodromeSlipstream,
 		dia.ZenlinkswapExchange,
 		dia.ZenlinkswapExchangeBifrostPolkadot,
 		dia.PearlfiExchangeTestnet,
