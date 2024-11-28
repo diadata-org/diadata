@@ -769,6 +769,18 @@
             "Ignore": false
         },
         {
+            "Symbol": "USDE",
+            "ForeignName": "USDEUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDE",
+            "ForeignName": "USDEUSDC",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "UST",
             "ForeignName": "USTUSDT",
             "Exchange": "ByBit",

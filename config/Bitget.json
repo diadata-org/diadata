@@ -343,6 +343,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "USDE",
+            "ForeignName": "USDEUSDT",
+            "Exchange": "Bitget",
+            "Ignore": false
+        },
+        {
             "Symbol": "USDT",
             "ForeignName": "USDTEUR",
             "Exchange": "Bitget",

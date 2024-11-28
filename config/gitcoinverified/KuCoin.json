@@ -1063,6 +1063,12 @@
             "Address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
         },
         {
+            "Symbol": "USDE",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3"
+        },
+        {
             "Symbol": "UOS",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

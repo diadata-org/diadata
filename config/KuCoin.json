@@ -1783,6 +1783,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "USDE",
+            "ForeignName": "USDE-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "USDJ",
             "ForeignName": "USDJ-USDT",
             "Exchange": "KuCoin",
