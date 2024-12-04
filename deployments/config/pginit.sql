@@ -122,31 +122,6 @@ CREATE TABLE polling (
     UNIQUE(blockchain, contract_address)
 );
 
----------------------------------------
-------- tables for NFT storage --------
----------------------------------------
-
--- collect all possible categories for nfts
-CREATE TABLE nftcategory (
-    category_id UUID DEFAULT gen_random_uuid(),
-    category text NOT NULL,
-    UNIQUE(category)
-);
-
--- nftclass is uniquely defined by the pair (blockchain,address),
--- referring to the blockchain on which the nft was minted.
-CREATE TABLE nftclass (
-    nftclass_id UUID DEFAULT gen_random_uuid(),
-    blockchain text NOT NULL,
-    address text NOT NULL,
-    symbol text,
-    name text,
-    contract_type text,
-    category text REFERENCES nftcategory(category),
-    UNIQUE(blockchain, address),
-    UNIQUE(nftclass_id)
-);
-
 -- historicalquotation collects USD quotes with lower frequency
 -- for a selection of assets.
 CREATE TABLE historicalquotation (
@@ -157,78 +132,6 @@ CREATE TABLE historicalquotation (
     source text,
     UNIQUE(asset_id,quote_time,source),
     UNIQUE(historicalquotation_id)
-);
-
--- an element from nft is a specific non-fungible nft, unqiuely
--- identified by the pair (address(on blockchain), token_id)
-CREATE TABLE nft (
-    nft_id UUID DEFAULT gen_random_uuid(),
-    nftclass_id UUID REFERENCES nftclass(nftclass_id),
-    token_id text NOT NULL,
-    creation_time timestamp,
-    creator_address text,
-    uri text,
-    attributes jsonb,
-    UNIQUE(nftclass_id, token_id),
-    UNIQUE(nft_id)
-);
-
-CREATE TABLE nfttradecurrent (
-    sale_id UUID DEFAULT gen_random_uuid(),
-    nftclass_id UUID REFERENCES nftclass(nftclass_id),
-    nft_id UUID REFERENCES nft(nft_id),
-    price text,
-    price_usd numeric,
-    transfer_from text,
-    transfer_to text,
-    currency_symbol text,
-    currency_address text,
-    currency_decimals numeric,
-    currency_id UUID REFERENCES asset(asset_id),
-    bundle_sale boolean default false,
-    block_number numeric,
-    trade_time timestamp,
-    tx_hash text,    
-    marketplace text,
-    UNIQUE(sale_id),
-    UNIQUE(nft_id, trade_time)
-);
-
-CREATE TABLE nftbid (
-    bid_id UUID DEFAULT gen_random_uuid(),
-    nft_id UUID REFERENCES nft(nft_id),
-    bid_value text,
-    from_address text,
-    currency_symbol text,
-    currency_address text,
-    currency_decimals numeric,
-    blocknumber numeric,
-    blockposition numeric,
-    bid_time timestamp,
-    tx_hash text,
-    marketplace text,
-    UNIQUE(bid_id),
-    UNIQUE(nft_id, from_address, bid_time)
-);
-
-CREATE TABLE nftoffer (
-    offer_id UUID DEFAULT gen_random_uuid(),
-    nft_id UUID REFERENCES nft(nft_id),
-    start_value text,
-    end_value text,
-    duration numeric,
-    from_address text,
-    auction_type text,
-    currency_symbol text,
-    currency_address text,
-    currency_decimals numeric,
-    blocknumber numeric,
-    blockposition numeric,
-    offer_time timestamp,
-    tx_hash text,
-    marketplace text,
-    UNIQUE(offer_id),
-    UNIQUE(nft_id, from_address, offer_time)
 );
 
 CREATE TABLE IF NOT EXISTS scrapers (
@@ -256,32 +159,6 @@ CREATE TABLE assetpriceident (
     UNIQUE(group_id, rank_in_group)
 );
 
-CREATE TABLE synthassetdata (
-    synthassetdata_id UUID DEFAULT gen_random_uuid(),
-    synthasset_id UUID REFERENCES asset(asset_id),
-    underlying_id UUID REFERENCES asset(asset_id),
-    supply numeric,
-    locked_underlying numeric,
-    num_mints numeric,
-    num_redeems numeric,
-    block_number numeric,
-    time_stamp timestamp,
-    UNIQUE(synthassetdata_id),
-    UNIQUE(synthasset_id,time_stamp)
-);
-
-CREATE TABLE nftexchange (
-    exchange_id UUID DEFAULT gen_random_uuid(),
-    name text NOT NULL,
-    centralized boolean default false,
-    contract text,
-    blockchain text,
-    rest_api text,
-    ws_api text,
-    watchdog_delay numeric NOT NULL,
-    UNIQUE(exchange_id),
-    UNIQUE (name)
-);
 
 CREATE TABLE oracleconfig (
     id uuid DEFAULT gen_random_uuid(),

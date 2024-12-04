@@ -24,10 +24,6 @@ type Datastore interface {
 	GetSupply(string, time.Time, time.Time, *RelDB) ([]dia.Supply, error)
 	SetSupply(supply *dia.Supply) error
 	GetSupplyInflux(dia.Asset, time.Time, time.Time) ([]dia.Supply, error)
-	SaveSynthSupplyInfluxToTable(*dia.SynthAssetSupply, string) error
-	SaveSynthSupplyInflux(*dia.SynthAssetSupply) error
-	GetSynthSupplyInflux(string, string, string, int, time.Time, time.Time) ([]dia.SynthAssetSupply, error)
-	GetSynthAssets(string, string) ([]string, error)
 
 	SetDiaTotalSupply(totalSupply float64) error
 	GetDiaTotalSupply() (float64, error)
@@ -172,7 +168,6 @@ const (
 	influxDBAssetQuotationsTable      = "assetQuotations"
 	influxDbBenchmarkedIndexTableName = "benchmarkedIndexValues"
 	influxDbVwapFireflyTable          = "vwapFirefly"
-	influxDbSynthSupplyTable          = "synthsupply"
 
 	influxDBDefaultURL = "http://influxdb:8086"
 )

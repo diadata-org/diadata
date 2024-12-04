@@ -66,26 +66,6 @@ type Query {
 	  BasisPoints: Int!
   ): VWALP
 
-  GetNFT(Address: String!, Blockchain: String!, TokenID: String!): NFT
-
-  GetNFTTrades(
-    Address: String!
-    Blockchain: String!
-    TokenID: String!
-  ): [NFTTrade]
-
-  GetNFTOffers(
-    Address: String!
-    Blockchain: String!
-    TokenID: String!
-  ): [NFTOffer]
-
-  GetNFTBids(
-    Address: String!,
-    Blockchain: String!,
-    TokenID: String!
-  ): [NFTBid]
-
 }
 
 input FeedSelection {
@@ -182,62 +162,4 @@ type Trade {
   Volume: Float
   Symbol: String
   EstimatedUSDPrice: Float
-}
-
-type NFT {
-  Address: String
-  Blockchain: String
-  CreationTime: Time
-  CreatorAddress: String
-  URI: String
-  TokenID: String
-}
-
-type NFTTrade {
-  Address: String
-  Blockchain: String
-  TokenID: String
-  Price: String
-  FromAddress: String
-  ToAddress: String
-  CurrencyAddress: String
-  CurrencySymbol: String
-  CurrencyDecimals: Int
-  BlockNumber: Int
-  Timestamp: Time
-  TxHash: String
-  Exchange: String
-}
-
-type NFTOffer {
-  Address: String
-  Blockchain: String
-  TokenID: String
-  StartValue: String
-  EndValue: String
-  Duration: Int
-  AuctionType: String
-  FromAddress: String
-  CurrencyAddress: String
-  CurrencySymbol: String
-  CurrencyDecimals: Int
-  Blocknumber: Int
-  Timestamp: Time
-  TxHash: String
-  Exchange: String
-}
-
-type NFTBid {
-  Address: String
-  Blockchain: String
-  TokenID: String
-  BidValue: String
-  FromAddress: String
-  CurrencyAddress: String
-  CurrencySymbol: String
-  CurrencyDecimals: Int
-  Blocknumber: Int
-  Timestamp: Time
-  TxHash: String
-  Exchange: String
 }

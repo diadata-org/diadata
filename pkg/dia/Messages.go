@@ -1,9 +1,7 @@
 package dia
 
 import (
-	"database/sql/driver"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"math"
 	"math/big"
@@ -60,169 +58,6 @@ const (
 var CRYPTO_ZERO_UNIX_TIME = time.Unix(1230768000, 0)
 
 type VerificationMechanism string
-
-// NFTClass is the container for a nft class defined by
-// a contract (address) on a blockchain.
-type NFTClass struct {
-	Address      string `json:"Address"`
-	Symbol       string `json:"Symbol"`
-	Name         string `json:"Name"`
-	Blockchain   string `json:"Blockchain"`
-	ContractType string `json:"ContractType"`
-	Category     string `json:"Category"`
-}
-
-// MarshalBinary for NFTClass
-func (nc *NFTClass) MarshalBinary() ([]byte, error) {
-	return json.Marshal(nc)
-}
-
-// UnmarshalBinary for NFTClass
-func (nc *NFTClass) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &nc); err != nil {
-		return err
-	}
-	return nil
-}
-
-// NFT is the container for a specific NFT defined by
-// the pair (address,tokenID).
-type NFT struct {
-	NFTClass       NFTClass  `json:"NFTClass"`
-	TokenID        string    `json:"TokenID"`
-	CreationTime   time.Time `json:"CreationTme"`
-	CreatorAddress string    `json:"CreatorAddress"`
-	URI            string    `json:"URI"`
-	// @Attributes is a collection of attributes from on- and off-chain
-	// TO DO: Should we split up into two fields?
-	Attributes NFTAttributes `json:"Attributes"`
-}
-
-// NFTAttributes can be stored as jasonb in postgres:
-// https://www.alexedwards.net/blog/using-postgresql-jsonb
-type NFTAttributes map[string]interface{}
-
-func (a NFTAttributes) Value() (driver.Value, error) {
-	return json.Marshal(a)
-}
-
-func (a *NFTAttributes) Scan(value interface{}) error {
-	b, ok := value.([]byte)
-	if !ok {
-		return errors.New("type assertion to []byte failed")
-	}
-
-	return json.Unmarshal(b, &a)
-}
-
-// MarshalBinary for NFT
-func (n *NFT) MarshalBinary() ([]byte, error) {
-	return json.Marshal(n)
-}
-
-// UnmarshalBinary for NFT
-func (n *NFT) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &n); err != nil {
-		return err
-	}
-	return nil
-}
-
-type NFTTrade struct {
-	NFT         NFT       `json:"NFT"`
-	Price       *big.Int  `json:"Price"`
-	PriceUSD    float64   `json:"PriceUSD"`
-	FromAddress string    `json:"FromAddress"`
-	ToAddress   string    `json:"ToAddress"`
-	Currency    Asset     `json:"Currency"`
-	BundleSale  bool      `json:"BundleSale"`
-	BlockNumber uint64    `json:"BlockNumber"`
-	Timestamp   time.Time `json:"Timestamp"`
-	TxHash      string    `json:"TxHash"`
-	Exchange    string    `json:"Exchange"`
-}
-
-// MarshalBinary for NFTTrade
-func (ns *NFTTrade) MarshalBinary() ([]byte, error) {
-	return json.Marshal(ns)
-}
-
-// UnmarshalBinary for NFTTrade
-func (ns *NFTTrade) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &ns); err != nil {
-		return err
-	}
-	return nil
-}
-
-type NFTBid struct {
-	NFT              NFT       `json:"NFT"`
-	Value            *big.Int  `json:"Value"`
-	FromAddress      string    `json:"FromAddress"`
-	CurrencySymbol   string    `json:"CurrencySymbol"`
-	CurrencyAddress  string    `json:"CurrencyAddress"`
-	CurrencyDecimals int32     `json:"CurrencyDecimals"`
-	BlockNumber      uint64    `json:"BlockNumber"`
-	BlockPosition    uint64    `json:"BlockPosition"`
-	Timestamp        time.Time `json:"Timestamp"`
-	TxHash           string    `json:"TxHash"`
-	Exchange         string    `json:"Exchange"`
-}
-
-// MarshalBinary for NFTBid
-func (nb *NFTBid) MarshalBinary() ([]byte, error) {
-	return json.Marshal(nb)
-}
-
-// UnmarshalBinary for NFTBid
-func (nb *NFTBid) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &nb); err != nil {
-		return err
-	}
-	return nil
-}
-
-type NFTExchangeStats struct {
-	Exchange  string
-	NumTrades uint64
-	Volume    float64
-}
-
-type NFTOffer struct {
-	NFT NFT `json:"NFT"`
-	// Start and EndValue are for auction types. Otherwise, use StartValue
-	// and leave EndValue blank.
-	StartValue *big.Int `json:"StartValue"`
-	EndValue   *big.Int `json:"EndValue"`
-	// Duration of the offer/auction measured in seconds
-	Duration    time.Duration `json:"Duration"`
-	FromAddress string        `json:"FromAddress"`
-	// Type of offer can be auction, simple offer,...
-	AuctionType string `json:"AuctionType"`
-
-	CurrencySymbol   string `json:"CurrencySymbol"`
-	CurrencyAddress  string `json:"CurrencyAddress"`
-	CurrencyDecimals int32  `json:"CurrencyDecimals"`
-
-	BlockNumber   uint64    `json:"BlockNumber"`
-	BlockPosition uint64    `json:"BlockPosition"`
-	Timestamp     time.Time `json:"Timestamp"`
-	TxHash        string    `json:"TxHash"`
-	Exchange      string    `json:"Exchange"`
-}
-
-// MarshalBinary for NFTOffer
-func (no *NFTOffer) MarshalBinary() ([]byte, error) {
-	return json.Marshal(no)
-}
-
-// UnmarshalBinary for NFTOffer
-func (no *NFTOffer) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &no); err != nil {
-		return err
-	}
-	return nil
-}
 
 // BlockData stores information on a specific block in a given blockchain.
 type BlockData struct {
@@ -301,16 +136,6 @@ type Exchange struct {
 	PairsAPI      string     `json:"PairsAPI"`
 	WatchdogDelay int        `json:"WatchdogDelay"`
 	ScraperActive bool       `json:"ScraperActive"`
-}
-
-type NFTExchange struct {
-	Name          string     `json:"Name"`
-	Centralized   bool       `json:"Centralized"`
-	Contract      string     `json:"Contract"`
-	BlockChain    BlockChain `json:"BlockChain"`
-	RestAPI       string     `json:"RestAPI"`
-	WsAPI         string     `json:"WsAPI"`
-	WatchdogDelay int        `json:"WatchdogDelay"`
 }
 
 type Supply struct {
@@ -555,22 +380,6 @@ func (t *Trade) NormalizeSymbols(upperCase bool, pairSplitter string) error {
 		}
 	}
 	return nil
-}
-
-// SynthAssetSupply is a container for data on synthetic assets such as aUSDC.
-// https://etherscan.io/address/0xbcca60bb61934080951369a648fb03df4f96263c
-type SynthAssetSupply struct {
-	Asset            Asset   // Synthetic asset under consideration.
-	AssetUnderlying  Asset   // Asset underlying the synth asset.
-	Supply           float64 // Supply of the synthetic asset.
-	LockedUnderlying float64 // Amount of underlying asset locked in the contract.
-	NumMint          int64   // Total number of synth asset mint events (optional).
-	NumRedeem        int64   // Total number of underlying asset redeem events (optional).
-	BlockNumber      uint64
-	Time             time.Time
-	ColleteralRatio  float64
-	Protocol         string
-	TotalDebt        float64
 }
 
 type TradesBlockData struct {

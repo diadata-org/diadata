@@ -134,21 +134,6 @@ const (
 )
 
 const (
-	CryptoPunks              = "CryptopunkMarket"
-	CryptoKitties            = "CryptoKitties"
-	Topshot                  = "Topshot"
-	X2Y2                     = "X2Y2"
-	Opensea                  = "OpenSea"
-	OpenseaBAYC              = "OpenseaBAYC"
-	OpenseaSeaport           = "OpenseaSeaport"
-	BlurV1                   = "BlurV1"
-	LooksRare                = "LooksRare"
-	TofuNFTAstar             = "TofuNFT-Astar"
-	TofuNFTBinanceSmartChain = "TofuNFT-BinanceSmartChain"
-	MagicEden                = "MagicEden"
-)
-
-const (
 	SCRAPER_TYPE_ASSETCOLLECTOR   = "assetcollector"
 	SCRAPER_TYPE_LIQUIDITYSCRAPER = "liquidityscraper"
 	INDEX_TYPE_BLOCKNUMBER        = "blocknumber"

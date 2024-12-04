@@ -238,7 +238,6 @@ func main() {
 
 		// Other endpoints.
 		diaGroup.GET("/search/:query", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.SearchAsset))
-		diaGroup.GET("/searchnft/:query", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.SearchNFTs))
 		diaGroup.GET("/assetInfo/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetAssetInfo))
 		diaGroup.GET("/pairsInFeed/:blockchain/:address/:numTradesThreshold", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetPairsInFeed))
 		diaGroup.GET("/filterPerSource/:blockchain/:address/:filter", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeMedium, diaApiEnv.GetFilterPerSource))
@@ -249,8 +248,6 @@ func main() {
 		diaGroup.GET("/tokenexchanges/:symbol", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetAssetExchanges))
 
 		diaGroup.GET("/exchanges", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetExchanges))
-		diaGroup.GET("/NFT/exchanges", cache.CachePageAtomic(memoryStore, cacheTime.CachingTime1Sec, diaApiEnv.GetNFTExchanges))
-
 		diaGroup.GET("/blockchains", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetAllBlockchains))
 
 		// Endpoints for fiat currencies
@@ -275,28 +272,8 @@ func main() {
 		diaGroup.GET("/diaTotalSupply", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetDiaTotalSupply))
 		diaGroup.GET("/diaCirculatingSupply", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetDiaCirculatingSupply))
 
-		// NFT endpoints.
-		// diaGroup.GET("/AllNFTClasses/:blockchain", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetAllNFTClasses))
-		// diaGroup.GET("/NFTClasses/:limit/:offset", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetNFTClasses))
-		// diaGroup.GET("/NFTCategories", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetNFTCategories))
-		// diaGroup.GET("/NFT/:blockchain/:address/:id", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetNFT))
-		// diaGroup.GET("/NFTTrades/:blockchain/:address/:id", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetNFTTrades))
-		// diaGroup.GET("/NFTTradesCollection/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetNFTTradesCollection))
-		// diaGroup.GET("/NFTFloor/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetNFTFloor))
-		// diaGroup.GET("/NFTFloorMA/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetNFTFloorMA))
-		// diaGroup.GET("/NFTDownday/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetNFTDownday))
-		// diaGroup.GET("/NFTVolatility/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetNFTFloorVola))
-		// diaGroup.GET("/NFTDistribution/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeMedium, diaApiEnv.GetNFTDistribution))
-		// diaGroup.GET("/topNFT/:numCollections", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetTopNFTClasses))
-		// diaGroup.GET("/NFTVolume/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetNFTVolume))
-		// diaGroup.GET("/NFTMarketCap/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetNFTMarketCap))
-
 		diaGroup.GET("/assetmap/:blockchain/:address", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeLong, diaApiEnv.GetAssetMap))
 		diaGroup.GET("/assetUpdates/:blockchain/:address/:deviation/:frequencySeconds", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetAssetUpdates))
-
-		// Endpoints for Synthassets
-
-		diaGroup.GET("/synthasset/:blockchain/:protocol", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.GetSyntheticAsset))
 
 		// Endpoints for asset list
 		// diaGroup.GET("/assetlist/:query/", cache.CachePageAtomic(memoryStore, cacheTime.CachingTimeShort, diaApiEnv.SearchAssetList))

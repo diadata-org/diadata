@@ -84,55 +84,6 @@ type RelDatastore interface {
 	GetExchangePairCache(exchange string, foreignName string) (dia.ExchangePair, error)
 	CountCache() (uint32, error)
 
-	// ---------------- NFT methods -------------------
-	// NFT class methods
-	SetNFTClass(nftClass dia.NFTClass) error
-	GetAllNFTClasses(blockchain string) ([]dia.NFTClass, error)
-	GetTradedNFTClasses(starttime time.Time) ([]dia.NFTClass, error)
-	GetNFTClasses(limit, offset uint64) ([]dia.NFTClass, error)
-	GetNFTClass(address string, blockchain string) (dia.NFTClass, error)
-	GetNFTClassID(address string, blockchain string) (string, error)
-	GetNFTClassByID(id string) (dia.NFTClass, error)
-	GetNFTClassesByNameSymbol(searchstring string) ([]dia.NFTClass, error)
-	UpdateNFTClassCategory(nftclassID string, category string) (bool, error)
-	GetNFTCategories() ([]string, error)
-
-	// NFT methods
-	SetNFT(nft dia.NFT) error
-	GetNFT(address string, blockchain string, tokenID string) (dia.NFT, error)
-	GetNFTID(address string, blockchain string, tokenID string) (string, error)
-
-	// NFT trading and bidding methods
-	SetNFTTrade(trade dia.NFTTrade) error
-	SetNFTTradeToTable(trade dia.NFTTrade, table string) error
-	GetNFTTrades(address string, blockchain string, tokenID string, starttime time.Time, endtime time.Time) ([]dia.NFTTrade, error)
-	GetNFTTradesCollection(address string, blockchain string, starttime time.Time, endtime time.Time) ([]dia.NFTTrade, error)
-	GetAllLastTrades(nftclass dia.NFTClass) ([]dia.NFTTrade, error)
-	GetNFTOffers(address string, blockchain string, tokenID string) ([]dia.NFTOffer, error)
-	GetNFTBids(address string, blockchain string, tokenID string) ([]dia.NFTBid, error)
-	GetNFTFloor(nftclass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, noBundles bool, exchange string) (float64, error)
-	GetNFTFloorLevel(nftclass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, currencies []dia.Asset, level float64, noBundles bool, exchange string) (float64, error)
-	GetNFTFloorRecursive(nftClass dia.NFTClass, timestamp time.Time, floorWindowSeconds time.Duration, stepBackLimit int, noBundles bool, exchange string) (float64, error)
-	GetNFTFloorRange(nftClass dia.NFTClass, starttime time.Time, endtime time.Time, floorWindowSeconds time.Duration, stepBackLimit int, noBundles bool, exchange string) ([]float64, error)
-	GetLastBlockheightTopshot(upperBound time.Time) (uint64, error)
-	SetNFTBid(bid dia.NFTBid) error
-	GetLastNFTBid(address string, blockchain string, tokenID string, blockNumber uint64, blockPosition uint) (dia.NFTBid, error)
-	GetLastBlockNFTBid(nftclass dia.NFTClass) (uint64, error)
-	GetLastBlockNFTOffer(nftclass dia.NFTClass) (uint64, error)
-	GetLastBlockNFTTrade(nftclass dia.NFTClass) (uint64, error)
-	SetNFTOffer(offer dia.NFTOffer) error
-	GetLastNFTOffer(address string, blockchain string, tokenID string, blockNumber uint64, blockPosition uint) (offer dia.NFTOffer, err error)
-
-	// NFT stats
-	GetTopNFTsEth(numCollections int, offset int64, exchanges []string, starttime time.Time, endtime time.Time) ([]struct {
-		Name       string
-		Address    string
-		Blockchain string
-		Volume     float64
-	}, error)
-	GetNumNFTTrades(address string, blockchain string, exchange string, starttime time.Time, endtime time.Time) (int, error)
-	GetNFTVolume(address string, blockchain string, exchange string, starttime time.Time, endtime time.Time) (float64, error)
-
 	// General methods
 	GetKeys(table string) ([]string, error)
 
@@ -146,15 +97,6 @@ type RelDatastore interface {
 	SetBlockData(dia.BlockData) error
 	GetBlockData(blockchain string, blocknumber int64) (dia.BlockData, error)
 	GetLastBlockBlockscraper(blockchain string) (int64, error)
-
-	//NFT exchange methods
-
-	GetAllNFTExchanges() (exchanges []dia.NFTExchange, err error)
-	GetNFTExchange(name string) (exchange dia.Exchange, err error)
-	SetNFTExchange(exchange dia.NFTExchange) (err error)
-	GetCollectionCountByExchange(exchange string) (int64, error)
-	Get24HoursNFTExchangeVolume(exchange dia.NFTExchange) (float64, error)
-	Get24HoursNFTExchangeTrades(exchange dia.NFTExchange) (int64, error)
 
 	//Oracle builder
 	SetKeyPair(publickey string, privatekey string) error
@@ -234,7 +176,6 @@ const (
 	poolassetTable           = "poolasset"
 	scraperCronjobStateTable = "scraper_cronjob_state"
 	exchangeTable            = "exchange"
-	nftExchangeTable         = "nftexchange"
 	chainconfigTable         = "chainconfig"
 	blockchainTable          = "blockchain"
 	assetVolumeTable         = "assetvolume"
@@ -245,21 +186,14 @@ const (
 	keyAssetCache        = "dia_asset_"
 	keyExchangePairCache = "dia_exchangepair_"
 
-	blockdataTable       = "blockdata"
-	nftcategoryTable     = "nftcategory"
-	nftclassTable        = "nftclass"
-	nftTable             = "nft"
-	NfttradeCurrTable    = "nfttradecurrent"
-	NfttradeSumeriaTable = "nfttradesumeria"
-	nftbidTable          = "nftbid"
-	nftofferTable        = "nftoffer"
-	scrapersTable        = "scrapers"
-	keypairTable         = "keypair"
-	oracleconfigTable    = "oracleconfig"
-	feederconfigTable    = "feederconfig"
-	feederaccessTable    = "feederaccess"
-	feederResourceTable  = "feederresource"
-	feederupdatesTable   = "feederupdates"
+	blockdataTable      = "blockdata"
+	scrapersTable       = "scrapers"
+	keypairTable        = "keypair"
+	oracleconfigTable   = "oracleconfig"
+	feederconfigTable   = "feederconfig"
+	feederaccessTable   = "feederaccess"
+	feederResourceTable = "feederresource"
+	feederupdatesTable  = "feederupdates"
 
 	// time format for blockchain genesis dates
 	// timeFormatBlockchain = "2006-01-02"
