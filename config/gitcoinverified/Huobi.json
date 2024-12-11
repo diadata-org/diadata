@@ -525,7 +525,7 @@
         {
             "Symbol": "XRP",
             "Exchange": "Huobi",
-            "Blockchain": "Ripple",
+            "Blockchain": "XRPL",
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {

@@ -513,7 +513,7 @@
         {
             "Symbol": "XRP",
             "Exchange": "Binance2",
-            "Blockchain": "Ripple",
+            "Blockchain": "XRPL",
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {

@@ -1,9 +1,9 @@
 module github.com/diadata-org/diadata/services/supplyService
 
-go 1.19
+go 1.22
 
 require (
-	github.com/diadata-org/diadata v1.4.549
+	github.com/diadata-org/diadata v1.4.564
 	github.com/sirupsen/logrus v1.9.3
 )
 

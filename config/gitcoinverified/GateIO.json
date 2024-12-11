@@ -1317,7 +1317,7 @@
         {
             "Exchange": "GateIO",
             "Symbol": "XRP",
-            "Blockchain": "Ripple",
+            "Blockchain": "XRPL",
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {

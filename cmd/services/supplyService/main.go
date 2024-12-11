@@ -62,7 +62,7 @@ func main() {
 		log.Info("set circulating supply: DIA")
 	}
 
-	xrp, err := relDB.GetAsset("0x0000000000000000000000000000000000000000", "Ripple")
+	xrp, err := relDB.GetAsset("0x0000000000000000000000000000000000000000", "XRPL")
 	if err != nil {
 		log.Error("get xrp: ", err)
 	}
