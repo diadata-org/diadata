@@ -74,7 +74,6 @@ func main() {
 		"0x6B175474E89094C44Da98b954EedeAC495271d0F", //DAI
 		"0xdAC17F958D2ee523a2206206994597C13D831ec7", //USDT
 		"0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35", //BAI
-		"Token:AUSD", //aUSD
 	}
 	blockchains := []string{
 		"Astar",             //nASTR
@@ -87,7 +86,6 @@ func main() {
 		"Ethereum",          //DAI
 		"Ethereum",          //USDT
 		"Astar",             //BAI
-		"Acala",             //aUSD
 	}
 	cgNames := []string{
 		"liquid-astr",
@@ -100,7 +98,6 @@ func main() {
 		"dai",
 		"tether",
 		"bai-stablecoin",
-		"acala-dollar-acala",
 	}
 	oldPrices := make(map[int]float64)
 
