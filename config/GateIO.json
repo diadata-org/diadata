@@ -1214,6 +1214,12 @@
         },
         {
             "Exchange": "GateIO",
+            "ForeignName": "ION_USDT",
+            "Ignore": false,
+            "Symbol": "ION"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "IOTX_ETH",
             "Ignore": false,
             "Symbol": "IOTX"

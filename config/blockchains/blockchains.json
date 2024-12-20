@@ -287,6 +287,15 @@
             "ChainID": "Polkadot2032"
         },
         {
+            "Name": "Interlay",
+            "GenesisDate": 1700775982,
+            "NativeToken": {
+                "Address": ""
+            },
+            "VerificationMechanism": "pos",
+            "ChainID": "Ethereum34443"
+        },
+        {
             "Name": "Optimism",
             "GenesisDate": 1636622199,
             "NativeToken": {

@@ -35,6 +35,10 @@
         {
             "Address": "0x6d0b9C9E92a3De30081563c3657B5258b3fFa38B",
             "ForeignName": "USDz-USDC"
-        }       
+        },
+        {
+            "Address": "0x0FAc819628a7F612AbAc1CaD939768058cc0170c",
+            "ForeignName": "ION-WETH"
+        }   
     ]
 }

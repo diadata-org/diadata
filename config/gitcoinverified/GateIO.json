@@ -559,6 +559,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "ION",
+            "Exchange": "GateIO",
+            "Blockchain": "Mode",
+            "Address": "0x18470019bF0E94611f15852F7e93cf5D65BC34CA"
+        },
+        {
             "Symbol": "JNT",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
