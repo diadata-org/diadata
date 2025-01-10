@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/hex"
 	"math/big"
+	"strconv"
 	"strings"
 	"time"
 
@@ -16,16 +17,17 @@ import (
 )
 
 type VelarLiquidityScraper struct {
-	logger       *logrus.Entry
-	api          *stackshelper.StacksClient
-	velarClient  *velarhelper.VelarClient
-	poolChannel  chan dia.Pool
-	doneChannel  chan bool
-	blockchain   string
-	exchangeName string
-	relDB        *models.RelDB
-	datastore    *models.DB
-	handlerType  string
+	logger                *logrus.Entry
+	api                   *stackshelper.StacksClient
+	velarClient           *velarhelper.VelarClient
+	poolChannel           chan dia.Pool
+	doneChannel           chan bool
+	blockchain            string
+	exchangeName          string
+	sleepTimeMilliseconds int
+	relDB                 *models.RelDB
+	datastore             *models.DB
+	handlerType           string
 }
 
 // NewVelarLiquidityScraper returns a new VelarLiquidityScraper initialized with default values.
@@ -54,16 +56,21 @@ func NewVelarLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, datast
 		isDebug,
 	)
 
+	sleepTime, err := strconv.Atoi(utils.Getenv("SLEEP_TIME_MILLISECONDS", "1000"))
+	if err != nil {
+		log.Error("parse SLEEP_TIME_MILLISECONDS: ", err)
+	}
 	s := &VelarLiquidityScraper{
-		poolChannel:  make(chan dia.Pool),
-		doneChannel:  make(chan bool),
-		exchangeName: exchange.Name,
-		blockchain:   exchange.BlockChain.Name,
-		api:          stacksClient,
-		velarClient:  velarClient,
-		relDB:        relDB,
-		datastore:    datastore,
-		handlerType:  "liquidity",
+		poolChannel:           make(chan dia.Pool),
+		doneChannel:           make(chan bool),
+		exchangeName:          exchange.Name,
+		blockchain:            exchange.BlockChain.Name,
+		sleepTimeMilliseconds: sleepTime,
+		api:                   stacksClient,
+		velarClient:           velarClient,
+		relDB:                 relDB,
+		datastore:             datastore,
+		handlerType:           "liquidity",
 	}
 
 	s.logger = logrus.
@@ -85,6 +92,8 @@ func (s *VelarLiquidityScraper) fetchPools() {
 	}
 
 	for _, t := range tickers {
+		time.Sleep(time.Duration(s.sleepTimeMilliseconds) * time.Millisecond)
+
 		balances, err := s.fetchPoolBalances(t.PoolID)
 		if err != nil {
 			s.logger.WithError(err).Error("failed to fetch velar pool balances")
