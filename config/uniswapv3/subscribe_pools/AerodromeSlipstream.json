@@ -55,6 +55,14 @@
         {
             "Address": "0x7f770A81811B58094b75CeA1dE76304aa8EAE72c",
             "ForeignName": "USDz-cbBTC"
+        },
+        {
+            "Address": "0xb0a65b3A6F9DA0e5EB057e0D5327DEDDbe17309E",
+            "ForeignName": "PEAS-USDC"
+        },
+        {
+            "Address": "0xd3f0223802C9e0DdBF21e124036cD8dc3c043453",
+            "ForeignName": "PEAS-WETH"
         }
     ]
 }

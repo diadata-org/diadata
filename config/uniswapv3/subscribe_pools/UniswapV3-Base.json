@@ -43,6 +43,10 @@
         {
             "Address": "0x0C8Fed5DD65542cA5f0ADD1AcAb14C2e470c9110",
             "ForeignName": "WETH-PRIME"
+        },
+        {
+            "Address": "0x5abdb204b1E5365FC523b6aaC9D0fc405bF5a72b",
+            "ForeignName": "PEAS-USDC"
         }
     ]
 }
