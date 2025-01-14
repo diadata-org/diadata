@@ -3,6 +3,7 @@ package liquidityscrapers
 import (
 	"context"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -75,16 +76,17 @@ func NewBitflowLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, data
 }
 
 func (s *BitflowLiquidityScraper) fetchPools() {
-	poolTxs := make([]stackshelper.Transaction, 0)
 
 	swapContracts := bitflowhelper.StableSwapContracts[:]
 	if s.targetSwapContract != "" {
-		swapContracts = []string{s.targetSwapContract}
+		swapContracts = []bitflowhelper.SwapContract{
+			{ContractRegistry: s.targetSwapContract},
+		}
 	}
 
-	for _, contractName := range swapContracts {
-		s.logger.Infof("Fetching pools of %s", contractName)
-		contractId := fmt.Sprintf("%s.%s", bitflowhelper.DeployerAddress, contractName)
+	for _, contract := range swapContracts {
+		s.logger.Infof("Fetching pools of %s", contract.ContractRegistry)
+		contractId := fmt.Sprintf("%s.%s", contract.DeployerAddress, contract.ContractRegistry)
 
 		total := stackshelper.MaxPageLimit
 
@@ -96,98 +98,148 @@ func (s *BitflowLiquidityScraper) fetchPools() {
 			}
 
 			total = resp.Total
-			filtered := s.fetchPoolTransactions(resp.Results)
-			poolTxs = append(poolTxs, filtered...)
-		}
-	}
-
-	for _, tx := range poolTxs {
-		args := make(map[string]stackshelper.FunctionArg, len(tx.ContractCall.FunctionArgs))
-		for _, item := range tx.ContractCall.FunctionArgs {
-			args[item.Name] = item
-		}
-
-		tokens := [...]string{"", args["y-token"].Repr[1:]}
-		if xToken, ok := args["x-token"]; ok {
-			tokens[0] = xToken.Repr[1:]
-		}
-
-		dbAssets := make([]dia.Asset, 0, len(tokens))
-
-		for _, address := range tokens {
-			// Workaround to fetch the native STX token data from DB
-			key := address
-			if address == "" {
-				key = "0x0000000000000000000000000000000000000000"
-			}
-
-			assset, err := s.relDB.GetAsset(key, s.blockchain)
-			if err != nil {
-				s.logger.WithError(err).Errorf("failed to GetAsset with key: %s", key)
-				continue
-			}
-			dbAssets = append(dbAssets, assset)
-		}
-
-		if len(dbAssets) != len(tokens) {
-			s.logger.Error("found less than 2 assets for the pool pair")
-			continue
-		}
-
-		balances, err := s.fetchPoolBalances(
-			tx.ContractCall.ContractID,
-			args["x-token"].Hex,
-			args["y-token"].Hex,
-			args["lp-token"].Hex,
-		)
-
-		if err != nil {
-			s.logger.WithError(err).Error("failed to fetch bitflow pool balances")
-			continue
-		}
-
-		assetVolumes := make([]dia.AssetVolume, len(balances))
-
-		for i, balance := range balances {
-			assetVolumes[i] = dia.AssetVolume{
-				Index:  uint8(i),
-				Asset:  dbAssets[i],
-				Volume: balance,
+			filtered := s.fetchPoolTransactions(resp.Results, contract.ContractType)
+			for _, tx := range filtered {
+				pool, err := s.parseTx(tx, contract.ContractType)
+				if err != nil {
+					continue
+				}
+				// s.logger.WithField("pool", pool).Info("sending pool to poolChannel")
+				s.poolChannel <- pool
 			}
 		}
-
-		pool := dia.Pool{
-			Exchange:     dia.Exchange{Name: s.exchangeName},
-			Blockchain:   dia.BlockChain{Name: s.blockchain},
-			Address:      args["lp-token"].Repr[1:],
-			Time:         time.Now(),
-			Assetvolumes: assetVolumes,
-		}
-
-		if pool.SufficientNativeBalance(GLOBAL_NATIVE_LIQUIDITY_THRESHOLD) {
-			s.datastore.GetPoolLiquiditiesUSD(&pool, priceCache)
-		}
-
-		s.logger.WithField("pool", pool).Info("sending pool to poolChannel")
-		s.poolChannel <- pool
 	}
 
 	s.doneChannel <- true
 }
 
-func (s *BitflowLiquidityScraper) fetchPoolBalances(stableSwapContract, xToken, yToken, lpToken string) ([]float64, error) {
+func (s *BitflowLiquidityScraper) parseTx(tx stackshelper.Transaction, contractType int) (dia.Pool, error) {
+	args := make(map[string]stackshelper.FunctionArg, len(tx.ContractCall.FunctionArgs))
+	for _, item := range tx.ContractCall.FunctionArgs {
+		args[item.Name] = item
+	}
+
+	var tokens [2]string
+	if contractType == 0 {
+		tokens = [...]string{"", args["y-token"].Repr[1:]}
+		if xToken, ok := args["x-token"]; ok {
+			tokens[0] = xToken.Repr[1:]
+		}
+	} else if contractType == 1 {
+		tokens = [...]string{"", args["y-token-trait"].Repr[1:]}
+		if xToken, ok := args["x-token-trait"]; ok {
+			tokens[0] = xToken.Repr[1:]
+		}
+	}
+
+	dbAssets := make([]dia.Asset, 0, len(tokens))
+
+	for _, address := range tokens {
+		// Workaround to fetch the native STX token data from DB
+		key := address
+		if address == "" {
+			key = "0x0000000000000000000000000000000000000000"
+		}
+
+		assset, err := s.relDB.GetAsset(key, s.blockchain)
+		if err != nil {
+			s.logger.WithError(err).Errorf("failed to GetAsset with key: %s", key)
+			continue
+		}
+		dbAssets = append(dbAssets, assset)
+	}
+
+	if len(dbAssets) != len(tokens) {
+		return dia.Pool{}, errors.New("found less than 2 assets for the pool pair")
+	}
+
+	var balances []float64
+	var err error
+	if contractType == 0 {
+		balances, err = s.fetchPoolBalances(
+			tx.ContractCall.ContractID,
+			args["x-token"].Hex,
+			args["y-token"].Hex,
+			args["lp-token"].Hex,
+			contractType,
+		)
+	} else if contractType == 1 {
+		balances, err = s.fetchPoolBalances(
+			tx.ContractCall.ContractID,
+			args["x-token-trait"].Hex,
+			args["y-token-trait"].Hex,
+			args["pool-trait"].Hex,
+			contractType,
+		)
+	}
+	if err != nil {
+		return dia.Pool{}, errors.New("failed to fetch bitflow pool balances")
+	}
+
+	assetVolumes := make([]dia.AssetVolume, len(balances))
+
+	for i, balance := range balances {
+		assetVolumes[i] = dia.AssetVolume{
+			Index:  uint8(i),
+			Asset:  dbAssets[i],
+			Volume: balance,
+		}
+	}
+
+	pool := dia.Pool{
+		Exchange:     dia.Exchange{Name: s.exchangeName},
+		Blockchain:   dia.BlockChain{Name: s.blockchain},
+		Time:         time.Now(),
+		Assetvolumes: assetVolumes,
+	}
+
+	// TO DO: This could go into fetchPoolBalances
+	if contractType == 0 {
+		pool.Address = args["lp-token"].Repr[1:]
+	} else if contractType == 1 {
+		pool.Address = args["pool-trait"].Repr[1:]
+	}
+
+	if pool.SufficientNativeBalance(GLOBAL_NATIVE_LIQUIDITY_THRESHOLD) {
+		s.datastore.GetPoolLiquiditiesUSD(&pool, priceCache)
+	}
+	return pool, nil
+
+}
+
+func (s *BitflowLiquidityScraper) fetchPoolBalances(stableSwapContract, xToken, yToken, lpToken string, contractType int) ([]float64, error) {
+
 	yTokenBytes, _ := hex.DecodeString(yToken[2:])
 	lpTokenBytes, _ := hex.DecodeString(lpToken[2:])
-	pairKey := stackshelper.CVTuple{"lp-token": lpTokenBytes, "y-token": yTokenBytes}
 
-	if xToken != "" {
-		xTokenBytes, _ := hex.DecodeString(xToken[2:])
-		pairKey["x-token"] = xTokenBytes
+	var pairKey stackshelper.CVTuple
+	if contractType == 0 {
+		pairKey = stackshelper.CVTuple{"lp-token": lpTokenBytes, "y-token": yTokenBytes}
+	} else if contractType == 1 {
+		pairKey = stackshelper.CVTuple{"pool-trait": lpTokenBytes, "y-token-trait": yTokenBytes}
+	}
+
+	if contractType == 0 {
+		if xToken != "" {
+			xTokenBytes, _ := hex.DecodeString(xToken[2:])
+			pairKey["x-token"] = xTokenBytes
+		}
+	} else if contractType == 1 {
+		if xToken != "" {
+			xTokenBytes, _ := hex.DecodeString(xToken[2:])
+			pairKey["x-token-trait"] = xTokenBytes
+		}
 	}
 
 	encodedKey := "0x" + hex.EncodeToString(stackshelper.SerializeCVTuple(pairKey))
 
-	entry, err := s.api.GetDataMapEntry(stableSwapContract, "PairsDataMap", encodedKey)
+	var entry []byte
+	var err error
+	if contractType == 0 {
+		entry, err = s.api.GetDataMapEntry(stableSwapContract, "PairsDataMap", encodedKey)
+	} else if contractType == 1 {
+		entry, err = s.api.GetDataMapEntry(stableSwapContract, "pools", encodedKey)
+	}
 	if err != nil {
 		s.logger.WithError(err).Error("failed to GetDataMapEntry")
 		return nil, err
@@ -212,12 +264,18 @@ func (s *BitflowLiquidityScraper) fetchPoolBalances(stableSwapContract, xToken, 
 	return balances, nil
 }
 
-func (s *BitflowLiquidityScraper) fetchPoolTransactions(txs []stackshelper.AddressTransaction) []stackshelper.Transaction {
+func (s *BitflowLiquidityScraper) fetchPoolTransactions(txs []stackshelper.AddressTransaction, poolType int) []stackshelper.Transaction {
 	poolTxs := make([]stackshelper.Transaction, 0)
 
 	for _, item := range txs {
-		isCreatePairCall := item.Tx.TxType == "contract_call" &&
-			item.Tx.ContractCall.FunctionName == "create-pair"
+		var isCreatePairCall bool
+		if poolType == 0 {
+			isCreatePairCall = item.Tx.TxType == "contract_call" &&
+				item.Tx.ContractCall.FunctionName == "create-pair"
+		} else if poolType == 1 {
+			isCreatePairCall = item.Tx.TxType == "contract_call" &&
+				item.Tx.ContractCall.FunctionName == "create-pool"
+		}
 
 		if isCreatePairCall && item.Tx.TxStatus == "success" {
 			// This is a temporary workaround introduced due to a bug in hiro stacks API.

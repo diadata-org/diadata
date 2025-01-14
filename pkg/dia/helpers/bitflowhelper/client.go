@@ -12,15 +12,48 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const DeployerAddress = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M"
+var StableSwapContracts = [...]SwapContract{
+	{
+		DeployerAddress:  "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M",
+		ContractRegistry: "stableswap-stx-ststx-v-1-2",
+		ContractType:     0,
+	},
+	{
+		DeployerAddress:  "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M",
+		ContractRegistry: "stableswap-usda-susdt-v-1-2",
+		ContractType:     0,
+	},
+	{
+		DeployerAddress:  "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M",
+		ContractRegistry: "stableswap-aeusdc-susdt-v-1-2",
+		ContractType:     0,
+	},
+	{
+		DeployerAddress:  "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M",
+		ContractRegistry: "stableswap-usda-aeusdc-v-1-2",
+		ContractType:     0,
+	},
+	{
+		DeployerAddress:  "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M",
+		ContractRegistry: "stableswap-usda-aeusdc-v-1-4",
+		ContractType:     0,
+	},
+	{
+		DeployerAddress:  "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M",
+		ContractRegistry: "stableswap-abtc-xbtc-v-1-2",
+		ContractType:     0,
+	},
+	{
+		DeployerAddress:  "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR",
+		ContractRegistry: "xyk-pool-sbtc-stx-v-1-1",
+		ContractType:     1,
+	},
+}
 
-var StableSwapContracts = [...]string{
-	"stableswap-stx-ststx-v-1-2",
-	"stableswap-usda-susdt-v-1-2",
-	"stableswap-aeusdc-susdt-v-1-2",
-	"stableswap-usda-aeusdc-v-1-2",
-	"stableswap-usda-aeusdc-v-1-4",
-	"stableswap-abtc-xbtc-v-1-2",
+type SwapContract struct {
+	DeployerAddress  string
+	ContractRegistry string
+	ContractType     int
 }
 
 type BitflowClient struct {

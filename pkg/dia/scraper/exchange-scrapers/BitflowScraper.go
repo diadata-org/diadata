@@ -70,8 +70,8 @@ func NewBitflowScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 
 	swapContracts := make(map[string]nothing, len(bitflowhelper.StableSwapContracts))
 
-	for _, contractName := range bitflowhelper.StableSwapContracts {
-		contractId := fmt.Sprintf("%s.%s", bitflowhelper.DeployerAddress, contractName)
+	for _, contract := range bitflowhelper.StableSwapContracts {
+		contractId := fmt.Sprintf("%s.%s", contract.DeployerAddress, contract.ContractRegistry)
 		swapContracts[contractId] = nothing{}
 	}
 
