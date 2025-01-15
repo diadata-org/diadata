@@ -589,6 +589,12 @@
       "Ignore": false
     },
     {
+      "Symbol": "S",
+      "ForeignName": "SUSDT",
+      "Exchange": "MEXC",
+      "Ignore": false
+    },
+    {
       "Symbol": "SAMO",
       "ForeignName": "SAMOUSDT",
       "Exchange": "MEXC",

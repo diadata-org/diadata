@@ -547,6 +547,12 @@
             "Address": "0x3082CC23568eA640225c2467653dB90e9250AaA0"
         },
         {
+            "Symbol": "S",
+            "Exchange": "MEXC",
+            "Blockchain": "Sonic",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "SAMO",
             "Exchange": "MEXC",
             "Blockchain": "Solana",

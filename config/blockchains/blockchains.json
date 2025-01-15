@@ -181,7 +181,7 @@
             "VerificationMechanism": "pos",
             "ChainID": "Ethereum592"
         },
-          {
+        {
             "Name": "Velas",
             "GenesisDate": 1618834090,
             "NativeToken": {
@@ -242,7 +242,6 @@
             },
             "VerificationMechanism": "pos"
         },
-
         {
             "Name": "Kusama",
             "GenesisDate": 1590507381,
@@ -324,6 +323,14 @@
             "Name": "Fiat",
             "GenesisDate": 0,
             "VerificationMechanism": "poa"
+        },
+        {
+            "Name": "Sonic",
+            "GenesisDate": 1733054400,
+            "NativeToken": {
+                "Address": "0x0000000000000000000000000000000000000000"
+            },
+            "VerificationMechanism": "Ethereum146"
         }
     ]
 }
