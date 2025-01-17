@@ -167,8 +167,9 @@ func (s *BitflowScraper) Update() error {
 		for _, tx := range swapTxs {
 			lpToken := ""
 			for _, arg := range tx.ContractCall.FunctionArgs {
-				if arg.Name == "lp-token" {
+				if arg.Name == "lp-token" || arg.Name == "pool-trait" {
 					lpToken = arg.Repr[1:]
+					break
 				}
 			}
 
