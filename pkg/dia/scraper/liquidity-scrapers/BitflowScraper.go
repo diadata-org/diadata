@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/hex"
 	"errors"
-	"fmt"
+	"math/big"
 	"strings"
 	"time"
 
@@ -76,102 +76,112 @@ func NewBitflowLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, data
 }
 
 func (s *BitflowLiquidityScraper) fetchPools() {
-
 	swapContracts := bitflowhelper.StableSwapContracts[:]
+
 	if s.targetSwapContract != "" {
+		address := strings.Split(s.targetSwapContract, ".")
+
+		contractType := 0
+		if strings.HasPrefix(address[1], "xyk") {
+			contractType = 1
+		}
+
 		swapContracts = []bitflowhelper.SwapContract{
-			{ContractRegistry: s.targetSwapContract},
+			{
+				ContractType:     contractType,
+				DeployerAddress:  address[0],
+				ContractRegistry: address[1],
+			},
 		}
 	}
 
 	for _, contract := range swapContracts {
 		s.logger.Infof("Fetching pools of %s", contract.ContractRegistry)
-		contractId := fmt.Sprintf("%s.%s", contract.DeployerAddress, contract.ContractRegistry)
+		contractID := contract.DeployerAddress + "." + contract.ContractRegistry
 
-		total := stackshelper.MaxPageLimit
+		switch contract.ContractType {
+		case 0:
+			total := stackshelper.MaxPageLimit
 
-		for offset := 0; offset < total; offset += stackshelper.MaxPageLimit {
-			resp, err := s.api.GetAddressTransactions(contractId, stackshelper.MaxPageLimit, offset)
+			for offset := 0; offset < total; offset += stackshelper.MaxPageLimit {
+				resp, err := s.api.GetAddressTransactions(contractID, stackshelper.MaxPageLimit, offset)
+				if err != nil {
+					s.logger.WithError(err).Error("failed to GetAddressTransactions")
+					continue
+				}
+
+				total = resp.Total
+				filtered := s.fetchPoolTransactions(resp.Results, contract.ContractType)
+				for _, tx := range filtered {
+					pool, err := s.parseTx(tx)
+					if err != nil {
+						continue
+					}
+					// s.logger.WithField("pool", pool).Info("sending pool to poolChannel")
+					s.poolChannel <- pool
+				}
+			}
+		case 1:
+			lastID, err := s.api.GetDataVar(contract.DeployerAddress, contract.ContractRegistry, "last-pool-id")
 			if err != nil {
-				s.logger.WithError(err).Error("failed to GetAddressTransactions")
+				s.logger.WithError(err).Error("failed to get last pool ID")
 				continue
 			}
 
-			total = resp.Total
-			filtered := s.fetchPoolTransactions(resp.Results, contract.ContractType)
-			for _, tx := range filtered {
-				pool, err := s.parseTx(tx, contract.ContractType)
+			total, err := stackshelper.DeserializeCVUint(lastID)
+			if err != nil {
+				s.logger.WithError(err).Error("failed to deserialize CV uint")
+				continue
+			}
+
+			xykContract := contract.DeployerAddress + "." + contract.ContractRegistry
+			one := big.NewInt(1)
+
+			for id := new(big.Int).Set(one); id.Cmp(total) <= 0; id.Add(id, one) {
+				poolContract, err := s.getXykPoolContractAddress(xykContract, id)
+				if err != nil {
+					s.logger.Error("failed to get xyk pool contract address")
+					continue
+				}
+
+				pool, err := s.fetchXykPool(poolContract)
 				if err != nil {
 					continue
 				}
-				// s.logger.WithField("pool", pool).Info("sending pool to poolChannel")
+
+				s.logger.WithField("pool", pool).Info("sending pool to poolChannel")
 				s.poolChannel <- pool
 			}
+
 		}
 	}
 
 	s.doneChannel <- true
 }
 
-func (s *BitflowLiquidityScraper) parseTx(tx stackshelper.Transaction, contractType int) (dia.Pool, error) {
+func (s *BitflowLiquidityScraper) parseTx(tx stackshelper.Transaction) (dia.Pool, error) {
 	args := make(map[string]stackshelper.FunctionArg, len(tx.ContractCall.FunctionArgs))
 	for _, item := range tx.ContractCall.FunctionArgs {
 		args[item.Name] = item
 	}
 
-	var tokens [2]string
-	if contractType == 0 {
-		tokens = [...]string{"", args["y-token"].Repr[1:]}
-		if xToken, ok := args["x-token"]; ok {
-			tokens[0] = xToken.Repr[1:]
-		}
-	} else if contractType == 1 {
-		tokens = [...]string{"", args["y-token-trait"].Repr[1:]}
-		if xToken, ok := args["x-token-trait"]; ok {
-			tokens[0] = xToken.Repr[1:]
-		}
+	tokens := [...]string{"", args["y-token"].Repr[1:]}
+	if xToken, ok := args["x-token"]; ok {
+		tokens[0] = xToken.Repr[1:]
 	}
 
-	dbAssets := make([]dia.Asset, 0, len(tokens))
-
-	for _, address := range tokens {
-		// Workaround to fetch the native STX token data from DB
-		key := address
-		if address == "" {
-			key = "0x0000000000000000000000000000000000000000"
-		}
-
-		assset, err := s.relDB.GetAsset(key, s.blockchain)
-		if err != nil {
-			s.logger.WithError(err).Errorf("failed to GetAsset with key: %s", key)
-			continue
-		}
-		dbAssets = append(dbAssets, assset)
+	dbAssets, err := s.fetchAssets(tokens[:])
+	if err != nil {
+		return dia.Pool{}, err
 	}
 
-	if len(dbAssets) != len(tokens) {
-		return dia.Pool{}, errors.New("found less than 2 assets for the pool pair")
-	}
+	balances, err := s.fetchStableswapPoolBalances(
+		tx.ContractCall.ContractID,
+		args["x-token"].Hex,
+		args["y-token"].Hex,
+		args["lp-token"].Hex,
+	)
 
-	var balances []float64
-	var err error
-	if contractType == 0 {
-		balances, err = s.fetchPoolBalances(
-			tx.ContractCall.ContractID,
-			args["x-token"].Hex,
-			args["y-token"].Hex,
-			args["lp-token"].Hex,
-			contractType,
-		)
-	} else if contractType == 1 {
-		balances, err = s.fetchPoolBalances(
-			tx.ContractCall.ContractID,
-			args["x-token-trait"].Hex,
-			args["y-token-trait"].Hex,
-			args["pool-trait"].Hex,
-			contractType,
-		)
-	}
 	if err != nil {
 		return dia.Pool{}, errors.New("failed to fetch bitflow pool balances")
 	}
@@ -191,55 +201,27 @@ func (s *BitflowLiquidityScraper) parseTx(tx stackshelper.Transaction, contractT
 		Blockchain:   dia.BlockChain{Name: s.blockchain},
 		Time:         time.Now(),
 		Assetvolumes: assetVolumes,
-	}
-
-	// TO DO: This could go into fetchPoolBalances
-	if contractType == 0 {
-		pool.Address = args["lp-token"].Repr[1:]
-	} else if contractType == 1 {
-		pool.Address = args["pool-trait"].Repr[1:]
+		Address:      args["lp-token"].Repr[1:],
 	}
 
 	if pool.SufficientNativeBalance(GLOBAL_NATIVE_LIQUIDITY_THRESHOLD) {
 		s.datastore.GetPoolLiquiditiesUSD(&pool, priceCache)
 	}
 	return pool, nil
-
 }
 
-func (s *BitflowLiquidityScraper) fetchPoolBalances(stableSwapContract, xToken, yToken, lpToken string, contractType int) ([]float64, error) {
-
+func (s *BitflowLiquidityScraper) fetchStableswapPoolBalances(contract, xToken, yToken, lpToken string) ([]float64, error) {
 	yTokenBytes, _ := hex.DecodeString(yToken[2:])
 	lpTokenBytes, _ := hex.DecodeString(lpToken[2:])
+	pairKey := stackshelper.CVTuple{"lp-token": lpTokenBytes, "y-token": yTokenBytes}
 
-	var pairKey stackshelper.CVTuple
-	if contractType == 0 {
-		pairKey = stackshelper.CVTuple{"lp-token": lpTokenBytes, "y-token": yTokenBytes}
-	} else if contractType == 1 {
-		pairKey = stackshelper.CVTuple{"pool-trait": lpTokenBytes, "y-token-trait": yTokenBytes}
-	}
-
-	if contractType == 0 {
-		if xToken != "" {
-			xTokenBytes, _ := hex.DecodeString(xToken[2:])
-			pairKey["x-token"] = xTokenBytes
-		}
-	} else if contractType == 1 {
-		if xToken != "" {
-			xTokenBytes, _ := hex.DecodeString(xToken[2:])
-			pairKey["x-token-trait"] = xTokenBytes
-		}
+	if xToken != "" {
+		xTokenBytes, _ := hex.DecodeString(xToken[2:])
+		pairKey["x-token"] = xTokenBytes
 	}
 
 	encodedKey := "0x" + hex.EncodeToString(stackshelper.SerializeCVTuple(pairKey))
-
-	var entry []byte
-	var err error
-	if contractType == 0 {
-		entry, err = s.api.GetDataMapEntry(stableSwapContract, "PairsDataMap", encodedKey)
-	} else if contractType == 1 {
-		entry, err = s.api.GetDataMapEntry(stableSwapContract, "pools", encodedKey)
-	}
+	entry, err := s.api.GetDataMapEntry(contract, "PairsDataMap", encodedKey)
 	if err != nil {
 		s.logger.WithError(err).Error("failed to GetDataMapEntry")
 		return nil, err
@@ -262,6 +244,140 @@ func (s *BitflowLiquidityScraper) fetchPoolBalances(stableSwapContract, xToken, 
 	balances[1], _ = utils.StringToFloat64(balanceY.String(), decimalsY.Int64())
 
 	return balances, nil
+}
+
+func (s *BitflowLiquidityScraper) getXykPoolContractAddress(contractID string, poolID *big.Int) (string, error) {
+	encodedPoolID := hex.EncodeToString(stackshelper.SerializeCVUint(poolID))
+
+	result, err := s.api.GetDataMapEntry(contractID, "pools", encodedPoolID)
+	if err != nil {
+		log.WithError(err).Error("failed to get pool by ID")
+		return "", err
+	}
+
+	tuple, err := stackshelper.DeserializeCVTuple(result)
+	if err != nil {
+		log.WithError(err).Error("failed to deserialize cv tuple")
+		return "", err
+	}
+
+	return stackshelper.DeserializeCVPrincipal(tuple["pool-contract"])
+}
+
+func (s *BitflowLiquidityScraper) fetchXykPool(poolContract string) (dia.Pool, error) {
+	address := strings.Split(poolContract, ".")
+	args := stackshelper.ContractCallArgs{
+		Sender:    address[0],
+		Arguments: []string{},
+	}
+
+	result, err := s.api.CallContractFunction(address[0], address[1], "get-pool", args)
+	if err != nil {
+		return dia.Pool{}, err
+	}
+
+	data, ok := stackshelper.DeserializeCVResponse(result)
+	if !ok {
+		return dia.Pool{}, errors.New("failed to deserialize CV response")
+	}
+	poolInfo, err := stackshelper.DeserializeCVTuple(data)
+	if err != nil {
+		return dia.Pool{}, err
+	}
+
+	xToken, _ := stackshelper.DeserializeCVPrincipal(poolInfo["x-token"])
+	yToken, _ := stackshelper.DeserializeCVPrincipal(poolInfo["y-token"])
+
+	xDecimals, err := s.fetchTokenDecimals(xToken)
+	if err != nil {
+		return dia.Pool{}, err
+	}
+	yDecimals, err := s.fetchTokenDecimals(yToken)
+	if err != nil {
+		return dia.Pool{}, err
+	}
+
+	dbAssets, err := s.fetchAssets([]string{xToken, yToken})
+	if err != nil {
+		return dia.Pool{}, err
+	}
+
+	xBalance, _ := stackshelper.DeserializeCVUint(poolInfo["x-balance"])
+	yBalance, _ := stackshelper.DeserializeCVUint(poolInfo["y-balance"])
+
+	balances := make([]float64, 2)
+	balances[0], _ = utils.StringToFloat64(xBalance.String(), xDecimals)
+	balances[1], _ = utils.StringToFloat64(yBalance.String(), yDecimals)
+
+	assetVolumes := make([]dia.AssetVolume, len(balances))
+	for i, balance := range balances {
+		assetVolumes[i] = dia.AssetVolume{
+			Index:  uint8(i),
+			Asset:  dbAssets[i],
+			Volume: balance,
+		}
+	}
+
+	pool := dia.Pool{
+		Exchange:     dia.Exchange{Name: s.exchangeName},
+		Blockchain:   dia.BlockChain{Name: s.blockchain},
+		Time:         time.Now(),
+		Assetvolumes: assetVolumes,
+		Address:      poolContract,
+	}
+
+	if pool.SufficientNativeBalance(GLOBAL_NATIVE_LIQUIDITY_THRESHOLD) {
+		s.datastore.GetPoolLiquiditiesUSD(&pool, priceCache)
+	}
+	return pool, nil
+}
+
+func (s *BitflowLiquidityScraper) fetchTokenDecimals(tokenContract string) (int64, error) {
+	address := strings.Split(tokenContract, ".")
+	args := stackshelper.ContractCallArgs{
+		Sender:    address[0],
+		Arguments: []string{},
+	}
+
+	result, err := s.api.CallContractFunction(address[0], address[1], "get-decimals", args)
+	if err != nil {
+		return 0, err
+	}
+
+	data, ok := stackshelper.DeserializeCVResponse(result)
+	if !ok {
+		return 0, errors.New("failed to deserialize CV response")
+	}
+
+	decimals, err := stackshelper.DeserializeCVUint(data)
+	if err != nil {
+		return 0, err
+	}
+	return decimals.Int64(), nil
+}
+
+func (s *BitflowLiquidityScraper) fetchAssets(tokens []string) ([]dia.Asset, error) {
+	dbAssets := make([]dia.Asset, 0, len(tokens))
+
+	for _, address := range tokens {
+		// Workaround to fetch the native STX token data from DB
+		key := address
+		if address == "" {
+			key = "0x0000000000000000000000000000000000000000"
+		}
+
+		assset, err := s.relDB.GetAsset(key, s.blockchain)
+		if err != nil {
+			s.logger.WithError(err).Errorf("failed to GetAsset with key: %s", key)
+			continue
+		}
+		dbAssets = append(dbAssets, assset)
+	}
+
+	if len(dbAssets) != len(tokens) {
+		return nil, errors.New("found less than 2 assets for the pool pair")
+	}
+	return dbAssets, nil
 }
 
 func (s *BitflowLiquidityScraper) fetchPoolTransactions(txs []stackshelper.AddressTransaction, poolType int) []stackshelper.Transaction {

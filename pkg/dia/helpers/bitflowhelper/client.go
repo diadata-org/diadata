@@ -45,7 +45,7 @@ var StableSwapContracts = [...]SwapContract{
 	},
 	{
 		DeployerAddress:  "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR",
-		ContractRegistry: "xyk-pool-sbtc-stx-v-1-1",
+		ContractRegistry: "xyk-core-v-1-2",
 		ContractType:     1,
 	},
 }
