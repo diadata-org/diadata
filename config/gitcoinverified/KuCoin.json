@@ -481,6 +481,12 @@
             "Address": "ryjl3-tyaaa-aaaaa-aaaba-cai"
         },
         {
+            "Exchange": "KuCoin",
+            "Symbol": "IMX",
+            "Blockchain": "Immutable",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "KAT",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
@@ -635,6 +641,12 @@
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
             "Address": "0x8a77e40936BbC27e80E9a3F526368C967869c86D"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Symbol": "NAKA",
+            "Blockchain": "Polygon",
+            "Address": "0x311434160D7537be358930def317AfB606C0D737"
         },
         {
             "Symbol": "NEAR",
@@ -1063,12 +1075,6 @@
             "Address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
         },
         {
-            "Symbol": "USDE",
-            "Exchange": "KuCoin",
-            "Blockchain": "Ethereum",
-            "Address": "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3"
-        },
-        {
             "Symbol": "UOS",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
@@ -1085,6 +1091,12 @@
             "Symbol": "USDC",
             "Blockchain": "Ethereum",
             "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+        },
+        {
+            "Symbol": "USDE",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3"
         },
         {
             "Symbol": "USDP",

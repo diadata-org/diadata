@@ -86,6 +86,12 @@
         },
         {
             "Exchange": "Crypto.com",
+            "Symbol": "BEAM",
+            "Blockchain": "Ethereum",
+            "Address": "0x62D0A8458eD7719FDAF978fe5929C6D342B0bFcE"
+        },
+        {
+            "Exchange": "Crypto.com",
             "Symbol": "BNB",
             "Blockchain": "BinanceSmartChain",
             "Address": "0x0000000000000000000000000000000000000000"

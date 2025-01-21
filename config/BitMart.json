@@ -86,6 +86,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "BEAM_USDT",
+            "Symbol": "BEAM"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "BENJI_USDT",
             "Ignore": false,
             "Symbol": "BENJI"
@@ -398,6 +404,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "NAKA_USDT",
+            "Symbol": "NAKA"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "NEAR_USDT",
             "Ignore": false,
             "Symbol": "NEAR"
@@ -584,12 +596,6 @@
         },
         {
             "Exchange": "BitMart",
-            "ForeignName": "USDE_USDT",
-            "Ignore": false,
-            "Symbol": "USDE"
-        },
-        {
-            "Exchange": "BitMart",
             "ForeignName": "USDD_USDT",
             "Ignore": false,
             "Symbol": "USDD"
@@ -599,6 +605,12 @@
             "ForeignName": "USDD_USDC",
             "Ignore": false,
             "Symbol": "USDD"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "USDE_USDT",
+            "Ignore": false,
+            "Symbol": "USDE"
         },
         {
             "Exchange": "BitMart",

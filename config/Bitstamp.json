@@ -25,6 +25,36 @@
             "Ignore": false
         },
         {
+            "Symbol": "rlusd",
+            "ForeignName": "rlusdusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "rlusd",
+            "ForeignName": "rlusdusdt",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "xrp",
+            "ForeignName": "xrprlusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "btc",
+            "ForeignName": "btcrlusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eth",
+            "ForeignName": "ethrlusd",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
             "Symbol": "xrp",
             "ForeignName": "xrpusd",
             "Exchange": "Bitstamp",

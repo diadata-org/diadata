@@ -1160,6 +1160,12 @@
     },
     {
       "Exchange": "OKEx",
+      "ForeignName": "IMX-USDT",
+      "Ignore": false,
+      "Symbol": "IMX"
+    },
+    {
+      "Exchange": "OKEx",
       "ForeignName": "INJ-USDT",
       "Ignore": false,
       "Symbol": "INJ"

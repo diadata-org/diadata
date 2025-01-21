@@ -61,6 +61,12 @@
             "Address": "0xBA11D00c5f74255f56a5E366F4F77f5A186d7f55"
         },
         {
+            "Exchange": "Binance2",
+            "Symbol": "BEAM",
+            "Blockchain": "Ethereum",
+            "Address": "0x62D0A8458eD7719FDAF978fe5929C6D342B0bFcE"
+        },
+        {
             "Symbol": "BNB",
             "Exchange": "Binance2",
             "Blockchain": "BinanceSmartChain",
@@ -233,6 +239,12 @@
             "Exchange": "Binance2",
             "Blockchain": "InternetComputer",
             "Address": "ryjl3-tyaaa-aaaaa-aaaba-cai"
+        },
+        {
+            "Exchange": "Binance2",
+            "Symbol": "IMX",
+            "Blockchain": "Immutable",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "JOE",

@@ -91,6 +91,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "BEAMUSDT",
+            "Symbol": "BEAM"
+        },
+        {
             "Symbol": "BICO",
             "ForeignName": "BICOUSDT",
             "Exchange": "ByBit",
@@ -533,6 +539,12 @@
             "ForeignName": "MOGUSDT",
             "Exchange": "ByBit",
             "Ignore": false
+        },
+        {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "NAKAUSDT",
+            "Symbol": "NAKA"
         },
         {
             "Symbol": "NEAR",

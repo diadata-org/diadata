@@ -57,6 +57,20 @@
       "Address": "0x0000000000000000000000000000000000000000"
     },
     {
+      "Symbol": "RLUSD",
+      "Name": "Ripple USD",
+      "Decimals": 9,
+      "Blockchain": "XRPL",
+      "Address": "rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De"
+    },
+    {
+      "Symbol": "IMX",
+      "Name": "IMX",
+      "Decimals": 18,
+      "Blockchain": "Immutable",
+      "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
       "Symbol": "THETA",
       "Name": "Theta Network",
       "Decimals": 0,

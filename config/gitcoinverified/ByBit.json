@@ -97,6 +97,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "ByBit",
+            "Symbol": "BEAM",
+            "Blockchain": "Ethereum",
+            "Address": "0x62D0A8458eD7719FDAF978fe5929C6D342B0bFcE"
+        },
+        {
             "Symbol": "BICO",
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
@@ -497,6 +503,12 @@
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
             "Address": "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a"
+        },
+        {
+            "Exchange": "ByBit",
+            "Symbol": "NAKA",
+            "Blockchain": "Polygon",
+            "Address": "0x311434160D7537be358930def317AfB606C0D737"
         },
         {
             "Symbol": "NEAR",

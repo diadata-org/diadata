@@ -205,6 +205,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "Crypto.com",
+            "Ignore": false,
+            "ForeignName": "BEAM_USD",
+            "Symbol": "BEAM"
+        },
+        {
             "Symbol": "BOBA",
             "ForeignName": "BOBA_USD",
             "Exchange": "Crypto.com",

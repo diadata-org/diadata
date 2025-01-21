@@ -313,6 +313,12 @@
             "Address": "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a"
         },
         {
+            "Exchange": "Huobi",
+            "Symbol": "NAKA",
+            "Blockchain": "Polygon",
+            "Address": "0x311434160D7537be358930def317AfB606C0D737"
+        },
+        {
             "Symbol": "NEAR",
             "Exchange": "Huobi",
             "Blockchain": "NEAR",

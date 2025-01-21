@@ -127,6 +127,12 @@
             "Address": "0x1e797Ce986C3CFF4472F7D38d5C4aba55DfEFE40"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "BEAM",
+            "Blockchain": "Ethereum",
+            "Address": "0x62D0A8458eD7719FDAF978fe5929C6D342B0bFcE"
+        },
+        {
             "Symbol": "BENJI",
             "Exchange": "GateIO",
             "Blockchain": "Base",
@@ -547,6 +553,12 @@
             "Address": "0xEda8B016efA8b1161208Cf041cD86972eeE0F31E"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "IMX",
+            "Blockchain": "Immutable",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "INJ",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -809,6 +821,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x41dBECc1cdC5517C6f76f6a6E836aDbEe2754DE3"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "NAKA",
+            "Blockchain": "Polygon",
+            "Address": "0x311434160D7537be358930def317AfB606C0D737"
         },
         {
             "Exchange": "GateIO",

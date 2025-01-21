@@ -368,6 +368,12 @@
         },
         {
             "Exchange": "Huobi",
+            "Ignore": false,
+            "ForeignName": "NAKAUSDT",
+            "Symbol": "NAKA"
+        },
+        {
+            "Exchange": "Huobi",
             "ForeignName": "NEARUSDT",
             "Ignore": false,
             "Symbol": "NEAR"

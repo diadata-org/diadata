@@ -92,6 +92,12 @@
         },
         {
             "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "BEAMUSD",
+            "Symbol": "BEAM"
+        },
+        {
+            "Exchange": "Kraken",
             "ForeignName": "BNCUSD",
             "Ignore": false,
             "Symbol": "BNC"
@@ -275,6 +281,12 @@
             "Ignore": false,
             "ForeignName": "ICPUSD",
             "Symbol": "ICP"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "IMXUSD",
+            "Symbol": "IMX"
         },
         {
             "Exchange": "Kraken",

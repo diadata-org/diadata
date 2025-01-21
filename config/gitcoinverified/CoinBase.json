@@ -241,6 +241,12 @@
             "Address": "ryjl3-tyaaa-aaaaa-aaaba-cai"
         },
         {
+            "Exchange": "CoinBase",
+            "Symbol": "IMX",
+            "Blockchain": "Immutable",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "INJ",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",

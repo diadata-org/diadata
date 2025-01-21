@@ -266,6 +266,12 @@
         },
         {
             "Exchange": "CoinBase",
+            "ForeignName": "IMX-USD",
+            "Ignore": false,
+            "Symbol": "IMX"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "INJ-USD",
             "Ignore": false,
             "Symbol": "INJ"

@@ -62,6 +62,12 @@
         },
         {
             "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "BEAMUSDT",
+            "Symbol": "BEAM"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "BNBFDUSD",
             "Ignore": false,
             "Symbol": "BNB"
@@ -203,6 +209,12 @@
             "ForeignName": "ICPUSDT",
             "Ignore": false,
             "Symbol": "ICP"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "IMXUSDT",
+            "Ignore": false,
+            "Symbol": "IMX"
         },
         {
             "Exchange": "Binance",

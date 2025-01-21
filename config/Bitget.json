@@ -79,6 +79,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "BEAMUSDT",
+            "Symbol": "BEAM"
+        },
+        {
             "Symbol": "BNB",
             "ForeignName": "BNBUSDC",
             "Exchange": "Bitget",
@@ -205,6 +211,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "IMXUSDT",
+            "Symbol": "IMX"
+        },
+        {
             "Symbol": "KDA",
             "ForeignName": "KDAUSDT",
             "Exchange": "Bitget",
@@ -251,6 +263,12 @@
             "ForeignName": "MOVRUSDT",
             "Exchange": "Bitget",
             "Ignore": false
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "NAKAUSDT",
+            "Symbol": "NAKA"
         },
         {
             "Symbol": "NEAR",

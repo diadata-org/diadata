@@ -931,6 +931,12 @@
             "Symbol": "ICP"
         },
         {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "IMX-USDT",
+            "Symbol": "IMX"
+        },
+        {
             "Symbol": "IOST",
             "ForeignName": "IOST-ETH",
             "Exchange": "KuCoin",
@@ -1235,6 +1241,12 @@
             "ForeignName": "MOVR-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
+        },
+        {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "NAKA-USDT",
+            "Symbol": "NAKA"
         },
         {
             "Symbol": "NEAR",

@@ -248,6 +248,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "BEAM_USDT",
+            "Symbol": "BEAM"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "BENJI_USDT",
             "Ignore": false,
             "Symbol": "BENJI"
@@ -1178,6 +1184,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "IMX_USDT",
+            "Symbol": "IMX"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "INJ_USDT",
             "Ignore": false,
             "Symbol": "INJ"
@@ -1733,6 +1745,12 @@
             "ForeignName": "MTN_USDT",
             "Ignore": false,
             "Symbol": "MTN"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "NAKA_USDT",
+            "Symbol": "NAKA"
         },
         {
             "Exchange": "GateIO",

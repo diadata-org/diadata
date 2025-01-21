@@ -205,6 +205,12 @@
             "Address": "0x767FE9EDC9E0dF98E07454847909b5E959D7ca0E"
         },
         {
+            "Exchange": "OKEx",
+            "Symbol": "IMX",
+            "Blockchain": "Immutable",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "INJ",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",

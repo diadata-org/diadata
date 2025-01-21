@@ -62,6 +62,12 @@
         },
         {
             "Exchange": "Kraken",
+            "Symbol": "BEAM",
+            "Blockchain": "Ethereum",
+            "Address": "0x62D0A8458eD7719FDAF978fe5929C6D342B0bFcE"
+        },
+        {
+            "Exchange": "Kraken",
             "Symbol": "BNB",
             "Blockchain": "BinanceSmartChain",
             "Address": "0x0000000000000000000000000000000000000000"
@@ -179,6 +185,12 @@
             "Symbol": "ICP",
             "Blockchain": "InternetComputer",
             "Address": "ryjl3-tyaaa-aaaaa-aaaba-cai"
+        },
+        {
+            "Exchange": "Kraken",
+            "Symbol": "IMX",
+            "Blockchain": "Immutable",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "KILT",
