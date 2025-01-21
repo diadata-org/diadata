@@ -13,9 +13,10 @@ import (
 )
 
 const (
-	DeployerAddress  = "SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1"
-	VelarCoreAddress = DeployerAddress + ".univ2-core"
-	VelarURL         = "https://api.velar.co"
+	DeployerAddress   = "SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1"
+	DeployerAddressV2 = "SP20X3DC5R091J8B6YPQT638J8NR1W83KN6TN5BJY"
+	VelarCoreAddress  = DeployerAddress + ".univ2-core"
+	VelarURL          = "https://api.velar.co"
 )
 
 type VelarClient struct {

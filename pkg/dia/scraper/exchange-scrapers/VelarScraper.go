@@ -189,21 +189,24 @@ func (s *VelarScraper) fetchSwapTransactions(txs []stackshelper.Transaction) ([]
 	swapTxs := make([]stackshelper.Transaction, 0)
 
 	for _, tx := range txs {
-		isSwapTx := tx.TxType == "contract_call" &&
-			strings.HasPrefix(tx.ContractCall.ContractID, velarhelper.DeployerAddress) &&
-			strings.HasPrefix(tx.ContractCall.FunctionName, "swap")
+		if tx.TxStatus == "success" && tx.TxType == "contract_call" {
+			isVelarTx := strings.HasPrefix(tx.ContractCall.ContractID, velarhelper.DeployerAddress) ||
+				strings.HasPrefix(tx.ContractCall.ContractID, velarhelper.DeployerAddressV2)
 
-		if isSwapTx && tx.TxStatus == "success" {
-			// This is a temporary workaround introduced due to a bug in hiro stacks API.
-			// Results returned from /blocks/{block_height}/transactions route have empty
-			// `name` field in `contract_call.function_args` list.
-			// TODO: remove this as soon as the issue is fixed.
-			normalizedTx, err := s.api.GetTransactionAt(tx.TxID)
-			if err != nil {
-				return nil, err
+			isSwapTx := strings.HasPrefix(tx.ContractCall.FunctionName, "swap") ||
+				strings.HasPrefix(tx.ContractCall.FunctionName, "apply")
+
+			if isVelarTx && isSwapTx {
+				// This is a temporary workaround introduced due to a bug in hiro stacks API.
+				// Results returned from /blocks/{block_height}/transactions route have empty
+				// `name` field in `contract_call.function_args` list.
+				// TODO: remove this as soon as the issue is fixed.
+				normalizedTx, err := s.api.GetTransactionAt(tx.TxID)
+				if err != nil {
+					return nil, err
+				}
+				swapTxs = append(swapTxs, normalizedTx)
 			}
-
-			swapTxs = append(swapTxs, normalizedTx)
 		}
 	}
 
