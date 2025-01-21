@@ -63,7 +63,7 @@ func (c *StacksClient) GetLatestBlock() (Block, error) {
 	var block Block
 
 	url := fmt.Sprintf("%s/extended/v2/blocks/latest", StacksURL)
-	req, _ := http.NewRequest("GET", url, http.NoBody)
+	req, _ := http.NewRequest(http.MethodGet, url, http.NoBody)
 
 	err := c.callStacksAPI(req, &block)
 	if err != nil {
@@ -76,7 +76,7 @@ func (c *StacksClient) GetTransactionAt(txID string) (Transaction, error) {
 	var transaction Transaction
 
 	url := fmt.Sprintf("%s/extended/v1/tx/%s", StacksURL, txID)
-	req, _ := http.NewRequest("GET", url, http.NoBody)
+	req, _ := http.NewRequest(http.MethodGet, url, http.NoBody)
 
 	err := c.callStacksAPI(req, &transaction)
 	if err != nil {
@@ -95,7 +95,7 @@ func (c *StacksClient) GetAllBlockTransactions(height int) ([]Transaction, error
 
 	for offset := 0; offset < total; offset += MaxPageLimit {
 		url := fmt.Sprintf("%s?limit=%d&offset=%d", baseURL, MaxPageLimit, offset)
-		req, _ := http.NewRequest("GET", url, http.NoBody)
+		req, _ := http.NewRequest(http.MethodGet, url, http.NoBody)
 
 		err := c.callStacksAPI(req, &resp)
 		if err != nil {
@@ -123,7 +123,7 @@ func (c *StacksClient) GetAddressTransactions(address string, limit, offset int)
 		offset,
 	)
 
-	req, _ := http.NewRequest("GET", url, http.NoBody)
+	req, _ := http.NewRequest(http.MethodGet, url, http.NoBody)
 	err := c.callStacksAPI(req, &resp)
 	if err != nil {
 		return resp, err
@@ -131,18 +131,17 @@ func (c *StacksClient) GetAddressTransactions(address string, limit, offset int)
 	return resp, nil
 }
 
-func (c *StacksClient) GetDataMapEntry(contractId, mapName, key string) ([]byte, error) {
-	address := strings.Split(contractId, ".")
+func (c *StacksClient) GetDataMapEntry(contractID, mapName, key string) ([]byte, error) {
+	address := strings.Split(contractID, ".")
 
 	url := fmt.Sprintf("%s/v2/map_entry/%s/%s/%s", StacksURL, address[0], address[1], mapName)
 	body := []byte(fmt.Sprintf(`"%s"`, key))
 
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(body))
+	req, _ := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(body))
 	req.Header.Set("Content-Type", "application/json")
 
-	var entry DataMapEntry
-	err := c.callStacksAPI(req, &entry)
-	if err != nil {
+	var entry ContractValue
+	if err := c.callStacksAPI(req, &entry); err != nil {
 		return nil, err
 	}
 
@@ -158,6 +157,41 @@ func (c *StacksClient) GetDataMapEntry(contractId, mapName, key string) ([]byte,
 		return nil, err
 	}
 	return result, nil
+}
+
+func (c *StacksClient) GetDataVar(contractAddress, contractName, dataVar string) ([]byte, error) {
+	url := fmt.Sprintf("%s/v2/data_var/%s/%s/%s", StacksURL, contractAddress, contractName, dataVar)
+	req, _ := http.NewRequest(http.MethodGet, url, http.NoBody)
+
+	var result ContractValue
+	if err := c.callStacksAPI(req, &result); err != nil {
+		return nil, err
+	}
+	return hex.DecodeString(result.Data[2:])
+}
+
+func (c *StacksClient) CallContractFunction(contractAddress, contractName, functionName string, args ContractCallArgs) ([]byte, error) {
+	url := fmt.Sprintf("%s/v2/contracts/call-read/%s/%s/%s", StacksURL, contractAddress, contractName, functionName)
+	body, err := json.Marshal(args)
+	if err != nil {
+		return nil, err
+	}
+
+	req, _ := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+
+	var resp ContractCallResult
+	if err := c.callStacksAPI(req, &resp); err != nil {
+		return nil, err
+	}
+
+	if !resp.Okay {
+		err = errors.New(resp.Cause)
+		c.logger.WithError(err).Error("failed to call a read-only function")
+		return nil, err
+	}
+
+	return hex.DecodeString(resp.Result[2:])
 }
 
 func (c *StacksClient) callStacksAPI(request *http.Request, target interface{}) error {

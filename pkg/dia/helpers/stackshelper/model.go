@@ -69,7 +69,18 @@ type GetAddressTransactionsResponse struct {
 	Results []AddressTransaction `json:"results"`
 }
 
-type DataMapEntry struct {
+type ContractValue struct {
 	Data  string `json:"data"`
 	Proof string `json:"proof"`
+}
+
+type ContractCallArgs struct {
+	Sender    string   `json:"sender"`
+	Arguments []string `json:"arguments"`
+}
+
+type ContractCallResult struct {
+	Okay   bool   `json:"okay"`
+	Result string `json:"result"`
+	Cause  string `json:"cause"`
 }
