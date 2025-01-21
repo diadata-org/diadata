@@ -2,6 +2,7 @@ package stackshelper
 
 import (
 	"encoding/binary"
+	"encoding/hex"
 	"errors"
 	"math/big"
 	"sort"
@@ -18,10 +19,13 @@ const (
 	boolFalseCV       = 0x04
 	principalStandard = 0x05
 	principalContract = 0x06
+	responseOkCV      = 0x07
+	responseErrCV     = 0x08
 	optionNoneCV      = 0x09
 	optionSomeCV      = 0x0a
 	tupleCV           = 0x0c
 	stringASCII       = 0x0d
+	stringUTF8        = 0x0e
 )
 
 type CVTuple map[string][]byte
@@ -45,6 +49,35 @@ func DeserializeCVUint(src []byte) (*big.Int, error) {
 	value := new(big.Int)
 	value.SetBytes(src[1:])
 	return value, nil
+}
+
+func DeserializeCVPrincipal(src []byte) (string, error) {
+	switch src[0] {
+	case principalStandard:
+		version, hash160 := deserializeAddress(src[1:])
+		return c32address(version, hash160)
+	case principalContract:
+		version, hash160 := deserializeAddress(src[1:])
+		cAddress, err := c32address(version, hash160)
+		if err != nil {
+			return "", err
+		}
+		contractName, _ := deserializeLPString(src[clarityPrincipalByteSize+2:])
+		return cAddress + "." + contractName, nil
+	default:
+		return "", errors.New("value is not a CV principal")
+	}
+}
+
+func DeserializeCVResponse(src []byte) ([]byte, bool) {
+	switch src[0] {
+	case responseOkCV:
+		return src[1:], true
+	case responseErrCV:
+		return src[1:], false
+	default:
+		return nil, false
+	}
 }
 
 // SerializeCVTuple converts a clarity value tuple into its binary representation
@@ -112,7 +145,7 @@ func DeserializeCVTuple(src []byte) (CVTuple, error) {
 				entrySize := len(serializeLPString(k)) + len(v)
 				valueSize += entrySize
 			}
-		case stringASCII:
+		case stringASCII, stringUTF8:
 			size := readClarityTypeSize(src[offset+1:])
 			valueSize += 4 + int(size)
 		default:
@@ -145,6 +178,12 @@ func serializeLPString(val string) []byte {
 func deserializeLPString(val []byte) (string, int) {
 	size := int(val[0])
 	return string(val[1 : size+1]), size
+}
+
+func deserializeAddress(src []byte) (int, string) {
+	version := int(src[0])
+	hash160 := hex.EncodeToString(src[1 : clarityPrincipalByteSize+1])
+	return version, hash160
 }
 
 func readClarityTypeSize(src []byte) uint32 {
