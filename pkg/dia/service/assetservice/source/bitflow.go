@@ -83,6 +83,7 @@ func (s *BitflowAssetSource) fetchAssets() {
 		for _, wrappedToken := range token.WrapTokens {
 			s.assetChannel <- dia.Asset{
 				Address:    wrappedToken.TokenContract,
+				Symbol:     "w" + token.Symbol,
 				Name:       wrappedToken.Name,
 				Decimals:   uint8(wrappedToken.TokenDecimals),
 				Blockchain: s.blockchain,
