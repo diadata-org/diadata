@@ -1,4 +1,4 @@
-FROM us.icr.io/dia-registry/devops/build-119:latest as build
+FROM us.icr.io/dia-registry/devops/build-122:latest as build
 
 WORKDIR $GOPATH/src/
 COPY ./cmd/http/restServer ./
