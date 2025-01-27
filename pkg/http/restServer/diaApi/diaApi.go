@@ -829,11 +829,11 @@ func (env *Env) GetPoolSlippage(c *gin.Context) {
 	poolType := c.Param("poolType")
 	priceDeviationInt, err := strconv.ParseInt(c.Param("priceDeviation"), 10, 64)
 	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("error parsing priceDeviation."))
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("error parsing priceDeviation"))
 		return
 	}
 	if priceDeviationInt < 0 || priceDeviationInt >= 1000 {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("priceDeviation measured in per mille is out of range."))
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("priceDeviation measured in per mille is out of range"))
 		return
 	}
 	priceDeviation := float64(priceDeviationInt) / 1000
@@ -897,11 +897,11 @@ func (env *Env) GetPoolPriceImpact(c *gin.Context) {
 	poolType := c.Param("poolType")
 	priceDeviationInt, err := strconv.ParseInt(c.Param("priceDeviation"), 10, 64)
 	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("error parsing priceDeviation."))
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("error parsing priceDeviation"))
 		return
 	}
 	if priceDeviationInt < 0 || priceDeviationInt >= 1000 {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("priceDeviation measured in per mille is out of range."))
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("priceDeviation measured in per mille is out of range"))
 		return
 	}
 	priceDeviation := float64(priceDeviationInt) / 1000
@@ -963,30 +963,30 @@ func (env *Env) GetPriceImpactSimulation(c *gin.Context) {
 	poolType := c.Param("poolType")
 	priceDeviationInt, err := strconv.ParseInt(c.Param("priceDeviation"), 10, 64)
 	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("error parsing priceDeviation."))
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("error parsing priceDeviation"))
 		return
 	}
 	if priceDeviationInt < 0 || priceDeviationInt >= 1000 {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("priceDeviation measured in per mille is out of range."))
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("priceDeviation measured in per mille is out of range"))
 		return
 	}
 	priceDeviation := float64(priceDeviationInt) / 1000
 	liquidityA, err := strconv.ParseFloat(c.Param("liquidityA"), 64)
 	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("error parsing liquidityA."))
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("error parsing liquidityA"))
 		return
 	}
 	if liquidityA <= 0 {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("Liquidity must be a non-negative number."))
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("liquidity must be a non-negative number"))
 		return
 	}
 	liquidityB, err := strconv.ParseFloat(c.Param("liquidityB"), 64)
 	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("error parsing liquidityB."))
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("error parsing liquidityB"))
 		return
 	}
 	if liquidityB <= 0 {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("Liquidity must be a non-negative number."))
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("liquidity must be a non-negative number"))
 		return
 	}
 
@@ -1185,7 +1185,7 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 
 	pageNumber, err = strconv.ParseInt(pageString, 10, 64)
 	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("Page of assets must be an integer"))
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("page of assets must be an integer"))
 	}
 
 	onlycex, err := strconv.ParseBool(onlycexString)
@@ -1231,7 +1231,7 @@ func (env *Env) GetTopAssets(c *gin.Context) {
 		}
 		aqf.Source = sources
 
-		quotationYesterday, err := env.DataStore.GetAssetQuotation(aqf.Asset, time.Now().AddDate(0, 0, -1), dia.CRYPTO_ZERO_UNIX_TIME)
+		quotationYesterday, err := env.DataStore.GetAssetQuotation(aqf.Asset, dia.CRYPTO_ZERO_UNIX_TIME, time.Now().AddDate(0, 0, -1))
 		if err != nil {
 			log.Warn("get quotation yesterday: ", err)
 		} else {
@@ -1792,7 +1792,7 @@ func (env *Env) GetFeedStats(c *gin.Context) {
 		restApi.SendError(
 			c,
 			http.StatusInternalServerError,
-			fmt.Errorf("sizeBinSeconds out of range. Must be between %v and %v.", 20*time.Second, 6*time.Hour),
+			fmt.Errorf("sizeBinSeconds out of range. Must be between %v and %v", 20*time.Second, 6*time.Hour),
 		)
 		return
 	}
@@ -1930,7 +1930,7 @@ func (env *Env) GetAssetUpdates(c *gin.Context) {
 		return
 	}
 	if endtime.Sub(starttime) > time.Duration(7*24*60)*time.Minute {
-		restApi.SendError(c, http.StatusRequestedRangeNotSatisfiable, errors.New("Requested time-range too large."))
+		restApi.SendError(c, http.StatusRequestedRangeNotSatisfiable, errors.New("requested time-range too large"))
 		return
 	}
 	if ok := utils.ValidTimeRange(starttime, endtime, 30*24*time.Hour); !ok {
@@ -2191,13 +2191,6 @@ func (env *Env) GetAvailableAssets(c *gin.Context) {
 	}
 
 	assetClass := c.Param("assetClass")
-	// Default starttime is 01-01-2018
-	starttimeInt, err := strconv.ParseInt(c.DefaultQuery("starttime", "1514764800"), 10, 64)
-	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("Unable to parse timestamp."))
-		return
-	}
-	starttime := time.Unix(starttimeInt, 0)
 
 	if assetClass == "CryptoToken" {
 		assets, err := env.RelDB.GetAllExchangeAssets(true)
@@ -2207,7 +2200,7 @@ func (env *Env) GetAvailableAssets(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, assets)
 	} else {
-		restApi.SendError(c, http.StatusInternalServerError, errors.New("Unknown asset class"))
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("unknown asset class"))
 		return
 	}
 }
@@ -2288,18 +2281,6 @@ func (env *Env) getAssetFromCache(localCache map[string]dia.Asset, blockchain st
 	}
 	localCache[assetIdentifier(blockchain, address)] = fullAsset
 	return fullAsset
-}
-
-func (env *Env) getQuotationFromCache(localCache map[string]*models.AssetQuotation, asset dia.Asset) (q *models.AssetQuotation, err error) {
-	delayThreshold := time.Duration(1 * time.Hour)
-	var ok bool
-	if q, ok = localCache[assetIdentifier(asset.Blockchain, asset.Address)]; ok {
-		if q.Time.Add(delayThreshold).After(time.Now()) {
-			return
-		}
-	}
-	q, err = env.DataStore.GetAssetQuotationCache(asset)
-	return
 }
 
 func assetIdentifier(blockchain string, address string) string {
