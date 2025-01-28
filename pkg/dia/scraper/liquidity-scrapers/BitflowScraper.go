@@ -76,7 +76,7 @@ func NewBitflowLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, data
 }
 
 func (s *BitflowLiquidityScraper) fetchPools() {
-	swapContracts := bitflowhelper.StableSwapContracts[:]
+	swapContracts := bitflowhelper.SwapContracts[:]
 
 	if s.targetSwapContract != "" {
 		address := strings.Split(s.targetSwapContract, ".")

@@ -80,6 +80,18 @@ func DeserializeCVResponse(src []byte) ([]byte, bool) {
 	}
 }
 
+func DeserializeCVString(src []byte) (string, error) {
+	if src[0] != stringASCII && src[0] != stringUTF8 {
+		err := errors.New("value is not an ASCII/UTF8 encoded string")
+		return "", err
+	}
+
+	size := readClarityTypeSize(src[1:])
+	start := 5
+	end := start + int(size)
+	return string(src[start:end]), nil
+}
+
 // SerializeCVTuple converts a clarity value tuple into its binary representation
 // that can be used to call stacks smart contract functions.
 func SerializeCVTuple(tuple CVTuple) []byte {

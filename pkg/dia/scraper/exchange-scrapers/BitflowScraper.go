@@ -2,6 +2,7 @@ package scrapers
 
 import (
 	"context"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"strings"
@@ -9,13 +10,22 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/bitflowhelper"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/stackshelper"
+	bitflow "github.com/diadata-org/diadata/pkg/dia/helpers/bitflowhelper"
+	stacks "github.com/diadata-org/diadata/pkg/dia/helpers/stackshelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/timedmap"
 )
+
+type bitflowSwapEvent struct {
+	txID        string
+	action      string
+	amountIn    string
+	amountOut   string
+	poolAddress string
+	blockTime   int
+}
 
 type BitflowScraper struct {
 	logger             *logrus.Entry
@@ -30,7 +40,7 @@ type BitflowScraper struct {
 	exchangeName       string
 	blockchain         string
 	chanTrades         chan *dia.Trade
-	api                *stackshelper.StacksClient
+	api                *stacks.StacksClient
 	db                 *models.RelDB
 	currentHeight      int
 	initialBlockHeight int
@@ -51,26 +61,26 @@ func NewBitflowScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 	sleepBetweenCalls := utils.GetTimeDurationFromIntAsMilliseconds(
 		utils.GetenvInt(
 			envPrefix+"_SLEEP_TIMEOUT",
-			stackshelper.DefaultSleepBetweenCalls,
+			stacks.DefaultSleepBetweenCalls,
 		),
 	)
 	refreshDelay := utils.GetTimeDurationFromIntAsMilliseconds(
-		utils.GetenvInt(envPrefix+"_REFRESH_DELAY", stackshelper.DefaultRefreshDelay),
+		utils.GetenvInt(envPrefix+"_REFRESH_DELAY", stacks.DefaultRefreshDelay),
 	)
 	hiroAPIKey := utils.Getenv(envPrefix+"_HIRO_API_KEY", "")
 	initialBlockHeight := utils.GetenvInt(envPrefix+"_INITIAL_BLOCK_HEIGHT", 0)
 	isDebug := utils.GetenvBool(envPrefix+"_DEBUG", false)
 
-	stacksClient := stackshelper.NewStacksClient(
+	stacksClient := stacks.NewStacksClient(
 		log.WithContext(context.Background()).WithField("context", "StacksClient"),
 		sleepBetweenCalls,
 		hiroAPIKey,
 		isDebug,
 	)
 
-	swapContracts := make(map[string]nothing, len(bitflowhelper.StableSwapContracts))
+	swapContracts := make(map[string]nothing, len(bitflow.SwapContracts))
 
-	for _, contract := range bitflowhelper.StableSwapContracts {
+	for _, contract := range bitflow.SwapContracts {
 		contractId := fmt.Sprintf("%s.%s", contract.DeployerAddress, contract.ContractRegistry)
 		swapContracts[contractId] = nothing{}
 	}
@@ -140,13 +150,13 @@ func (s *BitflowScraper) Update() error {
 	}
 	s.currentHeight += 1
 
-	swapTxs, err := s.fetchSwapTransactions(txs)
+	swapEvents, err := s.fetchSwapEvents(txs)
 	if err != nil {
-		s.logger.WithError(err).Error("failed to fetchSwapTransactions")
+		s.logger.WithError(err).Error("failed to fetchSwapEvents")
 		return err
 	}
 
-	if len(swapTxs) == 0 {
+	if len(swapEvents) == 0 {
 		return nil
 	}
 
@@ -164,21 +174,13 @@ func (s *BitflowScraper) Update() error {
 			continue
 		}
 
-		for _, tx := range swapTxs {
-			lpToken := ""
-			for _, arg := range tx.ContractCall.FunctionArgs {
-				if arg.Name == "lp-token" || arg.Name == "pool-trait" {
-					lpToken = arg.Repr[1:]
-					break
-				}
-			}
-
-			if lpToken != pool.Address {
+		for _, e := range swapEvents {
+			if e.poolAddress != pool.Address {
 				continue
 			}
 
-			diaTrade := s.handleTrade(&pool, &tx)
-			log.Infof("got trade at height %v: %v -- %s -- %v --%v -- %s", s.currentHeight, diaTrade.Time, diaTrade.Pair, diaTrade.Price, diaTrade.Volume, diaTrade.ForeignTradeID)
+			diaTrade := s.handleTrade(&pool, &e)
+			log.Infof("got trade at height %v: %v -- %s -- %v --%v -- %s", s.currentHeight-1, diaTrade.Time, diaTrade.Pair, diaTrade.Price, diaTrade.Volume, diaTrade.ForeignTradeID)
 			discardTrade := diaTrade.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
 			if discardTrade {
 				log.Warn("Identical trade already scraped: ", diaTrade)
@@ -187,7 +189,6 @@ func (s *BitflowScraper) Update() error {
 				diaTrade.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
 				s.chanTrades <- diaTrade
 			}
-
 		}
 	}
 
@@ -198,56 +199,154 @@ func (s *BitflowScraper) getPools() ([]dia.Pool, error) {
 	return s.db.GetAllPoolsExchange(s.exchangeName, 0)
 }
 
-func (s *BitflowScraper) fetchSwapTransactions(txs []stackshelper.Transaction) ([]stackshelper.Transaction, error) {
-	swapTxs := make([]stackshelper.Transaction, 0)
+func (s *BitflowScraper) fetchSwapEvents(transactions []stacks.Transaction) ([]bitflowSwapEvent, error) {
+	swapEvents := make([]bitflowSwapEvent, 0)
 
-	for _, tx := range txs {
-		isSwapTx := tx.TxType == "contract_call" &&
-			(tx.ContractCall.FunctionName == "swap-x-for-y" || tx.ContractCall.FunctionName == "swap-y-for-x")
+	for _, tx := range transactions {
+		if tx.TxStatus != "success" || tx.TxType != "contract_call" {
+			continue
+		}
 
-		if isSwapTx && tx.TxStatus == "success" {
-			if _, ok := s.swapContracts[tx.ContractCall.ContractID]; !ok {
-				continue
+		// This is a temporary workaround introduced due to a bug in hiro stacks API.
+		// Results returned from /blocks/{block_height}/transactions route have empty
+		// `name` field in `contract_call.function_args` list.
+		// TODO: remove this as soon as the issue is fixed.
+		normalizedTx, err := s.api.GetTransactionAt(tx.TxID)
+		if err != nil {
+			return nil, err
+		}
+
+		_, contractFound := s.swapContracts[tx.ContractCall.ContractID]
+		isStableSwapTransaction := contractFound &&
+			strings.Contains(tx.ContractCall.ContractID, "stableswap") &&
+			strings.HasPrefix(tx.ContractCall.FunctionName, "swap")
+
+		if isStableSwapTransaction {
+			event := bitflowSwapEvent{
+				txID:      tx.TxID,
+				action:    tx.ContractCall.FunctionName,
+				amountOut: normalizedTx.TxResult.Repr[5 : len(normalizedTx.TxResult.Repr)-1],
+				blockTime: tx.BlockTime,
 			}
 
-			// This is a temporary workaround introduced due to a bug in hiro stacks API.
-			// Results returned from /blocks/{block_height}/transactions route have empty
-			// `name` field in `contract_call.function_args` list.
-			// TODO: remove this as soon as the issue is fixed.
-			normalizedTx, err := s.api.GetTransactionAt(tx.TxID)
-			if err != nil {
-				return nil, err
+			for _, arg := range normalizedTx.ContractCall.FunctionArgs {
+				value := arg.Repr[1:]
+				switch arg.Name {
+				case "x-amount":
+					event.amountIn = value
+				case "y-amount":
+					event.amountIn = value
+				case "lp-token":
+					event.poolAddress = value
+				}
 			}
-			swapTxs = append(swapTxs, normalizedTx)
+
+			swapEvents = append(swapEvents, event)
+		} else {
+			for _, e := range normalizedTx.Events {
+				log := &e.ContractLog
+
+				isBitflowSwap := e.Type == "smart_contract_log" &&
+					log.Topic == "print" &&
+					(strings.HasPrefix(log.ContractID, bitflow.StableSwapDeployer) || strings.HasPrefix(log.ContractID, bitflow.XykDeployer)) &&
+					(strings.Contains(log.Value.Repr, "swap-x-for-y") || strings.Contains(log.Value.Repr, "swap-y-for-x"))
+
+				if !isBitflowSwap {
+					continue
+				}
+
+				bytes, err := hex.DecodeString(e.ContractLog.Value.Hex[2:])
+				if err != nil {
+					s.logger.WithError(err).Error("failed to decode contract log")
+					return nil, err
+				}
+
+				event, err := s.decodeXykSwapEvent(tx.TxID, tx.BlockTime, bytes)
+				if err != nil {
+					return nil, err
+				}
+				swapEvents = append(swapEvents, event)
+			}
 		}
 	}
 
-	return swapTxs, nil
+	return swapEvents, nil
 }
 
-func (s *BitflowScraper) handleTrade(pool *dia.Pool, tx *stackshelper.Transaction) *dia.Trade {
+func (s *BitflowScraper) decodeXykSwapEvent(txID string, blockTime int, src []byte) (bitflowSwapEvent, error) {
+	empty := bitflowSwapEvent{}
+
+	tuple, err := stacks.DeserializeCVTuple(src)
+	if err != nil {
+		s.logger.WithError(err).Error("failed to deserialize cv tuple")
+		return empty, err
+	}
+
+	action, err := stacks.DeserializeCVString(tuple["action"])
+	if err != nil {
+		s.logger.WithError(err).Error("failed to deserialize event action")
+		return empty, err
+	}
+
+	data, err := stacks.DeserializeCVTuple(tuple["data"])
+	if err != nil {
+		s.logger.WithError(err).Error("failed to deserialize cv tuple")
+		return empty, err
+	}
+
+	var keyIn, keyOut string
+	if action == "swap-x-for-y" {
+		keyIn = "x-amount"
+		keyOut = "dy"
+	} else {
+		keyIn = "y-amount"
+		keyOut = "dx"
+	}
+
+	amountIn, err := stacks.DeserializeCVUint(data[keyIn])
+	if err != nil {
+		s.logger.WithError(err).Error("failed to deserialize input amount")
+		return empty, err
+	}
+
+	amountOut, err := stacks.DeserializeCVUint(data[keyOut])
+	if err != nil {
+		s.logger.WithError(err).Error("failed to deserialize output amount")
+		return empty, err
+	}
+
+	poolContract, err := stacks.DeserializeCVPrincipal(data["pool-contract"])
+	if err != nil {
+		s.logger.WithError(err).Error("failed to deserialize pool contract address")
+		return empty, err
+	}
+
+	event := bitflowSwapEvent{
+		txID:        txID,
+		action:      action,
+		amountIn:    amountIn.String(),
+		amountOut:   amountOut.String(),
+		poolAddress: poolContract,
+		blockTime:   blockTime,
+	}
+
+	return event, nil
+}
+
+func (s *BitflowScraper) handleTrade(pool *dia.Pool, event *bitflowSwapEvent) *dia.Trade {
 	var volume, price float64
 
 	decimals0 := int64(pool.Assetvolumes[0].Asset.Decimals)
 	decimals1 := int64(pool.Assetvolumes[1].Asset.Decimals)
 
-	amountIn := "0"
-	amountOut := tx.TxResult.Repr[5 : len(tx.TxResult.Repr)-1]
-
-	for _, arg := range tx.ContractCall.FunctionArgs {
-		if arg.Name == "x-amount" || arg.Name == "y-amount" {
-			amountIn = arg.Repr[1:]
-		}
-	}
-
-	if tx.ContractCall.FunctionName == "swap-x-for-y" {
-		amount0In, _ := utils.StringToFloat64(amountIn, decimals0)
-		amount1Out, _ := utils.StringToFloat64(amountOut, decimals1)
+	if event.action == "swap-x-for-y" {
+		amount0In, _ := utils.StringToFloat64(event.amountIn, decimals0)
+		amount1Out, _ := utils.StringToFloat64(event.amountOut, decimals1)
 		volume = amount0In
 		price = amount1Out / amount0In
 	} else {
-		amount1In, _ := utils.StringToFloat64(amountIn, decimals1)
-		amount0Out, _ := utils.StringToFloat64(amountOut, decimals0)
+		amount1In, _ := utils.StringToFloat64(event.amountIn, decimals1)
+		amount0Out, _ := utils.StringToFloat64(event.amountOut, decimals0)
 		volume = -amount0Out
 		price = amount1In / amount0Out
 	}
@@ -255,10 +354,10 @@ func (s *BitflowScraper) handleTrade(pool *dia.Pool, tx *stackshelper.Transactio
 	symbolPair := fmt.Sprintf("%s-%s", pool.Assetvolumes[0].Asset.Symbol, pool.Assetvolumes[1].Asset.Symbol)
 
 	return &dia.Trade{
-		Time:           time.Unix(int64(tx.BlockTime), 0),
+		Time:           time.Unix(int64(event.blockTime), 0),
 		Symbol:         pool.Assetvolumes[0].Asset.Symbol,
 		Pair:           symbolPair,
-		ForeignTradeID: tx.TxID,
+		ForeignTradeID: event.txID,
 		Source:         s.exchangeName,
 		Price:          price,
 		Volume:         volume,
