@@ -99,8 +99,8 @@
         {
             "Exchange": "MEXC",
             "Ignore": false,
-            "ForeignName": "BEAMUSDT",
-            "Symbol": "BEAM"
+            "ForeignName": "BEAMXUSDT",
+            "Symbol": "BEAMX"
         },
         {
             "Symbol": "BFR",

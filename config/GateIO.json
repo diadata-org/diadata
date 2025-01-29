@@ -249,8 +249,8 @@
         {
             "Exchange": "GateIO",
             "Ignore": false,
-            "ForeignName": "BEAM_USDT",
-            "Symbol": "BEAM"
+            "ForeignName": "BEAMX_USDT",
+            "Symbol": "BEAMX"
         },
         {
             "Exchange": "GateIO",
