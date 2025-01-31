@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/stackshelper"
-	"github.com/diadata-org/diadata/pkg/dia/helpers/velarhelper"
+	stacks "github.com/diadata-org/diadata/pkg/dia/helpers/stackshelper"
+	velar "github.com/diadata-org/diadata/pkg/dia/helpers/velarhelper"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/sirupsen/logrus"
@@ -28,7 +28,7 @@ type VelarScraper struct {
 	exchangeName       string
 	blockchain         string
 	chanTrades         chan *dia.Trade
-	api                *stackshelper.StacksClient
+	api                *stacks.StacksClient
 	db                 *models.RelDB
 	currentHeight      int
 	initialBlockHeight int
@@ -49,17 +49,17 @@ func NewVelarScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *V
 	sleepBetweenCalls := utils.GetTimeDurationFromIntAsMilliseconds(
 		utils.GetenvInt(
 			envPrefix+"_SLEEP_TIMEOUT",
-			stackshelper.DefaultSleepBetweenCalls,
+			stacks.DefaultSleepBetweenCalls,
 		),
 	)
 	refreshDelay := utils.GetTimeDurationFromIntAsMilliseconds(
-		utils.GetenvInt(envPrefix+"_REFRESH_DELAY", stackshelper.DefaultRefreshDelay),
+		utils.GetenvInt(envPrefix+"_REFRESH_DELAY", stacks.DefaultRefreshDelay),
 	)
 	hiroAPIKey := utils.Getenv(envPrefix+"_HIRO_API_KEY", "")
 	initialBlockHeight := utils.GetenvInt(envPrefix+"_INITIAL_BLOCK_HEIGHT", 0)
 	isDebug := utils.GetenvBool(envPrefix+"_DEBUG", false)
 
-	stacksClient := stackshelper.NewStacksClient(
+	stacksClient := stacks.NewStacksClient(
 		log.WithContext(context.Background()).WithField("context", "StacksClient"),
 		sleepBetweenCalls,
 		hiroAPIKey,
@@ -129,11 +129,11 @@ func (s *VelarScraper) Update() error {
 	}
 	s.currentHeight += 1
 
-	swapTxs, err := s.fetchSwapTransactions(txs)
+	swapEvents, err := s.getSwapEvents(txs)
 	if err != nil {
 		return err
 	}
-	if len(swapTxs) == 0 {
+	if len(swapEvents) == 0 {
 		return nil
 	}
 
@@ -149,29 +149,15 @@ func (s *VelarScraper) Update() error {
 			continue
 		}
 
-		for _, tx := range swapTxs {
-			swapInfo := velarhelper.ExtractSwapInfo(tx.TxResult.Repr)
-
-			swapPoolAddress := fmt.Sprintf("%s_%s", swapInfo.Token0, swapInfo.Token1)
-			if pool.Address != swapPoolAddress {
+		for _, e := range swapEvents {
+			if pool.Address != e.TickerID {
 				continue
 			}
 
-			if swapInfo.TokenIn == "" || swapInfo.TokenOut == "" {
-				for _, arg := range tx.ContractCall.FunctionArgs {
-					switch arg.Name {
-					case "token-in":
-						swapInfo.TokenIn = arg.Repr[1:]
-					case "token-out":
-						swapInfo.TokenOut = arg.Repr[1:]
-					}
-				}
-			}
-
-			diaTrade := s.handleTrade(&pool, swapInfo, tx)
+			diaTrade := s.handleTrade(&pool, &e)
 			s.logger.
 				WithField("parentAddress", pool.Address).
-				WithField("height", s.currentHeight).
+				WithField("height", s.currentHeight-1).
 				WithField("diaTrade", diaTrade).
 				Info("trade")
 			s.chanTrades <- diaTrade
@@ -185,43 +171,51 @@ func (s *VelarScraper) getPools() ([]dia.Pool, error) {
 	return s.db.GetAllPoolsExchange(s.exchangeName, 0)
 }
 
-func (s *VelarScraper) fetchSwapTransactions(txs []stackshelper.Transaction) ([]stackshelper.Transaction, error) {
-	swapTxs := make([]stackshelper.Transaction, 0)
+func (s *VelarScraper) getSwapEvents(txs []stacks.Transaction) ([]velar.SwapEvent, error) {
+	result := make([]velar.SwapEvent, 0)
 
 	for _, tx := range txs {
-		isSwapTx := tx.TxType == "contract_call" &&
-			strings.HasPrefix(tx.ContractCall.ContractID, velarhelper.DeployerAddress) &&
-			strings.HasPrefix(tx.ContractCall.FunctionName, "swap")
-
-		if isSwapTx && tx.TxStatus == "success" {
-			// This is a temporary workaround introduced due to a bug in hiro stacks API.
-			// Results returned from /blocks/{block_height}/transactions route have empty
-			// `name` field in `contract_call.function_args` list.
-			// TODO: remove this as soon as the issue is fixed.
-			normalizedTx, err := s.api.GetTransactionAt(tx.TxID)
-			if err != nil {
-				return nil, err
-			}
-
-			swapTxs = append(swapTxs, normalizedTx)
+		if tx.TxStatus != "success" || tx.TxType != "contract_call" || !s.isSwapTransaction(&tx) {
+			continue
 		}
+
+		// This is a temporary workaround introduced due to a bug in hiro stacks API.
+		// Results returned from /blocks/{block_height}/transactions route have empty
+		// `name` field in `contract_call.function_args` list.
+		// TODO: remove this as soon as the issue is fixed.
+		normalizedTx, err := s.api.GetTransactionAt(tx.TxID)
+		if err != nil {
+			return nil, err
+		}
+
+		events, err := velar.DecodeSwapEvents(normalizedTx)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, events...)
 	}
 
-	return swapTxs, nil
+	return result, nil
 }
 
-func (s *VelarScraper) handleTrade(pool *dia.Pool, swapInfo velarhelper.SwapInfo, tx stackshelper.Transaction) *dia.Trade {
+func (s *VelarScraper) isSwapTransaction(tx *stacks.Transaction) bool {
+	return strings.HasPrefix(tx.ContractCall.FunctionName, "swap") ||
+		tx.ContractCall.FunctionName == "apply" ||
+		tx.ContractCall.FunctionName == "r4"
+}
+
+func (s *VelarScraper) handleTrade(pool *dia.Pool, event *velar.SwapEvent) *dia.Trade {
 	var volume, price float64
 
 	token0 := pool.Assetvolumes[0].Asset
 	token1 := pool.Assetvolumes[1].Asset
 
-	amountIn := swapInfo.AmountIn.String()
-	amountOut := swapInfo.AmountOut.String()
+	amountIn := event.AmountIn.String()
+	amountOut := event.AmountOut.String()
 
 	var trade dia.Trade
 
-	if swapInfo.TokenIn == token0.Address {
+	if event.TokenIn == token0.Address {
 		trade.Pair = fmt.Sprintf("%s-%s", token1.Symbol, token0.Symbol)
 		trade.Symbol = token1.Symbol
 		trade.BaseToken = token0
@@ -243,8 +237,8 @@ func (s *VelarScraper) handleTrade(pool *dia.Pool, swapInfo velarhelper.SwapInfo
 		price = amount1In / amount0Out
 	}
 
-	trade.Time = time.Unix(int64(tx.BlockTime), 0)
-	trade.ForeignTradeID = tx.TxID
+	trade.Time = time.Unix(int64(event.Timestamp), 0)
+	trade.ForeignTradeID = event.TxID
 	trade.Source = s.exchangeName
 	trade.Price = price
 	trade.Volume = volume

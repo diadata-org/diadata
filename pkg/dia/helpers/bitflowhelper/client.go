@@ -12,39 +12,44 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var StableSwapContracts = [...]SwapContract{
+const (
+	StableSwapDeployer = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M"
+	XykDeployer        = "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR"
+)
+
+var SwapContracts = [...]SwapContract{
 	{
-		DeployerAddress:  "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M",
+		DeployerAddress:  StableSwapDeployer,
 		ContractRegistry: "stableswap-stx-ststx-v-1-2",
 		ContractType:     0,
 	},
 	{
-		DeployerAddress:  "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M",
+		DeployerAddress:  StableSwapDeployer,
 		ContractRegistry: "stableswap-usda-susdt-v-1-2",
 		ContractType:     0,
 	},
 	{
-		DeployerAddress:  "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M",
+		DeployerAddress:  StableSwapDeployer,
 		ContractRegistry: "stableswap-aeusdc-susdt-v-1-2",
 		ContractType:     0,
 	},
 	{
-		DeployerAddress:  "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M",
+		DeployerAddress:  StableSwapDeployer,
 		ContractRegistry: "stableswap-usda-aeusdc-v-1-2",
 		ContractType:     0,
 	},
 	{
-		DeployerAddress:  "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M",
+		DeployerAddress:  StableSwapDeployer,
 		ContractRegistry: "stableswap-usda-aeusdc-v-1-4",
 		ContractType:     0,
 	},
 	{
-		DeployerAddress:  "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M",
+		DeployerAddress:  StableSwapDeployer,
 		ContractRegistry: "stableswap-abtc-xbtc-v-1-2",
 		ContractType:     0,
 	},
 	{
-		DeployerAddress:  "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR",
+		DeployerAddress:  XykDeployer,
 		ContractRegistry: "xyk-core-v-1-2",
 		ContractType:     1,
 	},

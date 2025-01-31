@@ -26,6 +26,14 @@ type ContractCall struct {
 	FunctionArgs []FunctionArg `json:"function_args"`
 }
 
+type AssetLog struct {
+	ID        string `json:"asset_id"`
+	EventType string `json:"asset_event_type"`
+	Sender    string `json:"sender"`
+	Recipient string `json:"recipient"`
+	Amount    string `json:"amount"`
+}
+
 type ContractLog struct {
 	ContractID string       `json:"contract_id"`
 	Topic      string       `json:"topic"`
@@ -35,6 +43,7 @@ type ContractLog struct {
 type Event struct {
 	Index       int         `json:"event_index"`
 	Type        string      `json:"event_type"`
+	Asset       AssetLog    `json:"asset"`
 	ContractLog ContractLog `json:"contract_log"`
 }
 

@@ -172,6 +172,10 @@ func (c *StacksClient) GetDataVar(contractAddress, contractName, dataVar string)
 
 func (c *StacksClient) CallContractFunction(contractAddress, contractName, functionName string, args ContractCallArgs) ([]byte, error) {
 	url := fmt.Sprintf("%s/v2/contracts/call-read/%s/%s/%s", StacksURL, contractAddress, contractName, functionName)
+
+	if args.Arguments == nil {
+		args.Arguments = []string{}
+	}
 	body, err := json.Marshal(args)
 	if err != nil {
 		return nil, err

@@ -3,6 +3,7 @@ package liquidityscrapers
 import (
 	"context"
 	"encoding/hex"
+	"errors"
 	"math/big"
 	"strconv"
 	"strings"
@@ -150,28 +151,50 @@ func (s *VelarLiquidityScraper) fetchPools() {
 }
 
 func (s *VelarLiquidityScraper) fetchPoolBalances(poolID string) ([]*big.Int, error) {
-	value := new(big.Int)
-	value.SetString(poolID, 10)
-	key := hex.EncodeToString(stackshelper.SerializeCVUint(value))
+	var data []byte
+	var err error
 
-	entry, err := s.api.GetDataMapEntry(velarhelper.VelarCoreAddress, "pools", key)
+	if strings.HasPrefix(poolID, "21000") {
+		// Handle univ2 liquidity pools
+		args := stackshelper.ContractCallArgs{Sender: velarhelper.DeployerAddressV2}
+		poolContract := "univ2-pool-v1_0_0-" + poolID[4:]
+
+		var resp []byte
+		resp, err = s.api.CallContractFunction(velarhelper.DeployerAddressV2, poolContract, "get-pool", args)
+		if err != nil {
+			return nil, err
+		}
+
+		if entry, ok := stackshelper.DeserializeCVResponse(resp); ok {
+			data = entry
+		} else {
+			err = errors.New("failed to call get-pool: runtime error")
+		}
+	} else {
+		value := new(big.Int)
+		value.SetString(poolID, 10)
+		key := hex.EncodeToString(stackshelper.SerializeCVUint(value))
+
+		data, err = s.api.GetDataMapEntry(velarhelper.VelarCoreAddress, "pools", key)
+	}
+
 	if err != nil {
-		s.logger.WithError(err).Error("failed to GetDataMapEntry")
+		s.logger.WithError(err).Error("failed to fetch velar pool information")
 		return nil, err
 	}
 
-	tuple, err := stackshelper.DeserializeCVTuple(entry)
+	pool, err := stackshelper.DeserializeCVTuple(data)
 	if err != nil {
 		s.logger.WithError(err).Error("failed to deserialize cv tuple")
 		return nil, err
 	}
 
-	balance0, err := stackshelper.DeserializeCVUint(tuple["reserve0"])
+	balance0, err := stackshelper.DeserializeCVUint(pool["reserve0"])
 	if err != nil {
 		return nil, err
 	}
 
-	balance1, err := stackshelper.DeserializeCVUint(tuple["reserve1"])
+	balance1, err := stackshelper.DeserializeCVUint(pool["reserve1"])
 	if err != nil {
 		return nil, err
 	}

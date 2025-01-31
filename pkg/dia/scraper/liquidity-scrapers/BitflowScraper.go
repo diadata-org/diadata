@@ -76,7 +76,7 @@ func NewBitflowLiquidityScraper(exchange dia.Exchange, relDB *models.RelDB, data
 }
 
 func (s *BitflowLiquidityScraper) fetchPools() {
-	swapContracts := bitflowhelper.StableSwapContracts[:]
+	swapContracts := bitflowhelper.SwapContracts[:]
 
 	if s.targetSwapContract != "" {
 		address := strings.Split(s.targetSwapContract, ".")
@@ -266,10 +266,7 @@ func (s *BitflowLiquidityScraper) getXykPoolContractAddress(contractID string, p
 
 func (s *BitflowLiquidityScraper) fetchXykPool(poolContract string) (dia.Pool, error) {
 	address := strings.Split(poolContract, ".")
-	args := stackshelper.ContractCallArgs{
-		Sender:    address[0],
-		Arguments: []string{},
-	}
+	args := stackshelper.ContractCallArgs{Sender: address[0]}
 
 	result, err := s.api.CallContractFunction(address[0], address[1], "get-pool", args)
 	if err != nil {
@@ -334,10 +331,7 @@ func (s *BitflowLiquidityScraper) fetchXykPool(poolContract string) (dia.Pool, e
 
 func (s *BitflowLiquidityScraper) fetchTokenDecimals(tokenContract string) (int64, error) {
 	address := strings.Split(tokenContract, ".")
-	args := stackshelper.ContractCallArgs{
-		Sender:    address[0],
-		Arguments: []string{},
-	}
+	args := stackshelper.ContractCallArgs{Sender: address[0]}
 
 	result, err := s.api.CallContractFunction(address[0], address[1], "get-decimals", args)
 	if err != nil {
