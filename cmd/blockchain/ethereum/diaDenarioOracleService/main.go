@@ -292,7 +292,7 @@ func updateOracleMultiValues(
 
 	// Get 110% of the gas price
 	fGas := new(big.Float).SetInt(gasPrice)
-	fGas.Mul(fGas, big.NewFloat(1.1))
+	fGas.Mul(fGas, big.NewFloat(1.5))
 	gasPrice, _ = fGas.Int(nil)
 
 	for _, value := range values {
