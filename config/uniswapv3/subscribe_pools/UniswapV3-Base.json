@@ -49,8 +49,8 @@
             "ForeignName": "PEAS-USDC"
         },
         {
-            "Address": "0x23D17764F41AEa93fdbb5beffA83571f0bF3f8b2",
-            "ForeignName": "PEAS-WETH"
+            "Address": "0x8F8184BB6D3817910BC2Ef91a393d2FE3ca8D774",
+            "ForeignName": "PEAS-USDC"
         }
     ]
 }
