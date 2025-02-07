@@ -47,6 +47,10 @@
         {
             "Address": "0x5abdb204b1E5365FC523b6aaC9D0fc405bF5a72b",
             "ForeignName": "PEAS-USDC"
+        },
+        {
+            "Address": "0x23D17764F41AEa93fdbb5beffA83571f0bF3f8b2",
+            "ForeignName": "PEAS-WETH"
         }
     ]
 }
