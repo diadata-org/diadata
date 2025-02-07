@@ -47,6 +47,8 @@ func NewUniswapV3Scraper(exchange dia.Exchange, relDB *models.RelDB, datastore *
 		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(12369621))
 	case dia.UniswapExchangeV3Base:
 		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(1371680))
+	case dia.UniswapExchangeV3Celo:
+		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(13916355))
 	case dia.UniswapExchangeV3Polygon:
 		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(22757913))
 	case dia.UniswapExchangeV3Arbitrum:
@@ -158,6 +160,9 @@ func (uls *UniswapV3Scraper) fetchPools() {
 		)
 		if err != nil {
 			log.Error("filter pool created: ", err)
+			startblock = endblock
+			endblock = startblock + uls.chunksBlockSize
+			continue
 		}
 
 		for poolCreated.Next() {

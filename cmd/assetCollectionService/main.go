@@ -124,6 +124,8 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 		return source.NewUniswapV3AssetSource(exchanges[dia.UniswapExchangeV3Polygon], relDB)
 	case dia.UniswapExchangeV3Arbitrum:
 		return source.NewUniswapV3AssetSource(exchanges[dia.UniswapExchangeV3Arbitrum], relDB)
+	case dia.UniswapExchangeV3Celo:
+		return source.NewUniswapV3AssetSource(exchanges[dia.UniswapExchangeV3Celo], relDB)
 	case dia.RamsesV2Exchange:
 		return source.NewUniswapV3AssetSource(exchanges[dia.RamsesV2Exchange], relDB)
 	case dia.NileV2Exchange:

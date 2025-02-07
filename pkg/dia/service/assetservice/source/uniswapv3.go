@@ -50,6 +50,8 @@ func NewUniswapV3AssetSource(exchange dia.Exchange, relDB *models.RelDB) *Uniswa
 		uas = makeUniswapV3AssetSource(exchange, "", "", relDB, "200", uint64(165))
 	case dia.UniswapExchangeV3Base:
 		uas = makeUniswapV3AssetSource(exchange, "", "", relDB, "200", uint64(1371680))
+	case dia.UniswapExchangeV3Celo:
+		uas = makeUniswapV3AssetSource(exchange, "", "", relDB, "200", uint64(13916355))
 	case dia.PanCakeSwapExchangeV3:
 		uas = makeUniswapV3AssetSource(exchange, "", "", relDB, "200", uint64(26956207))
 	case dia.RamsesV2Exchange:

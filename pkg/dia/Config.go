@@ -62,6 +62,7 @@ const (
 	UniswapExchangeV3Polygon           = "UniswapV3-polygon"
 	UniswapExchangeV3Arbitrum          = "UniswapV3-Arbitrum"
 	UniswapExchangeV3Base              = "UniswapV3-Base"
+	UniswapExchangeV3Celo              = "UniswapV3-Celo"
 	LoopringExchange                   = "Loopring"
 	CamelotExchange                    = "Camelot"
 	CamelotExchangeV3                  = "CamelotV3"
