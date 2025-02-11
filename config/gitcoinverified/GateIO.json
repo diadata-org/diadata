@@ -1021,6 +1021,12 @@
             "Address": "0xf278c1CA969095ffddDED020290cf8B5C424AcE2"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "S",
+            "Blockchain": "Sonic",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "SALT",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",

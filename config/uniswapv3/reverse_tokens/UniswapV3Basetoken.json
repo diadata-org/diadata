@@ -1,6 +1,10 @@
 {
   "Tokens": [
     {
+      "Address": "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
+      "Symbol": "cbBTC"
+    },
+    {
       "Address": "0xFca59Cd816aB1eaD66534D82bc21E7515cE441CF",
       "Symbol": "RARI"
     },

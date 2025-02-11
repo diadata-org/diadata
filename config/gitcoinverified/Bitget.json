@@ -265,6 +265,12 @@
             "Address": "0x0000000000000000000000000000000000001010"
         },
         {
+            "Exchange": "Bitget",
+            "Symbol": "S",
+            "Blockchain": "Sonic",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "SATS",
             "Exchange": "Bitget",
             "Blockchain": "Bitcoin",

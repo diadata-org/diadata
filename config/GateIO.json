@@ -2216,6 +2216,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "S_USDT",
+            "Symbol": "S"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "SALT_ETH",
             "Ignore": false,
             "Symbol": "SALT"

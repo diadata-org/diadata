@@ -1,0 +1,12 @@
+{
+  "Tokens": [
+    {
+      "Address": "0x62Fcb3C1794FB95BD8B1A97f6Ad5D8a7e4943a1e",
+      "Symbol": "ETH-WBNB"
+    },
+    {
+      "Address": "0xf2688Fb5B81049DFB7703aDa5e770543770612C4",
+      "Symbol": "USDC-WBNB"
+    }
+  ]
+}

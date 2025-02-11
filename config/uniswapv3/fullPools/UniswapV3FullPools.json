@@ -11,6 +11,18 @@
     {
       "Address": "0x0da6253560822973185297d5f32fF8fA38243Afe",
       "Symbol": "WBTC-cbBTC"
+    },
+    {
+      "Address": "0xD4F56e41E77e2594E89473C7ec03f3F8f6Ed315B",
+      "Symbol": "LBTC-cbBTC"
+    },
+    {
+      "Address": "0x4585FE77225b41b697C938B018E2Ac67Ac5a20c0",
+      "Symbol": "WBTC-WETH"
+    },
+    {
+      "Address": "0x97e7d56A0408570bA1a7852De36350f7713906ec",
+      "Symbol": "DAI-FRAX"
     }
   ]
 }

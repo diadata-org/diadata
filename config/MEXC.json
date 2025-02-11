@@ -73,6 +73,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "AYIN",
+            "ForeignName": "AYINUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
             "Symbol": "AZERO",
             "ForeignName": "AZEROUSDT",
             "Exchange": "MEXC",

@@ -452,6 +452,12 @@
         },
         {
             "Exchange": "Crypto.com",
+            "Symbol": "S",
+            "Blockchain": "Sonic",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Crypto.com",
             "Symbol": "SAND",
             "Blockchain": "Ethereum",
             "Address": "0x3845badAde8e6dFF049820680d1F14bD3903a5d0"

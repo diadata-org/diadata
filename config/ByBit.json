@@ -649,6 +649,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "SUSDT",
+            "Symbol": "S"
+        },
+        {
             "Symbol": "SAND",
             "ForeignName": "SANDUSDT",
             "Exchange": "ByBit",

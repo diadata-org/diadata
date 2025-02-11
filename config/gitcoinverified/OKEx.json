@@ -367,6 +367,12 @@
             "Address": "0x408e41876cCCDC0F92210600ef50372656052a38"
         },
         {
+            "Exchange": "OKEx",
+            "Symbol": "S",
+            "Blockchain": "Sonic",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "SAMO",
             "Exchange": "OKEx",
             "Blockchain": "Solana",

@@ -1519,6 +1519,18 @@
             "Ignore": false
         },
         {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "S-USDT",
+            "Symbol": "S"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "S-USDC",
+            "Symbol": "S"
+        },
+        {
             "Symbol": "SAND",
             "ForeignName": "SAND-USDT",
             "Exchange": "KuCoin",

@@ -847,6 +847,12 @@
             "Address": "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24"
         },
         {
+            "Exchange": "KuCoin",
+            "Symbol": "S",
+            "Blockchain": "Sonic",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "SAND",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

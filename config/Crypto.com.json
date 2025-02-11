@@ -879,6 +879,12 @@
         {
             "Exchange": "Crypto.com",
             "Ignore": false,
+            "ForeignName": "S_USD",
+            "Symbol": "S"
+        },
+        {
+            "Exchange": "Crypto.com",
+            "Ignore": false,
             "ForeignName": "SAND_USDT",
             "Symbol": "SAND"
         },

@@ -476,6 +476,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "S_USDT",
+            "Symbol": "S"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "SAND_USDT",
             "Ignore": false,
             "Symbol": "SAND"
