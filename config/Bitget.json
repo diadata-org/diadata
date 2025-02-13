@@ -307,12 +307,6 @@
             "Symbol": "S"
         },
         {
-            "Exchange": "Bitget",
-            "Ignore": false,
-            "ForeignName": "SUSD",
-            "Symbol": "S"
-        },
-        {
             "Symbol": "SATS",
             "ForeignName": "SATSUSDT",
             "Exchange": "Bitget",
