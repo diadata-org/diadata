@@ -1303,24 +1303,48 @@ func (env *Env) GetTwelvedataFiatQuotations(c *gin.Context) {
 	}
 	timestamp := time.Unix(timestampInt, 0)
 
-	q, err := env.DataStore.GetForeignQuotationInflux(symbol, "TwelveData", timestamp)
-	if err != nil {
-		if errors.Is(err, redis.Nil) {
-			restApi.SendError(c, http.StatusNotFound, err)
-		} else {
-			restApi.SendError(c, http.StatusInternalServerError, err)
+	var (
+		q       models.ForeignQuotation
+		errRev  error
+		reverse bool
+	)
+
+	q, err = env.DataStore.GetForeignQuotationInflux(symbol, "TwelveData", timestamp)
+	if err != nil || q.Price == 0 {
+		reverse = true
+		symbol = assets[1] + "/" + assets[0]
+		log.Info("try reverse order: ", symbol)
+		q, errRev = env.DataStore.GetForeignQuotationInflux(symbol, "TwelveData", timestamp)
+		if errRev != nil || q.Price == 0 {
+			if q.Price == 0 {
+				errRev = errors.New("not found")
+			}
+			if errors.Is(errRev, redis.Nil) {
+				restApi.SendError(c, http.StatusNotFound, errRev)
+				return
+			} else {
+				log.Info(c)
+				restApi.SendError(c, http.StatusInternalServerError, errRev)
+				return
+			}
 		}
-	} else {
-		// Format response.
-		response := struct {
-			Ticker    string
-			Price     float64
-			Timestamp time.Time
-		}{
-			Ticker:    c.Param("symbol"),
-			Price:     q.Price,
-			Timestamp: q.Time,
-		}
+	}
+
+	response := struct {
+		Ticker    string
+		Price     float64
+		Timestamp time.Time
+	}{
+		Ticker:    c.Param("symbol"),
+		Price:     q.Price,
+		Timestamp: q.Time,
+	}
+	if err == nil && !reverse {
+		c.JSON(http.StatusOK, response)
+		return
+	}
+	if errRev == nil && q.Price != 0 {
+		response.Price = 1 / q.Price
 		c.JSON(http.StatusOK, response)
 	}
 }
@@ -1452,6 +1476,83 @@ func (env *Env) GetStockQuotation(c *gin.Context) {
 		} else {
 			c.JSON(http.StatusOK, q)
 		}
+	}
+}
+
+func (env *Env) GetTwelvedataCommodityQuotation(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	timestampInt, err := strconv.ParseInt(c.DefaultQuery("timestamp", strconv.Itoa(int(time.Now().Unix()))), 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, errors.New("could not parse Unix timestamp"))
+		return
+	}
+	timestamp := time.Unix(timestampInt, 0)
+	if len(strings.Split(c.Param("symbol"), "-")) != 2 {
+		restApi.SendError(c, http.StatusNotFound, errors.New("symbol format not known"))
+		return
+	}
+	symbol := strings.Split(c.Param("symbol"), "-")[0] + "/" + strings.Split(c.Param("symbol"), "-")[1]
+
+	q, err := env.DataStore.GetForeignQuotationInflux(symbol, "TwelveData", timestamp)
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			restApi.SendError(c, http.StatusNotFound, err)
+		} else {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+	} else {
+		// Format response.
+		response := struct {
+			Ticker    string
+			Name      string
+			Price     float64
+			Timestamp time.Time
+		}{
+			Ticker:    c.Param("symbol"),
+			Name:      q.Name,
+			Price:     q.Price,
+			Timestamp: q.Time,
+		}
+		c.JSON(http.StatusOK, response)
+	}
+}
+
+func (env *Env) GetTwelvedataETFQuotation(c *gin.Context) {
+	if !validateInputParams(c) {
+		return
+	}
+
+	timestampInt, err := strconv.ParseInt(c.DefaultQuery("timestamp", strconv.Itoa(int(time.Now().Unix()))), 10, 64)
+	if err != nil {
+		restApi.SendError(c, http.StatusNotFound, errors.New("could not parse Unix timestamp"))
+		return
+	}
+	timestamp := time.Unix(timestampInt, 0)
+
+	q, err := env.DataStore.GetForeignQuotationInflux(c.Param("symbol"), "TwelveData", timestamp)
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			restApi.SendError(c, http.StatusNotFound, err)
+		} else {
+			restApi.SendError(c, http.StatusInternalServerError, err)
+		}
+	} else {
+		// Format response.
+		response := struct {
+			Ticker    string
+			Name      string
+			Price     float64
+			Timestamp time.Time
+		}{
+			Ticker:    c.Param("symbol"),
+			Name:      q.Name,
+			Price:     q.Price,
+			Timestamp: q.Time,
+		}
+		c.JSON(http.StatusOK, response)
 	}
 }
 
