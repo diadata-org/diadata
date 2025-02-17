@@ -31,11 +31,20 @@ type twelvedataAPIStockResponse struct {
 	Price string `json:"price"`
 }
 
+type twelvedataQuoteResponse struct {
+	Symbol    string `json:"symbol"`
+	Name      string `json:"name"`
+	Timestamp int64  `json:"timestamp"`
+	Price     string `json:"close"`
+}
+
 type TwelvedataScraper struct {
 	ticker                 *time.Ticker
 	foreignScrapper        ForeignScraper
 	twelvedataStockSymbols []string
 	twelvedataFXTickers    []string
+	twelvedataCommodities  []string
+	twelvedataETFs         []string
 	apiKey                 string
 }
 
@@ -60,6 +69,8 @@ func NewTwelvedataScraper(datastore models.Datastore) *TwelvedataScraper {
 		foreignScrapper:        foreignScrapper,
 		twelvedataStockSymbols: strings.Split(utils.Getenv("STOCK_SYMBOLS", ""), ","),
 		twelvedataFXTickers:    strings.Split(utils.Getenv("FX_TICKERS", ""), ","),
+		twelvedataCommodities:  strings.Split(utils.Getenv("COMMODITIES", ""), ","),
+		twelvedataETFs:         strings.Split(utils.Getenv("ETF", ""), ","),
 		apiKey:                 utils.Getenv("TWELVEDATA_API_KEY", ""),
 	}
 
@@ -97,8 +108,11 @@ func (scraper *TwelvedataScraper) mainLoop() {
 // Update retrieves new coin information from the twelvedata API and stores it to influx
 func (scraper *TwelvedataScraper) UpdateQuotation() error {
 
-	log.Printf("Executing stock data update")
+	log.Printf("Executing stock data update for %v symbols", len(scraper.twelvedataStockSymbols))
 	for _, symbol := range scraper.twelvedataStockSymbols {
+		if symbol == "" {
+			continue
+		}
 		quotation, err := scraper.getTwelveStockData(symbol)
 		if err != nil {
 			log.Error("getTwelveStockData: ", err)
@@ -117,8 +131,11 @@ func (scraper *TwelvedataScraper) UpdateQuotation() error {
 		scraper.foreignScrapper.chanQuotation <- &foreignQuotation
 	}
 
-	log.Printf("Executing fx data update")
+	log.Printf("Executing fx data update for %v symbols", len(scraper.twelvedataFXTickers))
 	for _, ticker := range scraper.twelvedataFXTickers {
+		if ticker == "" {
+			continue
+		}
 		quotation, err := scraper.getTwelveFXData(ticker)
 		if err != nil {
 			log.Error("getTwelveFXData: ", err)
@@ -127,6 +144,56 @@ func (scraper *TwelvedataScraper) UpdateQuotation() error {
 		foreignQuotation := models.ForeignQuotation{
 			Symbol: ticker,
 			Price:  quotation.Rate,
+			Source: sourceTwelvedata,
+			Time:   time.Unix(quotation.Timestamp, 0),
+		}
+		scraper.foreignScrapper.chanQuotation <- &foreignQuotation
+	}
+
+	log.Printf("Executing commodities data update for %v symbols", len(scraper.twelvedataCommodities))
+	for _, ticker := range scraper.twelvedataCommodities {
+		if ticker == "" {
+			continue
+		}
+		quotation, err := scraper.getTwelveQuote(ticker)
+		if err != nil {
+			log.Error("getTwelveFXData: ", err)
+		}
+
+		price, err := strconv.ParseFloat(quotation.Price, 64)
+		if err != nil {
+			log.Errorf("parse price for %s", quotation.Symbol)
+		}
+
+		foreignQuotation := models.ForeignQuotation{
+			Symbol: ticker,
+			Name:   quotation.Name,
+			Price:  price,
+			Source: sourceTwelvedata,
+			Time:   time.Unix(quotation.Timestamp, 0),
+		}
+		scraper.foreignScrapper.chanQuotation <- &foreignQuotation
+	}
+
+	log.Printf("Executing ETF data update for %v symbols", len(scraper.twelvedataETFs))
+	for _, ticker := range scraper.twelvedataETFs {
+		if ticker == "" {
+			continue
+		}
+		quotation, err := scraper.getTwelveQuote(ticker)
+		if err != nil {
+			log.Error("getTwelveFXData: ", err)
+		}
+
+		price, err := strconv.ParseFloat(quotation.Price, 64)
+		if err != nil {
+			log.Errorf("parse price for %s", quotation.Symbol)
+		}
+
+		foreignQuotation := models.ForeignQuotation{
+			Symbol: ticker,
+			Name:   quotation.Name,
+			Price:  price,
 			Source: sourceTwelvedata,
 			Time:   time.Unix(quotation.Timestamp, 0),
 		}
@@ -164,6 +231,19 @@ func (scraper *TwelvedataScraper) getTwelveStockData(symbol string) (stockPrice 
 	}
 
 	err = json.Unmarshal(response, &stockPrice)
+	return
+}
+
+func (scraper *TwelvedataScraper) getTwelveQuote(symbol string) (commodity twelvedataQuoteResponse, err error) {
+	var response []byte
+
+	apiURL := twelvedataApiBaseString + "quote?symbol=" + symbol + "&apikey=" + scraper.apiKey
+	response, _, err = utils.GetRequest(apiURL)
+	if err != nil {
+		return
+	}
+
+	err = json.Unmarshal(response, &commodity)
 	return
 }
 
