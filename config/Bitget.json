@@ -277,6 +277,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "NPCUSDT",
+            "Symbol": "NPC"
+        },
+        {
             "Symbol": "OP",
             "ForeignName": "OPUSDT",
             "Exchange": "Bitget",

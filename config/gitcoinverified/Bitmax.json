@@ -313,6 +313,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "Bitmax",
+            "Symbol": "NPC",
+            "Blockchain": "Ethereum",
+            "Address": "0x8eD97a637A790Be1feff5e888d43629dc05408F6"
+        },
+        {
             "Symbol": "OKB",
             "Exchange": "Bitmax",
             "Blockchain": "Ethereum",

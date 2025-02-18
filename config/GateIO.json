@@ -1826,6 +1826,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "NPC_USDT",
+            "Symbol": "NPC"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "OAX_ETH",
             "Ignore": false,
             "Symbol": "OAX"

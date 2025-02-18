@@ -7,6 +7,10 @@
         {
             "Address": "0x17A3Ad8c74c4947005aFEDa9965305ae2EB2518a",
             "ForeignName": "WETH-MIGGLES"
-        }       
+        },
+        {
+            "Address": "0x3F413FcCAEa59b8053d605AEa7ae847C02ed5D95",
+            "ForeignName": "WETH-NPC"
+        }    
     ]
 }

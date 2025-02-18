@@ -535,6 +535,18 @@
             "Ignore": false
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "NPCUSDT",
+            "Symbol": "NPC"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "NPCUSDC",
+            "Symbol": "NPC"
+        },
+        {
             "Symbol": "OP",
             "ForeignName": "OPUSDT",
             "Exchange": "MEXC",

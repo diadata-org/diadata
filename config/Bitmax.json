@@ -1435,6 +1435,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "Bitmax",
+            "Ignore": false,
+            "ForeignName": "NPC/USDT",
+            "Symbol": "NPC"
+        },
+        {
             "Symbol": "NSURE",
             "ForeignName": "NSURE/USDT",
             "Exchange": "Bitmax",

@@ -416,6 +416,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "NPC_USDT",
+            "Symbol": "NPC"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "OKB_USDT",
             "Ignore": false,
             "Symbol": "OKB"

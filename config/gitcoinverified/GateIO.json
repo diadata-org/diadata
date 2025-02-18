@@ -841,6 +841,12 @@
             "Address": "0x5774B2fc3e91aF89f89141EacF76545e74265982"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "NPC",
+            "Blockchain": "Ethereum",
+            "Address": "0x8eD97a637A790Be1feff5e888d43629dc05408F6"
+        },
+        {
             "Symbol": "OAX",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
