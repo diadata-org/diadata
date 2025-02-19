@@ -87,6 +87,10 @@
         {
             "Address": "0x0Aa48bF937ee8F41f1a52D225EF5A6F6961e39FA",
             "ForeignName": "USDC.multi-ETH.multi"
+        },
+        {
+            "Address": "0xd95cab0Ed89269390f2aD121798e6092Ea395139",
+            "ForeignName": "WGLMR-xcaUSD"
         }
     ]
 }
