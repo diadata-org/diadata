@@ -56,7 +56,7 @@ Here you can find the introduction to the structure of the system and first step
 
 ## DIA Technical Structure
 
-DIA is setup as a hybrid system with off-chain components for storing and proceccing large amounts of data and on-chain components providing data sources for financial smart contracts. Currently, Ethereum is used as smart contract plaform because of its widespread use and technical quality, but the DIA system is not limited to one blockchain technology.
+DIA is setup as a hybrid system with off-chain components for storing and proceccing large amounts of data and on-chain components providing data sources for financial smart contracts. Currently, Ethereum is used as smart contract platform because of its widespread use and technical quality, but the DIA system is not limited to one blockchain technology.
 
 ### Centralized Backend
 
