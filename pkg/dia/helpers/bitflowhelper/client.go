@@ -19,6 +19,11 @@ const (
 
 var SwapContracts = [...]SwapContract{
 	{
+		DeployerAddress:  XykDeployer,
+		ContractRegistry: "stableswap-core-v-1-2",
+		ContractType:     1,
+	},
+	{
 		DeployerAddress:  StableSwapDeployer,
 		ContractRegistry: "stableswap-stx-ststx-v-1-2",
 		ContractType:     0,
