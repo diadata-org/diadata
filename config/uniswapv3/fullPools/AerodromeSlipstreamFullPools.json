@@ -1,6 +1,10 @@
 {
     "Tokens": [
         {
+            "Address": "0x138aceE5573fA09e7F215965ff60898cc33c6330",
+            "ForeignName": "tBTC-cbBTC"
+        },
+        {
             "Address": "0xd0b53D9277642d899DF5C87A3966A349A798F224",
             "ForeignName": "USDC-WETH"
         },
