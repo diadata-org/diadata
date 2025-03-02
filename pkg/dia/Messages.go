@@ -53,6 +53,7 @@ const (
 	BASE                                    = "Base"
 	FILECOIN                                = "Filecoin"
 	HYDRATION                               = "Hydration"
+	STACKS                                  = "Stacks"
 )
 
 var CRYPTO_ZERO_UNIX_TIME = time.Unix(1230768000, 0)

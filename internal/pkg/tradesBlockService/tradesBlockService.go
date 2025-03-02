@@ -724,6 +724,15 @@ func buildBridge(t dia.Trade) dia.Asset {
 			}
 		}
 	}
+	if basetoken.Blockchain == dia.STACKS && (t.Source == dia.BitflowExchange || t.Source == dia.VelarExchange) {
+		if basetoken.Address == "SP3Y2ZSH8P7D50B0VBTSX11S7XSG24M1VB9YFQA4K.token-aeusdc" {
+			basetoken = dia.Asset{
+				Symbol:     "USDC",
+				Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+				Blockchain: dia.ETHEREUM,
+			}
+		}
+	}
 
 	return basetoken
 }
