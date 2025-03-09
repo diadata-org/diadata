@@ -1,6 +1,10 @@
 {
     "Pools": [
         {
+            "Address": "0x89D0F320ac73dd7d9513FFC5bc58D1161452a657",
+            "ForeignName": "WETH-WELL"
+        },
+        {
             "Address": "0xC90E88d30b99442B6994915F3b146cE3D55982D9",
             "ForeignName": "MAVIA-WETH"
         },
