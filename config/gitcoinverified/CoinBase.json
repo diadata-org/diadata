@@ -121,6 +121,12 @@
             "Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
         },
         {
+            "Symbol": "DEGEN",
+            "Exchange": "CoinBase",
+            "Blockchain": "Base",
+            "Address": "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"
+        },
+        {
             "Symbol": "DIA",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
@@ -509,6 +515,12 @@
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
             "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "WELL",
+            "Blockchain": "Moonbeam",
+            "Address": "0x511aB53F793683763E5a8829738301368a2411E3"
         },
         {
             "Exchange": "CoinBase",
