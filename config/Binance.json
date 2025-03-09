@@ -392,12 +392,6 @@
         },
         {
             "Exchange": "Binance",
-            "ForeignName": "BTCUSDT",
-            "Ignore": false,
-            "Symbol": "BTC"
-        },
-        {
-            "Exchange": "Binance",
             "ForeignName": "DASHBTC",
             "Ignore": false,
             "Symbol": "DASH"
