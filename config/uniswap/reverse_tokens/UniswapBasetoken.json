@@ -1,6 +1,10 @@
 {
   "Tokens": [
     {
+      "Address": "0x857FfC55B1Aa61A7fF847C82072790cAE73cd883",
+      "Symbol": "EEFI"
+    },
+    {
       "Address": "0xFca59Cd816aB1eaD66534D82bc21E7515cE441CF",
       "Symbol": "RARI"
     },

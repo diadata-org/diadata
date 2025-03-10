@@ -115,6 +115,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "BLEND",
+            "ForeignName": "BLENDUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
             "Symbol": "BNB",
             "ForeignName": "BNBUSDT",
             "Exchange": "MEXC",
@@ -807,6 +813,12 @@
         {
             "Symbol": "WBTC",
             "ForeignName": "WBTCUSDC",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WCO",
+            "ForeignName": "WCOUSDT",
             "Exchange": "MEXC",
             "Ignore": false
         },

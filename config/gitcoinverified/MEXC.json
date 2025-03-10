@@ -115,6 +115,12 @@
             "Address": "0x1A5B0aaF478bf1FDA7b934c76E7692D722982a6D"
         },
         {
+            "Symbol": "BLEND",
+            "Exchange": "MEXC",
+            "Blockchain": "EduChain",
+            "Address": "0x526E8a66E357FFeaEeEc6d7Be1E5eA44a788dd1d"
+        },
+        {
             "Symbol": "BNB",
             "Exchange": "MEXC",
             "Blockchain": "BinanceSmartChain",
@@ -767,6 +773,12 @@
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
             "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
+        },
+        {
+            "Symbol": "WCO",
+            "Exchange": "MEXC",
+            "Blockchain": "WChain",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "WELSH",
