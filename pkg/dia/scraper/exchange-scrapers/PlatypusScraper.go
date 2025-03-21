@@ -254,7 +254,7 @@ func (s *PlatypusScraper) loadPoolsAndCoins(registry platypusRegistry, liquidity
 		asset, errPoolInfo := contractMaster.PoolInfo(&bind.CallOpts{}, big.NewInt(int64(i)))
 		if errPoolInfo != nil {
 			log.Error("PoolInfo: ", errPoolInfo)
-			return err
+			return errPoolInfo
 		}
 		pool, errPool := s.relDB.GetPoolByAddress(dia.ETHEREUM, asset.LpToken.Hex())
 		if errPool != nil {
