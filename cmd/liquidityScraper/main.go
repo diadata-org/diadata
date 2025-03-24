@@ -48,7 +48,7 @@ func runLiquiditySource(relDB *models.RelDB, datastore *models.DB, source string
 	for {
 		select {
 		case receivedPool := <-scraper.Pool():
-
+			log.Debug("pool: ", receivedPool)
 			// Set to persistent DB.
 			err := relDB.SetPool(receivedPool)
 			if err != nil {

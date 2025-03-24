@@ -7,7 +7,7 @@ require (
 	github.com/segmentio/kafka-go v0.4.35
 	github.com/sirupsen/logrus v1.9.3
 )
-
+replace github.com/diadata-org/diadata => /home/philipp/go/src/github.com/diadata-org/diadata
 require (
 	filippo.io/edwards25519 v1.0.0 // indirect
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
