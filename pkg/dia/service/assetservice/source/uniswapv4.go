@@ -122,7 +122,7 @@ func (uas *UniswapV4AssetSource) fetchAssets() {
 		log.Error("GetBlockNumber: ", err)
 	}
 
-	endblock := utils.Min(uint64(uas.startBlock)+numBlocksQuery, currentBlockNumber)
+	endblock := utils.Min(uint64(uas.startBlock)+numBlocksQueryUniswapV4, currentBlockNumber)
 	log.Infof("startblock -- endblock: %v -- %v", uas.startBlock, endblock)
 
 	for uas.startBlock <= currentBlockNumber {
@@ -167,8 +167,8 @@ func (uas *UniswapV4AssetSource) fetchAssets() {
 		if err != nil {
 			log.Error("SetScraperIndex: ", err)
 		}
-		endblock += numBlocksQuery
-		uas.startBlock += numBlocksQuery
+		endblock += numBlocksQueryUniswapV4
+		uas.startBlock += numBlocksQueryUniswapV4
 	}
 
 	uas.doneChannel <- true
