@@ -144,23 +144,29 @@ func (uas *UniswapV4AssetSource) fetchAssets() {
 			log.Info("pools count: ", poolsCount)
 
 			blocknumber = int64(poolCreated.Event.Raw.BlockNumber)
-
-			// Don't repeat sending already sent assets
-			if _, ok := checkMap[poolCreated.Event.Currency0.Hex()]; !ok {
-				checkMap[poolCreated.Event.Currency0.Hex()] = struct{}{}
-				asset, err := uas.GetAssetFromAddress(poolCreated.Event.Currency0)
-				if err != nil {
-					log.Warnf("cannot fetch asset from address %s: %v", poolCreated.Event.Currency0.Hex(), err)
+			address0 := poolCreated.Event.Currency0
+			address1 := poolCreated.Event.Currency0
+			// Don't repeat sending already sent assets.
+			// Take into account that UniswapV4 allows for trading unwrapped ETH.
+			if (address0 != common.Address{}) {
+				if _, ok := checkMap[address0.Hex()]; !ok {
+					checkMap[address0.Hex()] = struct{}{}
+					asset, err := uas.GetAssetFromAddress(address0)
+					if err != nil {
+						log.Warnf("cannot fetch asset from address %s: %v", address0.Hex(), err)
+					}
+					uas.assetChannel <- asset
 				}
-				uas.assetChannel <- asset
 			}
-			if _, ok := checkMap[poolCreated.Event.Currency1.Hex()]; !ok {
-				checkMap[poolCreated.Event.Currency1.Hex()] = struct{}{}
-				asset, err := uas.GetAssetFromAddress(poolCreated.Event.Currency1)
-				if err != nil {
-					log.Warnf("cannot fetch asset from address %s: %v", poolCreated.Event.Currency1.Hex(), err)
+			if (address1 != common.Address{}) {
+				if _, ok := checkMap[address1.Hex()]; !ok {
+					checkMap[address1.Hex()] = struct{}{}
+					asset, err := uas.GetAssetFromAddress(address1)
+					if err != nil {
+						log.Warnf("cannot fetch asset from address %s: %v", address1.Hex(), err)
+					}
+					uas.assetChannel <- asset
 				}
-				uas.assetChannel <- asset
 			}
 		}
 		err = uas.relDB.SetScraperIndex(uas.exchange.Name, dia.SCRAPER_TYPE_ASSETCOLLECTOR, dia.INDEX_TYPE_BLOCKNUMBER, blocknumber)
