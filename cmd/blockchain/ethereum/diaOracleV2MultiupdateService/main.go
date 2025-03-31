@@ -475,10 +475,16 @@ func retrieveAssetPrice(asset Asset, useGql bool, gqlWindowSize int, gqlMethodol
 	if strings.ToLower(strings.TrimSpace(asset.blockchain)) == "rwa-equity" {
 		price, err = getRwaEquityPriceFromDia(asset.address)
 		if err != nil {
-			log.Printf("Failed to retrieve %s rwa price from DIA: %v", asset.address, err)
+			log.Printf("Failed to retrieve %s rwa equity price from DIA: %v", asset.address, err)
 		}
 		return price, nil
-	} 
+	} else if strings.ToLower(strings.TrimSpace(asset.blockchain)) == "rwa-commodity" {
+		price, err = getRwaCommodityPriceFromDia(asset.address)
+		if err != nil {
+			log.Printf("Failed to retrieve %s rwa commodity price from DIA: %v", asset.address, err)
+		}
+		return price, nil
+	}
 	// Get quotation for token and update Oracle
 	if useGql {
 		price, err = getGraphqlAssetQuotationFromDia(asset.blockchain, asset.address, gqlWindowSize, gqlMethodology, gqlLiquidityParameters)
@@ -799,6 +805,29 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int,
 func getRwaEquityPriceFromDia(address string) (float64, error) {
 	// Execute the query
 	response, err := http.Get(diaBaseUrl + "/v1/rwa/Equities/" + address)
+	if err != nil {
+		return 0.0, err
+	}
+
+	defer response.Body.Close()
+	if 200 != response.StatusCode {
+		return 0.0, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	}
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return 0.0, err
+	}
+	var quotation models.ForeignQuotation
+	err = quotation.UnmarshalBinary(contents)
+	if err != nil {
+		return 0.0, err
+	}
+	return quotation.Price, nil
+}
+
+func getRwaCommodityPriceFromDia(address string) (float64, error) {
+	// Execute the query
+	response, err := http.Get(diaBaseUrl + "/v1/rwa/Commodities/" + address)
 	if err != nil {
 		return 0.0, err
 	}
