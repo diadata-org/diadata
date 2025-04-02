@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
+	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -148,7 +150,24 @@ func (scraper *BinanceScraper) connectToAPI() error {
 		scraper.proxyIndex = (scraper.proxyIndex + 1) % 2
 	}
 
+	username := utils.Getenv("BINANCE_PROXY"+strconv.Itoa(scraper.proxyIndex)+"_USERNAME", "")
+	password := utils.Getenv("BINANCE_PROXY"+strconv.Itoa(scraper.proxyIndex)+"_PASSWORD", "")
+	user := url.UserPassword(username, password)
+	host := utils.Getenv("BINANCE_PROXY"+strconv.Itoa(scraper.proxyIndex)+"_HOST", "")
+
 	var d ws.Dialer
+	if host != "" {
+		d = ws.Dialer{
+			Proxy: http.ProxyURL(&url.URL{
+				Scheme: "http", // or "https" depending on your proxy
+				User:   user,
+				Host:   host,
+				Path:   "/",
+			},
+			),
+		}
+	}
+
 	conn, _, err := d.Dial(binanceWSBaseString, nil)
 	if err != nil {
 		log.Errorf("Binance - Connect to API: %s.", err.Error())
