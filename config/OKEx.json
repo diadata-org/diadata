@@ -932,6 +932,12 @@
         },
         {
             "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "GALA-USDT",
+            "Symbol": "GALA"
+        },
+        {
+            "Exchange": "OKEx",
             "ForeignName": "GAS-BTC",
             "Ignore": false,
             "Symbol": "GAS"

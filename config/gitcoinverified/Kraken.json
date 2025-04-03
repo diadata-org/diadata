@@ -428,6 +428,12 @@
         },
         {
             "Exchange": "Kraken",
+            "Symbol": "WELL",
+            "Blockchain": "Moonbeam",
+            "Address": "0x511aB53F793683763E5a8829738301368a2411E3"
+        },
+        {
+            "Exchange": "Kraken",
             "Symbol": "WIF",
             "Blockchain": "Solana",
             "Address": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm"

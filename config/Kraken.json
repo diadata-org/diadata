@@ -525,6 +525,18 @@
         {
             "Exchange": "Kraken",
             "Ignore": false,
+            "ForeignName": "WELLUSD",
+            "Symbol": "WELL"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "WELLEUR",
+            "Symbol": "WELL"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
             "ForeignName": "WIFUSD",
             "Symbol": "WIF"
         },

@@ -1981,6 +1981,18 @@
             "Ignore": false
         },
         {
+            "Exchange": "Bitmax",
+            "Ignore": false,
+            "ForeignName": "XFI/USDT",
+            "Symbol": "XFI"
+        },
+        {
+            "Exchange": "Bitmax",
+            "Ignore": false,
+            "ForeignName": "XFI/BTC",
+            "Symbol": "XFI"
+        },
+        {
             "Symbol": "XLM",
             "ForeignName": "XLM/BTC",
             "Exchange": "Bitmax",

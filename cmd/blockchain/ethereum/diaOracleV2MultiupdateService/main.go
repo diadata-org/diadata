@@ -32,7 +32,8 @@ type Asset struct {
 	symbol                    string
 	coingeckoName             string
 	cmcName										string
-	allowedDeviation          float64
+	allowedGuardianDeviation  float64
+	deviation                 int64
 	gqlParams                 GqlParameters
 }
 
@@ -88,6 +89,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse gqlWindowSize: %v", err)
 	}
+	oracleDecimals, err := strconv.Atoi(utils.Getenv("ORACLE_DECIMALS", "8"))
+	if err != nil {
+		log.Fatalf("Failed to parse oracleDecimals: %v", err)
+	}
 	conditionalAssets := utils.Getenv("CONDITIONAL_ASSETS", "")
 	gqlMethodology := utils.Getenv("GQL_METHODOLOGY", "vwap")
 	coingeckoApiKey := utils.Getenv("COINGECKO_API_KEY", "")
@@ -98,6 +103,10 @@ func main() {
 	compatibilityMode, err := strconv.ParseBool(utils.Getenv("COMPATIBILITY_MODE", "false"))
 	if err != nil {
 		log.Fatalf("Failed to parse compatibilityMode: %v", err)
+	}
+	deviationPerAssetMode, err := strconv.ParseBool(utils.Getenv("DEVIATION_PER_ASSET_MODE", "false"))
+	if err != nil {
+		log.Fatalf("Failed to parse deviationPerAssetMode: %v", err)
 	}
 	gasMultiplier, err := strconv.ParseFloat(utils.Getenv("GAS_MULTIPLIER", "1.1"), 64)
 	if err != nil {
@@ -123,29 +132,42 @@ func main() {
 
 	for _, asset := range assetsParsed {
 		var currAsset Asset
+		variableParserOffset := 0
 
 		// parse asset from env
 		entries := strings.Split(asset, "§")
-		//TODO: check if len(array) > 0
+		//check if len(array) > 0
+		if len(entries) == 0 {
+			log.Fatalf("No asset entries specified")
+		}
+
 		currAsset.blockchain = strings.TrimSpace(entries[0])
 		currAsset.address = strings.TrimSpace(entries[1])
 		currAsset.symbol = strings.TrimSpace(entries[2])
-		if len(entries) > 4 {
-    	currAsset.coingeckoName = strings.TrimSpace(entries[3])
-			currAsset.cmcName = strings.TrimSpace(entries[4])
+
+		// Check if deviation needs to be parsed per asset
+		if deviationPerAssetMode {
+			currAsset.deviation, err = strconv.ParseInt(strings.TrimSpace(entries[3]), 10, 64)
+			variableParserOffset += 1
+		} else {
+			currAsset.deviation = int64(deviationPermille)
+		}
+		if len(entries) > (4 + variableParserOffset) {
+    	currAsset.coingeckoName = strings.TrimSpace(entries[3 + variableParserOffset])
+			currAsset.cmcName = strings.TrimSpace(entries[4 + variableParserOffset])
 			if currAsset.coingeckoName != "" || currAsset.cmcName != "" {
-				allowedDeviation, err := strconv.ParseFloat(strings.TrimSpace(entries[5]), 64)
+				allowedGuardianDeviation, err := strconv.ParseFloat(strings.TrimSpace(entries[5 + variableParserOffset]), 64)
 				if err != nil {
 					log.Fatalf("Error converting guardian Deviation float on parsing %s-%s!", currAsset.blockchain, currAsset.address)
 				}
-    		currAsset.allowedDeviation = allowedDeviation
+    		currAsset.allowedGuardianDeviation = allowedGuardianDeviation
 			}
 		}
 
 		// Find out is there are additional GQL parameters for this asset
-		if len(entries) > 6 {
+		if len(entries) > (6 + variableParserOffset) {
 			// Join the rest of the line together, because the previous split might have affected substrings of the parameters
-			gqlFeedSelectionQuery := strings.Join(entries[6:], "-")
+			gqlFeedSelectionQuery := strings.Join(entries[6 + variableParserOffset:], "-")
 			var currGqlParams GqlParameters
 			if useGql && gqlFeedSelectionQuery != "" {
 				err := json.Unmarshal([]byte(gqlFeedSelectionQuery), &currGqlParams)
@@ -232,12 +254,12 @@ func main() {
 					}
 					log.Println(newAssetPrices)
 					// update all prices
-					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, cmcApiKey, auth, contract, conn, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
+					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, coingeckoApiKey, cmcApiKey, auth, contract, conn, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, oracleDecimals, mutexSeconds, oracleUpdateMutex)
 					if err != nil {
 						log.Printf("Failed to execute oracle update using primary connection: %v. Retrying with backup connection...", err)
 
 						// Attempt using the backup connection
-						publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, cmcApiKey, auth, contractBackup, connBackup, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
+						publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, coingeckoApiKey, cmcApiKey, auth, contractBackup, connBackup, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, oracleDecimals, mutexSeconds, oracleUpdateMutex)
 						if err != nil {
 							log.Fatalf("Failed to execute oracle update using backup connection: %v", err)
 						}
@@ -262,12 +284,12 @@ func main() {
 					}
 					// update all prices, regardless of deviation
 					emptyMap := make(map[string]float64)
-					publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, deviationPermille, coingeckoApiKey, cmcApiKey, auth, contract, conn, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
+					publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, coingeckoApiKey, cmcApiKey, auth, contract, conn, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, oracleDecimals, mutexSeconds, oracleUpdateMutex)
 					if err != nil {
 						log.Printf("Failed to execute oracle update using primary connection: %v. Retrying with backup connection...", err)
 
 						// Attempt using the backup connection
-						publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, deviationPermille, coingeckoApiKey, cmcApiKey, auth, contractBackup, connBackup, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
+						publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, coingeckoApiKey, cmcApiKey, auth, contractBackup, connBackup, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, oracleDecimals, mutexSeconds, oracleUpdateMutex)
 						if err != nil {
 							log.Fatalf("Failed to execute oracle update using backup connection: %v", err)
 						}
@@ -287,12 +309,12 @@ func main() {
 						newAssetPrices[asset.symbol] = newAssetPrice
 					}
 					// update all prices
-					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, cmcApiKey, auth, contract, conn, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
+					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, coingeckoApiKey, cmcApiKey, auth, contract, conn, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, oracleDecimals, mutexSeconds, oracleUpdateMutex)
 					if err != nil {
 						log.Printf("Failed to execute oracle update using primary connection: %v. Retrying with backup connection...", err)
 
 						// Attempt using the backup connection
-						publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, deviationPermille, coingeckoApiKey, cmcApiKey, auth, contractBackup, connBackup, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, mutexSeconds, oracleUpdateMutex)
+						publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, coingeckoApiKey, cmcApiKey, auth, contractBackup, connBackup, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, oracleDecimals, mutexSeconds, oracleUpdateMutex)
 						if err != nil {
 							log.Fatalf("Failed to execute oracle update using backup connection: %v", err)
 						}
@@ -308,7 +330,6 @@ func main() {
 func oracleUpdateExecutor(
 	publishedPrices map[string]float64,
 	newPrices map[string]float64,
-	deviationPermille int,
 	coingeckoApiKey string,
 	cmcApiKey string,
 	auth *bind.TransactOpts,
@@ -319,6 +340,7 @@ func oracleUpdateExecutor(
 	compatibilityMode bool,
 	assets []Asset,
 	conditionalAssets []ConditionalPair,
+	oracleDecimals int,
 	mutexSeconds int,
 	oracleUpdateMutex sync.Mutex) (map[string]float64, error) {
 	// Check for deviation and collect all new prices in a map
@@ -338,7 +360,7 @@ func oracleUpdateExecutor(
 				asset0OldPrice := publishedPrices[asset0.symbol]
 
 				// Flag asset for update if it is conditional
-				if asset0NewPrice > 1e-8 && ((asset0NewPrice > (asset0OldPrice * (1 + float64(deviationPermille)/1000))) || (asset0NewPrice < (asset0OldPrice * (1 - float64(deviationPermille)/1000)))) {
+				if asset0NewPrice > 1e-8 && ((asset0NewPrice > (asset0OldPrice * (1 + float64(asset0.deviation)/1000))) || (asset0NewPrice < (asset0OldPrice * (1 - float64(asset0.deviation)/1000)))) {
 					updateAssetConditional = true
 					log.Printf("Asset %s flagged for update because conditional asset %s is updated as well.", asset.symbol, asset0.symbol)
 				} else {
@@ -351,7 +373,7 @@ func oracleUpdateExecutor(
 		newPrice := newPrices[asset.symbol]
 		oldPrice := publishedPrices[asset.symbol]
 
-		if updateAssetConditional || (newPrice > 1e-8 && ((newPrice > (oldPrice * (1 + float64(deviationPermille)/1000))) || (newPrice < (oldPrice * (1 - float64(deviationPermille)/1000))))) {
+		if updateAssetConditional || (newPrice > 1e-8 && ((newPrice > (oldPrice * (1 + float64(asset.deviation)/1000))) || (newPrice < (oldPrice * (1 - float64(asset.deviation)/1000))))) {
 			var externalPrices []float64
 
 			if asset.coingeckoName != "" {
@@ -377,7 +399,7 @@ func oracleUpdateExecutor(
 				numGuardianMatches := 0
 			  // Check for deviation
 				for _, guardianPrice := range externalPrices {
-					if math.Abs(guardianPrice - newPrice) / guardianPrice <= asset.allowedDeviation {
+					if math.Abs(guardianPrice - newPrice) / guardianPrice <= asset.allowedGuardianDeviation {
 						numGuardianMatches += 1
 					}
 				}
@@ -393,7 +415,7 @@ func oracleUpdateExecutor(
 				continue
 			}
 
-			log.Printf("Entering deviation based update zone for old price %.2f of asset %s. New price: %.2f", oldPrice, asset.symbol, newPrice)
+			log.Printf("Entering deviation based update zone for old price %.2f of asset %s. New price: %.2f. Required deviation: %d permille", oldPrice, asset.symbol, newPrice, asset.deviation)
 			updateCollector[asset.symbol] = newPrice
 			priceCollector[asset.symbol] = newPrice
 		} else {
@@ -412,7 +434,7 @@ func oracleUpdateExecutor(
 	for key, price := range updateCollector {
 		key = key + "/USD"
 		keys = append(keys, key)
-		integerPrice := int64(price * 100000000)
+		integerPrice := int64(price * math.Pow(10, float64(oracleDecimals)))
 		prices = append(prices, integerPrice)
 	}
 
@@ -453,10 +475,16 @@ func retrieveAssetPrice(asset Asset, useGql bool, gqlWindowSize int, gqlMethodol
 	if strings.ToLower(strings.TrimSpace(asset.blockchain)) == "rwa-equity" {
 		price, err = getRwaEquityPriceFromDia(asset.address)
 		if err != nil {
-			log.Printf("Failed to retrieve %s rwa price from DIA: %v", asset.address, err)
+			log.Printf("Failed to retrieve %s rwa equity price from DIA: %v", asset.address, err)
 		}
 		return price, nil
-	} 
+	} else if strings.ToLower(strings.TrimSpace(asset.blockchain)) == "rwa-commodity" {
+		price, err = getRwaCommodityPriceFromDia(asset.address)
+		if err != nil {
+			log.Printf("Failed to retrieve %s rwa commodity price from DIA: %v", asset.address, err)
+		}
+		return price, nil
+	}
 	// Get quotation for token and update Oracle
 	if useGql {
 		price, err = getGraphqlAssetQuotationFromDia(asset.blockchain, asset.address, gqlWindowSize, gqlMethodology, gqlLiquidityParameters)
@@ -777,6 +805,29 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int,
 func getRwaEquityPriceFromDia(address string) (float64, error) {
 	// Execute the query
 	response, err := http.Get(diaBaseUrl + "/v1/rwa/Equities/" + address)
+	if err != nil {
+		return 0.0, err
+	}
+
+	defer response.Body.Close()
+	if 200 != response.StatusCode {
+		return 0.0, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	}
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return 0.0, err
+	}
+	var quotation models.ForeignQuotation
+	err = quotation.UnmarshalBinary(contents)
+	if err != nil {
+		return 0.0, err
+	}
+	return quotation.Price, nil
+}
+
+func getRwaCommodityPriceFromDia(address string) (float64, error) {
+	// Execute the query
+	response, err := http.Get(diaBaseUrl + "/v1/rwa/Commodities/" + address)
 	if err != nil {
 		return 0.0, err
 	}

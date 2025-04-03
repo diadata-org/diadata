@@ -662,6 +662,12 @@
         },
         {
             "Exchange": "BitMart",
+            "ForeignName": "WCO_USDT",
+            "Ignore": false,
+            "Symbol": "WCO"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "XAI_USDT",
             "Ignore": false,
             "Symbol": "XAI"

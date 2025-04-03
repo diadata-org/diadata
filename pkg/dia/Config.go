@@ -63,6 +63,7 @@ const (
 	UniswapExchangeV3Arbitrum          = "UniswapV3-Arbitrum"
 	UniswapExchangeV3Base              = "UniswapV3-Base"
 	UniswapExchangeV3Celo              = "UniswapV3-Celo"
+	UniswapExchangeV4                  = "UniswapV4"
 	LoopringExchange                   = "Loopring"
 	CamelotExchange                    = "Camelot"
 	CamelotExchangeV3                  = "CamelotV3"
@@ -131,6 +132,7 @@ const (
 	AerodromeV1Exchange                = "AerodromeV1"
 	BifrostExchange                    = "Bifrost"
 	HydrationExchange                  = "Hydration"
+	VelodromeExchangeSwellchain        = "Velodrome-Swellchain"
 	// FinageForex        = "FinageForex"
 )
 

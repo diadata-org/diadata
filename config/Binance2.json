@@ -86,6 +86,12 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "BTCUSDT",
+            "Ignore": false,
+            "Symbol": "BTC"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "CVXUSDT",
             "Ignore": false,
             "Symbol": "CVX"
@@ -590,9 +596,9 @@
         },
         {
             "Exchange": "Binance",
-            "ForeignName": "wBETHUSDT",
+            "ForeignName": "WBETHUSDT",
             "Ignore": false,
-            "Symbol": "wBETH"
+            "Symbol": "WBETH"
         }
     ]
 }

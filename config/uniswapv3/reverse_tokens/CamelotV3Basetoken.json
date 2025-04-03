@@ -3,6 +3,10 @@
       {
         "Address": "0xd3443ee1e91aF28e5FB858Fbd0D72A63bA8046E0",
         "Symbol": "gUSDC"
+      },
+      {
+        "Address": "0xF4AcDE4D938844751f34659C67056f7e69dBE85a",
+        "Symbol": "CLUTCH"
       }
     ]
   }

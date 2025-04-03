@@ -296,12 +296,6 @@
         },
         {
             "Exchange": "Huobi",
-            "ForeignName": "KSMUSDT",
-            "Ignore": false,
-            "Symbol": "KSM"
-        },
-        {
-            "Exchange": "Huobi",
             "ForeignName": "LSKBTC",
             "Ignore": false,
             "Symbol": "LSK"

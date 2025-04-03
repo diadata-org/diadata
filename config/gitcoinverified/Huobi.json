@@ -271,12 +271,6 @@
             "Address": "0xdeFA4e8a7bcBA345F687a2f1456F5Edd9CE97202"
         },
         {
-            "Symbol": "KSM",
-            "Exchange": "Huobi",
-            "Blockchain": "Kusama",
-            "Address": "0x0000000000000000000000000000000000000000"
-        },
-        {
             "Symbol": "LSK",
             "Exchange": "Huobi",
             "Blockchain": "Lisk",

@@ -4,26 +4,35 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
+	"net/http"
+	"net/url"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
-	"github.com/adshao/go-binance/v2"
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	models "github.com/diadata-org/diadata/pkg/model"
 	utils "github.com/diadata-org/diadata/pkg/utils"
+	ws "github.com/gorilla/websocket"
 	"github.com/zekroTJA/timedmap"
+)
+
+const (
+	BINANCE_API_MAX_RETRIES = 5
+)
+
+var (
+	binanceWSBaseString = "wss://stream.binance.com:9443/ws"
 )
 
 type binancePairScraperSet map[*BinancePairScraper]nothing
 
 // BinanceScraper is a Scraper for collecting trades from the Binance websocket API
 type BinanceScraper struct {
-	client *binance.Client
 	// signaling channels for session initialization and finishing
-	initDone     chan nothing
 	shutdown     chan nothing
 	shutdownDone chan nothing
 	// error handling; to read error or closed, first acquire read lock
@@ -33,28 +42,48 @@ type BinanceScraper struct {
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
 	// use sync.Maps to concurrently handle multiple pairs
-	pairScrapers sync.Map // dia.ExchangePair -> binancePairScraperSet
-	// pairSubscriptions sync.Map // dia.ExchangePair -> string (subscription ID)
-	// pairLocks         sync.Map // dia.ExchangePair -> sync.Mutex
-	exchangeName string
-	scraperName  string
-	chanTrades   chan *dia.Trade
-	db           *models.RelDB
+	pairScrapers      sync.Map // dia.ExchangePair -> binancePairScraperSet
+	newPairScrapers   map[string]*BinancePairScraper
+	proxyIndex        int
+	exchangeName      string
+	scraperName       string
+	chanTrades        chan *dia.Trade
+	db                *models.RelDB
+	wsClient          *ws.Conn
+	apiConnectRetries int
+}
+
+type binanceWSResponse struct {
+	Timestamp      int64       `json:"T"`
+	Price          string      `json:"p"`
+	Volume         string      `json:"q"`
+	ForeignTradeID int         `json:"t"`
+	ForeignName    string      `json:"s"`
+	Type           interface{} `json:"e"`
+	Buy            bool        `json:"m"`
+	Ignore         bool        `json:"M"`
+}
+
+// BinancePairScraper implements PairScraper for Binance
+type BinancePairScraper struct {
+	parent *BinanceScraper
+	pair   dia.ExchangePair
+	closed bool
 }
 
 // NewBinanceScraper returns a new BinanceScraper for the given pair
 func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange, scraperName string, scrape bool, relDB *models.RelDB) *BinanceScraper {
 
 	s := &BinanceScraper{
-		client:       binance.NewClient(apiKey, secretKey),
-		initDone:     make(chan nothing),
-		shutdown:     make(chan nothing),
-		shutdownDone: make(chan nothing),
-		exchangeName: exchange.Name,
-		scraperName:  scraperName,
-		error:        nil,
-		chanTrades:   make(chan *dia.Trade),
-		db:           relDB,
+		shutdown:        make(chan nothing),
+		shutdownDone:    make(chan nothing),
+		exchangeName:    exchange.Name,
+		scraperName:     scraperName,
+		error:           nil,
+		chanTrades:      make(chan *dia.Trade),
+		db:              relDB,
+		proxyIndex:      0,
+		newPairScrapers: make(map[string]*BinancePairScraper),
 	}
 
 	var err error
@@ -64,39 +93,180 @@ func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange, s
 	}
 	log.Info("reverse basetokens: ", reverseBasetokens)
 
-	// establish connection in the background
+	err = s.connectToAPI()
+	if err != nil {
+		log.Error("getting an error while connecting to api: ", err)
+	} else {
+		log.Println("Successfully connect to websocket server.")
+	}
+
+	//establish connection in the background
 	if scrape {
 		go s.mainLoop()
 	}
+
 	return s
 }
 
+func (scraper *BinanceScraper) subscribe(pair dia.ExchangePair, subscribe bool) error {
+	if scraper.closed {
+		return errors.New("binance Scraper: Call ScrapePair on closed scraper")
+	}
+
+	// Validate WebSocket connection exists
+	if scraper.wsClient == nil {
+		return errors.New("WebSocket connection not initialized")
+	}
+
+	// Determine subscription type (SUBSCRIBE/UNSUBSCRIBE)
+	subscribeType := "UNSUBSCRIBE"
+	if subscribe {
+		subscribeType = "SUBSCRIBE"
+	}
+	// Convert symbol+currency to lowercase (e.g., "btcusdt@trade")
+	pairTicker := strings.ToLower(pair.ForeignName)
+
+	subscribeMessage := map[string]interface{}{
+		"method": subscribeType,
+		"params": []string{pairTicker + "@trade"}, //btcusdt@trade
+		"id":     time.Now().UnixNano(),
+	}
+	log.Info("Subscribe Message: ", subscribeMessage)
+
+	if err := scraper.wsClient.WriteJSON(subscribeMessage); err != nil {
+		log.Errorf("Failed to send subscription request: %v", err)
+		return err
+	}
+	return nil
+}
+
+func (scraper *BinanceScraper) connectToAPI() error {
+	log.Info("Starting connect to API")
+
+	// Switch to alternative Proxy whenever too many retries on the first.
+	if scraper.apiConnectRetries > BINANCE_API_MAX_RETRIES {
+		log.Errorf("too many timeouts for Binance api connection with proxy %v. Switch to alternative proxy.", scraper.proxyIndex)
+		scraper.apiConnectRetries = 0
+		scraper.proxyIndex = (scraper.proxyIndex + 1) % 2
+	}
+
+	username := utils.Getenv("BINANCE_PROXY"+strconv.Itoa(scraper.proxyIndex)+"_USERNAME", "")
+	password := utils.Getenv("BINANCE_PROXY"+strconv.Itoa(scraper.proxyIndex)+"_PASSWORD", "")
+	user := url.UserPassword(username, password)
+	host := utils.Getenv("BINANCE_PROXY"+strconv.Itoa(scraper.proxyIndex)+"_HOST", "")
+
+	var d ws.Dialer
+	if host != "" {
+		d = ws.Dialer{
+			Proxy: http.ProxyURL(&url.URL{
+				Scheme: "http", // or "https" depending on your proxy
+				User:   user,
+				Host:   host,
+				Path:   "/",
+			},
+			),
+		}
+	}
+
+	conn, _, err := d.Dial(binanceWSBaseString, nil)
+	if err != nil {
+		log.Errorf("Binance - Connect to API: %s.", err.Error())
+		return err
+	}
+	scraper.wsClient = conn
+
+	return nil
+}
+
 func (up *BinanceScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
-	if pair.Symbol == "MIOTA" {
-		pair.ForeignName = "M" + pair.ForeignName
-	}
-	if pair.Symbol == "YOYOW" {
-		pair.ForeignName = "YOYOW" + pair.ForeignName[4:]
-	}
-	if pair.Symbol == "ETHOS" {
-		pair.ForeignName = "ETHOS" + pair.ForeignName[3:]
-	}
-	if pair.Symbol == "WNXM" {
-		pair.Symbol = "wNXM"
-		pair.ForeignName = "wNXM" + pair.ForeignName[4:]
-	}
 	return pair, nil
 }
 
-// runs in a goroutine until s is closed
 func (s *BinanceScraper) mainLoop() {
-	close(s.initDone)
-	for range s.shutdown { // user requested shutdown
-		log.Println("BinanceScraper shutting down")
+
+	defer func() {
+		log.Println("BinanceScraper main loop exiting")
 		s.cleanup()
-		return
+	}()
+
+	for {
+		var message binanceWSResponse
+		err := s.wsClient.ReadJSON(&message)
+		if err != nil {
+			log.Error("JSON decode error: ", err)
+			continue
+		}
+
+		if message.ForeignName == "" || message.Price == "" || message.Volume == "" {
+			log.Warn("Skipping invalid trade data:", message)
+		} else {
+			s.parseWSResponse(message)
+		}
 	}
-	select {}
+}
+
+func (s *BinanceScraper) parseWSResponse(message binanceWSResponse) {
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+
+	var exchangepair dia.ExchangePair
+	var err error
+
+	ps := s.newPairScrapers[message.ForeignName]
+	pair := ps.pair
+
+	exchangepair, err = s.db.GetExchangePairCache(s.scraperName, message.ForeignName)
+	if err != nil {
+		log.Error(err)
+	}
+
+	tradeTime := time.Unix(0, message.Timestamp*1000000)
+	tradePrice, err := strconv.ParseFloat(message.Price, 64)
+	if err != nil {
+		log.Errorf("Binance - Parse price: %v.", err)
+	}
+	tradeVolume, err := strconv.ParseFloat(message.Volume, 64)
+	if err != nil {
+		log.Errorf("Binance - Parse volume: %v.", err)
+	}
+
+	if !message.Buy {
+		tradeVolume = -tradeVolume
+	}
+	tradeForeignTradeID := strconv.Itoa(message.ForeignTradeID)
+
+	t := &dia.Trade{
+		Symbol:         pair.Symbol,
+		Pair:           message.ForeignName,
+		Price:          tradePrice,
+		Volume:         tradeVolume,
+		Time:           tradeTime,
+		ForeignTradeID: tradeForeignTradeID,
+		Source:         s.exchangeName,
+		VerifiedPair:   exchangepair.Verified,
+		BaseToken:      exchangepair.UnderlyingPair.BaseToken,
+		QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
+	}
+
+	if utils.Contains(reverseBasetokens, t.BaseToken.Identifier()) {
+		// If we need quotation of a base token, reverse pair
+		tSwapped, errSwap := dia.SwapTrade(*t)
+		if errSwap == nil {
+			t = &tSwapped
+		}
+	}
+
+	if exchangepair.Verified {
+		log.Infoln("Got verified trade", t)
+	}
+
+	// Handle duplicate trades.
+	discardTrade := t.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+	if !discardTrade {
+		t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+		ps.parent.chanTrades <- t
+	}
+
 }
 
 func (s *BinanceScraper) FillSymbolData(symbol string) (dia.Asset, error) {
@@ -138,139 +308,54 @@ func (s *BinanceScraper) Close() error {
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
 // this APIScraper
 func (s *BinanceScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
-	<-s.initDone // wait until client is connected
-
-	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
-	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
-
-	if s.closed {
-		return nil, errors.New("BinanceScraper: Call ScrapePair on closed scraper")
-	}
-
 	ps := &BinancePairScraper{
 		parent: s,
 		pair:   pair,
 	}
 
-	wsAggTradeHandler := func(event *binance.WsAggTradeEvent) {
-		var exchangepair dia.ExchangePair
+	s.newPairScrapers[pair.ForeignName] = ps
 
-		volume, err := strconv.ParseFloat(event.Quantity, 64)
-		price, err2 := strconv.ParseFloat(event.Price, 64)
-
-		if err == nil && err2 == nil && event.Event == "aggTrade" {
-			if !event.IsBuyerMaker {
-				volume = -volume
-			}
-			pairNormalized, _ := s.NormalizePair(pair)
-			exchangepair, err = s.db.GetExchangePairCache(s.scraperName, pair.ForeignName)
-			if err != nil {
-				log.Error(err)
-			}
-			t := &dia.Trade{
-				Symbol:         pairNormalized.Symbol,
-				Pair:           pairNormalized.ForeignName,
-				Price:          price,
-				Volume:         volume,
-				Time:           time.Unix(event.TradeTime/1000, (event.TradeTime%1000)*int64(time.Millisecond)),
-				ForeignTradeID: strconv.FormatInt(event.AggTradeID, 16),
-				Source:         s.exchangeName,
-				VerifiedPair:   exchangepair.Verified,
-				BaseToken:      exchangepair.UnderlyingPair.BaseToken,
-				QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
-			}
-
-			if utils.Contains(reverseBasetokens, t.BaseToken.Identifier()) {
-				// If we need quotation of a base token, reverse pair
-				tSwapped, errSwap := dia.SwapTrade(*t)
-				if errSwap == nil {
-					t = &tSwapped
-				}
-			}
-
-			if exchangepair.Verified {
-				log.Infoln("Got verified trade", t)
-			}
-
-			// Handle duplicate trades.
-			discardTrade := t.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
-			if !discardTrade {
-				t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
-				ps.parent.chanTrades <- t
-			}
-		} else {
-			log.Println("ignoring event ", event, err, err2)
-		}
-	}
-	errHandler := func(err error) {
-		log.Error(err)
+	if err := s.subscribe(pair, true); err != nil {
+		log.Error("Subscription failed:", err)
 	}
 
-	_, _, err := binance.WsAggTradeServe(pair.ForeignName, wsAggTradeHandler, errHandler)
-	if err != nil {
-		log.Errorf("serving pair %s", pair.ForeignName)
-	}
+	//ensure that no more than 5 requests are sent per second(as required by Binance).
+	time.Sleep(400 * time.Millisecond)
 
-	return ps, err
+	return ps, nil
 }
 func (s *BinanceScraper) normalizeSymbol(p dia.ExchangePair, foreignName string, params ...string) (pair dia.ExchangePair, err error) {
-	// symbol := p.Symbol
-	// status := params[0]
-	// if status == "TRADING" {
-	// 	if helpers.NameForSymbol(symbol) == symbol {
-	// 		if !helpers.SymbolIsName(symbol) {
-	// 			pair.Symbol = symbol
-	// 			pair, _ = s.NormalizePair(pair)
-
-	// 			return pair, errors.New("Foreign name can not be normalized:" + foreignName + " symbol:" + symbol)
-	// 		}
-	// 	}
-	// 	if helpers.SymbolIsBlackListed(symbol) {
-	// 		pair.Symbol = symbol
-	// 		return pair, errors.New("Symbol is black listed:" + symbol)
-	// 	}
-	// } else {
-	// 	return pair, errors.New("Symbol:" + symbol + " with foreign name:" + foreignName + " is:" + status)
-
-	// }
 	return pair, nil
 }
 
 // FetchAvailablePairs returns a list with all available trade pairs
 func (s *BinanceScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 
-	data, _, err := utils.GetRequest("https://api.binance.com/api/v1/exchangeInfo")
+	// data, _, err := utils.GetRequest("https://api.binance.com/api/v1/exchangeInfo")
 
-	if err != nil {
-		return
-	}
-	var ar binance.ExchangeInfo
-	err = json.Unmarshal(data, &ar)
-	if err == nil {
-		for _, p := range ar.Symbols {
+	// if err != nil {
+	// 	return
+	// }
+	// var ar binance.ExchangeInfo
+	// err = json.Unmarshal(data, &ar)
+	// if err == nil {
+	// 	for _, p := range ar.Symbols {
 
-			pairToNormalise := dia.ExchangePair{
-				Symbol:      p.Symbol,
-				ForeignName: p.Symbol,
-				Exchange:    s.exchangeName,
-			}
+	// 		pairToNormalise := dia.ExchangePair{
+	// 			Symbol:      p.Symbol,
+	// 			ForeignName: p.Symbol,
+	// 			Exchange:    s.exchangeName,
+	// 		}
 
-			pair, serr := s.normalizeSymbol(pairToNormalise, p.BaseAsset, p.Status)
-			if serr == nil {
-				pairs = append(pairs, pair)
-			} else {
-				log.Error(serr)
-			}
-		}
-	}
+	// 		pair, serr := s.normalizeSymbol(pairToNormalise, p.BaseAsset, p.Status)
+	// 		if serr == nil {
+	// 			pairs = append(pairs, pair)
+	// 		} else {
+	// 			log.Error(serr)
+	// 		}
+	// 	}
+	// }
 	return
-}
-
-// BinancePairScraper implements PairScraper for Binance
-type BinancePairScraper struct {
-	parent *BinanceScraper
-	pair   dia.ExchangePair
-	closed bool
 }
 
 // Close stops listening for trades of the pair associated with s
@@ -335,12 +420,6 @@ func getReverseTokensFromConfigFull(filename string) (*[]string, error) {
 		return &[]string{}, err
 	}
 
-	// // Unmarshal read data
-	// type lockedAsset struct {
-	// 	Address    string `json:"Address"`
-	// 	Blockchain string `json:"Blockchain"`
-	// 	Symbol     string `json:"Symbol"`
-	// }
 	type lockedAssetList struct {
 		AllAssets []dia.Asset `json:"Tokens"`
 	}

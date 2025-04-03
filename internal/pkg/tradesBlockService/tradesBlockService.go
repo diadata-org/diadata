@@ -724,6 +724,24 @@ func buildBridge(t dia.Trade) dia.Asset {
 			}
 		}
 	}
+	if basetoken.Blockchain == dia.STACKS && (t.Source == dia.BitflowExchange || t.Source == dia.VelarExchange) {
+		if basetoken.Address == "SP3Y2ZSH8P7D50B0VBTSX11S7XSG24M1VB9YFQA4K.token-aeusdc" {
+			basetoken = dia.Asset{
+				Symbol:     "USDC",
+				Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+				Blockchain: dia.ETHEREUM,
+			}
+		}
+	}
+	if basetoken.Blockchain == dia.SWELLCHAIN && t.Source == dia.VelodromeExchangeSwellchain {
+		if basetoken.Address == "0x4200000000000000000000000000000000000006" {
+			basetoken = dia.Asset{
+				Symbol:     "WETH",
+				Address:    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+				Blockchain: dia.ETHEREUM,
+			}
+		}
+	}
 
 	return basetoken
 }

@@ -211,6 +211,9 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapV3Scraper(Exchanges[dia.UniswapExchangeV3Polygon], scrape, relDB)
 	case dia.UniswapExchangeV3Arbitrum:
 		return NewUniswapV3Scraper(Exchanges[dia.UniswapExchangeV3Arbitrum], scrape, relDB)
+	case dia.UniswapExchangeV4:
+		return NewUniswapV4Scraper(Exchanges[dia.UniswapExchangeV4], scrape, relDB)
+
 	case dia.HuckleberryExchange:
 		return NewUniswapScraper(Exchanges[dia.HuckleberryExchange], scrape, relDB)
 	case dia.TraderJoeExchange:
@@ -275,6 +278,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewZenlinkScraper(Exchanges[dia.ZenlinkswapExchangeBifrostPolkadot], scrape)
 	case dia.VelodromeExchange:
 		return NewVelodromeScraper(Exchanges[dia.VelodromeExchange], scrape, relDB)
+	case dia.VelodromeExchangeSwellchain:
+		return NewVelodromeScraper(Exchanges[dia.VelodromeExchangeSwellchain], scrape, relDB)
 	case dia.AerodromeV1Exchange:
 		return NewVelodromeScraper(Exchanges[dia.AerodromeV1Exchange], scrape, relDB)
 	case dia.MaverickExchange:

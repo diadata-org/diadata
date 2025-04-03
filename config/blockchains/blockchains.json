@@ -295,6 +295,14 @@
             "ChainID": "Ethereum34443"
         },
         {
+            "Name": "EduChain",
+            "NativeToken": {
+                "Address": ""
+            },
+            "VerificationMechanism": "pos",
+            "ChainID": "Ethereum41923"
+        },
+        {
             "Name": "Optimism",
             "GenesisDate": 1636622199,
             "NativeToken": {

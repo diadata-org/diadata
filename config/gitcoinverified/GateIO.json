@@ -1346,6 +1346,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Symbol": "XFI",
+            "Blockchain": "Ethereum",
+            "Address": "0xC8CeED65E236F7d6fB378b8715f9e6912e486A54"
+        },
+        {
+            "Exchange": "GateIO",
             "Symbol": "XLM",
             "Blockchain": "Stellar",
             "Address": "0x0000000000000000000000000000000000000000"

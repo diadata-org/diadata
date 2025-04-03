@@ -2750,6 +2750,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "XFI_USDT",
+            "Symbol": "XFI"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "XLM_BTC",
             "Ignore": false,
             "Symbol": "XLM"

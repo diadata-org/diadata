@@ -140,6 +140,12 @@
         },
         {
             "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "DEGEN-USD",
+            "Symbol": "DEGEN"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "DIA-USD",
             "Ignore": false,
             "Symbol": "DIA"
@@ -515,6 +521,12 @@
             "ForeignName": "WBTC-BTC",
             "Ignore": false,
             "Symbol": "WBTC"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "WELL-USD",
+            "Symbol": "WELL"
         },
         {
             "Exchange": "CoinBase",

@@ -727,6 +727,20 @@
       "Decimals": 18,
       "Blockchain": "Bifrost-polkadot",
       "Address": "2308"
+    },
+    {
+      "Symbol": "BLEND",
+      "Name": "Blend Token",
+      "Decimals": 18,
+      "Blockchain": "EduChain",
+      "Address": "0x526E8a66E357FFeaEeEc6d7Be1E5eA44a788dd1d"
+    },
+    {
+      "Symbol": "WCO",
+      "Name": "W Coin",
+      "Decimals": 18,
+      "Blockchain": "WChain",
+      "Address": "0x0000000000000000000000000000000000000000"
     }
   ]
 }
