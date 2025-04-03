@@ -553,7 +553,7 @@
             "Address": "0x6985884C4392D348587B19cb9eAAf157F13271cd"
         },
         {
-            "Symbol": "wBETH",
+            "Symbol": "WBETH",
             "Exchange": "Binance2",
             "Blockchain": "BinanceSmartChain",
             "Address": "0xa2E3356610840701BDf5611a53974510Ae27E2e1"

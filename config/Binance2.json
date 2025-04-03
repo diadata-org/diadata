@@ -596,9 +596,9 @@
         },
         {
             "Exchange": "Binance",
-            "ForeignName": "wBETHUSDT",
+            "ForeignName": "WBETHUSDT",
             "Ignore": false,
-            "Symbol": "wBETH"
+            "Symbol": "WBETH"
         }
     ]
 }
