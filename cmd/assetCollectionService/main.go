@@ -154,6 +154,8 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 		return source.NewOsmosisScraper(exchanges[dia.OsmosisExchange])
 	case dia.VelodromeExchange:
 		return source.NewVelodromeAssetSource(exchanges[dia.VelodromeExchange], relDB)
+	case dia.VelodromeExchangeSwellchain:
+		return source.NewVelodromeAssetSource(exchanges[dia.VelodromeExchangeSwellchain], relDB)
 	case dia.VelodromeSlipstreamExchange:
 		return source.NewVelodromeAssetSource(exchanges[dia.VelodromeSlipstreamExchange], relDB)
 	case dia.TraderJoeExchangeV2_1:

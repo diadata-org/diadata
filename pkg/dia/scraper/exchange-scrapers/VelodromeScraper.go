@@ -19,10 +19,12 @@ import (
 )
 
 const (
-	velodromeRestDial = ""
-	velodromeWsDial   = ""
-	baseRestDial      = ""
-	baseWsDial        = ""
+	velodromeRestDial  = ""
+	velodromeWsDial    = ""
+	baseRestDial       = ""
+	baseWsDial         = ""
+	swellchainRestDial = ""
+	swellchainWsDial   = ""
 )
 
 type VelodromeSwap struct {
@@ -67,6 +69,8 @@ func NewVelodromeScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 	switch exchange.Name {
 	case dia.VelodromeExchange:
 		s = makeVelodromeScraper(exchange, velodromeRestDial, velodromeWsDial, relDB)
+	case dia.VelodromeExchangeSwellchain:
+		s = makeVelodromeScraper(exchange, swellchainRestDial, swellchainWsDial, relDB)
 	case dia.AerodromeV1Exchange:
 		s = makeVelodromeScraper(exchange, baseRestDial, baseWsDial, relDB)
 	}

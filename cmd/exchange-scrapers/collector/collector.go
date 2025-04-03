@@ -49,6 +49,7 @@ var (
 		dia.HydrationExchange,
 		dia.UniswapExchangeV3Celo,
 		dia.UniswapExchangeV4,
+		dia.VelodromeExchangeSwellchain,
 	}
 
 	exchange = flag.String("exchange", "", "which exchange")

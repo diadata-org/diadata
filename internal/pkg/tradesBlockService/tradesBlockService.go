@@ -733,6 +733,15 @@ func buildBridge(t dia.Trade) dia.Asset {
 			}
 		}
 	}
+	if basetoken.Blockchain == dia.SWELLCHAIN && t.Source == dia.VelodromeExchangeSwellchain {
+		if basetoken.Address == "0x4200000000000000000000000000000000000006" {
+			basetoken = dia.Asset{
+				Symbol:     "WETH",
+				Address:    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+				Blockchain: dia.ETHEREUM,
+			}
+		}
+	}
 
 	return basetoken
 }

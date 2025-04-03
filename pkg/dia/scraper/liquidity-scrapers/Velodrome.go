@@ -32,6 +32,7 @@ type VelodromePoolScraper struct {
 var (
 	velodromeWaitMilliseconds = "500"
 	restDialOptimism          = ""
+	restDialSwellchain        = ""
 )
 
 func NewVelodromePoolScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *models.DB) (us *VelodromePoolScraper) {
@@ -39,6 +40,8 @@ func NewVelodromePoolScraper(exchange dia.Exchange, relDB *models.RelDB, datasto
 	switch exchange.Name {
 	case dia.VelodromeExchange:
 		us = makeVelodromePoolScraper(exchange, relDB, datastore, restDialOptimism, velodromeWaitMilliseconds)
+	case dia.VelodromeExchangeSwellchain:
+		us = makeVelodromePoolScraper(exchange, relDB, datastore, restDialSwellchain, velodromeWaitMilliseconds)
 	case dia.VelodromeSlipstreamExchange:
 		us = makeVelodromePoolScraper(exchange, relDB, datastore, restDialOptimism, velodromeWaitMilliseconds)
 	case dia.AerodromeV1Exchange:

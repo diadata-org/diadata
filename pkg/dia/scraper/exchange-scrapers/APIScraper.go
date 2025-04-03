@@ -278,6 +278,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewZenlinkScraper(Exchanges[dia.ZenlinkswapExchangeBifrostPolkadot], scrape)
 	case dia.VelodromeExchange:
 		return NewVelodromeScraper(Exchanges[dia.VelodromeExchange], scrape, relDB)
+	case dia.VelodromeExchangeSwellchain:
+		return NewVelodromeScraper(Exchanges[dia.VelodromeExchangeSwellchain], scrape, relDB)
 	case dia.AerodromeV1Exchange:
 		return NewVelodromeScraper(Exchanges[dia.AerodromeV1Exchange], scrape, relDB)
 	case dia.MaverickExchange:
