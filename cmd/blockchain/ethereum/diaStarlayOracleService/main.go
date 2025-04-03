@@ -62,7 +62,6 @@ func main() {
 		"0x0000000000000000000000000000000000000000", //BNB
 		"0x0000000000000000000000000000000000001010", //MATIC
 		"0x0000000000000000000000000000000000000000", //DOT
-		"Token:AUSD",                                 //aUSD
 		"0xE511ED88575C57767BAfb72BfD10775413E3F2b0", //nASTR
 		"vDOT",                                       //vDOT
 		"vASTR",                                      //vASTR
@@ -79,7 +78,6 @@ func main() {
 		"BinanceSmartChain", //BNB
 		"Polygon", //MATIC
 		"Polkadot", //DOT
-		"Acala", //aUSD
 		"Astar", //nASTR
 		"Bifrost", //vDOT
 		"Bifrost", //vASTR
@@ -96,10 +94,9 @@ func main() {
 		"binancecoin",
 		"matic-network",
 		"polkadot",
-		"acala-dollar-acala",
 		"liquid-astr",
 		"voucher-dot",
-		"astar", //vASTR is not yet available on CG
+		"bifrost-voucher-astr",
 	}
 	oldPrices := make(map[int]float64)
 
