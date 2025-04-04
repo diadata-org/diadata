@@ -1,0 +1,10 @@
+{
+    "Coins": [
+        {
+            "Exchange": "Binance",
+            "ForeignName": "BTCUSDT",
+            "Ignore": false,
+            "Symbol": "BTC"
+        }
+    ]
+}
