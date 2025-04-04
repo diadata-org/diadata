@@ -281,6 +281,20 @@
             "ScraperActive": true
         },
         {
+            "Name": "CoinEx",
+            "Centralized": true,
+            "Bridge": false,
+            "Contract": "",
+            "Blockchain": {
+                "Name": "Ethereum"
+            },
+            "RestAPI": "https://api.coinex.com/v2",
+            "WsAPI": "wss://socket.coinex.com/v2/spot",
+            "pairsAPI": "https://api.coinex.com/v1/market/list",
+            "WatchdogDelay": 3600,
+            "ScraperActive": false
+        },
+        {
             "Name": "Crypto.com",
             "Centralized": true,
             "Bridge": false,

@@ -1,0 +1,22 @@
+{
+    "Coins": [
+      {
+        "Exchange": "CoinEx",
+        "ForeignName": "BTCUSDT",
+        "Ignore": false,
+        "Symbol": "BTC"
+      },
+      {
+        "Exchange": "CoinEx",
+        "ForeignName": "SUSDT",
+        "Ignore": false,
+        "Symbol": "S"
+      },
+      {
+        "Exchange": "CoinEx",
+        "ForeignName": "SYKUSDT",
+        "Ignore": false,
+        "Symbol": "SYK"
+      }
+    ]
+  }
