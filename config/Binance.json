@@ -2,126 +2,6 @@
     "Coins": [
         {
             "Exchange": "Binance",
-            "ForeignName": "SHIBUSDT",
-            "Ignore": false,
-            "Symbol": "SHIB"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "DOTUSDT",
-            "Ignore": false,
-            "Symbol": "DOT"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "DOTBTC",
-            "Ignore": false,
-            "Symbol": "DOT"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "DOGEUSDT",
-            "Ignore": false,
-            "Symbol": "DOGE"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "ASTRUSDT",
-            "Ignore": false,
-            "Symbol": "ASTR"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "WBTCBTC",
-            "Ignore": false,
-            "Symbol": "WBTC"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "WBTCETH",
-            "Ignore": false,
-            "Symbol": "WBTC"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "GLMRUSDT",
-            "Ignore": false,
-            "Symbol": "GLMR"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "MOVRUSDT",
-            "Ignore": false,
-            "Symbol": "MOVR"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "FILUSDT",
-            "Ignore": false,
-            "Symbol": "FIL"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "CELOUSDT",
-            "Ignore": false,
-            "Symbol": "CELO"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "BALUSDT",
-            "Ignore": false,
-            "Symbol": "BAL"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "INJUSDT",
-            "Ignore": false,
-            "Symbol": "INJ"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "CRVUSDT",
-            "Ignore": false,
-            "Symbol": "CRV"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "GRTUSDT",
-            "Ignore": false,
-            "Symbol": "GRT"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "NEARUSDT",
-            "Ignore": false,
-            "Symbol": "NEAR"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "NEARBTC",
-            "Ignore": false,
-            "Symbol": "NEAR"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "MKRBTC",
-            "Ignore": false,
-            "Symbol": "MKR"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "COMPUSDT",
-            "Ignore": false,
-            "Symbol": "COMP"
-        },
-        {
-            "Exchange": "Binance",
-            "ForeignName": "COMPBTC",
-            "Ignore": false,
-            "Symbol": "COMP"
-        },
-        {
-            "Exchange": "Binance",
             "ForeignName": "ADABNB",
             "Ignore": false,
             "Symbol": "ADA"
@@ -146,6 +26,18 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "ASTRUSDT",
+            "Ignore": false,
+            "Symbol": "ASTR"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "BALUSDT",
+            "Ignore": false,
+            "Symbol": "BAL"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "BNBBTC",
             "Ignore": false,
             "Symbol": "BNB"
@@ -164,6 +56,30 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "CELOUSDT",
+            "Ignore": false,
+            "Symbol": "CELO"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "COMPUSDT",
+            "Ignore": false,
+            "Symbol": "COMP"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "COMPBTC",
+            "Ignore": false,
+            "Symbol": "COMP"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "CRVUSDT",
+            "Ignore": false,
+            "Symbol": "CRV"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "DIABTC",
             "Ignore": false,
             "Symbol": "DIA"
@@ -173,6 +89,24 @@
             "ForeignName": "DIAUSDT",
             "Ignore": false,
             "Symbol": "DIA"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "DOGEUSDT",
+            "Ignore": false,
+            "Symbol": "DOGE"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "DOTUSDT",
+            "Ignore": false,
+            "Symbol": "DOT"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "DOTBTC",
+            "Ignore": false,
+            "Symbol": "DOT"
         },
         {
             "Exchange": "Binance",
@@ -218,9 +152,33 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "FILUSDT",
+            "Ignore": false,
+            "Symbol": "FIL"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "FLOWUSDT",
             "Ignore": false,
             "Symbol": "FLOW"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "GLMRUSDT",
+            "Ignore": false,
+            "Symbol": "GLMR"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "GRTUSDT",
+            "Ignore": false,
+            "Symbol": "GRT"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "INJUSDT",
+            "Ignore": false,
+            "Symbol": "INJ"
         },
         {
             "Exchange": "Binance",
@@ -284,9 +242,39 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "MKRBTC",
+            "Ignore": false,
+            "Symbol": "MKR"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "MOVRUSDT",
+            "Ignore": false,
+            "Symbol": "MOVR"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "NEARUSDT",
+            "Ignore": false,
+            "Symbol": "NEAR"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "NEARBTC",
+            "Ignore": false,
+            "Symbol": "NEAR"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "SANDUSDT",
             "Ignore": false,
             "Symbol": "SAND"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "SHIBUSDT",
+            "Ignore": false,
+            "Symbol": "SHIB"
         },
         {
             "Exchange": "Binance",
@@ -353,6 +341,18 @@
             "ForeignName": "WANETH",
             "Ignore": false,
             "Symbol": "WAN"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "WBTCBTC",
+            "Ignore": false,
+            "Symbol": "WBTC"
+        },
+        {
+            "Exchange": "Binance",
+            "ForeignName": "WBTCETH",
+            "Ignore": false,
+            "Symbol": "WBTC"
         },
         {
             "Exchange": "Binance",
