@@ -7,6 +7,12 @@
             "Address": "Token:ACA"
         },
         {
+            "Symbol": "ADA",
+            "Exchange": "Binance",
+            "Blockchain": "Cardano",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "ADX",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -85,6 +91,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "BTC",
+            "Exchange": "Binance",
+            "Blockchain": "Bitcoin",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "BOND",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -121,6 +133,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "COMP",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0xc00e94Cb662C3520282E6f5717214004A7f26888"
+        },
+        {
             "Symbol": "CRV",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -137,6 +155,12 @@
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0x0Cf0Ee63788A0849fE5297F3407f701E122cC023"
+        },
+        {
+            "Symbol": "DIA",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"
         },
         {
             "Symbol": "DLT",
@@ -167,6 +191,18 @@
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e"
+        },
+        {
+            "Symbol": "ENJ",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0xF629cBd94d3791C9250152BD8dfBDF380E2a3B9c"
+        },
+        {
+            "Symbol": "ETH",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "FET",
@@ -217,6 +253,12 @@
             "Address": "7i5KKsX2weiTkry7jA4ZwSuXGhs5eJBEjY8vVxR4pfRx"
         },
         {
+            "Exchange": "Binance",
+            "Symbol": "GRT",
+            "Blockchain": "Ethereum",
+            "Address": "0xc944E90C64B2c07662A292be6244BDf05Cda44a7"
+        },
+        {
             "Symbol": "GTC",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -265,6 +307,12 @@
             "Address": "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32"
         },
         {
+            "Symbol": "LINK",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x514910771AF9Ca656af840dff83E8264EcF986CA"
+        },
+        {
             "Symbol": "LRC",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -275,6 +323,24 @@
             "Exchange": "Binance",
             "Blockchain": "Lisk",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "LTC",
+            "Exchange": "Binance",
+            "Blockchain": "Litecoin",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "MANA",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942"
+        },
+        {
+            "Exchange": "Binance",
+            "Symbol": "MKR",
+            "Blockchain": "Ethereum",
+            "Address": "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"
         },
         {
             "Symbol": "MLN",
@@ -299,6 +365,12 @@
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0xF433089366899D83a9f26A773D59ec7eCF30355e"
+        },
+        {
+            "Symbol": "NEAR",
+            "Exchange": "Binance",
+            "Blockchain": "NEAR",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "NGN",
@@ -421,10 +493,28 @@
             "Address": "0xe53EC727dbDEB9E2d5456c3be40cFF031AB40A55"
         },
         {
+            "Symbol": "TRX",
+            "Exchange": "Binance",
+            "Blockchain": "Tron",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "TUSD",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0x0000000000085d4780B73119b644AE5ecd22b376"
+        },
+        {
+            "Symbol": "USDC",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+        },
+        {
+            "Symbol": "USDT",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
         },
         {
             "Symbol": "UST",
@@ -463,9 +553,21 @@
             "Address": "0xb7cB1C96dB6B22b0D3d9536E0108d062BD488F74"
         },
         {
+            "Symbol": "XLM",
+            "Exchange": "Binance",
+            "Blockchain": "Stellar",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "XMR",
             "Exchange": "Binance",
             "Blockchain": "Monero",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "XRP",
+            "Exchange": "Binance",
+            "Blockchain": "XRPL",
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
