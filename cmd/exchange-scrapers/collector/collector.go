@@ -8,6 +8,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia/helpers/configCollectors"
 	scrapers "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers"
 	"github.com/diadata-org/diadata/pkg/utils"
+	"github.com/diadata-org/diadata/pkg/utils/probes"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	"github.com/diadata-org/diadata/pkg/dia/helpers/kafkaHelper"
@@ -62,6 +63,11 @@ var (
 	mode              = flag.String("mode", "current", "either storeTrades, current, historical or estimation.")
 	pairsfile         = flag.Bool("pairsfile", false, "read pairs from json file in config folder.")
 	replicaKafkaTopic string
+
+	lastTradeTime time.Time
+	startupDone   bool
+	// Smallest time unit for liveness probes.
+	livenessProbeSeconds = 5
 )
 
 func init() {
@@ -82,10 +88,20 @@ func init() {
 	replicaKafkaTopic = utils.Getenv("REPLICA_KAFKA_TOPIC", "false")
 }
 
+func ready() bool {
+	return startupDone
+}
+
+func live() bool {
+	return !lastTradeTime.Before(time.Now().Add(-time.Duration(livenessProbeSeconds) * time.Second))
+}
+
 // main manages all PairScrapers and handles incoming trade information
 func main() {
 
 	log.Infof("start collector for %s in %s mode...", *exchange, *mode)
+	log.Infoln("starting probes")
+	probes.Start(live, ready)
 
 	relDB, err := models.NewRelDataStore()
 	if err != nil {
@@ -169,11 +185,12 @@ func main() {
 		defer wg.Wait()
 
 	}
+	startupDone = true
 	go handleTrades(es.Channel(), &wg, w, wReplica, ds, *exchange, *mode)
 }
 
 func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wReplica *kafka.Writer, ds *models.DB, exchange string, mode string) {
-	lastTradeTime := time.Now()
+	lastTradeTime = time.Now()
 	watchdogDelay := scrapers.Exchanges[exchange].WatchdogDelay
 	if watchdogDelay == 0 {
 		watchdogDelay = scrapers.ExchangeDuplicates[exchange].WatchdogDelay
