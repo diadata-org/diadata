@@ -140,7 +140,7 @@
         },
         {
             "Exchange": "Kraken",
-            "ForeignName": "DASHXBT",
+            "ForeignName": "DASHUSD",
             "Ignore": false,
             "Symbol": "DASH"
         },
@@ -185,18 +185,6 @@
             "Ignore": false,
             "ForeignName": "ENSUSD",
             "Symbol": "ENS"
-        },
-        {
-            "Exchange": "Kraken",
-            "ForeignName": "EOSETH",
-            "Ignore": false,
-            "Symbol": "EOS"
-        },
-        {
-            "Exchange": "Kraken",
-            "ForeignName": "EOSXBT",
-            "Ignore": false,
-            "Symbol": "EOS"
         },
         {
             "Exchange": "Kraken",

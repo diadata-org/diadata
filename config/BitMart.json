@@ -14,12 +14,6 @@
         },
         {
             "Exchange": "BitMart",
-            "ForeignName": "AERO_USDT",
-            "Ignore": false,
-            "Symbol": "AERO"
-        },
-        {
-            "Exchange": "BitMart",
             "Ignore": false,
             "ForeignName": "ALEX_USDT",
             "Symbol": "ALEX"
@@ -278,12 +272,6 @@
         },
         {
             "Exchange": "BitMart",
-            "ForeignName": "FTM_USDT",
-            "Ignore": false,
-            "Symbol": "FTM"
-        },
-        {
-            "Exchange": "BitMart",
             "ForeignName": "GMT_USDT",
             "Ignore": false,
             "Symbol": "GMT"
@@ -302,12 +290,6 @@
         },
         {
             "Exchange": "BitMart",
-            "ForeignName": "GRAIL_USDT",
-            "Ignore": false,
-            "Symbol": "GRAIL"
-        },
-        {
-            "Exchange": "BitMart",
             "ForeignName": "GRT_USDT",
             "Ignore": false,
             "Symbol": "GRT"
@@ -323,12 +305,6 @@
             "ForeignName": "KAVA_USDT",
             "Ignore": false,
             "Symbol": "KAVA"
-        },
-        {
-            "Exchange": "BitMart",
-            "ForeignName": "KLIMA_USDT",
-            "Ignore": false,
-            "Symbol": "KLIMA"
         },
         {
             "Exchange": "BitMart",
@@ -452,12 +428,6 @@
         },
         {
             "Exchange": "BitMart",
-            "Ignore": false,
-            "ForeignName": "PRIME_USDT",
-            "Symbol": "PRIME"
-        },
-        {
-            "Exchange": "BitMart",
             "ForeignName": "QNT_USDT",
             "Ignore": false,
             "Symbol": "QNT"
@@ -521,12 +491,6 @@
             "ForeignName": "SOL_USDT",
             "Ignore": false,
             "Symbol": "SOL"
-        },
-        {
-            "Exchange": "BitMart",
-            "ForeignName": "SOLAR_USDT",
-            "Ignore": false,
-            "Symbol": "SOLAR"
         },
         {
             "Exchange": "BitMart",
@@ -608,18 +572,6 @@
         },
         {
             "Exchange": "BitMart",
-            "ForeignName": "USDD_USDT",
-            "Ignore": false,
-            "Symbol": "USDD"
-        },
-        {
-            "Exchange": "BitMart",
-            "ForeignName": "USDD_USDC",
-            "Ignore": false,
-            "Symbol": "USDD"
-        },
-        {
-            "Exchange": "BitMart",
             "ForeignName": "USDE_USDT",
             "Ignore": false,
             "Symbol": "USDE"
@@ -629,12 +581,6 @@
             "ForeignName": "USDP_USDT",
             "Ignore": false,
             "Symbol": "USDP"
-        },
-        {
-            "Exchange": "BitMart",
-            "ForeignName": "VELA_USDT",
-            "Ignore": false,
-            "Symbol": "VELA"
         },
         {
             "Exchange": "BitMart",

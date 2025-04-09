@@ -396,6 +396,7 @@ func (s *BitMartScraper) mainLoop() {
 					continue
 				} else {
 					t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+					log.Infof("got trade at %v : %s -- %v -- %v", t.Time, t.Pair, t.Price, t.Volume)
 					s.chanTrades <- t
 				}
 			}
