@@ -342,7 +342,7 @@ func (rdb *RelDB) GetExchangepairsByAsset(asset dia.Asset, exchange string, base
 		baseQuoteQuery      string
 	)
 	if exchange == dia.BinanceExchange {
-		secondExchangeQuery = fmt.Sprintf(" OR ep.exchange='%s'", dia.Binance2Exchange)
+		secondExchangeQuery = fmt.Sprintf(" OR ep.exchange='%s' OR ep.exchange='%s' ", dia.Binance2Exchange, dia.Binance3Exchange)
 	}
 	if exchange == dia.BKEXExchange {
 		secondExchangeQuery = fmt.Sprintf(" OR ep.exchange='%s'", dia.BKEX2Exchange)

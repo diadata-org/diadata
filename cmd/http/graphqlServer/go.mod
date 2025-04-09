@@ -4,7 +4,7 @@ go 1.22
 
 
 require (
-	github.com/diadata-org/diadata v1.4.563
+	github.com/diadata-org/diadata v1.4.581
 	github.com/graph-gophers/graphql-go v1.3.0
 	github.com/sirupsen/logrus v1.9.3
 )

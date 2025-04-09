@@ -73,6 +73,7 @@ func init() {
 	}
 
 	ExchangeDuplicates[dia.Binance2Exchange] = dia.Exchange{Name: "Binance2", Centralized: true, WatchdogDelay: 300}
+	ExchangeDuplicates[dia.Binance3Exchange] = dia.Exchange{Name: "Binance3", Centralized: true, WatchdogDelay: 300}
 	ExchangeDuplicates[dia.BKEX2Exchange] = dia.Exchange{Name: "BKEX2", Centralized: true, WatchdogDelay: 1200}
 
 }
@@ -121,6 +122,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewBinanceScraper(key, secret, Exchanges[dia.BinanceExchange], Exchanges[dia.BinanceExchange].Name, scrape, relDB)
 	case dia.Binance2Exchange:
 		return NewBinanceScraper(key, secret, Exchanges[dia.BinanceExchange], dia.Binance2Exchange, scrape, relDB)
+	case dia.Binance3Exchange:
+		return NewBinanceScraper(key, secret, Exchanges[dia.BinanceExchange], dia.Binance3Exchange, scrape, relDB)
 	case dia.BinanceExchangeUS:
 		return NewBinanceScraperUS(key, secret, Exchanges[dia.BinanceExchangeUS], scrape, relDB)
 	case dia.BitfinexExchange:

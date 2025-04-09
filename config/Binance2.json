@@ -74,12 +74,6 @@
         },
         {
             "Exchange": "Binance",
-            "ForeignName": "BTCUSDT",
-            "Ignore": false,
-            "Symbol": "BTC"
-        },
-        {
-            "Exchange": "Binance",
             "ForeignName": "DOGEFDUSD",
             "Ignore": false,
             "Symbol": "DOGE"

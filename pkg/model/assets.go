@@ -330,7 +330,7 @@ func (rdb *RelDB) GetExchangeSymbol(exchange string, symbol string) (asset dia.A
 	var decimals sql.NullInt64
 	var secondExchangeQuery string
 	if exchange == dia.BinanceExchange {
-		secondExchangeQuery = fmt.Sprintf(" OR es.exchange='%s'", dia.Binance2Exchange)
+		secondExchangeQuery = fmt.Sprintf(" OR es.exchange='%s' OR es.exchange='%s'", dia.Binance2Exchange, dia.Binance3Exchange)
 	}
 	if exchange == dia.BKEXExchange {
 		secondExchangeQuery = fmt.Sprintf(" OR es.exchange='%s'", dia.BKEX2Exchange)

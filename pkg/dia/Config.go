@@ -27,6 +27,7 @@ const (
 	BitforexExchange                   = "Bitforex"
 	BinanceExchange                    = "Binance"
 	Binance2Exchange                   = "Binance2"
+	Binance3Exchange                   = "Binance3"
 	BinanceExchangeUS                  = "BinanceUS"
 	BitstampExchange                   = "Bitstamp"
 	CryptoDotComExchange               = "Crypto.com"
