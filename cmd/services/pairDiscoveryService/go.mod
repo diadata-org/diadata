@@ -3,7 +3,7 @@ module github.com/diadata-org/diadata/services/pairDiscoveryService
 go 1.22
 
 require (
-	github.com/diadata-org/diadata v1.4.192
+	github.com/diadata-org/diadata v1.4.581
 	github.com/sirupsen/logrus v1.9.3
 	github.com/tkanos/gonfig v0.0.0-20210106201359-53e13348de2f
 )
@@ -183,3 +183,6 @@ require (
 )
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+
+
+replace github.com/btcsuite/btcd/btcec/v2 => github.com/btcsuite/btcd/btcec/v2 v2.3.3
