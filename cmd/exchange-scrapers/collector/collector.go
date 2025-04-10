@@ -210,7 +210,7 @@ func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wRepli
 				log.Error("handleTrades")
 				return
 			}
-			lastTradeTime = time.Now()
+			lastTradeTime = t.Time
 			// Trades are sent to the tradesblockservice through a kafka channel - either
 			// through trades topic or historical trades topic.
 			if mode == "current" || mode == "historical" || mode == "estimation" {
