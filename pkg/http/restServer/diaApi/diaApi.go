@@ -396,6 +396,17 @@ func (env *Env) Get24hVolume(c *gin.Context) {
 
 // GetExchanges is the delegate method for fetching all exchanges available in Postgres.
 func (env *Env) GetExchanges(c *gin.Context) {
+
+	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*time.Hour))
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("parse time range"))
+		return
+	}
+	if starttime.Before(endtime.AddDate(0, 0, -30)) {
+		restApi.SendError(c, http.StatusInternalServerError, errors.New("time range is limited to 30 days"))
+		return
+	}
+
 	type exchangeReturn struct {
 		Name          string
 		Volume24h     float64
@@ -419,13 +430,13 @@ func (env *Env) GetExchanges(c *gin.Context) {
 	for _, exchange := range exchanges {
 		var numPairs int
 
-		vol, err := env.DataStore.Get24HoursExchangeVolume(exchange.Name)
+		vol, err := env.DataStore.GetVolumeInflux(dia.Asset{}, exchange.Name, starttime, endtime)
 		if err != nil {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 			return
 		}
 
-		numTrades, err := env.DataStore.GetNumTradesExchange24H(exchange.Name)
+		numTrades, err := env.DataStore.GetNumTrades(exchange.Name, "", "", starttime, endtime)
 		if err != nil {
 			restApi.SendError(c, http.StatusInternalServerError, err)
 			return
