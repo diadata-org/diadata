@@ -64,10 +64,7 @@ var (
 	pairsfile         = flag.Bool("pairsfile", false, "read pairs from json file in config folder.")
 	replicaKafkaTopic string
 
-	lastTradeTime time.Time
-	startupDone   bool
-	// Smallest time unit for liveness probes.
-	livenessProbeSeconds = 5
+	startupDone bool
 )
 
 func init() {
@@ -93,7 +90,7 @@ func ready() bool {
 }
 
 func live() bool {
-	return !lastTradeTime.Before(time.Now().Add(-time.Duration(livenessProbeSeconds) * time.Second))
+	return true
 }
 
 // main manages all PairScrapers and handles incoming trade information
@@ -190,7 +187,7 @@ func main() {
 }
 
 func handleTrades(c chan *dia.Trade, wg *sync.WaitGroup, w *kafka.Writer, wReplica *kafka.Writer, ds *models.DB, exchange string, mode string) {
-	lastTradeTime = time.Now()
+	lastTradeTime := time.Now()
 	watchdogDelay := scrapers.Exchanges[exchange].WatchdogDelay
 	if watchdogDelay == 0 {
 		watchdogDelay = scrapers.ExchangeDuplicates[exchange].WatchdogDelay
