@@ -14,7 +14,6 @@ import (
 
 	ws "github.com/gorilla/websocket"
 	"github.com/zekroTJA/timedmap"
-	"go.uber.org/ratelimit"
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
@@ -86,7 +85,6 @@ type BitMartScraper struct {
 	errCount           []int
 	countTopic         []int
 	lastUsedConnection int
-	rl                 ratelimit.Limiter
 	listener           chan *BitmartWsTradeResponse
 	// signaling channels for session initialization and finishing
 	shutdown     chan nothing
@@ -113,7 +111,6 @@ func NewBitMartScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		wsClient:     make([]*ws.Conn, bitMartMaxConnections),
 		errCount:     make([]int, bitMartMaxConnections),
 		countTopic:   make([]int, bitMartMaxConnections),
-		rl:           ratelimit.New(100, ratelimit.Per(10*time.Second)),
 		listener:     make(chan *BitmartWsTradeResponse),
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
@@ -272,28 +269,30 @@ func (s *BitMartScraper) mainLoop() {
 	defer s.cleanup(nil)
 	defer func() {
 		log.Printf("Shutting down main loop...\n")
-		return
 	}()
-	for i := 0; i < bitMartMaxConnections; i++ {
+	for i := range bitMartMaxConnections {
 		go func(idx int) {
 			defer func() {
 				if a := recover(); a != nil {
 					log.Errorf("Work routine end. Recover msg: %+v", a)
 				}
 			}()
-			ticker := time.NewTicker(bitMartPingInterval * time.Second)
-			defer ticker.Stop()
-			for {
-				<-ticker.C
-				if s.isClosed() {
-					return
-				}
-				s.rl.Take()
-				if err := s.wsClient[idx].WriteMessage(ws.TextMessage, []byte(bitMartPingMessage)); err != nil {
-					log.Errorf("Error sending ping: %s", err)
-					return
-				}
-			}
+			// ticker := time.NewTicker(bitMartPingInterval * time.Second)
+			// defer ticker.Stop()
+			// for {
+			// 	<-ticker.C
+			// 	if s.isClosed() {
+			// 		return
+			// 	}
+
+			// 	err := s.wsClient[idx].WriteMessage(ws.TextMessage, []byte(bitMartPingMessage))
+			// 	if err != nil {
+			// 		log.Errorf("Error sending ping: %s", err)
+			// 		return
+			// 	} else {
+			// 		log.Warn("sent ping")
+			// 	}
+			// }
 		}(i)
 		go func(idx int) {
 			defer func() {
@@ -482,7 +481,6 @@ func (s *BitMartScraper) setError(err error) {
 
 func (s *BitMartScraper) subscribe(foreignName string, id int) error {
 	topic := fmt.Sprintf("%s:%s", bitMartWSSpotTradingTopic, foreignName)
-	s.rl.Take()
 	if err := s.wsClient[id].WriteJSON(BitmartWsRequest{
 		Op:   bitMartWSOpSubscribe,
 		Args: []string{topic},
