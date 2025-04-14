@@ -108,6 +108,9 @@ func (s *CoinExScraper) mainLoop() {
 		s.cleanup()
 	}()
 
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+
 	for {
 		_, message, err := s.wsClient.ReadMessage()
 		if err != nil {
@@ -140,19 +143,20 @@ func (s *CoinExScraper) mainLoop() {
 			log.Warnf("Empty trade list | raw data:%s", buf.String())
 			continue
 		} else {
-			s.parseWSResponse(response)
+			s.parseWSResponse(response, tmFalseDuplicateTrades, tmDuplicateTrades)
 		}
 	}
 }
 
-func (s *CoinExScraper) parseWSResponse(message coinexWSResponse) {
+func (s *CoinExScraper) parseWSResponse(
+	message coinexWSResponse,
+	tmFalseDuplicateTrades *timedmap.TimedMap,
+	tmDuplicateTrades *timedmap.TimedMap,
+) {
 	if len(message.Data.DealList) == 0 {
 		log.Warn("Empty Trade Message:", message)
 		return
 	}
-
-	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
-	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
 
 	var exchangepair dia.ExchangePair
 	var err error

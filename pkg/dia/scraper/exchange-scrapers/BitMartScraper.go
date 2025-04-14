@@ -270,6 +270,9 @@ func (s *BitMartScraper) mainLoop() {
 	defer func() {
 		log.Printf("Shutting down main loop...\n")
 	}()
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+
 	for i := range bitMartMaxConnections {
 		go func(idx int) {
 			defer func() {
@@ -360,8 +363,6 @@ func (s *BitMartScraper) mainLoop() {
 	for {
 		select {
 		case response := <-s.listener:
-			tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
-			tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
 
 			for _, data := range response.Data {
 				var exchangepair dia.ExchangePair

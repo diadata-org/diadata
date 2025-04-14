@@ -51,6 +51,7 @@ type BinanceScraper struct {
 	db                *models.RelDB
 	wsClient          *ws.Conn
 	apiConnectRetries int
+	exchangepairCache map[string]dia.ExchangePair
 }
 
 type binanceWSResponse struct {
@@ -75,15 +76,16 @@ type BinancePairScraper struct {
 func NewBinanceScraper(apiKey string, secretKey string, exchange dia.Exchange, scraperName string, scrape bool, relDB *models.RelDB) *BinanceScraper {
 
 	s := &BinanceScraper{
-		shutdown:        make(chan nothing),
-		shutdownDone:    make(chan nothing),
-		exchangeName:    exchange.Name,
-		scraperName:     scraperName,
-		error:           nil,
-		chanTrades:      make(chan *dia.Trade),
-		db:              relDB,
-		proxyIndex:      0,
-		newPairScrapers: make(map[string]*BinancePairScraper),
+		shutdown:          make(chan nothing),
+		shutdownDone:      make(chan nothing),
+		exchangeName:      exchange.Name,
+		scraperName:       scraperName,
+		error:             nil,
+		chanTrades:        make(chan *dia.Trade),
+		db:                relDB,
+		proxyIndex:        0,
+		newPairScrapers:   make(map[string]*BinancePairScraper),
+		exchangepairCache: make(map[string]dia.ExchangePair),
 	}
 
 	var err error
@@ -189,6 +191,10 @@ func (s *BinanceScraper) mainLoop() {
 		s.cleanup()
 	}()
 
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	var lock sync.RWMutex
+
 	for {
 		var message binanceWSResponse
 		err := s.wsClient.ReadJSON(&message)
@@ -197,17 +203,20 @@ func (s *BinanceScraper) mainLoop() {
 			continue
 		}
 
-		if message.ForeignName == "" || message.Price == "" || message.Volume == "" {
-			log.Warn("Skipping invalid trade data:", message)
+		if message.Type != nil {
+			s.parseWSResponse(message, tmFalseDuplicateTrades, tmDuplicateTrades, &lock)
 		} else {
-			s.parseWSResponse(message)
+			log.Warn("Skipping invalid trade data:", message)
 		}
 	}
 }
 
-func (s *BinanceScraper) parseWSResponse(message binanceWSResponse) {
-	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
-	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+func (s *BinanceScraper) parseWSResponse(
+	message binanceWSResponse,
+	tmFalseDuplicateTrades *timedmap.TimedMap,
+	tmDuplicateTrades *timedmap.TimedMap,
+	lock *sync.RWMutex,
+) {
 
 	var exchangepair dia.ExchangePair
 	var err error
@@ -215,9 +224,9 @@ func (s *BinanceScraper) parseWSResponse(message binanceWSResponse) {
 	ps := s.newPairScrapers[message.ForeignName]
 	pair := ps.pair
 
-	exchangepair, err = s.db.GetExchangePairCache(s.scraperName, message.ForeignName)
+	exchangepair, err = s.getExchangePair(message.ForeignName, lock)
 	if err != nil {
-		log.Error(err)
+		log.Errorf("getExchangePair %s: %v", message.ForeignName, err)
 	}
 
 	tradeTime := time.Unix(0, message.Timestamp*1000000)
@@ -267,6 +276,22 @@ func (s *BinanceScraper) parseWSResponse(message binanceWSResponse) {
 		ps.parent.chanTrades <- t
 	}
 
+}
+
+// getExchangePair returns the exchangepair for @foreignname. It is taken from a local cache
+// if existing, otherwise from Redis.
+func (s *BinanceScraper) getExchangePair(foreignName string, lock *sync.RWMutex) (dia.ExchangePair, error) {
+	if ep, ok := s.exchangepairCache[s.scraperName+foreignName]; ok {
+		return ep, nil
+	}
+	ep, err := s.db.GetExchangePairCache(s.scraperName, foreignName)
+	if err != nil {
+		return dia.ExchangePair{}, err
+	}
+	lock.Lock()
+	s.exchangepairCache[s.scraperName+foreignName] = ep
+	lock.Unlock()
+	return ep, nil
 }
 
 func (s *BinanceScraper) FillSymbolData(symbol string) (dia.Asset, error) {
