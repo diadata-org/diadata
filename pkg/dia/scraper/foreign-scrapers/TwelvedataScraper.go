@@ -24,7 +24,7 @@ var (
 type twelvedataAPIFXResponse struct {
 	Symbol    string  `json:"symbol"`
 	Rate      float64 `json:"rate"`
-	Timestamp int64   `json:"timestamp"`
+	Timestamp int64   `json:"last_quote_at"`
 }
 
 type twelvedataAPIStockResponse struct {
@@ -34,7 +34,7 @@ type twelvedataAPIStockResponse struct {
 type twelvedataQuoteResponse struct {
 	Symbol    string `json:"symbol"`
 	Name      string `json:"name"`
-	Timestamp int64  `json:"timestamp"`
+	Timestamp int64  `json:"last_quote_at"`
 	Price     string `json:"close"`
 }
 
