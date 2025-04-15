@@ -1982,6 +1982,12 @@
         },
         {
             "Exchange": "GateIO",
+            "ForeignName": "PIN_USDT",
+            "Ignore": false,
+            "Symbol": "PIN"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "PNG_USDT",
             "Ignore": false,
             "Symbol": "PNG"

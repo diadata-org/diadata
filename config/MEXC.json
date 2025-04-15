@@ -595,6 +595,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "PIN",
+            "ForeignName": "PINUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
             "Symbol": "PNG",
             "ForeignName": "PNGUSDT",
             "Exchange": "MEXC",

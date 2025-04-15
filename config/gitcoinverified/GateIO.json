@@ -919,6 +919,12 @@
             "Address": "0xbC396689893D065F41bc2C6EcbeE5e0085233447"
         },
         {
+            "Symbol": "PIN",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x2e44f3f609ff5aA4819B323FD74690f07C3607c4"
+        },
+        {
             "Symbol": "PNG",
             "Exchange": "GateIO",
             "Blockchain": "Avalanche",

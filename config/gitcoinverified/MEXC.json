@@ -553,6 +553,12 @@
             "Address": "0xF17c59bF0f6326dA7A8cC2CE417e4F53a26707bd"
         },
         {
+            "Symbol": "PIN",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x2e44f3f609ff5aA4819B323FD74690f07C3607c4"
+        },
+        {
             "Symbol": "PNG",
             "Exchange": "MEXC",
             "Blockchain": "Avalanche",
