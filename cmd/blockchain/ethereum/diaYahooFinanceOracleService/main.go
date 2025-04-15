@@ -232,7 +232,7 @@ func cbAssetOracleUpdateHelper(oldPrice float64, auth *bind.TransactOpts, contra
 	// Check for deviation
 	newPrice := rawQ.Price
 
-	err = updateForeignQuotation(rawQ, auth, contract, conn)
+	err = updateQuotation(rawQ, auth, contract, conn)
 	if err != nil {
 		log.Fatalf("Failed to update DIA Oracle: %v", err)
 		return oldPrice, err
