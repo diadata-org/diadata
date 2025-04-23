@@ -135,6 +135,9 @@ func NewLiquidityScraper(source string, relDB *models.RelDB, datastore *models.D
 	case dia.BalancerV2ExchangePolygon:
 		return NewBalancerV2Scraper(exchanges[dia.BalancerV2ExchangePolygon], relDB, datastore)
 
+	case dia.BalancerV3Exchange:
+		return NewBalancerV3Scraper(exchanges[dia.BalancerV3Exchange], relDB, datastore)
+
 	case dia.UniswapExchangeV3:
 		return NewUniswapV3Scraper(exchanges[dia.UniswapExchangeV3], relDB, datastore)
 	case dia.UniswapExchangeV3Polygon:

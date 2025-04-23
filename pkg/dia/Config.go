@@ -21,6 +21,7 @@ const (
 	BalancerV2Exchange                 = "BalancerV2"
 	BalancerV2ExchangeArbitrum         = "BalancerV2-Arbitrum"
 	BalancerV2ExchangePolygon          = "BalancerV2-Polygon"
+	BalancerV3Exchange                 = "BalancerV3"
 	BeetsExchange                      = "Beets"
 	KrakenExchange                     = "Kraken"
 	BitfinexExchange                   = "Bitfinex"
