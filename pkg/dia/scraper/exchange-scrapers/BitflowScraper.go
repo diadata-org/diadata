@@ -46,6 +46,10 @@ type BitflowScraper struct {
 	initialBlockHeight int
 }
 
+var (
+	singleDirectionPoolsBitflow *[]string
+)
+
 // NewBitflowScraper returns a new BitflowScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
 // ENV values:
@@ -111,6 +115,14 @@ func NewBitflowScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 }
 
 func (s *BitflowScraper) mainLoop() {
+
+	var err error
+	singleDirectionPoolsBitflow, err = getReverseTokensFromConfig("bitflow/singleDirectionPools/" + s.exchangeName + "SingleDirectionPools")
+	if err != nil {
+		log.Error("error getting fullPools for which pairs should be reversed: ", err)
+	}
+	log.Info("singleDiration: ", *singleDirectionPoolsBitflow)
+
 	if s.initialBlockHeight <= 0 {
 		latestBlock, err := s.api.GetLatestBlock()
 		if err != nil {
@@ -188,6 +200,15 @@ func (s *BitflowScraper) Update() error {
 			} else {
 				diaTrade.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
 				s.chanTrades <- diaTrade
+				if !utils.Contains(singleDirectionPoolsBitflow, pool.Address) {
+					tSwapped, err := dia.SwapTrade(*diaTrade)
+					if err == nil {
+						if tSwapped.Price > 0 {
+							log.Infof("got trade at height %v: %v -- %s -- %v --%v -- %s", s.currentHeight-1, tSwapped.Time, tSwapped.Pair, tSwapped.Price, tSwapped.Volume, tSwapped.ForeignTradeID)
+							s.chanTrades <- &tSwapped
+						}
+					}
+				}
 			}
 		}
 	}

@@ -44,7 +44,6 @@ var (
 		dia.ZenlinkswapExchangeBifrostPolkadot,
 		dia.PearlfiExchangeTestnet,
 		dia.PanCakeSwapExchangeV3,
-		dia.BitflowExchange,
 		dia.VelarExchange,
 		dia.BifrostExchange,
 		dia.HydrationExchange,
