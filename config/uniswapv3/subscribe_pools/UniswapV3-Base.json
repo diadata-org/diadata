@@ -1,6 +1,26 @@
 {
     "Pools": [
         {
+            "Address": "0xADE9BcD4b968EE26Bed102dd43A55f6A8c2416df",
+            "ForeignName": "WETH-doginme"
+        },
+        {
+            "Address": "0xd82403772cB858219cfb58bFab46Ba7a31073474",
+            "ForeignName": "WETH-KEYCAT"
+        },
+        {
+            "Address": "0xf1Fdc83c3A336bdbDC9fB06e318B08EadDC82FF4",
+            "ForeignName": "AIXBT-USDC"
+        },
+        {
+            "Address": "0x68B27E9066d3aAdC6078E17C8611b37868F96A1D",
+            "ForeignName": "WETH-FAI"
+        },
+        {
+            "Address": "0xFdbAf04326AcC24e3d1788333826b71E3291863a",
+            "ForeignName": "FARTCOIN-WETH"
+        },
+        {
             "Address": "0x4b0Aaf3EBb163dd45F663b38b6d93f6093EBC2d3",
             "ForeignName": "WETH-TOSHI"
         },

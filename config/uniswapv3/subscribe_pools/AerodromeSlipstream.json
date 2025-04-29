@@ -1,6 +1,22 @@
 {
     "Pools": [
         {
+            "Address": "0x088c39ee29fC30DF8Adc394e9f7dEa33E3A26507",
+            "ForeignName": "WETH-doginme"
+        },
+        {
+            "Address": "0xB211a9DDff3a10806c8fdb92Dbc4c34596A23F84",
+            "ForeignName": "WETH-KEYCAT"
+        },
+        {
+            "Address": "0xB211a9DDff3a10806c8fdb92Dbc4c34596A23F84",
+            "ForeignName": "WETH-B3"
+        },
+        {
+            "Address": "0xC200F21EfE67c7F41B81A854c26F9cdA80593065",
+            "ForeignName": "VIRTUAL-WETH"
+        },
+        {
             "Address": "0x138aceE5573fA09e7F215965ff60898cc33c6330",
             "ForeignName": "tBTC-cbBTC"
         },
