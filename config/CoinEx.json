@@ -1,22 +1,118 @@
 {
     "Coins": [
-      {
-        "Exchange": "CoinEx",
-        "ForeignName": "BTCUSDT",
-        "Ignore": false,
-        "Symbol": "BTC"
-      },
-      {
-        "Exchange": "CoinEx",
-        "ForeignName": "SUSDT",
-        "Ignore": false,
-        "Symbol": "S"
-      },
-      {
-        "Exchange": "CoinEx",
-        "ForeignName": "SYKUSDT",
-        "Ignore": false,
-        "Symbol": "SYK"
-      }
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "AIXBTUSDT",
+            "Symbol": "AIXBT"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "ANDYUSDT",
+            "Symbol": "ANDY"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "APUUSDT",
+            "Symbol": "APU"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "B3USDT",
+            "Symbol": "B3"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "BITCOINUSDT",
+            "Symbol": "BITCOIN"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "BOBOUSDT",
+            "Symbol": "BOBO"
+        },
+        {
+            "Exchange": "CoinEx",
+            "ForeignName": "BTCUSDT",
+            "Ignore": false,
+            "Symbol": "BTC"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "DOGINMEUSDT",
+            "Symbol": "DOGINME"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "FAIUSDT",
+            "Symbol": "FAI"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "FLOKIUSDT",
+            "Symbol": "FLOKI"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "KAITOUSDT",
+            "Symbol": "KAITO"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "KEYCATUSDT",
+            "Symbol": "KEYCAT"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "PROUSDT",
+            "Symbol": "PRO"
+        },
+        {
+            "Exchange": "CoinEx",
+            "ForeignName": "SUSDT",
+            "Ignore": false,
+            "Symbol": "S"
+        },
+        {
+            "Exchange": "CoinEx",
+            "ForeignName": "SYKUSDT",
+            "Ignore": false,
+            "Symbol": "SYK"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "TURBOUSDT",
+            "Symbol": "TURBO"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "VIRTUALUSDT",
+            "Symbol": "VIRTUAL"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "VVVUSDT",
+            "Symbol": "VVV"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "WOJAKUSDT",
+            "Symbol": "WOJAK"
+        }
     ]
-  }
+}

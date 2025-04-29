@@ -14,6 +14,18 @@
         },
         {
             "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "AIXBTUSDT",
+            "Symbol": "AIXBT"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "AIXBTUSDC",
+            "Symbol": "AIXBT"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "APTUSDT",
             "Ignore": false,
             "Symbol": "APT"
@@ -146,6 +158,12 @@
         },
         {
             "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "FLOKIUSDT",
+            "Symbol": "FLOKI"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "FXSUSDT",
             "Ignore": false,
             "Symbol": "FXS"
@@ -173,6 +191,18 @@
             "ForeignName": "IMXUSDT",
             "Ignore": false,
             "Symbol": "IMX"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "KAITOUSDT",
+            "Symbol": "KAITO"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "KAITOUSDC",
+            "Symbol": "KAITO"
         },
         {
             "Exchange": "Binance",
@@ -416,6 +446,18 @@
         },
         {
             "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "TURBOUSDT",
+            "Symbol": "TURBO"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "TURBOUSDC",
+            "Symbol": "TURBO"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "UNIUSDT",
             "Ignore": false,
             "Symbol": "UNI"
@@ -425,6 +467,18 @@
             "ForeignName": "USDCUSDT",
             "Ignore": false,
             "Symbol": "USDC"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "VIRTUALUSDT",
+            "Symbol": "VIRTUAL"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "VIRTUALUSDC",
+            "Symbol": "VIRTUAL"
         },
         {
             "Exchange": "Binance",

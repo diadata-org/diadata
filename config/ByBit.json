@@ -19,6 +19,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "AIXBTUSDT",
+            "Symbol": "AIXBT"
+        },
+        {
             "Symbol": "ALGO",
             "ForeignName": "ALGOUSDT",
             "Exchange": "ByBit",
@@ -79,6 +85,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "B3USDT",
+            "Symbol": "B3"
+        },
+        {
             "Symbol": "BAT",
             "ForeignName": "BATUSDT",
             "Exchange": "ByBit",
@@ -113,6 +125,12 @@
             "ForeignName": "BITUSDT",
             "Exchange": "ByBit",
             "Ignore": false
+        },
+        {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "BITCOINUSDT",
+            "Symbol": "BITCOIN"
         },
         {
             "Symbol": "BNB",
@@ -341,6 +359,18 @@
             "ForeignName": "FILUSDT",
             "Exchange": "ByBit",
             "Ignore": false
+        },
+        {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "FLOKIUSDT",
+            "Symbol": "FLOKI"
+        },
+        {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "FLOKIUSDC",
+            "Symbol": "FLOKI"
         },
         {
             "Symbol": "FLOW",
@@ -823,10 +853,22 @@
             "Ignore": false
         },
         {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "VIRTUALUSDT",
+            "Symbol": "VIRTUAL"
+        },
+        {
             "Symbol": "VRTX",
             "ForeignName": "VRTXUSDT",
             "Exchange": "ByBit",
             "Ignore": false
+        },
+        {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "VVVUSDT",
+            "Symbol": "VVV"
         },
         {
             "Symbol": "WIF",

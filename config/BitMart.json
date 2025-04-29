@@ -15,6 +15,12 @@
         {
             "Exchange": "BitMart",
             "Ignore": false,
+            "ForeignName": "AIXBT_USDT",
+            "Symbol": "AIXBT"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
             "ForeignName": "ALEX_USDT",
             "Symbol": "ALEX"
         },
@@ -26,9 +32,21 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "ANDY_USDT",
+            "Symbol": "ANDY"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "APE_USDC",
             "Ignore": false,
             "Symbol": "APE"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "APU_USDT",
+            "Symbol": "APU"
         },
         {
             "Exchange": "BitMart",
@@ -59,6 +77,12 @@
             "ForeignName": "AZERO_USDT",
             "Ignore": false,
             "Symbol": "AZERO"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "B3_USDT",
+            "Symbol": "B3"
         },
         {
             "Exchange": "BitMart",
@@ -188,6 +212,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "DOGINME_USDT",
+            "Symbol": "DOGINME"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "DOT_USDT",
             "Ignore": false,
             "Symbol": "DOT"
@@ -272,6 +302,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "FLOKI_USDT",
+            "Symbol": "FLOKI"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "GMT_USDT",
             "Ignore": false,
             "Symbol": "GMT"
@@ -302,9 +338,21 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "KAITO_USDT",
+            "Symbol": "KAITO"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "KAVA_USDT",
             "Ignore": false,
             "Symbol": "KAVA"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "KEYCAT_USDT",
+            "Symbol": "KEYCAT"
         },
         {
             "Exchange": "BitMart",
@@ -548,6 +596,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "TURBO_USDT",
+            "Symbol": "TURBO"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "TUSD_USDT",
             "Ignore": false,
             "Symbol": "TUSD"
@@ -602,6 +656,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "VVV_USDT",
+            "Symbol": "VVV"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "WBTC_USDT",
             "Ignore": false,
             "Symbol": "WBTC"
@@ -611,6 +671,18 @@
             "ForeignName": "WCO_USDT",
             "Ignore": false,
             "Symbol": "WCO"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "WOJAK_USDT",
+            "Symbol": "WOJAK"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "WOLF_USDT",
+            "Symbol": "WOLF"
         },
         {
             "Exchange": "BitMart",

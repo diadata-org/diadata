@@ -73,6 +73,12 @@
             "Symbol": "AERO"
         },
         {
+            "Exchange": "Crypto.com",
+            "Ignore": false,
+            "ForeignName": "AIXBT_USD",
+            "Symbol": "AIXBT"
+        },
+        {
             "Symbol": "ALGO",
             "ForeignName": "ALGO_BTC",
             "Exchange": "Crypto.com",
@@ -173,6 +179,12 @@
             "Ignore": false,
             "ForeignName": "AVAX_USDT",
             "Symbol": "AVAX"
+        },
+        {
+            "Exchange": "Crypto.com",
+            "Ignore": false,
+            "ForeignName": "B3_USD",
+            "Symbol": "B3"
         },
         {
             "Symbol": "BAT",
@@ -523,6 +535,12 @@
             "Symbol": "FIL"
         },
         {
+            "Exchange": "Crypto.com",
+            "Ignore": false,
+            "ForeignName": "FLOKI_USD",
+            "Symbol": "FLOKI"
+        },
+        {
             "Symbol": "FLOW",
             "ForeignName": "FLOW_USDC",
             "Exchange": "Crypto.com",
@@ -605,6 +623,12 @@
             "Ignore": false,
             "ForeignName": "ICP_USD",
             "Symbol": "ICP"
+        },
+        {
+            "Exchange": "Crypto.com",
+            "Ignore": false,
+            "ForeignName": "KAITO_USD",
+            "Symbol": "KAITO"
         },
         {
             "Symbol": "KDA",
@@ -1049,6 +1073,12 @@
             "Ignore": false,
             "ForeignName": "TIA_USDT",
             "Symbol": "TIA"
+        },
+        {
+            "Exchange": "Crypto.com",
+            "Ignore": false,
+            "ForeignName": "TURBO_USD",
+            "Symbol": "TURBO"
         },
         {
             "Symbol": "UNI",

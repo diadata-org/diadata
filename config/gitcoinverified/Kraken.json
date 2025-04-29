@@ -19,6 +19,12 @@
             "Address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631"
         },
         {
+            "Exchange": "Kraken",
+            "Symbol": "AIXBT",
+            "Blockchain": "Base",
+            "Address": "0x4F9Fd6Be4a90f2620860d680c0d4d5Fb53d1A825"
+        },
+        {
             "Symbol": "AKT",
             "Exchange": "Kraken",
             "Blockchain": "Osmosis",
@@ -29,6 +35,12 @@
             "Symbol": "APT",
             "Blockchain": "Aptos",
             "Address": "0x1::aptos_coin::AptosCoin"
+        },
+        {
+            "Exchange": "Kraken",
+            "Symbol": "APU",
+            "Blockchain": "Ethereum",
+            "Address": "0x594DaaD7D77592a2b97b725A7AD59D7E188b5bFa"
         },
         {
             "Exchange": "Kraken",
@@ -62,9 +74,21 @@
         },
         {
             "Exchange": "Kraken",
+            "Symbol": "B3",
+            "Blockchain": "Base",
+            "Address": "0xB3B32F9f8827D4634fE7d973Fa1034Ec9fdDB3B3"
+        },
+        {
+            "Exchange": "Kraken",
             "Symbol": "BEAM",
             "Blockchain": "Ethereum",
             "Address": "0x62D0A8458eD7719FDAF978fe5929C6D342B0bFcE"
+        },
+        {
+            "Exchange": "Kraken",
+            "Symbol": "BITCOIN",
+            "Blockchain": "Ethereum",
+            "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9"
         },
         {
             "Exchange": "Kraken",
@@ -152,6 +176,12 @@
         },
         {
             "Exchange": "Kraken",
+            "Symbol": "FLOKI",
+            "Blockchain": "Ethereum",
+            "Address": "0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E"
+        },
+        {
+            "Exchange": "Kraken",
             "Symbol": "FLOW",
             "Blockchain": "Flow",
             "Address": "0x0000000000000000000000000000000000000000"
@@ -191,6 +221,12 @@
             "Symbol": "IMX",
             "Blockchain": "Immutable",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Kraken",
+            "Symbol": "KAITO",
+            "Blockchain": "Base",
+            "Address": "0x98d0baa52b2D063E780DE12F615f963Fe8537553"
         },
         {
             "Symbol": "KILT",
@@ -398,6 +434,12 @@
         },
         {
             "Exchange": "Kraken",
+            "Symbol": "TURBO",
+            "Blockchain": "Ethereum",
+            "Address": "0xA35923162C49cF95e6BF26623385eb431ad920D3"
+        },
+        {
+            "Exchange": "Kraken",
             "Symbol": "UNI",
             "Blockchain": "Ethereum",
             "Address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
@@ -419,6 +461,18 @@
             "Symbol": "USDT",
             "Blockchain": "Ethereum",
             "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+        },
+        {
+            "Exchange": "Kraken",
+            "Symbol": "VIRTUAL",
+            "Blockchain": "Ethereum",
+            "Address": "0x44ff8620b8cA30902395A7bD3F2407e1A091BF73"
+        },
+        {
+            "Exchange": "Kraken",
+            "Symbol": "VVV",
+            "Blockchain": "Base",
+            "Address": "0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf"
         },
         {
             "Symbol": "WBTC",

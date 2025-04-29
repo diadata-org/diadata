@@ -19,6 +19,12 @@
             "Address": "0x2598c30330D5771AE9F983979209486aE26dE875"
         },
         {
+            "Exchange": "Bitmax",
+            "Symbol": "AIXBT",
+            "Blockchain": "Base",
+            "Address": "0x4F9Fd6Be4a90f2620860d680c0d4d5Fb53d1A825"
+        },
+        {
             "Symbol": "AKRO",
             "Exchange": "Bitmax",
             "Blockchain": "Ethereum",
@@ -265,6 +271,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "Bitmax",
+            "Symbol": "KAITO",
+            "Blockchain": "Base",
+            "Address": "0x98d0baa52b2D063E780DE12F615f963Fe8537553"
+        },
+        {
             "Symbol": "KAVA",
             "Exchange": "Bitmax",
             "Blockchain": "Osmosis",
@@ -421,6 +433,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "Bitmax",
+            "Symbol": "TURBO",
+            "Blockchain": "Ethereum",
+            "Address": "0xA35923162C49cF95e6BF26623385eb431ad920D3"
+        },
+        {
             "Symbol": "UNI",
             "Exchange": "Bitmax",
             "Blockchain": "Ethereum",
@@ -449,6 +467,24 @@
             "Exchange": "Bitmax",
             "Blockchain": "Ethereum",
             "Address": "0xF411903cbC70a74d22900a5DE66A2dda66507255"
+        },
+        {
+            "Exchange": "Bitmax",
+            "Symbol": "VVV",
+            "Blockchain": "Base",
+            "Address": "0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf"
+        },
+        {
+            "Exchange": "Bitmax",
+            "Symbol": "WOJAK",
+            "Blockchain": "Ethereum",
+            "Address": "0x5026F006B85729a8b14553FAE6af249aD16c9aaB"
+        },
+        {
+            "Exchange": "Bitmax",
+            "Symbol": "WOLF",
+            "Blockchain": "Ethereum",
+            "Address": "0x67466BE17df832165F8C80a5A120CCc652bD7E69"
         },
         {
             "Symbol": "XEM",

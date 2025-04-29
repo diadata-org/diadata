@@ -62,6 +62,12 @@
         },
         {
             "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "B3-USD",
+            "Symbol": "B3"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "BCH-USD",
             "Ignore": false,
             "Symbol": "BCH"
@@ -164,6 +170,12 @@
         },
         {
             "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "DOGINME-USD",
+            "Symbol": "DOGINME"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "DOT-USD",
             "Ignore": false,
             "Symbol": "DOT"
@@ -212,6 +224,12 @@
         },
         {
             "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "FAI-USD",
+            "Symbol": "FAI"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "FET-USD",
             "Ignore": false,
             "Symbol": "FET"
@@ -227,6 +245,12 @@
             "Ignore": false,
             "ForeignName": "FIL-USD",
             "Symbol": "FIL"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "FLOKI-USD",
+            "Symbol": "FLOKI"
         },
         {
             "Exchange": "CoinBase",
@@ -284,9 +308,21 @@
         },
         {
             "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "KAITO-USD",
+            "Symbol": "KAITO"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "KAVA-USD",
             "Ignore": false,
             "Symbol": "KAVA"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "KEYCAT-USD",
+            "Symbol": "KEYCAT"
         },
         {
             "Exchange": "CoinBase",
@@ -359,6 +395,12 @@
             "Ignore": false,
             "ForeignName": "PRIME-USD",
             "Symbol": "PRIME"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "PRO-USD",
+            "Symbol": "PRO"
         },
         {
             "Exchange": "CoinBase",
@@ -485,6 +527,12 @@
             "ForeignName": "TIA-USD",
             "Ignore": false,
             "Symbol": "TIA"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "TURBO-USD",
+            "Symbol": "TURBO"
         },
         {
             "Exchange": "CoinBase",

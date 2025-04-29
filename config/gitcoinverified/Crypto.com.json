@@ -25,6 +25,12 @@
             "Address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631"
         },
         {
+            "Exchange": "Crypto.com",
+            "Symbol": "AIXBT",
+            "Blockchain": "Base",
+            "Address": "0x4F9Fd6Be4a90f2620860d680c0d4d5Fb53d1A825"
+        },
+        {
             "Symbol": "ALGO",
             "Exchange": "Crypto.com",
             "Blockchain": "Algorand",
@@ -71,6 +77,12 @@
             "Symbol": "AVAX",
             "Blockchain": "Avalanche",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Crypto.com",
+            "Symbol": "B3",
+            "Blockchain": "Base",
+            "Address": "0xB3B32F9f8827D4634fE7d973Fa1034Ec9fdDB3B3"
         },
         {
             "Symbol": "BAT",
@@ -235,6 +247,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "Crypto.com",
+            "Symbol": "FLOKI",
+            "Blockchain": "Ethereum",
+            "Address": "0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E"
+        },
+        {
             "Symbol": "FLOW",
             "Exchange": "Crypto.com",
             "Blockchain": "Flow",
@@ -275,6 +293,12 @@
             "Symbol": "ICP",
             "Blockchain": "InternetComputer",
             "Address": "ryjl3-tyaaa-aaaaa-aaaba-cai"
+        },
+        {
+            "Exchange": "Crypto.com",
+            "Symbol": "KAITO",
+            "Blockchain": "Base",
+            "Address": "0x98d0baa52b2D063E780DE12F615f963Fe8537553"
         },
         {
             "Symbol": "KDA",
@@ -557,6 +581,12 @@
             "Symbol": "TRX",
             "Blockchain": "Tron",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Crypto.com",
+            "Symbol": "TURBO",
+            "Blockchain": "Ethereum",
+            "Address": "0xA35923162C49cF95e6BF26623385eb431ad920D3"
         },
         {
             "Symbol": "UNI",

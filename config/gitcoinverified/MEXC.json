@@ -14,6 +14,12 @@
         },
         {
             "Exchange": "MEXC",
+            "Symbol": "AIXBT",
+            "Blockchain": "Base",
+            "Address": "0x4F9Fd6Be4a90f2620860d680c0d4d5Fb53d1A825"
+        },
+        {
+            "Exchange": "MEXC",
             "Symbol": "ALEX",
             "Blockchain": "Stacks",
             "Address": "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.age000-governance-token"
@@ -35,6 +41,12 @@
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
             "Address": "0x4d224452801ACEd8B2F0aebE155379bb5D594381"
+        },
+        {
+            "Exchange": "MEXC",
+            "Symbol": "APU",
+            "Blockchain": "Ethereum",
+            "Address": "0x594DaaD7D77592a2b97b725A7AD59D7E188b5bFa"
         },
         {
             "Symbol": "ARB",
@@ -85,6 +97,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "MEXC",
+            "Symbol": "B3",
+            "Blockchain": "Base",
+            "Address": "0xB3B32F9f8827D4634fE7d973Fa1034Ec9fdDB3B3"
+        },
+        {
             "Symbol": "BADGER",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
@@ -115,6 +133,12 @@
             "Address": "0x1A5B0aaF478bf1FDA7b934c76E7692D722982a6D"
         },
         {
+            "Exchange": "MEXC",
+            "Symbol": "BITCOIN",
+            "Blockchain": "Ethereum",
+            "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9"
+        },
+        {
             "Symbol": "BLEND",
             "Exchange": "MEXC",
             "Blockchain": "EduChain",
@@ -131,6 +155,12 @@
             "Exchange": "MEXC",
             "Blockchain": "Bifrost",
             "Address": "0"
+        },
+        {
+            "Exchange": "MEXC",
+            "Symbol": "BOBO",
+            "Blockchain": "Ethereum",
+            "Address": "0xB90B2A35C65dBC466b04240097Ca756ad2005295"
         },
         {
             "Symbol": "BOO",
@@ -211,6 +241,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "MEXC",
+            "Symbol": "DOGINME",
+            "Blockchain": "Base",
+            "Address": "0x6921B130D297cc43754afba22e5EAc0FBf8Db75b"
+        },
+        {
             "Symbol": "DOT",
             "Exchange": "MEXC",
             "Blockchain": "Polkadot",
@@ -277,6 +313,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "MEXC",
+            "Symbol": "FAI",
+            "Blockchain": "Base",
+            "Address": "0xb33Ff54b9F7242EF1593d2C9Bcd8f9df46c77935"
+        },
+        {
             "Symbol": "FEI",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
@@ -287,6 +329,12 @@
             "Exchange": "MEXC",
             "Blockchain": "Filecoin",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "MEXC",
+            "Symbol": "FLOKI",
+            "Blockchain": "Ethereum",
+            "Address": "0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E"
         },
         {
             "Symbol": "FLOW",
@@ -377,6 +425,18 @@
             "Exchange": "MEXC",
             "Blockchain": "Arbitrum",
             "Address": "0x10393c20975cF177a3513071bC110f7962CD67da"
+        },
+        {
+            "Exchange": "MEXC",
+            "Symbol": "KAITO",
+            "Blockchain": "Base",
+            "Address": "0x98d0baa52b2D063E780DE12F615f963Fe8537553"
+        },
+        {
+            "Exchange": "MEXC",
+            "Symbol": "KEYCAT",
+            "Blockchain": "Base",
+            "Address": "0x9a26F5433671751C3276a065f57e5a02D2817973"
         },
         {
             "Symbol": "KLIMA",
@@ -571,6 +631,12 @@
             "Address": "0x0000000000000000000000000000000000001010"
         },
         {
+            "Exchange": "MEXC",
+            "Symbol": "PRO",
+            "Blockchain": "Ethereum",
+            "Address": "0x226bb599a12C826476e3A771454697EA52E9E220"
+        },
+        {
             "Symbol": "PSP",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
@@ -629,6 +695,12 @@
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
             "Address": "0xe2512A2f19F0388aD3D7A5263eaA82AcD564827b"
+        },
+        {
+            "Exchange": "MEXC",
+            "Symbol": "SKI",
+            "Blockchain": "Base",
+            "Address": "0x768BE13e1680b5ebE0024C42c896E3dB59ec0149"
         },
         {
             "Symbol": "SOL",
@@ -715,6 +787,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "MEXC",
+            "Symbol": "TURBO",
+            "Blockchain": "Ethereum",
+            "Address": "0xA35923162C49cF95e6BF26623385eb431ad920D3"
+        },
+        {
             "Symbol": "TUSD",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
@@ -769,10 +847,22 @@
             "Address": "0x9560e827aF36c94D2Ac33a39bCE1Fe78631088Db"
         },
         {
+            "Exchange": "MEXC",
+            "Symbol": "VIRTUAL",
+            "Blockchain": "Ethereum",
+            "Address": "0x44ff8620b8cA30902395A7bD3F2407e1A091BF73"
+        },
+        {
             "Symbol": "VRTX",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
             "Address": "0xbbEE07B3e8121227AfCFe1E2B82772246226128e"
+        },
+        {
+            "Exchange": "MEXC",
+            "Symbol": "VVV",
+            "Blockchain": "Base",
+            "Address": "0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf"
         },
         {
             "Symbol": "WBTC",
@@ -791,6 +881,18 @@
             "Exchange": "MEXC",
             "Blockchain": "Stacks",
             "Address": "SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G.welshcorgicoin-token"
+        },
+        {
+            "Exchange": "MEXC",
+            "Symbol": "WOJAK",
+            "Blockchain": "Ethereum",
+            "Address": "0x5026F006B85729a8b14553FAE6af249aD16c9aaB"
+        },
+        {
+            "Exchange": "MEXC",
+            "Symbol": "WOLF",
+            "Blockchain": "Ethereum",
+            "Address": "0x67466BE17df832165F8C80a5A120CCc652bD7E69"
         },
         {
             "Symbol": "XAI",

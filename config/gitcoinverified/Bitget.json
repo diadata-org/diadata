@@ -20,6 +20,12 @@
         },
         {
             "Exchange": "Bitget",
+            "Symbol": "AIXBT",
+            "Blockchain": "Base",
+            "Address": "0x4F9Fd6Be4a90f2620860d680c0d4d5Fb53d1A825"
+        },
+        {
+            "Exchange": "Bitget",
             "Symbol": "ALEX",
             "Blockchain": "Stacks",
             "Address": "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.age000-governance-token"
@@ -29,6 +35,12 @@
             "Exchange": "Bitget",
             "Blockchain": "Alephium",
             "Address": "tgx7VNFoP9DJiFMFgXXtafQZkUvyEdDHT9ryamHJYrjq"
+        },
+        {
+            "Exchange": "Bitget",
+            "Symbol": "APU",
+            "Blockchain": "Ethereum",
+            "Address": "0x594DaaD7D77592a2b97b725A7AD59D7E188b5bFa"
         },
         {
             "Symbol": "ARB",
@@ -133,6 +145,12 @@
             "Address": "978"
         },
         {
+            "Exchange": "Bitget",
+            "Symbol": "FLOKI",
+            "Blockchain": "Ethereum",
+            "Address": "0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E"
+        },
+        {
             "Symbol": "FTM",
             "Exchange": "Bitget",
             "Blockchain": "Fantom",
@@ -179,6 +197,12 @@
             "Symbol": "IMX",
             "Blockchain": "Immutable",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Bitget",
+            "Symbol": "KAITO",
+            "Blockchain": "Base",
+            "Address": "0x98d0baa52b2D063E780DE12F615f963Fe8537553"
         },
         {
             "Symbol": "KDA",
@@ -325,6 +349,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "Bitget",
+            "Symbol": "TURBO",
+            "Blockchain": "Ethereum",
+            "Address": "0xA35923162C49cF95e6BF26623385eb431ad920D3"
+        },
+        {
             "Symbol": "USDC",
             "Exchange": "Bitget",
             "Blockchain": "Ethereum",
@@ -341,6 +371,18 @@
             "Exchange": "Bitget",
             "Blockchain": "Ethereum",
             "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+        },
+        {
+            "Exchange": "Bitget",
+            "Symbol": "VIRTUAL",
+            "Blockchain": "Ethereum",
+            "Address": "0x44ff8620b8cA30902395A7bD3F2407e1A091BF73"
+        },
+        {
+            "Exchange": "Bitget",
+            "Symbol": "WOLF",
+            "Blockchain": "Ethereum",
+            "Address": "0x67466BE17df832165F8C80a5A120CCc652bD7E69"
         },
         {
             "Symbol": "XRP",

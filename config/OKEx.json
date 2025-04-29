@@ -164,6 +164,12 @@
         },
         {
             "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "AIXBT-USDT",
+            "Symbol": "AIXBT"
+        },
+        {
+            "Exchange": "OKEx",
             "ForeignName": "AMM-USDT",
             "Ignore": false,
             "Symbol": "AMM"
@@ -896,6 +902,12 @@
         },
         {
             "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "FLOKI-USDT",
+            "Symbol": "FLOKI"
+        },
+        {
+            "Exchange": "OKEx",
             "ForeignName": "FLOW-USDT",
             "Ignore": false,
             "Symbol": "FLOW"
@@ -1277,6 +1289,18 @@
             "ForeignName": "JOE-USDT",
             "Ignore": false,
             "Symbol": "JOE"
+        },
+        {
+            "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "KAITO-USDT",
+            "Symbol": "KAITO"
+        },
+        {
+            "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "KAITO-USD",
+            "Symbol": "KAITO"
         },
         {
             "Exchange": "OKEx",
@@ -2705,6 +2729,18 @@
             "ForeignName": "TRX-USDT",
             "Ignore": false,
             "Symbol": "TRX"
+        },
+        {
+            "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "TURBO-USDT",
+            "Symbol": "TURBO"
+        },
+        {
+            "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "TURBO-USDC",
+            "Symbol": "TURBO"
         },
         {
             "Exchange": "OKEx",

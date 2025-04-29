@@ -21,6 +21,12 @@
         {
             "Exchange": "Bitget",
             "Ignore": false,
+            "ForeignName": "AIXBTUSDT",
+            "Symbol": "AIXBT"
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
             "ForeignName": "ALEXUSDT",
             "Symbol": "ALEX"
         },
@@ -29,6 +35,12 @@
             "ForeignName": "ALPHUSDT",
             "Exchange": "Bitget",
             "Ignore": false
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "APUUSDT",
+            "Symbol": "APU"
         },
         {
             "Symbol": "ARB",
@@ -169,6 +181,18 @@
             "Ignore": false
         },
         {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "FLOKIUSDT",
+            "Symbol": "FLOKI"
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "FLOKIUSDC",
+            "Symbol": "FLOKI"
+        },
+        {
             "Symbol": "FTM",
             "ForeignName": "FTMUSDT",
             "Exchange": "Bitget",
@@ -215,6 +239,12 @@
             "Ignore": false,
             "ForeignName": "IMXUSDT",
             "Symbol": "IMX"
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "KAITOUSDT",
+            "Symbol": "KAITO"
         },
         {
             "Symbol": "KDA",
@@ -367,6 +397,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "TURBOUSDT",
+            "Symbol": "TURBO"
+        },
+        {
             "Symbol": "USDC",
             "ForeignName": "USDCEUR",
             "Exchange": "Bitget",
@@ -383,6 +419,18 @@
             "ForeignName": "USDTEUR",
             "Exchange": "Bitget",
             "Ignore": false
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "VIRTUALUSDT",
+            "Symbol": "VIRTUAL"
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "WOLFUSDT",
+            "Symbol": "WOLF"
         },
         {
             "Symbol": "XRP",

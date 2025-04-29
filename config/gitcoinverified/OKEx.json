@@ -19,6 +19,12 @@
             "Address": "Token:ACA"
         },
         {
+            "Exchange": "OKEx",
+            "Symbol": "AIXBT",
+            "Blockchain": "Base",
+            "Address": "0x4F9Fd6Be4a90f2620860d680c0d4d5Fb53d1A825"
+        },
+        {
             "Symbol": "ANT",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
@@ -145,6 +151,12 @@
             "Address": "0xFe0c30065B384F05761f15d0CC899D4F9F9Cc0eB"
         },
         {
+            "Exchange": "OKEx",
+            "Symbol": "FLOKI",
+            "Blockchain": "Ethereum",
+            "Address": "0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E"
+        },
+        {
             "Symbol": "FLOW",
             "Exchange": "OKEx",
             "Blockchain": "Flow",
@@ -221,6 +233,12 @@
             "Exchange": "OKEx",
             "Blockchain": "Avalanche",
             "Address": "0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd"
+        },
+        {
+            "Exchange": "OKEx",
+            "Symbol": "KAITO",
+            "Blockchain": "Base",
+            "Address": "0x98d0baa52b2D063E780DE12F615f963Fe8537553"
         },
         {
             "Symbol": "KAN",
@@ -461,6 +479,12 @@
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
             "Address": "0x8B40761142B9aa6dc8964e61D0585995425C3D94"
+        },
+        {
+            "Exchange": "OKEx",
+            "Symbol": "TURBO",
+            "Blockchain": "Ethereum",
+            "Address": "0xA35923162C49cF95e6BF26623385eb431ad920D3"
         },
         {
             "Symbol": "UNI",

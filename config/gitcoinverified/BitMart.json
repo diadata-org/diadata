@@ -20,6 +20,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Symbol": "AIXBT",
+            "Blockchain": "Base",
+            "Address": "0x4F9Fd6Be4a90f2620860d680c0d4d5Fb53d1A825"
+        },
+        {
+            "Exchange": "BitMart",
             "Symbol": "ALEX",
             "Blockchain": "Stacks",
             "Address": "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.age000-governance-token"
@@ -31,10 +37,22 @@
             "Address": "tgx7VNFoP9DJiFMFgXXtafQZkUvyEdDHT9ryamHJYrjq"
         },
         {
+            "Exchange": "BitMart",
+            "Symbol": "ANDY",
+            "Blockchain": "Ethereum",
+            "Address": "0x68BbEd6A47194EFf1CF514B50Ea91895597fc91E"
+        },
+        {
             "Symbol": "APE",
             "Exchange": "BitMart",
             "Blockchain": "Ethereum",
             "Address": "0x4d224452801ACEd8B2F0aebE155379bb5D594381"
+        },
+        {
+            "Exchange": "BitMart",
+            "Symbol": "APU",
+            "Blockchain": "Ethereum",
+            "Address": "0x594DaaD7D77592a2b97b725A7AD59D7E188b5bFa"
         },
         {
             "Symbol": "ASTR",
@@ -65,6 +83,12 @@
             "Exchange": "BitMart",
             "Blockchain": "AlephZero",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "BitMart",
+            "Symbol": "B3",
+            "Blockchain": "Base",
+            "Address": "0xB3B32F9f8827D4634fE7d973Fa1034Ec9fdDB3B3"
         },
         {
             "Symbol": "BAL",
@@ -181,6 +205,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "BitMart",
+            "Symbol": "DOGINME",
+            "Blockchain": "Base",
+            "Address": "0x6921B130D297cc43754afba22e5EAc0FBf8Db75b"
+        },
+        {
             "Symbol": "DOT",
             "Exchange": "BitMart",
             "Blockchain": "Polkadot",
@@ -241,6 +271,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "BitMart",
+            "Symbol": "FLOKI",
+            "Blockchain": "Ethereum",
+            "Address": "0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E"
+        },
+        {
             "Symbol": "FTM",
             "Exchange": "BitMart",
             "Blockchain": "Fantom",
@@ -283,10 +319,22 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "BitMart",
+            "Symbol": "KAITO",
+            "Blockchain": "Base",
+            "Address": "0x98d0baa52b2D063E780DE12F615f963Fe8537553"
+        },
+        {
             "Symbol": "KAVA",
             "Exchange": "BitMart",
             "Blockchain": "Osmosis",
             "Address": "ibc/57AA1A70A4BC9769C525EBF6386F7A21536E04A79D62E1981EFCEF9428EBB205"
+        },
+        {
+            "Exchange": "BitMart",
+            "Symbol": "KEYCAT",
+            "Blockchain": "Base",
+            "Address": "0x9a26F5433671751C3276a065f57e5a02D2817973"
         },
         {
             "Symbol": "KLIMA",
@@ -541,6 +589,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "BitMart",
+            "Symbol": "TURBO",
+            "Blockchain": "Ethereum",
+            "Address": "0xA35923162C49cF95e6BF26623385eb431ad920D3"
+        },
+        {
             "Symbol": "TUSD",
             "Exchange": "BitMart",
             "Blockchain": "Ethereum",
@@ -607,6 +661,12 @@
             "Address": "0xbbEE07B3e8121227AfCFe1E2B82772246226128e"
         },
         {
+            "Exchange": "BitMart",
+            "Symbol": "VVV",
+            "Blockchain": "Base",
+            "Address": "0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf"
+        },
+        {
             "Symbol": "WBTC",
             "Exchange": "BitMart",
             "Blockchain": "Ethereum",
@@ -617,6 +677,18 @@
             "Exchange": "BitMart",
             "Blockchain": "WChain",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "BitMart",
+            "Symbol": "WOJAK",
+            "Blockchain": "Ethereum",
+            "Address": "0x5026F006B85729a8b14553FAE6af249aD16c9aaB"
+        },
+        {
+            "Exchange": "BitMart",
+            "Symbol": "WOLF",
+            "Blockchain": "Ethereum",
+            "Address": "0x67466BE17df832165F8C80a5A120CCc652bD7E69"
         },
         {
             "Symbol": "XAI",

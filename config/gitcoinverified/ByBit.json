@@ -85,6 +85,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "ByBit",
+            "Symbol": "B3",
+            "Blockchain": "Base",
+            "Address": "0xB3B32F9f8827D4634fE7d973Fa1034Ec9fdDB3B3"
+        },
+        {
             "Symbol": "BAT",
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
@@ -113,6 +119,12 @@
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
             "Address": "0x1A4b46696b2bB4794Eb3D4c26f1c55F9170fa4C5"
+        },
+        {
+            "Exchange": "ByBit",
+            "Symbol": "BITCOIN",
+            "Blockchain": "Ethereum",
+            "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9"
         },
         {
             "Symbol": "BNB",
@@ -311,6 +323,12 @@
             "Exchange": "ByBit",
             "Blockchain": "Filecoin",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "ByBit",
+            "Symbol": "FLOKI",
+            "Blockchain": "Ethereum",
+            "Address": "0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E"
         },
         {
             "Symbol": "FLOW",
@@ -793,10 +811,22 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "ByBit",
+            "Symbol": "VIRTUAL",
+            "Blockchain": "Ethereum",
+            "Address": "0x44ff8620b8cA30902395A7bD3F2407e1A091BF73"
+        },
+        {
             "Symbol": "VRTX",
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
             "Address": "0xbbEE07B3e8121227AfCFe1E2B82772246226128e"
+        },
+        {
+            "Exchange": "ByBit",
+            "Symbol": "VVV",
+            "Blockchain": "Base",
+            "Address": "0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf"
         },
         {
             "Symbol": "WIF",

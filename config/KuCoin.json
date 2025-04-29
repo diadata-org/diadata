@@ -67,6 +67,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "AIXBT-USDT",
+            "Symbol": "AIXBT"
+        },
+        {
             "Symbol": "AKRO",
             "ForeignName": "AKRO-BTC",
             "Exchange": "KuCoin",
@@ -229,6 +235,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "B3-USDT",
+            "Symbol": "B3"
+        },
+        {
             "Symbol": "BAT",
             "ForeignName": "BAT-USDT",
             "Exchange": "KuCoin",
@@ -299,6 +311,12 @@
             "ForeignName": "BFC-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
+        },
+        {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "BITCOIN-USDT",
+            "Symbol": "BITCOIN"
         },
         {
             "Symbol": "BNB",
@@ -859,6 +877,18 @@
             "Ignore": false
         },
         {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "FLOKI-USDT",
+            "Symbol": "FLOKI"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "FLOKI-USDC",
+            "Symbol": "FLOKI"
+        },
+        {
             "Symbol": "FLOW",
             "ForeignName": "FLOW-USDT",
             "Exchange": "KuCoin",
@@ -953,6 +983,12 @@
             "ForeignName": "IOST-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
+        },
+        {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "KAITO-USDT",
+            "Symbol": "KAITO"
         },
         {
             "Symbol": "KAVA",
@@ -1765,6 +1801,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "TURBO-USDT",
+            "Symbol": "TURBO"
+        },
+        {
             "Symbol": "UMA",
             "ForeignName": "UMA-USDT",
             "Exchange": "KuCoin",
@@ -1873,6 +1915,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "VIRTUAL-USDT",
+            "Symbol": "VIRTUAL"
+        },
+        {
             "Symbol": "VLX",
             "ForeignName": "VLX-USDT",
             "Exchange": "KuCoin",
@@ -1895,6 +1943,12 @@
             "ForeignName": "VRTX-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
+        },
+        {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "VVV-USDT",
+            "Symbol": "VVV"
         },
         {
             "Symbol": "WAN",

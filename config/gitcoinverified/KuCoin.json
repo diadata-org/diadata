@@ -37,6 +37,12 @@
             "Address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631"
         },
         {
+            "Exchange": "KuCoin",
+            "Symbol": "AIXBT",
+            "Blockchain": "Base",
+            "Address": "0x4F9Fd6Be4a90f2620860d680c0d4d5Fb53d1A825"
+        },
+        {
             "Symbol": "AKRO",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
@@ -133,6 +139,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "KuCoin",
+            "Symbol": "B3",
+            "Blockchain": "Base",
+            "Address": "0xB3B32F9f8827D4634fE7d973Fa1034Ec9fdDB3B3"
+        },
+        {
             "Symbol": "BCHSV",
             "Exchange": "KuCoin",
             "Blockchain": "BitcoinSV",
@@ -149,6 +161,12 @@
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
             "Address": "0x0c7D5ae016f806603CB1782bEa29AC69471CAb9c"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Symbol": "BITCOIN",
+            "Blockchain": "Ethereum",
+            "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9"
         },
         {
             "Symbol": "BNB",
@@ -421,6 +439,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "KuCoin",
+            "Symbol": "FLOKI",
+            "Blockchain": "Ethereum",
+            "Address": "0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E"
+        },
+        {
             "Symbol": "FLOW",
             "Exchange": "KuCoin",
             "Blockchain": "Flow",
@@ -485,6 +509,12 @@
             "Symbol": "IMX",
             "Blockchain": "Immutable",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Symbol": "KAITO",
+            "Blockchain": "Base",
+            "Address": "0x98d0baa52b2D063E780DE12F615f963Fe8537553"
         },
         {
             "Symbol": "KAT",
@@ -1063,6 +1093,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "KuCoin",
+            "Symbol": "TURBO",
+            "Blockchain": "Ethereum",
+            "Address": "0xA35923162C49cF95e6BF26623385eb431ad920D3"
+        },
+        {
             "Symbol": "UBX",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
@@ -1135,6 +1171,12 @@
             "Address": "0xfeF4185594457050cC9c23980d301908FE057Bb1"
         },
         {
+            "Exchange": "KuCoin",
+            "Symbol": "VIRTUAL",
+            "Blockchain": "Ethereum",
+            "Address": "0x44ff8620b8cA30902395A7bD3F2407e1A091BF73"
+        },
+        {
             "Symbol": "VLX",
             "Exchange": "KuCoin",
             "Blockchain": "Velas",
@@ -1151,6 +1193,12 @@
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
             "Address": "0xbbEE07B3e8121227AfCFe1E2B82772246226128e"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Symbol": "VVV",
+            "Blockchain": "Base",
+            "Address": "0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf"
         },
         {
             "Symbol": "WAN",

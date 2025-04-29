@@ -73,6 +73,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "Bitmax",
+            "Ignore": false,
+            "ForeignName": "AIXBT/USDT",
+            "Symbol": "AIXBT"
+        },
+        {
             "Symbol": "AKRO",
             "ForeignName": "AKRO/USDT",
             "Exchange": "Bitmax",
@@ -1135,6 +1141,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "Bitmax",
+            "Ignore": false,
+            "ForeignName": "KAITO/USDT",
+            "Symbol": "KAITO"
+        },
+        {
             "Symbol": "KAVA",
             "ForeignName": "KAVA/BTC",
             "Exchange": "Bitmax",
@@ -1843,6 +1855,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "Bitmax",
+            "Ignore": false,
+            "ForeignName": "TURBO/USDT",
+            "Symbol": "TURBO"
+        },
+        {
             "Symbol": "TVK",
             "ForeignName": "TVK/USDT",
             "Exchange": "Bitmax",
@@ -1927,6 +1945,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "Bitmax",
+            "Ignore": false,
+            "ForeignName": "VVV/USDT",
+            "Symbol": "VVV"
+        },
+        {
             "Symbol": "WAN",
             "ForeignName": "WAN/USDT",
             "Exchange": "Bitmax",
@@ -1937,6 +1961,18 @@
             "ForeignName": "WAN/BTC",
             "Exchange": "Bitmax",
             "Ignore": false
+        },
+        {
+            "Exchange": "Bitmax",
+            "Ignore": false,
+            "ForeignName": "WOJAK/USDT",
+            "Symbol": "WOJAK"
+        },
+        {
+            "Exchange": "Bitmax",
+            "Ignore": false,
+            "ForeignName": "WOLF/USDT",
+            "Symbol": "WOLF"
         },
         {
             "Symbol": "WOO",

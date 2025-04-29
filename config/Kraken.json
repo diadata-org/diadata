@@ -32,6 +32,18 @@
         },
         {
             "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "AIXBTUSD",
+            "Symbol": "AIXBT"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "AIXBTEUR",
+            "Symbol": "AIXBT"
+        },
+        {
+            "Exchange": "Kraken",
             "ForeignName": "AKTUSD",
             "Ignore": false,
             "Symbol": "AKT"
@@ -41,6 +53,18 @@
             "Ignore": false,
             "ForeignName": "APTUSD",
             "Symbol": "APT"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "APUUSD",
+            "Symbol": "APU"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "APUEUR",
+            "Symbol": "APU"
         },
         {
             "Exchange": "Kraken",
@@ -80,6 +104,18 @@
         },
         {
             "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "B3EUR",
+            "Symbol": "B3"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "B3USD",
+            "Symbol": "B3"
+        },
+        {
+            "Exchange": "Kraken",
             "ForeignName": "BCHUSD",
             "Ignore": false,
             "Symbol": "BCH"
@@ -95,6 +131,18 @@
             "Ignore": false,
             "ForeignName": "BEAMUSD",
             "Symbol": "BEAM"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "BITCOINUSD",
+            "Symbol": "BITCOIN"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "BITCOINEUR",
+            "Symbol": "BITCOIN"
         },
         {
             "Exchange": "Kraken",
@@ -243,6 +291,18 @@
         {
             "Exchange": "Kraken",
             "Ignore": false,
+            "ForeignName": "FLOKIUSD",
+            "Symbol": "FLOKI"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "FLOKIEUR",
+            "Symbol": "FLOKI"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
             "ForeignName": "FTMUSD",
             "Symbol": "FTM"
         },
@@ -275,6 +335,18 @@
             "Ignore": false,
             "ForeignName": "IMXUSD",
             "Symbol": "IMX"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "KAITOUSD",
+            "Symbol": "KAITO"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "KAITOEUR",
+            "Symbol": "KAITO"
         },
         {
             "Exchange": "Kraken",
@@ -477,6 +549,18 @@
         {
             "Exchange": "Kraken",
             "Ignore": false,
+            "ForeignName": "TURBOUSD",
+            "Symbol": "TURBO"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "TURBOEUR",
+            "Symbol": "TURBO"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
             "ForeignName": "UNIUSD",
             "Symbol": "UNI"
         },
@@ -497,6 +581,24 @@
             "ForeignName": "USDTZUSD",
             "Ignore": false,
             "Symbol": "USDT"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "VIRTUALUSD",
+            "Symbol": "VIRTUAL"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "VVVUSD",
+            "Symbol": "VVV"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "VVVEUR",
+            "Symbol": "VVV"
         },
         {
             "Exchange": "Kraken",
