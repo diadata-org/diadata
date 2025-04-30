@@ -129,8 +129,8 @@
         {
             "Exchange": "ByBit",
             "Ignore": false,
-            "ForeignName": "BITCOINUSDT",
-            "Symbol": "BITCOIN"
+            "ForeignName": "HPOS10IUSDT",
+            "Symbol": "HPOS10I"
         },
         {
             "Symbol": "BNB",

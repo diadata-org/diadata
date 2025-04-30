@@ -128,7 +128,7 @@
         },
         {
             "Exchange": "ByBit",
-            "Symbol": "BITCOIN",
+            "Symbol": "HPOS10I",
             "Blockchain": "Ethereum",
             "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9"
         },

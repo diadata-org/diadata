@@ -681,8 +681,8 @@
         {
             "Exchange": "BitMart",
             "Ignore": false,
-            "ForeignName": "WOLF_USDT",
-            "Symbol": "WOLF"
+            "ForeignName": "LWOLF_USDT",
+            "Symbol": "LWOLF"
         },
         {
             "Exchange": "BitMart",

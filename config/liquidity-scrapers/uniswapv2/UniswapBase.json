@@ -1,6 +1,14 @@
 {
     "Pools": [
         {
+            "Address": "0x377FeeeD4820B3B28D1ab429509e7A0789824fCA",
+            "ForeignName": "WETH-KEYCAT"
+        },
+        {
+            "Address": "0x6d6391B9bD02Eefa00FA711fB1Cb828A6471d283",
+            "ForeignName": "WETH-SKI"
+        },
+        {
             "Address": "0x16905890A1D02b6F824387419319Bf4188B961b0",
             "ForeignName": "WETH-BENJI"
         },

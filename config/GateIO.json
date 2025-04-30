@@ -321,8 +321,8 @@
         {
             "Exchange": "GateIO",
             "Ignore": false,
-            "ForeignName": "BITCOIN_USDT",
-            "Symbol": "BITCOIN"
+            "ForeignName": "HPOS10I_USDT",
+            "Symbol": "HPOS10I"
         },
         {
             "Exchange": "GateIO",

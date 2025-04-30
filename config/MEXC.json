@@ -141,8 +141,8 @@
         {
             "Exchange": "MEXC",
             "Ignore": false,
-            "ForeignName": "BITCOINUSDT",
-            "Symbol": "BITCOIN"
+            "ForeignName": "HPOS10IUSDT",
+            "Symbol": "HPOS10I"
         },
         {
             "Symbol": "BLEND",
@@ -957,8 +957,8 @@
         {
             "Exchange": "MEXC",
             "Ignore": false,
-            "ForeignName": "WOLFUSDT",
-            "Symbol": "WOLF"
+            "ForeignName": "LWOLFUSDT",
+            "Symbol": "LWOLF"
         },
         {
             "Symbol": "XAI",

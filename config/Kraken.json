@@ -135,14 +135,14 @@
         {
             "Exchange": "Kraken",
             "Ignore": false,
-            "ForeignName": "BITCOINUSD",
-            "Symbol": "BITCOIN"
+            "ForeignName": "HPOS10IUSD",
+            "Symbol": "HPOS10I"
         },
         {
             "Exchange": "Kraken",
             "Ignore": false,
-            "ForeignName": "BITCOINEUR",
-            "Symbol": "BITCOIN"
+            "ForeignName": "HPOS10IEUR",
+            "Symbol": "HPOS10I"
         },
         {
             "Exchange": "Kraken",

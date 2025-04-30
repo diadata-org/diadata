@@ -315,8 +315,8 @@
         {
             "Exchange": "KuCoin",
             "Ignore": false,
-            "ForeignName": "BITCOIN-USDT",
-            "Symbol": "BITCOIN"
+            "ForeignName": "HPOS10I-USDT",
+            "Symbol": "HPOS10I"
         },
         {
             "Symbol": "BNB",
