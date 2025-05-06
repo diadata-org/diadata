@@ -239,7 +239,12 @@ func (s *BitstampScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err e
 		log.Error("Get Pairs:", err)
 	}
 
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Warn("Error closing file: ", err)
+		}
+	}()
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Error("Read pair body:", err)
