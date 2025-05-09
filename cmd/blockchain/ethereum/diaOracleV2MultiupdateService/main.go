@@ -94,7 +94,7 @@ func main() {
 		log.Fatalf("Failed to parse oracleDecimals: %v", err)
 	}
 	conditionalAssets := utils.Getenv("CONDITIONAL_ASSETS", "")
-	gqlMethodology := utils.Getenv("GQL_METHODOLOGY", "vwap")
+	gqlMethodology := utils.Getenv("GQL_METHODOLOGY", "vwapir")
 	coingeckoApiKey := utils.Getenv("COINGECKO_API_KEY", "")
 	cmcApiKey := utils.Getenv("CMC_API_KEY", "")
 	assetsStr := utils.Getenv("ASSETS", "")
