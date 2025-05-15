@@ -3,6 +3,7 @@ package main
 import (
 	"io/ioutil"
 	"net/http"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -13,8 +14,60 @@ import (
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 )
+
+// Define a simple counter for total requests
+var (
+	httpRequestsTotal = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "http_requests_total",
+			Help: "Total number of HTTP requests",
+		},
+		[]string{"path"},
+	)
+
+	// Custom memory gauge for more control
+	memoryUsage = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Name: "memory_alloc_bytes",
+			Help: "Current memory usage in bytes",
+		},
+	)
+)
+
+func init() {
+	// Register the metrics with Prometheus
+	prometheus.MustRegister(httpRequestsTotal)
+	prometheus.MustRegister(memoryUsage)
+
+	// Register the Go collector (memory, goroutines, GC, etc.)
+	prometheus.MustRegister(collectors.NewGoCollector())
+
+	// Register process collector (CPU, file descriptors, etc.)
+	prometheus.MustRegister(collectors.NewProcessCollector(collectors.ProcessCollectorOpts{
+		Namespace: "graphql",
+	}))
+
+	// Start a goroutine to update memory metrics periodically
+	go updateMemoryMetrics()
+}
+
+func updateMemoryMetrics() {
+	// Update memory metrics every 15 seconds
+	for {
+		var m runtime.MemStats
+		runtime.ReadMemStats(&m)
+
+		// Update gauge with allocated memory (in bytes)
+		memoryUsage.Set(float64(m.Alloc))
+
+		time.Sleep(15 * time.Second)
+	}
+}
 
 // nolint: gas
 func main() {
@@ -54,10 +107,27 @@ func main() {
 		}
 	}))
 
-	mux.Handle(urlFolderPrefix+"/query", &relay.Handler{Schema: diaSchema})
+	// Wrap the GraphQL handler with simple metrics
+	gqlHandler := &relay.Handler{Schema: diaSchema}
+	mux.Handle(urlFolderPrefix+"/query", metricsMiddleware(gqlHandler, urlFolderPrefix+"/query"))
+
+	// Add Prometheus metrics endpoint
+	mux.Handle("/metrics", promhttp.Handler())
 
 	log.WithFields(log.Fields{"time": time.Now()}).Info("starting server")
+	log.Info("Metrics available at /metrics")
 	log.Fatal(http.ListenAndServe(utils.Getenv("LISTEN_PORT", ":1111"), logged(mux)))
+}
+
+// Simple metrics middleware that counts requests
+func metricsMiddleware(next http.Handler, path string) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Increment the counter for this path
+		httpRequestsTotal.WithLabelValues(path).Inc()
+
+		// Call the next handler
+		next.ServeHTTP(w, r)
+	})
 }
 
 var page = []byte(`
