@@ -3,70 +3,41 @@ package main
 import (
 	"io/ioutil"
 	"net/http"
-	"runtime"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/diadata-org/diadata/pkg/utils"
-
 	"github.com/diadata-org/diadata/pkg/graphql/resolver"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 )
 
-// Define a simple counter for total requests
+// Counter for GraphQL queries
 var (
-	httpRequestsTotal = prometheus.NewCounterVec(
-		prometheus.CounterOpts{
-			Name: "http_requests_total",
-			Help: "Total number of HTTP requests",
-		},
-		[]string{"path"},
-	)
+	graphqlQueries = prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "graphql_queries_total",
+		Help: "Total number of GraphQL queries processed",
+	})
 
-	// Custom memory gauge for more control
-	memoryUsage = prometheus.NewGauge(
-		prometheus.GaugeOpts{
-			Name: "memory_alloc_bytes",
-			Help: "Current memory usage in bytes",
-		},
-	)
+	// Add version info as a gauge
+	versionInfo = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "graphql_server_info",
+		Help: "Information about the GraphQL server",
+	}, []string{"version"})
 )
 
 func init() {
-	// Register the metrics with Prometheus
-	prometheus.MustRegister(httpRequestsTotal)
-	prometheus.MustRegister(memoryUsage)
+	// Register metrics with Prometheus
+	prometheus.MustRegister(graphqlQueries)
+	prometheus.MustRegister(versionInfo)
 
-	// Register the Go collector (memory, goroutines, GC, etc.)
-	prometheus.MustRegister(collectors.NewGoCollector())
-
-	// Register process collector (CPU, file descriptors, etc.)
-	prometheus.MustRegister(collectors.NewProcessCollector(collectors.ProcessCollectorOpts{
-		Namespace: "graphql",
-	}))
-
-	// Start a goroutine to update memory metrics periodically
-	go updateMemoryMetrics()
-}
-
-func updateMemoryMetrics() {
-	// Update memory metrics every 15 seconds
-	for {
-		var m runtime.MemStats
-		runtime.ReadMemStats(&m)
-
-		// Update gauge with allocated memory (in bytes)
-		memoryUsage.Set(float64(m.Alloc))
-
-		time.Sleep(15 * time.Second)
-	}
+	// Set version info
+	versionInfo.WithLabelValues("v1.4.581").Set(1)
 }
 
 // nolint: gas
@@ -107,9 +78,9 @@ func main() {
 		}
 	}))
 
-	// Wrap the GraphQL handler with simple metrics
+	// Wrap the GraphQL handler with metrics
 	gqlHandler := &relay.Handler{Schema: diaSchema}
-	mux.Handle(urlFolderPrefix+"/query", metricsMiddleware(gqlHandler, urlFolderPrefix+"/query"))
+	mux.Handle(urlFolderPrefix+"/query", metricsMiddleware(gqlHandler))
 
 	// Add Prometheus metrics endpoint
 	mux.Handle("/metrics", promhttp.Handler())
@@ -120,10 +91,10 @@ func main() {
 }
 
 // Simple metrics middleware that counts requests
-func metricsMiddleware(next http.Handler, path string) http.Handler {
+func metricsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Increment the counter for this path
-		httpRequestsTotal.WithLabelValues(path).Inc()
+		// Increment the counter for each query
+		graphqlQueries.Inc()
 
 		// Call the next handler
 		next.ServeHTTP(w, r)
