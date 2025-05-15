@@ -7,14 +7,38 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diadata-org/diadata/pkg/utils"
-
 	"github.com/diadata-org/diadata/pkg/graphql/resolver"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 )
+
+// Counter for GraphQL queries
+var (
+	graphqlQueries = prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "graphql_queries_total",
+		Help: "Total number of GraphQL queries processed",
+	})
+
+	// Add version info as a gauge
+	versionInfo = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "graphql_server_info",
+		Help: "Information about the GraphQL server",
+	}, []string{"version"})
+)
+
+func init() {
+	// Register metrics with Prometheus
+	prometheus.MustRegister(graphqlQueries)
+	prometheus.MustRegister(versionInfo)
+
+	// Set version info
+	versionInfo.WithLabelValues("v1.4.581").Set(1)
+}
 
 // nolint: gas
 func main() {
@@ -54,10 +78,27 @@ func main() {
 		}
 	}))
 
-	mux.Handle(urlFolderPrefix+"/query", &relay.Handler{Schema: diaSchema})
+	// Wrap the GraphQL handler with metrics
+	gqlHandler := &relay.Handler{Schema: diaSchema}
+	mux.Handle(urlFolderPrefix+"/query", metricsMiddleware(gqlHandler))
+
+	// Add Prometheus metrics endpoint
+	mux.Handle("/metrics", promhttp.Handler())
 
 	log.WithFields(log.Fields{"time": time.Now()}).Info("starting server")
+	log.Info("Metrics available at /metrics")
 	log.Fatal(http.ListenAndServe(utils.Getenv("LISTEN_PORT", ":1111"), logged(mux)))
+}
+
+// Simple metrics middleware that counts requests
+func metricsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Increment the counter for each query
+		graphqlQueries.Inc()
+
+		// Call the next handler
+		next.ServeHTTP(w, r)
+	})
 }
 
 var page = []byte(`
