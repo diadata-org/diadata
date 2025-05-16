@@ -31,7 +31,7 @@ type Asset struct {
 	address                   string
 	symbol                    string
 	coingeckoName             string
-	cmcName										string
+	cmcName					  string
 	allowedGuardianDeviation  float64
 	deviation                 int64
 	gqlParams                 GqlParameters
@@ -53,6 +53,8 @@ type GqlParameters struct {
 			Pairs    []string `json:"Pairs"`
 		} `json:"Exchangepairs"`
 	} `json:"FeedSelection"`
+	// global window override (seconds)
+	GqlWindow      int `json:"GqlWindow"`
 }
 
 var diaBaseUrl string
@@ -759,6 +761,10 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int,
 			}`
 	}
 	feedSelectionQuery += "]"
+
+	if gqlParameters.GqlWindow > 0 {
+	    windowSize = gqlParameters.GqlWindow
+	}
 
 	// Get times for start/end
 	currentTime := time.Now()
