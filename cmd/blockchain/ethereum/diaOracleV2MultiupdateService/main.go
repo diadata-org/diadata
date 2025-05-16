@@ -31,7 +31,7 @@ type Asset struct {
 	address                   string
 	symbol                    string
 	coingeckoName             string
-	cmcName					  string
+	cmcName                   string
 	allowedGuardianDeviation  float64
 	deviation                 int64
 	gqlParams                 GqlParameters
