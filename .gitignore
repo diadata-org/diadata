@@ -11,6 +11,7 @@ secrets
 *-workspace
 .idea
 .DS_Store
+ibm_single_deploy.sh
 
 .zos.session
 .vscode/

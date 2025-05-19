@@ -71,6 +71,10 @@ func main() {
 	if !strings.HasPrefix(urlFolderPrefix, "/") {
 		urlFolderPrefix = "/" + urlFolderPrefix
 	}
+
+	// Add Prometheus metrics endpoint BEFORE the catch-all handler
+	mux.Handle(urlFolderPrefix+"/metrics", promhttp.Handler())
+
 	mux.Handle(urlFolderPrefix+"/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, err := w.Write(page)
 		if err != nil {
@@ -82,11 +86,8 @@ func main() {
 	gqlHandler := &relay.Handler{Schema: diaSchema}
 	mux.Handle(urlFolderPrefix+"/query", metricsMiddleware(gqlHandler))
 
-	// Add Prometheus metrics endpoint
-	mux.Handle("/metrics", promhttp.Handler())
-
 	log.WithFields(log.Fields{"time": time.Now()}).Info("starting server")
-	log.Info("Metrics available at /metrics")
+	log.Info("Metrics available at " + urlFolderPrefix + "/metrics")
 	log.Fatal(http.ListenAndServe(utils.Getenv("LISTEN_PORT", ":1111"), logged(mux)))
 }
 
