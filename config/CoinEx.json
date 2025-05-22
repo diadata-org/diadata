@@ -3,8 +3,68 @@
         {
             "Exchange": "CoinEx",
             "Ignore": false,
+            "ForeignName": "AAVEUSDT",
+            "Symbol": "AAVE"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "AAVEUSDC",
+            "Symbol": "AAVE"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "AAVEBTC",
+            "Symbol": "AAVE"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "ADAUSDT",
+            "Symbol": "ADA"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "ADAUSDC",
+            "Symbol": "ADA"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "ADABTC",
+            "Symbol": "ADA"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "AEROUSDT",
+            "Symbol": "AERO"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
             "ForeignName": "AIXBTUSDT",
             "Symbol": "AIXBT"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "ALEXUSDT",
+            "Symbol": "ALEX"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "ALEXBTC",
+            "Symbol": "ALEX"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "ALPHUSDT",
+            "Symbol": "ALPH"
         },
         {
             "Exchange": "CoinEx",
@@ -21,8 +81,74 @@
         {
             "Exchange": "CoinEx",
             "Ignore": false,
+            "ForeignName": "ARBUSDT",
+            "Symbol": "ARB"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "ARBUSDC",
+            "Symbol": "ARB"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "ASTRUSDT",
+            "Symbol": "ASTR"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "ASTRBTC",
+            "Symbol": "ASTR"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "AVAXUSDT",
+            "Symbol": "AVAX"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "AVAXUSDC",
+            "Symbol": "AVAX"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "AVAXBTC",
+            "Symbol": "AVAX"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "AZEROUSDT",
+            "Symbol": "AZERO"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "AZEROBTC",
+            "Symbol": "AZERO"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
             "ForeignName": "B3USDT",
             "Symbol": "B3"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "BEAMUSDT",
+            "Symbol": "BEAM"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "BEAMBTC",
+            "Symbol": "BEAM"
         },
         {
             "Exchange": "CoinEx",
@@ -33,8 +159,32 @@
         {
             "Exchange": "CoinEx",
             "Ignore": false,
+            "ForeignName": "BNBUSDT",
+            "Symbol": "BNB"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "BOBAUSDT",
+            "Symbol": "BOBA"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "BOBABTC",
+            "Symbol": "BOBA"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
             "ForeignName": "BOBOUSDT",
             "Symbol": "BOBO"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "BRETTUSDT",
+            "Symbol": "BRETT"
         },
         {
             "Exchange": "CoinEx",
@@ -45,8 +195,104 @@
         {
             "Exchange": "CoinEx",
             "Ignore": false,
+            "ForeignName": "CELOUSDT",
+            "Symbol": "CELO"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "CELOBTC",
+            "Symbol": "CELO"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "COMPUSDT",
+            "Symbol": "COMP"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "DEGENUSDT",
+            "Symbol": "DEGEN"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "DEGENBTC",
+            "Symbol": "DEGEN"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "DIAUSDT",
+            "Symbol": "DIA"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "DOGEUSDT",
+            "Symbol": "DOGE"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "DOGEUSDC",
+            "Symbol": "DOGE"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "DOGEBTC",
+            "Symbol": "DOGE"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
             "ForeignName": "DOGINMEUSDT",
             "Symbol": "DOGINME"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "DOTUSDT",
+            "Symbol": "DOT"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "DOTUSDC",
+            "Symbol": "DOT"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "EDUUSDT",
+            "Symbol": "EDU"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "ENAUSDT",
+            "Symbol": "ENA"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "ENAUSDC",
+            "Symbol": "ENA"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "ENABTC",
+            "Symbol": "ENA"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "ETHUSDT",
+            "Symbol": "ETH"
         },
         {
             "Exchange": "CoinEx",
@@ -63,8 +309,104 @@
         {
             "Exchange": "CoinEx",
             "Ignore": false,
+            "ForeignName": "FXSUSDT",
+            "Symbol": "FXS"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "GALAUSDT",
+            "Symbol": "GALA"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "GALAUSDC",
+            "Symbol": "GALA"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "GLMRUSDT",
+            "Symbol": "GLMR"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "GLMRBTC",
+            "Symbol": "GLMR"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "GNOUSDT",
+            "Symbol": "GNO"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "GNOBTC",
+            "Symbol": "GNO"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "GRAILUSDT",
+            "Symbol": "GRAIL"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "IMXUSDT",
+            "Symbol": "IMX"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "IMXBTC",
+            "Symbol": "IMX"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "JONESUSDT",
+            "Symbol": "JONES"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
             "ForeignName": "KAITOUSDT",
             "Symbol": "KAITO"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "KAVAUSDT",
+            "Symbol": "KAVA"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "KAVABTC",
+            "Symbol": "KAVA"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "KDAUSDT",
+            "Symbol": "KDA"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "KDAUSDC",
+            "Symbol": "KDA"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "KDABTC",
+            "Symbol": "KDA"
         },
         {
             "Exchange": "CoinEx",
@@ -75,14 +417,218 @@
         {
             "Exchange": "CoinEx",
             "Ignore": false,
+            "ForeignName": "KSMUSDT",
+            "Symbol": "KSM"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "KSMBTC",
+            "Symbol": "KSM"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "LDOUSDT",
+            "Symbol": "LDO"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "LINKUSDT",
+            "Symbol": "LINK"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "LTCUSDT",
+            "Symbol": "LTC"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "LTCBTC",
+            "Symbol": "LTC"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "LTCUSDC",
+            "Symbol": "LTC"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "LYXUSDT",
+            "Symbol": "LYX"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "MAVIAUSDT",
+            "Symbol": "MAVIA"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "MIGGLESUSDT",
+            "Symbol": "MIGGLES"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "MOGUSDT",
+            "Symbol": "MOG"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "MOVRUSDT",
+            "Symbol": "MOVR"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "MOVRBTC",
+            "Symbol": "MOVR"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "NAKAUSDT",
+            "Symbol": "NAKA"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "NPCUSDT",
+            "Symbol": "NPC"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "OPUSDT",
+            "Symbol": "OP"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "OPBTC",
+            "Symbol": "OP"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "ORDIUSDT",
+            "Symbol": "ORDI"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "ORDIBTC",
+            "Symbol": "ORDI"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "PRIMEUSDT",
+            "Symbol": "PRIME"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
             "ForeignName": "PROUSDT",
             "Symbol": "PRO"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "PSPUSDT",
+            "Symbol": "PSP"
         },
         {
             "Exchange": "CoinEx",
             "ForeignName": "SUSDT",
             "Ignore": false,
             "Symbol": "S"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "SUSDC",
+            "Symbol": "S"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "SBTC",
+            "Symbol": "S"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "SANDUSDT",
+            "Symbol": "SAND"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "SATSUSDT",
+            "Symbol": "SATS"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "SDNUSDT",
+            "Symbol": "SDN"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "SDNBTC",
+            "Symbol": "SDN"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "SILOUSDT",
+            "Symbol": "SILO"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "SOLUSDT",
+            "Symbol": "SOL"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "SOVUSDT",
+            "Symbol": "SOV"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "STORJUSDT",
+            "Symbol": "STORJ"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "STXUSDT",
+            "Symbol": "STX"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "STXUSDC",
+            "Symbol": "STX"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "STXBTC",
+            "Symbol": "STX"
         },
         {
             "Exchange": "CoinEx",
@@ -93,8 +639,56 @@
         {
             "Exchange": "CoinEx",
             "Ignore": false,
+            "ForeignName": "TLOSUSDT",
+            "Symbol": "TLOS"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "TLOSBTC",
+            "Symbol": "TLOS"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "TONUSDT",
+            "Symbol": "TON"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "TONBTC",
+            "Symbol": "TON"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "TOSHIUSDT",
+            "Symbol": "TOSHI"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
             "ForeignName": "TURBOUSDT",
             "Symbol": "TURBO"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "UNIUSDT",
+            "Symbol": "UNI"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "UNIUSDC",
+            "Symbol": "UNI"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "UNIBTC",
+            "Symbol": "UNI"
         },
         {
             "Exchange": "CoinEx",
@@ -105,14 +699,68 @@
         {
             "Exchange": "CoinEx",
             "Ignore": false,
+            "ForeignName": "VLXUSDT",
+            "Symbol": "VLX"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "VLXBTC",
+            "Symbol": "VLX"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
             "ForeignName": "VVVUSDT",
             "Symbol": "VVV"
         },
         {
             "Exchange": "CoinEx",
             "Ignore": false,
+            "ForeignName": "WANUSDT",
+            "Symbol": "WAN"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "WANBTC",
+            "Symbol": "WAN"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "WELLUSDT",
+            "Symbol": "WELL"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "WELSHUSDT",
+            "Symbol": "WELSH"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
             "ForeignName": "WOJAKUSDT",
             "Symbol": "WOJAK"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "XRPUSDT",
+            "Symbol": "XRP"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "XRPBTC",
+            "Symbol": "XRP"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "ZKUSDT",
+            "Symbol": "ZK"
         }
     ]
 }

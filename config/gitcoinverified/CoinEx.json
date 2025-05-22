@@ -2,9 +2,39 @@
     "Tokens": [
         {
             "Exchange": "CoinEx",
+            "Symbol": "AAVE",
+            "Blockchain": "Ethereum",
+            "Address": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "ADA",
+            "Blockchain": "Cardano",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "AERO",
+            "Blockchain": "Base",
+            "Address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631"
+        },
+        {
+            "Exchange": "CoinEx",
             "Symbol": "AIXBT",
             "Blockchain": "Base",
             "Address": "0x4F9Fd6Be4a90f2620860d680c0d4d5Fb53d1A825"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "ALEX",
+            "Blockchain": "Stacks",
+            "Address": "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.age000-governance-token"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "ALPH",
+            "Blockchain": "Alephium",
+            "Address": "tgx7VNFoP9DJiFMFgXXtafQZkUvyEdDHT9ryamHJYrjq"
         },
         {
             "Exchange": "CoinEx",
@@ -20,9 +50,39 @@
         },
         {
             "Exchange": "CoinEx",
+            "Symbol": "ARB",
+            "Blockchain": "Arbitrum",
+            "Address": "0x912CE59144191C1204E64559FE8253a0e49E6548"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "ASTR",
+            "Blockchain": "Astar",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "AVAX",
+            "Blockchain": "Avalanche",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "AZERO",
+            "Blockchain": "AlephZero",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinEx",
             "Symbol": "B3",
             "Blockchain": "Base",
             "Address": "0xB3B32F9f8827D4634fE7d973Fa1034Ec9fdDB3B3"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "BEAM",
+            "Blockchain": "Ethereum",
+            "Address": "0x62D0A8458eD7719FDAF978fe5929C6D342B0bFcE"
         },
         {
             "Exchange": "CoinEx",
@@ -32,9 +92,27 @@
         },
         {
             "Exchange": "CoinEx",
+            "Symbol": "BNB",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "BOBA",
+            "Blockchain": "Ethereum",
+            "Address": "0x42bBFa2e77757C645eeaAd1655E0911a7553Efbc"
+        },
+        {
+            "Exchange": "CoinEx",
             "Symbol": "BOBO",
             "Blockchain": "Ethereum",
             "Address": "0xB90B2A35C65dBC466b04240097Ca756ad2005295"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "BRETT",
+            "Blockchain": "Base",
+            "Address": "0x532f27101965dd16442E59d40670FaF5eBB142E4"
         },
         {
             "Symbol": "BTC",
@@ -44,9 +122,63 @@
         },
         {
             "Exchange": "CoinEx",
+            "Symbol": "CELO",
+            "Blockchain": "Celo",
+            "Address": "0x471EcE3750Da237f93B8E339c536989b8978a438"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "COMP",
+            "Blockchain": "Ethereum",
+            "Address": "0xc00e94Cb662C3520282E6f5717214004A7f26888"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "DEGEN",
+            "Blockchain": "Base",
+            "Address": "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "DIA",
+            "Blockchain": "Ethereum",
+            "Address": "0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "DOGE",
+            "Blockchain": "Dogechain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinEx",
             "Symbol": "DOGINME",
             "Blockchain": "Base",
             "Address": "0x6921B130D297cc43754afba22e5EAc0FBf8Db75b"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "DOT",
+            "Blockchain": "Polkadot",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "EDU",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xBdEAe1cA48894A1759A8374D63925f21f2Ee2639"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "ENA",
+            "Blockchain": "Ethereum",
+            "Address": "0x57e114B691Db790C35207b2e685D4A43181e6061"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "ETH",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Exchange": "CoinEx",
@@ -62,9 +194,63 @@
         },
         {
             "Exchange": "CoinEx",
+            "Symbol": "FXS",
+            "Blockchain": "Ethereum",
+            "Address": "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "GALA",
+            "Blockchain": "Ethereum",
+            "Address": "0xd1d2Eb1B1e90B638588728b4130137D262C87cae"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "GLMR",
+            "Blockchain": "Moonbeam",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "GNO",
+            "Blockchain": "Gnosis",
+            "Address": "0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "GRAIL",
+            "Blockchain": "Arbitrum",
+            "Address": "0x3d9907F9a368ad0a51Be60f7Da3b97cf940982D8"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "IMX",
+            "Blockchain": "Immutable",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "JONES",
+            "Blockchain": "Arbitrum",
+            "Address": "0x10393c20975cF177a3513071bC110f7962CD67da"
+        },
+        {
+            "Exchange": "CoinEx",
             "Symbol": "KAITO",
             "Blockchain": "Base",
             "Address": "0x98d0baa52b2D063E780DE12F615f963Fe8537553"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "KAVA",
+            "Blockchain": "Osmosis",
+            "Address": "ibc/57AA1A70A4BC9769C525EBF6386F7A21536E04A79D62E1981EFCEF9428EBB205"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "KDA",
+            "Blockchain": "Kadena",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Exchange": "CoinEx",
@@ -74,14 +260,152 @@
         },
         {
             "Exchange": "CoinEx",
+            "Symbol": "KSM",
+            "Blockchain": "Kusama",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "LDO",
+            "Blockchain": "Ethereum",
+            "Address": "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "LINK",
+            "Blockchain": "Ethereum",
+            "Address": "0x514910771AF9Ca656af840dff83E8264EcF986CA"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "LTC",
+            "Blockchain": "Litecoin",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "LYX",
+            "Blockchain": "Lukso",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "MAVIA",
+            "Blockchain": "Ethereum",
+            "Address": "0x24fcFC492C1393274B6bcd568ac9e225BEc93584"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "MIGGLES",
+            "Blockchain": "Base",
+            "Address": "0xB1a03EdA10342529bBF8EB700a06C60441fEf25d"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "MOG",
+            "Blockchain": "Ethereum",
+            "Address": "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "MOVR",
+            "Blockchain": "Moonriver",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "NAKA",
+            "Blockchain": "Polygon",
+            "Address": "0x311434160D7537be358930def317AfB606C0D737"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "NPC",
+            "Blockchain": "Ethereum",
+            "Address": "0x8eD97a637A790Be1feff5e888d43629dc05408F6"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "OP",
+            "Blockchain": "Optimism",
+            "Address": "0x4200000000000000000000000000000000000042"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "ORDI",
+            "Blockchain": "Bitcoin",
+            "Address": "b61b0172d95e266c18aea0c624db987e971a5d6d4ebc2aaed85da4642d635735i0"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "PRIME",
+            "Blockchain": "Ethereum",
+            "Address": "0xb23d80f5FefcDDaa212212F028021B41DEd428CF"
+        },
+        {
+            "Exchange": "CoinEx",
             "Symbol": "PRO",
             "Blockchain": "Ethereum",
             "Address": "0x226bb599a12C826476e3A771454697EA52E9E220"
         },
         {
+            "Exchange": "CoinEx",
+            "Symbol": "PSP",
+            "Blockchain": "Ethereum",
+            "Address": "0xcAfE001067cDEF266AfB7Eb5A286dCFD277f3dE5"
+        },
+        {
             "Symbol": "S",
             "Exchange": "CoinEx",
             "Blockchain": "Sonic",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "SAND",
+            "Blockchain": "Ethereum",
+            "Address": "0x3845badAde8e6dFF049820680d1F14bD3903a5d0"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "SATS",
+            "Blockchain": "Bitcoin",
+            "Address": "9b664bdd6f5ed80d8d88957b63364c41f3ad4efb8eee11366aa16435974d9333i0"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "SDN",
+            "Blockchain": "Shiden",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "SILO",
+            "Blockchain": "Arbitrum",
+            "Address": "0x0341C0C0ec423328621788d4854119B97f44E391"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "SOL",
+            "Blockchain": "Solana",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "SOV",
+            "Blockchain": "Rootstock",
+            "Address": "0xEFc78fc7d48b64958315949279Ba181c2114ABBd"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "STORJ",
+            "Blockchain": "Ethereum",
+            "Address": "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "STX",
+            "Blockchain": "Stacks",
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
@@ -92,9 +416,33 @@
         },
         {
             "Exchange": "CoinEx",
+            "Symbol": "TLOS",
+            "Blockchain": "Telos",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "TON",
+            "Blockchain": "Ton",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "TOSHI",
+            "Blockchain": "Base",
+            "Address": "0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4"
+        },
+        {
+            "Exchange": "CoinEx",
             "Symbol": "TURBO",
             "Blockchain": "Ethereum",
             "Address": "0xA35923162C49cF95e6BF26623385eb431ad920D3"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "UNI",
+            "Blockchain": "Ethereum",
+            "Address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
         },
         {
             "Symbol": "USDT",
@@ -110,15 +458,51 @@
         },
         {
             "Exchange": "CoinEx",
+            "Symbol": "VLX",
+            "Blockchain": "Velas",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinEx",
             "Symbol": "VVV",
             "Blockchain": "Base",
             "Address": "0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf"
         },
         {
             "Exchange": "CoinEx",
+            "Symbol": "WAN",
+            "Blockchain": "Wanchain",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "WELL",
+            "Blockchain": "Moonbeam",
+            "Address": "0x511aB53F793683763E5a8829738301368a2411E3"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "WELSH",
+            "Blockchain": "Stacks",
+            "Address": "SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G.welshcorgicoin-token"
+        },
+        {
+            "Exchange": "CoinEx",
             "Symbol": "WOJAK",
             "Blockchain": "Ethereum",
             "Address": "0x5026F006B85729a8b14553FAE6af249aD16c9aaB"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "XRP",
+            "Blockchain": "XRPL",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "ZK",
+            "Blockchain": "ZKsync",
+            "Address": "0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E"
         }
     ]
 }
