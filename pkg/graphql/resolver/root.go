@@ -2,6 +2,9 @@ package resolver
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -610,13 +613,50 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 			endtimes = append(endtimes, bin.Endtime)
 		}
 	}
+
+	// Hash @args for logging--------------------------------------------
+	argsByte, err := json.Marshal(args)
+	if err != nil {
+		log.Error("Marshal args: ", err)
+	}
+	argHash := sha256.Sum256(argsByte)
+	argHashReadable := hex.EncodeToString(argHash[:])
+
+	log.Infof("%s <=>  graphql query parameters:", argHashReadable)
+	if args.Filter.Value != nil {
+		log.Info("Filter: ", *args.Filter.Value)
+	}
+	if args.BlockShiftSeconds.Value != nil {
+		log.Info("BlockShiftSeconds: ", *args.BlockShiftSeconds.Value)
+	}
+	if args.BlockSizeSeconds.Value != nil {
+		log.Info("BlockSizeSeconds: ", *args.BlockSizeSeconds.Value)
+	}
+	if args.StartTime.Value != nil {
+		log.Info("StartTime: ", *args.StartTime.Value)
+	}
+	if args.EndTime.Value != nil {
+		log.Info("EndTime: ", *args.EndTime.Value)
+	}
+	if args.FeedSelection != nil && len(*args.FeedSelection) > 0 {
+		fs := (*args.FeedSelection)[0]
+		log.Infof("Address -- Blockchain: %s -- %s ", *fs.Address.Value, *fs.Blockchain.Value)
+		if fs.Exchangepairs != nil {
+			log.Info("Exchangepairs: ", *fs.Exchangepairs)
+		}
+	}
+	// ----------------------------------------------------------------
+
+	t0 := time.Now()
 	trades, err = r.DS.GetTradesByFeedSelection(feedselection, starttimes, endtimes, 0)
 	if err != nil {
 		return sr, err
 	}
-	log.Println("Generating blocks, Total Trades", len(trades))
-	log.Info("generating bins. Total bins: ", len(bins))
+	log.Infof("%s : Generating blocks, Total Trades: %v", argHashReadable, len(trades))
+	log.Infof("%s : generating bins. Total bins: %v", argHashReadable, len(bins))
+	log.Infof("%s : Time elapsed for getting trades: %v", argHashReadable, time.Since(t0))
 
+	t0 = time.Now()
 	if len(bins) > 0 {
 		// In case the first bin is empty, look for the last trades before @starttime
 		// in order to select the most recent one with sufficient volume.
@@ -624,6 +664,10 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 			previousTrade, err := r.DS.GetTradesByFeedSelection(feedselection, []time.Time{endtime.AddDate(0, 0, -10)}, []time.Time{starttime}, lookbackTradesNumber)
 			if len(previousTrade) == 0 {
 				log.Error("get initial trade: ", err)
+				if len(trades) == 0 {
+					var fper []*FilterPointExtendedResolver
+					return &fper, errors.New("no trades in given time range")
+				}
 				// Fill with a zero trade so we can build blocks.
 				auxTrade := trades[0]
 				auxTrade.Volume = 0
@@ -642,7 +686,9 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 		tradeBlocks = queryhelper.NewBlockGenerator(trades).GenerateBlocks(blockSizeSeconds, blockShiftSeconds, bins)
 		log.Println("Total TradeBlocks", len(tradeBlocks))
 	}
+	log.Infof("%s : Time elapsed for creating blocks: %v", argHashReadable, time.Since(t0))
 
+	t0 = time.Now()
 	switch filter {
 	case "mair":
 		{
@@ -670,6 +716,7 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 		}
 
 	}
+	log.Infof("%s : Time elapsed forcomputing filter points: %v", argHashReadable, time.Since(t0))
 
 	var fper []*FilterPointExtendedResolver
 
@@ -734,12 +781,38 @@ func (r *DiaResolver) GetFeedAggregation(ctx context.Context, args struct {
 		return &sr, err
 	}
 
+	// Hash @args for logging--------------------------------------------
+	argsByte, err := json.Marshal(args)
+	if err != nil {
+		log.Error("Marshal args: ", err)
+	}
+	argHash := sha256.Sum256(argsByte)
+	argHashReadable := hex.EncodeToString(argHash[:])
+
+	log.Infof("GetFeedAggregation - %s <=>  graphql query parameters:", argHashReadable)
+	if args.StartTime.Value != nil {
+		log.Info("GetFeedAggregation - StartTime: ", *args.StartTime.Value)
+	}
+	if args.EndTime.Value != nil {
+		log.Info("GetFeedAggregation - EndTime: ", *args.EndTime.Value)
+	}
+	if args.FeedSelection != nil && len(*args.FeedSelection) > 0 {
+		fs := (*args.FeedSelection)[0]
+		log.Infof("Address -- Blockchain: %s -- %s ", *fs.Address.Value, *fs.Blockchain.Value)
+		if fs.Exchangepairs != nil {
+			log.Info("GetFeedAggregation - Exchangepairs: ", *fs.Exchangepairs)
+		}
+	}
+	// ----------------------------------------------------------------
+
+	t0 := time.Now()
 	// Get aggregated data in given time-range.
 	fsa, err := r.DS.GetAggregatedFeedSelection(feedselection, starttime, endtime, tradeVolumeThreshold)
 	if err != nil {
 		log.Error("GetAggregatedFeedSelection: ", err)
 		return &sr, err
 	}
+	log.Infof("%s -- %s : Time elapsed for creating blocks: %v", "GetFeedAggregation", argHashReadable, time.Since(t0))
 
 	// Fill response slice.
 	var fsar []*FeedSelectionAggregatedResolver

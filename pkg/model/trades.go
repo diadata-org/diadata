@@ -501,7 +501,7 @@ func (datastore *DB) GetTradesByExchangesBatchedFull(
 		AND time > %d AND time <= %d ; `,
 			influxDbTradesTable, quoteasset.Address, quoteasset.Blockchain, subQuery, subQueryBase, startTimes[i].UnixNano(), endTimes[i].UnixNano())
 	}
-	log.Info("query: ", query)
+
 	res, err := queryInfluxDB(datastore.influxClient, query)
 	if err != nil {
 		return r, err
