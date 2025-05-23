@@ -445,6 +445,12 @@
             "Address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
         },
         {
+            "Exchange": "CoinEx",
+            "Symbol": "USDC",
+            "Blockchain": "Ethereum",
+            "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+        },
+        {
             "Symbol": "USDT",
             "Exchange": "CoinEx",
             "Blockchain": "Ethereum",
