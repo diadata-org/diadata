@@ -615,36 +615,44 @@ func (r *DiaResolver) GetFeed(ctx context.Context, args struct {
 	}
 
 	// Hash @args for logging--------------------------------------------
+	timeQuery := time.Now()
+	timeQueryBytes, err := json.Marshal(timeQuery)
+	if err != nil {
+		log.Error("Marshal timeQuery: ", err)
+	}
 	argsByte, err := json.Marshal(args)
 	if err != nil {
 		log.Error("Marshal args: ", err)
 	}
-	argHash := sha256.Sum256(argsByte)
+	argsByteFull := append(timeQueryBytes, argsByte...)
+	argHash := sha256.Sum256(argsByteFull)
 	argHashReadable := hex.EncodeToString(argHash[:])
 
-	log.Infof("%s <=>  graphql query parameters:", argHashReadable)
+	logString := fmt.Sprintf("%s <=>  graphql query parameters for query at %v: \n", argHashReadable, timeQuery)
+
 	if args.Filter.Value != nil {
-		log.Info("Filter: ", *args.Filter.Value)
+		logString += fmt.Sprintf("Filter: %s \n", *args.Filter.Value)
 	}
 	if args.BlockShiftSeconds.Value != nil {
-		log.Info("BlockShiftSeconds: ", *args.BlockShiftSeconds.Value)
+		logString += fmt.Sprintf("BlockShiftSeconds: %v \n", *args.BlockShiftSeconds.Value)
 	}
 	if args.BlockSizeSeconds.Value != nil {
-		log.Info("BlockSizeSeconds: ", *args.BlockSizeSeconds.Value)
+		logString += fmt.Sprintf("BlockSizeSeconds: %v \n", *args.BlockSizeSeconds.Value)
 	}
 	if args.StartTime.Value != nil {
-		log.Info("StartTime: ", *args.StartTime.Value)
+		logString += fmt.Sprintf("StartTime: %v \n", *args.StartTime.Value)
 	}
 	if args.EndTime.Value != nil {
-		log.Info("EndTime: ", *args.EndTime.Value)
+		logString += fmt.Sprintf("EndTime: %v \n", *args.EndTime.Value)
 	}
 	if args.FeedSelection != nil && len(*args.FeedSelection) > 0 {
 		fs := (*args.FeedSelection)[0]
-		log.Infof("Address -- Blockchain: %s -- %s ", *fs.Address.Value, *fs.Blockchain.Value)
+		logString += fmt.Sprintf("Address -- Blockchain: %s -- %s  \n", *fs.Address.Value, *fs.Blockchain.Value)
 		if fs.Exchangepairs != nil {
-			log.Info("Exchangepairs: ", *fs.Exchangepairs)
+			logString += fmt.Sprintf("Exchangepairs: %v \n", *fs.Exchangepairs)
 		}
 	}
+	log.Info(logString)
 	// ----------------------------------------------------------------
 
 	t0 := time.Now()
@@ -782,27 +790,35 @@ func (r *DiaResolver) GetFeedAggregation(ctx context.Context, args struct {
 	}
 
 	// Hash @args for logging--------------------------------------------
+	timeQuery := time.Now()
+	timeQueryBytes, err := json.Marshal(timeQuery)
+	if err != nil {
+		log.Error("Marshal timeQuery: ", err)
+	}
 	argsByte, err := json.Marshal(args)
 	if err != nil {
 		log.Error("Marshal args: ", err)
 	}
-	argHash := sha256.Sum256(argsByte)
+	argsByteFull := append(timeQueryBytes, argsByte...)
+	argHash := sha256.Sum256(argsByteFull)
 	argHashReadable := hex.EncodeToString(argHash[:])
 
-	log.Infof("GetFeedAggregation - %s <=>  graphql query parameters:", argHashReadable)
+	logString := fmt.Sprintf("GetFeedAggregation - %s <=>  graphql query parameters for query at %v: \n", argHashReadable, timeQuery)
+
 	if args.StartTime.Value != nil {
-		log.Info("GetFeedAggregation - StartTime: ", *args.StartTime.Value)
+		logString += fmt.Sprintf("GetFeedAggregation - StartTime: %v \n", *args.StartTime.Value)
 	}
 	if args.EndTime.Value != nil {
-		log.Info("GetFeedAggregation - EndTime: ", *args.EndTime.Value)
+		logString += fmt.Sprintf("GetFeedAggregation - EndTime: %v \n", *args.EndTime.Value)
 	}
 	if args.FeedSelection != nil && len(*args.FeedSelection) > 0 {
 		fs := (*args.FeedSelection)[0]
-		log.Infof("Address -- Blockchain: %s -- %s ", *fs.Address.Value, *fs.Blockchain.Value)
+		logString += fmt.Sprintf("GetFeedAggregation - Address -- Blockchain: %s -- %s \n", *fs.Address.Value, *fs.Blockchain.Value)
 		if fs.Exchangepairs != nil {
-			log.Info("GetFeedAggregation - Exchangepairs: ", *fs.Exchangepairs)
+			logString += fmt.Sprintf("GetFeedAggregation - Exchangepairs: %v \n", *fs.Exchangepairs)
 		}
 	}
+	log.Info(logString)
 	// ----------------------------------------------------------------
 
 	t0 := time.Now()
