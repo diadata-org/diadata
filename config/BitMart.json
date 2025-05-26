@@ -392,12 +392,6 @@
         },
         {
             "Exchange": "BitMart",
-            "Ignore": false,
-            "ForeignName": "MAVIA_USDT",
-            "Symbol": "MAVIA"
-        },
-        {
-            "Exchange": "BitMart",
             "ForeignName": "MCRT_USDT",
             "Ignore": false,
             "Symbol": "MCRT"

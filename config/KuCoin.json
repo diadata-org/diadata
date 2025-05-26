@@ -1219,12 +1219,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "MAVIA",
-            "ForeignName": "MAVIA-USDT",
-            "Exchange": "KuCoin",
-            "Ignore": false
-        },
-        {
             "Symbol": "METIS",
             "ForeignName": "METIS-USDT",
             "Exchange": "KuCoin",

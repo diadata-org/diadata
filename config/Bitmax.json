@@ -607,12 +607,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "DEGEN",
-            "ForeignName": "DEGEN/USDT",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
             "Symbol": "DFD",
             "ForeignName": "DFD/USDT",
             "Exchange": "Bitmax",
@@ -1447,12 +1441,6 @@
             "Ignore": false
         },
         {
-            "Exchange": "Bitmax",
-            "Ignore": false,
-            "ForeignName": "NPC/USDT",
-            "Symbol": "NPC"
-        },
-        {
             "Symbol": "NSURE",
             "ForeignName": "NSURE/USDT",
             "Exchange": "Bitmax",
@@ -1855,12 +1843,6 @@
             "Ignore": false
         },
         {
-            "Exchange": "Bitmax",
-            "Ignore": false,
-            "ForeignName": "TURBO/USDT",
-            "Symbol": "TURBO"
-        },
-        {
             "Symbol": "TVK",
             "ForeignName": "TVK/USDT",
             "Exchange": "Bitmax",
@@ -1961,18 +1943,6 @@
             "ForeignName": "WAN/BTC",
             "Exchange": "Bitmax",
             "Ignore": false
-        },
-        {
-            "Exchange": "Bitmax",
-            "Ignore": false,
-            "ForeignName": "WOJAK/USDT",
-            "Symbol": "WOJAK"
-        },
-        {
-            "Exchange": "Bitmax",
-            "Ignore": false,
-            "ForeignName": "WOLF/USDT",
-            "Symbol": "WOLF"
         },
         {
             "Symbol": "WOO",

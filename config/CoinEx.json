@@ -141,14 +141,14 @@
         {
             "Exchange": "CoinEx",
             "Ignore": false,
-            "ForeignName": "BEAMUSDT",
-            "Symbol": "BEAM"
+            "ForeignName": "BEAMXUSDT",
+            "Symbol": "BEAMX"
         },
         {
             "Exchange": "CoinEx",
             "Ignore": false,
-            "ForeignName": "BEAMBTC",
-            "Symbol": "BEAM"
+            "ForeignName": "BEAMXBTC",
+            "Symbol": "BEAMX"
         },
         {
             "Exchange": "CoinEx",
