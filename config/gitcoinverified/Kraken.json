@@ -164,6 +164,18 @@
         },
         {
             "Exchange": "Kraken",
+            "Symbol": "EUR",
+            "Blockchain": "Fiat",
+            "Address": "978"
+        },
+        {
+            "Exchange": "Kraken",
+            "Symbol": "EUROP",
+            "Blockchain": "Ethereum",
+            "Address": "0x888883b5F5D21fb10Dfeb70e8f9722B9FB0E5E51"
+        },
+        {
+            "Exchange": "Kraken",
             "Symbol": "FET",
             "Blockchain": "Fetch",
             "Address": "0x0000000000000000000000000000000000000000"

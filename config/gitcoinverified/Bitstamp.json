@@ -121,6 +121,12 @@
             "Address": "978"
         },
         {
+            "Symbol": "eurcv",
+            "Exchange": "Bitstamp",
+            "Blockchain": "Ethereum",
+            "Address": "0x5F7827FDeb7c20b443265Fc2F40845B715385Ff2"
+        },
+        {
             "Symbol": "euroc",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",

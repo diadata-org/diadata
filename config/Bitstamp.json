@@ -19,6 +19,18 @@
             "Ignore": false
         },
         {
+            "Symbol": "eurcv",
+            "ForeignName": "eurcvusdt",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
+            "Symbol": "eurcv",
+            "ForeignName": "eurcveur",
+            "Exchange": "Bitstamp",
+            "Ignore": false
+        },
+        {
             "Symbol": "euroc",
             "ForeignName": "eurocusdc",
             "Exchange": "Bitstamp",

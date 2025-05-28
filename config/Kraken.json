@@ -236,6 +236,24 @@
         },
         {
             "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "EUROPEUR",
+            "Symbol": "EUROP"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "EUROPUSD",
+            "Symbol": "EUROP"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "EUROPUSDC",
+            "Symbol": "EUROP"
+        },
+        {
+            "Exchange": "Kraken",
             "ForeignName": "XETCXETH",
             "Ignore": false,
             "Symbol": "ETC"

@@ -1,6 +1,10 @@
 {
     "Pools": [
         {
+            "Address": "0x4097073E82eDAC2D758eCfD594139A891340D59d",
+            "ForeignName": "RNT-USDT"
+        },
+        {
             "Address": "0x999fC000F3F5176306c0753bAD01d6a37644FEEF",
             "ForeignName": "NXD-USDT"
         },
