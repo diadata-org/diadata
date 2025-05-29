@@ -121,7 +121,7 @@ func (s *BitflowScraper) mainLoop() {
 	if err != nil {
 		log.Error("error getting fullPools for which pairs should be reversed: ", err)
 	}
-	log.Info("singleDiration: ", *singleDirectionPoolsBitflow)
+	log.Info("singleDirection: ", *singleDirectionPoolsBitflow)
 
 	if s.initialBlockHeight <= 0 {
 		latestBlock, err := s.api.GetLatestBlock()
@@ -151,6 +151,12 @@ func (s *BitflowScraper) mainLoop() {
 }
 
 func (s *BitflowScraper) Update() error {
+	latestBlock, err := s.api.GetLatestBlock()
+	if err != nil {
+		s.logger.WithError(err).Error("failed to GetLatestBlock")
+	}
+	s.currentHeight = latestBlock.Height
+
 	txs, err := s.api.GetAllBlockTransactions(s.currentHeight)
 	if err != nil {
 		s.logger.WithError(err).Error("failed to GetBlockTransactions")
@@ -160,7 +166,6 @@ func (s *BitflowScraper) Update() error {
 	if len(txs) == 0 {
 		return nil
 	}
-	s.currentHeight += 1
 
 	swapEvents, err := s.fetchSwapEvents(txs)
 	if err != nil {

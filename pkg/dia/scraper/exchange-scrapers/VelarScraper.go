@@ -119,6 +119,13 @@ func (s *VelarScraper) mainLoop() {
 }
 
 func (s *VelarScraper) Update() error {
+
+	latestBlock, err := s.api.GetLatestBlock()
+	if err != nil {
+		s.logger.WithError(err).Error("failed to GetLatestBlock")
+	}
+	s.currentHeight = latestBlock.Height
+
 	txs, err := s.api.GetAllBlockTransactions(s.currentHeight)
 	if err != nil {
 		return err
@@ -127,7 +134,6 @@ func (s *VelarScraper) Update() error {
 	if len(txs) == 0 {
 		return nil
 	}
-	s.currentHeight += 1
 
 	swapEvents, err := s.getSwapEvents(txs)
 	if err != nil {

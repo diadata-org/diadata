@@ -13,15 +13,17 @@ import (
 	"strings"
 	"time"
 
+	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/sirupsen/logrus"
 )
 
 const (
-	StacksURL                = "https://api.mainnet.hiro.so"
 	DefaultSleepBetweenCalls = 1000  // ms
 	DefaultRefreshDelay      = 10000 // ms
 	MaxPageLimit             = 50
 )
+
+var StacksURL = utils.Getenv("STACKS_RPC_URL", "")
 
 type StacksClient struct {
 	debug             bool
@@ -233,7 +235,7 @@ func (c *StacksClient) callStacksAPI(request *http.Request, target interface{}) 
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		err = fmt.Errorf("failed to call Hiro API, status code: %d", resp.StatusCode)
+		err = fmt.Errorf("failed to call Stacks API, status code: %d", resp.StatusCode)
 		if resp.StatusCode != http.StatusNotFound {
 			c.logger.
 				WithField("status", resp.StatusCode).
