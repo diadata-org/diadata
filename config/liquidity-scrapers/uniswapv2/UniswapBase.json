@@ -1,6 +1,10 @@
 {
     "Pools": [
         {
+            "Address": "0x0c3b466104545efa096b8f944c1e524E1d0D4888",
+            "ForeignName": "VIRTUAL-TIBBIR"
+        },
+        {
             "Address": "0x377FeeeD4820B3B28D1ab429509e7A0789824fCA",
             "ForeignName": "WETH-KEYCAT"
         },
