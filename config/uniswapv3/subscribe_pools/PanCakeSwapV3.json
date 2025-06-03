@@ -1,6 +1,10 @@
 {
     "Pools": [
         {
+            "Address": "0xAC0FE1C4126e4a9B644Adfc1303827e3bB5dDDF3",
+            "ForeignName": "USDT-satUSD"
+        },
+        {
             "Address": "0x62Fcb3C1794FB95BD8B1A97f6Ad5D8a7e4943a1e",
             "ForeignName": "ETH-WBNB"
         },
