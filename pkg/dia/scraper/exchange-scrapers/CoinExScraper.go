@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"math"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -93,6 +94,16 @@ func NewCoinExScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *
 		log.Println("Successfully connect to websocket server.")
 	}
 
+	memTicker := time.NewTicker(time.Duration(30 * time.Second))
+	m := runtime.MemStats{}
+	go func() {
+		for range memTicker.C {
+			runtime.ReadMemStats(&m)
+			log.Infof("HeapAlloc -- %v", m.HeapAlloc)
+			log.Infof("HeapObjects -- %v", m.HeapObjects)
+		}
+	}()
+
 	//establish connection in the background
 	if scrape {
 		go s.mainLoop()
@@ -124,13 +135,16 @@ func (s *CoinExScraper) mainLoop() {
 			log.Error("Decompression failed:", err)
 			continue
 		}
-		defer reader.Close()
 
 		// Read decompressed content
 		var buf bytes.Buffer
 		if _, err := buf.ReadFrom(reader); err != nil {
 			log.Error("Read failed:", err)
 			continue
+		}
+		err = reader.Close()
+		if err != nil {
+			log.Error("close reader: ", err)
 		}
 
 		var response coinexWSResponse
@@ -171,6 +185,9 @@ func (s *CoinExScraper) parseWSResponse(
 
 	for _, deal := range message.Data.DealList {
 		tradeTime := time.Unix(deal.CreatedAt/1000, (deal.CreatedAt%1000)*1e6)
+		if time.Since(tradeTime) > time.Duration(120*time.Second) {
+			continue
+		}
 
 		tradePrice, err := strconv.ParseFloat(deal.Price, 64)
 		if err != nil {
@@ -212,7 +229,7 @@ func (s *CoinExScraper) parseWSResponse(
 		}
 
 		if exchangepair.Verified {
-			log.Infoln("Got verified trade", t)
+			log.Infof("Got verified trade %v", t)
 		}
 
 		// Handle duplicate trades.
