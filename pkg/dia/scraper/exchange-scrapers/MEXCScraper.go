@@ -267,7 +267,11 @@ func (s *MEXCScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error
 		log.Error("get symbols: ", err)
 	}
 
-	defer response.Body.Close()
+	defer func() {
+		if err := response.Body.Close(); err != nil {
+			log.Warn("Error closing file: ", err)
+		}
+	}()
 
 	body, err := ioutil.ReadAll(response.Body)
 
