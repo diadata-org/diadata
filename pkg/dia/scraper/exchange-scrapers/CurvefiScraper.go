@@ -191,13 +191,16 @@ func NewCurveFIScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		factoryPools := curveRegistry{Type: 3, Address: common.HexToAddress("0xF18056Bbd320E96A48e3Fbf8bC061322531aac99")}
 		factory2Pools := curveRegistry{Type: 3, Address: common.HexToAddress("0x4F8846Ae9380B90d2E71D5e3D042dff3E7ebb40d")}
 		stableSwapRegistry := curveRegistry{Type: 3, Address: common.HexToAddress("0x6A8cbed756804B16E05E741eDaBd5cB544AE21bf")}
+		twocryptoNGPools := curveRegistry{Type: 3, Address: common.HexToAddress("0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F")}
 		scraper.registriesUnderlying = []curveRegistry{
 			factoryPools,
 			factory2Pools,
 			metaPoolRegistry,
 			basePoolRegistry,
 			cryptoswapPools,
-			stableSwapRegistry}
+			stableSwapRegistry,
+			twocryptoNGPools,
+		}
 		scraper.screenPools = true
 
 	case dia.CurveFIExchangeFantom:
