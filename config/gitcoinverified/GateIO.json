@@ -133,6 +133,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "AXL",
+            "Blockchain": "Ethereum",
+            "Address": "0x467719aD09025FcC6cF6F8311755809d45a5E5f3"
+        },
+        {
             "Symbol": "AZERO",
             "Exchange": "GateIO",
             "Blockchain": "AlephZero",
@@ -179,12 +185,6 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x01fF50f8b7f74E4f00580d9596cd3D0d6d6E326f"
-        },
-        {
-            "Exchange": "GateIO",
-            "Symbol": "HPOS10I",
-            "Blockchain": "Ethereum",
-            "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9"
         },
         {
             "Symbol": "BNB",
@@ -271,10 +271,22 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "CLANKER",
+            "Blockchain": "Base",
+            "Address": "0x1bc0c42215582d5A085795f4baDbaC3ff36d1Bcb"
+        },
+        {
             "Symbol": "COFI",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x3136eF851592aCf49CA4C825131E364170FA32b3"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "COOKIE",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xC0041EF357B183448B235a8Ea73Ce4E4eC8c265F"
         },
         {
             "Exchange": "GateIO",
@@ -581,6 +593,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x7995ab36bB307Afa6A683C24a25d90Dc1Ea83566"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "HPOS10I",
+            "Blockchain": "Ethereum",
+            "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9"
         },
         {
             "Symbol": "HSC",
@@ -1481,6 +1499,12 @@
             "Exchange": "GateIO",
             "Blockchain": "ZKsync",
             "Address": "0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "ZORA",
+            "Blockchain": "Base",
+            "Address": "0x1111111111166b7FE7bd91427724B487980aFc69"
         },
         {
             "Symbol": "ZRO",

@@ -1,6 +1,18 @@
 {
     "Pools": [
         {
+            "Address": "0x9c087Eb773291e50CF6c6a90ef0F4500e349B903",
+            "ForeignName": "VIRTUAL-WETH"
+        },
+        {
+            "Address": "0x8d421B0D641193D67Dd1aa024DAb17fcdE0BfC89",
+            "ForeignName": "WETH-KTA"
+        },
+        {
+            "Address": "0xC1a6FBeDAe68E1472DbB91FE29B51F7a0Bd44F97",
+            "ForeignName": "CLANKER-WETH"
+        },
+        {
             "Address": "0xADE9BcD4b968EE26Bed102dd43A55f6A8c2416df",
             "ForeignName": "WETH-doginme"
         },

@@ -68,6 +68,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "AXL_USDT",
+            "Symbol": "AXL"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "AXS_USDT",
             "Ignore": false,
             "Symbol": "AXS"
@@ -362,6 +368,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "LA_USDT",
+            "Symbol": "LA"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "LINK_BTC",
             "Ignore": false,
             "Symbol": "LINK"
@@ -383,6 +395,12 @@
             "ForeignName": "LUNC_USDT",
             "Ignore": false,
             "Symbol": "LUNC"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "LWOLF_USDT",
+            "Symbol": "LWOLF"
         },
         {
             "Exchange": "BitMart",
@@ -674,12 +692,6 @@
         },
         {
             "Exchange": "BitMart",
-            "Ignore": false,
-            "ForeignName": "LWOLF_USDT",
-            "Symbol": "LWOLF"
-        },
-        {
-            "Exchange": "BitMart",
             "ForeignName": "XAI_USDT",
             "Ignore": false,
             "Symbol": "XAI"
@@ -707,6 +719,12 @@
             "ForeignName": "ZK_USDT",
             "Ignore": false,
             "Symbol": "ZK"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "ZORA_USDT",
+            "Symbol": "ZORA"
         },
         {
             "Exchange": "BitMart",

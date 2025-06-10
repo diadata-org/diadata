@@ -61,6 +61,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "CoinBase",
+            "Symbol": "AXL",
+            "Blockchain": "Ethereum",
+            "Address": "0x467719aD09025FcC6cF6F8311755809d45a5E5f3"
+        },
+        {
             "Symbol": "AXS",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
@@ -109,10 +115,22 @@
             "Address": "0xBe9895146f7AF43049ca1c1AE358B0541Ea49704"
         },
         {
+            "Exchange": "CoinBase",
+            "Symbol": "CLANKER",
+            "Blockchain": "Base",
+            "Address": "0x1bc0c42215582d5A085795f4baDbaC3ff36d1Bcb"
+        },
+        {
             "Symbol": "COMP",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
             "Address": "0xc00e94Cb662C3520282E6f5717214004A7f26888"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "COOKIE",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xC0041EF357B183448B235a8Ea73Ce4E4eC8c265F"
         },
         {
             "Exchange": "CoinBase",
@@ -305,6 +323,12 @@
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
             "Address": "0xdeFA4e8a7bcBA345F687a2f1456F5Edd9CE97202"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "LA",
+            "Blockchain": "Ethereum",
+            "Address": "0x0fc2a55d5BD13033f1ee0cdd11f60F7eFe66f467"
         },
         {
             "Exchange": "CoinBase",
@@ -599,6 +623,12 @@
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
             "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "ZORA",
+            "Blockchain": "Base",
+            "Address": "0x1111111111166b7FE7bd91427724B487980aFc69"
         },
         {
             "Symbol": "ZRO",

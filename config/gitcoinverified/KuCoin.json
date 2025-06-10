@@ -163,12 +163,6 @@
             "Address": "0x0c7D5ae016f806603CB1782bEa29AC69471CAb9c"
         },
         {
-            "Exchange": "KuCoin",
-            "Symbol": "HPOS10I",
-            "Blockchain": "Ethereum",
-            "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9"
-        },
-        {
             "Symbol": "BNB",
             "Exchange": "KuCoin",
             "Blockchain": "BinanceSmartChain",
@@ -253,10 +247,22 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "KuCoin",
+            "Symbol": "CLANKER",
+            "Blockchain": "Base",
+            "Address": "0x1bc0c42215582d5A085795f4baDbaC3ff36d1Bcb"
+        },
+        {
             "Symbol": "COFI",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
             "Address": "0x3136eF851592aCf49CA4C825131E364170FA32b3"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Symbol": "COOKIE",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xC0041EF357B183448B235a8Ea73Ce4E4eC8c265F"
         },
         {
             "Exchange": "KuCoin",
@@ -500,6 +506,12 @@
         },
         {
             "Exchange": "KuCoin",
+            "Symbol": "HPOS10I",
+            "Blockchain": "Ethereum",
+            "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9"
+        },
+        {
+            "Exchange": "KuCoin",
             "Symbol": "ICP",
             "Blockchain": "InternetComputer",
             "Address": "ryjl3-tyaaa-aaaaa-aaaba-cai"
@@ -551,6 +563,12 @@
             "Exchange": "KuCoin",
             "Blockchain": "Kusama",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Symbol": "LA",
+            "Blockchain": "Ethereum",
+            "Address": "0x0fc2a55d5BD13033f1ee0cdd11f60F7eFe66f467"
         },
         {
             "Symbol": "LAYER",
@@ -1283,6 +1301,12 @@
             "Exchange": "KuCoin",
             "Blockchain": "ZKsync",
             "Address": "0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Symbol": "ZORA",
+            "Blockchain": "Base",
+            "Address": "0x1111111111166b7FE7bd91427724B487980aFc69"
         },
         {
             "Symbol": "ZRO",

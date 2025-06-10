@@ -85,6 +85,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "AXLUSDT",
+            "Symbol": "AXL"
+        },
+        {
             "Symbol": "AZERO",
             "ForeignName": "AZEROUSDT",
             "Exchange": "Bitget",
@@ -131,6 +137,18 @@
             "ForeignName": "CELOUSDT",
             "Exchange": "Bitget",
             "Ignore": false
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "CLANKERUSDT",
+            "Symbol": "CLANKER"
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "COOKIEUSDT",
+            "Symbol": "COOKIE"
         },
         {
             "Symbol": "CUSD",
@@ -257,6 +275,12 @@
             "ForeignName": "KSMUSDT",
             "Exchange": "Bitget",
             "Ignore": false
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "LAUSDT",
+            "Symbol": "LA"
         },
         {
             "Symbol": "LDO",
@@ -443,6 +467,12 @@
             "ForeignName": "ZKUSDT",
             "Exchange": "Bitget",
             "Ignore": false
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "ZORAUSDT",
+            "Symbol": "ZORA"
         }
     ]
 }

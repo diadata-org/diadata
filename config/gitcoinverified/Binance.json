@@ -67,6 +67,12 @@
             "Address": "0xA2120b9e674d3fC3875f415A7DF52e382F141225"
         },
         {
+            "Exchange": "Binance",
+            "Symbol": "AXL",
+            "Blockchain": "Ethereum",
+            "Address": "0x467719aD09025FcC6cF6F8311755809d45a5E5f3"
+        },
+        {
             "Symbol": "AXS",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -91,12 +97,6 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
-            "Symbol": "BTC",
-            "Exchange": "Binance",
-            "Blockchain": "Bitcoin",
-            "Address": "0x0000000000000000000000000000000000000000"
-        },
-        {
             "Symbol": "BOND",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -107,6 +107,12 @@
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0x5Af2Be193a6ABCa9c8817001F45744777Db30756"
+        },
+        {
+            "Symbol": "BTC",
+            "Exchange": "Binance",
+            "Blockchain": "Bitcoin",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "BUSD",
@@ -137,6 +143,12 @@
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0xc00e94Cb662C3520282E6f5717214004A7f26888"
+        },
+        {
+            "Exchange": "Binance",
+            "Symbol": "COOKIE",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xC0041EF357B183448B235a8Ea73Ce4E4eC8c265F"
         },
         {
             "Symbol": "CRV",
@@ -421,16 +433,16 @@
             "Address": "0x595832F8FC6BF59c85C527fEC3740A1b7a361269"
         },
         {
-            "Symbol": "QUICK",
-            "Exchange": "Binance",
-            "Blockchain": "Polygon",
-            "Address": "0x831753DD7087CaC61aB5644b308642cc1c33Dc13"
-        },
-        {
             "Symbol": "QKC",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0xEA26c4aC16D4a5A106820BC8AEE85fd0b7b2b664"
+        },
+        {
+            "Symbol": "QUICK",
+            "Exchange": "Binance",
+            "Blockchain": "Polygon",
+            "Address": "0x831753DD7087CaC61aB5644b308642cc1c33Dc13"
         },
         {
             "Symbol": "RAY",
@@ -587,6 +599,12 @@
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0x25f8087EAD173b73D6e8B84329989A8eEA16CF73"
+        },
+        {
+            "Exchange": "Binance",
+            "Symbol": "ZRO",
+            "Blockchain": "Ethereum",
+            "Address": "0x6985884C4392D348587B19cb9eAAf157F13271cd"
         }
     ]
 }

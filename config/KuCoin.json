@@ -313,12 +313,6 @@
             "Ignore": false
         },
         {
-            "Exchange": "KuCoin",
-            "Ignore": false,
-            "ForeignName": "HPOS10I-USDT",
-            "Symbol": "HPOS10I"
-        },
-        {
             "Symbol": "BNB",
             "ForeignName": "BNB-BTC",
             "Exchange": "KuCoin",
@@ -481,10 +475,22 @@
             "Ignore": false
         },
         {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "CLANKER-USDT",
+            "Symbol": "CLANKER"
+        },
+        {
             "Symbol": "COMP",
             "ForeignName": "COMP-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
+        },
+        {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "COOKIE-USDT",
+            "Symbol": "COOKIE"
         },
         {
             "Symbol": "CRO",
@@ -957,6 +963,12 @@
         {
             "Exchange": "KuCoin",
             "Ignore": false,
+            "ForeignName": "HPOS10I-USDT",
+            "Symbol": "HPOS10I"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Ignore": false,
             "ForeignName": "ICP-USDT",
             "Symbol": "ICP"
         },
@@ -1061,6 +1073,12 @@
             "ForeignName": "KSM-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
+        },
+        {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "LA-USDT",
+            "Symbol": "LA"
         },
         {
             "Exchange": "KuCoin",
@@ -2195,6 +2213,12 @@
             "ForeignName": "ZK-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
+        },
+        {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "ZORA-USDT",
+            "Symbol": "ZORA"
         },
         {
             "Symbol": "ZRO",

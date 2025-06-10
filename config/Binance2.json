@@ -63,6 +63,12 @@
         {
             "Exchange": "Binance",
             "Ignore": false,
+            "ForeignName": "AXLUSDT",
+            "Symbol": "AXL"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
             "ForeignName": "BEAMUSDT",
             "Symbol": "BEAM"
         },
@@ -83,6 +89,18 @@
             "ForeignName": "BTCFDUSD",
             "Ignore": false,
             "Symbol": "BTC"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "COOKIEUSDT",
+            "Symbol": "COOKIE"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "COOKIEUSDC",
+            "Symbol": "COOKIE"
         },
         {
             "Exchange": "Binance",
@@ -521,6 +539,12 @@
             "ForeignName": "ZKUSDT",
             "Ignore": false,
             "Symbol": "ZK"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "ZROUSDT",
+            "Symbol": "ZRO"
         }
     ]
 }

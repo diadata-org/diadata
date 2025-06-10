@@ -182,6 +182,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "AXL_USDT",
+            "Symbol": "AXL"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "AZERO_USDT",
             "Ignore": false,
             "Symbol": "AZERO"
@@ -317,12 +323,6 @@
             "ForeignName": "BIFI_USDT",
             "Ignore": false,
             "Symbol": "BIFI"
-        },
-        {
-            "Exchange": "GateIO",
-            "Ignore": false,
-            "ForeignName": "HPOS10I_USDT",
-            "Symbol": "HPOS10I"
         },
         {
             "Exchange": "GateIO",
@@ -530,6 +530,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "CLANKER_USDT",
+            "Symbol": "CLANKER"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "COFI_ETH",
             "Ignore": false,
             "Symbol": "COFI"
@@ -539,6 +545,12 @@
             "ForeignName": "COFI_USDT",
             "Ignore": false,
             "Symbol": "COFI"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "COOKIE_USDT",
+            "Symbol": "COOKIE"
         },
         {
             "Exchange": "GateIO",
@@ -1193,6 +1205,12 @@
             "ForeignName": "HIT_USDT",
             "Ignore": false,
             "Symbol": "HIT"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "HPOS10I_USDT",
+            "Symbol": "HPOS10I"
         },
         {
             "Exchange": "GateIO",
@@ -2987,6 +3005,12 @@
             "ForeignName": "ZK_USDT",
             "Ignore": false,
             "Symbol": "ZK"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "ZORA_USDT",
+            "Symbol": "ZORA"
         },
         {
             "Exchange": "GateIO",

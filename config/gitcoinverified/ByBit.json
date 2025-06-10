@@ -79,6 +79,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "ByBit",
+            "Symbol": "AXL",
+            "Blockchain": "Ethereum",
+            "Address": "0x467719aD09025FcC6cF6F8311755809d45a5E5f3"
+        },
+        {
             "Symbol": "AXS",
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
@@ -125,12 +131,6 @@
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
             "Address": "0x1A4b46696b2bB4794Eb3D4c26f1c55F9170fa4C5"
-        },
-        {
-            "Exchange": "ByBit",
-            "Symbol": "HPOS10I",
-            "Blockchain": "Ethereum",
-            "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9"
         },
         {
             "Symbol": "BNB",
@@ -203,6 +203,12 @@
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
             "Address": "0xc00e94Cb662C3520282E6f5717214004A7f26888"
+        },
+        {
+            "Exchange": "ByBit",
+            "Symbol": "COOKIE",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xC0041EF357B183448B235a8Ea73Ce4E4eC8c265F"
         },
         {
             "Symbol": "COTI",
@@ -391,6 +397,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "ByBit",
+            "Symbol": "HPOS10I",
+            "Blockchain": "Ethereum",
+            "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9"
+        },
+        {
             "Symbol": "ICP",
             "Exchange": "ByBit",
             "Blockchain": "InternetComputer",
@@ -455,6 +467,12 @@
             "Exchange": "ByBit",
             "Blockchain": "Kusama",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "ByBit",
+            "Symbol": "LA",
+            "Blockchain": "Ethereum",
+            "Address": "0x0fc2a55d5BD13033f1ee0cdd11f60F7eFe66f467"
         },
         {
             "Symbol": "LINK",
@@ -905,6 +923,12 @@
             "Exchange": "ByBit",
             "Blockchain": "ZKsync",
             "Address": "0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E"
+        },
+        {
+            "Exchange": "ByBit",
+            "Symbol": "ZORA",
+            "Blockchain": "Base",
+            "Address": "0x1111111111166b7FE7bd91427724B487980aFc69"
         },
         {
             "Symbol": "ZRO",

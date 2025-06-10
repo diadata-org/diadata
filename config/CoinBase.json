@@ -56,6 +56,12 @@
         },
         {
             "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "AXL-USDT",
+            "Symbol": "AXL"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "AXS-USD",
             "Ignore": false,
             "Symbol": "AXS"
@@ -128,9 +134,21 @@
         },
         {
             "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "CLANKER-USDT",
+            "Symbol": "CLANKER"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "COMP-USD",
             "Ignore": false,
             "Symbol": "COMP"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "COOKIE-USDT",
+            "Symbol": "COOKIE"
         },
         {
             "Exchange": "CoinBase",
@@ -329,6 +347,12 @@
             "ForeignName": "KNC-USD",
             "Ignore": false,
             "Symbol": "KNC"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "LA-USDT",
+            "Symbol": "LA"
         },
         {
             "Exchange": "CoinBase",
@@ -599,6 +623,12 @@
             "ForeignName": "YFI-USD",
             "Ignore": false,
             "Symbol": "YFI"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "ZORA-USDT",
+            "Symbol": "ZORA"
         },
         {
             "Exchange": "CoinBase",

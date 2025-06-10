@@ -67,6 +67,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "Bitget",
+            "Symbol": "AXL",
+            "Blockchain": "Ethereum",
+            "Address": "0x467719aD09025FcC6cF6F8311755809d45a5E5f3"
+        },
+        {
             "Symbol": "AZERO",
             "Exchange": "Bitget",
             "Blockchain": "AlephZero",
@@ -101,6 +107,18 @@
             "Exchange": "Bitget",
             "Blockchain": "Celo",
             "Address": "0x471EcE3750Da237f93B8E339c536989b8978a438"
+        },
+        {
+            "Exchange": "Bitget",
+            "Symbol": "CLANKER",
+            "Blockchain": "Base",
+            "Address": "0x1bc0c42215582d5A085795f4baDbaC3ff36d1Bcb"
+        },
+        {
+            "Exchange": "Bitget",
+            "Symbol": "COOKIE",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xC0041EF357B183448B235a8Ea73Ce4E4eC8c265F"
         },
         {
             "Symbol": "CUSD",
@@ -215,6 +233,12 @@
             "Exchange": "Bitget",
             "Blockchain": "Kusama",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Bitget",
+            "Symbol": "LA",
+            "Blockchain": "Ethereum",
+            "Address": "0x0fc2a55d5BD13033f1ee0cdd11f60F7eFe66f467"
         },
         {
             "Symbol": "LDO",
@@ -395,6 +419,12 @@
             "Exchange": "Bitget",
             "Blockchain": "ZKsync",
             "Address": "0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E"
+        },
+        {
+            "Exchange": "Bitget",
+            "Symbol": "ZORA",
+            "Blockchain": "Base",
+            "Address": "0x1111111111166b7FE7bd91427724B487980aFc69"
         }
     ]
 }

@@ -133,12 +133,6 @@
             "Address": "0x1A5B0aaF478bf1FDA7b934c76E7692D722982a6D"
         },
         {
-            "Exchange": "MEXC",
-            "Symbol": "HPOS10I",
-            "Blockchain": "Ethereum",
-            "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9"
-        },
-        {
             "Symbol": "BLEND",
             "Exchange": "MEXC",
             "Blockchain": "EduChain",
@@ -197,6 +191,18 @@
             "Exchange": "MEXC",
             "Blockchain": "Nervos",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "MEXC",
+            "Symbol": "CLANKER",
+            "Blockchain": "Base",
+            "Address": "0x1bc0c42215582d5A085795f4baDbaC3ff36d1Bcb"
+        },
+        {
+            "Exchange": "MEXC",
+            "Symbol": "COOKIE",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xC0041EF357B183448B235a8Ea73Ce4E4eC8c265F"
         },
         {
             "Symbol": "CRO",
@@ -404,6 +410,12 @@
         },
         {
             "Exchange": "MEXC",
+            "Symbol": "HPOS10I",
+            "Blockchain": "Ethereum",
+            "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9"
+        },
+        {
+            "Exchange": "MEXC",
             "Symbol": "IMX",
             "Blockchain": "Immutable",
             "Address": "0x0000000000000000000000000000000000000000"
@@ -463,6 +475,12 @@
             "Address": "0x920Cf626a271321C151D027030D5d08aF699456b"
         },
         {
+            "Exchange": "MEXC",
+            "Symbol": "LA",
+            "Blockchain": "Ethereum",
+            "Address": "0x0fc2a55d5BD13033f1ee0cdd11f60F7eFe66f467"
+        },
+        {
             "Symbol": "LEO",
             "Exchange": "MEXC",
             "Blockchain": "Stacks",
@@ -479,6 +497,12 @@
             "Exchange": "MEXC",
             "Blockchain": "Litecoin",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "MEXC",
+            "Symbol": "LWOLF",
+            "Blockchain": "Ethereum",
+            "Address": "0x67466BE17df832165F8C80a5A120CCc652bD7E69"
         },
         {
             "Symbol": "LYX",
@@ -889,12 +913,6 @@
             "Address": "0x5026F006B85729a8b14553FAE6af249aD16c9aaB"
         },
         {
-            "Exchange": "MEXC",
-            "Symbol": "LWOLF",
-            "Blockchain": "Ethereum",
-            "Address": "0x67466BE17df832165F8C80a5A120CCc652bD7E69"
-        },
-        {
             "Symbol": "XAI",
             "Exchange": "MEXC",
             "Blockchain": "Arbitrum",
@@ -923,6 +941,12 @@
             "Exchange": "MEXC",
             "Blockchain": "ZKsync",
             "Address": "0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E"
+        },
+        {
+            "Exchange": "MEXC",
+            "Symbol": "ZORA",
+            "Blockchain": "Base",
+            "Address": "0x1111111111166b7FE7bd91427724B487980aFc69"
         },
         {
             "Symbol": "ZRO",

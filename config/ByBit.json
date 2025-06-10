@@ -79,6 +79,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "AXLUSDT",
+            "Symbol": "AXL"
+        },
+        {
             "Symbol": "AXS",
             "ForeignName": "AXSUSDT",
             "Exchange": "ByBit",
@@ -125,12 +131,6 @@
             "ForeignName": "BITUSDT",
             "Exchange": "ByBit",
             "Ignore": false
-        },
-        {
-            "Exchange": "ByBit",
-            "Ignore": false,
-            "ForeignName": "HPOS10IUSDT",
-            "Symbol": "HPOS10I"
         },
         {
             "Symbol": "BNB",
@@ -215,6 +215,12 @@
             "ForeignName": "COMPUSDT",
             "Exchange": "ByBit",
             "Ignore": false
+        },
+        {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "COOKIEUSDT",
+            "Symbol": "COOKIE"
         },
         {
             "Symbol": "COTI",
@@ -427,6 +433,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "HPOS10IUSDT",
+            "Symbol": "HPOS10I"
+        },
+        {
             "Symbol": "ICP",
             "ForeignName": "ICPUSDT",
             "Exchange": "ByBit",
@@ -491,6 +503,12 @@
             "ForeignName": "KSMUSDT",
             "Exchange": "ByBit",
             "Ignore": false
+        },
+        {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "LAUSDT",
+            "Symbol": "LA"
         },
         {
             "Symbol": "LINK",
@@ -953,6 +971,12 @@
             "ForeignName": "ZKUSDT",
             "Exchange": "ByBit",
             "Ignore": false
+        },
+        {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "ZORAUSDT",
+            "Symbol": "ZORA"
         },
         {
             "Symbol": "ZRO",
