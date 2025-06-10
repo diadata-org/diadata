@@ -61,6 +61,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "Binance2",
+            "Symbol": "AXL",
+            "Blockchain": "Ethereum",
+            "Address": "0x467719aD09025FcC6cF6F8311755809d45a5E5f3"
+        },
+        {
             "Symbol": "BAND",
             "Exchange": "Binance2",
             "Blockchain": "Ethereum",
@@ -95,6 +101,12 @@
             "Exchange": "Binance2",
             "Blockchain": "BinanceSmartChain",
             "Address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+        },
+        {
+            "Exchange": "Binance2",
+            "Symbol": "COOKIE",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xC0041EF357B183448B235a8Ea73Ce4E4eC8c265F"
         },
         {
             "Exchange": "Binance2",
@@ -585,6 +597,12 @@
         {
             "Symbol": "ZRO",
             "Exchange": "Binance2",
+            "Blockchain": "Ethereum",
+            "Address": "0x6985884C4392D348587B19cb9eAAf157F13271cd"
+        },
+        {
+            "Exchange": "Binance",
+            "Symbol": "ZRO",
             "Blockchain": "Ethereum",
             "Address": "0x6985884C4392D348587B19cb9eAAf157F13271cd"
         }
