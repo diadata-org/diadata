@@ -80,6 +80,12 @@
         },
         {
             "Exchange": "Kraken",
+            "Symbol": "BCH",
+            "Blockchain": "BitcoinCash",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Kraken",
             "Symbol": "BEAM",
             "Blockchain": "Ethereum",
             "Address": "0x62D0A8458eD7719FDAF978fe5929C6D342B0bFcE"
@@ -109,6 +115,12 @@
             "Address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"
         },
         {
+            "Symbol": "BTC",
+            "Exchange": "Kraken",
+            "Blockchain": "Bitcoin",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "CFG",
             "Exchange": "Kraken",
             "Blockchain": "Centrifuge",
@@ -125,6 +137,12 @@
             "Exchange": "Kraken",
             "Blockchain": "Ethereum",
             "Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+        },
+        {
+            "Symbol": "DASH",
+            "Exchange": "Kraken",
+            "Blockchain": "Dash",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Exchange": "Kraken",
@@ -161,6 +179,18 @@
             "Symbol": "ENS",
             "Blockchain": "Ethereum",
             "Address": "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72"
+        },
+        {
+            "Symbol": "ETC",
+            "Exchange": "Kraken",
+            "Blockchain": "EthereumClassic",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "ETH",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Exchange": "Kraken",
@@ -209,6 +239,12 @@
             "Symbol": "GALA",
             "Blockchain": "Ethereum",
             "Address": "0xd1d2Eb1B1e90B638588728b4130137D262C87cae"
+        },
+        {
+            "Exchange": "Kraken",
+            "Symbol": "GBP",
+            "Blockchain": "Fiat",
+            "Address": "826"
         },
         {
             "Symbol": "GLMR",
@@ -263,6 +299,12 @@
             "Exchange": "Kraken",
             "Blockchain": "Ethereum",
             "Address": "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32"
+        },
+        {
+            "Symbol": "LTC",
+            "Exchange": "Kraken",
+            "Blockchain": "Litecoin",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Exchange": "Kraken",
@@ -329,6 +371,12 @@
             "Symbol": "PRIME",
             "Blockchain": "Ethereum",
             "Address": "0xb23d80f5FefcDDaa212212F028021B41DEd428CF"
+        },
+        {
+            "Symbol": "QTUM",
+            "Exchange": "Kraken",
+            "Blockchain": "Qtum",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Exchange": "Kraken",
@@ -517,6 +565,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "XMR",
+            "Exchange": "Kraken",
+            "Blockchain": "Monero",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Exchange": "Kraken",
             "Symbol": "XRP",
             "Blockchain": "XRPL",
@@ -527,6 +581,12 @@
             "Exchange": "Kraken",
             "Blockchain": "Ethereum",
             "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
+        },
+        {
+            "Symbol": "ZEC",
+            "Exchange": "Kraken",
+            "Blockchain": "Zcash",
+            "Address": "0x0000000000000000000000000000000000000000"
         }
     ]
 }

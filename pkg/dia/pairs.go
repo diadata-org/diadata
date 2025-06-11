@@ -8,13 +8,6 @@ import (
 
 // GetPairSymbols returns the two symbol tickers of @pair.
 func GetPairSymbols(pair ExchangePair) ([]string, error) {
-	if pair.Exchange == KrakenExchange {
-		pair = normalizeKrakenPair(pair)
-		foreignName := pair.ForeignName
-		quoteToken := pair.Symbol
-		baseToken := strings.TrimPrefix(foreignName, quoteToken)
-		return []string{quoteToken, baseToken}, nil
-	}
 	foreignName := pair.ForeignName
 	quoteToken := pair.Symbol
 
@@ -32,36 +25,6 @@ func GetPairSymbols(pair ExchangePair) ([]string, error) {
 	}
 	baseToken = strings.TrimPrefix(foreignName, quoteToken)
 	return []string{quoteToken, baseToken}, nil
-}
-
-// normalizeKrakenPair addresses the particular asset notation at Kraken.
-func normalizeKrakenPair(pair ExchangePair) ExchangePair {
-	if len(pair.ForeignName) == 7 {
-		if pair.ForeignName[len(pair.ForeignName)-3:] == "XBT" {
-			pair.ForeignName = pair.ForeignName[:len(pair.ForeignName)-3] + "BTC"
-		}
-		if pair.ForeignName[4:5] == "Z" || pair.ForeignName[4:5] == "X" {
-			pair.ForeignName = pair.ForeignName[:4] + pair.ForeignName[5:]
-		}
-		if pair.ForeignName[:1] == "Z" || pair.ForeignName[:1] == "X" {
-			pair.ForeignName = pair.ForeignName[1:]
-		}
-	}
-	if len(pair.ForeignName) == 8 {
-		if pair.ForeignName[4:5] == "Z" || pair.ForeignName[4:5] == "X" {
-			pair.ForeignName = pair.ForeignName[:4] + pair.ForeignName[5:]
-		}
-		if pair.ForeignName[:1] == "Z" || pair.ForeignName[:1] == "X" {
-			pair.ForeignName = pair.ForeignName[1:]
-		}
-	}
-	if pair.ForeignName[len(pair.ForeignName)-3:] == "XBT" {
-		pair.ForeignName = pair.ForeignName[:len(pair.ForeignName)-3] + "BTC"
-	}
-	if pair.ForeignName[:3] == "XBT" {
-		pair.ForeignName = "BTC" + pair.ForeignName[len(pair.ForeignName)-3:]
-	}
-	return pair
 }
 
 // GetAllSymbolsFromPairs returns a unique list of symbols which constitute @pairs.

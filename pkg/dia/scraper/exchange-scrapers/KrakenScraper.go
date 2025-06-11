@@ -2,14 +2,15 @@ package scrapers
 
 import (
 	"errors"
-	"math"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
-	krakenapi "github.com/beldur/kraken-go-api-client"
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
+	ws "github.com/gorilla/websocket"
 	"github.com/zekroTJA/timedmap"
 )
 
@@ -17,7 +18,12 @@ const (
 	krakenRefreshDelay = time.Second * 30 * 1
 )
 
+var (
+	krakenWSBaseString = utils.Getenv("KRAKEN_WS_BASE_STRING", "wss://ws.kraken.com/v2")
+)
+
 type KrakenScraper struct {
+	wsClient *ws.Conn
 	// signaling channels
 	shutdown     chan nothing
 	shutdownDone chan nothing
@@ -27,21 +33,54 @@ type KrakenScraper struct {
 	error        error
 	closed       bool
 	pairScrapers map[string]*KrakenPairScraper // pc.ExchangePair -> pairScraperSet
-	api          *krakenapi.KrakenApi
+
 	ticker       *time.Ticker
 	exchangeName string
 	chanTrades   chan *dia.Trade
 	db           *models.RelDB
 }
 
+type krakenWSSubscribeMessage struct {
+	Method string       `json:"method"`
+	Params krakenParams `json:"params"`
+}
+
+type krakenParams struct {
+	Channel  string   `json:"channel"`
+	Symbol   []string `json:"symbol"`
+	Snapshot bool     `json:"snapshot"`
+}
+
+type krakenWSResponse struct {
+	Channel string                 `json:"channel"`
+	Type    string                 `json:"type"`
+	Data    []krakenWSResponseData `json:"data"`
+}
+
+type krakenWSResponseData struct {
+	Symbol    string  `json:"symbol"`
+	Side      string  `json:"side"`
+	Price     float64 `json:"price"`
+	Size      float64 `json:"qty"`
+	OrderType string  `json:"order_type"`
+	TradeID   int     `json:"trade_id"`
+	Time      string  `json:"timestamp"`
+}
+
 // NewKrakenScraper returns a new KrakenScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
 func NewKrakenScraper(key string, secret string, exchange dia.Exchange, scrape bool, relDB *models.RelDB) *KrakenScraper {
+	var wsDialer ws.Dialer
+	wsClient, _, err := wsDialer.Dial(krakenWSBaseString, nil)
+	if err != nil {
+		log.Fatalf("Kraken - Dial ws base string: %v.", err)
+	}
+
 	s := &KrakenScraper{
+		wsClient:     wsClient,
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*KrakenPairScraper),
-		api:          krakenapi.New(key, secret),
 		ticker:       time.NewTicker(krakenRefreshDelay),
 		exchangeName: exchange.Name,
 		error:        nil,
@@ -54,32 +93,57 @@ func NewKrakenScraper(key string, secret string, exchange dia.Exchange, scrape b
 	return s
 }
 
-func Round(x, unit float64) float64 {
-	return math.Round(x/unit) * unit
-}
-
-// func neededBalanceAdjustement(current float64, minChange float64, desired float64) (float64, string) {
-// 	obj := desired - current
-// 	roundedObj := Round(obj, minChange)
-// 	message := fmt.Sprintf("current position: %v, min change: %v, desired position: %v, delta current/desired: %v, rounded delta: %v", current, minChange, desired, obj, roundedObj)
-// 	return roundedObj, message
-// }
-
-func FloatToString(input_num float64) string {
-	// to convert a float number to a string
-	return strconv.FormatFloat(input_num, 'f', -1, 64)
-}
-
 // mainLoop runs in a goroutine until channel s is closed.
 func (s *KrakenScraper) mainLoop() {
+	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+
 	for {
-		select {
-		case <-s.ticker.C:
-			s.Update()
-		case <-s.shutdown: // user requested shutdown
-			log.Printf("KrakenScraper shutting down")
-			s.cleanup(nil)
-			return
+		var message krakenWSResponse
+		err := s.wsClient.ReadJSON(&message)
+		if err != nil {
+			log.Error("JSON decode error: ", err)
+			continue
+		}
+
+		if message.Channel == "trade" && message.Type == "update" {
+			for _, data := range message.Data {
+
+				symbols := strings.Split(data.Symbol, "/")
+				if len(symbols) != 2 {
+					continue
+				}
+
+				exchangePair, err := s.db.GetExchangePairCache(s.exchangeName, symbols[0]+symbols[1])
+				if err != nil {
+					log.Error("get exchange pair from cache: ", err)
+				}
+
+				price, volume, timestamp, foreignTradeID, err := parseKrakenTradeMessage(data)
+				if err != nil {
+					log.Error("parseKrakenTradeMessage: ", err)
+					continue
+				}
+				trade := dia.Trade{
+					Symbol:         symbols[0],
+					Pair:           data.Symbol,
+					QuoteToken:     exchangePair.UnderlyingPair.QuoteToken,
+					BaseToken:      exchangePair.UnderlyingPair.BaseToken,
+					Price:          price,
+					Volume:         volume,
+					Time:           timestamp,
+					ForeignTradeID: foreignTradeID,
+				}
+
+				// Handle duplicate trades.
+				discardTrade := trade.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+				if !discardTrade {
+					trade.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+					log.Info("got trade: ", trade)
+					s.chanTrades <- &trade
+				}
+			}
+
 		}
 	}
 }
@@ -114,10 +178,9 @@ func (s *KrakenScraper) Close() error {
 
 // KrakenPairScraper implements PairScraper for Kraken
 type KrakenPairScraper struct {
-	parent     *KrakenScraper
-	pair       dia.ExchangePair
-	closed     bool
-	lastRecord int64
+	parent *KrakenScraper
+	pair   dia.ExchangePair
+	closed bool
 }
 
 // ScrapePair returns a PairScraper that can be used to get trades for a single pair from
@@ -133,14 +196,34 @@ func (s *KrakenScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 		return nil, errors.New("KrakenScraper: Call ScrapePair on closed scraper")
 	}
 	ps := &KrakenPairScraper{
-		parent:     s,
-		pair:       pair,
-		lastRecord: 0, //TODO FIX to figure out the last we got...
+		parent: s,
+		pair:   pair,
 	}
 
 	s.pairScrapers[pair.Symbol] = ps
+	err := s.subscribe(pair, true)
+	if err != nil {
+		return ps, err
+	}
 
 	return ps, nil
+}
+
+func (s *KrakenScraper) subscribe(pair dia.ExchangePair, subscribe bool) error {
+	subscribeType := "unsubscribe"
+	if subscribe {
+		subscribeType = "subscribe"
+	}
+	a := &krakenWSSubscribeMessage{
+		Method: subscribeType,
+		Params: krakenParams{
+			Channel:  "trade",
+			Symbol:   []string{pair.Symbol + "/" + strings.Trim(pair.ForeignName, pair.Symbol)},
+			Snapshot: false,
+		},
+	}
+	log.Info("subscribed to: ", a.Params.Symbol)
+	return s.wsClient.WriteJSON(a)
 }
 
 func (s *KrakenScraper) FillSymbolData(symbol string) (dia.Asset, error) {
@@ -152,31 +235,7 @@ func (s *KrakenScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err err
 	return []dia.ExchangePair{}, errors.New("FetchAvailablePairs() not implemented")
 }
 
-// NormalizePair accounts for the par
 func (ps *KrakenScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
-	if len(pair.ForeignName) == 7 {
-		if pair.ForeignName[4:5] == "Z" || pair.ForeignName[4:5] == "X" {
-			pair.ForeignName = pair.ForeignName[:4] + pair.ForeignName[5:]
-			return pair, nil
-		}
-		if pair.ForeignName[:1] == "Z" || pair.ForeignName[:1] == "X" {
-			pair.ForeignName = pair.ForeignName[1:]
-		}
-	}
-	if len(pair.ForeignName) == 8 {
-		if pair.ForeignName[4:5] == "Z" || pair.ForeignName[4:5] == "X" {
-			pair.ForeignName = pair.ForeignName[:4] + pair.ForeignName[5:]
-		}
-		if pair.ForeignName[:1] == "Z" || pair.ForeignName[:1] == "X" {
-			pair.ForeignName = pair.ForeignName[1:]
-		}
-	}
-	if pair.ForeignName[len(pair.ForeignName)-3:] == "XBT" {
-		pair.ForeignName = pair.ForeignName[:len(pair.ForeignName)-3] + "BTC"
-	}
-	if pair.ForeignName[:3] == "XBT" {
-		pair.ForeignName = "BTC" + pair.ForeignName[len(pair.ForeignName)-3:]
-	}
 	return pair, nil
 }
 
@@ -204,57 +263,23 @@ func (ps *KrakenPairScraper) Pair() dia.ExchangePair {
 	return ps.pair
 }
 
-func NewTrade(pair dia.ExchangePair, info krakenapi.TradeInfo, foreignTradeID string, relDB *models.RelDB) *dia.Trade {
-	volume := info.VolumeFloat
-	if info.Sell {
-		volume = -volume
+func parseKrakenTradeMessage(message krakenWSResponseData) (
+	price float64,
+	volume float64,
+	timestamp time.Time,
+	foreignTradeID string,
+	err error,
+) {
+	price = message.Price
+	volume = message.Size
+	if message.Side == "sell" {
+		volume -= 1
 	}
-	exchangepair, err := relDB.GetExchangePairCache(dia.KrakenExchange, pair.ForeignName)
+	timestamp, err = time.Parse("2006-01-02T15:04:05.000000Z", message.Time)
 	if err != nil {
-		log.Error("get exchangepair from cache: ", err)
-	}
-	t := &dia.Trade{
-		Pair:           pair.ForeignName,
-		Price:          info.PriceFloat,
-		Symbol:         pair.Symbol,
-		Volume:         volume,
-		Time:           time.Unix(info.Time, 0),
-		ForeignTradeID: foreignTradeID,
-		Source:         dia.KrakenExchange,
-		VerifiedPair:   exchangepair.Verified,
-		BaseToken:      exchangepair.UnderlyingPair.BaseToken,
-		QuoteToken:     exchangepair.UnderlyingPair.QuoteToken,
-	}
-	if exchangepair.Verified {
-		log.Infoln("Got verified trade", t)
+		return
 	}
 
-	return t
-}
-
-func (s *KrakenScraper) Update() {
-	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
-
-	for _, ps := range s.pairScrapers {
-
-		r, err := s.api.Trades(ps.pair.ForeignName, ps.lastRecord)
-
-		if err != nil {
-			log.Printf("err on collect trades %v %v", err, ps.pair.ForeignName)
-			time.Sleep(1 * time.Minute)
-		} else {
-			if r != nil {
-				ps.lastRecord = r.Last
-				for _, ti := range r.Trades {
-					// p, _ := s.NormalizePair(ps.pair)
-					t := NewTrade(ps.pair, ti, strconv.FormatInt(r.Last, 16), s.db)
-					// Handle duplicate trades.
-					t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
-					ps.parent.chanTrades <- t
-				}
-			} else {
-				log.Printf("r nil")
-			}
-		}
-	}
+	foreignTradeID = strconv.Itoa(message.TradeID)
+	return
 }
