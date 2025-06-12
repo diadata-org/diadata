@@ -220,7 +220,7 @@ func (s *KrakenScraper) subscribe(pair dia.ExchangePair, subscribe bool) error {
 		Method: subscribeType,
 		Params: krakenParams{
 			Channel:  "trade",
-			Symbol:   []string{pair.Symbol + "/" + strings.Trim(pair.ForeignName, pair.Symbol)},
+			Symbol:   []string{pair.Symbol + "/" + strings.TrimPrefix(pair.ForeignName, pair.Symbol)},
 			Snapshot: false,
 		},
 	}
