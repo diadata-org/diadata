@@ -133,6 +133,7 @@ func (s *KrakenScraper) mainLoop() {
 					Volume:         volume,
 					Time:           timestamp,
 					ForeignTradeID: foreignTradeID,
+					Source:         s.exchangeName,
 				}
 
 				// Handle duplicate trades.
