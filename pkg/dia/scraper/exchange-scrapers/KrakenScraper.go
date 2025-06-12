@@ -134,6 +134,7 @@ func (s *KrakenScraper) mainLoop() {
 					Time:           timestamp,
 					ForeignTradeID: foreignTradeID,
 					Source:         s.exchangeName,
+					VerifiedPair:   exchangePair.Verified,
 				}
 
 				// Handle duplicate trades.
