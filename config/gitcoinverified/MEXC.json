@@ -379,6 +379,12 @@
             "Address": "0x3F382DbD960E3a9bbCeaE22651E88158d2791550"
         },
         {
+            "Exchange": "MEXC",
+            "Symbol": "GIZA",
+            "Blockchain": "Ethereum",
+            "Address": "0x590830dFDf9A3F68aFCDdE2694773dEBDF267774"
+        },
+        {
             "Symbol": "GLMR",
             "Exchange": "MEXC",
             "Blockchain": "Moonbeam",
@@ -611,6 +617,12 @@
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
             "Address": "0x45804880De22913dAFE09f4980848ECE6EcbAf78"
+        },
+        {
+            "Exchange": "MEXC",
+            "Symbol": "PELL",
+            "Blockchain": "Ethereum",
+            "Address": "0xC65d8d96cddDB31328186EFA113a460b0Af9Ec63"
         },
         {
             "Symbol": "PENDULUM",

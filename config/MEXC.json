@@ -403,6 +403,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "GIZAUSDT",
+            "Symbol": "GIZA"
+        },
+        {
             "Symbol": "GLMR",
             "ForeignName": "GLMRUSDT",
             "Exchange": "MEXC",
@@ -665,6 +671,18 @@
             "ForeignName": "PAXGUSDT",
             "Exchange": "MEXC",
             "Ignore": false
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "PELLUSDT",
+            "Symbol": "PELL"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "PELLUSDC",
+            "Symbol": "PELL"
         },
         {
             "Symbol": "PENDULUM",

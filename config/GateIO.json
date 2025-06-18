@@ -1082,6 +1082,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "GIZA_USDT",
+            "Symbol": "GIZA"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "GLM_USDT",
             "Ignore": false,
             "Symbol": "GLM"
@@ -2045,6 +2051,12 @@
             "ForeignName": "PAY_USDT",
             "Ignore": false,
             "Symbol": "PAY"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "PELL_USDT",
+            "Symbol": "PELL"
         },
         {
             "Exchange": "GateIO",

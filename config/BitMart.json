@@ -314,6 +314,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "GIZA_USDT",
+            "Symbol": "GIZA"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "GMT_USDT",
             "Ignore": false,
             "Symbol": "GMT"
@@ -467,6 +473,12 @@
             "ForeignName": "ORDI_USDT",
             "Ignore": false,
             "Symbol": "ORDI"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "PELL_USDT",
+            "Symbol": "PELL"
         },
         {
             "Exchange": "BitMart",

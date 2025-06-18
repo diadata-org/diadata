@@ -535,6 +535,12 @@
             "Address": "0x3F382DbD960E3a9bbCeaE22651E88158d2791550"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "GIZA",
+            "Blockchain": "Ethereum",
+            "Address": "0x590830dFDf9A3F68aFCDdE2694773dEBDF267774"
+        },
+        {
             "Symbol": "GLM",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -971,6 +977,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0xB97048628DB6B661D4C2aA833e95Dbe1A905B280"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "PELL",
+            "Blockchain": "Ethereum",
+            "Address": "0xC65d8d96cddDB31328186EFA113a460b0Af9Ec63"
         },
         {
             "Symbol": "PENDLE",

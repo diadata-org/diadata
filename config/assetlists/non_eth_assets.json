@@ -741,6 +741,13 @@
       "Decimals": 18,
       "Blockchain": "WChain",
       "Address": "0x0000000000000000000000000000000000000000"
+    },
+    {
+      "Symbol": "PELL",
+      "Name": "PELL Network Token",
+      "Decimals": 18,
+      "Blockchain": "Ethereum",
+      "Address": "0xC65d8d96cddDB31328186EFA113a460b0Af9Ec63"
     }
   ]
 }

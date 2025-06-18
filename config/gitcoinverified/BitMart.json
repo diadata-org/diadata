@@ -289,6 +289,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "BitMart",
+            "Symbol": "GIZA",
+            "Blockchain": "Ethereum",
+            "Address": "0x590830dFDf9A3F68aFCDdE2694773dEBDF267774"
+        },
+        {
             "Symbol": "GMT",
             "Exchange": "BitMart",
             "Blockchain": "Solana",
@@ -467,6 +473,12 @@
             "Exchange": "BitMart",
             "Blockchain": "Bitcoin",
             "Address": "b61b0172d95e266c18aea0c624db987e971a5d6d4ebc2aaed85da4642d635735i0"
+        },
+        {
+            "Exchange": "BitMart",
+            "Symbol": "PELL",
+            "Blockchain": "Ethereum",
+            "Address": "0xC65d8d96cddDB31328186EFA113a460b0Af9Ec63"
         },
         {
             "Symbol": "PEPE",

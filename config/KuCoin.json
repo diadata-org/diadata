@@ -937,6 +937,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "GIZA-USDT",
+            "Symbol": "GIZA"
+        },
+        {
             "Symbol": "GLMR",
             "ForeignName": "GLMR-USDT",
             "Exchange": "KuCoin",

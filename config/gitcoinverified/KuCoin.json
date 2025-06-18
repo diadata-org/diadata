@@ -481,6 +481,12 @@
             "Address": "0x3F382DbD960E3a9bbCeaE22651E88158d2791550"
         },
         {
+            "Exchange": "KuCoin",
+            "Symbol": "GIZA",
+            "Blockchain": "Ethereum",
+            "Address": "0x590830dFDf9A3F68aFCDdE2694773dEBDF267774"
+        },
+        {
             "Symbol": "GLMR",
             "Exchange": "KuCoin",
             "Blockchain": "Moonbeam",

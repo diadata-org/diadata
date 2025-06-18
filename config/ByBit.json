@@ -619,6 +619,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "PELLUSDT",
+            "Symbol": "PELL"
+        },
+        {
             "Symbol": "PENDLE",
             "ForeignName": "PENDLEUSDT",
             "Exchange": "ByBit",
