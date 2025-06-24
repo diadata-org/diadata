@@ -1675,6 +1675,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "SPX-USDT",
+            "Symbol": "SPX"
+        },
+        {
             "Symbol": "STG",
             "ForeignName": "STG-USDT",
             "Exchange": "KuCoin",

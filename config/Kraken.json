@@ -134,18 +134,6 @@
         },
         {
             "Exchange": "Kraken",
-            "Ignore": false,
-            "ForeignName": "HPOS10IUSD",
-            "Symbol": "HPOS10I"
-        },
-        {
-            "Exchange": "Kraken",
-            "Ignore": false,
-            "ForeignName": "HPOS10IEUR",
-            "Symbol": "HPOS10I"
-        },
-        {
-            "Exchange": "Kraken",
             "ForeignName": "BNCUSD",
             "Ignore": false,
             "Symbol": "BNC"
@@ -254,24 +242,6 @@
         },
         {
             "Exchange": "Kraken",
-            "Ignore": false,
-            "ForeignName": "EUROPEUR",
-            "Symbol": "EUROP"
-        },
-        {
-            "Exchange": "Kraken",
-            "Ignore": false,
-            "ForeignName": "EUROPUSD",
-            "Symbol": "EUROP"
-        },
-        {
-            "Exchange": "Kraken",
-            "Ignore": false,
-            "ForeignName": "EUROPUSDC",
-            "Symbol": "EUROP"
-        },
-        {
-            "Exchange": "Kraken",
             "ForeignName": "ETHBTC",
             "Ignore": false,
             "Symbol": "ETH"
@@ -293,6 +263,24 @@
             "ForeignName": "EURUSD",
             "Ignore": false,
             "Symbol": "EUR"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "EUROPEUR",
+            "Symbol": "EUROP"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "EUROPUSD",
+            "Symbol": "EUROP"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "EUROPUSDC",
+            "Symbol": "EUROP"
         },
         {
             "Exchange": "Kraken",
@@ -341,6 +329,18 @@
             "Ignore": false,
             "ForeignName": "GRTUSD",
             "Symbol": "GRT"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "HPOS10IUSD",
+            "Symbol": "HPOS10I"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "HPOS10IEUR",
+            "Symbol": "HPOS10I"
         },
         {
             "Exchange": "Kraken",
@@ -497,6 +497,12 @@
             "Ignore": false,
             "ForeignName": "SOLUSD",
             "Symbol": "SOL"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "SPXUSD",
+            "Symbol": "SPX"
         },
         {
             "Exchange": "Kraken",

@@ -829,6 +829,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "SPXUSDT",
+            "Symbol": "SPX"
+        },
+        {
             "Symbol": "STORJ",
             "ForeignName": "STORJUSDT",
             "Exchange": "MEXC",

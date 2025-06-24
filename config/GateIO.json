@@ -2540,6 +2540,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "SPX_USDT",
+            "Symbol": "SPX"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "STG_USDT",
             "Ignore": false,
             "Symbol": "STG"

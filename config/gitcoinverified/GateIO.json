@@ -1243,6 +1243,12 @@
             "Address": "0xB4A3B0Faf0Ab53df58001804DdA5Bfc6a3D59008"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "SPX",
+            "Blockchain": "Ethereum",
+            "Address": "0xE0f63A424a4439cBE457D80E4f4b51aD25b2c56C"
+        },
+        {
             "Symbol": "STG",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",

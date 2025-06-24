@@ -751,6 +751,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "SPXUSDT",
+            "Symbol": "SPX"
+        },
+        {
             "Symbol": "SRM",
             "ForeignName": "SRMUSDT",
             "Exchange": "ByBit",

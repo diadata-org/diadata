@@ -709,6 +709,12 @@
             "Address": "0x090185f2135308BaD17527004364eBcC2D37e5F6"
         },
         {
+            "Exchange": "ByBit",
+            "Symbol": "SPX",
+            "Blockchain": "Ethereum",
+            "Address": "0xE0f63A424a4439cBE457D80E4f4b51aD25b2c56C"
+        },
+        {
             "Symbol": "SRM",
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
