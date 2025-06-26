@@ -110,8 +110,8 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: "${{ steps.version.outputs.service-name }}-${{ steps.version.outputs.version }}"
-          name: "${{ steps.version.outputs.service-name }} ${{ steps.version.outputs.version }}"
+          tag_name: "${{ steps.version.outputs.version }}"
+          name: "${{ steps.version.outputs.version }}"
           body: |
             ## Service Release: ${{ steps.version.outputs.service-name }}
             
