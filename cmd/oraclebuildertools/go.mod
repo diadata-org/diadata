@@ -7,7 +7,7 @@ replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alp
 go 1.19
 
 require (
-	github.com/diadata-org/diadata v1.4.523-1
+	github.com/diadata-org/diadata v1.4.606
 	github.com/ethereum/go-ethereum v1.10.10
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.7.0
