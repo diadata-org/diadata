@@ -158,12 +158,16 @@ jobs:
           # Check for dockerfile in service directory with service name
           elif [ -f "$service_path/Dockerfile-$service_name" ]; then
             dockerfile="$service_path/Dockerfile-$service_name"
+          # Check build directory for Dockerfile-{service} pattern
+          elif [ -f "build/Dockerfile-$service_name" ]; then
+            dockerfile="build/Dockerfile-$service_name"
           else
             echo "Error: Could not find Dockerfile for service $service_name"
             echo "Searched locations:"
             echo "  - $service_path/Dockerfile"
             echo "  - Dockerfile-$service_name"
             echo "  - $service_path/Dockerfile-$service_name"
+            echo "  - build/Dockerfile-$service_name"
             exit 1
           fi
           
