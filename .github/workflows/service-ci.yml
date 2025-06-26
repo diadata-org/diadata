@@ -73,9 +73,44 @@ jobs:
           echo "services=$services" >> $GITHUB_OUTPUT
           echo "Detected services: $services"
 
+  test-service:
+    name: "Test ${{ matrix.service.name }}"
+    needs: detect-service-changes
+    if: needs.detect-service-changes.outputs.has-changes == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.detect-service-changes.outputs.services) }}
+      fail-fast: false
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
+
+      - name: Test service
+        run: |
+          service_path="${{ matrix.service.path }}"
+          echo "Testing service in: $service_path"
+          
+          cd "$service_path"
+          
+          # Run tests if any exist
+          if find . -name "*_test.go" | head -1 | grep -q .; then
+            echo "Running tests..."
+            go test -v ./...
+          else
+            echo "No tests found, checking if code builds..."
+            go build -v .
+          fi
+
   build-and-release:
     name: "Build ${{ matrix.service.name }}"
-    needs: detect-service-changes
+    needs: [detect-service-changes, test-service]
     if: needs.detect-service-changes.outputs.has-changes == 'true'
     runs-on: ubuntu-latest
     strategy:
@@ -211,7 +246,7 @@ jobs:
           echo "  - $latest_tag"
 
   summary:
-    needs: [detect-service-changes, build-and-release]
+    needs: [detect-service-changes, test-service, build-and-release]
     if: always()
     runs-on: ubuntu-latest
     steps:
