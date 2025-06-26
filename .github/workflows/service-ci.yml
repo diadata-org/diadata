@@ -74,7 +74,7 @@ jobs:
           echo "Detected services: $services"
 
   create-release:
-    name: "Release ${{ matrix.service.name }}"
+    name: "Create release ${{ matrix.service.name }}"
     needs: detect-service-changes
     if: needs.detect-service-changes.outputs.has-changes == 'true'
     runs-on: ubuntu-latest
