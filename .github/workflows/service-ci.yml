@@ -99,6 +99,10 @@ jobs:
           
           cd "$service_path"
           
+          # Ensure go.mod is up to date
+          echo "Running go mod tidy..."
+          go mod tidy
+          
           # Run tests if any exist
           if find . -name "*_test.go" | head -1 | grep -q .; then
             echo "Running tests..."
