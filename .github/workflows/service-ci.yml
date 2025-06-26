@@ -118,11 +118,6 @@ jobs:
             **Version:** ${{ steps.version.outputs.version }}
             **Service Path:** ${{ matrix.service.path }}
             
-            ### Docker Image
-            ```bash
-            docker pull ${{ env.REGISTRY }}/${{ steps.version.outputs.service-name }}:${{ steps.version.outputs.version }}
-            ```
-            
             ### Changes
             This release contains updates to the ${{ steps.version.outputs.service-name }} service.
             
