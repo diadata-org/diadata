@@ -180,8 +180,11 @@ jobs:
           version="${{ steps.version.outputs.version }}"
           dockerfile="${{ steps.dockerfile.outputs.dockerfile }}"
           
-          version_tag="$REGISTRY/$service_name:$version"
-          latest_tag="$REGISTRY/$service_name:latest"
+          # Convert service name to lowercase for Docker registry
+          service_name_lower=$(echo "$service_name" | tr '[:upper:]' '[:lower:]')
+          
+          version_tag="$REGISTRY/$service_name_lower:$version"
+          latest_tag="$REGISTRY/$service_name_lower:latest"
           
           echo "Building Docker image:"
           echo "  Service: $service_name"
@@ -194,7 +197,7 @@ jobs:
             -f "$dockerfile" \
             -t "$version_tag" \
             -t "$latest_tag" \
-            --build-arg SERVICE_NAME="$service_name" \
+            --build-arg SERVICE_NAME="$service_name_lower" \
             --build-arg VERSION="$version" \
             .
           
