@@ -148,6 +148,11 @@ jobs:
         with:
           go-version: '1.22'
 
+      - name: Wait for Go proxy indexing
+        run: |
+          echo "Waiting 30 seconds for Go module proxy to index v${{ matrix.service.version }}..."
+          sleep 30
+
       - name: Test service
         run: |
           service_path="${{ matrix.service.path }}"
@@ -155,9 +160,23 @@ jobs:
           
           cd "$service_path"
           
-          # Ensure go.mod is up to date
-          echo "Running go mod tidy..."
-          go mod tidy
+          # Try go mod tidy with retry logic (up to 4 minutes total)
+          echo "Running go mod tidy with retry..."
+          for i in {1..8}; do
+            echo "Attempt $i: Running go mod tidy..."
+            if go mod tidy; then
+              echo "✅ Success!"
+              break
+            else
+              if [ $i -lt 8 ]; then
+                echo "❌ Failed, waiting 30 seconds..."
+                sleep 30
+              else
+                echo "❌ All attempts failed after 4 minutes"
+                exit 1
+              fi
+            fi
+          done
           
           # Run tests if any exist
           if find . -name "*_test.go" | head -1 | grep -q .; then
