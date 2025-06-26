@@ -72,13 +72,6 @@ func (p *Pools) setPool(k string, v map[int]*CurveCoin) {
 	p.pools[k] = v
 }
 
-func (p *Pools) getPool(k string) (map[int]*CurveCoin, bool) {
-	p.poolsLock.RLock()
-	defer p.poolsLock.RUnlock()
-	r, ok := p.pools[k]
-	return r, ok
-}
-
 func (p *Pools) getPoolCoin(poolk string, coink int) (*CurveCoin, bool) {
 	p.poolsLock.RLock()
 	defer p.poolsLock.RUnlock()
@@ -221,6 +214,7 @@ func NewCurveFIScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x722272D36ef0Da72FF51c5A65Db7b870E2e8D4ee")}
 		scraper.registriesUnderlying = []curveRegistry{stableSwapFactory}
 		scraper.screenPools = false
+
 	case dia.CurveFIExchangeArbitrum:
 		scraper = makeCurvefiScraper(exchange, curveRestDialArbitrum, curveWsDialArbitrum, relDB)
 		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0xb17b674D9c5CB2e441F8e196a2f048A81355d031")}
@@ -322,8 +316,8 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 	}
 
 	go func() {
-		fmt.Println("Curvefi Subscribed to pool: " + pool)
-		defer fmt.Printf("Curvefi UnSubscribed to pool %s with error: %v", pool, err)
+		log.Info("Curvefi Subscribed to pool: " + pool)
+		defer log.Warnf("Curvefi UnSubscribed to pool %s with error: %v", pool, err)
 		defer sub.Unsubscribe()
 		defer subV2.Unsubscribe()
 		defer subTwoCrypto.Unsubscribe()
