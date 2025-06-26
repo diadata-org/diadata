@@ -87,6 +87,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Audit - Log release attempt
+        run: |
+          echo "🔍 AUDIT LOG - Release Creation"
+          echo "Triggered by: ${{ github.actor }}"
+          echo "Branch: ${{ github.ref }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Service: ${{ matrix.service.name }}"
+          echo "Timestamp: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          echo "Repository: ${{ github.repository }}"
+          echo "Workflow: ${{ github.workflow }}"
+
       - name: Extract and validate version
         id: version
         run: |
@@ -204,6 +215,17 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Audit - Log Docker deployment attempt
+        run: |
+          echo "🔍 AUDIT LOG - Docker Deployment"
+          echo "Triggered by: ${{ github.actor }}"
+          echo "Branch: ${{ github.ref }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Service: ${{ matrix.service.name }}"
+          echo "Timestamp: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          echo "Target Registry: us.icr.io/dia-registry"
+          echo "Action: Docker build and push"
+
       - name: Log in to IBM Cloud Container Registry
         run: |
           echo "${{ secrets.IBM_CLOUD_API_KEY }}" | docker login us.icr.io -u iamapikey --password-stdin
@@ -277,6 +299,14 @@ jobs:
           echo "✅ Successfully built and pushed:"
           echo "  - $version_tag"
           echo "  - $latest_tag"
+          
+          echo ""
+          echo "🔍 AUDIT LOG - Deployment Completed"
+          echo "User: ${{ github.actor }}"
+          echo "Service: $service_name"
+          echo "Version: $version"
+          echo "Images: $version_tag, $latest_tag"
+          echo "Completed: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
 
   summary:
     needs: [detect-service-changes, create-release, test-service, build-and-release]

@@ -82,6 +82,58 @@ Contribute to the DAO through the two verticals below:
 - [Product development](contribute/product-development.md)
 - [Ecosystem growth](contribute/ecosystem-growth.md)
 
+## CI/CD Pipeline
+
+For automated tests, build, deployments we use the following pipeline.
+This is the full workflow:
+
+1. **Trigger Detection**
+   - Trigger: Push to master (or feature/automated-service-deployment for testing)
+   - Path filter: Only triggers on changes to cmd/**/go.mod files
+   - Action: Scan for modified go.mod files in the cmd/ directory
+
+2. **Service Detection & Version Extraction**
+   - Scan changed files: Find all modified cmd/**/go.mod files
+   - Extract service info for each file:
+     - Service name from directory path (e.g., cmd/http/graphqlServer → graphqlServer)
+     - Version from github.com/diadata-org/diadata vX.X.X dependency line
+   - Validate version format: Ensure it matches vX.X.X pattern
+   - Output: JSON array of services with name, path, and version
+
+3. **Create GitHub Release (Per Service)**
+   - Tag creation: Creates git tag with version number (e.g., v1.4.586)
+   - Release creation: GitHub release named with just the version (e.g., v1.4.586)
+   - Release body: Includes service info and auto-generated content
+   - Purpose: Ensures the version exists before testing/building
+
+4. **Test Service (Per Service)**
+   - Setup: Checkout code, install Go 1.22
+   - Dependency resolution: Run go mod tidy to update go.sum
+   - Test execution:
+     - If *_test.go files exist → Run go test -v ./...
+     - If no tests → Run go build -v . to verify compilation
+   - Validation: Ensures code quality before proceeding
+
+5. **Build & Push Docker Image (Per Service)**
+   - Dockerfile discovery: Search for Dockerfile in order:
+     - {service_path}/Dockerfile
+     - Dockerfile-{service_name} (root)
+     - {service_path}/Dockerfile-{service_name}
+     - build/Dockerfile-{service_name} ✅ (most common)
+   - Docker setup: Configure Docker Buildx
+   - Registry login: Authenticate with IBM Cloud Container Registry
+   - Image build:
+     - Convert service name to lowercase for Docker compatibility
+     - Build with tags: us.icr.io/dia-registry/{service}:{version} and latest
+   - Image push: Push both version and latest tags to registry
+
+6. **Pipeline Summary**
+   - Dependency: Waits for all previous jobs to complete
+   - Status reporting:
+     - If changes detected: List processed services, success/failure status
+     - If no changes: Report that pipeline was skipped
+   - Output: Comprehensive summary of all pipeline activities
+
 ## Support
 
 - [Discord](support/discord.md)
