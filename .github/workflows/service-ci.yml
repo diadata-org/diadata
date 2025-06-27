@@ -345,10 +345,11 @@ jobs:
             echo "### Services built and released:"
             echo "$services" | jq -r '.[] | "- **\(.name)** version \(.version)"'
             echo ""
-            echo "Each service has been:"
-            echo "- ✅ GitHub release created"
-            echo "- ✅ Docker image built"
-            echo "- ✅ Docker image pushed to registry"
+            echo "## 📊 Job Results:"
+            echo "- **Release:** ${{ needs.create-release.result }}"
+            echo "- **Lint:** ${{ needs.lint-service.result }}"
+            echo "- **Test:** ${{ needs.test-service.result }}"
+            echo "- **Build:** ${{ needs.build-and-release.result }}"
             
             echo ""
             echo "## 🔍 Audit Report"
@@ -359,16 +360,21 @@ jobs:
             echo "**Timestamp:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
             echo "**Workflow:** ${{ github.workflow }}"
             echo "**Run ID:** ${{ github.run_id }}"
-            echo ""
-            echo "### Services Deployed:"
-            echo "$services" | jq -r '.[] | "- **\(.name)** → us.icr.io/dia-registry/\(.name | ascii_downcase):\(.version)"'
             
-            if [ "${{ needs.build-and-release.result }}" = "success" ]; then
+            if [ "${{ needs.lint-service.result }}" = "success" ] && [ "${{ needs.test-service.result }}" = "success" ] && [ "${{ needs.build-and-release.result }}" = "success" ]; then
               echo ""
               echo "🎉 **All services processed successfully!**"
+              echo ""
+              echo "### Services Deployed:"
+              echo "$services" | jq -r '.[] | "- **\(.name)** → us.icr.io/dia-registry/\(.name | ascii_downcase):\(.version)"'
             else
               echo ""
-              echo "⚠️ **Some services failed to process. Check logs above.**"
+              echo "⚠️ **Pipeline failed. Services were NOT deployed.**"
+              echo ""
+              echo "**Failed stages:**"
+              [ "${{ needs.lint-service.result }}" != "success" ] && echo "- 🔴 Linting failed"
+              [ "${{ needs.test-service.result }}" != "success" ] && echo "- 🔴 Testing failed" 
+              [ "${{ needs.build-and-release.result }}" != "success" ] && echo "- 🔴 Build/Deploy failed"
             fi
           else
             echo "## ℹ️ No Service Changes Detected"
