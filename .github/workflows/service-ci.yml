@@ -147,6 +147,11 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: '1.22'
+      # ensure all dependencies are downloaded and the go.sum file is properly populated.
+      - name: Download Go modules
+        run: |
+          cd ${{ matrix.service.path }}
+          go mod download
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v6
