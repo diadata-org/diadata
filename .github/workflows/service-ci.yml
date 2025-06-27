@@ -149,11 +149,11 @@ jobs:
           go-version: '1.22'
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v4
+        uses: golangci/golangci-lint-action@v6
         with:
-          version: latest
+          version: v1.61
           working-directory: ${{ matrix.service.path }}
-          args: --config=../../../.golangci.yml
+          args: --config=../../../.golangci.yml --out-format=colored-line-number
           only-new-issues: true
 
   test-service:
