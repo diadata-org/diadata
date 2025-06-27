@@ -129,9 +129,36 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  lint-service:
+    name: "Lint ${{ matrix.service.name }}"
+    needs: [detect-service-changes, create-release]
+    if: needs.detect-service-changes.outputs.has-changes == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.detect-service-changes.outputs.services) }}
+      fail-fast: false
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: latest
+          working-directory: ${{ matrix.service.path }}
+          args: --config=./.golangci.yml
+          only-new-issues: true
+
   test-service:
     name: "Test ${{ matrix.service.name }}"
-    needs: [detect-service-changes, create-release]
+    needs: [detect-service-changes, create-release, lint-service]
     if: needs.detect-service-changes.outputs.has-changes == 'true'
     runs-on: ubuntu-latest
     strategy:
@@ -189,7 +216,7 @@ jobs:
 
   build-and-release:
     name: "Build ${{ matrix.service.name }}"
-    needs: [detect-service-changes, create-release, test-service]
+    needs: [detect-service-changes, create-release, lint-service, test-service]
     if: needs.detect-service-changes.outputs.has-changes == 'true'
     runs-on: ubuntu-latest
     strategy:
@@ -301,7 +328,7 @@ jobs:
           
 
   summary:
-    needs: [detect-service-changes, create-release, test-service, build-and-release]
+    needs: [detect-service-changes, create-release, lint-service, test-service, build-and-release]
     if: always()
     runs-on: ubuntu-latest
     steps:
