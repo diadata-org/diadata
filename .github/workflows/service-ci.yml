@@ -148,9 +148,10 @@ jobs:
         with:
           go-version: '1.22'
       # ensure all dependencies are downloaded and the go.sum file is properly populated.
-      - name: Download Go modules
+      - name: Download and tidy Go modules
         run: |
           cd ${{ matrix.service.path }}
+          go mod tidy
           go mod download
 
       - name: golangci-lint
