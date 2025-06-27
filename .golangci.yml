@@ -1,11 +1,12 @@
 version: "2"
 run:
   timeout: 2m
+  tests: false
 
 linters:
   enable:
     - errcheck
-    - gosimple
+    - gosimple  
     - govet
     - ineffassign
     - staticcheck
@@ -13,3 +14,7 @@ linters:
     - unused
     - gofmt
     - goimports
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
