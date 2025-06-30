@@ -6,6 +6,11 @@ on:
     paths:
       - 'cmd/**/go.mod'
 
+permissions:
+  contents: write
+  actions: read
+  checks: write
+
 env:
   REGISTRY: us.icr.io/dia-registry
   

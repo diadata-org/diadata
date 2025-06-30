@@ -5,6 +5,13 @@ on:
     paths:
       - 'cmd/**/go.mod'
 
+permissions:
+  contents: read
+  pull-requests: read
+  actions: read
+  checks: write
+  issues: write
+
 env:
   REGISTRY: us.icr.io/dia-registry
   
