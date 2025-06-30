@@ -16,6 +16,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/curvefi/curvepool"
 	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/curvefifactory"
 	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/curvefimeta"
+	"github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/curvefitwocryptooptimized"
 	models "github.com/diadata-org/diadata/pkg/model"
 	"github.com/diadata-org/diadata/pkg/utils"
 
@@ -69,13 +70,6 @@ func (p *Pools) setPool(k string, v map[int]*CurveCoin) {
 	p.poolsLock.Lock()
 	defer p.poolsLock.Unlock()
 	p.pools[k] = v
-}
-
-func (p *Pools) getPool(k string) (map[int]*CurveCoin, bool) {
-	p.poolsLock.RLock()
-	defer p.poolsLock.RUnlock()
-	r, ok := p.pools[k]
-	return r, ok
 }
 
 func (p *Pools) getPoolCoin(poolk string, coink int) (*CurveCoin, bool) {
@@ -220,6 +214,7 @@ func NewCurveFIScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x722272D36ef0Da72FF51c5A65Db7b870E2e8D4ee")}
 		scraper.registriesUnderlying = []curveRegistry{stableSwapFactory}
 		scraper.screenPools = false
+
 	case dia.CurveFIExchangeArbitrum:
 		scraper = makeCurvefiScraper(exchange, curveRestDialArbitrum, curveWsDialArbitrum, relDB)
 		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0xb17b674D9c5CB2e441F8e196a2f048A81355d031")}
@@ -287,6 +282,12 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 	}
 	sinkV2 := make(chan *curvefifactory.CurvefifactoryTokenExchange)
 
+	filtererTwoCrypto, err := curvefitwocryptooptimized.NewCurvefitwocryptooptimizedFilterer(common.HexToAddress(pool), scraper.WsClient)
+	if err != nil {
+		log.Fatal(err)
+	}
+	sinkTwoCrypto := make(chan *curvefitwocryptooptimized.CurvefitwocryptooptimizedTokenExchange)
+
 	header, err := scraper.RestClient.HeaderByNumber(context.Background(), nil)
 	if err != nil {
 		log.Fatal(err)
@@ -303,6 +304,11 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 		log.Error("WatchTokenExchange: ", err)
 	}
 
+	subTwoCrypto, err := filtererTwoCrypto.WatchTokenExchange(&bind.WatchOpts{Start: &startblock}, sinkTwoCrypto, nil)
+	if err != nil {
+		log.Error("WatchTokenExchange for twoCrypto: ", err)
+	}
+
 	sinkUnderlying := make(chan *curvepool.CurvepoolTokenExchangeUnderlying)
 	subUnderlying, err := filterer.WatchTokenExchangeUnderlying(&bind.WatchOpts{Start: &startblock}, sinkUnderlying, nil)
 	if err != nil {
@@ -310,25 +316,18 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 	}
 
 	go func() {
-		fmt.Println("Curvefi Subscribed to pool: " + pool)
-		defer fmt.Printf("Curvefi UnSubscribed to pool %s with error: %v", pool, err)
+		log.Info("Curvefi Subscribed to pool: " + pool)
+		defer log.Warnf("Curvefi UnSubscribed to pool %s with error: %v", pool, err)
 		defer sub.Unsubscribe()
 		defer subV2.Unsubscribe()
+		defer subTwoCrypto.Unsubscribe()
 		defer subUnderlying.Unsubscribe()
+
 		subscribed := true
 
 		for scraper.run && subscribed {
 			select {
-			case err = <-sub.Err():
-				if err != nil {
-					log.Error("sub error: ", err)
-				}
-				subscribed = false
-				if scraper.run {
-					log.Warn("resubscribe pool: ", pool)
-					scraper.resubscribe <- pool
-				}
-				log.Warn("subscription error: ", err)
+
 			case swp := <-sink:
 				log.Info("got swap V1")
 				scraper.processSwap(pool, swp)
@@ -336,12 +335,15 @@ func (scraper *CurveFIScraper) watchSwaps(pool string) error {
 			case swpV2 := <-sinkV2:
 				log.Info("got swap V2")
 				scraper.processSwap(pool, swpV2)
+
+			case swpTwoCrypto := <-sinkTwoCrypto:
+				log.Info("got swap twoCrypto")
+				scraper.processSwap(pool, swpTwoCrypto)
+
 			case swpUnderlying := <-sinkUnderlying:
 				log.Warn("got underlying swap: ", swpUnderlying)
-				// Only fetch trades from USDR pool until we have parsing TokenExchangeUnderlying resolved.
-				// if pool == common.HexToAddress("0xa138341185a9d0429b0021a11fb717b225e13e1f").Hex() && Exchanges[scraper.exchangeName].BlockChain.Name == dia.POLYGON {
 				scraper.processSwap(pool, swpUnderlying)
-				// }
+
 			}
 		}
 	}()
@@ -383,6 +385,13 @@ func (scraper *CurveFIScraper) processSwap(pool string, swp interface{}) {
 			return
 		}
 		foreignTradeID = s.Raw.TxHash.Hex() + "-" + fmt.Sprint(s.Raw.Index)
+	case *curvefitwocryptooptimized.CurvefitwocryptooptimizedTokenExchange:
+		foreignName, volume, price, baseToken, quoteToken, err = scraper.getSwapDataCurve(pool, s)
+		if err != nil {
+			log.Error("getSwapDataCurve: ", err)
+			return
+		}
+		foreignTradeID = s.Raw.TxHash.Hex() + "-" + fmt.Sprint(s.Raw.Index)
 	}
 
 	// Hotfix for zero address bug.
@@ -407,7 +416,7 @@ func (scraper *CurveFIScraper) processSwap(pool string, swp interface{}) {
 		Source:         scraper.exchangeName,
 		VerifiedPair:   true,
 	}
-	log.Infof("Got Trade in pool %s:\n %v", pool, trade)
+	log.Infof("Got Trade in pool %s: %v", pool, trade)
 
 	scraper.chanTrades <- trade
 
@@ -452,7 +461,22 @@ func (scraper *CurveFIScraper) getSwapDataCurve(pool string, swp interface{}) (
 			err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
 		}
 		if toToken == nil || fromToken == nil {
-			err = errors.New("token not available, skip trade.")
+			err = errors.New("token not available, skip trade")
+			return
+		}
+		amountIn, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(s.TokensSold), new(big.Float).SetFloat64(math.Pow10(int(fromToken.Decimals)))).Float64()
+		amountOut, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(s.TokensBought), new(big.Float).SetFloat64(math.Pow10(int(toToken.Decimals)))).Float64()
+	case *curvefitwocryptooptimized.CurvefitwocryptooptimizedTokenExchange:
+		fromToken, ok = scraper.pools.getPoolCoin(pool, int(s.SoldId.Int64()))
+		if !ok {
+			err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
+		}
+		toToken, ok = scraper.pools.getPoolCoin(pool, int(s.BoughtId.Int64()))
+		if !ok {
+			err = fmt.Errorf("token not found: " + pool + "-" + s.SoldId.String())
+		}
+		if toToken == nil || fromToken == nil {
+			err = errors.New("token not available, skip trade")
 			return
 		}
 		amountIn, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(s.TokensSold), new(big.Float).SetFloat64(math.Pow10(int(fromToken.Decimals)))).Float64()
