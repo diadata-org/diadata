@@ -84,55 +84,106 @@ Contribute to the DAO through the two verticals below:
 
 ## CI/CD Pipeline
 
-For automated tests, build, deployments we use the following pipeline.
-This is the full workflow:
+We use a **two-pipeline approach** for automated testing, building, and container image publishing that provides proper validation before production releases.
+
+### Pipeline Overview
+
+**Pipeline 1: PR Validation** (`pr-validation.yml`)
+- **Trigger:** Pull request creation/updates with changes to `cmd/**/go.mod`
+- **Purpose:** Validate changes before merge with draft releases
+- **Actions:** Create draft release → Lint → Test → Build validation (no registry push)
+
+**Pipeline 2: Production Build & Publish** (`production-deployment.yml`)  
+- **Trigger:** Push to master branch with changes to `cmd/**/go.mod`
+- **Purpose:** Build and publish validated container images to registry
+- **Actions:** Publish release → Build → Push to IBM Cloud Container Registry
+
+---
+
+### Pipeline 1: PR Validation Workflow
 
 1. **Trigger Detection**
-   - Trigger: Push to master (or feature/automated-service-deployment for testing)
-   - Path filter: Only triggers on changes to cmd/**/go.mod files
-   - Action: Scan for modified go.mod files in the cmd/ directory
+   - **Trigger:** Pull request events (opened, updated, synchronized)
+   - **Path filter:** Only triggers on changes to `cmd/**/go.mod` files
+   - **Action:** Scan for modified go.mod files in the cmd/ directory
 
 2. **Service Detection & Version Extraction**
-   - Scan changed files: Find all modified cmd/**/go.mod files
-   - Extract service info for each file:
-     - Service name from directory path (e.g., cmd/http/graphqlServer → graphqlServer)
-     - Version from github.com/diadata-org/diadata vX.X.X dependency line
-   - Validate version format: Ensure it matches vX.X.X pattern
-   - Output: JSON array of services with name, path, and version
+   - **Scan changed files:** Find all modified `cmd/**/go.mod` files
+   - **Extract service info:** 
+     - Service name from directory path (e.g., `cmd/http/graphqlServer` → `graphqlServer`)
+     - Version from `github.com/diadata-org/diadata vX.X.X` dependency line
+   - **Validate version format:** Ensure it matches `vX.X.X` pattern
+   - **Output:** JSON array of services with name, path, and version
 
-3. **Create GitHub Release (Per Service)**
-   - Tag creation: Creates git tag with version number (e.g., v1.4.586)
-   - Release creation: GitHub release named with just the version (e.g., v1.4.586)
-   - Release body: Includes service info and auto-generated content
-   - Purpose: Ensures the version exists before testing/building
+3. **Create Draft Release (Per Service)**
+   - **Tag creation:** Creates git tag with version number (e.g., `v1.4.586`)
+   - **Draft release:** GitHub draft release for validation purposes
+   - **Release body:** Includes service info, PR number, and validation status
+   - **Purpose:** Validate version and prepare for production release
 
-4. **Test Service (Per Service)**
-   - Setup: Checkout code, install Go 1.22
-   - Dependency resolution: Run go mod tidy to update go.sum
-   - Test execution:
-     - If *_test.go files exist → Run go test -v ./...
-     - If no tests → Run go build -v . to verify compilation
-   - Validation: Ensures code quality before proceeding
+4. **Lint Service (Per Service)**
+   - **Setup:** Checkout code, install Go 1.22
+   - **Dependencies:** Run `go mod tidy` and `go mod download`
+   - **Linting:** Execute `golangci-lint` with project configuration
+   - **Validation:** Ensure code quality standards before testing
 
-5. **Build & Push Docker Image (Per Service)**
-   - Dockerfile discovery: Search for Dockerfile in order:
-     - {service_path}/Dockerfile
-     - Dockerfile-{service_name} (root)
-     - {service_path}/Dockerfile-{service_name}
-     - build/Dockerfile-{service_name} ✅ (most common)
-   - Docker setup: Configure Docker Buildx
-   - Registry login: Authenticate with IBM Cloud Container Registry
-   - Image build:
-     - Convert service name to lowercase for Docker compatibility
-     - Build with tags: us.icr.io/dia-registry/{service}:{version} and latest
-   - Image push: Push both version and latest tags to registry
+5. **Test Service (Per Service)**
+   - **Setup:** Go environment with 30s proxy indexing wait
+   - **Dependency resolution:** Retry `go mod tidy` up to 8 times (4 min timeout)
+   - **Test execution:**
+     - If `*_test.go` files exist → Run `go test -v ./...`
+     - If no tests → Run `go build -v .` to verify compilation
+   - **Purpose:** Ensure functionality before build validation
 
-6. **Pipeline Summary**
-   - Dependency: Waits for all previous jobs to complete
-   - Status reporting:
-     - If changes detected: List processed services, success/failure status
-     - If no changes: Report that pipeline was skipped
-   - Output: Comprehensive summary of all pipeline activities
+6. **Build Validation (Per Service)**
+   - **Dockerfile discovery:** Search for Dockerfile in order:
+     - `{service_path}/Dockerfile`
+     - `Dockerfile-{service_name}` (root)
+     - `{service_path}/Dockerfile-{service_name}`
+     - `build/Dockerfile-{service_name}` ✅ (most common)
+   - **Build validation:** Build Docker image locally without pushing to registry
+   - **Purpose:** Verify Docker build process works correctly
+
+7. **PR Summary**
+   - **Status report:** Comprehensive validation results for all services
+   - **Pass criteria:** All lint, test, and build validations must succeed
+   - **Output:** Ready/not ready for merge status with detailed feedback
+
+---
+
+### Pipeline 2: Production Build & Publish Workflow
+
+1. **Trigger Detection**
+   - **Trigger:** Push to master branch (after PR merge)
+   - **Path filter:** Only triggers on changes to `cmd/**/go.mod` files
+   - **Action:** Detect services that changed in the merge
+
+2. **Publish Release (Per Service)**
+   - **Draft to production:** Convert draft releases to published releases
+   - **New releases:** Create new production releases if no draft exists
+   - **Release body:** Production-ready release notes with container image info
+   - **Purpose:** Official release marking for production container images
+
+3. **Build & Push to Container Registry (Per Service)**
+   - **Docker setup:** Configure Docker Buildx and authenticate with IBM Cloud Container Registry
+   - **Image build:** Build production Docker images with version and latest tags
+   - **Registry push:** Push to `us.icr.io/dia-registry/{service}:{version}` and `:latest`
+   - **Container availability:** Images are now available for deployment by operations teams
+
+4. **Build Summary**
+   - **Audit trail:** Complete build report with actor, commit, timestamp
+   - **Container tracking:** List all published container images with registry URLs
+   - **Status reporting:** Success/failure status for container image publishing
+
+---
+
+### Key Benefits
+
+- **🔒 Safety:** No production container images without PR validation
+- **🏃 Speed:** Parallel processing of multiple services
+- **📋 Visibility:** Comprehensive status reporting at each stage  
+- **🔄 Reliability:** Retry logic and robust error handling
+- **📦 Traceability:** Full audit trail from PR to container registry
 
 ## Support
 
