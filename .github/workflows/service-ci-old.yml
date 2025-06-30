@@ -1,10 +1,17 @@
 name: Automated Service CI
 
+# DISABLED - Kept for reference only
+# on:
+#   push:
+#     branches: [master, feature/automated-service-deployment]
+#     paths:
+#       - 'cmd/**/go.mod'
+
+# This pipeline is disabled in favor of the new two-pipeline approach:
+# - pr-validation.yml for PR validation with draft releases
+# - production-deployment.yml for master branch deployments
 on:
-  push:
-    branches: [master, feature/automated-service-deployment]
-    paths:
-      - 'cmd/**/go.mod'
+  workflow_dispatch:  # Manual trigger only
 
 env:
   REGISTRY: us.icr.io/dia-registry
