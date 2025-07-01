@@ -2,8 +2,6 @@ name: PR Validation
 
 on:
   pull_request:
-    paths:
-      - 'cmd/**/go.mod'
 
 permissions:
   contents: write

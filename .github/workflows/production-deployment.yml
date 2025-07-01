@@ -144,7 +144,7 @@ jobs:
           gh release edit "$version" \
             --draft=false \
             --title "$version" \
-            --notes "Production Service Release: $service_name - Version: $version - Service Path: ${{ matrix.service.path }} - Production deployment of $service_name service. This release was automatically published upon merge to master."
+            --notes "Production Service Release: $service_name - Version: $version - Service Path: ${{ matrix.service.path }} - This release was automatically published upon merge to master."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
