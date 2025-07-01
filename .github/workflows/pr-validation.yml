@@ -160,12 +160,27 @@ jobs:
           go mod tidy
           go mod download
 
+      - name: Determine golangci-lint config path
+        id: config-path
+        run: |
+          # Count directory depth from repository root
+          SERVICE_PATH="${{ matrix.service.path }}"
+          DEPTH=$(echo "$SERVICE_PATH" | tr '/' '\n' | wc -l)
+          
+          if [ "$DEPTH" -eq 2 ]; then
+            # 2-level services like cmd/assetlists need ../../.golangci.yml
+            echo "config-path=../../.golangci.yml" >> $GITHUB_OUTPUT
+          else
+            # 3-level services like cmd/services/pairDiscovery need ../../../.golangci.yml
+            echo "config-path=../../../.golangci.yml" >> $GITHUB_OUTPUT
+          fi
+
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
           version: v1.61
           working-directory: ${{ matrix.service.path }}
-          args: --config=../../../.golangci.yml --out-format=colored-line-number
+          args: --config=${{ steps.config-path.outputs.config-path }} --out-format=colored-line-number
           only-new-issues: true
 
   test-service:
