@@ -303,13 +303,6 @@ jobs:
           # Check build directory for Dockerfile-{service} pattern
           elif [ -f "build/Dockerfile-$service_name" ]; then
             dockerfile="build/Dockerfile-$service_name"
-          # Check build directory with case-insensitive matching
-          else
-            # Try to find case-insensitive match in build directory
-            found_dockerfile=$(find build/ -maxdepth 1 -iname "Dockerfile-$service_name" 2>/dev/null | head -1)
-            if [ -n "$found_dockerfile" ]; then
-              dockerfile="$found_dockerfile"
-            fi
           fi
           
           if [ -z "$dockerfile" ]; then
