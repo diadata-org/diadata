@@ -387,6 +387,9 @@ jobs:
               [ "${{ needs.lint-service.result }}" != "success" ] && echo "- 🔴 Linting failed"
               [ "${{ needs.test-service.result }}" != "success" ] && echo "- 🔴 Testing failed" 
               [ "${{ needs.build-service.result }}" != "success" ] && echo "- 🔴 Build failed"
+              echo ""
+              echo "Failing job to block merge until issues are resolved."
+              exit 1
             fi
           else
             echo "## ℹ️ No Service Changes Detected"
