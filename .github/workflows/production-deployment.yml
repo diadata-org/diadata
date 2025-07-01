@@ -144,16 +144,7 @@ jobs:
           gh release edit "$version" \
             --draft=false \
             --title "$version" \
-            --notes "## Production Service Release: $service_name
-
-**Version:** $version
-**Service Path:** ${{ matrix.service.path }}
-
-### Changes
-Production deployment of $service_name service.
-
----
-*This release was automatically published upon merge to master.*"
+            --notes "Production Service Release: $service_name - Version: $version - Service Path: ${{ matrix.service.path }} - Production deployment of $service_name service. This release was automatically published upon merge to master."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -241,7 +232,16 @@ Production deployment of $service_name service.
           # Check build directory for Dockerfile-{service} pattern
           elif [ -f "build/Dockerfile-$service_name" ]; then
             dockerfile="build/Dockerfile-$service_name"
+          # Check build directory with case-insensitive matching
           else
+            # Try to find case-insensitive match in build directory
+            found_dockerfile=$(find build/ -maxdepth 1 -iname "Dockerfile-$service_name" 2>/dev/null | head -1)
+            if [ -n "$found_dockerfile" ]; then
+              dockerfile="$found_dockerfile"
+            fi
+          fi
+          
+          if [ -z "$dockerfile" ]; then
             echo "Error: Could not find Dockerfile for service $service_name"
             echo "Searched locations:"
             echo "  - $service_path/Dockerfile"

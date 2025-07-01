@@ -278,6 +278,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Log in to IBM Cloud Container Registry
+        run: |
+          echo "${{ secrets.IBM_CLOUD_API_KEY }}" | docker login us.icr.io -u iamapikey --password-stdin
+
       - name: Find Dockerfile for service
         id: dockerfile
         run: |
@@ -299,7 +303,16 @@ jobs:
           # Check build directory for Dockerfile-{service} pattern
           elif [ -f "build/Dockerfile-$service_name" ]; then
             dockerfile="build/Dockerfile-$service_name"
+          # Check build directory with case-insensitive matching
           else
+            # Try to find case-insensitive match in build directory
+            found_dockerfile=$(find build/ -maxdepth 1 -iname "Dockerfile-$service_name" 2>/dev/null | head -1)
+            if [ -n "$found_dockerfile" ]; then
+              dockerfile="$found_dockerfile"
+            fi
+          fi
+          
+          if [ -z "$dockerfile" ]; then
             echo "Error: Could not find Dockerfile for service $service_name"
             echo "Searched locations:"
             echo "  - $service_path/Dockerfile"
