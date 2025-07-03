@@ -43,6 +43,7 @@ const (
 	restDialUnrealTestnet = ""
 	restDialUnreal        = ""
 	restDialLinea         = ""
+	restDialSonic         = ""
 
 	uniswapWaitMilliseconds     = "25"
 	baseWaitMilliseconds        = "200"
@@ -144,6 +145,8 @@ func NewUniswapAssetSource(exchange dia.Exchange, relDB *models.RelDB) (uas *Uni
 		uas = makeUniswapAssetSource(exchange, restDialBSC, relDB, sushiswapWaitMilliseconds)
 	case dia.UniswapExchangeBase:
 		uas = makeUniswapAssetSource(exchange, restDialBase, relDB, baseWaitMilliseconds)
+	case dia.ShadowV2Exchange:
+		uas = makeUniswapAssetSource(exchange, restDialSonic, relDB, baseWaitMilliseconds)
 	}
 
 	exchangeFactoryContractAddress = exchange.Contract

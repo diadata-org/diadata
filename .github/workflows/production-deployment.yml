@@ -78,15 +78,11 @@ jobs:
           echo "services=$services" >> $GITHUB_OUTPUT
           echo "Detected services: $services"
 
-  publish-release:
-    name: "Publish release ${{ matrix.service.name }}"
+  verify_release:
+    name: "Verify combined release"
     needs: detect-service-changes
     if: needs.detect-service-changes.outputs.has-changes == 'true'
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service: ${{ fromJson(needs.detect-service-changes.outputs.services) }}
-      fail-fast: false
       
     steps:
       - name: Checkout code
@@ -95,13 +91,14 @@ jobs:
       - name: Extract and validate version
         id: version
         run: |
-          service_name="${{ matrix.service.name }}"
-          service_path="${{ matrix.service.path }}"
-          version="${{ matrix.service.version }}"
+          services='${{ needs.detect-service-changes.outputs.services }}'
           
-          echo "Processing service: $service_name"
-          echo "Service path: $service_path"
-          echo "Extracted version: $version"
+          # Extract version from first service (all should have same version)
+          version=$(echo "$services" | jq -r '.[0].version')
+          
+          echo "Processing release verification for version: $version"
+          echo "Services in this release:"
+          echo "$services" | jq -r '.[] | "- \(.name) (\(.path))"'
           
           # Validate version format
           if [[ ! "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -110,69 +107,68 @@ jobs:
           fi
           
           echo "version=$version" >> $GITHUB_OUTPUT
-          echo "service-name=$service_name" >> $GITHUB_OUTPUT
 
-      - name: Check if release exists (draft or published)
-        id: check_release
+      - name: Verify release exists
+        id: verify_release
         run: |
           version="${{ steps.version.outputs.version }}"
           
-          # Check if release already exists
+          # Check if release exists
           if gh release view "$version" >/dev/null 2>&1; then
-            echo "Release $version already exists"
+            echo "✅ Release $version exists and is ready for production deployment"
             echo "exists=true" >> $GITHUB_OUTPUT
-            
-            # Check if it's a draft
-            draft_status=$(gh release view "$version" --json isDraft --jq '.isDraft')
-            echo "is_draft=$draft_status" >> $GITHUB_OUTPUT
           else
-            echo "Release $version does not exist"
+            echo "❌ Release $version does not exist. It should have been created during PR validation."
             echo "exists=false" >> $GITHUB_OUTPUT
-            echo "is_draft=false" >> $GITHUB_OUTPUT
+            exit 1
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish existing draft release
-        if: steps.check_release.outputs.exists == 'true' && steps.check_release.outputs.is_draft == 'true'
+      - name: Update release for production
+        if: steps.verify_release.outputs.exists == 'true'
         run: |
+          services='${{ needs.detect-service-changes.outputs.services }}'
           version="${{ steps.version.outputs.version }}"
-          service_name="${{ steps.version.outputs.service-name }}"
           
-          echo "Publishing draft release $version as production release"
+          echo "Updating release $version with production deployment info"
           
-          gh release edit "$version" \
-            --draft=false \
-            --title "$version" \
-            --notes "Production Service Release: $service_name - Version: $version - Service Path: ${{ matrix.service.path }} - This release was automatically published upon merge to master."
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Create production release notes
+          cat > production_notes.md << 'EOF'
+          ## Production Service Release ${{ steps.version.outputs.version }}
 
-      - name: Create new release
-        if: steps.check_release.outputs.exists == 'false'
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: "${{ steps.version.outputs.version }}"
-          name: "${{ steps.version.outputs.version }}"
-          body: |
-            ## Production Service Release: ${{ steps.version.outputs.service-name }}
-            
-            **Version:** ${{ steps.version.outputs.version }}
-            **Service Path:** ${{ matrix.service.path }}
-            
-            ### Changes
-            Production deployment of ${{ steps.version.outputs.service-name }} service.
-            
-            ---
-            *This release was automatically created upon merge to master.*
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          **Services Deployed:**
+          EOF
+                    
+                    # Add each service to the production notes
+                    echo "$services" | jq -r '.[] | "- **\(.name)** (\(.path))"' >> production_notes.md
+                    
+                    cat >> production_notes.md << 'EOF'
+
+          ### Status
+          ✅ **Deployed to Production**
+
+          ### Changes
+          Production deployment of all updated services.
+
+          ---
+          *This release was created during PR validation and deployed to production upon merge to master.*
+          EOF
+                    
+                    echo "Production release notes:"
+                    cat production_notes.md
+                    
+                    gh release edit "$version" \
+                      --title "$version" \
+                      --notes "$(cat production_notes.md)"
+                    
+                    echo "Release $version updated with production deployment notes"
+                  env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-and-deploy:
     name: "Build & Deploy ${{ matrix.service.name }}"
-    needs: [detect-service-changes, publish-release]
+    needs: [detect-service-changes, verify_release]
     if: needs.detect-service-changes.outputs.has-changes == 'true'
     runs-on: ubuntu-latest
     strategy:
@@ -284,7 +280,7 @@ jobs:
           echo "  - $latest_tag"
 
   deployment-summary:
-    needs: [detect-service-changes, publish-release, build-and-deploy]
+    needs: [detect-service-changes, verify_release, build-and-deploy]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -302,7 +298,7 @@ jobs:
             echo "$services" | jq -r '.[] | "- **\(.name)** version \(.version)"'
             echo ""
             echo "## 📊 Deployment Results:"
-            echo "- **Release:** ${{ needs.publish-release.result }}"
+            echo "- **Release:** ${{ needs.verify_release.result }}"
             echo "- **Build & Deploy:** ${{ needs.build-and-deploy.result }}"
             
             echo ""
@@ -326,7 +322,7 @@ jobs:
               echo "❌ **Deployment failed. Check logs above.**"
               echo ""
               echo "**Failed stages:**"
-              [ "${{ needs.publish-release.result }}" != "success" ] && echo "- 🔴 Release publishing failed"
+              [ "${{ needs.verify_release.result }}" != "success" ] && echo "- 🔴 Release verification failed"
               [ "${{ needs.build-and-deploy.result }}" != "success" ] && echo "- 🔴 Build/Deploy failed"
             fi
           else

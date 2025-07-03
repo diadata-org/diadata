@@ -90,22 +90,22 @@ We use a **two-pipeline approach** for automated testing, building, and containe
 
 **Pipeline 1: PR Validation** (`pr-validation.yml`)
 - **Trigger:** Pull request creation/updates with changes to `cmd/**/go.mod`
-- **Purpose:** Validate changes before merge with draft releases
-- **Actions:** Create draft release → Lint → Test → Build validation (no registry push)
+- **Purpose:** Validate changes before merge with real releases for Go module resolution
+- **Actions:** Create release → Lint → Test → Build validation (no registry push)
 
 **Pipeline 2: Production Build & Publish** (`production-deployment.yml`)  
 - **Trigger:** Push to master branch with changes to `cmd/**/go.mod`
 - **Purpose:** Build and publish validated container images to registry
-- **Actions:** Publish release → Build → Push to IBM Cloud Container Registry
+- **Actions:** Verify release → Build → Push to IBM Cloud Container Registry
 
 ---
 
 ### Pipeline 1: PR Validation Workflow
 
 1. **Trigger Detection**
-   - **Trigger:** Pull request events (opened, updated, synchronized)
-   - **Path filter:** Only triggers on changes to `cmd/**/go.mod` files
-   - **Action:** Scan for modified go.mod files in the cmd/ directory
+   - **Trigger:** Pull request events (opened, updated, synchronized) - runs on all PRs
+   - **Change detection:** Scan for modified `cmd/**/go.mod` files to determine if service validation is needed
+   - **Action:** If no go.mod files changed, skip all validation steps; otherwise process changed services
 
 2. **Service Detection & Version Extraction**
    - **Scan changed files:** Find all modified `cmd/**/go.mod` files
@@ -115,15 +115,16 @@ We use a **two-pipeline approach** for automated testing, building, and containe
    - **Validate version format:** Ensure it matches `vX.X.X` pattern
    - **Output:** JSON array of services with name, path, and version
 
-3. **Create Draft Release (Per Service)**
+3. **Create Combined Release**
    - **Tag creation:** Creates git tag with version number (e.g., `v1.4.586`)
-   - **Draft release:** GitHub draft release for validation purposes
-   - **Release body:** Includes service info, PR number, and validation status
-   - **Purpose:** Validate version and prepare for production release
+   - **GitHub release:** Single release covering all changed services for Go module resolution during linting
+   - **Release body:** Includes all updated services, PR number, and validation status
+   - **Purpose:** Enable Go module resolution and prepare for production deployment
 
 4. **Lint Service (Per Service)**
    - **Setup:** Checkout code, install Go 1.22
    - **Dependencies:** Run `go mod tidy` and `go mod download`
+   - **Note:** Real releases (not drafts) are required because Go module resolution during linting needs to resolve `github.com/diadata-org/diadata vX.X.X` dependencies, which requires actual Git tags to exist
    - **Linting:** Execute `golangci-lint` with project configuration
    - **Validation:** Ensure code quality standards before testing
 
@@ -154,15 +155,15 @@ We use a **two-pipeline approach** for automated testing, building, and containe
 ### Pipeline 2: Production Build & Publish Workflow
 
 1. **Trigger Detection**
-   - **Trigger:** Push to master branch (after PR merge)
-   - **Path filter:** Only triggers on changes to `cmd/**/go.mod` files
+   - **Trigger:** Push to master branch (after PR merge) with path filter for `cmd/**/go.mod` files
+   - **Path filter:** Only triggers when `cmd/**/go.mod` files are actually modified in the push
    - **Action:** Detect services that changed in the merge
 
-2. **Publish Release (Per Service)**
-   - **Draft to production:** Convert draft releases to published releases
-   - **New releases:** Create new production releases if no draft exists
+2. **Verify Release (Per Service)**
+   - **Release verification:** Ensure the release created during PR validation exists
+   - **Production update:** Update release notes with production deployment status
    - **Release body:** Production-ready release notes with container image info
-   - **Purpose:** Official release marking for production container images
+   - **Purpose:** Confirm release readiness and mark production deployment
 
 3. **Build & Push to Container Registry (Per Service)**
    - **Docker setup:** Configure Docker Buildx and authenticate with IBM Cloud Container Registry
