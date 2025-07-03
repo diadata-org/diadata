@@ -144,23 +144,26 @@ jobs:
           gh release edit "$version" \
             --title "$version" \
             --notes "$(cat <<EOF
-## Production Service Release $version
+          ## Production Service Release $version
 
-**Services Deployed:**
-${service_list}
+          **Services Deployed:**
+          ${service_list}
 
-### Status
-✅ **Deployed to Production**
+          ### Status
+          ✅ **Deployed to Production**
 
-### Changes
-Production deployment of all updated services.
+          ### Changes
+          Production deployment of all updated services.
 
----
-*This release was created during PR validation and deployed to production upon merge to master.*
-EOF
-)"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ---
+          *This release was created during PR validation and deployed to production upon merge to master.*
+          EOF
+          )"
+              
+              echo "Release $version updated with production deployment notes"
+            if: steps.verify_release.outputs.exists == 'true'
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-and-deploy:
     name: "Build & Deploy ${{ matrix.service.name }}"
