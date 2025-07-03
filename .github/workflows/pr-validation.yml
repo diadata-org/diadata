@@ -369,8 +369,33 @@ jobs:
           
           echo "✅ Docker image built successfully (not pushed to registry)"
 
-  pr-summary:
+  cleanup-failed-releases:
     needs: [detect-service-changes, create-release, lint-service, test-service, build-service]
+    if: always() && needs.detect-service-changes.outputs.has-changes == 'true' && (needs.lint-service.result == 'failure' || needs.test-service.result == 'failure' || needs.build-service.result == 'failure')
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.detect-service-changes.outputs.services) }}
+      fail-fast: false
+    steps:
+      - name: Delete failed release
+        run: |
+          version="${{ matrix.service.version }}"
+          echo "Cleaning up failed release $version due to validation failures"
+          
+          # Delete the release and tag
+          if gh release view "$version" >/dev/null 2>&1; then
+            echo "Deleting release $version..."
+            gh release delete "$version" --yes
+            echo "✅ Release $version deleted"
+          else
+            echo "Release $version not found, nothing to clean up"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  pr-summary:
+    needs: [detect-service-changes, create-release, lint-service, test-service, build-service, cleanup-failed-releases]
     if: always()
     runs-on: ubuntu-latest
     steps:
