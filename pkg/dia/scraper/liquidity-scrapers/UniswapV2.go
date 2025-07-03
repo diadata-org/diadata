@@ -48,6 +48,7 @@ const (
 	restDialMoonbeam  = ""
 	restDialWanchain  = ""
 	restDialUnreal    = ""
+	restDialSonic     = ""
 
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
@@ -151,6 +152,8 @@ func NewUniswapScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *mo
 		us = makeUniswapPoolScraper(exchange, pathToPools, restDialBSC, relDB, datastore, sushiswapWaitMilliseconds)
 	case dia.PearlfiStableswapExchange:
 		us = makeUniswapPoolScraper(exchange, pathToPools, restDialUnreal, relDB, datastore, sushiswapWaitMilliseconds)
+	case dia.ShadowV2Exchange:
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialSonic, relDB, datastore, sushiswapWaitMilliseconds)
 	}
 
 	exchangeFactoryContractAddress = exchange.Contract

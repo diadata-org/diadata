@@ -89,6 +89,9 @@ const (
 	restDialUnreal = ""
 	wsDialUnreal   = ""
 
+	restDialSonic = ""
+	wsDialSonic   = ""
+
 	uniswapWaitMilliseconds     = "25"
 	sushiswapWaitMilliseconds   = "100"
 	pancakeswapWaitMilliseconds = "200"
@@ -242,6 +245,8 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialBSC, wsDialBSC, sushiswapWaitMilliseconds)
 	case dia.PearlfiStableswapExchange:
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialUnreal, wsDialUnreal, sushiswapWaitMilliseconds)
+	case dia.ShadowV2Exchange:
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialSonic, wsDialSonic, wanchainWaitMilliseconds)
 
 	}
 
