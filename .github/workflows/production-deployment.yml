@@ -1,0 +1,337 @@
+name: Production Deployment
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'cmd/**/go.mod'
+
+permissions:
+  contents: write
+  actions: read
+  checks: write
+
+env:
+  REGISTRY: us.icr.io/dia-registry
+  
+jobs:
+  detect-service-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      services: ${{ steps.detect.outputs.services }}
+      has-changes: ${{ steps.detect.outputs.has-changes }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect go.mod changes in services
+        id: detect
+        run: |
+          # Get changed go.mod files in cmd directory
+          changed_files=$(git diff --name-only HEAD~1 HEAD | grep '^cmd/.*/go\.mod$' || true)
+          
+          if [ -z "$changed_files" ]; then
+            echo "has-changes=false" >> $GITHUB_OUTPUT
+            echo "services=[]" >> $GITHUB_OUTPUT
+            echo "No service go.mod files changed"
+            exit 0
+          fi
+          
+          echo "has-changes=true" >> $GITHUB_OUTPUT
+          echo "Changed go.mod files:"
+          echo "$changed_files"
+          
+          # Build services array
+          services="["
+          first=true
+          
+          for file in $changed_files; do
+            service_dir=$(dirname "$file")
+            service_name=$(basename "$service_dir")
+            
+            # Extract version from go.mod module line
+            version=$(grep -E "^module.*" "$file" | grep -o 'v[0-9]\+\.[0-9]\+\.[0-9]\+[^[:space:]]*' || echo "")
+            
+            # If no version in module line, try to extract from require section
+            if [ -z "$version" ]; then
+              version=$(grep "github.com/diadata-org/diadata" "$file" | grep -o 'v[0-9]\+\.[0-9]\+\.[0-9]\+[^[:space:]]*' | head -1 || echo "")
+            fi
+            
+            if [ -z "$version" ]; then
+              echo "Warning: Could not extract version from $file"
+              continue
+            fi
+            
+            if [ "$first" = true ]; then
+              first=false
+            else
+              services="$services,"
+            fi
+            
+            services="$services{\"name\":\"$service_name\",\"path\":\"$service_dir\",\"version\":\"$version\"}"
+          done
+          
+          services="$services]"
+          
+          echo "services=$services" >> $GITHUB_OUTPUT
+          echo "Detected services: $services"
+
+  publish-release:
+    name: "Publish release ${{ matrix.service.name }}"
+    needs: detect-service-changes
+    if: needs.detect-service-changes.outputs.has-changes == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.detect-service-changes.outputs.services) }}
+      fail-fast: false
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract and validate version
+        id: version
+        run: |
+          service_name="${{ matrix.service.name }}"
+          service_path="${{ matrix.service.path }}"
+          version="${{ matrix.service.version }}"
+          
+          echo "Processing service: $service_name"
+          echo "Service path: $service_path"
+          echo "Extracted version: $version"
+          
+          # Validate version format
+          if [[ ! "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: Invalid version format '$version'. Expected format: v1.2.3"
+            exit 1
+          fi
+          
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "service-name=$service_name" >> $GITHUB_OUTPUT
+
+      - name: Check if release exists (draft or published)
+        id: check_release
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          
+          # Check if release already exists
+          if gh release view "$version" >/dev/null 2>&1; then
+            echo "Release $version already exists"
+            echo "exists=true" >> $GITHUB_OUTPUT
+            
+            # Check if it's a draft
+            draft_status=$(gh release view "$version" --json isDraft --jq '.isDraft')
+            echo "is_draft=$draft_status" >> $GITHUB_OUTPUT
+          else
+            echo "Release $version does not exist"
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "is_draft=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish existing draft release
+        if: steps.check_release.outputs.exists == 'true' && steps.check_release.outputs.is_draft == 'true'
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          service_name="${{ steps.version.outputs.service-name }}"
+          
+          echo "Publishing draft release $version as production release"
+          
+          gh release edit "$version" \
+            --draft=false \
+            --title "$version" \
+            --notes "Production Service Release: $service_name - Version: $version - Service Path: ${{ matrix.service.path }} - This release was automatically published upon merge to master."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create new release
+        if: steps.check_release.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "${{ steps.version.outputs.version }}"
+          name: "${{ steps.version.outputs.version }}"
+          body: |
+            ## Production Service Release: ${{ steps.version.outputs.service-name }}
+            
+            **Version:** ${{ steps.version.outputs.version }}
+            **Service Path:** ${{ matrix.service.path }}
+            
+            ### Changes
+            Production deployment of ${{ steps.version.outputs.service-name }} service.
+            
+            ---
+            *This release was automatically created upon merge to master.*
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-and-deploy:
+    name: "Build & Deploy ${{ matrix.service.name }}"
+    needs: [detect-service-changes, publish-release]
+    if: needs.detect-service-changes.outputs.has-changes == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.detect-service-changes.outputs.services) }}
+      fail-fast: false
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract and validate version
+        id: version
+        run: |
+          service_name="${{ matrix.service.name }}"
+          service_path="${{ matrix.service.path }}"
+          version="${{ matrix.service.version }}"
+          
+          echo "Processing service: $service_name"
+          echo "Service path: $service_path"
+          echo "Extracted version: $version"
+          
+          # Validate version format
+          if [[ ! "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: Invalid version format '$version'. Expected format: v1.2.3"
+            exit 1
+          fi
+          
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "service-name=$service_name" >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to IBM Cloud Container Registry
+        run: |
+          echo "${{ secrets.IBM_CLOUD_API_KEY }}" | docker login us.icr.io -u iamapikey --password-stdin
+
+      - name: Find Dockerfile for service
+        id: dockerfile
+        run: |
+          service_name="${{ steps.version.outputs.service-name }}"
+          service_path="${{ matrix.service.path }}"
+          
+          # Look for Dockerfile in multiple locations
+          dockerfile=""
+          
+          # Check service directory first
+          if [ -f "$service_path/Dockerfile" ]; then
+            dockerfile="$service_path/Dockerfile"
+          # Check for Dockerfile-{service} pattern in root
+          elif [ -f "Dockerfile-$service_name" ]; then
+            dockerfile="Dockerfile-$service_name"
+          # Check for dockerfile in service directory with service name
+          elif [ -f "$service_path/Dockerfile-$service_name" ]; then
+            dockerfile="$service_path/Dockerfile-$service_name"
+          # Check build directory for Dockerfile-{service} pattern
+          elif [ -f "build/Dockerfile-$service_name" ]; then
+            dockerfile="build/Dockerfile-$service_name"
+          fi
+          
+          if [ -z "$dockerfile" ]; then
+            echo "Error: Could not find Dockerfile for service $service_name"
+            echo "Searched locations:"
+            echo "  - $service_path/Dockerfile"
+            echo "  - Dockerfile-$service_name"
+            echo "  - $service_path/Dockerfile-$service_name"
+            echo "  - build/Dockerfile-$service_name"
+            exit 1
+          fi
+          
+          echo "dockerfile=$dockerfile" >> $GITHUB_OUTPUT
+          echo "Found Dockerfile: $dockerfile"
+
+      - name: Build and push Docker image
+        run: |
+          service_name="${{ steps.version.outputs.service-name }}"
+          version="${{ steps.version.outputs.version }}"
+          dockerfile="${{ steps.dockerfile.outputs.dockerfile }}"
+          
+          # Convert service name to lowercase for Docker registry
+          service_name_lower=$(echo "$service_name" | tr '[:upper:]' '[:lower:]')
+          
+          version_tag="$REGISTRY/$service_name_lower:$version"
+          latest_tag="$REGISTRY/$service_name_lower:latest"
+          
+          echo "Building and pushing Docker image:"
+          echo "  Service: $service_name"
+          echo "  Version: $version"
+          echo "  Dockerfile: $dockerfile"
+          echo "  Tags: $version_tag, $latest_tag"
+          
+          # Build the image
+          docker build \
+            -f "$dockerfile" \
+            -t "$version_tag" \
+            -t "$latest_tag" \
+            --build-arg SERVICE_NAME="$service_name_lower" \
+            --build-arg VERSION="$version" \
+            .
+          
+          # Push both tags
+          echo "Pushing Docker images..."
+          docker push "$version_tag"
+          docker push "$latest_tag"
+          
+          echo "✅ Successfully built and pushed:"
+          echo "  - $version_tag"
+          echo "  - $latest_tag"
+
+  deployment-summary:
+    needs: [detect-service-changes, publish-release, build-and-deploy]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Production Deployment Summary
+        run: |
+          if [ "${{ needs.detect-service-changes.outputs.has-changes }}" = "true" ]; then
+            services='${{ needs.detect-service-changes.outputs.services }}'
+            count=$(echo "$services" | jq length)
+            
+            echo "## 🚀 Production Deployment Summary"
+            echo ""
+            echo "**Services deployed:** $count"
+            echo ""
+            echo "### Services deployed to production:"
+            echo "$services" | jq -r '.[] | "- **\(.name)** version \(.version)"'
+            echo ""
+            echo "## 📊 Deployment Results:"
+            echo "- **Release:** ${{ needs.publish-release.result }}"
+            echo "- **Build & Deploy:** ${{ needs.build-and-deploy.result }}"
+            
+            echo ""
+            echo "## 🔍 Audit Report"
+            echo "**Triggered by:** ${{ github.actor }}"
+            echo "**Branch:** ${{ github.ref }}"
+            echo "**Commit:** ${{ github.sha }}"
+            echo "**Repository:** ${{ github.repository }}"
+            echo "**Timestamp:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+            echo "**Workflow:** ${{ github.workflow }}"
+            echo "**Run ID:** ${{ github.run_id }}"
+            
+            if [ "${{ needs.build-and-deploy.result }}" = "success" ]; then
+              echo ""
+              echo "🎉 **All services deployed successfully!**"
+              echo ""
+              echo "### Services in production:"
+              echo "$services" | jq -r '.[] | "- **\(.name)** → us.icr.io/dia-registry/\(.name | ascii_downcase):\(.version)"'
+            else
+              echo ""
+              echo "❌ **Deployment failed. Check logs above.**"
+              echo ""
+              echo "**Failed stages:**"
+              [ "${{ needs.publish-release.result }}" != "success" ] && echo "- 🔴 Release publishing failed"
+              [ "${{ needs.build-and-deploy.result }}" != "success" ] && echo "- 🔴 Build/Deploy failed"
+            fi
+          else
+            echo "## ℹ️ No Service Changes Detected"
+            echo ""
+            echo "No service go.mod files were modified in this push."
+            echo "Deployment pipeline was skipped."
+          fi
