@@ -79,14 +79,10 @@ jobs:
           echo "Detected services: $services"
 
   verify_release:
-    name: "Verify release ${{ matrix.service.name }}"
+    name: "Verify combined release"
     needs: detect-service-changes
     if: needs.detect-service-changes.outputs.has-changes == 'true'
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service: ${{ fromJson(needs.detect-service-changes.outputs.services) }}
-      fail-fast: false
       
     steps:
       - name: Checkout code
@@ -95,13 +91,14 @@ jobs:
       - name: Extract and validate version
         id: version
         run: |
-          service_name="${{ matrix.service.name }}"
-          service_path="${{ matrix.service.path }}"
-          version="${{ matrix.service.version }}"
+          services='${{ needs.detect-service-changes.outputs.services }}'
           
-          echo "Processing service: $service_name"
-          echo "Service path: $service_path"
-          echo "Extracted version: $version"
+          # Extract version from first service (all should have same version)
+          version=$(echo "$services" | jq -r '.[0].version')
+          
+          echo "Processing release verification for version: $version"
+          echo "Services in this release:"
+          echo "$services" | jq -r '.[] | "- \(.name) (\(.path))"'
           
           # Validate version format
           if [[ ! "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -110,7 +107,6 @@ jobs:
           fi
           
           echo "version=$version" >> $GITHUB_OUTPUT
-          echo "service-name=$service_name" >> $GITHUB_OUTPUT
 
       - name: Verify release exists
         id: verify_release
@@ -132,29 +128,37 @@ jobs:
       - name: Update release for production
         if: steps.verify_release.outputs.exists == 'true'
         run: |
+          services='${{ needs.detect-service-changes.outputs.services }}'
           version="${{ steps.version.outputs.version }}"
-          service_name="${{ steps.version.outputs.service-name }}"
+          
+          # Generate service list for production notes
+          service_list=""
+          while IFS= read -r line; do
+            if [ -n "$line" ]; then
+              service_list="${service_list}${line}\n"
+            fi
+          done < <(echo "$services" | jq -r '.[] | "- **\(.name)** (\(.path))"')
           
           echo "Updating release $version with production deployment info"
           
           gh release edit "$version" \
             --title "$version" \
             --notes "$(cat <<EOF
-            ## Production Service Release: $service_name
+## Production Service Release $version
 
-            **Version:** $version
-            **Service Path:** ${{ matrix.service.path }}
+**Services Deployed:**
+${service_list}
 
-            ### Status
-            ✅ **Deployed to Production**
+### Status
+✅ **Deployed to Production**
 
-            ### Changes
-            Production deployment of $service_name service.
+### Changes
+Production deployment of all updated services.
 
-            ---
-            *This release was created during PR validation and deployed to production upon merge to master.*
-            EOF
-            )"
+---
+*This release was created during PR validation and deployed to production upon merge to master.*
+EOF
+)"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

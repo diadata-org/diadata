@@ -115,10 +115,10 @@ We use a **two-pipeline approach** for automated testing, building, and containe
    - **Validate version format:** Ensure it matches `vX.X.X` pattern
    - **Output:** JSON array of services with name, path, and version
 
-3. **Create Release (Per Service)**
+3. **Create Combined Release**
    - **Tag creation:** Creates git tag with version number (e.g., `v1.4.586`)
-   - **GitHub release:** Real GitHub release for Go module resolution during linting
-   - **Release body:** Includes service info, PR number, and validation status
+   - **GitHub release:** Single release covering all changed services for Go module resolution during linting
+   - **Release body:** Includes all updated services, PR number, and validation status
    - **Purpose:** Enable Go module resolution and prepare for production deployment
 
 4. **Lint Service (Per Service)**

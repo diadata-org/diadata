@@ -78,14 +78,10 @@ jobs:
           echo "Detected services: $services"
 
   create-release:
-    name: "Create release ${{ matrix.service.name }}"
+    name: "Create combined release for all services"
     needs: detect-service-changes
     if: needs.detect-service-changes.outputs.has-changes == 'true'
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service: ${{ fromJson(needs.detect-service-changes.outputs.services) }}
-      fail-fast: false
       
     steps:
       - name: Checkout code
@@ -94,13 +90,14 @@ jobs:
       - name: Extract and validate version
         id: version
         run: |
-          service_name="${{ matrix.service.name }}"
-          service_path="${{ matrix.service.path }}"
-          version="${{ matrix.service.version }}"
+          services='${{ needs.detect-service-changes.outputs.services }}'
           
-          echo "Processing service: $service_name"
-          echo "Service path: $service_path"
-          echo "Extracted version: $version"
+          # Extract version from first service (all should have same version)
+          version=$(echo "$services" | jq -r '.[0].version')
+          
+          echo "Processing release for version: $version"
+          echo "Services in this release:"
+          echo "$services" | jq -r '.[] | "- \(.name) (\(.path))"'
           
           # Validate version format
           if [[ ! "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -109,7 +106,38 @@ jobs:
           fi
           
           echo "version=$version" >> $GITHUB_OUTPUT
-          echo "service-name=$service_name" >> $GITHUB_OUTPUT
+
+      - name: Generate release notes
+        id: notes
+        run: |
+          services='${{ needs.detect-service-changes.outputs.services }}'
+          version="${{ steps.version.outputs.version }}"
+          
+          # Generate service list for release notes
+          service_list=""
+          while IFS= read -r line; do
+            if [ -n "$line" ]; then
+              service_list="${service_list}${line}\n"
+            fi
+          done < <(echo "$services" | jq -r '.[] | "- **\(.name)** (\(.path))"')
+          
+          # Create release body
+          cat > release_body.md << EOF
+          ## Service Release $version
+          
+          **Services Updated:**
+          ${service_list}
+          **PR:** #${{ github.event.number }}
+          
+          ### Status
+          This release was created for PR validation and Go module resolution.
+          
+          ---
+          *This release was automatically created for PR validation.*
+          EOF
+          
+          echo "Generated release notes:"
+          cat release_body.md
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
@@ -117,18 +145,7 @@ jobs:
           tag_name: "${{ steps.version.outputs.version }}"
           name: "${{ steps.version.outputs.version }}"
           target_commitish: "${{ github.sha }}"
-          body: |
-            ## Service Release: ${{ steps.version.outputs.service-name }}
-            
-            **Version:** ${{ steps.version.outputs.version }}
-            **Service Path:** ${{ matrix.service.path }}
-            **PR:** #${{ github.event.number }}
-            
-            ### Status
-            This release was created for PR validation and Go module resolution.
-            
-            ---
-            *This release was automatically created for PR validation.*
+          body_path: release_body.md
           draft: false
           prerelease: false
         env:
@@ -373,14 +390,12 @@ jobs:
     needs: [detect-service-changes, create-release, lint-service, test-service, build-service]
     if: always() && needs.detect-service-changes.outputs.has-changes == 'true' && (needs.lint-service.result == 'failure' || needs.test-service.result == 'failure' || needs.build-service.result == 'failure')
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service: ${{ fromJson(needs.detect-service-changes.outputs.services) }}
-      fail-fast: false
     steps:
       - name: Delete failed release
         run: |
-          version="${{ matrix.service.version }}"
+          services='${{ needs.detect-service-changes.outputs.services }}'
+          version=$(echo "$services" | jq -r '.[0].version')
+          
           echo "Cleaning up failed release $version due to validation failures"
           
           # Delete the release and tag
