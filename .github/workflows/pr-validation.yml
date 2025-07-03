@@ -77,15 +77,11 @@ jobs:
           echo "services=$services" >> $GITHUB_OUTPUT
           echo "Detected services: $services"
 
-  create-draft-release:
-    name: "Create draft release ${{ matrix.service.name }}"
+  create-release:
+    name: "Create combined release for all services"
     needs: detect-service-changes
     if: needs.detect-service-changes.outputs.has-changes == 'true'
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service: ${{ fromJson(needs.detect-service-changes.outputs.services) }}
-      fail-fast: false
       
     steps:
       - name: Checkout code
@@ -94,13 +90,14 @@ jobs:
       - name: Extract and validate version
         id: version
         run: |
-          service_name="${{ matrix.service.name }}"
-          service_path="${{ matrix.service.path }}"
-          version="${{ matrix.service.version }}"
+          services='${{ needs.detect-service-changes.outputs.services }}'
           
-          echo "Processing service: $service_name"
-          echo "Service path: $service_path"
-          echo "Extracted version: $version"
+          # Extract version from first service (all should have same version)
+          version=$(echo "$services" | jq -r '.[0].version')
+          
+          echo "Processing release for version: $version"
+          echo "Services in this release:"
+          echo "$services" | jq -r '.[] | "- \(.name) (\(.path))"'
           
           # Validate version format
           if [[ ! "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -109,33 +106,45 @@ jobs:
           fi
           
           echo "version=$version" >> $GITHUB_OUTPUT
-          echo "service-name=$service_name" >> $GITHUB_OUTPUT
 
-      - name: Create Draft GitHub Release
+      - name: Generate release notes
+        id: notes
+        run: |
+          services='${{ needs.detect-service-changes.outputs.services }}'
+          version="${{ steps.version.outputs.version }}"
+          
+          # Create release body
+          cat > release_body.md << EOF
+          ## Service Release $version
+
+          **Services Updated:**
+          EOF
+                    
+                    # Add each service to the release notes
+                    echo "$services" | jq -r '.[] | "- **\(.name)** (\(.path))"' >> release_body.md
+                    
+                    cat >> release_body.md << EOF
+
+          **PR:** #${{ github.event.number }}
+
+          ### Status
+          This release was created for PR validation and Go module resolution.
+          
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: "${{ steps.version.outputs.version }}"
           name: "${{ steps.version.outputs.version }}"
-          body: |
-            ## Draft Service Release: ${{ steps.version.outputs.service-name }}
-            
-            **Version:** ${{ steps.version.outputs.version }}
-            **Service Path:** ${{ matrix.service.path }}
-            **PR:** #${{ github.event.number }}
-            
-            ### Status
-            This is a draft release for PR validation. Will be published upon merge to master.
-            
-            ---
-            *This draft release was automatically created for PR validation.*
-          draft: true
+          target_commitish: "${{ github.sha }}"
+          body_path: release_body.md
+          draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   lint-service:
     name: "Lint ${{ matrix.service.name }}"
-    needs: [detect-service-changes, create-draft-release]
+    needs: [detect-service-changes, create-release]
     if: needs.detect-service-changes.outputs.has-changes == 'true'
     runs-on: ubuntu-latest
     strategy:
@@ -152,10 +161,33 @@ jobs:
         with:
           go-version: '1.22'
 
+      - name: Wait for Go proxy indexing
+        run: |
+          echo "Waiting 30 seconds for Go module proxy to index ${{ matrix.service.version }}..."
+          sleep 30
+
       - name: Download and tidy Go modules
         run: |
           cd ${{ matrix.service.path }}
-          go mod tidy
+          
+          # Try go mod tidy with retry logic (up to 4 minutes total)
+          echo "Running go mod tidy with retry..."
+          for i in {1..8}; do
+            echo "Attempt $i: Running go mod tidy..."
+            if go mod tidy; then
+              echo "✅ Success!"
+              break
+            else
+              if [ $i -lt 8 ]; then
+                echo "❌ Failed, waiting 30 seconds..."
+                sleep 30
+              else
+                echo "❌ All attempts failed after 4 minutes"
+                exit 1
+              fi
+            fi
+          done
+          
           go mod download
 
       - name: Determine golangci-lint config path
@@ -183,7 +215,7 @@ jobs:
 
   test-service:
     name: "Test ${{ matrix.service.name }}"
-    needs: [detect-service-changes, create-draft-release, lint-service]
+    needs: [detect-service-changes, create-release, lint-service]
     if: needs.detect-service-changes.outputs.has-changes == 'true'
     runs-on: ubuntu-latest
     strategy:
@@ -241,7 +273,7 @@ jobs:
 
   build-service:
     name: "Build ${{ matrix.service.name }}"
-    needs: [detect-service-changes, create-draft-release, lint-service, test-service]
+    needs: [detect-service-changes, create-release, lint-service, test-service]
     if: needs.detect-service-changes.outputs.has-changes == 'true'
     runs-on: ubuntu-latest
     strategy:
@@ -345,8 +377,31 @@ jobs:
           
           echo "✅ Docker image built successfully (not pushed to registry)"
 
+  cleanup-failed-releases:
+    needs: [detect-service-changes, create-release, lint-service, test-service, build-service]
+    if: always() && needs.detect-service-changes.outputs.has-changes == 'true' && (needs.lint-service.result == 'failure' || needs.test-service.result == 'failure' || needs.build-service.result == 'failure')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete failed release
+        run: |
+          services='${{ needs.detect-service-changes.outputs.services }}'
+          version=$(echo "$services" | jq -r '.[0].version')
+          
+          echo "Cleaning up failed release $version due to validation failures"
+          
+          # Delete the release and tag
+          if gh release view "$version" >/dev/null 2>&1; then
+            echo "Deleting release $version..."
+            gh release delete "$version" --yes
+            echo "✅ Release $version deleted"
+          else
+            echo "Release $version not found, nothing to clean up"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   pr-summary:
-    needs: [detect-service-changes, create-draft-release, lint-service, test-service, build-service]
+    needs: [detect-service-changes, create-release, lint-service, test-service, build-service, cleanup-failed-releases]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -364,7 +419,7 @@ jobs:
             echo "$services" | jq -r '.[] | "- **\(.name)** version \(.version)"'
             echo ""
             echo "## 📊 Validation Results:"
-            echo "- **Draft Release:** ${{ needs.create-draft-release.result }}"
+            echo "- **Release:** ${{ needs.create-release.result }}"
             echo "- **Lint:** ${{ needs.lint-service.result }}"
             echo "- **Test:** ${{ needs.test-service.result }}"
             echo "- **Build:** ${{ needs.build-service.result }}"
@@ -375,7 +430,7 @@ jobs:
               echo ""
               echo "### Next Steps:"
               echo "- Merge this PR to trigger production deployment"
-              echo "- Draft releases will be published"
+              echo "- Releases are ready for production"
               echo "- Docker images will be pushed to registry"
             else
               echo ""

@@ -109,6 +109,8 @@ func NewUniswapV3Scraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 		s = makeUniswapV3Scraper(exchange, listenByAddress, "", "", "2000", uint64(0))
 	case dia.VelodromeSlipstreamExchange:
 		s = makeUniswapV3Scraper(exchange, listenByAddress, "", "", "2000", uint64(0))
+	case dia.ShadowV3Exchange:
+		s = makeUniswapV3Scraper(exchange, listenByAddress, "", "", "200", uint64(1705781))
 	}
 
 	s.relDB = relDB
