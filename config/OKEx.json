@@ -914,18 +914,6 @@
         },
         {
             "Exchange": "OKEx",
-            "ForeignName": "FTM-USDT",
-            "Ignore": false,
-            "Symbol": "FTM"
-        },
-        {
-            "Exchange": "OKEx",
-            "ForeignName": "FTM-USDT",
-            "Ignore": false,
-            "Symbol": "FTM"
-        },
-        {
-            "Exchange": "OKEx",
             "ForeignName": "FUN-BTC",
             "Ignore": false,
             "Symbol": "FUN"

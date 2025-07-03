@@ -637,18 +637,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "FTM",
-            "ForeignName": "FTMUSDT",
-            "Exchange": "BinanceUS",
-            "Ignore": false
-        },
-        {
-            "Symbol": "FTM",
-            "ForeignName": "FTMUSD",
-            "Exchange": "BinanceUS",
-            "Ignore": false
-        },
-        {
             "Symbol": "USDC",
             "ForeignName": "USDCUSDT",
             "Exchange": "BinanceUS",

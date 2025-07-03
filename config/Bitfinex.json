@@ -439,12 +439,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "FTM",
-            "ForeignName": "FTMUSD",
-            "Exchange": "Bitfinex",
-            "Ignore": false
-        },
-        {
             "Symbol": "FTT",
             "ForeignName": "FTTUSD",
             "Exchange": "Bitfinex",

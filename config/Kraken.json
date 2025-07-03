@@ -308,12 +308,6 @@
         },
         {
             "Exchange": "Kraken",
-            "Ignore": false,
-            "ForeignName": "FTMUSD",
-            "Symbol": "FTM"
-        },
-        {
-            "Exchange": "Kraken",
             "ForeignName": "GBPUSD",
             "Ignore": false,
             "Symbol": "GBP"

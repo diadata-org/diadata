@@ -931,18 +931,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "FTM",
-            "ForeignName": "FTM/USDT",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
-            "Symbol": "FTM",
-            "ForeignName": "FTM/BTC",
-            "Exchange": "Bitmax",
-            "Ignore": false
-        },
-        {
             "Symbol": "FTT",
             "ForeignName": "FTT/USDT",
             "Exchange": "Bitmax",
