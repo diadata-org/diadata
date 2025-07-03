@@ -131,23 +131,19 @@ jobs:
           services='${{ needs.detect-service-changes.outputs.services }}'
           version="${{ steps.version.outputs.version }}"
           
-          # Generate service list for production notes
-          service_list=""
-          while IFS= read -r line; do
-            if [ -n "$line" ]; then
-              service_list="${service_list}${line}\n"
-            fi
-          done < <(echo "$services" | jq -r '.[] | "- **\(.name)** (\(.path))"')
-          
           echo "Updating release $version with production deployment info"
           
-          gh release edit "$version" \
-            --title "$version" \
-            --notes "$(cat <<EOF
-          ## Production Service Release $version
+          # Create production release notes
+          cat > production_notes.md << 'EOF'
+          ## Production Service Release ${{ steps.version.outputs.version }}
 
           **Services Deployed:**
-          ${service_list}
+          EOF
+                    
+                    # Add each service to the production notes
+                    echo "$services" | jq -r '.[] | "- **\(.name)** (\(.path))"' >> production_notes.md
+                    
+                    cat >> production_notes.md << 'EOF'
 
           ### Status
           ✅ **Deployed to Production**
@@ -158,12 +154,17 @@ jobs:
           ---
           *This release was created during PR validation and deployed to production upon merge to master.*
           EOF
-          )"
-              
-              echo "Release $version updated with production deployment notes"
-            if: steps.verify_release.outputs.exists == 'true'
-            env:
-              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                    
+                    echo "Production release notes:"
+                    cat production_notes.md
+                    
+                    gh release edit "$version" \
+                      --title "$version" \
+                      --notes "$(cat production_notes.md)"
+                    
+                    echo "Release $version updated with production deployment notes"
+                  env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-and-deploy:
     name: "Build & Deploy ${{ matrix.service.name }}"

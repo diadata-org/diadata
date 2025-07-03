@@ -113,31 +113,26 @@ jobs:
           services='${{ needs.detect-service-changes.outputs.services }}'
           version="${{ steps.version.outputs.version }}"
           
-          # Generate service list for release notes
-          service_list=""
-          while IFS= read -r line; do
-            if [ -n "$line" ]; then
-              service_list="${service_list}${line}\n"
-            fi
-          done < <(echo "$services" | jq -r '.[] | "- **\(.name)** (\(.path))"')
-          
           # Create release body
-          cat > release_body.md << EOF
-          ## Service Release $version
-          
+          cat > release_body.md << 'EOF'
+          ## Service Release ${{ steps.version.outputs.version }}
+
           **Services Updated:**
-          ${service_list}
-          **PR:** #${{ github.event.number }}
-          
-          ### Status
-          This release was created for PR validation and Go module resolution.
-          
-          ---
-          *This release was automatically created for PR validation.*
           EOF
-          
-          echo "Generated release notes:"
-          cat release_body.md
+                    # Add each service to the release notes
+                    echo "$services" | jq -r '.[] | "- **\(.name)** (\(.path))"' >> release_body.md
+                    
+                    cat >> release_body.md << 'EOF'
+
+          **PR:** #${{ github.event.number }}
+            ### Status
+            This release was created for PR validation and Go module resolution.
+            ---
+            *This release was automatically created for PR validation.*
+            EOF
+                      
+                      echo "Generated release notes:"
+                      cat release_body.md
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
