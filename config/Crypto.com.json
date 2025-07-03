@@ -553,24 +553,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "FTM",
-            "ForeignName": "FTM_USDT",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Symbol": "FTM",
-            "ForeignName": "FTM_BTC",
-            "Exchange": "Crypto.com",
-            "Ignore": false
-        },
-        {
-            "Exchange": "Crypto.com",
-            "Ignore": false,
-            "ForeignName": "FTM_USD",
-            "Symbol": "FTM"
-        },
-        {
             "Exchange": "Crypto.com",
             "Ignore": false,
             "ForeignName": "GALA_USDT",

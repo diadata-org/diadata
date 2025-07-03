@@ -901,24 +901,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "FTM",
-            "ForeignName": "FTM-USDT",
-            "Exchange": "KuCoin",
-            "Ignore": false
-        },
-        {
-            "Symbol": "FTM",
-            "ForeignName": "FTM-BTC",
-            "Exchange": "KuCoin",
-            "Ignore": false
-        },
-        {
-            "Symbol": "FTM",
-            "ForeignName": "FTM-ETH",
-            "Exchange": "KuCoin",
-            "Ignore": false
-        },
-        {
             "Symbol": "FX",
             "ForeignName": "FX-BTC",
             "Exchange": "KuCoin",

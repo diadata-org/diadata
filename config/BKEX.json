@@ -217,12 +217,6 @@
       "Ignore": false
     },
     {
-      "Symbol": "FTM",
-      "ForeignName": "FTM_USDT",
-      "Exchange": "BKEX",
-      "Ignore": false
-    },
-    {
       "Symbol": "FUSE",
       "ForeignName": "FUSE_USDT",
       "Exchange": "BKEX",

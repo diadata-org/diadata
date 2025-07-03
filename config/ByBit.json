@@ -385,12 +385,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "FTM",
-            "ForeignName": "FTMUSDT",
-            "Exchange": "ByBit",
-            "Ignore": false
-        },
-        {
             "Symbol": "FTT",
             "ForeignName": "FTTUSDT",
             "Exchange": "ByBit",

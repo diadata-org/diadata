@@ -211,12 +211,6 @@
             "Symbol": "FLOKI"
         },
         {
-            "Symbol": "FTM",
-            "ForeignName": "FTMUSDT",
-            "Exchange": "Bitget",
-            "Ignore": false
-        },
-        {
             "Symbol": "FXS",
             "ForeignName": "FXSUSDT",
             "Exchange": "Bitget",

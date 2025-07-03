@@ -373,12 +373,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "FTM",
-            "ForeignName": "FTMUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
             "Symbol": "FTT",
             "ForeignName": "FTTUSDT",
             "Exchange": "MEXC",
