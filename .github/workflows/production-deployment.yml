@@ -134,37 +134,34 @@ jobs:
           echo "Updating release $version with production deployment info"
           
           # Create production release notes
-          cat > production_notes.md << 'EOF'
-          ## Production Service Release ${{ steps.version.outputs.version }}
+          cat > production_notes.md << EOF
+          ## Production Service Release $version
 
           **Services Deployed:**
           EOF
-                    
+                      
                     # Add each service to the production notes
                     echo "$services" | jq -r '.[] | "- **\(.name)** (\(.path))"' >> production_notes.md
                     
-                    cat >> production_notes.md << 'EOF'
+                    cat >> production_notes.md << EOF
 
           ### Status
           ✅ **Deployed to Production**
 
           ### Changes
           Production deployment of all updated services.
-
-          ---
-          *This release was created during PR validation and deployed to production upon merge to master.*
           EOF
-                    
-                    echo "Production release notes:"
-                    cat production_notes.md
-                    
-                    gh release edit "$version" \
-                      --title "$version" \
-                      --notes "$(cat production_notes.md)"
-                    
-                    echo "Release $version updated with production deployment notes"
-                  env:
-                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+          echo "Production release notes:"
+          cat production_notes.md
+          
+          gh release edit "$version" \
+            --title "$version" \
+            --notes "$(cat production_notes.md)"
+          
+          echo "Release $version updated with production deployment notes"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-and-deploy:
     name: "Build & Deploy ${{ matrix.service.name }}"
