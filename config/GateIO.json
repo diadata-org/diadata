@@ -986,12 +986,6 @@
         },
         {
             "Exchange": "GateIO",
-            "ForeignName": "FTM_USDT",
-            "Ignore": false,
-            "Symbol": "FTM"
-        },
-        {
-            "Exchange": "GateIO",
             "ForeignName": "FUEL_ETH",
             "Ignore": false,
             "Symbol": "FUEL"
