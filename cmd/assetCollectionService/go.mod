@@ -1,9 +1,8 @@
 module github.com/diadata-org/diadata/assetCollectionService
 
 go 1.22
-
 require (
-	github.com/diadata-org/diadata v1.4.596
+	github.com/diadata-org/diadata v1.4.610
 	github.com/sirupsen/logrus v1.9.3
 )
 
@@ -21,7 +20,6 @@ require (
 	github.com/andres-erbsen/clock v0.0.0-20160526145045-9e14626cd129 // indirect
 	github.com/armon/go-metrics v0.3.10 // indirect
 	github.com/aybabtme/rgbterm v0.0.0-20170906152045-cc83f3b3ce59 // indirect
-	github.com/beldur/kraken-go-api-client v0.0.0-20200330152217-ed78f31b987e // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/speakeasy v0.1.0 // indirect
 	github.com/bitfinexcom/bitfinex-api-go v0.0.0-20200709134622-b8be40b33f25 // indirect

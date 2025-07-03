@@ -67,6 +67,8 @@ const (
 	UniswapExchangeV3Celo              = "UniswapV3-Celo"
 	UniswapExchangeV4                  = "UniswapV4"
 	LoopringExchange                   = "Loopring"
+	ShadowV2Exchange                   = "ShadowV2"
+	ShadowV3Exchange                   = "ShadowV3"
 	CamelotExchange                    = "Camelot"
 	CamelotExchangeV3                  = "CamelotV3"
 	CurveFIExchange                    = "Curvefi"
