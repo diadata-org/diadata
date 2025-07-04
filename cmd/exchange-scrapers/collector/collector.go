@@ -32,17 +32,12 @@ var (
 		dia.MaverickExchange,
 		dia.NetswapExchange,
 		dia.OmniDexExchange,
-		dia.OrcaExchange,
-		dia.OsmosisExchange,
-		dia.PlatypusExchange,
-		dia.SolarbeamExchange,
 		dia.TraderJoeExchangeV2_1Avalanche,
 		dia.WanswapExchange,
 		dia.VelodromeExchange,
 		dia.VelodromeSlipstreamExchange,
 		dia.ZenlinkswapExchange,
 		dia.ZenlinkswapExchangeBifrostPolkadot,
-		dia.PearlfiExchangeTestnet,
 		dia.PanCakeSwapExchangeV3,
 		dia.VelarExchange,
 		dia.BifrostExchange,
@@ -50,6 +45,8 @@ var (
 		dia.UniswapExchangeV3Celo,
 		dia.UniswapExchangeV4,
 		dia.VelodromeExchangeSwellchain,
+		dia.ShadowV2Exchange,
+		dia.ShadowV3Exchange,
 	}
 
 	exchange = flag.String("exchange", "", "which exchange")

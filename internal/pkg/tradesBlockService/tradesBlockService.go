@@ -71,11 +71,15 @@ var (
 	BUSD             = dia.Asset{Address: "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", Blockchain: dia.BINANCESMARTCHAIN}
 	DAI              = dia.Asset{Address: "0x6B175474E89094C44Da98b954EedeAC495271d0F", Blockchain: dia.ETHEREUM}
 	TUSD             = dia.Asset{Address: "0x0000000000085d4780B73119b644AE5ecd22b376", Blockchain: dia.ETHEREUM}
+	USDC_SONIC       = dia.Asset{Address: "0x29219dd400f2Bf60E5a23d13Be72B486D4038894", Blockchain: dia.SONIC}
+	USDT_SONIC       = dia.Asset{Address: "0x6047828dc181963ba44974801FF68e538dA5eaF9", Blockchain: dia.SONIC}
 	stablecoinAssets = map[string]interface{}{
-		USDT.Identifier(): "",
-		USDC.Identifier(): "",
-		DAI.Identifier():  "",
-		TUSD.Identifier(): "",
+		USDT.Identifier():       "",
+		USDC.Identifier():       "",
+		DAI.Identifier():        "",
+		TUSD.Identifier():       "",
+		USDC_SONIC.Identifier(): "",
+		USDT_SONIC.Identifier(): "",
 	}
 
 	tol                     = float64(0.04)
@@ -486,6 +490,15 @@ func buildBridge(t dia.Trade) dia.Asset {
 			Symbol:     "USDC",
 			Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
 			Blockchain: dia.ETHEREUM,
+		}
+	}
+	if basetoken.Blockchain == dia.SONIC && (t.Source == dia.ShadowV2Exchange || t.Source == dia.ShadowV3Exchange) {
+		if basetoken.Address == "0x29219dd400f2Bf60E5a23d13Be72B486D4038894" {
+			basetoken = dia.Asset{
+				Symbol:     "USDC",
+				Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+				Blockchain: dia.ETHEREUM,
+			}
 		}
 	}
 	if basetoken.Blockchain == dia.FANTOM && (t.Source == dia.SpookyswapExchange || t.Source == dia.SpiritswapExchange || t.Source == dia.BeetsExchange || t.Source == dia.SushiSwapExchangeFantom) {
