@@ -170,19 +170,19 @@ jobs:
         run: |
           cd ${{ matrix.service.path }}
           
-          # Try go mod tidy with retry logic (up to 4 minutes total)
+          # Try go mod tidy with retry logic (up to 15 minutes total)
           echo "Running go mod tidy with retry..."
-          for i in {1..8}; do
+          for i in {1..30}; do
             echo "Attempt $i: Running go mod tidy..."
             if go mod tidy; then
               echo "✅ Success!"
               break
             else
-              if [ $i -lt 8 ]; then
+              if [ $i -lt 30 ]; then
                 echo "❌ Failed, waiting 30 seconds..."
                 sleep 30
               else
-                echo "❌ All attempts failed after 4 minutes"
+                echo "❌ All attempts failed after 15 minutes"
                 exit 1
               fi
             fi
@@ -244,19 +244,19 @@ jobs:
           
           cd "$service_path"
           
-          # Try go mod tidy with retry logic (up to 4 minutes total)
+          # Try go mod tidy with retry logic (up to 15 minutes total)
           echo "Running go mod tidy with retry..."
-          for i in {1..8}; do
+          for i in {1..30}; do
             echo "Attempt $i: Running go mod tidy..."
             if go mod tidy; then
               echo "✅ Success!"
               break
             else
-              if [ $i -lt 8 ]; then
+              if [ $i -lt 30 ]; then
                 echo "❌ Failed, waiting 30 seconds..."
                 sleep 30
               else
-                echo "❌ All attempts failed after 4 minutes"
+                echo "❌ All attempts failed after 15 minutes"
                 exit 1
               fi
             fi
