@@ -432,52 +432,6 @@ type FilterPointExtended struct {
 	StatusCode    int32
 }
 
-type IndexBlock struct {
-	BlockHash      string         `json:"BlockHash"`
-	IndexBlockData IndexBlockData `json:"IndexBlockData"`
-}
-
-type IndexBlockData struct {
-	FiltersBlockHash    string         `json:"FiltersBlockHash"`
-	SuppliesBlockHash   string         `json:"SuppliesBlockHash"`
-	VolatilityBlockHash string         `json:"VolatilityBlockHash"`
-	IndexElements       []IndexElement `json:"IndexElements"`
-	IndexElementsNumber int            `json:"IndexElementsNumber"`
-	Time                time.Time      `json:"Time"`
-	IndexValue          float64        `json:"IndexValue"`
-	ValueTokenette      float64        `json:"ValueTokenette"`
-	ValueToken          float64        `json:"ValueToken"`
-	USDPerPointsOfIndex float64        `json:"USDPerPointsOfIndex"`
-}
-
-type IndexElement struct {
-	Name            string
-	Symbol          string
-	Percentage      float64
-	FilteredPoint   FilterPoint
-	Supply          Supply
-	VolatilityRatio VolatilityRatio
-}
-
-type VolatilityRatio struct {
-	Symbol    string
-	Threehold float64
-	DaysAbove int64
-	DaysBelow int64
-	Time      time.Time
-	Selected  bool
-}
-
-type SuppliesBlock struct {
-	BlockHash string            `json:"BlockHash"`
-	BlockData SuppliesBlockData `json:"BlockData"`
-}
-
-type SuppliesBlockData struct {
-	Time     time.Time `json:"Time"`
-	Supplies []Supply  `json:"Supplies"`
-}
-
 type FilterPointMetadata struct {
 	Max float64
 	Min float64
@@ -555,36 +509,6 @@ func (e *Pairs) MarshalBinary() ([]byte, error) {
 
 // UnmarshalBinary -
 func (e *Pairs) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &e); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (ib IndexBlock) Hash() string {
-	return ib.BlockHash
-}
-
-// MarshalBinary -
-func (e *IndexBlock) MarshalBinary() ([]byte, error) {
-	return json.Marshal(e)
-}
-
-// UnmarshalBinary -
-func (e *IndexBlock) UnmarshalBinary(data []byte) error {
-	if err := json.Unmarshal(data, &e); err != nil {
-		return err
-	}
-	return nil
-}
-
-// MarshalBinary -
-func (e *SuppliesBlock) MarshalBinary() ([]byte, error) {
-	return json.Marshal(e)
-}
-
-// UnmarshalBinary -
-func (e *SuppliesBlock) UnmarshalBinary(data []byte) error {
 	if err := json.Unmarshal(data, &e); err != nil {
 		return err
 	}

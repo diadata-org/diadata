@@ -172,7 +172,7 @@ func (s *TradesBlockService) mainLoop() {
 		case t := <-s.chanTrades:
 
 			// Only take into account original order for CEX trade.
-			if scrapers.Exchanges[(*t).Source].Centralized {
+			if scrapers.Exchanges[t.Source].Centralized {
 				s.process(*t)
 			} else {
 
@@ -379,10 +379,8 @@ func (s *TradesBlockService) process(t dia.Trade) {
 			if _, ok := checkTradesDuplicate[t.TradeIdentifierFull()]; !ok {
 				s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
 				checkTradesDuplicate[t.TradeIdentifierFull()] = struct{}{}
-			} else {
-				if scrapers.Exchanges[t.Source].Name != dia.BitforexExchange {
-					log.Warn("duplicate trade within one tradesblock: ", t)
-				}
+			} else if scrapers.Exchanges[t.Source].Name != dia.BitforexExchange {
+				log.Warn("duplicate trade within one tradesblock: ", t)
 			}
 		} else {
 			s.currentBlock.TradesBlockData.Trades = append(s.currentBlock.TradesBlockData.Trades, t)
