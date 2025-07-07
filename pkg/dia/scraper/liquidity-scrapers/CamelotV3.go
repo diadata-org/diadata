@@ -1,6 +1,7 @@
 package liquidityscrapers
 
 import (
+	"context"
 	"math"
 	"math/big"
 	"strconv"
@@ -28,6 +29,7 @@ type CamelotV3Scraper struct {
 	doneChannel     chan bool
 	blockchain      string
 	startBlock      uint64
+	chunksBlockSize uint64
 	factoryContract string
 	exchangeName    string
 	waitTime        int
@@ -95,6 +97,14 @@ func makeCamelotV3Scraper(exchange dia.Exchange, restDial string, wsDial string,
 		exchangeName:    exchange.Name,
 		waitTime:        waitTime,
 	}
+
+	blockSize := utils.Getenv("CHUNKS_BLOCK_SIZE", "10000")
+	cls.chunksBlockSize, err = strconv.ParseUint(blockSize, 10, 64)
+	if err != nil {
+		log.Error("Parse CHUNKS_BLOCK_SIZE: ", err)
+		cls.chunksBlockSize = uint64(10000)
+	}
+
 	return cls
 }
 
@@ -110,68 +120,86 @@ func (cls *CamelotV3Scraper) fetchPools() {
 		log.Error(err)
 	}
 
-	poolCreated, err := contract.FilterPool(
-		&bind.FilterOpts{Start: cls.startBlock},
-		[]common.Address{},
-		[]common.Address{},
-	)
+	// Iterate over chunks of blocks.
+	currentBlockNumber, err := cls.RestClient.BlockNumber(context.Background())
 	if err != nil {
-		log.Error("filter pool created: ", err)
+		log.Fatal("Get current block number: ", err)
 	}
+	var startblock, endblock uint64
+	startblock = cls.startBlock
+	endblock = cls.startBlock + cls.chunksBlockSize
 
-	for poolCreated.Next() {
-		poolsCount++
-		var (
-			pool   dia.Pool
-			asset0 dia.Asset
-			asset1 dia.Asset
+	for endblock < currentBlockNumber+cls.chunksBlockSize {
+
+		poolCreated, err := contract.FilterPool(
+			&bind.FilterOpts{Start: startblock, End: &endblock},
+			[]common.Address{},
+			[]common.Address{},
 		)
-		log.Info("pools count: ", poolsCount)
-
-		asset0, err = cls.relDB.GetAsset(poolCreated.Event.Token0.Hex(), cls.blockchain)
 		if err != nil {
-			asset0, err = ethhelper.ETHAddressToAsset(poolCreated.Event.Token0, cls.RestClient, cls.blockchain)
+			log.Error("filter pool created: ", err)
+			log.Error("filter pool created: ", err)
+			startblock = endblock
+			endblock = startblock + cls.chunksBlockSize
+			continue
+		}
+
+		for poolCreated.Next() {
+			poolsCount++
+			var (
+				pool   dia.Pool
+				asset0 dia.Asset
+				asset1 dia.Asset
+			)
+			log.Info("pools count: ", poolsCount)
+
+			asset0, err = cls.relDB.GetAsset(poolCreated.Event.Token0.Hex(), cls.blockchain)
 			if err != nil {
-				log.Warn("cannot fetch asset from address ", poolCreated.Event.Token0.Hex())
-				continue
+				asset0, err = ethhelper.ETHAddressToAsset(poolCreated.Event.Token0, cls.RestClient, cls.blockchain)
+				if err != nil {
+					log.Warn("cannot fetch asset from address ", poolCreated.Event.Token0.Hex())
+					continue
+				}
 			}
-		}
-		asset1, err = cls.relDB.GetAsset(poolCreated.Event.Token1.Hex(), cls.blockchain)
-		if err != nil {
-			asset1, err = ethhelper.ETHAddressToAsset(poolCreated.Event.Token1, cls.RestClient, cls.blockchain)
+			asset1, err = cls.relDB.GetAsset(poolCreated.Event.Token1.Hex(), cls.blockchain)
 			if err != nil {
-				log.Warn("cannot fetch asset from address ", poolCreated.Event.Token1.Hex())
-				continue
+				asset1, err = ethhelper.ETHAddressToAsset(poolCreated.Event.Token1, cls.RestClient, cls.blockchain)
+				if err != nil {
+					log.Warn("cannot fetch asset from address ", poolCreated.Event.Token1.Hex())
+					continue
+				}
 			}
+
+			pool.Exchange = dia.Exchange{Name: cls.exchangeName}
+			pool.Blockchain = dia.BlockChain{Name: cls.blockchain}
+			pool.Address = poolCreated.Event.Pool.Hex()
+
+			balance0Big, err := ethhelper.GetBalanceOf(common.HexToAddress(asset0.Address), common.HexToAddress(pool.Address), cls.RestClient)
+			if err != nil {
+				log.Error("GetBalanceOf: ", err)
+			}
+			balance1Big, err := ethhelper.GetBalanceOf(common.HexToAddress(asset1.Address), common.HexToAddress(pool.Address), cls.RestClient)
+			if err != nil {
+				log.Error("GetBalanceOf: ", err)
+			}
+			balance0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance0Big), new(big.Float).SetFloat64(math.Pow10(int(asset0.Decimals)))).Float64()
+			balance1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance1Big), new(big.Float).SetFloat64(math.Pow10(int(asset1.Decimals)))).Float64()
+
+			pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset0, Volume: balance0, Index: uint8(0)})
+			pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset1, Volume: balance1, Index: uint8(1)})
+
+			// Determine USD liquidity
+			if balance0 > GLOBAL_NATIVE_LIQUIDITY_THRESHOLD && balance1 > GLOBAL_NATIVE_LIQUIDITY_THRESHOLD {
+				cls.datastore.GetPoolLiquiditiesUSD(&pool, priceCache)
+			}
+
+			pool.Time = time.Now()
+
+			cls.poolChannel <- pool
+
 		}
-
-		pool.Exchange = dia.Exchange{Name: cls.exchangeName}
-		pool.Blockchain = dia.BlockChain{Name: cls.blockchain}
-		pool.Address = poolCreated.Event.Pool.Hex()
-
-		balance0Big, err := ethhelper.GetBalanceOf(common.HexToAddress(asset0.Address), common.HexToAddress(pool.Address), cls.RestClient)
-		if err != nil {
-			log.Error("GetBalanceOf: ", err)
-		}
-		balance1Big, err := ethhelper.GetBalanceOf(common.HexToAddress(asset1.Address), common.HexToAddress(pool.Address), cls.RestClient)
-		if err != nil {
-			log.Error("GetBalanceOf: ", err)
-		}
-		balance0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance0Big), new(big.Float).SetFloat64(math.Pow10(int(asset0.Decimals)))).Float64()
-		balance1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(balance1Big), new(big.Float).SetFloat64(math.Pow10(int(asset1.Decimals)))).Float64()
-
-		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset0, Volume: balance0, Index: uint8(0)})
-		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset1, Volume: balance1, Index: uint8(1)})
-
-		// Determine USD liquidity
-		if balance0 > GLOBAL_NATIVE_LIQUIDITY_THRESHOLD && balance1 > GLOBAL_NATIVE_LIQUIDITY_THRESHOLD {
-			cls.datastore.GetPoolLiquiditiesUSD(&pool, priceCache)
-		}
-
-		pool.Time = time.Now()
-
-		cls.poolChannel <- pool
-
+		startblock = endblock
+		endblock = startblock + cls.chunksBlockSize
 	}
 	cls.doneChannel <- true
 }
