@@ -1,6 +1,7 @@
 package source
 
 import (
+	"context"
 	"strconv"
 	"strings"
 
@@ -27,6 +28,7 @@ type CamelotV3AssetSource struct {
 	exchange        dia.Exchange
 	startBlock      uint64
 	factoryContract string
+	chunksBlockSize uint64
 	waitTime        int
 }
 
@@ -92,6 +94,13 @@ func makeCamelotV3AssetSource(exchange dia.Exchange, restDial string, wsDial str
 		exchange:        exchange,
 		waitTime:        waitTime,
 	}
+	blockSize := utils.Getenv("CHUNKS_BLOCK_SIZE", "10000")
+	uas.chunksBlockSize, err = strconv.ParseUint(blockSize, 10, 64)
+	if err != nil {
+		log.Error("Parse CHUNKS_BLOCK_SIZE: ", err)
+		uas.chunksBlockSize = uint64(10000)
+	}
+
 	return uas
 }
 
@@ -100,13 +109,15 @@ func (uas *CamelotV3AssetSource) fetchAssets() {
 
 	// filter from contract created https://etherscan.io/tx/0x1e20cd6d47d7021ae7e437792823517eeadd835df09dde17ab45afd7a5df4603
 	var blocknumber int64
+	var endblock uint64
 
-	_, startblock, err := uas.relDB.GetScraperIndex(uas.exchange.Name, dia.SCRAPER_TYPE_ASSETCOLLECTOR)
+	_, sb, err := uas.relDB.GetScraperIndex(uas.exchange.Name, dia.SCRAPER_TYPE_ASSETCOLLECTOR)
 	if err != nil {
 		log.Error("GetScraperIndex: ", err)
 	} else {
-		uas.startBlock = uint64(startblock)
+		uas.startBlock = uint64(sb)
 	}
+	startblock := uint64(sb)
 
 	log.Infof("get pool creations from address %s at startblock %v.", uas.factoryContract, uas.startBlock)
 	poolsCount := 0
@@ -116,39 +127,50 @@ func (uas *CamelotV3AssetSource) fetchAssets() {
 		log.Error(err)
 	}
 
-	poolCreated, err := contract.FilterPool(
-		&bind.FilterOpts{Start: uas.startBlock},
-		[]common.Address{},
-		[]common.Address{},
-	)
+	currentBlockNumber, err := uas.RestClient.BlockNumber(context.Background())
 	if err != nil {
-		log.Error("filter pool created: ", err)
+		log.Fatal("Get current block number: ", err)
 	}
-	for poolCreated.Next() {
-		poolsCount++
-		log.Info("pools count: ", poolsCount)
-		blocknumber = int64(poolCreated.Event.Raw.BlockNumber)
-		// Don't repeat sending already sent assets
-		if _, ok := checkMap[poolCreated.Event.Token0.Hex()]; !ok {
-			checkMap[poolCreated.Event.Token0.Hex()] = struct{}{}
-			asset, err := uas.GetAssetFromAddress(poolCreated.Event.Token0)
-			if err != nil {
-				log.Warn("cannot fetch asset from address ", poolCreated.Event.Token0.Hex())
-			}
-			uas.assetChannel <- asset
+	endblock = startblock + uas.chunksBlockSize
+
+	for endblock < currentBlockNumber+uas.chunksBlockSize {
+
+		poolCreated, err := contract.FilterPool(
+			&bind.FilterOpts{Start: startblock, End: &endblock},
+			[]common.Address{},
+			[]common.Address{},
+		)
+		if err != nil {
+			log.Error("filter pool created: ", err)
 		}
-		if _, ok := checkMap[poolCreated.Event.Token1.Hex()]; !ok {
-			checkMap[poolCreated.Event.Token1.Hex()] = struct{}{}
-			asset, err := uas.GetAssetFromAddress(poolCreated.Event.Token1)
-			if err != nil {
-				log.Warn("cannot fetch asset from address ", poolCreated.Event.Token1.Hex())
+		for poolCreated.Next() {
+			poolsCount++
+			log.Info("pools count: ", poolsCount)
+			blocknumber = int64(poolCreated.Event.Raw.BlockNumber)
+			// Don't repeat sending already sent assets
+			if _, ok := checkMap[poolCreated.Event.Token0.Hex()]; !ok {
+				checkMap[poolCreated.Event.Token0.Hex()] = struct{}{}
+				asset, err := uas.GetAssetFromAddress(poolCreated.Event.Token0)
+				if err != nil {
+					log.Warn("cannot fetch asset from address ", poolCreated.Event.Token0.Hex())
+				}
+				uas.assetChannel <- asset
 			}
-			uas.assetChannel <- asset
+			if _, ok := checkMap[poolCreated.Event.Token1.Hex()]; !ok {
+				checkMap[poolCreated.Event.Token1.Hex()] = struct{}{}
+				asset, err := uas.GetAssetFromAddress(poolCreated.Event.Token1)
+				if err != nil {
+					log.Warn("cannot fetch asset from address ", poolCreated.Event.Token1.Hex())
+				}
+				uas.assetChannel <- asset
+			}
 		}
-	}
-	err = uas.relDB.SetScraperIndex(uas.exchange.Name, dia.SCRAPER_TYPE_ASSETCOLLECTOR, dia.INDEX_TYPE_BLOCKNUMBER, blocknumber)
-	if err != nil {
-		log.Error("SetScraperIndex: ", err)
+		err = uas.relDB.SetScraperIndex(uas.exchange.Name, dia.SCRAPER_TYPE_ASSETCOLLECTOR, dia.INDEX_TYPE_BLOCKNUMBER, blocknumber)
+		if err != nil {
+			log.Error("SetScraperIndex: ", err)
+		}
+		startblock = endblock
+		endblock = startblock + uas.chunksBlockSize
 	}
 	uas.doneChannel <- true
 }
