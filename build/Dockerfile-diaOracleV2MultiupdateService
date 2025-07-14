@@ -1,9 +1,11 @@
-FROM us.icr.io/dia-registry/devops/build-117:latest as build
+FROM us.icr.io/dia-registry/devops/build-122:latest as build
 
 WORKDIR $GOPATH
 
 WORKDIR $GOPATH/src/
 COPY ./cmd/blockchain/ethereum/diaOracleV2MultiupdateService ./
+
+RUN go mod download github.com/diadata-org/diadata
 
 RUN go install
 
