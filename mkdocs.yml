@@ -1,5 +1,0 @@
-site_name: Diadata
-docs_dir: documentation
-theme:
-  name: readthedocs
-  highlightjs: true
