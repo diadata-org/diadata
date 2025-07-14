@@ -163,26 +163,26 @@ jobs:
 
       - name: Wait for Go proxy indexing
         run: |
-          echo "Waiting 30 seconds for Go module proxy to index ${{ matrix.service.version }}..."
-          sleep 30
+          echo "Waiting 4 minutes for Go module proxy to index ${{ matrix.service.version }}..."
+          sleep 240
 
       - name: Download and tidy Go modules
         run: |
           cd ${{ matrix.service.path }}
           
-          # Try go mod tidy with retry logic (up to 15 minutes total)
+          # Try go mod tidy with retry logic (up to 30 minutes total)
           echo "Running go mod tidy with retry..."
-          for i in {1..30}; do
+          for i in {1..60}; do
             echo "Attempt $i: Running go mod tidy..."
             if go mod tidy; then
               echo "✅ Success!"
               break
             else
-              if [ $i -lt 30 ]; then
+              if [ $i -lt 60 ]; then
                 echo "❌ Failed, waiting 30 seconds..."
                 sleep 30
               else
-                echo "❌ All attempts failed after 15 minutes"
+                echo "❌ All attempts failed after 30 minutes"
                 exit 1
               fi
             fi
@@ -197,18 +197,19 @@ jobs:
           SERVICE_PATH="${{ matrix.service.path }}"
           DEPTH=$(echo "$SERVICE_PATH" | tr '/' '\n' | wc -l)
           
-          if [ "$DEPTH" -eq 2 ]; then
-            # 2-level services like cmd/assetlists need ../../.golangci.yml
-            echo "config-path=../../.golangci.yml" >> $GITHUB_OUTPUT
-          else
-            # 3-level services like cmd/services/pairDiscovery need ../../../.golangci.yml
-            echo "config-path=../../../.golangci.yml" >> $GITHUB_OUTPUT
-          fi
+          # Generate the correct relative path based on depth
+          RELATIVE_PATH=""
+          for ((i=1; i<=$DEPTH; i++)); do
+            RELATIVE_PATH="../$RELATIVE_PATH"
+          done
+          RELATIVE_PATH="${RELATIVE_PATH}.golangci.yml"
+          
+          echo "config-path=$RELATIVE_PATH" >> $GITHUB_OUTPUT
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
-          version: v1.61
+          version: v1.62.2
           working-directory: ${{ matrix.service.path }}
           args: --config=${{ steps.config-path.outputs.config-path }} --out-format=colored-line-number
           only-new-issues: true
@@ -234,8 +235,8 @@ jobs:
 
       - name: Wait for Go proxy indexing
         run: |
-          echo "Waiting 30 seconds for Go module proxy to index ${{ matrix.service.version }}..."
-          sleep 30
+          echo "Waiting 4 minutes for Go module proxy to index ${{ matrix.service.version }}..."
+          sleep 240
 
       - name: Test service
         run: |
@@ -244,19 +245,19 @@ jobs:
           
           cd "$service_path"
           
-          # Try go mod tidy with retry logic (up to 15 minutes total)
+          # Try go mod tidy with retry logic (up to 30 minutes total)
           echo "Running go mod tidy with retry..."
-          for i in {1..30}; do
+          for i in {1..60}; do
             echo "Attempt $i: Running go mod tidy..."
             if go mod tidy; then
               echo "✅ Success!"
               break
             else
-              if [ $i -lt 30 ]; then
+              if [ $i -lt 60 ]; then
                 echo "❌ Failed, waiting 30 seconds..."
                 sleep 30
               else
-                echo "❌ All attempts failed after 15 minutes"
+                echo "❌ All attempts failed after 30 minutes"
                 exit 1
               fi
             fi
