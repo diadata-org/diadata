@@ -1568,6 +1568,12 @@
         },
         {
             "Exchange": "GateIO",
+            "ForeignName": "LYNX_USDT",
+            "Ignore": false,
+            "Symbol": "LYNX"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "LYX_USDT",
             "Ignore": false,
             "Symbol": "LYX"
@@ -2615,6 +2621,12 @@
             "ForeignName": "SYN_USDT",
             "Ignore": false,
             "Symbol": "SYN"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "TANSSI_USDT",
+            "Symbol": "TANSSI"
         },
         {
             "Exchange": "GateIO",

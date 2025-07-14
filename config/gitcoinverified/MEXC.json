@@ -511,6 +511,12 @@
             "Address": "0x67466BE17df832165F8C80a5A120CCc652bD7E69"
         },
         {
+            "Symbol": "LYNX",
+            "Exchange": "MEXC",
+            "Blockchain": "Linea",
+            "Address": "0x1a51b19CE03dbE0Cb44C1528E34a7EDD7771E9Af"
+        },
+        {
             "Symbol": "LYX",
             "Exchange": "MEXC",
             "Blockchain": "Lukso",
@@ -787,6 +793,12 @@
             "Address": "0x0f2D719407FdBeFF09D87557AbB7232601FD9F29"
         },
         {
+            "Exchange": "MEXC",
+            "Symbol": "TANSSI",
+            "Blockchain": "Ethereum",
+            "Address": "0x553F4cB7256D8fC038E91d36Cb63fa7C13b624AB"
+        },
+        {
             "Symbol": "TAO",
             "Exchange": "MEXC",
             "Blockchain": "Bittensor",
@@ -946,6 +958,12 @@
             "Symbol": "XRP",
             "Exchange": "MEXC",
             "Blockchain": "XRPL",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Symbol": "XVG",
+            "Exchange": "MEXC",
+            "Blockchain": "Verge",
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {

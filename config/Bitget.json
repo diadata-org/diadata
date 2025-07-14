@@ -403,6 +403,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "TANSSIUSDT",
+            "Symbol": "TANSSI"
+        },
+        {
             "Symbol": "TLOS",
             "ForeignName": "TLOSUSDT",
             "Exchange": "Bitget",

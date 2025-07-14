@@ -11,6 +11,10 @@
     {
       "Address": "0xB0B195aEFA3650A6908f15CdaC7D92F8a5791B0B",
       "Symbol": "BOB"
+    },
+    {
+      "Address": "0x6c84a8f1c29108F47a79964b5Fe888D4f4D0dE40",
+      "Symbol": "tBTC"
     }
   ]
 }
