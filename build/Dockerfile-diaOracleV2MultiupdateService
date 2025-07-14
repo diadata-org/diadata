@@ -1,4 +1,4 @@
-FROM us.icr.io/dia-registry/devops/build-122:latest as build
+FROM us.icr.io/dia-registry/devops/build:latest as build
 
 WORKDIR $GOPATH
 
