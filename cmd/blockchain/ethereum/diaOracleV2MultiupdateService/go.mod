@@ -2,8 +2,6 @@ module github.com/diadata-org/diadata/blockchain/diaOracleV2MultiupdateService
 
 go 1.22
 
-toolchain go1.24.1
-
 require (
 	github.com/diadata-org/diadata v1.4.615
 	github.com/ethereum/go-ethereum v1.10.26
