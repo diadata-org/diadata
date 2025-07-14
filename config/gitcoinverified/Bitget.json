@@ -361,6 +361,12 @@
             "Address": "0xACC51FFDeF63fB0c014c882267C3A17261A5eD50"
         },
         {
+            "Exchange": "Bitget",
+            "Symbol": "TANSSI",
+            "Blockchain": "Ethereum",
+            "Address": "0x553F4cB7256D8fC038E91d36Cb63fa7C13b624AB"
+        },
+        {
             "Symbol": "TLOS",
             "Exchange": "Bitget",
             "Blockchain": "Telos",

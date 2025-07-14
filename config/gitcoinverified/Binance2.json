@@ -583,6 +583,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "XVG",
+            "Exchange": "Binance2",
+            "Blockchain": "Verge",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Exchange": "Binance2",
             "Symbol": "YFI",
             "Blockchain": "Ethereum",

@@ -584,6 +584,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "TANSSI_USDT",
+            "Symbol": "TANSSI"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "TIA_USDT",
             "Ignore": false,
             "Symbol": "TIA"
@@ -713,6 +719,12 @@
             "ForeignName": "XLM_USDT",
             "Ignore": false,
             "Symbol": "XLM"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "XVG_USDT",
+            "Ignore": false,
+            "Symbol": "XVG"
         },
         {
             "Exchange": "BitMart",

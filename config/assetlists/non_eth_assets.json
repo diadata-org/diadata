@@ -748,6 +748,13 @@
       "Decimals": 18,
       "Blockchain": "Ethereum",
       "Address": "0xC65d8d96cddDB31328186EFA113a460b0Af9Ec63"
+    },
+    {
+      "Symbol": "XVG",
+      "Name": "VERGE",
+      "Decimals": 6,
+      "Blockchain": "Verge",
+      "Address": "0x0000000000000000000000000000000000000000"
     }
   ]
 }
