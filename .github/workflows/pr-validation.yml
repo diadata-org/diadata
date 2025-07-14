@@ -209,7 +209,7 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
-          version: v1.61
+          version: v1.62.2
           working-directory: ${{ matrix.service.path }}
           args: --config=${{ steps.config-path.outputs.config-path }} --out-format=colored-line-number
           only-new-issues: true
