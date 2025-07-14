@@ -197,18 +197,19 @@ jobs:
           SERVICE_PATH="${{ matrix.service.path }}"
           DEPTH=$(echo "$SERVICE_PATH" | tr '/' '\n' | wc -l)
           
-          if [ "$DEPTH" -eq 2 ]; then
-            # 2-level services like cmd/assetlists need ../../.golangci.yml
-            echo "config-path=../../.golangci.yml" >> $GITHUB_OUTPUT
-          else
-            # 3-level services like cmd/services/pairDiscovery need ../../../.golangci.yml
-            echo "config-path=../../../.golangci.yml" >> $GITHUB_OUTPUT
-          fi
+          # Generate the correct relative path based on depth
+          RELATIVE_PATH=""
+          for ((i=1; i<=$DEPTH; i++)); do
+            RELATIVE_PATH="../$RELATIVE_PATH"
+          done
+          RELATIVE_PATH="${RELATIVE_PATH}.golangci.yml"
+          
+          echo "config-path=$RELATIVE_PATH" >> $GITHUB_OUTPUT
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
-          version: v1.61
+          version: v1.62.2
           working-directory: ${{ matrix.service.path }}
           args: --config=${{ steps.config-path.outputs.config-path }} --out-format=colored-line-number
           only-new-issues: true
