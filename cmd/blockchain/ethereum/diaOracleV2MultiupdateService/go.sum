@@ -85,6 +85,8 @@ github.com/diadata-org/diadata v1.4.614 h1:2UAH3BGImoA5QWNXTGS5Sl4wwD7DYNWA5Xz4P
 github.com/diadata-org/diadata v1.4.614/go.mod h1:1jYL7zT3x0qZMwyzqdLSpAlrGGEHwUKSqq2VbBY4628=
 github.com/diadata-org/diadata v1.4.615 h1:8Rg6aIGbMyCIcFKL7J0lvtGFXHn/fs6js6GS1hGEYCs=
 github.com/diadata-org/diadata v1.4.615/go.mod h1:1jYL7zT3x0qZMwyzqdLSpAlrGGEHwUKSqq2VbBY4628=
+github.com/diadata-org/diadata v1.4.618 h1:9ugworU+tveUXr6kx+JK0poIJ6eGMG2L1dEcdirtkAg=
+github.com/diadata-org/diadata v1.4.618/go.mod h1:zaNvDMj0WbAeBWvVar9Rwdt9rG4MGgmME7Uy0nfYyuQ=
 github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
 github.com/eapache/go-resiliency v1.1.0/go.mod h1:kFI+JgMyC7bLPUVY133qvEBtVayf5mFgVsvEsIPBvNs=
 github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21/go.mod h1:+020luEh2TKB4/GOp8oxxtq0Daoen/Cii55CzbTV6DU=
