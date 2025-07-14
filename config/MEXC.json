@@ -547,6 +547,12 @@
             "Symbol": "LWOLF"
         },
         {
+            "Symbol": "LYNX",
+            "ForeignName": "LYNXUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
             "Symbol": "LYX",
             "ForeignName": "LYXUSDT",
             "Exchange": "MEXC",
@@ -847,6 +853,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "TANSSIUSDT",
+            "Symbol": "TANSSI"
+        },
+        {
             "Symbol": "TAO",
             "ForeignName": "TAOUSDT",
             "Exchange": "MEXC",
@@ -1011,6 +1023,12 @@
         {
             "Symbol": "XRP",
             "ForeignName": "XRPUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
+            "Symbol": "XVG",
+            "ForeignName": "XVGUSDT",
             "Exchange": "MEXC",
             "Ignore": false
         },

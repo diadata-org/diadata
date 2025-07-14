@@ -218,7 +218,8 @@ func NewCurveFIScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 	case dia.CurveFIExchangeArbitrum:
 		scraper = makeCurvefiScraper(exchange, curveRestDialArbitrum, curveWsDialArbitrum, relDB)
 		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0xb17b674D9c5CB2e441F8e196a2f048A81355d031")}
-		scraper.registriesUnderlying = []curveRegistry{stableSwapFactory}
+		stableSwapNGFactory := curveRegistry{Type: 3, Address: common.HexToAddress("0x9AF14D26075f142eb3F292D5065EB3faa646167b")}
+		scraper.registriesUnderlying = []curveRegistry{stableSwapFactory, stableSwapNGFactory}
 	}
 
 	if scrape {

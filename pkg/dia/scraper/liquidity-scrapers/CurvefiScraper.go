@@ -86,7 +86,8 @@ func NewCurveFIScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *mo
 		registries = []curveRegistry{stableSwapFactory}
 	case dia.CurveFIExchangeArbitrum:
 		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0xb17b674D9c5CB2e441F8e196a2f048A81355d031")}
-		registries = []curveRegistry{stableSwapFactory}
+		stableSwapNGFactory := curveRegistry{Type: 3, Address: common.HexToAddress("0x9AF14D26075f142eb3F292D5065EB3faa646167b")}
+		registries = []curveRegistry{stableSwapFactory, stableSwapNGFactory}
 
 	}
 

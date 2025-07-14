@@ -1,6 +1,14 @@
 {
     "Pools": [
         {
+            "Address": "0x6044c817e55A03DAdc5F6b8B7045aF1985aE90fA",
+            "ForeignName": "cbLTC-cbBTC"
+        },
+        {
+            "Address": "0x200681425b0C8D78C6a467512C5D49FA56BaC88A",
+            "ForeignName": "WETH-cbLTC"
+        },
+        {
             "Address": "0x3f0296BF652e19bca772EC3dF08b32732F93014A",
             "ForeignName": "VIRTUAL-WETH"
         },

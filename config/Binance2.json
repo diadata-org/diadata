@@ -530,6 +530,18 @@
         },
         {
             "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "XVGETH",
+            "Symbol": "XVG"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "XVGUSDT",
+            "Symbol": "XVG"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "ZKFDUSD",
             "Ignore": false,
             "Symbol": "ZK"
