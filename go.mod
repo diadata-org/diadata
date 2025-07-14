@@ -7,7 +7,6 @@ toolchain go1.22.8
 require (
 	github.com/Kucoin/kucoin-go-sdk v1.2.7
 	github.com/anaskhan96/soup v1.1.1
-	github.com/beldur/kraken-go-api-client v0.0.0-20200330152217-ed78f31b987e
 	github.com/bitfinexcom/bitfinex-api-go v0.0.0-20200709134622-b8be40b33f25
 	github.com/blockstatecom/go-bitcoind v0.0.0-20180820094557-9dedf42af7c3
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
@@ -34,25 +33,21 @@ require (
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/machinebox/graphql v0.2.2
 	github.com/mr-tron/base58 v1.2.0
-	github.com/onflow/cadence v0.15.0
 	github.com/onflow/flow-go-sdk v0.20.0
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/osmosis-labs/osmosis/v6 v6.4.1
 	github.com/pierrec/xxHash v0.1.5
 	github.com/pkg/errors v0.9.1
-	github.com/portto/solana-go-sdk v1.22.0
 	github.com/preichenberger/go-coinbasepro/v2 v2.0.5
 	github.com/rs/cors v1.8.2
 	github.com/segmentio/kafka-go v0.4.35
 	github.com/shopspring/decimal v1.4.0
 	github.com/sirupsen/logrus v1.9.3
-	github.com/status-im/keycard-go v0.2.0
 	github.com/streamingfast/solana-go v0.5.1-0.20220502224452-432fbe84aee8
 	github.com/stretchr/testify v1.9.0
 	github.com/tendermint/liquidity v1.5.0
 	github.com/tendermint/tendermint v0.34.15
 	github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf
-	github.com/vincent-petithory/dataurl v1.0.0
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	go.uber.org/ratelimit v0.2.0
 	golang.org/x/crypto v0.28.0
@@ -168,6 +163,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/mostynb/zstdpool-freelist v0.0.0-20201229113212-927304c0c3b1 // indirect
 	github.com/mtibben/percent v0.2.1 // indirect
+	github.com/onflow/cadence v0.15.0 // indirect
 	github.com/onflow/flow-go/crypto v0.12.0 // indirect
 	github.com/onflow/flow/protobuf/go/flow v0.1.9 // indirect
 	github.com/onsi/gomega v1.27.4 // indirect
@@ -194,6 +190,7 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.10.1 // indirect
+	github.com/status-im/keycard-go v0.2.0 // indirect
 	github.com/streamingfast/binary v0.0.0-20210928223119-44fc44e4a0b5 // indirect
 	github.com/streamingfast/logging v0.0.0-20230608130331-f22c91403091 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
@@ -232,7 +229,7 @@ require (
 require (
 	github.com/99designs/keyring v1.2.2 // indirect
 	github.com/PuerkitoBio/goquery v1.8.0 // indirect
-	github.com/adshao/go-binance/v2 v2.3.6
+	github.com/adshao/go-binance/v2 v2.3.6 // indirect
 	github.com/antchfx/htmlquery v1.2.5 // indirect
 	github.com/antchfx/xmlquery v1.3.13 // indirect
 	github.com/deckarep/golang-set v1.8.0
