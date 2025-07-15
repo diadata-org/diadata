@@ -769,6 +769,12 @@
             "Address": "0xc690F7C7FcfFA6a82b79faB7508c466FEfdfc8c5"
         },
         {
+            "Symbol": "LYNX",
+            "Exchange": "GateIO",
+            "Blockchain": "Linea",
+            "Address": "0x1a51b19CE03dbE0Cb44C1528E34a7EDD7771E9Af"
+        },
+        {
             "Symbol": "LYX",
             "Exchange": "GateIO",
             "Blockchain": "Lukso",
@@ -1301,6 +1307,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x0f2D719407FdBeFF09D87557AbB7232601FD9F29"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "TANSSI",
+            "Blockchain": "Ethereum",
+            "Address": "0x553F4cB7256D8fC038E91d36Cb63fa7C13b624AB"
         },
         {
             "Symbol": "TAO",

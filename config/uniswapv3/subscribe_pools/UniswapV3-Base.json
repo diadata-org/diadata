@@ -65,6 +65,10 @@
             "ForeignName": "WETH-cbBTC"
         },
         {
+            "Address": "0xfBB6Eed8e7aa03B138556eeDaF5D271A5E1e43ef",
+            "ForeignName": "USDC-cbBTC"
+        },
+        {
             "Address": "0x3e7586D52A9D07F8611B8ecf6CCc8a689c34a659",
             "ForeignName": "USDC-cbBTC"
         },
