@@ -710,24 +710,6 @@
         },
         {
             "Exchange": "OKEx",
-            "ForeignName": "DPY-BTC",
-            "Ignore": false,
-            "Symbol": "DPY"
-        },
-        {
-            "Exchange": "OKEx",
-            "ForeignName": "DPY-ETH",
-            "Ignore": false,
-            "Symbol": "DPY"
-        },
-        {
-            "Exchange": "OKEx",
-            "ForeignName": "DPY-USDT",
-            "Ignore": false,
-            "Symbol": "DPY"
-        },
-        {
-            "Exchange": "OKEx",
             "ForeignName": "EDO-BTC",
             "Ignore": false,
             "Symbol": "EDO"

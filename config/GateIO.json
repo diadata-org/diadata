@@ -674,24 +674,6 @@
         },
         {
             "Exchange": "GateIO",
-            "ForeignName": "DDD_BTC",
-            "Ignore": false,
-            "Symbol": "DDD"
-        },
-        {
-            "Exchange": "GateIO",
-            "ForeignName": "DDD_ETH",
-            "Ignore": false,
-            "Symbol": "DDD"
-        },
-        {
-            "Exchange": "GateIO",
-            "ForeignName": "DDD_USDT",
-            "Ignore": false,
-            "Symbol": "DDD"
-        },
-        {
-            "Exchange": "GateIO",
             "ForeignName": "DEGEN_USDT",
             "Ignore": false,
             "Symbol": "DEGEN"
@@ -767,18 +749,6 @@
             "ForeignName": "DOWS_ETH",
             "Ignore": false,
             "Symbol": "DOWS"
-        },
-        {
-            "Exchange": "GateIO",
-            "ForeignName": "DPY_ETH",
-            "Ignore": false,
-            "Symbol": "DPY"
-        },
-        {
-            "Exchange": "GateIO",
-            "ForeignName": "DPY_USDT",
-            "Ignore": false,
-            "Symbol": "DPY"
         },
         {
             "Exchange": "GateIO",
@@ -1424,18 +1394,6 @@
         },
         {
             "Exchange": "GateIO",
-            "ForeignName": "LEMO_ETH",
-            "Ignore": false,
-            "Symbol": "LEMO"
-        },
-        {
-            "Exchange": "GateIO",
-            "ForeignName": "LEMO_USDT",
-            "Ignore": false,
-            "Symbol": "LEMO"
-        },
-        {
-            "Exchange": "GateIO",
             "ForeignName": "LEND_ETH",
             "Ignore": false,
             "Symbol": "LEND"
@@ -1679,36 +1637,6 @@
             "ForeignName": "MDT_USDT",
             "Ignore": false,
             "Symbol": "MDT"
-        },
-        {
-            "Exchange": "GateIO",
-            "ForeignName": "MED_ETH",
-            "Ignore": false,
-            "Symbol": "MED"
-        },
-        {
-            "Exchange": "GateIO",
-            "ForeignName": "MED_QTUM",
-            "Ignore": false,
-            "Symbol": "MED"
-        },
-        {
-            "Exchange": "GateIO",
-            "ForeignName": "MED_USDT",
-            "Ignore": false,
-            "Symbol": "MED"
-        },
-        {
-            "Exchange": "GateIO",
-            "ForeignName": "MEDX_ETH",
-            "Ignore": false,
-            "Symbol": "MEDX"
-        },
-        {
-            "Exchange": "GateIO",
-            "ForeignName": "MEDX_USDT",
-            "Ignore": false,
-            "Symbol": "MEDX"
         },
         {
             "Exchange": "GateIO",
