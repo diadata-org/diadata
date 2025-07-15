@@ -325,12 +325,6 @@
             "Address": "0x0Cf0Ee63788A0849fE5297F3407f701E122cC023"
         },
         {
-            "Symbol": "DDD",
-            "Exchange": "GateIO",
-            "Blockchain": "Ethereum",
-            "Address": "0x9F5F3CFD7a32700C93F971637407ff17b91c7342"
-        },
-        {
             "Symbol": "DEGEN",
             "Exchange": "GateIO",
             "Blockchain": "Base",
@@ -377,12 +371,6 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x661Ab0Ed68000491d98C796146bcF28c20d7c559"
-        },
-        {
-            "Symbol": "DPY",
-            "Exchange": "GateIO",
-            "Blockchain": "Ethereum",
-            "Address": "0x6C2adC2073994fb2CCC5032cC2906Fa221e9B391"
         },
         {
             "Symbol": "DRGN",
@@ -721,12 +709,6 @@
             "Address": "0xC741f06082AA47F93729070aD0dD95E223Bda091"
         },
         {
-            "Symbol": "LEMO",
-            "Exchange": "GateIO",
-            "Blockchain": "Ethereum",
-            "Address": "0x60C24407d01782C2175D32fe7C8921ed732371D1"
-        },
-        {
             "Symbol": "LKR",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -827,12 +809,6 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x814e0908b12A99FeCf5BC101bB5d0b8B5cDf7d26"
-        },
-        {
-            "Symbol": "MEDX",
-            "Exchange": "GateIO",
-            "Blockchain": "Ethereum",
-            "Address": "0xfd1e80508F243E64CE234eA88A5Fd2827c71D4b7"
         },
         {
             "Symbol": "MEETONE",
