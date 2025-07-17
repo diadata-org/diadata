@@ -103,6 +103,8 @@ func NewBalancerV2Scraper(exchange dia.Exchange, scrape bool, relDB *models.RelD
 		balancerV2StartBlockPoolRegister = 222832
 	case dia.BeetsExchange:
 		balancerV2StartBlockPoolRegister = 16896080
+	case dia.BeetsV2ExchangeSonic:
+		balancerV2StartBlockPoolRegister = 368312
 	case dia.BalancerV2ExchangePolygon:
 		balancerV2StartBlockPoolRegister = 15832990
 	}
