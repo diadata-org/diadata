@@ -27,14 +27,14 @@ import (
 )
 
 type Asset struct {
-	blockchain                string
-	address                   string
-	symbol                    string
-	coingeckoName             string
-	cmcName                   string
-	allowedGuardianDeviation  float64
-	deviation                 int64
-	gqlParams                 GqlParameters
+	blockchain               string
+	address                  string
+	symbol                   string
+	coingeckoName            string
+	cmcName                  string
+	allowedGuardianDeviation float64
+	deviation                int64
+	gqlParams                GqlParameters
 }
 
 // Update asset1 only if asset0 is updated
@@ -54,7 +54,7 @@ type GqlParameters struct {
 		} `json:"Exchangepairs"`
 	} `json:"FeedSelection"`
 	// global window override (seconds)
-	GqlWindow      int `json:"GqlWindow"`
+	GqlWindow int `json:"GqlWindow"`
 }
 
 var diaBaseUrl string
@@ -155,21 +155,21 @@ func main() {
 			currAsset.deviation = int64(deviationPermille)
 		}
 		if len(entries) > (4 + variableParserOffset) {
-    	currAsset.coingeckoName = strings.TrimSpace(entries[3 + variableParserOffset])
-			currAsset.cmcName = strings.TrimSpace(entries[4 + variableParserOffset])
+			currAsset.coingeckoName = strings.TrimSpace(entries[3+variableParserOffset])
+			currAsset.cmcName = strings.TrimSpace(entries[4+variableParserOffset])
 			if currAsset.coingeckoName != "" || currAsset.cmcName != "" {
-				allowedGuardianDeviation, err := strconv.ParseFloat(strings.TrimSpace(entries[5 + variableParserOffset]), 64)
+				allowedGuardianDeviation, err := strconv.ParseFloat(strings.TrimSpace(entries[5+variableParserOffset]), 64)
 				if err != nil {
 					log.Fatalf("Error converting guardian Deviation float on parsing %s-%s!", currAsset.blockchain, currAsset.address)
 				}
-    		currAsset.allowedGuardianDeviation = allowedGuardianDeviation
+				currAsset.allowedGuardianDeviation = allowedGuardianDeviation
 			}
 		}
 
 		// Find out is there are additional GQL parameters for this asset
 		if len(entries) > (6 + variableParserOffset) {
 			// Join the rest of the line together, because the previous split might have affected substrings of the parameters
-			gqlFeedSelectionQuery := strings.Join(entries[6 + variableParserOffset:], "-")
+			gqlFeedSelectionQuery := strings.Join(entries[6+variableParserOffset:], "-")
 			var currGqlParams GqlParameters
 			if useGql && gqlFeedSelectionQuery != "" {
 				err := json.Unmarshal([]byte(gqlFeedSelectionQuery), &currGqlParams)
@@ -399,9 +399,9 @@ func oracleUpdateExecutor(
 			// Check if we have any external price available for the guardian
 			if len(externalPrices) > 0 {
 				numGuardianMatches := 0
-			  // Check for deviation
+				// Check for deviation
 				for _, guardianPrice := range externalPrices {
-					if math.Abs(guardianPrice - newPrice) / guardianPrice <= asset.allowedGuardianDeviation {
+					if math.Abs(guardianPrice-newPrice)/guardianPrice <= asset.allowedGuardianDeviation {
 						numGuardianMatches += 1
 					}
 				}
@@ -716,11 +716,11 @@ func getAssetQuotationFromDia(blockchain, address string) (float64, error) {
 }
 
 func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int, gqlMethodology string, gqlParameters GqlParameters) (float64, error) {
-  // Workaround: Check for ETH and BTC, if yes use assetQuotation instead
-  if address == "0x0000000000000000000000000000000000000000" && (blockchain == "Bitcoin" || blockchain == "Ethereum") && windowSize == 120 && len(gqlParameters.FeedSelection) == 0  {
-    fmt.Printf("Enter assetQuotationRetrieval modus for BTC/ETH")
-    return getAssetQuotationFromDia(blockchain, address)
-  }
+	// Workaround: Check for ETH and BTC, if yes use assetQuotation instead
+	if address == "0x0000000000000000000000000000000000000000" && (blockchain == "Bitcoin" || blockchain == "Ethereum") && windowSize == 120 && len(gqlParameters.FeedSelection) == 0 {
+		fmt.Printf("Enter assetQuotationRetrieval modus for BTC/ETH")
+		return getAssetQuotationFromDia(blockchain, address)
+	}
 	// Decide whether Feedselection or simple Address/blockchain logic is used
 	feedSelectionQuery := "FeedSelection: ["
 	if len(gqlParameters.FeedSelection) > 0 {
@@ -768,7 +768,7 @@ func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int,
 	feedSelectionQuery += "]"
 
 	if gqlParameters.GqlWindow > 0 {
-	    windowSize = gqlParameters.GqlWindow
+		windowSize = gqlParameters.GqlWindow
 	}
 
 	// Get times for start/end
