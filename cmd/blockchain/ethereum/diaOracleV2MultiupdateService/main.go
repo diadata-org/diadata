@@ -716,6 +716,11 @@ func getAssetQuotationFromDia(blockchain, address string) (float64, error) {
 }
 
 func getGraphqlAssetQuotationFromDia(blockchain, address string, windowSize int, gqlMethodology string, gqlParameters GqlParameters) (float64, error) {
+  // Workaround: Check for ETH and BTC, if yes use assetQuotation instead
+  if address == "0x0000000000000000000000000000000000000000" && (blockchain == "Bitcoin" || blockchain == "Ethereum") && windowSize == 120 && len(gqlParameters.FeedSelection) == 0  {
+    fmt.Printf("Enter assetQuotationRetrieval modus for BTC/ETH")
+    return getAssetQuotationFromDia(blockchain, address)
+  }
 	// Decide whether Feedselection or simple Address/blockchain logic is used
 	feedSelectionQuery := "FeedSelection: ["
 	if len(gqlParameters.FeedSelection) > 0 {
