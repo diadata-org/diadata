@@ -572,6 +572,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "CULT_USDT",
+            "Symbol": "CULT"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "CUSD_USDT",
             "Ignore": false,
             "Symbol": "CUSD"
@@ -1856,6 +1862,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "OBOL_USDT",
+            "Symbol": "OBOL"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "OCEAN_USDT",
             "Ignore": false,
             "Symbol": "OCEAN"
@@ -2180,6 +2192,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "REKT_USDT",
+            "Symbol": "REKT"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "REM_ETH",
             "Ignore": false,
             "Symbol": "REM"
@@ -2471,6 +2489,12 @@
             "Ignore": false,
             "ForeignName": "SPX_USDT",
             "Symbol": "SPX"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "SSV_USDT",
+            "Symbol": "SSV"
         },
         {
             "Exchange": "GateIO",

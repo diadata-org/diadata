@@ -223,6 +223,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "CULTUSDT",
+            "Symbol": "CULT"
+        },
+        {
             "Symbol": "CVX",
             "ForeignName": "CVXUSDT",
             "Exchange": "MEXC",
@@ -655,6 +661,12 @@
             "Symbol": "NPC"
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "OBOLUSDT",
+            "Symbol": "OBOL"
+        },
+        {
             "Symbol": "OP",
             "ForeignName": "OPUSDT",
             "Exchange": "MEXC",
@@ -801,6 +813,12 @@
         {
             "Exchange": "MEXC",
             "Ignore": false,
+            "ForeignName": "SILOUSDT",
+            "Symbol": "SILO"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
             "ForeignName": "SKIUSDT",
             "Symbol": "SKI"
         },
@@ -833,6 +851,12 @@
             "Ignore": false,
             "ForeignName": "SPXUSDT",
             "Symbol": "SPX"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "SSVUSDT",
+            "Symbol": "SSV"
         },
         {
             "Symbol": "STORJ",

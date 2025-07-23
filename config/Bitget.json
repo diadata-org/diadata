@@ -331,6 +331,12 @@
             "Symbol": "NPC"
         },
         {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "OBOLUSDT",
+            "Symbol": "OBOL"
+        },
+        {
             "Symbol": "OP",
             "ForeignName": "OPUSDT",
             "Exchange": "Bitget",
@@ -371,6 +377,12 @@
             "ForeignName": "SOLUSDT",
             "Exchange": "Bitget",
             "Ignore": false
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "SSV USDT",
+            "Symbol": "SSV "
         },
         {
             "Symbol": "STETH",

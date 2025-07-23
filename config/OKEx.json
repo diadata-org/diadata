@@ -2480,6 +2480,12 @@
         },
         {
             "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "SSV-USDT",
+            "Symbol": "SSV"
+        },
+        {
+            "Exchange": "OKEx",
             "ForeignName": "STC-BTC",
             "Ignore": false,
             "Symbol": "STC"

@@ -381,6 +381,12 @@
         {
             "Exchange": "Binance",
             "Ignore": false,
+            "ForeignName": "SSVUSDT",
+            "Symbol": "SSV"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
             "ForeignName": "STORJUSDT",
             "Symbol": "STORJ"
         },
