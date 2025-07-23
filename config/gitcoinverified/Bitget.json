@@ -295,6 +295,12 @@
             "Address": "0x8eD97a637A790Be1feff5e888d43629dc05408F6"
         },
         {
+            "Exchange": "Bitget",
+            "Symbol": "OBOL",
+            "Blockchain": "Ethereum",
+            "Address": "0x0B010000b7624eb9B3DfBC279673C76E9D29D5F7"
+        },
+        {
             "Symbol": "OP",
             "Exchange": "Bitget",
             "Blockchain": "Optimism",
@@ -335,6 +341,12 @@
             "Exchange": "Bitget",
             "Blockchain": "Solana",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Bitget",
+            "Symbol": "SSV",
+            "Blockchain": "Ethereum",
+            "Address": "0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54"
         },
         {
             "Symbol": "STETH",

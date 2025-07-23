@@ -445,6 +445,12 @@
             "Address": "0x090185f2135308BaD17527004364eBcC2D37e5F6"
         },
         {
+            "Exchange": "Binance2",
+            "Symbol": "SSV",
+            "Blockchain": "Ethereum",
+            "Address": "0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54"
+        },
+        {
             "Symbol": "STG",
             "Exchange": "Binance2",
             "Blockchain": "Ethereum",
