@@ -559,6 +559,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "ByBit",
+            "Symbol": "OBOL",
+            "Blockchain": "Ethereum",
+            "Address": "0x0B010000b7624eb9B3DfBC279673C76E9D29D5F7"
+        },
+        {
             "Symbol": "OMG",
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
@@ -719,6 +725,12 @@
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
             "Address": "0x476c5E26a75bd202a9683ffD34359C0CC15be0fF"
+        },
+        {
+            "Exchange": "ByBit",
+            "Symbol": "SSV",
+            "Blockchain": "Ethereum",
+            "Address": "0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54"
         },
         {
             "Symbol": "STETH",

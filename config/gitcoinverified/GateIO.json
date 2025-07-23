@@ -295,6 +295,12 @@
             "Address": "0xD533a949740bb3306d119CC777fa900bA034cd52"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "CULT",
+            "Blockchain": "Ethereum",
+            "Address": "0xf0f9D895aCa5c8678f706FB8216fa22957685A13"
+        },
+        {
             "Symbol": "CUSD",
             "Exchange": "GateIO",
             "Blockchain": "Celo",
@@ -913,6 +919,12 @@
             "Address": "0x701C244b988a513c945973dEFA05de933b23Fe1D"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "OBOL",
+            "Blockchain": "Ethereum",
+            "Address": "0x0B010000b7624eb9B3DfBC279673C76E9D29D5F7"
+        },
+        {
             "Symbol": "OCEAN",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -1061,6 +1073,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Arbitrum",
             "Address": "0x3082CC23568eA640225c2467653dB90e9250AaA0"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "REKT",
+            "Blockchain": "Solana",
+            "Address": "vQoYWru2pbUdcVkUrRH74ktQDJgVjRcDvsoDbUzM5n9"
         },
         {
             "Symbol": "REM",
@@ -1229,6 +1247,12 @@
             "Symbol": "SPX",
             "Blockchain": "Ethereum",
             "Address": "0xE0f63A424a4439cBE457D80E4f4b51aD25b2c56C"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "SSV",
+            "Blockchain": "Ethereum",
+            "Address": "0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54"
         },
         {
             "Symbol": "STG",
