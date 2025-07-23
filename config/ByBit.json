@@ -595,6 +595,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "OBOLUSDT",
+            "Symbol": "OBOL"
+        },
+        {
             "Symbol": "OMG",
             "ForeignName": "OMGUSDT",
             "Exchange": "ByBit",
@@ -755,6 +761,12 @@
             "ForeignName": "SRMUSDT",
             "Exchange": "ByBit",
             "Ignore": false
+        },
+        {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "SSV USDT",
+            "Symbol": "SSV "
         },
         {
             "Symbol": "STETH",

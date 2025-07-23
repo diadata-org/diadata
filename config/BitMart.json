@@ -464,6 +464,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "OBOL_USDT",
+            "Symbol": "OBOL"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "OKB_USDT",
             "Ignore": false,
             "Symbol": "OKB"
@@ -554,6 +560,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "SILO_USDT",
+            "Symbol": "SILO"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "SNX_USDT",
             "Ignore": false,
             "Symbol": "SNX"
@@ -569,6 +581,12 @@
             "ForeignName": "SPELL_USDT",
             "Ignore": false,
             "Symbol": "SPELL"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "SSV_USDT",
+            "Symbol": "SSV"
         },
         {
             "Exchange": "BitMart",
