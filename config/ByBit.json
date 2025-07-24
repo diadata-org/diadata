@@ -765,8 +765,8 @@
         {
             "Exchange": "ByBit",
             "Ignore": false,
-            "ForeignName": "SSV USDT",
-            "Symbol": "SSV "
+            "ForeignName": "SSVUSDT",
+            "Symbol": "SSV"
         },
         {
             "Symbol": "STETH",
