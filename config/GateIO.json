@@ -572,12 +572,6 @@
         },
         {
             "Exchange": "GateIO",
-            "Ignore": false,
-            "ForeignName": "CULT_USDT",
-            "Symbol": "CULT"
-        },
-        {
-            "Exchange": "GateIO",
             "ForeignName": "CUSD_USDT",
             "Ignore": false,
             "Symbol": "CUSD"
@@ -1742,6 +1736,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "MORPHO_USDT",
+            "Symbol": "MORPHO"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "MOVR_USDT",
             "Ignore": false,
             "Symbol": "MOVR"
@@ -1769,6 +1769,12 @@
             "ForeignName": "MTN_USDT",
             "Ignore": false,
             "Symbol": "MTN"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "MYLADYCULT_USDT",
+            "Symbol": "MYLADYCULT"
         },
         {
             "Exchange": "GateIO",
@@ -2193,8 +2199,8 @@
         {
             "Exchange": "GateIO",
             "Ignore": false,
-            "ForeignName": "REKT_USDT",
-            "Symbol": "REKT"
+            "ForeignName": "REKTCOIN_USDT",
+            "Symbol": "REKTCOIN"
         },
         {
             "Exchange": "GateIO",
@@ -2825,6 +2831,12 @@
             "ForeignName": "WIF_USDT",
             "Ignore": false,
             "Symbol": "WIF"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "WILD_USDT",
+            "Symbol": "WILD"
         },
         {
             "Exchange": "GateIO",

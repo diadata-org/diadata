@@ -447,6 +447,12 @@
         {
             "Exchange": "BitMart",
             "Ignore": false,
+            "ForeignName": "MORPHO_USDT",
+            "Symbol": "MORPHO"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
             "ForeignName": "NAKA_USDT",
             "Symbol": "NAKA"
         },
@@ -719,6 +725,12 @@
             "ForeignName": "WCO_USDT",
             "Ignore": false,
             "Symbol": "WCO"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "WILD_USDT",
+            "Symbol": "WILD"
         },
         {
             "Exchange": "BitMart",
