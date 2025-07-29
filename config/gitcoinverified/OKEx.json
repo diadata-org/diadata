@@ -313,6 +313,12 @@
             "Address": "0x653430560bE843C4a3D143d0110e896c2Ab8ac0D"
         },
         {
+            "Exchange": "OKEx",
+            "Symbol": "MORPHO",
+            "Blockchain": "Ethereum",
+            "Address": "0x58D97B57BB95320F9a05dC918Aef65434969c2B2"
+        },
+        {
             "Symbol": "MOVR",
             "Exchange": "OKEx",
             "Blockchain": "Moonriver",

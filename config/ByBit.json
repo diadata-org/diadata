@@ -585,6 +585,12 @@
         {
             "Exchange": "ByBit",
             "Ignore": false,
+            "ForeignName": "MORPHOUSDT",
+            "Symbol": "MORPHO"
+        },
+        {
+            "Exchange": "ByBit",
+            "Ignore": false,
             "ForeignName": "NAKAUSDT",
             "Symbol": "NAKA"
         },

@@ -289,12 +289,6 @@
             "Address": "0x817bbDbC3e8A1204f3691d14bB44992841e3dB35"
         },
         {
-            "Exchange": "KuCoin",
-            "Symbol": "CULT",
-            "Blockchain": "Ethereum",
-            "Address": "0xf0f9D895aCa5c8678f706FB8216fa22957685A13"
-        },
-        {
             "Symbol": "CUSD",
             "Exchange": "KuCoin",
             "Blockchain": "Celo",
@@ -679,6 +673,12 @@
             "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
         },
         {
+            "Exchange": "KuCoin",
+            "Symbol": "MORPHO",
+            "Blockchain": "Ethereum",
+            "Address": "0x58D97B57BB95320F9a05dC918Aef65434969c2B2"
+        },
+        {
             "Symbol": "MOVR",
             "Exchange": "KuCoin",
             "Blockchain": "Moonriver",
@@ -701,6 +701,12 @@
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
             "Address": "0x8a77e40936BbC27e80E9a3F526368C967869c86D"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Symbol": "MYLADYCULT",
+            "Blockchain": "Ethereum",
+            "Address": "0xf0f9D895aCa5c8678f706FB8216fa22957685A13"
         },
         {
             "Exchange": "KuCoin",
@@ -965,6 +971,12 @@
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
             "Address": "0x06A01a4d579479Dd5D884EBf61A31727A3d8D442"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Symbol": "SKY",
+            "Blockchain": "Ethereum",
+            "Address": "0x56072C95FAA701256059aa122697B133aDEd9279"
         },
         {
             "Symbol": "SNT",
@@ -1277,6 +1289,12 @@
             "Symbol": "WIF",
             "Blockchain": "Solana",
             "Address": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Symbol": "WILD",
+            "Blockchain": "Ethereum",
+            "Address": "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34"
         },
         {
             "Exchange": "KuCoin",

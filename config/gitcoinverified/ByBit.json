@@ -548,6 +548,12 @@
         },
         {
             "Exchange": "ByBit",
+            "Symbol": "MORPHO",
+            "Blockchain": "Ethereum",
+            "Address": "0x58D97B57BB95320F9a05dC918Aef65434969c2B2"
+        },
+        {
+            "Exchange": "ByBit",
             "Symbol": "NAKA",
             "Blockchain": "Polygon",
             "Address": "0x311434160D7537be358930def317AfB606C0D737"

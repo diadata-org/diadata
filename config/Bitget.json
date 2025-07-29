@@ -307,6 +307,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "MORPHOUSDT",
+            "Symbol": "MORPHO"
+        },
+        {
             "Symbol": "MOVR",
             "ForeignName": "MOVRUSDT",
             "Exchange": "Bitget",
@@ -371,6 +377,12 @@
             "ForeignName": "SATSUSDT",
             "Exchange": "Bitget",
             "Ignore": false
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "SKYUSDT",
+            "Symbol": "SKY"
         },
         {
             "Symbol": "SOL",
@@ -461,6 +473,12 @@
             "Ignore": false,
             "ForeignName": "VIRTUALUSDT",
             "Symbol": "VIRTUAL"
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "WILDUSDT",
+            "Symbol": "WILD"
         },
         {
             "Exchange": "Bitget",

@@ -319,6 +319,12 @@
             "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
         },
         {
+            "Exchange": "Kraken",
+            "Symbol": "MORPHO",
+            "Blockchain": "Ethereum",
+            "Address": "0x58D97B57BB95320F9a05dC918Aef65434969c2B2"
+        },
+        {
             "Symbol": "MOVR",
             "Exchange": "Kraken",
             "Blockchain": "Moonriver",
@@ -413,6 +419,12 @@
             "Symbol": "SHIB",
             "Blockchain": "Ethereum",
             "Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
+        },
+        {
+            "Exchange": "Kraken",
+            "Symbol": "SKY",
+            "Blockchain": "Ethereum",
+            "Address": "0x56072C95FAA701256059aa122697B133aDEd9279"
         },
         {
             "Exchange": "Kraken",
@@ -527,6 +539,12 @@
             "Symbol": "USDT",
             "Blockchain": "Ethereum",
             "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+        },
+        {
+            "Exchange": "Kraken",
+            "Symbol": "USDUC",
+            "Blockchain": "Solana",
+            "Address": "CB9dDufT3ZuQXqqSfa1c5kY935TEreyBw9XJXxHKpump"
         },
         {
             "Exchange": "Kraken",

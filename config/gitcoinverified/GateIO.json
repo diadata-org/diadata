@@ -295,12 +295,6 @@
             "Address": "0xD533a949740bb3306d119CC777fa900bA034cd52"
         },
         {
-            "Exchange": "GateIO",
-            "Symbol": "CULT",
-            "Blockchain": "Ethereum",
-            "Address": "0xf0f9D895aCa5c8678f706FB8216fa22957685A13"
-        },
-        {
             "Symbol": "CUSD",
             "Exchange": "GateIO",
             "Blockchain": "Celo",
@@ -871,6 +865,12 @@
             "Address": "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "MORPHO",
+            "Blockchain": "Ethereum",
+            "Address": "0x58D97B57BB95320F9a05dC918Aef65434969c2B2"
+        },
+        {
             "Symbol": "MOVR",
             "Exchange": "GateIO",
             "Blockchain": "Moonriver",
@@ -887,6 +887,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x41dBECc1cdC5517C6f76f6a6E836aDbEe2754DE3"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "MYLADYCULT",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000c5dc95539589fbD24BE07c6C14eCa4"
         },
         {
             "Exchange": "GateIO",
@@ -1076,7 +1082,7 @@
         },
         {
             "Exchange": "GateIO",
-            "Symbol": "REKT",
+            "Symbol": "REKTCOIN",
             "Blockchain": "Solana",
             "Address": "vQoYWru2pbUdcVkUrRH74ktQDJgVjRcDvsoDbUzM5n9"
         },
@@ -1463,6 +1469,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Solana",
             "Address": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "WILD",
+            "Blockchain": "Ethereum",
+            "Address": "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34"
         },
         {
             "Symbol": "WINGS",
