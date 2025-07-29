@@ -381,6 +381,12 @@
         {
             "Exchange": "CoinBase",
             "Ignore": false,
+            "ForeignName": "MORPHO-USD",
+            "Symbol": "MORPHO"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
             "ForeignName": "NEAR-USD",
             "Symbol": "NEAR"
         },
@@ -473,6 +479,12 @@
             "Ignore": false,
             "ForeignName": "SHIB-USDT",
             "Symbol": "SHIB"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "SKY-USD",
+            "Symbol": "SKY"
         },
         {
             "Exchange": "CoinBase",

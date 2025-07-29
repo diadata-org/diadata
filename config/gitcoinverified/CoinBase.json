@@ -356,6 +356,12 @@
         },
         {
             "Exchange": "CoinBase",
+            "Symbol": "MORPHO",
+            "Blockchain": "Ethereum",
+            "Address": "0x58D97B57BB95320F9a05dC918Aef65434969c2B2"
+        },
+        {
+            "Exchange": "CoinBase",
             "Symbol": "MOVR",
             "Blockchain": "Moonriver",
             "Address": "0x0000000000000000000000000000000000000000"
@@ -449,6 +455,12 @@
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
             "Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "SKY",
+            "Blockchain": "Ethereum",
+            "Address": "0x56072C95FAA701256059aa122697B133aDEd9279"
         },
         {
             "Exchange": "CoinBase",

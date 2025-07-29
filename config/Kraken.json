@@ -398,6 +398,12 @@
         },
         {
             "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "MORPHOUSD",
+            "Symbol": "MORPHO"
+        },
+        {
+            "Exchange": "Kraken",
             "ForeignName": "MOVRUSD",
             "Ignore": false,
             "Symbol": "MOVR"
@@ -479,6 +485,12 @@
             "Ignore": false,
             "ForeignName": "SHIBUSD",
             "Symbol": "SHIB"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "SKYUSD",
+            "Symbol": "SKY"
         },
         {
             "Exchange": "Kraken",
@@ -599,6 +611,12 @@
             "ForeignName": "USDTUSD",
             "Ignore": false,
             "Symbol": "USDT"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "USDUCUSDC",
+            "Symbol": "USDUC"
         },
         {
             "Exchange": "Kraken",

@@ -37,6 +37,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "AMPEDUSDT",
+            "Symbol": "AMPED"
+        },
+        {
             "Symbol": "ANY",
             "ForeignName": "ANYUSDT",
             "Exchange": "MEXC",
@@ -619,6 +625,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "MORPHOUSDT",
+            "Symbol": "MORPHO"
+        },
+        {
             "Symbol": "MOVR",
             "ForeignName": "MOVRUSDT",
             "Exchange": "MEXC",
@@ -677,6 +689,12 @@
             "ForeignName": "ORDIUSDT",
             "Exchange": "MEXC",
             "Ignore": false
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "OSAKUSDT",
+            "Symbol": "OSAK"
         },
         {
             "Symbol": "PAXG",
@@ -1025,6 +1043,12 @@
             "ForeignName": "WELSHUSDT",
             "Exchange": "MEXC",
             "Ignore": false
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "WILDUSDT",
+            "Symbol": "WILD"
         },
         {
             "Exchange": "MEXC",
