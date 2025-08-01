@@ -47,6 +47,8 @@ func NewBalancerV2AssetSource(exchange dia.Exchange) (bas *BalancerV2AssetSource
 		bas.startblockPoolRegister = 222832
 	case dia.BeetsExchange:
 		bas.startblockPoolRegister = 16896080
+	case dia.BeetsV2ExchangeSonic:
+		bas.startblockPoolRegister = 368312
 	case dia.BalancerV2ExchangePolygon:
 		bas.startblockPoolRegister = 15832990
 	}

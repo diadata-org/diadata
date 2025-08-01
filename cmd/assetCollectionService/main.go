@@ -96,10 +96,16 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 		return source.NewBalancerV2AssetSource(exchanges[dia.BalancerV2ExchangeArbitrum])
 	case dia.BeetsExchange:
 		return source.NewBalancerV2AssetSource(exchanges[dia.BeetsExchange])
+	case dia.BeetsV2ExchangeSonic:
+		return source.NewBalancerV2AssetSource(exchanges[dia.BeetsV2ExchangeSonic])
+	case dia.BeetsV3ExchangeSonic:
+		return source.NewBalancerV3AssetSource(exchanges[dia.BeetsV3ExchangeSonic])
 	case dia.BalancerV2ExchangePolygon:
 		return source.NewBalancerV2AssetSource(exchanges[dia.BalancerV2ExchangePolygon])
 	case dia.BalancerV3Exchange:
 		return source.NewBalancerV3AssetSource(exchanges[dia.BalancerV3Exchange])
+	case dia.BalancerV3ExchangeBase:
+		return source.NewBalancerV3AssetSource(exchanges[dia.BalancerV3ExchangeBase])
 	case dia.HuckleberryExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.HuckleberryExchange], relDB)
 	case dia.TraderJoeExchange:

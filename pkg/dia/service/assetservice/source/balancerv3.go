@@ -44,6 +44,10 @@ func NewBalancerV3AssetSource(exchange dia.Exchange) (bas *BalancerV3AssetSource
 	switch exchange.Name {
 	case dia.BalancerV3Exchange:
 		bas.startblockPoolRegister = 21332121
+	case dia.BalancerV3ExchangeBase:
+		bas.startblockPoolRegister = 25343854
+	case dia.BeetsV3ExchangeSonic:
+		bas.startblockPoolRegister = 368135
 	}
 
 	// TO DO: implement postgres storage of last fetched block.
