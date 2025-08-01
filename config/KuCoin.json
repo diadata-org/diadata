@@ -1273,10 +1273,22 @@
             "Symbol": "MNT"
         },
         {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "MORPHO-USDT",
+            "Symbol": "MORPHO"
+        },
+        {
             "Symbol": "MOVR",
             "ForeignName": "MOVR-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
+        },
+        {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "MYLADYCULT-USDT",
+            "Symbol": "MYLADYCULT"
         },
         {
             "Exchange": "KuCoin",
@@ -1519,6 +1531,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "REKT-USDT",
+            "Symbol": "REKT"
+        },
+        {
             "Symbol": "REN",
             "ForeignName": "REN-USDT",
             "Exchange": "KuCoin",
@@ -1609,6 +1627,12 @@
             "Symbol": "SHIB"
         },
         {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "SKY-USDT",
+            "Symbol": "SKY"
+        },
+        {
             "Symbol": "SNT",
             "ForeignName": "SNT-ETH",
             "Exchange": "KuCoin",
@@ -1661,6 +1685,12 @@
             "Ignore": false,
             "ForeignName": "SPX-USDT",
             "Symbol": "SPX"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "SSV-USDT",
+            "Symbol": "SSV"
         },
         {
             "Symbol": "STG",
@@ -1997,6 +2027,12 @@
             "Ignore": false,
             "ForeignName": "WIF-USDT",
             "Symbol": "WIF"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "WILD-USDT",
+            "Symbol": "WILD"
         },
         {
             "Exchange": "KuCoin",

@@ -37,6 +37,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "AMPEDUSDT",
+            "Symbol": "AMPED"
+        },
+        {
             "Symbol": "ANY",
             "ForeignName": "ANYUSDT",
             "Exchange": "MEXC",
@@ -221,6 +227,12 @@
             "ForeignName": "CROUSDT",
             "Exchange": "MEXC",
             "Ignore": false
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "CULTUSDT",
+            "Symbol": "CULT"
         },
         {
             "Symbol": "CVX",
@@ -613,6 +625,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "MORPHOUSDT",
+            "Symbol": "MORPHO"
+        },
+        {
             "Symbol": "MOVR",
             "ForeignName": "MOVRUSDT",
             "Exchange": "MEXC",
@@ -655,6 +673,12 @@
             "Symbol": "NPC"
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "OBOLUSDT",
+            "Symbol": "OBOL"
+        },
+        {
             "Symbol": "OP",
             "ForeignName": "OPUSDT",
             "Exchange": "MEXC",
@@ -665,6 +689,12 @@
             "ForeignName": "ORDIUSDT",
             "Exchange": "MEXC",
             "Ignore": false
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "OSAKUSDT",
+            "Symbol": "OSAK"
         },
         {
             "Symbol": "PAXG",
@@ -801,6 +831,12 @@
         {
             "Exchange": "MEXC",
             "Ignore": false,
+            "ForeignName": "SILOUSDT",
+            "Symbol": "SILO"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
             "ForeignName": "SKIUSDT",
             "Symbol": "SKI"
         },
@@ -833,6 +869,12 @@
             "Ignore": false,
             "ForeignName": "SPXUSDT",
             "Symbol": "SPX"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "SSVUSDT",
+            "Symbol": "SSV"
         },
         {
             "Symbol": "STORJ",
@@ -1001,6 +1043,12 @@
             "ForeignName": "WELSHUSDT",
             "Exchange": "MEXC",
             "Ignore": false
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "WILDUSDT",
+            "Symbol": "WILD"
         },
         {
             "Exchange": "MEXC",

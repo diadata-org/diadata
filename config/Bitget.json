@@ -307,6 +307,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "MORPHOUSDT",
+            "Symbol": "MORPHO"
+        },
+        {
             "Symbol": "MOVR",
             "ForeignName": "MOVRUSDT",
             "Exchange": "Bitget",
@@ -329,6 +335,12 @@
             "Ignore": false,
             "ForeignName": "NPCUSDT",
             "Symbol": "NPC"
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "OBOLUSDT",
+            "Symbol": "OBOL"
         },
         {
             "Symbol": "OP",
@@ -367,10 +379,22 @@
             "Ignore": false
         },
         {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "SKYUSDT",
+            "Symbol": "SKY"
+        },
+        {
             "Symbol": "SOL",
             "ForeignName": "SOLUSDT",
             "Exchange": "Bitget",
             "Ignore": false
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "SSVUSDT",
+            "Symbol": "SSV"
         },
         {
             "Symbol": "STETH",
@@ -449,6 +473,12 @@
             "Ignore": false,
             "ForeignName": "VIRTUALUSDT",
             "Symbol": "VIRTUAL"
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "WILDUSDT",
+            "Symbol": "WILD"
         },
         {
             "Exchange": "Bitget",

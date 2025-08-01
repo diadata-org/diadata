@@ -31,6 +31,12 @@
             "Address": "tgx7VNFoP9DJiFMFgXXtafQZkUvyEdDHT9ryamHJYrjq"
         },
         {
+            "Symbol": "AMPED",
+            "Exchange": "MEXC",
+            "Blockchain": "Sonic",
+            "Address": "0x4Cae73a23078e7A94D1e828Fa3bABa5080c04FcA"
+        },
+        {
             "Symbol": "ANY",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
@@ -209,6 +215,12 @@
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
             "Address": "0xA0b73E1Ff0B80914AB6fe0444E65848C4C34450b"
+        },
+        {
+            "Exchange": "MEXC",
+            "Symbol": "CULT",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000c5dc95539589fbD24BE07c6C14eCa4"
         },
         {
             "Symbol": "CVX",
@@ -571,6 +583,12 @@
             "Address": "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a"
         },
         {
+            "Exchange": "MEXC",
+            "Symbol": "MORPHO",
+            "Blockchain": "Ethereum",
+            "Address": "0x58D97B57BB95320F9a05dC918Aef65434969c2B2"
+        },
+        {
             "Symbol": "MOVR",
             "Exchange": "MEXC",
             "Blockchain": "Moonriver",
@@ -607,6 +625,12 @@
             "Address": "0x8eD97a637A790Be1feff5e888d43629dc05408F6"
         },
         {
+            "Exchange": "MEXC",
+            "Symbol": "OBOL",
+            "Blockchain": "Ethereum",
+            "Address": "0x0B010000b7624eb9B3DfBC279673C76E9D29D5F7"
+        },
+        {
             "Symbol": "OP",
             "Exchange": "MEXC",
             "Blockchain": "Optimism",
@@ -617,6 +641,12 @@
             "Exchange": "MEXC",
             "Blockchain": "Bitcoin",
             "Address": "b61b0172d95e266c18aea0c624db987e971a5d6d4ebc2aaed85da4642d635735i0"
+        },
+        {
+            "Symbol": "OSAK",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0xa21Af1050F7B26e0cfF45ee51548254C41ED6b5c"
         },
         {
             "Symbol": "PAXG",
@@ -740,6 +770,12 @@
         },
         {
             "Exchange": "MEXC",
+            "Symbol": "SILO",
+            "Blockchain": "Arbitrum",
+            "Address": "0x09f569AF991c730Cae05a392bae6490558eF2214"
+        },
+        {
+            "Exchange": "MEXC",
             "Symbol": "SKI",
             "Blockchain": "Base",
             "Address": "0x768BE13e1680b5ebE0024C42c896E3dB59ec0149"
@@ -767,6 +803,12 @@
             "Symbol": "SPX",
             "Blockchain": "Ethereum",
             "Address": "0xE0f63A424a4439cBE457D80E4f4b51aD25b2c56C"
+        },
+        {
+            "Exchange": "MEXC",
+            "Symbol": "SSV",
+            "Blockchain": "Ethereum",
+            "Address": "0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54"
         },
         {
             "Symbol": "STETH",
@@ -935,6 +977,12 @@
             "Exchange": "MEXC",
             "Blockchain": "Stacks",
             "Address": "SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G.welshcorgicoin-token"
+        },
+        {
+            "Exchange": "MEXC",
+            "Symbol": "WILD",
+            "Blockchain": "Ethereum",
+            "Address": "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34"
         },
         {
             "Exchange": "MEXC",

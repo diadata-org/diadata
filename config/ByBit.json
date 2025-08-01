@@ -585,6 +585,12 @@
         {
             "Exchange": "ByBit",
             "Ignore": false,
+            "ForeignName": "MORPHOUSDT",
+            "Symbol": "MORPHO"
+        },
+        {
+            "Exchange": "ByBit",
+            "Ignore": false,
             "ForeignName": "NAKAUSDT",
             "Symbol": "NAKA"
         },
@@ -593,6 +599,12 @@
             "ForeignName": "NEARUSDT",
             "Exchange": "ByBit",
             "Ignore": false
+        },
+        {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "OBOLUSDT",
+            "Symbol": "OBOL"
         },
         {
             "Symbol": "OMG",
@@ -755,6 +767,12 @@
             "ForeignName": "SRMUSDT",
             "Exchange": "ByBit",
             "Ignore": false
+        },
+        {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "SSVUSDT",
+            "Symbol": "SSV"
         },
         {
             "Symbol": "STETH",

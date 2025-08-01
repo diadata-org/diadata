@@ -446,6 +446,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Symbol": "MORPHO",
+            "Blockchain": "Ethereum",
+            "Address": "0x58D97B57BB95320F9a05dC918Aef65434969c2B2"
+        },
+        {
+            "Exchange": "BitMart",
             "Symbol": "NAKA",
             "Blockchain": "Polygon",
             "Address": "0x311434160D7537be358930def317AfB606C0D737"
@@ -461,6 +467,12 @@
             "Symbol": "NPC",
             "Blockchain": "Ethereum",
             "Address": "0x8eD97a637A790Be1feff5e888d43629dc05408F6"
+        },
+        {
+            "Exchange": "BitMart",
+            "Symbol": "OBOL",
+            "Blockchain": "Ethereum",
+            "Address": "0x0B010000b7624eb9B3DfBC279673C76E9D29D5F7"
         },
         {
             "Symbol": "OKB",
@@ -547,6 +559,12 @@
             "Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
         },
         {
+            "Exchange": "BitMart",
+            "Symbol": "SILO",
+            "Blockchain": "Arbitrum",
+            "Address": "0x09f569AF991c730Cae05a392bae6490558eF2214"
+        },
+        {
             "Symbol": "SNX",
             "Exchange": "BitMart",
             "Blockchain": "Ethereum",
@@ -569,6 +587,12 @@
             "Exchange": "BitMart",
             "Blockchain": "Ethereum",
             "Address": "0x090185f2135308BaD17527004364eBcC2D37e5F6"
+        },
+        {
+            "Exchange": "BitMart",
+            "Symbol": "SSV",
+            "Blockchain": "Ethereum",
+            "Address": "0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54"
         },
         {
             "Symbol": "STORJ",
@@ -713,6 +737,12 @@
             "Exchange": "BitMart",
             "Blockchain": "WChain",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "BitMart",
+            "Symbol": "WILD",
+            "Blockchain": "Ethereum",
+            "Address": "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34"
         },
         {
             "Exchange": "BitMart",

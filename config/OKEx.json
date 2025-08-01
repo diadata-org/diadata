@@ -1706,6 +1706,12 @@
         },
         {
             "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "MORPHO-USDT",
+            "Symbol": "MORPHO"
+        },
+        {
+            "Exchange": "OKEx",
             "ForeignName": "MOT-USDT",
             "Ignore": false,
             "Symbol": "MOT"
@@ -2477,6 +2483,12 @@
             "ForeignName": "SSC-USDT",
             "Ignore": false,
             "Symbol": "SSC"
+        },
+        {
+            "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "SSV-USDT",
+            "Symbol": "SSV"
         },
         {
             "Exchange": "OKEx",

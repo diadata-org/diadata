@@ -1736,6 +1736,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "MORPHO_USDT",
+            "Symbol": "MORPHO"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "MOVR_USDT",
             "Ignore": false,
             "Symbol": "MOVR"
@@ -1763,6 +1769,12 @@
             "ForeignName": "MTN_USDT",
             "Ignore": false,
             "Symbol": "MTN"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "MYLADYCULT_USDT",
+            "Symbol": "MYLADYCULT"
         },
         {
             "Exchange": "GateIO",
@@ -1853,6 +1865,12 @@
             "ForeignName": "OAX_ETH",
             "Ignore": false,
             "Symbol": "OAX"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "OBOL_USDT",
+            "Symbol": "OBOL"
         },
         {
             "Exchange": "GateIO",
@@ -2180,6 +2198,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "REKTCOIN_USDT",
+            "Symbol": "REKTCOIN"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "REM_ETH",
             "Ignore": false,
             "Symbol": "REM"
@@ -2471,6 +2495,12 @@
             "Ignore": false,
             "ForeignName": "SPX_USDT",
             "Symbol": "SPX"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "SSV_USDT",
+            "Symbol": "SSV"
         },
         {
             "Exchange": "GateIO",
@@ -2801,6 +2831,12 @@
             "ForeignName": "WIF_USDT",
             "Ignore": false,
             "Symbol": "WIF"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "WILD_USDT",
+            "Symbol": "WILD"
         },
         {
             "Exchange": "GateIO",

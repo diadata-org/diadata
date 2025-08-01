@@ -447,6 +447,12 @@
         {
             "Exchange": "BitMart",
             "Ignore": false,
+            "ForeignName": "MORPHO_USDT",
+            "Symbol": "MORPHO"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
             "ForeignName": "NAKA_USDT",
             "Symbol": "NAKA"
         },
@@ -461,6 +467,12 @@
             "Ignore": false,
             "ForeignName": "NPC_USDT",
             "Symbol": "NPC"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "OBOL_USDT",
+            "Symbol": "OBOL"
         },
         {
             "Exchange": "BitMart",
@@ -554,6 +566,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "SILO_USDT",
+            "Symbol": "SILO"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "SNX_USDT",
             "Ignore": false,
             "Symbol": "SNX"
@@ -569,6 +587,12 @@
             "ForeignName": "SPELL_USDT",
             "Ignore": false,
             "Symbol": "SPELL"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "SSV_USDT",
+            "Symbol": "SSV"
         },
         {
             "Exchange": "BitMart",
@@ -701,6 +725,12 @@
             "ForeignName": "WCO_USDT",
             "Ignore": false,
             "Symbol": "WCO"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "WILD_USDT",
+            "Symbol": "WILD"
         },
         {
             "Exchange": "BitMart",
