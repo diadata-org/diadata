@@ -47,6 +47,9 @@ var (
 		dia.VelodromeExchangeSwellchain,
 		dia.ShadowV2Exchange,
 		dia.ShadowV3Exchange,
+		dia.BeetsV2ExchangeSonic,
+		dia.BeetsV3ExchangeSonic,
+		dia.BalancerV3ExchangeBase,
 	}
 
 	exchange = flag.String("exchange", "", "which exchange")
