@@ -74,6 +74,8 @@ func NewBalancerV2Scraper(exchange dia.Exchange, relDB *models.RelDB, datastore 
 		scraper.startblockPoolRegister = 15832990
 	case dia.BeetsExchange:
 		scraper.startblockPoolRegister = 16896080
+	case dia.BeetsV2ExchangeSonic:
+		scraper.startblockPoolRegister = 368312
 	}
 
 	go func() {

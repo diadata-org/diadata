@@ -180,8 +180,14 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewBalancerV2Scraper(Exchanges[dia.BalancerV2ExchangePolygon], scrape, relDB)
 	case dia.BalancerV3Exchange:
 		return NewBalancerV3Scraper(Exchanges[dia.BalancerV3Exchange], scrape, relDB)
+	case dia.BalancerV3ExchangeBase:
+		return NewBalancerV3Scraper(Exchanges[dia.BalancerV3ExchangeBase], scrape, relDB)
 	case dia.BeetsExchange:
 		return NewBalancerV2Scraper(Exchanges[dia.BeetsExchange], scrape, relDB)
+	case dia.BeetsV2ExchangeSonic:
+		return NewBalancerV2Scraper(Exchanges[dia.BeetsV2ExchangeSonic], scrape, relDB)
+	case dia.BeetsV3ExchangeSonic:
+		return NewBalancerV3Scraper(Exchanges[dia.BeetsV3ExchangeSonic], scrape, relDB)
 	case dia.KuCoinExchange:
 		return NewKuCoinScraper(key, secret, Exchanges[dia.KuCoinExchange], scrape, relDB)
 	case dia.BitMartExchange:
