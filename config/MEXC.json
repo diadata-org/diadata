@@ -889,6 +889,12 @@
             "Symbol": "STX"
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "SUPRUSDT",
+            "Symbol": "SUPR"
+        },
+        {
             "Symbol": "SYN",
             "ForeignName": "SYNUSDT",
             "Exchange": "MEXC",
@@ -963,6 +969,12 @@
         {
             "Symbol": "UNI",
             "ForeignName": "UNIUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
+            "Symbol": "UNIT0",
+            "ForeignName": "UNIT0USDT",
             "Exchange": "MEXC",
             "Ignore": false
         },

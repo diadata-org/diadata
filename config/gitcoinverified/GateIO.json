@@ -1393,6 +1393,12 @@
             "Address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
         },
         {
+            "Symbol": "UNIT0",
+            "Exchange": "GateIO",
+            "Blockchain": "Waves",
+            "Address": "GjwAHMjqWzYR4LgoNy91CxUKAGJN79h2hseZoae4nU8t"
+        },
+        {
             "Symbol": "USD",
             "Exchange": "GateIO",
             "Blockchain": "Fiat",
