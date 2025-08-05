@@ -185,6 +185,8 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialEth, wsDialEth, uniswapWaitMilliseconds)
 	case dia.UniswapExchangeBase:
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialBase, wsDialBase, uniswapWaitMilliseconds)
+	case dia.UniswapExchangeArbitrum:
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialArbitrum, wsDialArbitrum, uniswapWaitMilliseconds)
 	case dia.SushiSwapExchange:
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialEth, wsDialEth, sushiswapWaitMilliseconds)
 	case dia.SushiSwapExchangePolygon:
