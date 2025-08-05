@@ -615,6 +615,12 @@
         {
             "Exchange": "Kraken",
             "Ignore": false,
+            "ForeignName": "USDUCUSD",
+            "Symbol": "USDUC"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
             "ForeignName": "USDUCUSDC",
             "Symbol": "USDUC"
         },

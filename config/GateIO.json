@@ -2750,6 +2750,12 @@
         },
         {
             "Exchange": "GateIO",
+            "ForeignName": "UNIT0_USDT",
+            "Ignore": false,
+            "Symbol": "UNIT0"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "USDC_USDT",
             "Ignore": false,
             "Symbol": "USDC"
