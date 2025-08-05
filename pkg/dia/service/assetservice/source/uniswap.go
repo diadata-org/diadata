@@ -81,6 +81,10 @@ func NewUniswapAssetSource(exchange dia.Exchange, relDB *models.RelDB) (uas *Uni
 	switch exchange.Name {
 	case dia.UniswapExchange:
 		uas = makeUniswapAssetSource(exchange, restDial, relDB, uniswapWaitMilliseconds)
+	case dia.UniswapExchangeBase:
+		uas = makeUniswapAssetSource(exchange, restDialBase, relDB, baseWaitMilliseconds)
+	case dia.UniswapExchangeArbitrum:
+		uas = makeUniswapAssetSource(exchange, restDialArbitrum, relDB, sushiswapWaitMilliseconds)
 	case dia.SushiSwapExchange:
 		uas = makeUniswapAssetSource(exchange, restDial, relDB, sushiswapWaitMilliseconds)
 	case dia.SushiSwapExchangeArbitrum:
@@ -143,8 +147,6 @@ func NewUniswapAssetSource(exchange dia.Exchange, relDB *models.RelDB) (uas *Uni
 		uas = makeUniswapAssetSource(exchange, restDialLinea, relDB, wanchainWaitMilliseconds)
 	case dia.ThenaExchange:
 		uas = makeUniswapAssetSource(exchange, restDialBSC, relDB, sushiswapWaitMilliseconds)
-	case dia.UniswapExchangeBase:
-		uas = makeUniswapAssetSource(exchange, restDialBase, relDB, baseWaitMilliseconds)
 	case dia.ShadowV2Exchange:
 		uas = makeUniswapAssetSource(exchange, restDialSonic, relDB, baseWaitMilliseconds)
 	}
