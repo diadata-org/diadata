@@ -829,6 +829,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "MEXC",
+            "Symbol": "SUPR",
+            "Blockchain": "Base",
+            "Address": "0x17906b1Cd88aA8EfaEfC5e82891B52a22219BD45"
+        },
+        {
             "Symbol": "SYN",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
@@ -899,6 +905,12 @@
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
             "Address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
+        },
+        {
+            "Symbol": "UNIT0",
+            "Exchange": "MEXC",
+            "Blockchain": "Waves",
+            "Address": "GjwAHMjqWzYR4LgoNy91CxUKAGJN79h2hseZoae4nU8t"
         },
         {
             "Symbol": "USDC",
