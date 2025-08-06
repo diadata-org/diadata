@@ -402,11 +402,6 @@ func (s *UniswapScraper) ListenToPair(i int, address common.Address) {
 		pair = poolMap[address.Hex()]
 	}
 
-	if len(pair.Token0.Symbol) < 2 || len(pair.Token1.Symbol) < 2 {
-		log.Info("skip pair: ", pair.ForeignName)
-		return
-	}
-
 	if helpers.AddressIsBlacklisted(pair.Token0.Address) || helpers.AddressIsBlacklisted(pair.Token1.Address) {
 		log.Info("skip pair ", pair.ForeignName, ", address is blacklisted")
 		return
