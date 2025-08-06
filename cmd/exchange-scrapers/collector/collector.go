@@ -50,6 +50,7 @@ var (
 		dia.BeetsV2ExchangeSonic,
 		dia.BeetsV3ExchangeSonic,
 		dia.BalancerV3ExchangeBase,
+		dia.UniswapExchangeV3Arbitrum,
 	}
 
 	exchange = flag.String("exchange", "", "which exchange")
