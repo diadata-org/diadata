@@ -62,6 +62,7 @@ const (
 	FilterKing                         = "MAIR120"
 	BancorExchange                     = "Bancor"
 	UniswapExchange                    = "Uniswap"
+	UniswapExchangeArbitrum            = "Uniswap-Arbitrum"
 	UniswapExchangeBase                = "Uniswap-Base"
 	UniswapExchangeV3                  = "UniswapV3"
 	UniswapExchangeV3Polygon           = "UniswapV3-polygon"

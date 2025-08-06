@@ -92,6 +92,8 @@ func NewUniswapScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *mo
 		us = makeUniswapPoolScraper(exchange, pathToPools, restDialEthereum, relDB, datastore, uniswapWaitMilliseconds)
 	case dia.UniswapExchangeBase:
 		us = makeUniswapPoolScraper(exchange, pathToPools, restDialBase, relDB, datastore, uniswapWaitMilliseconds)
+	case dia.UniswapExchangeArbitrum:
+		us = makeUniswapPoolScraper(exchange, pathToPools, restDialArbitrum, relDB, datastore, uniswapWaitMilliseconds)
 	case dia.SushiSwapExchange:
 		us = makeUniswapPoolScraper(exchange, pathToPools, restDialEthereum, relDB, datastore, sushiswapWaitMilliseconds)
 	case dia.SushiSwapExchangePolygon:
