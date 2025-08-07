@@ -128,10 +128,6 @@ func (s *MEXCScraper) mainLoop() {
 	// Wait for subscription to all pairs.
 	time.Sleep(5 * time.Second)
 	for _, c := range s.connections {
-		c.wsConn.SetPongHandler(func(appData string) error {
-			log.Debugf("Received pong: %s", appData)
-			return nil
-		})
 		go s.subLoop(c.wsConn)
 	}
 
@@ -142,8 +138,20 @@ func (s *MEXCScraper) subLoop(client *ws.Conn) {
 	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
 	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
 	for {
-		message := &MEXCTradeResponse{}
-		if err = client.ReadJSON(&message); err != nil {
+		var raw map[string]json.RawMessage
+		if err := client.ReadJSON(&raw); err != nil {
+			log.Errorf("read message failed: %v", err)
+			continue
+		}
+		var msg string
+		if raw["msg"] != nil {
+			if err := json.Unmarshal(raw["msg"], &msg); err == nil && msg == "PONG" {
+				log.Debug("Recevied PONG messgae")
+				continue
+			}
+		}
+		var message MEXCTradeResponse
+		if err := json.Unmarshal(raw["msg"], &message); err != nil {
 			log.Error("read message: ", err.Error())
 			continue
 			// deal it
@@ -266,7 +274,8 @@ func (s *MEXCScraper) newConn() error {
 				return
 			case <-ticker.C:
 				log.Info("MEXC - Sent Ping")
-				err := conn.WriteMessage(ws.PingMessage, nil)
+				pingMsg := map[string]string{"method": "PING"}
+				err := conn.WriteJSON(pingMsg)
 				if err != nil {
 					log.Errorf("Ping failed for conn %d: %v", idx, err)
 					return
