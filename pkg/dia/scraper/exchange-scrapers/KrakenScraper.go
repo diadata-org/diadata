@@ -15,7 +15,8 @@ import (
 )
 
 const (
-	krakenRefreshDelay = time.Second * 30 * 1
+	krakenRefreshDelay  = time.Second * 30 * 1
+	krakenMaxSubPerConn = 90
 )
 
 var (
@@ -23,7 +24,7 @@ var (
 )
 
 type KrakenScraper struct {
-	wsClient *ws.Conn
+	connections map[int]KrakenWSConnection
 	// signaling channels
 	shutdown     chan nothing
 	shutdownDone chan nothing
@@ -38,6 +39,11 @@ type KrakenScraper struct {
 	exchangeName string
 	chanTrades   chan *dia.Trade
 	db           *models.RelDB
+}
+
+type KrakenWSConnection struct {
+	wsConn           *ws.Conn
+	numSubscriptions int
 }
 
 type krakenWSSubscribeMessage struct {
@@ -70,14 +76,9 @@ type krakenWSResponseData struct {
 // NewKrakenScraper returns a new KrakenScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
 func NewKrakenScraper(key string, secret string, exchange dia.Exchange, scrape bool, relDB *models.RelDB) *KrakenScraper {
-	var wsDialer ws.Dialer
-	wsClient, _, err := wsDialer.Dial(krakenWSBaseString, nil)
-	if err != nil {
-		log.Fatalf("Kraken - Dial ws base string: %v.", err)
-	}
 
 	s := &KrakenScraper{
-		wsClient:     wsClient,
+		connections:  make(map[int]KrakenWSConnection),
 		shutdown:     make(chan nothing),
 		shutdownDone: make(chan nothing),
 		pairScrapers: make(map[string]*KrakenPairScraper),
@@ -87,20 +88,33 @@ func NewKrakenScraper(key string, secret string, exchange dia.Exchange, scrape b
 		chanTrades:   make(chan *dia.Trade),
 		db:           relDB,
 	}
+	err := s.newConn()
+	if err != nil {
+		log.Fatal("newConn: ", err)
+	}
+
 	if scrape {
 		go s.mainLoop()
 	}
 	return s
 }
 
-// mainLoop runs in a goroutine until channel s is closed.
 func (s *KrakenScraper) mainLoop() {
+	// Wait for subscription to all pairs.
+	time.Sleep(5 * time.Second)
+	for _, c := range s.connections {
+		go s.subLoop(c.wsConn)
+	}
+}
+
+// mainLoop runs in a goroutine until channel s is closed.
+func (s *KrakenScraper) subLoop(client *ws.Conn) {
 	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
 	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
 
 	for {
 		var message krakenWSResponse
-		err := s.wsClient.ReadJSON(&message)
+		err := client.ReadJSON(&message)
 		if err != nil {
 			log.Error("JSON decode error: ", err)
 			continue
@@ -212,6 +226,8 @@ func (s *KrakenScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 }
 
 func (s *KrakenScraper) subscribe(pair dia.ExchangePair, subscribe bool) error {
+	id := len(s.connections)
+
 	subscribeType := "unsubscribe"
 	if subscribe {
 		subscribeType = "subscribe"
@@ -224,8 +240,31 @@ func (s *KrakenScraper) subscribe(pair dia.ExchangePair, subscribe bool) error {
 			Snapshot: false,
 		},
 	}
-	log.Info("subscribed to: ", a.Params.Symbol)
-	return s.wsClient.WriteJSON(a)
+	if s.connections[id-1].numSubscriptions < krakenMaxSubPerConn {
+		if err := s.connections[id-1].wsConn.WriteJSON(a); err != nil {
+			return err
+		}
+		log.Info("subscribed to: ", a.Params.Symbol)
+		conn := s.connections[id-1]
+		conn.numSubscriptions++
+		s.connections[id-1] = conn
+	} else {
+		err := s.newConn()
+		if err != nil {
+			return err
+		}
+		log.Infof("make new connection. Total number of connections: %v", len(s.connections))
+		id++
+		if err := s.connections[id-1].wsConn.WriteJSON(a); err != nil {
+			return err
+		}
+		log.Info("subscribed to: ", a.Params.Symbol)
+		conn := s.connections[id-1]
+		conn.numSubscriptions++
+		s.connections[id-1] = conn
+	}
+
+	return nil
 }
 
 func (s *KrakenScraper) FillSymbolData(symbol string) (dia.Asset, error) {
@@ -237,8 +276,19 @@ func (s *KrakenScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err err
 	return []dia.ExchangePair{}, errors.New("FetchAvailablePairs() not implemented")
 }
 
-func (ps *KrakenScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
+func (s *KrakenScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, error) {
 	return pair, nil
+}
+
+// Add a connection to the connection pool.
+func (s *KrakenScraper) newConn() error {
+	var wsDialer ws.Dialer
+	wsConn, _, err := wsDialer.Dial(krakenWSBaseString, nil)
+	if err != nil {
+		return err
+	}
+	s.connections[len(s.connections)] = KrakenWSConnection{wsConn: wsConn, numSubscriptions: 0}
+	return nil
 }
 
 // Channel returns a channel that can be used to receive trades/pricing information
