@@ -11,13 +11,12 @@ import (
 
 	"github.com/diadata-org/diadata/pkg/dia"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
 	"github.com/zekroTJA/timedmap"
 )
 
 const (
-	mexc_socketurl    = "wss://wbs.mexc.com/ws"
-	api_url           = "https://api.mexc.com"
 	mexcMaxSubPerConn = 20
 )
 
@@ -88,22 +87,28 @@ type MEXCScraper struct {
 	error     error
 	closed    bool
 	// used to keep track of trading pairs that we subscribed to
-	pairScrapers map[string]*MEXCPairScraper
-	exchangeName string
-	chanTrades   chan *dia.Trade
-	db           *models.RelDB
+	pairScrapers   map[string]*MEXCPairScraper
+	exchangeName   string
+	chanTrades     chan *dia.Trade
+	db             *models.RelDB
+	mexc_socketurl string
+	api_url        string
 }
 
 func NewMEXCScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *MEXCScraper {
+	mexc_socketurl := utils.Getenv("MEXC_WS_URL", "ws://wbs-api.mexc.com/ws")
+	api_url := utils.Getenv("MEXC_API_URL", "https://api.mexc.com")
 	s := &MEXCScraper{
-		shutdown:     make(chan nothing),
-		shutdownDone: make(chan nothing),
-		connections:  make(map[int]MEXCWSConnection),
-		pairScrapers: make(map[string]*MEXCPairScraper),
-		exchangeName: exchange.Name,
-		error:        nil,
-		chanTrades:   make(chan *dia.Trade),
-		db:           relDB,
+		shutdown:       make(chan nothing),
+		shutdownDone:   make(chan nothing),
+		connections:    make(map[int]MEXCWSConnection),
+		pairScrapers:   make(map[string]*MEXCPairScraper),
+		exchangeName:   exchange.Name,
+		error:          nil,
+		chanTrades:     make(chan *dia.Trade),
+		db:             relDB,
+		mexc_socketurl: mexc_socketurl,
+		api_url:        api_url,
 	}
 
 	err := s.newConn()
@@ -133,8 +138,20 @@ func (s *MEXCScraper) subLoop(client *ws.Conn) {
 	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
 	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
 	for {
-		message := &MEXCTradeResponse{}
-		if err = client.ReadJSON(&message); err != nil {
+		var raw map[string]json.RawMessage
+		if err := client.ReadJSON(&raw); err != nil {
+			log.Errorf("read message failed: %v", err)
+			continue
+		}
+		var msg string
+		if raw["msg"] != nil {
+			if err := json.Unmarshal(raw["msg"], &msg); err == nil && msg == "PONG" {
+				log.Debug("Recevied PONG messgae")
+				continue
+			}
+		}
+		var message MEXCTradeResponse
+		if err := json.Unmarshal(raw["msg"], &message); err != nil {
 			log.Error("read message: ", err.Error())
 			continue
 			// deal it
@@ -241,11 +258,33 @@ func (s *MEXCScraper) subscribe(pair dia.ExchangePair) error {
 // Add a connection to the connection pool.
 func (s *MEXCScraper) newConn() error {
 	var wsDialer ws.Dialer
-	wsConn, _, err := wsDialer.Dial(mexc_socketurl, nil)
+	wsConn, _, err := wsDialer.Dial(s.mexc_socketurl, nil)
 	if err != nil {
 		return err
 	}
-	s.connections[len(s.connections)] = MEXCWSConnection{wsConn: wsConn, numSubscriptions: 0}
+	index := len(s.connections)
+	s.connections[index] = MEXCWSConnection{wsConn: wsConn, numSubscriptions: 0}
+
+	go func(conn *ws.Conn, idx int) {
+		ticker := time.NewTicker(1 * time.Second)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-s.shutdown:
+				return
+			case <-ticker.C:
+				log.Info("MEXC - Sent Ping")
+				pingMsg := map[string]string{"method": "PING"}
+				err := conn.WriteJSON(pingMsg)
+				if err != nil {
+					log.Errorf("Ping failed for conn %d: %v", idx, err)
+					return
+				}
+				log.Debugf("Ping sent for conn %d", idx)
+			}
+		}
+	}(wsConn, index)
+
 	return nil
 }
 
@@ -262,7 +301,7 @@ func (s *MEXCScraper) NormalizePair(pair dia.ExchangePair) (dia.ExchangePair, er
 
 func (s *MEXCScraper) FetchAvailablePairs() (pairs []dia.ExchangePair, err error) {
 	var mexcExchangeInfo MEXCExchangeInfo
-	response, err := http.Get(api_url + "/api/v3/exchangeInfo")
+	response, err := http.Get(s.api_url + "/api/v3/exchangeInfo")
 	if err != nil {
 		log.Error("get symbols: ", err)
 	}
