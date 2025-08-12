@@ -200,6 +200,12 @@
         },
         {
             "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "GUNUSDT",
+            "Symbol": "GUN"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "ICPUSDT",
             "Ignore": false,
             "Symbol": "ICP"

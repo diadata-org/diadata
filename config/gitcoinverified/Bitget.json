@@ -212,6 +212,12 @@
         },
         {
             "Exchange": "Bitget",
+            "Symbol": "GUN",
+            "Blockchain": "Gunz",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Bitget",
             "Symbol": "IMX",
             "Blockchain": "Immutable",
             "Address": "0x0000000000000000000000000000000000000000"

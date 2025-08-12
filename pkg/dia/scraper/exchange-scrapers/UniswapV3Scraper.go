@@ -227,10 +227,6 @@ func (s *UniswapV3Scraper) mainLoop() {
 		pool := <-s.pairRecieved
 		log.Infoln("Subscribing for pair", pool)
 
-		if len(pool.Token0.Symbol) < 2 || len(pool.Token1.Symbol) < 2 {
-			log.Info("skip pair: ", pool.ForeignName)
-			continue
-		}
 		if helpers.AddressIsBlacklisted(pool.Token0.Address) || helpers.AddressIsBlacklisted(pool.Token1.Address) {
 			log.Info("skip pair ", pool.ForeignName, ", address is blacklisted")
 			continue

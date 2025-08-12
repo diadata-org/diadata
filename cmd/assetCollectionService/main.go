@@ -48,6 +48,8 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 		return source.NewUniswapAssetSource(exchanges[dia.UniswapExchange], relDB)
 	case dia.UniswapExchangeBase:
 		return source.NewUniswapAssetSource(exchanges[dia.UniswapExchangeBase], relDB)
+	case dia.UniswapExchangeArbitrum:
+		return source.NewUniswapAssetSource(exchanges[dia.UniswapExchangeArbitrum], relDB)
 	case dia.PanCakeSwap:
 		return source.NewUniswapAssetSource(exchanges[dia.PanCakeSwap], relDB)
 	case dia.PanCakeSwapExchangeV3:

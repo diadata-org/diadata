@@ -1,6 +1,10 @@
 {
     "Pools": [
         {
+            "Address": "0xD971fF5a7530919ae67e06695710b262A72E8f2f",
+            "ForeignName": "SUPR-WETH"
+        },
+        {
             "Address": "0xDe787C5D6B40A82BcE4BE308E0803fcf8BCe3cdA",
             "ForeignName": "SANCHO-USDC"
         },

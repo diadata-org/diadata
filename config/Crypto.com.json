@@ -597,6 +597,12 @@
         {
             "Exchange": "Crypto.com",
             "Ignore": false,
+            "ForeignName": "GUN_USD",
+            "Symbol": "GUN"
+        },
+        {
+            "Exchange": "Crypto.com",
+            "Ignore": false,
             "ForeignName": "ICP_USDT",
             "Symbol": "ICP"
         },

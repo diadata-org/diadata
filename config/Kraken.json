@@ -327,6 +327,12 @@
         {
             "Exchange": "Kraken",
             "Ignore": false,
+            "ForeignName": "GUNUSD",
+            "Symbol": "GUN"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
             "ForeignName": "HPOS10IUSD",
             "Symbol": "HPOS10I"
         },
@@ -616,12 +622,6 @@
             "Exchange": "Kraken",
             "Ignore": false,
             "ForeignName": "USDUCUSD",
-            "Symbol": "USDUC"
-        },
-        {
-            "Exchange": "Kraken",
-            "Ignore": false,
-            "ForeignName": "USDUCUSDC",
             "Symbol": "USDUC"
         },
         {

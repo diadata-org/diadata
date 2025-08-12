@@ -185,6 +185,8 @@ func NewUniswapScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialEth, wsDialEth, uniswapWaitMilliseconds)
 	case dia.UniswapExchangeBase:
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialBase, wsDialBase, uniswapWaitMilliseconds)
+	case dia.UniswapExchangeArbitrum:
+		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialArbitrum, wsDialArbitrum, uniswapWaitMilliseconds)
 	case dia.SushiSwapExchange:
 		s = makeUniswapScraper(exchange, listenByAddress, fetchPoolsFromDB, restDialEth, wsDialEth, sushiswapWaitMilliseconds)
 	case dia.SushiSwapExchangePolygon:
@@ -398,11 +400,6 @@ func (s *UniswapScraper) ListenToPair(i int, address common.Address) {
 	} else {
 		// Relevant pool info is retrieved from @poolMap.
 		pair = poolMap[address.Hex()]
-	}
-
-	if len(pair.Token0.Symbol) < 2 || len(pair.Token1.Symbol) < 2 {
-		log.Info("skip pair: ", pair.ForeignName)
-		return
 	}
 
 	if helpers.AddressIsBlacklisted(pair.Token0.Address) || helpers.AddressIsBlacklisted(pair.Token1.Address) {

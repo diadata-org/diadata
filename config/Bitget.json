@@ -249,6 +249,12 @@
         {
             "Exchange": "Bitget",
             "Ignore": false,
+            "ForeignName": "GUNUSDT",
+            "Symbol": "GUN"
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
             "ForeignName": "IMXUSDT",
             "Symbol": "IMX"
         },
