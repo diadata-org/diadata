@@ -951,6 +951,12 @@
         {
             "Exchange": "KuCoin",
             "Ignore": false,
+            "ForeignName": "GUN-USDT",
+            "Symbol": "GUN"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Ignore": false,
             "ForeignName": "HPOS10I-USDT",
             "Symbol": "HPOS10I"
         },
@@ -1231,6 +1237,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "MILADYCULT-USDT",
+            "Symbol": "MILADYCULT"
+        },
+        {
             "Symbol": "MKR",
             "ForeignName": "MKR-USDT",
             "Exchange": "KuCoin",
@@ -1283,12 +1295,6 @@
             "ForeignName": "MOVR-USDT",
             "Exchange": "KuCoin",
             "Ignore": false
-        },
-        {
-            "Exchange": "KuCoin",
-            "Ignore": false,
-            "ForeignName": "MYLADYCULT-USDT",
-            "Symbol": "MYLADYCULT"
         },
         {
             "Exchange": "KuCoin",
