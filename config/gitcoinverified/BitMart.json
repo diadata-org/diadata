@@ -325,6 +325,12 @@
             "Address": "0xc944E90C64B2c07662A292be6244BDf05Cda44a7"
         },
         {
+            "Exchange": "BitMart",
+            "Symbol": "GUN",
+            "Blockchain": "Gunz",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "HBAR",
             "Exchange": "BitMart",
             "Blockchain": "Hedera",

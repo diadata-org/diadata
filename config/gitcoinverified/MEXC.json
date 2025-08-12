@@ -421,6 +421,12 @@
             "Address": "0x3d9907F9a368ad0a51Be60f7Da3b97cf940982D8"
         },
         {
+            "Exchange": "MEXC",
+            "Symbol": "GUN",
+            "Blockchain": "Gunz",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "HOP",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",

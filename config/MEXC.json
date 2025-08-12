@@ -439,6 +439,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "GUNUSDT",
+            "Symbol": "GUN"
+        },
+        {
             "Symbol": "HOP",
             "ForeignName": "HOPUSDT",
             "Exchange": "MEXC",

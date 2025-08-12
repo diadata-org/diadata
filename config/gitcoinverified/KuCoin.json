@@ -512,6 +512,12 @@
         },
         {
             "Exchange": "KuCoin",
+            "Symbol": "GUN",
+            "Blockchain": "Gunz",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "KuCoin",
             "Symbol": "HPOS10I",
             "Blockchain": "Ethereum",
             "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9"
@@ -655,6 +661,12 @@
             "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
         },
         {
+            "Exchange": "KuCoin",
+            "Symbol": "MILADYCULT",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000c5dc95539589fbD24BE07c6C14eCa4"
+        },
+        {
             "Symbol": "MITX",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
@@ -701,12 +713,6 @@
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
             "Address": "0x8a77e40936BbC27e80E9a3F526368C967869c86D"
-        },
-        {
-            "Exchange": "KuCoin",
-            "Symbol": "MYLADYCULT",
-            "Blockchain": "Ethereum",
-            "Address": "0xf0f9D895aCa5c8678f706FB8216fa22957685A13"
         },
         {
             "Exchange": "KuCoin",

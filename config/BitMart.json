@@ -344,6 +344,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "GUN_USDT",
+            "Symbol": "GUN"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "HBAR_USDT",
             "Ignore": false,
             "Symbol": "HBAR"

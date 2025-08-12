@@ -1136,6 +1136,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "GUN_USDT",
+            "Symbol": "GUN"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "GXS_BTC",
             "Ignore": false,
             "Symbol": "GXS"
@@ -1670,6 +1676,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "MILADYCULT_USDT",
+            "Symbol": "MILADYCULT"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "IOTA_BTC",
             "Ignore": false,
             "Symbol": "MIOTA"
@@ -1769,12 +1781,6 @@
             "ForeignName": "MTN_USDT",
             "Ignore": false,
             "Symbol": "MTN"
-        },
-        {
-            "Exchange": "GateIO",
-            "Ignore": false,
-            "ForeignName": "MYLADYCULT_USDT",
-            "Symbol": "MYLADYCULT"
         },
         {
             "Exchange": "GateIO",
