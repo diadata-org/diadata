@@ -13,6 +13,7 @@ import (
 	"github.com/diadata-org/diadata/pkg/dia"
 	mexcproto "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/mexcproto"
 	models "github.com/diadata-org/diadata/pkg/model"
+	"github.com/diadata-org/diadata/pkg/utils"
 	ws "github.com/gorilla/websocket"
 	"github.com/zekroTJA/timedmap"
 	"google.golang.org/protobuf/proto"
@@ -63,6 +64,7 @@ type MEXCWSConnection struct {
 // MEXCScraper is a scraper for MEXC
 type MEXCScraper struct {
 	connections map[int]MEXCWSConnection
+	socketurl   string
 	// signaling channels for session initialization and finishing
 	shutdown     chan nothing
 	shutdownDone chan nothing
@@ -89,6 +91,7 @@ func NewMEXCScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *ME
 		chanTrades:   make(chan *dia.Trade),
 		db:           relDB,
 	}
+	s.socketurl = utils.Getenv("WEBSOCKET_URL", mexc_socketurl)
 
 	err := s.newConn()
 	if err != nil {
@@ -150,8 +153,6 @@ func (s *MEXCScraper) subLoop(client *ws.Conn) {
 				log.Println("protobuf unmarshal error:", err)
 				continue
 			}
-
-			log.Infof("Received Message: %v", decodedMessage)
 
 			ch := strings.ToLower(decodedMessage.GetChannel())
 			sym := decodedMessage.GetSymbol()
@@ -284,7 +285,7 @@ func (s *MEXCScraper) subscribe(pair dia.ExchangePair) error {
 // Add a connection to the connection pool.
 func (s *MEXCScraper) newConn() error {
 	var wsDialer ws.Dialer
-	wsConn, _, err := wsDialer.Dial(mexc_socketurl, nil)
+	wsConn, _, err := wsDialer.Dial(s.socketurl, nil)
 	if err != nil {
 		return err
 	}
