@@ -105,7 +105,7 @@ func NewMEXCScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *ME
 func (s *MEXCScraper) mainLoop() {
 
 	// Wait for subscription to all pairs.
-	time.Sleep(15 * time.Second)
+	time.Sleep(5 * time.Second)
 
 	for _, c := range s.connections {
 		go func() {
