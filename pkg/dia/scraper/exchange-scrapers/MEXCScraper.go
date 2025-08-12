@@ -6,17 +6,20 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/diadata-org/diadata/pkg/dia"
+	mexcproto "github.com/diadata-org/diadata/pkg/dia/scraper/exchange-scrapers/mexcproto"
 	models "github.com/diadata-org/diadata/pkg/model"
 	ws "github.com/gorilla/websocket"
 	"github.com/zekroTJA/timedmap"
+	"google.golang.org/protobuf/proto"
 )
 
 const (
-	mexc_socketurl    = "wss://wbs.mexc.com/ws"
+	mexc_socketurl    = "wss://wbs-api.mexc.com/ws"
 	api_url           = "https://api.mexc.com"
 	mexcMaxSubPerConn = 20
 )
@@ -50,25 +53,6 @@ type MEXCExchangeInfo struct {
 	RateLimits      string               `json:"rateLimits"`
 	ExchangeFilters string               `json:"exchangeFilters"`
 	Symbols         []MEXCExchangeSymbol `json:"symbols"`
-}
-
-type MEXCRequest struct {
-	Method string   `json:"method"`
-	Params []string `json:"params"`
-	ID     int64    `json:"id"`
-}
-
-type MEXCTradeResponse struct {
-	C string `json:"c"`
-	D struct {
-		Deals []struct {
-			Side   int    `json:"S"`
-			Price  string `json:"p"`
-			Volume string `json:"v"`
-			TS     int64  `json:"t"`
-		} `json:"deals"`
-	} `json:"d"`
-	Symbol string `json:"s"`
 }
 
 type MEXCWSConnection struct {
@@ -122,54 +106,99 @@ func (s *MEXCScraper) mainLoop() {
 
 	// Wait for subscription to all pairs.
 	time.Sleep(5 * time.Second)
+
 	for _, c := range s.connections {
+		go func() {
+
+			pingMsg := map[string]string{"method": "PING"}
+			ticker := time.NewTicker(15 * time.Second)
+			defer ticker.Stop()
+			for range ticker.C {
+				log.Infof("MEXC - Sent Ping...")
+				if err := c.wsConn.WriteJSON(pingMsg); err != nil {
+					log.Error("ping error: ", err)
+					return
+				}
+			}
+		}()
 		go s.subLoop(c.wsConn)
 	}
 
 }
 
 func (s *MEXCScraper) subLoop(client *ws.Conn) {
-	var err error
 	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
 	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
 	for {
-		message := &MEXCTradeResponse{}
-		if err = client.ReadJSON(&message); err != nil {
-			log.Error("read message: ", err.Error())
-			continue
-			// deal it
+		_, payload, err := client.ReadMessage()
+		if err != nil {
+			return
 		}
-		for _, trade := range message.D.Deals {
-			var exchangePair dia.ExchangePair
-			priceFloat, _ := strconv.ParseFloat(trade.Price, 64)
-			volumeFloat, _ := strconv.ParseFloat(trade.Volume, 64)
-			if trade.Side == 2 {
-				volumeFloat *= -1
+
+		switch {
+		case len(payload) > 0 && (payload[0] == '{' || payload[0] == '['):
+			var msg map[string]any
+			if err := json.Unmarshal(payload, &msg); err != nil {
+				log.Errorf("failed to parse JSON: %v", err)
+				return
 			}
-			exchangePair, err = s.db.GetExchangePairCache(s.exchangeName, message.Symbol)
-			if err != nil {
-				log.Error("get exchange pair from cache: ", err)
-			}
-			t := &dia.Trade{
-				Symbol:       exchangePair.Symbol,
-				Pair:         message.Symbol,
-				Price:        priceFloat,
-				Volume:       volumeFloat,
-				Time:         time.Unix(0, trade.TS*int64(time.Millisecond)),
-				Source:       s.exchangeName,
-				VerifiedPair: exchangePair.Verified,
-				BaseToken:    exchangePair.UnderlyingPair.BaseToken,
-				QuoteToken:   exchangePair.UnderlyingPair.QuoteToken,
-			}
-			if exchangePair.Verified {
-				log.Infof("Got verified trade: %v", t)
+			log.Infof("Received JSON message: %+v", msg["msg"])
+
+		default:
+			decodedMessage := &mexcproto.PushDataV3ApiWrapper{}
+			if err := proto.Unmarshal(payload, decodedMessage); err != nil {
+				log.Println("protobuf unmarshal error:", err)
+				continue
 			}
 
-			// Handle duplicate trades.
-			discardTrade := t.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
-			if !discardTrade {
-				t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
-				s.chanTrades <- t
+			log.Infof("Received Message: %v", decodedMessage)
+
+			ch := strings.ToLower(decodedMessage.GetChannel())
+			sym := decodedMessage.GetSymbol()
+
+			switch {
+			case strings.Contains(ch, "public.aggre.deals.v3.api.pb"):
+				dealsMsg := decodedMessage.GetPublicAggreDeals()
+				if dealsMsg == nil {
+					log.Debug("aggre.deals wrapper has no PublicAggreDeals payload")
+					break
+				}
+				for _, trade := range dealsMsg.GetDeals() {
+					var exchangePair dia.ExchangePair
+					priceFloat, _ := strconv.ParseFloat(trade.GetPrice(), 64)
+					volumeFloat, _ := strconv.ParseFloat(trade.GetQuantity(), 64)
+					if trade.GetTradeType() == 2 {
+						volumeFloat *= -1
+					}
+					exchangePair, err = s.db.GetExchangePairCache(s.exchangeName, sym)
+					if err != nil {
+						log.Error("get exchange pair from cache: ", err)
+					}
+					t := &dia.Trade{
+						Symbol:       exchangePair.Symbol,
+						Pair:         sym,
+						Price:        priceFloat,
+						Volume:       volumeFloat,
+						Time:         time.Unix(0, trade.GetTime()*int64(time.Millisecond)),
+						Source:       s.exchangeName,
+						VerifiedPair: exchangePair.Verified,
+						BaseToken:    exchangePair.UnderlyingPair.BaseToken,
+						QuoteToken:   exchangePair.UnderlyingPair.QuoteToken,
+					}
+					if exchangePair.Verified {
+						log.Infof("Got verified trade: %v", t)
+					}
+
+					// Handle duplicate trades.
+					discardTrade := t.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
+					if !discardTrade {
+						t.IdentifyDuplicateTagset(tmDuplicateTrades, duplicateTradesMemory)
+						s.chanTrades <- t
+					}
+				}
+			default:
+				// handle other channels if you subscribe to them later
+				log.Debugf("unhandled channel: %s", decodedMessage.GetChannel())
 			}
 		}
 	}
@@ -206,16 +235,21 @@ func (s *MEXCScraper) ScrapePair(pair dia.ExchangePair) (PairScraper, error) {
 func (s *MEXCScraper) subscribe(pair dia.ExchangePair) error {
 	id := len(s.connections)
 
-	a := &MEXCRequest{
-		Method: "SUBSCRIPTION",
-		Params: []string{"spot@public.deals.v3.api@" + pair.ForeignName},
-	}
-
+	// spot@public.aggre.deals.v3.api.pb@100ms@BTCUSDT (from doc)
+	// spot@public.limit.depth.v3.api.pb@USDCUSDT@5 (from demo code)
+	// spot@public.deals.v3.api.pb@BTCUSDT (single trade channel - required but not supported in new API)
 	if s.connections[id-1].numSubscriptions < mexcMaxSubPerConn {
-		a.ID = int64(id)
-		if err := s.connections[id-1].wsConn.WriteJSON(a); err != nil {
+		subscriptionMessage := map[string]interface{}{
+			"method": "SUBSCRIPTION",
+			"params": []string{"spot@public.aggre.deals.v3.api.pb@100ms@" + pair.ForeignName},
+		}
+		subMsg, _ := json.Marshal(subscriptionMessage)
+		err := s.connections[id-1].wsConn.WriteMessage(ws.TextMessage, subMsg)
+		if err != nil {
+			log.Error(err)
 			return err
 		}
+		log.Infof("Sent Subscription Message: %v", string(subMsg))
 		conn := s.connections[id-1]
 		conn.numSubscriptions++
 		s.connections[id-1] = conn
@@ -226,10 +260,19 @@ func (s *MEXCScraper) subscribe(pair dia.ExchangePair) error {
 			return err
 		}
 		id++
-		a.ID = int64(id)
-		if err := s.connections[id-1].wsConn.WriteJSON(a); err != nil {
+
+		subscriptionMessage := map[string]interface{}{
+			"method": "SUBSCRIPTION",
+			"params": []string{"spot@public.aggre.deals.v3.api.pb@100ms@" + pair.ForeignName},
+		}
+		subMsg, _ := json.Marshal(subscriptionMessage)
+		err = s.connections[id-1].wsConn.WriteMessage(ws.TextMessage, subMsg)
+		if err != nil {
+			log.Error(err)
 			return err
 		}
+		log.Infof("Sent Subscription Message: %v", string(subMsg))
+
 		conn := s.connections[id-1]
 		conn.numSubscriptions++
 		s.connections[id-1] = conn
