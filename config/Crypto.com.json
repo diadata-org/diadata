@@ -187,6 +187,12 @@
             "Symbol": "B3"
         },
         {
+            "Exchange": "Crypto.com",
+            "Ignore": false,
+            "ForeignName": "BANANA_USD",
+            "Symbol": "BANANA"
+        },
+        {
             "Symbol": "BAT",
             "ForeignName": "BAT_USDT",
             "Exchange": "Crypto.com",
@@ -287,6 +293,12 @@
             "ForeignName": "COTI_USDC",
             "Exchange": "Crypto.com",
             "Ignore": false
+        },
+        {
+            "Exchange": "Crypto.com",
+            "Ignore": false,
+            "ForeignName": "COTI_USD",
+            "Symbol": "COTI"
         },
         {
             "Symbol": "CRO",
@@ -629,6 +641,12 @@
             "ForeignName": "KEEP_USDT",
             "Exchange": "Crypto.com",
             "Ignore": false
+        },
+        {
+            "Exchange": "Crypto.com",
+            "Ignore": false,
+            "ForeignName": "KERNEL_USD",
+            "Symbol": "KERNEL"
         },
         {
             "Symbol": "KNC",

@@ -79,6 +79,12 @@
             "Address": "0xba100000625a3754423978a60c9317c58a424e3D"
         },
         {
+            "Exchange": "OKEx",
+            "Symbol": "BANANA",
+            "Blockchain": "Ethereum",
+            "Address": "0x38E68A37E401F7271568CecaAc63c6B1e19130B4"
+        },
+        {
             "Symbol": "BONK",
             "Exchange": "OKEx",
             "Blockchain": "Solana",

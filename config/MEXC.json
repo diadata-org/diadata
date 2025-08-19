@@ -127,6 +127,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "BANANAUSDT",
+            "Symbol": "BANANA"
+        },
+        {
             "Symbol": "BCH",
             "ForeignName": "BCHUSDT",
             "Exchange": "MEXC",
@@ -501,6 +507,12 @@
         {
             "Exchange": "MEXC",
             "Ignore": false,
+            "ForeignName": "KERNELUSDT",
+            "Symbol": "KERNEL"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
             "ForeignName": "KEYCATUSDT",
             "Symbol": "KEYCAT"
         },
@@ -797,6 +809,12 @@
             "ForeignName": "SUSDT",
             "Exchange": "MEXC",
             "Ignore": false
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "SAGAUSDT",
+            "Symbol": "SAGA"
         },
         {
             "Symbol": "SAMO",

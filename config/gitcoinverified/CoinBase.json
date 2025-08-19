@@ -134,6 +134,12 @@
         },
         {
             "Exchange": "CoinBase",
+            "Symbol": "COTI",
+            "Blockchain": "Coti",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinBase",
             "Symbol": "CRV",
             "Blockchain": "Ethereum",
             "Address": "0xD533a949740bb3306d119CC777fa900bA034cd52"
@@ -311,6 +317,12 @@
             "Exchange": "CoinBase",
             "Blockchain": "Osmosis",
             "Address": "ibc/57AA1A70A4BC9769C525EBF6386F7A21536E04A79D62E1981EFCEF9428EBB205"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "KERNEL",
+            "Blockchain": "Ethereum",
+            "Address": "0x3f80B1c54Ae920Be41a77f8B902259D48cf24cCf"
         },
         {
             "Exchange": "CoinBase",

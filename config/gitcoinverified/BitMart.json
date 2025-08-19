@@ -187,6 +187,12 @@
             "Address": "0xc00e94Cb662C3520282E6f5717214004A7f26888"
         },
         {
+            "Exchange": "BitMart",
+            "Symbol": "COTI",
+            "Blockchain": "Coti",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "CRV",
             "Exchange": "BitMart",
             "Blockchain": "Ethereum",
@@ -347,6 +353,12 @@
             "Exchange": "BitMart",
             "Blockchain": "Osmosis",
             "Address": "ibc/57AA1A70A4BC9769C525EBF6386F7A21536E04A79D62E1981EFCEF9428EBB205"
+        },
+        {
+            "Exchange": "BitMart",
+            "Symbol": "KERNEL",
+            "Blockchain": "Ethereum",
+            "Address": "0x3f80B1c54Ae920Be41a77f8B902259D48cf24cCf"
         },
         {
             "Exchange": "BitMart",
@@ -545,6 +557,12 @@
             "Symbol": "S",
             "Blockchain": "Sonic",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "BitMart",
+            "Symbol": "SAGA",
+            "Blockchain": "Saga",
+            "Address": "0xA19377761FED745723B90993988E04d641c2CfFE"
         },
         {
             "Symbol": "SAND",

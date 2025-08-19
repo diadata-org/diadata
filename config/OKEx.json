@@ -278,6 +278,12 @@
         },
         {
             "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "BANANA-USDT",
+            "Symbol": "BANANA"
+        },
+        {
+            "Exchange": "OKEx",
             "ForeignName": "BCD-BTC",
             "Ignore": false,
             "Symbol": "BCD"
