@@ -121,6 +121,12 @@
             "Address": "0xba100000625a3754423978a60c9317c58a424e3D"
         },
         {
+            "Exchange": "MEXC",
+            "Symbol": "BANANA",
+            "Blockchain": "Ethereum",
+            "Address": "0x38E68A37E401F7271568CecaAc63c6B1e19130B4"
+        },
+        {
             "Symbol": "BCH",
             "Exchange": "MEXC",
             "Blockchain": "BitcoinCash",
@@ -470,6 +476,12 @@
         },
         {
             "Exchange": "MEXC",
+            "Symbol": "KERNEL",
+            "Blockchain": "Ethereum",
+            "Address": "0x3f80B1c54Ae920Be41a77f8B902259D48cf24cCf"
+        },
+        {
+            "Exchange": "MEXC",
             "Symbol": "KEYCAT",
             "Blockchain": "Base",
             "Address": "0x9a26F5433671751C3276a065f57e5a02D2817973"
@@ -737,6 +749,12 @@
             "Exchange": "MEXC",
             "Blockchain": "Sonic",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "MEXC",
+            "Symbol": "SAGA",
+            "Blockchain": "Saga",
+            "Address": "0xA19377761FED745723B90993988E04d641c2CfFE"
         },
         {
             "Symbol": "SAMO",

@@ -153,6 +153,12 @@
         {
             "Exchange": "CoinBase",
             "Ignore": false,
+            "ForeignName": "COTI-USD",
+            "Symbol": "COTI"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
             "ForeignName": "CRV-USD",
             "Symbol": "CRV"
         },
@@ -335,6 +341,12 @@
             "ForeignName": "KAVA-USD",
             "Ignore": false,
             "Symbol": "KAVA"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "KERNEL-USD",
+            "Symbol": "KERNEL"
         },
         {
             "Exchange": "CoinBase",

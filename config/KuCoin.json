@@ -241,6 +241,12 @@
             "Symbol": "B3"
         },
         {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "BANANA-USDT",
+            "Symbol": "BANANA"
+        },
+        {
             "Symbol": "BAT",
             "ForeignName": "BAT-USDT",
             "Exchange": "KuCoin",
@@ -491,6 +497,12 @@
             "Ignore": false,
             "ForeignName": "COOKIE-USDT",
             "Symbol": "COOKIE"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "COTI-USDT",
+            "Symbol": "COTI"
         },
         {
             "Symbol": "CRO",
@@ -1031,6 +1043,12 @@
             "ForeignName": "KDA-USDC",
             "Exchange": "KuCoin",
             "Ignore": false
+        },
+        {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "KERNEL-USDT",
+            "Symbol": "KERNEL"
         },
         {
             "Symbol": "KEY",

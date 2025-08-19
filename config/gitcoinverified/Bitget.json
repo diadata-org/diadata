@@ -80,6 +80,12 @@
         },
         {
             "Exchange": "Bitget",
+            "Symbol": "BANANA",
+            "Blockchain": "Ethereum",
+            "Address": "0x38E68A37E401F7271568CecaAc63c6B1e19130B4"
+        },
+        {
+            "Exchange": "Bitget",
             "Symbol": "BEAM",
             "Blockchain": "Ethereum",
             "Address": "0x62D0A8458eD7719FDAF978fe5929C6D342B0bFcE"
@@ -119,6 +125,12 @@
             "Symbol": "COOKIE",
             "Blockchain": "BinanceSmartChain",
             "Address": "0xC0041EF357B183448B235a8Ea73Ce4E4eC8c265F"
+        },
+        {
+            "Exchange": "Bitget",
+            "Symbol": "COTI",
+            "Blockchain": "Coti",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Symbol": "CUSD",
@@ -235,6 +247,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "Bitget",
+            "Symbol": "KERNEL",
+            "Blockchain": "Ethereum",
+            "Address": "0x3f80B1c54Ae920Be41a77f8B902259D48cf24cCf"
+        },
+        {
             "Symbol": "KSM",
             "Exchange": "Bitget",
             "Blockchain": "Kusama",
@@ -341,6 +359,12 @@
             "Symbol": "S",
             "Blockchain": "Sonic",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Bitget",
+            "Symbol": "SAGA",
+            "Blockchain": "Saga",
+            "Address": "0xA19377761FED745723B90993988E04d641c2CfFE"
         },
         {
             "Symbol": "SATS",

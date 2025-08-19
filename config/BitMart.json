@@ -188,6 +188,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "COTI_USDT",
+            "Symbol": "COTI"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "CRV_USDT",
             "Ignore": false,
             "Symbol": "CRV"
@@ -369,6 +375,12 @@
         {
             "Exchange": "BitMart",
             "Ignore": false,
+            "ForeignName": "KERNEL_USDT",
+            "Symbol": "KERNEL"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
             "ForeignName": "KEYCAT_USDT",
             "Symbol": "KEYCAT"
         },
@@ -545,6 +557,12 @@
             "Ignore": false,
             "ForeignName": "S_USDT",
             "Symbol": "S"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "SAGA_USDT",
+            "Symbol": "SAGA"
         },
         {
             "Exchange": "BitMart",

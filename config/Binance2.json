@@ -69,6 +69,18 @@
         {
             "Exchange": "Binance",
             "Ignore": false,
+            "ForeignName": "BANANAUSDT",
+            "Symbol": "BANANA"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "BANANAUSDC",
+            "Symbol": "BANANA"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
             "ForeignName": "BEAMUSDT",
             "Symbol": "BEAM"
         },
@@ -101,6 +113,12 @@
             "Ignore": false,
             "ForeignName": "COOKIEUSDC",
             "Symbol": "COOKIE"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "COTIUSDT",
+            "Symbol": "COTI"
         },
         {
             "Exchange": "Binance",
@@ -249,6 +267,18 @@
         {
             "Exchange": "Binance",
             "Ignore": false,
+            "ForeignName": "KERNELUSDT",
+            "Symbol": "KERNEL"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "KERNELUSDC",
+            "Symbol": "KERNEL"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
             "ForeignName": "LDOUSDT",
             "Symbol": "LDO"
         },
@@ -347,6 +377,18 @@
             "ForeignName": "SFDUSD",
             "Ignore": false,
             "Symbol": "S"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "SAGAUSDT",
+            "Symbol": "SAGA"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "SAGAUSDC",
+            "Symbol": "SAGA"
         },
         {
             "Exchange": "Binance",

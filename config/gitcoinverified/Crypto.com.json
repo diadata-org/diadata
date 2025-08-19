@@ -85,6 +85,12 @@
             "Address": "0xB3B32F9f8827D4634fE7d973Fa1034Ec9fdDB3B3"
         },
         {
+            "Exchange": "Crypto.com",
+            "Symbol": "BANANA",
+            "Blockchain": "Ethereum",
+            "Address": "0x38E68A37E401F7271568CecaAc63c6B1e19130B4"
+        },
+        {
             "Symbol": "BAT",
             "Exchange": "Crypto.com",
             "Blockchain": "Ethereum",
@@ -317,6 +323,12 @@
             "Exchange": "Crypto.com",
             "Blockchain": "Ethereum",
             "Address": "0x85Eee30c52B0b379b046Fb0F85F4f3Dc3009aFEC"
+        },
+        {
+            "Exchange": "Crypto.com",
+            "Symbol": "KERNEL",
+            "Blockchain": "Ethereum",
+            "Address": "0x3f80B1c54Ae920Be41a77f8B902259D48cf24cCf"
         },
         {
             "Symbol": "KNC",

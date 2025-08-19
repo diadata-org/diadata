@@ -99,6 +99,12 @@
         {
             "Exchange": "Bitget",
             "Ignore": false,
+            "ForeignName": "BANANAUSDT",
+            "Symbol": "BANANA"
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
             "ForeignName": "BEAMUSDT",
             "Symbol": "BEAM"
         },
@@ -149,6 +155,12 @@
             "Ignore": false,
             "ForeignName": "COOKIEUSDT",
             "Symbol": "COOKIE"
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "COTIUSDT",
+            "Symbol": "COTI"
         },
         {
             "Symbol": "CUSD",
@@ -271,6 +283,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "KERNELUSDT",
+            "Symbol": "KERNEL"
+        },
+        {
             "Symbol": "KSM",
             "ForeignName": "KSMUSDT",
             "Exchange": "Bitget",
@@ -377,6 +395,12 @@
             "Ignore": false,
             "ForeignName": "SUSDT",
             "Symbol": "S"
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "SAGAUSDT",
+            "Symbol": "SAGA"
         },
         {
             "Symbol": "SATS",

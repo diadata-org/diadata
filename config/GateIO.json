@@ -200,6 +200,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "BANANA_USDT",
+            "Symbol": "BANANA"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "BAT_BTC",
             "Ignore": false,
             "Symbol": "BAT"
@@ -551,6 +557,12 @@
             "Ignore": false,
             "ForeignName": "COOKIE_USDT",
             "Symbol": "COOKIE"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "COTI_USDT",
+            "Symbol": "COTI"
         },
         {
             "Exchange": "GateIO",
@@ -1331,6 +1343,12 @@
             "ForeignName": "KDA_USDT",
             "Ignore": false,
             "Symbol": "KDA"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "KERNEL_USDT",
+            "Symbol": "KERNEL"
         },
         {
             "Exchange": "GateIO",
@@ -2291,6 +2309,18 @@
             "Ignore": false,
             "ForeignName": "S_USDT",
             "Symbol": "S"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "SAGA_USDT",
+            "Symbol": "SAGA"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "SAGA_USDC",
+            "Symbol": "SAGA"
         },
         {
             "Exchange": "GateIO",

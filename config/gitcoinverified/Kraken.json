@@ -122,6 +122,12 @@
         },
         {
             "Exchange": "Kraken",
+            "Symbol": "COTI",
+            "Blockchain": "Coti",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Kraken",
             "Symbol": "CRV",
             "Blockchain": "Ethereum",
             "Address": "0xD533a949740bb3306d119CC777fa900bA034cd52"
@@ -283,6 +289,12 @@
             "Address": "0x98d0baa52b2D063E780DE12F615f963Fe8537553"
         },
         {
+            "Exchange": "Kraken",
+            "Symbol": "KERNEL",
+            "Blockchain": "Ethereum",
+            "Address": "0x3f80B1c54Ae920Be41a77f8B902259D48cf24cCf"
+        },
+        {
             "Symbol": "KILT",
             "Exchange": "Kraken",
             "Blockchain": "Kilt",
@@ -401,6 +413,12 @@
             "Exchange": "Kraken",
             "Blockchain": "Ethereum",
             "Address": "0x221657776846890989a759BA2973e427DfF5C9bB"
+        },
+        {
+            "Exchange": "Kraken",
+            "Symbol": "SAGA",
+            "Blockchain": "Saga",
+            "Address": "0xA19377761FED745723B90993988E04d641c2CfFE"
         },
         {
             "Exchange": "Kraken",

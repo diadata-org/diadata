@@ -170,6 +170,18 @@
         },
         {
             "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "COTIUSD",
+            "Symbol": "COTI"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "COTIEUR",
+            "Symbol": "COTI"
+        },
+        {
+            "Exchange": "Kraken",
             "ForeignName": "DAIUSD",
             "Ignore": false,
             "Symbol": "DAI"
@@ -368,6 +380,18 @@
         },
         {
             "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "KERNELUSD",
+            "Symbol": "KERNEL"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "KERNELEUR",
+            "Symbol": "KERNEL"
+        },
+        {
+            "Exchange": "Kraken",
             "ForeignName": "KILTUSD",
             "Ignore": false,
             "Symbol": "KILT"
@@ -461,6 +485,18 @@
             "ForeignName": "QTUMUSD",
             "Ignore": false,
             "Symbol": "QTUM"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "SAGAUSD",
+            "Symbol": "SAGA"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "SAGAEUR",
+            "Symbol": "SAGA"
         },
         {
             "Exchange": "Kraken",
