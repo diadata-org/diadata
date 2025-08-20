@@ -481,7 +481,7 @@ func getNAstrGraphqlAssetQuotationFromDia(blockchain, address string, windowSize
 
 	// Get times for start/end
 	currentTime := time.Now()
-	starttime := currentTime.Add(time.Duration(-windowSize*2) * time.Second)
+	starttime := currentTime.Add(time.Duration(-windowSize) * time.Second)
 
 	type Response struct {
 		GetFeed []struct {
