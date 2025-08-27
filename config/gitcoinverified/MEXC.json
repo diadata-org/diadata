@@ -625,6 +625,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "MEXC",
+            "Symbol": "NEIROETH",
+            "Blockchain": "Ethereum",
+            "Address": "0xEE2a03Aa6Dacf51C18679C516ad5283d8E7C2637"
+        },
+        {
             "Symbol": "NETT",
             "Exchange": "MEXC",
             "Blockchain": "Metis",
@@ -1055,6 +1061,12 @@
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
             "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
+        },
+        {
+            "Exchange": "MEXC",
+            "Symbol": "ZEN",
+            "Blockchain": "Base",
+            "Address": "0xf43eB8De897Fbc7F2502483B2Bef7Bb9EA179229"
         },
         {
             "Symbol": "ZK",

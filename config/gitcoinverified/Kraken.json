@@ -560,6 +560,12 @@
         },
         {
             "Exchange": "Kraken",
+            "Symbol": "USDS",
+            "Blockchain": "Ethereum",
+            "Address": "0xdC035D45d973E3EC169d2276DDab16f1e407384F"
+        },
+        {
+            "Exchange": "Kraken",
             "Symbol": "USDT",
             "Blockchain": "Ethereum",
             "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"

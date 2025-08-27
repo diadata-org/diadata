@@ -931,6 +931,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "NEIROETH",
+            "Blockchain": "Ethereum",
+            "Address": "0xEE2a03Aa6Dacf51C18679C516ad5283d8E7C2637"
+        },
+        {
             "Symbol": "NFTY",
             "Exchange": "GateIO",
             "Blockchain": "BinanceSmartChain",

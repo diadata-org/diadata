@@ -811,6 +811,12 @@
             "Symbol": "NEAR"
         },
         {
+            "Exchange": "Crypto.com",
+            "Ignore": false,
+            "ForeignName": "NEIROETH_USD",
+            "Symbol": "NEIROETH"
+        },
+        {
             "Symbol": "OMG",
             "ForeignName": "OMG_USDT",
             "Exchange": "Crypto.com",

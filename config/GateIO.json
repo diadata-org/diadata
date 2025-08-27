@@ -1850,6 +1850,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "NEIROETH_USDT",
+            "Symbol": "NEIROETH"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "NEO_BTC",
             "Ignore": false,
             "Symbol": "NEO"

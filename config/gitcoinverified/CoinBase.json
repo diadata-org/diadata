@@ -589,6 +589,12 @@
             "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
         },
         {
+            "Exchange": "CoinBase",
+            "Symbol": "USDS",
+            "Blockchain": "Ethereum",
+            "Address": "0xdC035D45d973E3EC169d2276DDab16f1e407384F"
+        },
+        {
             "Symbol": "USDT",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
@@ -647,6 +653,12 @@
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
             "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "ZEN",
+            "Blockchain": "Base",
+            "Address": "0xf43eB8De897Fbc7F2502483B2Bef7Bb9EA179229"
         },
         {
             "Exchange": "CoinBase",

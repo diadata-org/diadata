@@ -320,6 +320,12 @@
         },
         {
             "Exchange": "Bitget",
+            "Symbol": "NEIROETH",
+            "Blockchain": "Ethereum",
+            "Address": "0xEE2a03Aa6Dacf51C18679C516ad5283d8E7C2637"
+        },
+        {
+            "Exchange": "Bitget",
             "Symbol": "NPC",
             "Blockchain": "Ethereum",
             "Address": "0x8eD97a637A790Be1feff5e888d43629dc05408F6"
@@ -451,6 +457,12 @@
             "Address": "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3"
         },
         {
+            "Exchange": "Bitget",
+            "Symbol": "USDS",
+            "Blockchain": "Ethereum",
+            "Address": "0xdC035D45d973E3EC169d2276DDab16f1e407384F"
+        },
+        {
             "Symbol": "USDT",
             "Exchange": "Bitget",
             "Blockchain": "Ethereum",
@@ -479,6 +491,12 @@
             "Exchange": "Bitget",
             "Blockchain": "XRPL",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Bitget",
+            "Symbol": "ZEN",
+            "Blockchain": "Base",
+            "Address": "0xf43eB8De897Fbc7F2502483B2Bef7Bb9EA179229"
         },
         {
             "Symbol": "ZK",

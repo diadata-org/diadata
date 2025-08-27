@@ -590,6 +590,12 @@
         },
         {
             "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "USDS-USD",
+            "Symbol": "USDS"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "USDT-USD",
             "Ignore": false,
             "Symbol": "USDT"
@@ -647,6 +653,12 @@
             "ForeignName": "YFI-USD",
             "Ignore": false,
             "Symbol": "YFI"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "ZEN-USD",
+            "Symbol": "ZEN"
         },
         {
             "Exchange": "CoinBase",
