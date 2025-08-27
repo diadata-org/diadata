@@ -794,6 +794,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "ZEN_USDT",
+            "Symbol": "ZEN"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "ZK_USDT",
             "Ignore": false,
             "Symbol": "ZK"

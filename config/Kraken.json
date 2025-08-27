@@ -650,6 +650,12 @@
         },
         {
             "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "USDSUSD",
+            "Symbol": "USDS"
+        },
+        {
+            "Exchange": "Kraken",
             "ForeignName": "USDTUSD",
             "Ignore": false,
             "Symbol": "USDT"

@@ -596,6 +596,18 @@
         },
         {
             "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "ZENUSDT",
+            "Symbol": "ZEN"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "ZENUSDC",
+            "Symbol": "ZEN"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "ZKFDUSD",
             "Ignore": false,
             "Symbol": "ZK"

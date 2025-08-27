@@ -603,6 +603,12 @@
         {
             "Exchange": "ByBit",
             "Ignore": false,
+            "ForeignName": "NEIROUSDT",
+            "Symbol": "NEIRO"
+        },
+        {
+            "Exchange": "ByBit",
+            "Ignore": false,
             "ForeignName": "OBOLUSDT",
             "Symbol": "OBOL"
         },

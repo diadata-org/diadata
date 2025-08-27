@@ -357,6 +357,12 @@
         {
             "Exchange": "Bitget",
             "Ignore": false,
+            "ForeignName": "NEIROETHUSDT",
+            "Symbol": "NEIROETH"
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
             "ForeignName": "NPCUSDT",
             "Symbol": "NPC"
         },
@@ -493,6 +499,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "USDSUSDT",
+            "Symbol": "USDS"
+        },
+        {
             "Symbol": "USDT",
             "ForeignName": "USDTEUR",
             "Exchange": "Bitget",
@@ -521,6 +533,12 @@
             "ForeignName": "XRPUSDT",
             "Exchange": "Bitget",
             "Ignore": false
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "ZENUSDT",
+            "Symbol": "ZEN"
         },
         {
             "Symbol": "ZK",

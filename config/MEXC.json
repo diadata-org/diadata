@@ -667,6 +667,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "NEIROETHUSDT",
+            "Symbol": "NEIROETH"
+        },
+        {
             "Symbol": "NETT",
             "ForeignName": "NETTUSDT",
             "Exchange": "MEXC",
@@ -1121,6 +1127,12 @@
             "ForeignName": "YFIUSDT",
             "Exchange": "MEXC",
             "Ignore": false
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "ZENUSDT",
+            "Symbol": "ZEN"
         },
         {
             "Symbol": "ZK",

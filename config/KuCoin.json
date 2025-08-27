@@ -1327,6 +1327,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "NEIRO-USDT",
+            "Symbol": "NEIRO"
+        },
+        {
             "Symbol": "NEO",
             "ForeignName": "NEO-ETH",
             "Exchange": "KuCoin",

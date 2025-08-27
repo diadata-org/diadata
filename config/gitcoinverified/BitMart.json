@@ -805,6 +805,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "BitMart",
+            "Symbol": "ZEN",
+            "Blockchain": "Base",
+            "Address": "0xf43eB8De897Fbc7F2502483B2Bef7Bb9EA179229"
+        },
+        {
             "Symbol": "ZK",
             "Exchange": "BitMart",
             "Blockchain": "ZKsync",
