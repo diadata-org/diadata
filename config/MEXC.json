@@ -1,6 +1,12 @@
 {
     "Coins": [
         {
+            "Symbol": "AAVE",
+            "ForeignName": "AAVEUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
             "Symbol": "ADA",
             "ForeignName": "ADAUSDT",
             "Exchange": "MEXC",
