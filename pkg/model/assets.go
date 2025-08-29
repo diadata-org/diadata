@@ -388,7 +388,7 @@ func (rdb *RelDB) GetAssets(symbol string) (assets []dia.Asset, err error) {
 	return
 }
 
-// GetAssetExchnage returns all assets which share the symbol ticker @symbol.
+// GetAssetExchange returns all assets which share the symbol ticker @symbol.
 func (rdb *RelDB) GetAssetExchange(symbol string) (exchanges []string, err error) {
 
 	query := fmt.Sprintf(`
