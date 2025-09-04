@@ -457,6 +457,18 @@
             "Symbol": "GUN"
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "HEMIUSDT",
+            "Symbol": "HEMI"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "HEMIUSDC",
+            "Symbol": "HEMI"
+        },
+        {
             "Symbol": "HOP",
             "ForeignName": "HOPUSDT",
             "Exchange": "MEXC",
