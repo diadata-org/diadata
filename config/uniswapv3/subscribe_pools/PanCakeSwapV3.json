@@ -1,6 +1,10 @@
 {
     "Pools": [
         {
+            "Address": "0x1b54cd932B6B751803C996cBeF36280b53795f81",
+            "ForeignName": "USDT-HEMI"
+        },
+        {
             "Address": "0xAC0FE1C4126e4a9B644Adfc1303827e3bB5dDDF3",
             "ForeignName": "USDT-satUSD"
         },

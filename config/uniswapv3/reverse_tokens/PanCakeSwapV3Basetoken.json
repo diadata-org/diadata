@@ -3,6 +3,10 @@
     {
       "Address": "0xb4818BB69478730EF4e33Cc068dD94278e2766cB",
       "Symbol": "satUSD"
+    },
+    {
+      "Address": "0x5fFD0EAdc186AF9512542d0d5e5eAFC65d5aFc5B",
+      "Symbol": "HEMI"
     }
   ]
 }
