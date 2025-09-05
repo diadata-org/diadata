@@ -356,6 +356,12 @@
         },
         {
             "Exchange": "BitMart",
+            "ForeignName": "HEMI_USDT",
+            "Ignore": false,
+            "Symbol": "HEMI"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "HBAR_USDT",
             "Ignore": false,
             "Symbol": "HBAR"
