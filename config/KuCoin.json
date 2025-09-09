@@ -1705,6 +1705,12 @@
             "Symbol": "SOL"
         },
         {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "SOMI-USDT",
+            "Symbol": "SOMI"
+        },
+        {
             "Symbol": "SPA",
             "ForeignName": "SPA-USDT",
             "Exchange": "KuCoin",
@@ -2069,6 +2075,12 @@
             "Ignore": false,
             "ForeignName": "WLD-USDT",
             "Symbol": "WLD"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "WMTX-USDT",
+            "Symbol": "WMTX"
         },
         {
             "Symbol": "WXT",

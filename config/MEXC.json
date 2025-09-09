@@ -895,6 +895,18 @@
             "Ignore": false
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "SOMIUSDT",
+            "Symbol": "SOMI"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "SOMIUSDC",
+            "Symbol": "SOMI"
+        },
+        {
             "Symbol": "SOV",
             "ForeignName": "SOVUSDT",
             "Exchange": "MEXC",
@@ -1109,6 +1121,12 @@
             "Ignore": false,
             "ForeignName": "WILDUSDT",
             "Symbol": "WILD"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "WMTXUSDT",
+            "Symbol": "WMTX"
         },
         {
             "Exchange": "MEXC",

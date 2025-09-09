@@ -757,6 +757,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "SOMIUSDT",
+            "Symbol": "SOMI"
+        },
+        {
             "Symbol": "SPELL",
             "ForeignName": "SPELLUSDT",
             "Exchange": "ByBit",

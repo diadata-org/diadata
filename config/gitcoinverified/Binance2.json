@@ -469,6 +469,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "Binance2",
+            "Symbol": "SOMI",
+            "Blockchain": "Somnia",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "SPELL",
             "Exchange": "Binance2",
             "Blockchain": "Ethereum",

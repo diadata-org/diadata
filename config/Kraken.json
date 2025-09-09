@@ -716,6 +716,18 @@
         },
         {
             "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "WMTXUSD",
+            "Symbol": "WMTX"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "WMTXEUR",
+            "Symbol": "WMTX"
+        },
+        {
+            "Exchange": "Kraken",
             "ForeignName": "XLMBTC",
             "Ignore": false,
             "Symbol": "XLM"

@@ -614,6 +614,12 @@
         },
         {
             "Exchange": "Kraken",
+            "Symbol": "WMTX",
+            "Blockchain": "Ethereum",
+            "Address": "0xDBB5Cf12408a3Ac17d668037Ce289f9eA75439D7"
+        },
+        {
+            "Exchange": "Kraken",
             "Symbol": "XLM",
             "Blockchain": "Stellar",
             "Address": "0x0000000000000000000000000000000000000000"
