@@ -429,6 +429,12 @@
         {
             "Exchange": "Bitget",
             "Ignore": false,
+            "ForeignName": "SOMIUSDT",
+            "Symbol": "SOMI"
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
             "ForeignName": "SSVUSDT",
             "Symbol": "SSV"
         },

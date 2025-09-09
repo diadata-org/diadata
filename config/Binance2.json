@@ -429,6 +429,12 @@
         {
             "Exchange": "Binance",
             "Ignore": false,
+            "ForeignName": "SOMIUSDT",
+            "Symbol": "SOMI"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
             "ForeignName": "SSVUSDT",
             "Symbol": "SSV"
         },

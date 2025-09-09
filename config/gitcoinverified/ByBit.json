@@ -721,6 +721,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "ByBit",
+            "Symbol": "SOMI",
+            "Blockchain": "Somnia",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "SPELL",
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",

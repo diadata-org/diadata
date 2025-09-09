@@ -613,6 +613,12 @@
             "Address": "2wmKXX1xsxLfrvjEPrt2UHiqj8Gbzwxvffr9qmNjsw8g"
         },
         {
+            "Exchange": "BitMart",
+            "Symbol": "SOMI",
+            "Blockchain": "Somnia",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "SPELL",
             "Exchange": "BitMart",
             "Blockchain": "Ethereum",
@@ -773,6 +779,12 @@
             "Symbol": "WILD",
             "Blockchain": "Ethereum",
             "Address": "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34"
+        },
+        {
+            "Exchange": "BitMart",
+            "Symbol": "WMTX",
+            "Blockchain": "Ethereum",
+            "Address": "0xDBB5Cf12408a3Ac17d668037Ce289f9eA75439D7"
         },
         {
             "Exchange": "BitMart",

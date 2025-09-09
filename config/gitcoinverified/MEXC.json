@@ -829,6 +829,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "MEXC",
+            "Symbol": "SOMI",
+            "Blockchain": "Somnia",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "SPA",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
@@ -1037,6 +1043,12 @@
             "Symbol": "WILD",
             "Blockchain": "Ethereum",
             "Address": "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34"
+        },
+        {
+            "Exchange": "MEXC",
+            "Symbol": "WMTX",
+            "Blockchain": "Ethereum",
+            "Address": "0xDBB5Cf12408a3Ac17d668037Ce289f9eA75439D7"
         },
         {
             "Exchange": "MEXC",

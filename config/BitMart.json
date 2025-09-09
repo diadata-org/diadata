@@ -356,15 +356,15 @@
         },
         {
             "Exchange": "BitMart",
-            "ForeignName": "HEMI_USDT",
-            "Ignore": false,
-            "Symbol": "HEMI"
-        },
-        {
-            "Exchange": "BitMart",
             "ForeignName": "HBAR_USDT",
             "Ignore": false,
             "Symbol": "HBAR"
+        },
+        {
+            "Exchange": "BitMart",
+            "ForeignName": "HEMI_USDT",
+            "Ignore": false,
+            "Symbol": "HEMI"
         },
         {
             "Exchange": "BitMart",
@@ -614,6 +614,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "SOMI_USDT",
+            "Symbol": "SOMI"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "SPELL_USDT",
             "Ignore": false,
             "Symbol": "SPELL"
@@ -761,6 +767,12 @@
             "Ignore": false,
             "ForeignName": "WILD_USDT",
             "Symbol": "WILD"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "WMTX_USDT",
+            "Symbol": "WMTX"
         },
         {
             "Exchange": "BitMart",

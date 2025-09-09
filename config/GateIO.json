@@ -2492,6 +2492,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "SOMI_USDT",
+            "Symbol": "SOMI"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "SOP_ETH",
             "Ignore": false,
             "Symbol": "SOP"
@@ -2897,6 +2903,12 @@
             "Ignore": false,
             "ForeignName": "WLD_USDT",
             "Symbol": "WLD"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "WMTX_USDT",
+            "Symbol": "WMTX"
         },
         {
             "Exchange": "GateIO",
