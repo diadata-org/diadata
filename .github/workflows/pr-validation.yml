@@ -163,8 +163,8 @@ jobs:
 
       - name: Wait for Go proxy indexing
         run: |
-          echo "Waiting 4 minutes for Go module proxy to index ${{ matrix.service.version }}..."
-          sleep 240
+          echo "Waiting 6 minutes for Go module proxy to index ${{ matrix.service.version }}..."
+          sleep 360
 
       - name: Download and tidy Go modules
         run: |
