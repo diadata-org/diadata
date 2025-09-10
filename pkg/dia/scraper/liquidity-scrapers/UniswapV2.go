@@ -315,8 +315,7 @@ func (us *UniswapScraper) GetPoolByAddress(pairAddress common.Address) (pool dia
 	var amount0, amount1 float64
 	liquidity, err := pairContract.GetReserves(&bind.CallOpts{})
 	if err != nil {
-		amount0 = 0
-		amount1 = 0
+		return
 	} else {
 		amount0, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(liquidity.Reserve0), new(big.Float).SetFloat64(math.Pow10(int(token0.Decimals)))).Float64()
 		amount1, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(liquidity.Reserve1), new(big.Float).SetFloat64(math.Pow10(int(token1.Decimals)))).Float64()
