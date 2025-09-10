@@ -3,7 +3,7 @@ module github.com/diadata-org/diadata/liquidityScraper
 go 1.22
 
 require (
-	github.com/diadata-org/diadata v1.4.630
+	github.com/diadata-org/diadata v1.4.641
 	github.com/sirupsen/logrus v1.9.3
 )
 
