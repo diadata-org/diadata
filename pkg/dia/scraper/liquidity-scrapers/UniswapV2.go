@@ -2,6 +2,7 @@ package liquidityscrapers
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"math"
 	"math/big"
@@ -311,12 +312,14 @@ func (us *UniswapScraper) GetPoolByAddress(pairAddress common.Address) (pool dia
 	}
 
 	// Getting liquidity
+	var amount0, amount1 float64
 	liquidity, err := pairContract.GetReserves(&bind.CallOpts{})
 	if err != nil {
-		log.Error("get reserves: ", err)
+		return
+	} else {
+		amount0, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(liquidity.Reserve0), new(big.Float).SetFloat64(math.Pow10(int(token0.Decimals)))).Float64()
+		amount1, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(liquidity.Reserve1), new(big.Float).SetFloat64(math.Pow10(int(token1.Decimals)))).Float64()
 	}
-	amount0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(liquidity.Reserve0), new(big.Float).SetFloat64(math.Pow10(int(token0.Decimals)))).Float64()
-	amount1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(liquidity.Reserve1), new(big.Float).SetFloat64(math.Pow10(int(token1.Decimals)))).Float64()
 
 	// TO DO: Fetch timestamp using block number?
 	pool.Time = time.Now()
@@ -380,15 +383,23 @@ func (us *UniswapScraper) Done() chan bool {
 	return us.doneChannel
 }
 
-func (us *UniswapScraper) getNumPairs() (int, error) {
+func (us *UniswapScraper) getNumPairs() (numPairs int, err error) {
 	var contract *uniswap.IUniswapV2FactoryCaller
-	contract, err := uniswap.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), us.RestClient)
+	contract, err = uniswap.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), us.RestClient)
 	if err != nil {
-		log.Error(err)
+		return
 	}
 
-	numPairs, err := contract.AllPairsLength(&bind.CallOpts{})
-	return int(numPairs.Int64()), err
+	numPairsBig, err := contract.AllPairsLength(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+	if numPairsBig == nil {
+		err = errors.New("numPairs == nil")
+		return
+	}
+	numPairs = int(numPairsBig.Int64())
+	return
 }
 
 // getAddressesFromConfig returns a list of Uniswap pool addresses taken from a config file.
