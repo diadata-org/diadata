@@ -2,6 +2,7 @@ package liquidityscrapers
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"math"
 	"math/big"
@@ -380,15 +381,23 @@ func (us *UniswapScraper) Done() chan bool {
 	return us.doneChannel
 }
 
-func (us *UniswapScraper) getNumPairs() (int, error) {
+func (us *UniswapScraper) getNumPairs() (numPairs int, err error) {
 	var contract *uniswap.IUniswapV2FactoryCaller
-	contract, err := uniswap.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), us.RestClient)
+	contract, err = uniswap.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), us.RestClient)
 	if err != nil {
-		log.Error(err)
+		return
 	}
 
-	numPairs, err := contract.AllPairsLength(&bind.CallOpts{})
-	return int(numPairs.Int64()), err
+	numPairsBig, err := contract.AllPairsLength(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+	if numPairsBig == nil {
+		err = errors.New("numPairs == nil")
+		return
+	}
+	numPairs = int(numPairsBig.Int64())
+	return
 }
 
 // getAddressesFromConfig returns a list of Uniswap pool addresses taken from a config file.
