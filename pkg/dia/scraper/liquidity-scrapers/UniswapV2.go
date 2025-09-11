@@ -242,9 +242,11 @@ func (us *UniswapScraper) fetchPools() {
 			time.Sleep(time.Duration(us.waitTime) * time.Millisecond)
 			pool, err := us.GetPoolByID(int64(numPairs - 1 - i))
 			if err != nil {
-				log.Errorln("Error getting pair with ID ", numPairs-1-i)
+				log.Errorf("Error getting pair with ID %v: %v", numPairs-1-i, err)
+				continue
+			} else {
+				log.Info("found pool: ", pool)
 			}
-			log.Info("found pool: ", pool)
 			us.poolChannel <- pool
 		}
 	}
@@ -252,28 +254,22 @@ func (us *UniswapScraper) fetchPools() {
 }
 
 // GetPoolByID returns the Uniswap Pool with the integer id @num.
-func (us *UniswapScraper) GetPoolByID(num int64) (dia.Pool, error) {
+func (us *UniswapScraper) GetPoolByID(num int64) (pool dia.Pool, err error) {
 	var contract *uniswap.IUniswapV2FactoryCaller
 
-	contract, err := uniswap.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), us.RestClient)
+	contract, err = uniswap.NewIUniswapV2FactoryCaller(common.HexToAddress(exchangeFactoryContractAddress), us.RestClient)
 	if err != nil {
-		log.Error(err)
-		return dia.Pool{}, err
+		return
 	}
 
 	pairAddress, err := contract.AllPairs(&bind.CallOpts{}, big.NewInt(num))
 	if err != nil {
-		log.Error(err)
-		return dia.Pool{}, err
+		return
 	}
 
-	pool, err := us.GetPoolByAddress(pairAddress)
-	if err != nil {
-		log.Error(err)
-		return dia.Pool{}, err
-	}
+	pool, err = us.GetPoolByAddress(pairAddress)
+	return
 
-	return pool, err
 }
 
 // Get a pool by its LP token address.
@@ -287,8 +283,7 @@ func (us *UniswapScraper) GetPoolByAddress(pairAddress common.Address) (pool dia
 	connection := us.RestClient
 	pairContract, err = uniswap.NewIUniswapV2PairCaller(pairAddress, connection)
 	if err != nil {
-		log.Error(err)
-		return dia.Pool{}, err
+		return
 	}
 
 	// Getting tokens from pair
@@ -345,7 +340,7 @@ func (us *UniswapScraper) GetPoolByAddress(pairAddress common.Address) (pool dia
 	pool.Blockchain = dia.BlockChain{Name: us.blockchain}
 	pool.Exchange = dia.Exchange{Name: us.exchangeName}
 
-	return pool, nil
+	return
 }
 
 // GetDecimals returns the decimals of the token with address @tokenAddress
@@ -354,7 +349,6 @@ func (us *UniswapScraper) GetDecimals(tokenAddress common.Address) (decimals uin
 	var contract *uniswap.IERC20Caller
 	contract, err = uniswap.NewIERC20Caller(tokenAddress, us.RestClient)
 	if err != nil {
-		log.Error(err)
 		return
 	}
 	decimals, err = contract.Decimals(&bind.CallOpts{})
