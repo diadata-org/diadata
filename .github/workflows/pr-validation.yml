@@ -142,9 +142,22 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  wait-for-go-proxy:
+    name: "Wait for Go module proxy indexing"
+    needs: [detect-service-changes, create-release]
+    if: needs.detect-service-changes.outputs.has-changes == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for Go proxy indexing
+        run: |
+          services='${{ needs.detect-service-changes.outputs.services }}'
+          version=$(echo "$services" | jq -r '.[0].version')
+          echo "Waiting 6 minutes for Go module proxy to index $version..."
+          sleep 360
+
   lint-service:
     name: "Lint ${{ matrix.service.name }}"
-    needs: [detect-service-changes, create-release]
+    needs: [detect-service-changes, create-release, wait-for-go-proxy]
     if: needs.detect-service-changes.outputs.has-changes == 'true'
     runs-on: ubuntu-latest
     strategy:
@@ -160,11 +173,6 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: '1.22'
-
-      - name: Wait for Go proxy indexing
-        run: |
-          echo "Waiting 6 minutes for Go module proxy to index ${{ matrix.service.version }}..."
-          sleep 360
 
       - name: Download and tidy Go modules
         run: |
@@ -216,7 +224,7 @@ jobs:
 
   test-service:
     name: "Test ${{ matrix.service.name }}"
-    needs: [detect-service-changes, create-release, lint-service]
+    needs: [detect-service-changes, create-release, wait-for-go-proxy, lint-service]
     if: needs.detect-service-changes.outputs.has-changes == 'true'
     runs-on: ubuntu-latest
     strategy:
@@ -233,35 +241,12 @@ jobs:
         with:
           go-version: '1.22'
 
-      - name: Wait for Go proxy indexing
-        run: |
-          echo "Waiting 4 minutes for Go module proxy to index ${{ matrix.service.version }}..."
-          sleep 240
-
       - name: Test service
         run: |
           service_path="${{ matrix.service.path }}"
           echo "Testing service in: $service_path"
           
           cd "$service_path"
-          
-          # Try go mod tidy with retry logic (up to 30 minutes total)
-          echo "Running go mod tidy with retry..."
-          for i in {1..60}; do
-            echo "Attempt $i: Running go mod tidy..."
-            if go mod tidy; then
-              echo "✅ Success!"
-              break
-            else
-              if [ $i -lt 60 ]; then
-                echo "❌ Failed, waiting 30 seconds..."
-                sleep 30
-              else
-                echo "❌ All attempts failed after 30 minutes"
-                exit 1
-              fi
-            fi
-          done
           
           # Run tests if any exist
           if find . -name "*_test.go" | head -1 | grep -q .; then
@@ -274,7 +259,7 @@ jobs:
 
   build-service:
     name: "Build ${{ matrix.service.name }}"
-    needs: [detect-service-changes, create-release, lint-service, test-service]
+    needs: [detect-service-changes, create-release, wait-for-go-proxy, lint-service, test-service]
     if: needs.detect-service-changes.outputs.has-changes == 'true'
     runs-on: ubuntu-latest
     strategy:
@@ -379,7 +364,7 @@ jobs:
           echo "✅ Docker image built successfully (not pushed to registry)"
 
   cleanup-failed-releases:
-    needs: [detect-service-changes, create-release, lint-service, test-service, build-service]
+    needs: [detect-service-changes, create-release, wait-for-go-proxy, lint-service, test-service, build-service]
     if: always() && needs.detect-service-changes.outputs.has-changes == 'true' && (needs.lint-service.result == 'failure' || needs.test-service.result == 'failure' || needs.build-service.result == 'failure')
     runs-on: ubuntu-latest
     steps:
@@ -402,7 +387,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   pr-summary:
-    needs: [detect-service-changes, create-release, lint-service, test-service, build-service, cleanup-failed-releases]
+    needs: [detect-service-changes, create-release, wait-for-go-proxy, lint-service, test-service, build-service, cleanup-failed-releases]
     if: always()
     runs-on: ubuntu-latest
     steps:
