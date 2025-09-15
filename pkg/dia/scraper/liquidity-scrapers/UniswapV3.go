@@ -22,7 +22,6 @@ import (
 
 type UniswapV3Scraper struct {
 	RestClient      *ethclient.Client
-	WsClient        *ethclient.Client
 	relDB           *models.RelDB
 	datastore       *models.DB
 	poolChannel     chan dia.Pool
@@ -44,28 +43,28 @@ func NewUniswapV3Scraper(exchange dia.Exchange, relDB *models.RelDB, datastore *
 
 	switch exchange.Name {
 	case dia.UniswapExchangeV3:
-		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(12369621))
+		uls = makeUniswapV3Scraper(exchange, "", relDB, datastore, "200", uint64(12369621))
 	case dia.UniswapExchangeV3Base:
-		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(1371680))
+		uls = makeUniswapV3Scraper(exchange, "", relDB, datastore, "200", uint64(1371680))
 	case dia.UniswapExchangeV3Celo:
-		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(13916355))
+		uls = makeUniswapV3Scraper(exchange, "", relDB, datastore, "200", uint64(13916355))
 	case dia.UniswapExchangeV3Polygon:
-		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(22757913))
+		uls = makeUniswapV3Scraper(exchange, "", relDB, datastore, "200", uint64(22757913))
 	case dia.UniswapExchangeV3Arbitrum:
-		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(165))
+		uls = makeUniswapV3Scraper(exchange, "", relDB, datastore, "200", uint64(165))
 	case dia.PanCakeSwapExchangeV3:
-		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(26956207))
+		uls = makeUniswapV3Scraper(exchange, "", relDB, datastore, "200", uint64(26956207))
 	case dia.PearlfiExchangeTestnet:
-		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(2890))
+		uls = makeUniswapV3Scraper(exchange, "", relDB, datastore, "200", uint64(2890))
 	case dia.PearlfiExchange:
 		// TO DO: add init block number
-		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(0))
+		uls = makeUniswapV3Scraper(exchange, "", relDB, datastore, "200", uint64(0))
 	case dia.RamsesV2Exchange:
-		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(90593047))
+		uls = makeUniswapV3Scraper(exchange, "", relDB, datastore, "200", uint64(90593047))
 	case dia.NileV2Exchange:
-		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "2000", uint64(1768866))
+		uls = makeUniswapV3Scraper(exchange, "", relDB, datastore, "2000", uint64(1768866))
 	case dia.ShadowV3Exchange:
-		uls = makeUniswapV3Scraper(exchange, "", "", relDB, datastore, "200", uint64(1705781))
+		uls = makeUniswapV3Scraper(exchange, "", relDB, datastore, "200", uint64(1705781))
 	}
 
 	go func() {
@@ -75,10 +74,9 @@ func NewUniswapV3Scraper(exchange dia.Exchange, relDB *models.RelDB, datastore *
 }
 
 // makeUniswapV3Scraper returns a uniswap scraper as used in NewUniswapV3Scraper.
-func makeUniswapV3Scraper(exchange dia.Exchange, restDial string, wsDial string, relDB *models.RelDB, datastore *models.DB, waitMilliseconds string, startBlock uint64) *UniswapV3Scraper {
+func makeUniswapV3Scraper(exchange dia.Exchange, restDial string, relDB *models.RelDB, datastore *models.DB, waitMilliseconds string, startBlock uint64) *UniswapV3Scraper {
 	var (
 		restClient  *ethclient.Client
-		wsClient    *ethclient.Client
 		err         error
 		poolChannel = make(chan dia.Pool)
 		doneChannel = make(chan bool)
@@ -90,10 +88,6 @@ func makeUniswapV3Scraper(exchange dia.Exchange, restDial string, wsDial string,
 	if err != nil {
 		log.Fatal("init rest client: ", err)
 	}
-	wsClient, err = ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_WS", wsDial))
-	if err != nil {
-		log.Fatal("init ws client: ", err)
-	}
 
 	var waitTime int
 	waitTimeString := utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_WAIT_TIME", waitMilliseconds)
@@ -104,7 +98,6 @@ func makeUniswapV3Scraper(exchange dia.Exchange, restDial string, wsDial string,
 	}
 
 	uls = &UniswapV3Scraper{
-		WsClient:        wsClient,
 		RestClient:      restClient,
 		relDB:           relDB,
 		datastore:       datastore,
@@ -133,9 +126,9 @@ func (uls *UniswapV3Scraper) fetchPools() {
 
 	log.Info("get pool creations from address: ", uls.factoryContract)
 	poolsCount := 0
-	contract, err := uniswapcontractv3.NewUniswapV3Filterer(common.HexToAddress(uls.factoryContract), uls.WsClient)
+	contract, err := uniswapcontractv3.NewUniswapV3Filterer(common.HexToAddress(uls.factoryContract), uls.RestClient)
 	if err != nil {
-		log.Error(err)
+		log.Fatal("NewUniswapV3Filterer: ", err)
 	}
 
 	// Iterate over chunks of blocks.
