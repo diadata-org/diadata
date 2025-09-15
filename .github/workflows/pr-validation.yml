@@ -248,6 +248,10 @@ jobs:
           
           cd "$service_path"
           
+          # Ensure go.mod and go.sum are up to date
+          go mod tidy
+          go mod download
+          
           # Run tests if any exist
           if find . -name "*_test.go" | head -1 | grep -q .; then
             echo "Running tests..."
