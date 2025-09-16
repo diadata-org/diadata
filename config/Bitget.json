@@ -535,6 +535,12 @@
             "Symbol": "WOLF"
         },
         {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "XAUTUSDT",
+            "Symbol": "XAUT"
+        },
+        {
             "Symbol": "XRP",
             "ForeignName": "XRPUSDT",
             "Exchange": "Bitget",

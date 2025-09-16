@@ -565,6 +565,12 @@
             "Address": "0xb7cB1C96dB6B22b0D3d9536E0108d062BD488F74"
         },
         {
+            "Exchange": "OKEx",
+            "Symbol": "XAUT",
+            "Blockchain": "Ethereum",
+            "Address": "0x68749665FF8D2d112Fa859AA293F07A622782F38"
+        },
+        {
             "Symbol": "XUC",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",

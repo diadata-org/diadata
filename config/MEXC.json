@@ -1141,6 +1141,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "XAUTUSDT",
+            "Symbol": "XAUT"
+        },
+        {
             "Symbol": "XFI",
             "ForeignName": "XFIUSDT",
             "Exchange": "MEXC",

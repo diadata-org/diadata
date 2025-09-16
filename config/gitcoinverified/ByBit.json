@@ -919,6 +919,12 @@
             "Address": "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66"
         },
         {
+            "Exchange": "ByBit",
+            "Symbol": "XAUT",
+            "Blockchain": "Ethereum",
+            "Address": "0x68749665FF8D2d112Fa859AA293F07A622782F38"
+        },
+        {
             "Symbol": "XEM",
             "Exchange": "ByBit",
             "Blockchain": "NEM",

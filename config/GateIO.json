@@ -2931,6 +2931,12 @@
         {
             "Exchange": "GateIO",
             "Ignore": false,
+            "ForeignName": "XAUT_USDT",
+            "Symbol": "XAUT"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
             "ForeignName": "XFI_USDT",
             "Symbol": "XFI"
         },
