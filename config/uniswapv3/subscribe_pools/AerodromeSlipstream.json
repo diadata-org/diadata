@@ -1,6 +1,14 @@
 {
     "Pools": [
         {
+            "Address": "0xA6da283cf7D06b2279626E787c329d6aCF7e2994",
+            "ForeignName": "WETH-cbXRP"
+        },
+        {
+            "Address": "0x95Ff4985af7ED78421215be100c18a2b987f7E90",
+            "ForeignName": "cbXRP-cbBTC"
+        },
+        {
             "Address": "0x0392B12a1cEb0cd13af5Ea448CF5586EA609852D",
             "ForeignName": "WETH-ZEN"
         },

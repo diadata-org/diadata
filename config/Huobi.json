@@ -566,12 +566,6 @@
         },
         {
             "Exchange": "Huobi",
-            "ForeignName": "XAUTUSDT",
-            "Ignore": false,
-            "Symbol": "XAUT"
-        },
-        {
-            "Exchange": "Huobi",
             "ForeignName": "XFIUSDT",
             "Ignore": false,
             "Symbol": "XFI"
