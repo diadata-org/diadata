@@ -2984,6 +2984,12 @@
         },
         {
             "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "XAUT-USDT",
+            "Symbol": "XAUT"
+        },
+        {
+            "Exchange": "OKEx",
             "ForeignName": "XEM-BTC",
             "Ignore": false,
             "Symbol": "XEM"

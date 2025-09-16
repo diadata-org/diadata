@@ -493,6 +493,12 @@
             "Address": "0x67466BE17df832165F8C80a5A120CCc652bD7E69"
         },
         {
+            "Exchange": "Bitget",
+            "Symbol": "XAUT",
+            "Blockchain": "Ethereum",
+            "Address": "0x68749665FF8D2d112Fa859AA293F07A622782F38"
+        },
+        {
             "Symbol": "XRP",
             "Exchange": "Bitget",
             "Blockchain": "XRPL",

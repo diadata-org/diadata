@@ -524,6 +524,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "PNKSTR_USDT",
+            "Symbol": "PNKSTR"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "POL_USDT",
             "Ignore": false,
             "Symbol": "POL"

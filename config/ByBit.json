@@ -949,6 +949,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "XAUTUSDT",
+            "Symbol": "XAUT"
+        },
+        {
             "Symbol": "XEM",
             "ForeignName": "XEMUSDT",
             "Exchange": "ByBit",

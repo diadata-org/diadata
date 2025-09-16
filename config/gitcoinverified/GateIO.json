@@ -1562,6 +1562,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Symbol": "XAUT",
+            "Blockchain": "Ethereum",
+            "Address": "0x68749665FF8D2d112Fa859AA293F07A622782F38"
+        },
+        {
+            "Exchange": "GateIO",
             "Symbol": "XFI",
             "Blockchain": "Ethereum",
             "Address": "0xC8CeED65E236F7d6fB378b8715f9e6912e486A54"
