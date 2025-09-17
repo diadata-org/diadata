@@ -464,6 +464,12 @@
         },
         {
             "Exchange": "BitMart",
+            "ForeignName": "MNT_USDT",
+            "Ignore": false,
+            "Symbol": "MNT"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "MOG_USDT",
             "Ignore": false,
             "Symbol": "MOG"

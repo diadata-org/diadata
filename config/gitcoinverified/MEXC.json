@@ -607,6 +607,12 @@
             "Address": "0xB1a03EdA10342529bBF8EB700a06C60441fEf25d"
         },
         {
+            "Symbol": "MNT",
+            "Exchange": "MEXC",
+            "Blockchain": "Mantle",
+            "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
+        },
+        {
             "Symbol": "MOG",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
