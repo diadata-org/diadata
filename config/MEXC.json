@@ -655,6 +655,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "MNT",
+            "ForeignName": "MNTUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
             "Symbol": "MOG",
             "ForeignName": "MOGUSDT",
             "Exchange": "MEXC",
