@@ -57,6 +57,9 @@ func main() {
 		log.Info("run tradesblock service in historical mode")
 	}
 
+	log.Infof("Reading from Kafka topic:  %d", tradesTopic)
+	log.Infof("Writing to Kafka topic:    %d", tradesBlockTopic)
+
 	kafkaWriter := kafkaHelper.NewSyncWriterWithCompression(tradesBlockTopic)
 	defer func() {
 		err := kafkaWriter.Close()
@@ -88,9 +91,9 @@ func main() {
 	wg := sync.WaitGroup{}
 	go handleBlocks(service, &wg, kafkaWriter)
 
-	log.Printf("starting...")
-	log.Printf("Reading from Kafka topic:  %d", tradesTopic)
-	log.Printf("Writing to Kafka topic:    %d", tradesBlockTopic)
+	log.Infof("starting...")
+	log.Infof("Reading from Kafka topic:  %d", tradesTopic)
+	log.Infof("Writing to Kafka topic:    %d", tradesBlockTopic)
 
 	for {
 		m, err := kafkaReader.ReadMessage(context.Background())
