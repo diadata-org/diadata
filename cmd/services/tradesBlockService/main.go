@@ -89,6 +89,8 @@ func main() {
 	go handleBlocks(service, &wg, kafkaWriter)
 
 	log.Printf("starting...")
+	log.Printf("Reading from Kafka topic:  %d", tradesTopic)
+	log.Printf("Writing to Kafka topic:    %d", tradesBlockTopic)
 
 	for {
 		m, err := kafkaReader.ReadMessage(context.Background())
