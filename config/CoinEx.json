@@ -93,6 +93,12 @@
         {
             "Exchange": "CoinEx",
             "Ignore": false,
+            "ForeignName": "ASTERUSDT",
+            "Symbol": "ASTER"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
             "ForeignName": "ASTRUSDT",
             "Symbol": "ASTR"
         },
@@ -353,6 +359,12 @@
             "Ignore": false,
             "ForeignName": "GRAILUSDT",
             "Symbol": "GRAIL"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
+            "ForeignName": "HYPEUSDT",
+            "Symbol": "HYPE"
         },
         {
             "Exchange": "CoinEx",

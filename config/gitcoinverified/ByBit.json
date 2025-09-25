@@ -67,6 +67,12 @@
             "Address": "0x912CE59144191C1204E64559FE8253a0e49E6548"
         },
         {
+            "Exchange": "ByBit",
+            "Symbol": "ASTER",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0x000Ae314E2A2172a039B26378814C252734f556A"
+        },
+        {
             "Symbol": "ATOM",
             "Exchange": "ByBit",
             "Blockchain": "Cosmos",
@@ -401,6 +407,12 @@
             "Symbol": "HPOS10I",
             "Blockchain": "Ethereum",
             "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9"
+        },
+        {
+            "Exchange": "ByBit",
+            "Symbol": "HYPE",
+            "Blockchain": "Hyperliquid",
+            "Address": "0x0d01dc56dcaaca66ad901c959b4011ec"
         },
         {
             "Symbol": "ICP",

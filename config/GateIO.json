@@ -146,6 +146,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "ASTER_USDT",
+            "Symbol": "ASTER"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "ASTR_USDT",
             "Ignore": false,
             "Symbol": "ASTR"
@@ -1217,6 +1223,12 @@
             "ForeignName": "HT_USDT",
             "Ignore": false,
             "Symbol": "HT"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "HYPE_USDT",
+            "Symbol": "HYPE"
         },
         {
             "Exchange": "GateIO",

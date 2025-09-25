@@ -1,6 +1,22 @@
 {
     "Pools": [
         {
+            "Address": "0xaeaD6bd31dd66Eb3A6216aAF271D0E661585b0b1",
+            "ForeignName": "USDT-ASTER"
+        },
+        {
+            "Address": "0xb040ea24a4Ef35a3ED400B0fF26D8B6F30DEEcaD",
+            "ForeignName": "WBNB-ASTER"
+        },
+        {
+            "Address": "0x7E58f160B5B77b8B24Cd9900C09A3E730215aC47",
+            "ForeignName": "USDT-ASTER"
+        },
+        {
+            "Address": "0x3817fF61B34c5Ff5dc89709B2Db1f194299e3BA9",
+            "ForeignName": "USDT-ASTER"
+        },
+        {
             "Address": "0x1b54cd932B6B751803C996cBeF36280b53795f81",
             "ForeignName": "USDT-HEMI"
         },

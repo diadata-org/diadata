@@ -55,6 +55,12 @@
             "Address": "0x594DaaD7D77592a2b97b725A7AD59D7E188b5bFa"
         },
         {
+            "Exchange": "BitMart",
+            "Symbol": "ASTER",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0x000Ae314E2A2172a039B26378814C252734f556A"
+        },
+        {
             "Symbol": "ASTR",
             "Exchange": "BitMart",
             "Blockchain": "Astar",
@@ -347,6 +353,12 @@
             "Exchange": "BitMart",
             "Blockchain": "Hemi",
             "Address": "0x99e3dE3817F6081B2568208337ef83295b7f591D"
+        },
+        {
+            "Exchange": "BitMart",
+            "Symbol": "HYPE",
+            "Blockchain": "Hyperliquid",
+            "Address": "0x0d01dc56dcaaca66ad901c959b4011ec"
         },
         {
             "Exchange": "BitMart",

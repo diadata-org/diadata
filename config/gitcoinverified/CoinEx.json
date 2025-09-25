@@ -56,6 +56,12 @@
         },
         {
             "Exchange": "CoinEx",
+            "Symbol": "ASTER",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0x000Ae314E2A2172a039B26378814C252734f556A"
+        },
+        {
+            "Exchange": "CoinEx",
             "Symbol": "ASTR",
             "Blockchain": "Astar",
             "Address": "0x0000000000000000000000000000000000000000"
@@ -221,6 +227,12 @@
             "Symbol": "GRAIL",
             "Blockchain": "Arbitrum",
             "Address": "0x3d9907F9a368ad0a51Be60f7Da3b97cf940982D8"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Symbol": "HYPE",
+            "Blockchain": "Hyperliquid",
+            "Address": "0x0d01dc56dcaaca66ad901c959b4011ec"
         },
         {
             "Exchange": "CoinEx",
