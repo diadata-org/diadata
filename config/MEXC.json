@@ -73,6 +73,18 @@
             "Ignore": false
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "ASTERUSDT",
+            "Symbol": "ASTER"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "ASTERUSDC",
+            "Symbol": "ASTER"
+        },
+        {
             "Symbol": "ASTR",
             "ForeignName": "ASTRUSDT",
             "Exchange": "MEXC",
@@ -485,6 +497,18 @@
             "Ignore": false,
             "ForeignName": "HPOS10IUSDT",
             "Symbol": "HPOS10I"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "HYPEUSDT",
+            "Symbol": "HYPE"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "HYPEUSDC",
+            "Symbol": "HYPE"
         },
         {
             "Exchange": "MEXC",

@@ -67,6 +67,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "ASTERUSDT",
+            "Symbol": "ASTER"
+        },
+        {
             "Symbol": "ATOM",
             "ForeignName": "ATOMUSDT",
             "Exchange": "ByBit",
@@ -431,6 +437,12 @@
             "Ignore": false,
             "ForeignName": "HPOS10IUSDT",
             "Symbol": "HPOS10I"
+        },
+        {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "HYPEUSDT",
+            "Symbol": "HYPE"
         },
         {
             "Symbol": "ICP",

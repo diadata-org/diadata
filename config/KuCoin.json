@@ -975,6 +975,18 @@
         {
             "Exchange": "KuCoin",
             "Ignore": false,
+            "ForeignName": "HYPE-USDT",
+            "Symbol": "HYPE"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "HYPE-USDC",
+            "Symbol": "HYPE"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Ignore": false,
             "ForeignName": "ICP-USDT",
             "Symbol": "ICP"
         },
