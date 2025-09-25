@@ -50,6 +50,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "ASTER_USDT",
+            "Symbol": "ASTER"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "ASTR_USDT",
             "Ignore": false,
             "Symbol": "ASTR"
@@ -365,6 +371,12 @@
             "ForeignName": "HEMI_USDT",
             "Ignore": false,
             "Symbol": "HEMI"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "HYPE_USDT",
+            "Symbol": "HYPE"
         },
         {
             "Exchange": "BitMart",
