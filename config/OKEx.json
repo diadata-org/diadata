@@ -1,1 +1,3292 @@
-{"Coins": [{"Exchange": "OKEx", "ForeignName": "1ST-USDT", "Ignore": false, "Symbol": "1ST"}, {"Exchange": "OKEx", "ForeignName": "AAC-BTC", "Ignore": false, "Symbol": "AAC"}, {"Exchange": "OKEx", "ForeignName": "AAC-ETH", "Ignore": false, "Symbol": "AAC"}, {"Exchange": "OKEx", "ForeignName": "AAC-USDT", "Ignore": false, "Symbol": "AAC"}, {"Exchange": "OKEx", "ForeignName": "AAVE-USDC", "Ignore": false, "Symbol": "AAVE"}, {"Exchange": "OKEx", "ForeignName": "AAVE-USDT", "Ignore": false, "Symbol": "AAVE"}, {"Exchange": "OKEx", "ForeignName": "ABL-BTC", "Ignore": false, "Symbol": "ABL"}, {"Exchange": "OKEx", "ForeignName": "ABL-ETH", "Ignore": false, "Symbol": "ABL"}, {"Exchange": "OKEx", "ForeignName": "ABT-BTC", "Ignore": false, "Symbol": "ABT"}, {"Exchange": "OKEx", "ForeignName": "ABT-ETH", "Ignore": false, "Symbol": "ABT"}, {"Exchange": "OKEx", "ForeignName": "ABT-USDT", "Ignore": false, "Symbol": "ABT"}, {"Exchange": "OKEx", "ForeignName": "ACA-USDT", "Ignore": false, "Symbol": "ACA"}, {"Exchange": "OKEx", "ForeignName": "ACE-BTC", "Ignore": false, "Symbol": "ACE"}, {"Exchange": "OKEx", "ForeignName": "ACE-USDT", "Ignore": false, "Symbol": "ACE"}, {"Exchange": "OKEx", "ForeignName": "ACT-BTC", "Ignore": false, "Symbol": "ACT"}, {"Exchange": "OKEx", "ForeignName": "ACT-ETH", "Ignore": false, "Symbol": "ACT"}, {"Exchange": "OKEx", "ForeignName": "ACT-USDT", "Ignore": false, "Symbol": "ACT"}, {"Exchange": "OKEx", "ForeignName": "ADA-BTC", "Ignore": false, "Symbol": "ADA"}, {"Exchange": "OKEx", "ForeignName": "ADA-ETH", "Ignore": false, "Symbol": "ADA"}, {"Exchange": "OKEx", "ForeignName": "ADA-OKB", "Ignore": false, "Symbol": "ADA"}, {"Exchange": "OKEx", "ForeignName": "ADA-USDT", "Ignore": false, "Symbol": "ADA"}, {"Exchange": "OKEx", "ForeignName": "AE-BTC", "Ignore": false, "Symbol": "AE"}, {"Exchange": "OKEx", "ForeignName": "AE-ETH", "Ignore": false, "Symbol": "AE"}, {"Exchange": "OKEx", "ForeignName": "AE-OKB", "Ignore": false, "Symbol": "AE"}, {"Exchange": "OKEx", "ForeignName": "AE-USDT", "Ignore": false, "Symbol": "AE"}, {"Exchange": "OKEx", "ForeignName": "AIDOC-ETH", "Ignore": false, "Symbol": "AIDOC"}, {"Exchange": "OKEx", "ForeignName": "AIDOC-USDT", "Ignore": false, "Symbol": "AIDOC"}, {"Exchange": "OKEx", "Ignore": false, "ForeignName": "AIXBT-USDT", "Symbol": "AIXBT"}, {"Exchange": "OKEx", "ForeignName": "AMM-USDT", "Ignore": false, "Symbol": "AMM"}, {"Exchange": "OKEx", "ForeignName": "ANT-USDT", "Ignore": false, "Symbol": "ANT"}, {"Exchange": "OKEx", "ForeignName": "AR-USDT", "Ignore": false, "Symbol": "AR"}, {"Exchange": "OKEx", "ForeignName": "ARB-USDT", "Ignore": false, "Symbol": "ARB"}, {"Exchange": "OKEx", "ForeignName": "ARDR-BTC", "Ignore": false, "Symbol": "ARDR"}, {"Exchange": "OKEx", "ForeignName": "ARK-BTC", "Ignore": false, "Symbol": "ARK"}, {"Exchange": "OKEx", "ForeignName": "ARK-ETH", "Ignore": false, "Symbol": "ARK"}, {"Exchange": "OKEx", "ForeignName": "ARK-USDT", "Ignore": false, "Symbol": "ARK"}, {"Exchange": "OKEx", "ForeignName": "AST-USDT", "Ignore": false, "Symbol": "AST"}, {"Exchange": "OKEx", "ForeignName": "ASTR-USDT", "Ignore": false, "Symbol": "ASTR"}, {"Exchange": "OKEx", "ForeignName": "ATL-ETH", "Ignore": false, "Symbol": "ATL"}, {"Exchange": "OKEx", "ForeignName": "ATOM-USDT", "Ignore": false, "Symbol": "ATOM"}, {"Exchange": "OKEx", "ForeignName": "ATOM-USDC", "Ignore": false, "Symbol": "ATOM"}, {"Exchange": "OKEx", "ForeignName": "AUTO-ETH", "Ignore": false, "Symbol": "AUTO"}, {"Exchange": "OKEx", "ForeignName": "AVT-BTC", "Ignore": false, "Symbol": "AVT"}, {"Exchange": "OKEx", "ForeignName": "AXS-USDT", "Ignore": false, "Symbol": "AXS"}, {"Exchange": "OKEx", "ForeignName": "BADGER-USDT", "Ignore": false, "Symbol": "BADGER"}, {"Exchange": "OKEx", "ForeignName": "BAL-USDT", "Ignore": false, "Symbol": "BAL"}, {"Exchange": "OKEx", "Ignore": false, "ForeignName": "BANANA-USDT", "Symbol": "BANANA"}, {"Exchange": "OKEx", "ForeignName": "BCD-BTC", "Ignore": false, "Symbol": "BCD"}, {"Exchange": "OKEx", "ForeignName": "BCD-USDT", "Ignore": false, "Symbol": "BCD"}, {"Exchange": "OKEx", "ForeignName": "BCX-BTC", "Ignore": false, "Symbol": "BCX"}, {"Exchange": "OKEx", "ForeignName": "BEC-BTC", "Ignore": false, "Symbol": "BEC"}, {"Exchange": "OKEx", "ForeignName": "BEC-ETH", "Ignore": false, "Symbol": "BEC"}, {"Exchange": "OKEx", "ForeignName": "BEC-USDT", "Ignore": false, "Symbol": "BEC"}, {"Exchange": "OKEx", "ForeignName": "BKX-BTC", "Ignore": false, "Symbol": "BKX"}, {"Exchange": "OKEx", "ForeignName": "BKX-ETH", "Ignore": false, "Symbol": "BKX"}, {"Exchange": "OKEx", "ForeignName": "BKX-USDT", "Ignore": false, "Symbol": "BKX"}, {"Exchange": "OKEx", "ForeignName": "BNT-BTC", "Ignore": false, "Symbol": "BNT"}, {"Exchange": "OKEx", "ForeignName": "BNT-ETH", "Ignore": false, "Symbol": "BNT"}, {"Exchange": "OKEx", "ForeignName": "BNT-USDT", "Ignore": false, "Symbol": "BNT"}, {"Exchange": "OKEx", "ForeignName": "BONK-USDT", "Ignore": false, "Symbol": "BONK"}, {"Exchange": "OKEx", "ForeignName": "BRD-ETH", "Ignore": false, "Symbol": "BRD"}, {"Exchange": "OKEx", "ForeignName": "BTC-USDT", "Ignore": false, "Symbol": "BTC"}, {"Exchange": "OKEx", "ForeignName": "BTG-BTC", "Ignore": false, "Symbol": "BTG"}, {"Exchange": "OKEx", "ForeignName": "BTG-USDT", "Ignore": false, "Symbol": "BTG"}, {"Exchange": "OKEx", "ForeignName": "CAG-USDT", "Ignore": false, "Symbol": "CAG"}, {"Exchange": "OKEx", "ForeignName": "CAI-BTC", "Ignore": false, "Symbol": "CAI"}, {"Exchange": "OKEx", "ForeignName": "CAI-ETH", "Ignore": false, "Symbol": "CAI"}, {"Exchange": "OKEx", "ForeignName": "CAI-OKB", "Ignore": false, "Symbol": "CAI"}, {"Exchange": "OKEx", "ForeignName": "CAI-USDT", "Ignore": false, "Symbol": "CAI"}, {"Exchange": "OKEx", "ForeignName": "CBT-BTC", "Ignore": false, "Symbol": "CBT"}, {"Exchange": "OKEx", "ForeignName": "CHAT-BTC", "Ignore": false, "Symbol": "CHAT"}, {"Exchange": "OKEx", "ForeignName": "CHAT-USDT", "Ignore": false, "Symbol": "CHAT"}, {"Exchange": "OKEx", "ForeignName": "CIC-BTC", "Ignore": false, "Symbol": "CIC"}, {"Exchange": "OKEx", "ForeignName": "CIC-ETH", "Ignore": false, "Symbol": "CIC"}, {"Exchange": "OKEx", "ForeignName": "CIC-USDT", "Ignore": false, "Symbol": "CIC"}, {"Exchange": "OKEx", "ForeignName": "CIT-BTC", "Ignore": false, "Symbol": "CIT"}, {"Exchange": "OKEx", "ForeignName": "CIT-ETH", "Ignore": false, "Symbol": "CIT"}, {"Exchange": "OKEx", "ForeignName": "CIT-OKB", "Ignore": false, "Symbol": "CIT"}, {"Exchange": "OKEx", "ForeignName": "COMP-USDT", "Ignore": false, "Symbol": "COMP"}, {"Exchange": "OKEx", "ForeignName": "CTXC-BTC", "Ignore": false, "Symbol": "CTXC"}, {"Exchange": "OKEx", "ForeignName": "CTXC-ETH", "Ignore": false, "Symbol": "CTXC"}, {"Exchange": "OKEx", "ForeignName": "CTXC-USDT", "Ignore": false, "Symbol": "CTXC"}, {"Exchange": "OKEx", "ForeignName": "CVC-BTC", "Ignore": false, "Symbol": "CVC"}, {"Exchange": "OKEx", "ForeignName": "CVC-ETH", "Ignore": false, "Symbol": "CVC"}, {"Exchange": "OKEx", "ForeignName": "CVC-USDT", "Ignore": false, "Symbol": "CVC"}, {"Exchange": "OKEx", "ForeignName": "CVT-BTC", "Ignore": false, "Symbol": "CVT"}, {"Exchange": "OKEx", "ForeignName": "CVT-ETH", "Ignore": false, "Symbol": "CVT"}, {"Exchange": "OKEx", "ForeignName": "CVT-OKB", "Ignore": false, "Symbol": "CVT"}, {"Exchange": "OKEx", "ForeignName": "CVT-USDT", "Ignore": false, "Symbol": "CVT"}, {"Exchange": "OKEx", "ForeignName": "DADI-BTC", "Ignore": false, "Symbol": "DADI"}, {"Exchange": "OKEx", "ForeignName": "DADI-ETH", "Ignore": false, "Symbol": "DADI"}, {"Exchange": "OKEx", "ForeignName": "DADI-USDT", "Ignore": false, "Symbol": "DADI"}, {"Exchange": "OKEx", "ForeignName": "DASH-BTC", "Ignore": false, "Symbol": "DASH"}, {"Exchange": "OKEx", "ForeignName": "DASH-ETH", "Ignore": false, "Symbol": "DASH"}, {"Exchange": "OKEx", "ForeignName": "DASH-OKB", "Ignore": false, "Symbol": "DASH"}, {"Exchange": "OKEx", "ForeignName": "DASH-USDT", "Ignore": false, "Symbol": "DASH"}, {"Exchange": "OKEx", "ForeignName": "DAT-BTC", "Ignore": false, "Symbol": "DAT"}, {"Exchange": "OKEx", "ForeignName": "DAT-ETH", "Ignore": false, "Symbol": "DAT"}, {"Exchange": "OKEx", "ForeignName": "DAT-USDT", "Ignore": false, "Symbol": "DAT"}, {"Exchange": "OKEx", "ForeignName": "DCR-BTC", "Ignore": false, "Symbol": "DCR"}, {"Exchange": "OKEx", "ForeignName": "DCR-ETH", "Ignore": false, "Symbol": "DCR"}, {"Exchange": "OKEx", "ForeignName": "DCR-OKB", "Ignore": false, "Symbol": "DCR"}, {"Exchange": "OKEx", "ForeignName": "DCR-USDT", "Ignore": false, "Symbol": "DCR"}, {"Exchange": "OKEx", "ForeignName": "DEGEN-USDT", "Ignore": false, "Symbol": "DEGEN"}, {"Exchange": "OKEx", "ForeignName": "DENT-BTC", "Ignore": false, "Symbol": "DENT"}, {"Exchange": "OKEx", "ForeignName": "DENT-ETH", "Ignore": false, "Symbol": "DENT"}, {"Exchange": "OKEx", "ForeignName": "DENT-USDT", "Ignore": false, "Symbol": "DENT"}, {"Exchange": "OKEx", "ForeignName": "DGB-BTC", "Ignore": false, "Symbol": "DGB"}, {"Exchange": "OKEx", "ForeignName": "DGB-ETH", "Ignore": false, "Symbol": "DGB"}, {"Exchange": "OKEx", "ForeignName": "DGB-USDT", "Ignore": false, "Symbol": "DGB"}, {"Exchange": "OKEx", "ForeignName": "DGD-BTC", "Ignore": false, "Symbol": "DGD"}, {"Exchange": "OKEx", "ForeignName": "DGD-ETH", "Ignore": false, "Symbol": "DGD"}, {"Exchange": "OKEx", "ForeignName": "DGD-USDT", "Ignore": false, "Symbol": "DGD"}, {"Exchange": "OKEx", "ForeignName": "DIA-USDT", "Ignore": false, "Symbol": "DIA"}, {"Exchange": "OKEx", "ForeignName": "DNA-USDT", "Ignore": false, "Symbol": "DNA"}, {"Exchange": "OKEx", "ForeignName": "DNT-USDT", "Ignore": false, "Symbol": "DNT"}, {"Exchange": "OKEx", "ForeignName": "DOGE-USDT", "Ignore": false, "Symbol": "DOGE"}, {"Exchange": "OKEx", "ForeignName": "DOT-USDT", "Ignore": false, "Symbol": "DOT"}, {"Exchange": "OKEx", "ForeignName": "DOT-USDC", "Ignore": false, "Symbol": "DOT"}, {"Exchange": "OKEx", "ForeignName": "EDO-BTC", "Ignore": false, "Symbol": "EDO"}, {"Exchange": "OKEx", "ForeignName": "EDO-ETH", "Ignore": false, "Symbol": "EDO"}, {"Exchange": "OKEx", "ForeignName": "EDO-USDT", "Ignore": false, "Symbol": "EDO"}, {"Exchange": "OKEx", "ForeignName": "EGT-BTC", "Ignore": false, "Symbol": "EGT"}, {"Exchange": "OKEx", "ForeignName": "EGT-ETH", "Ignore": false, "Symbol": "EGT"}, {"Exchange": "OKEx", "ForeignName": "EGT-OKB", "Ignore": false, "Symbol": "EGT"}, {"Exchange": "OKEx", "ForeignName": "EGT-USDT", "Ignore": false, "Symbol": "EGT"}, {"Exchange": "OKEx", "ForeignName": "ELF-BTC", "Ignore": false, "Symbol": "ELF"}, {"Exchange": "OKEx", "ForeignName": "ELF-ETH", "Ignore": false, "Symbol": "ELF"}, {"Exchange": "OKEx", "ForeignName": "ELF-USDT", "Ignore": false, "Symbol": "ELF"}, {"Exchange": "OKEx", "ForeignName": "ENG-BTC", "Ignore": false, "Symbol": "ENG"}, {"Exchange": "OKEx", "ForeignName": "ENG-ETH", "Ignore": false, "Symbol": "ENG"}, {"Exchange": "OKEx", "ForeignName": "ENG-USDT", "Ignore": false, "Symbol": "ENG"}, {"Exchange": "OKEx", "ForeignName": "ENJ-BTC", "Ignore": false, "Symbol": "ENJ"}, {"Exchange": "OKEx", "ForeignName": "ENJ-ETH", "Ignore": false, "Symbol": "ENJ"}, {"Exchange": "OKEx", "ForeignName": "ENJ-USDT", "Ignore": false, "Symbol": "ENJ"}, {"Exchange": "OKEx", "ForeignName": "EOS-BTC", "Ignore": false, "Symbol": "EOS"}, {"Exchange": "OKEx", "ForeignName": "EOS-ETH", "Ignore": false, "Symbol": "EOS"}, {"Exchange": "OKEx", "ForeignName": "EOS-OKB", "Ignore": false, "Symbol": "EOS"}, {"Exchange": "OKEx", "ForeignName": "EOS-USDT", "Ignore": false, "Symbol": "EOS"}, {"Exchange": "OKEx", "ForeignName": "ETC-BTC", "Ignore": false, "Symbol": "ETC"}, {"Exchange": "OKEx", "ForeignName": "ETC-ETH", "Ignore": false, "Symbol": "ETC"}, {"Exchange": "OKEx", "ForeignName": "ETC-OKB", "Ignore": false, "Symbol": "ETC"}, {"Exchange": "OKEx", "ForeignName": "ETC-USDT", "Ignore": false, "Symbol": "ETC"}, {"Exchange": "OKEx", "ForeignName": "ETH-BTC", "Ignore": false, "Symbol": "ETH"}, {"Exchange": "OKEx", "ForeignName": "ETH-USDT", "Ignore": false, "Symbol": "ETH"}, {"Exchange": "OKEx", "ForeignName": "ETHFI-USDT", "Ignore": false, "Symbol": "ETHFI"}, {"Exchange": "OKEx", "ForeignName": "EVX-ETH", "Ignore": false, "Symbol": "EVX"}, {"Exchange": "OKEx", "ForeignName": "EVX-USDT", "Ignore": false, "Symbol": "EVX"}, {"Exchange": "OKEx", "Ignore": false, "ForeignName": "FLOKI-USDT", "Symbol": "FLOKI"}, {"Exchange": "OKEx", "ForeignName": "FLOW-USDT", "Ignore": false, "Symbol": "FLOW"}, {"Exchange": "OKEx", "ForeignName": "FUN-BTC", "Ignore": false, "Symbol": "FUN"}, {"Exchange": "OKEx", "ForeignName": "FUN-ETH", "Ignore": false, "Symbol": "FUN"}, {"Exchange": "OKEx", "ForeignName": "FUN-USDT", "Ignore": false, "Symbol": "FUN"}, {"Exchange": "OKEx", "Ignore": false, "ForeignName": "GALA-USDT", "Symbol": "GALA"}, {"Exchange": "OKEx", "ForeignName": "GAS-BTC", "Ignore": false, "Symbol": "GAS"}, {"Exchange": "OKEx", "ForeignName": "GAS-ETH", "Ignore": false, "Symbol": "GAS"}, {"Exchange": "OKEx", "ForeignName": "GAS-USDT", "Ignore": false, "Symbol": "GAS"}, {"Exchange": "OKEx", "ForeignName": "GHST-USDT", "Ignore": false, "Symbol": "GHST"}, {"Exchange": "OKEx", "ForeignName": "GLM-USDT", "Ignore": false, "Symbol": "GLM"}, {"Exchange": "OKEx", "ForeignName": "GMT-USDT", "Ignore": false, "Symbol": "GMT"}, {"Exchange": "OKEx", "ForeignName": "GMX-USDT", "Ignore": false, "Symbol": "GMX"}, {"Exchange": "OKEx", "ForeignName": "GMX-USDC", "Ignore": false, "Symbol": "GMX"}, {"Exchange": "OKEx", "ForeignName": "GNT-BTC", "Ignore": false, "Symbol": "GNT"}, {"Exchange": "OKEx", "ForeignName": "GNT-ETH", "Ignore": false, "Symbol": "GNT"}, {"Exchange": "OKEx", "ForeignName": "GNT-USDT", "Ignore": false, "Symbol": "GNT"}, {"Exchange": "OKEx", "ForeignName": "GNX-BTC", "Ignore": false, "Symbol": "GNX"}, {"Exchange": "OKEx", "ForeignName": "GNX-ETH", "Ignore": false, "Symbol": "GNX"}, {"Exchange": "OKEx", "ForeignName": "GNX-USDT", "Ignore": false, "Symbol": "GNX"}, {"Exchange": "OKEx", "ForeignName": "GRT-USDT", "Ignore": false, "Symbol": "GRT"}, {"Exchange": "OKEx", "ForeignName": "GSC-ETH", "Ignore": false, "Symbol": "GSC"}, {"Exchange": "OKEx", "ForeignName": "GSC-USDT", "Ignore": false, "Symbol": "GSC"}, {"Exchange": "OKEx", "ForeignName": "GTO-BTC", "Ignore": false, "Symbol": "GTO"}, {"Exchange": "OKEx", "ForeignName": "GTO-ETH", "Ignore": false, "Symbol": "GTO"}, {"Exchange": "OKEx", "ForeignName": "GTO-USDT", "Ignore": false, "Symbol": "GTO"}, {"Exchange": "OKEx", "ForeignName": "GUSD-BTC", "Ignore": false, "Symbol": "GUSD"}, {"Exchange": "OKEx", "ForeignName": "GUSD-USDT", "Ignore": false, "Symbol": "GUSD"}, {"Exchange": "OKEx", "ForeignName": "HIT-BTC", "Ignore": false, "Symbol": "HIT"}, {"Exchange": "OKEx", "ForeignName": "HIT-ETH", "Ignore": false, "Symbol": "HIT"}, {"Exchange": "OKEx", "ForeignName": "HPB-BTC", "Ignore": false, "Symbol": "HPB"}, {"Exchange": "OKEx", "ForeignName": "HPB-ETH", "Ignore": false, "Symbol": "HPB"}, {"Exchange": "OKEx", "ForeignName": "HPB-OKB", "Ignore": false, "Symbol": "HPB"}, {"Exchange": "OKEx", "ForeignName": "HPB-USDT", "Ignore": false, "Symbol": "HPB"}, {"Exchange": "OKEx", "ForeignName": "HSR-BTC", "Ignore": false, "Symbol": "HSR"}, {"Exchange": "OKEx", "ForeignName": "HSR-ETH", "Ignore": false, "Symbol": "HSR"}, {"Exchange": "OKEx", "ForeignName": "HSR-USDT", "Ignore": false, "Symbol": "HSR"}, {"Exchange": "OKEx", "ForeignName": "HYC-BTC", "Ignore": false, "Symbol": "HYC"}, {"Exchange": "OKEx", "ForeignName": "HYC-ETH", "Ignore": false, "Symbol": "HYC"}, {"Exchange": "OKEx", "ForeignName": "HYC-USDT", "Ignore": false, "Symbol": "HYC"}, {"Exchange": "OKEx", "ForeignName": "ICX-BTC", "Ignore": false, "Symbol": "ICX"}, {"Exchange": "OKEx", "ForeignName": "ICX-ETH", "Ignore": false, "Symbol": "ICX"}, {"Exchange": "OKEx", "ForeignName": "ICX-USDT", "Ignore": false, "Symbol": "ICX"}, {"Exchange": "OKEx", "ForeignName": "ILV-USDT", "Ignore": false, "Symbol": "ILV"}, {"Exchange": "OKEx", "ForeignName": "IMX-USDT", "Ignore": false, "Symbol": "IMX"}, {"Exchange": "OKEx", "ForeignName": "INJ-USDT", "Ignore": false, "Symbol": "INJ"}, {"Exchange": "OKEx", "ForeignName": "INS-BTC", "Ignore": false, "Symbol": "INS"}, {"Exchange": "OKEx", "ForeignName": "INS-ETH", "Ignore": false, "Symbol": "INS"}, {"Exchange": "OKEx", "ForeignName": "INS-USDT", "Ignore": false, "Symbol": "INS"}, {"Exchange": "OKEx", "ForeignName": "INSUR-BTC", "Ignore": false, "Symbol": "INSUR"}, {"Exchange": "OKEx", "ForeignName": "INSUR-ETH", "Ignore": false, "Symbol": "INSUR"}, {"Exchange": "OKEx", "ForeignName": "INSUR-USDT", "Ignore": false, "Symbol": "INSUR"}, {"Exchange": "OKEx", "ForeignName": "INT-BTC", "Ignore": false, "Symbol": "INT"}, {"Exchange": "OKEx", "ForeignName": "INT-ETH", "Ignore": false, "Symbol": "INT"}, {"Exchange": "OKEx", "ForeignName": "INT-USDT", "Ignore": false, "Symbol": "INT"}, {"Exchange": "OKEx", "ForeignName": "IOST-BTC", "Ignore": false, "Symbol": "IOST"}, {"Exchange": "OKEx", "ForeignName": "IOST-ETH", "Ignore": false, "Symbol": "IOST"}, {"Exchange": "OKEx", "ForeignName": "IOST-USDT", "Ignore": false, "Symbol": "IOST"}, {"Exchange": "OKEx", "ForeignName": "IPC-USDT", "Ignore": false, "Symbol": "IPC"}, {"Exchange": "OKEx", "ForeignName": "ITC-BTC", "Ignore": false, "Symbol": "ITC"}, {"Exchange": "OKEx", "ForeignName": "ITC-ETH", "Ignore": false, "Symbol": "ITC"}, {"Exchange": "OKEx", "ForeignName": "ITC-USDT", "Ignore": false, "Symbol": "ITC"}, {"Exchange": "OKEx", "ForeignName": "JOE-USDT", "Ignore": false, "Symbol": "JOE"}, {"Exchange": "OKEx", "Ignore": false, "ForeignName": "KAITO-USDT", "Symbol": "KAITO"}, {"Exchange": "OKEx", "Ignore": false, "ForeignName": "KAITO-USD", "Symbol": "KAITO"}, {"Exchange": "OKEx", "ForeignName": "KAN-BTC", "Ignore": false, "Symbol": "KAN"}, {"Exchange": "OKEx", "ForeignName": "KAN-ETH", "Ignore": false, "Symbol": "KAN"}, {"Exchange": "OKEx", "ForeignName": "KAN-OKB", "Ignore": false, "Symbol": "KAN"}, {"Exchange": "OKEx", "ForeignName": "KAN-USDT", "Ignore": false, "Symbol": "KAN"}, {"Exchange": "OKEx", "ForeignName": "KCASH-BTC", "Ignore": false, "Symbol": "KCASH"}, {"Exchange": "OKEx", "ForeignName": "KCASH-ETH", "Ignore": false, "Symbol": "KCASH"}, {"Exchange": "OKEx", "ForeignName": "KCASH-USDT", "Ignore": false, "Symbol": "KCASH"}, {"Exchange": "OKEx", "ForeignName": "KDA-USDT", "Ignore": false, "Symbol": "KDA"}, {"Exchange": "OKEx", "ForeignName": "KNC-USDT", "Ignore": false, "Symbol": "KNC"}, {"Exchange": "OKEx", "ForeignName": "KNC-USDC", "Ignore": false, "Symbol": "KNC"}, {"Exchange": "OKEx", "ForeignName": "KP3R-USDT", "Ignore": false, "Symbol": "KP3R"}, {"Exchange": "OKEx", "ForeignName": "KSM-USDT", "Ignore": false, "Symbol": "KSM"}, {"Exchange": "OKEx", "ForeignName": "LA-ETH", "Ignore": false, "Symbol": "LA"}, {"Exchange": "OKEx", "ForeignName": "LBA-BTC", "Ignore": false, "Symbol": "LBA"}, {"Exchange": "OKEx", "ForeignName": "LBA-ETH", "Ignore": false, "Symbol": "LBA"}, {"Exchange": "OKEx", "ForeignName": "LBA-OKB", "Ignore": false, "Symbol": "LBA"}, {"Exchange": "OKEx", "ForeignName": "LBA-USDT", "Ignore": false, "Symbol": "LBA"}, {"Exchange": "OKEx", "ForeignName": "LDO-USDT", "Ignore": false, "Symbol": "LDO"}, {"Exchange": "OKEx", "ForeignName": "LEND-BTC", "Ignore": false, "Symbol": "LEND"}, {"Exchange": "OKEx", "ForeignName": "LEND-ETH", "Ignore": false, "Symbol": "LEND"}, {"Exchange": "OKEx", "ForeignName": "LEND-USDT", "Ignore": false, "Symbol": "LEND"}, {"Exchange": "OKEx", "ForeignName": "LET-BTC", "Ignore": false, "Symbol": "LET"}, {"Exchange": "OKEx", "ForeignName": "LET-ETH", "Ignore": false, "Symbol": "LET"}, {"Exchange": "OKEx", "ForeignName": "LET-OKB", "Ignore": false, "Symbol": "LET"}, {"Exchange": "OKEx", "ForeignName": "LET-USDT", "Ignore": false, "Symbol": "LET"}, {"Exchange": "OKEx", "ForeignName": "LEV-BTC", "Ignore": false, "Symbol": "LEV"}, {"Exchange": "OKEx", "ForeignName": "LEV-ETH", "Ignore": false, "Symbol": "LEV"}, {"Exchange": "OKEx", "ForeignName": "LEV-USDT", "Ignore": false, "Symbol": "LEV"}, {"Exchange": "OKEx", "ForeignName": "LIGHT-BTC", "Ignore": false, "Symbol": "LIGHT"}, {"Exchange": "OKEx", "ForeignName": "LIGHT-ETH", "Ignore": false, "Symbol": "LIGHT"}, {"Exchange": "OKEx", "ForeignName": "LIGHT-USDT", "Ignore": false, "Symbol": "LIGHT"}, {"Exchange": "OKEx", "ForeignName": "LINK-BTC", "Ignore": false, "Symbol": "LINK"}, {"Exchange": "OKEx", "ForeignName": "LINK-ETH", "Ignore": false, "Symbol": "LINK"}, {"Exchange": "OKEx", "ForeignName": "LINK-USDT", "Ignore": false, "Symbol": "LINK"}, {"Exchange": "OKEx", "ForeignName": "LRC-BTC", "Ignore": false, "Symbol": "LRC"}, {"Exchange": "OKEx", "ForeignName": "LRC-ETH", "Ignore": false, "Symbol": "LRC"}, {"Exchange": "OKEx", "ForeignName": "LRC-USDT", "Ignore": false, "Symbol": "LRC"}, {"Exchange": "OKEx", "ForeignName": "LSK-BTC", "Ignore": false, "Symbol": "LSK"}, {"Exchange": "OKEx", "ForeignName": "LSK-ETH", "Ignore": false, "Symbol": "LSK"}, {"Exchange": "OKEx", "ForeignName": "LSK-USDT", "Ignore": false, "Symbol": "LSK"}, {"Exchange": "OKEx", "ForeignName": "LTC-BTC", "Ignore": false, "Symbol": "LTC"}, {"Exchange": "OKEx", "ForeignName": "LTC-ETH", "Ignore": false, "Symbol": "LTC"}, {"Exchange": "OKEx", "ForeignName": "LTC-OKB", "Ignore": false, "Symbol": "LTC"}, {"Exchange": "OKEx", "ForeignName": "LTC-USDT", "Ignore": false, "Symbol": "LTC"}, {"Exchange": "OKEx", "ForeignName": "LUNA-USDT", "Ignore": false, "Symbol": "LUNA"}, {"Exchange": "OKEx", "ForeignName": "MANA-BTC", "Ignore": false, "Symbol": "MANA"}, {"Exchange": "OKEx", "ForeignName": "MANA-ETH", "Ignore": false, "Symbol": "MANA"}, {"Exchange": "OKEx", "ForeignName": "MANA-USDT", "Ignore": false, "Symbol": "MANA"}, {"Exchange": "OKEx", "Ignore": false, "ForeignName": "MAVIA-USDT", "Symbol": "MAVIA"}, {"Exchange": "OKEx", "ForeignName": "MCO-BTC", "Ignore": false, "Symbol": "MCO"}, {"Exchange": "OKEx", "ForeignName": "MCO-ETH", "Ignore": false, "Symbol": "MCO"}, {"Exchange": "OKEx", "ForeignName": "MCO-USDT", "Ignore": false, "Symbol": "MCO"}, {"Exchange": "OKEx", "ForeignName": "MDA-BTC", "Ignore": false, "Symbol": "MDA"}, {"Exchange": "OKEx", "ForeignName": "MDA-ETH", "Ignore": false, "Symbol": "MDA"}, {"Exchange": "OKEx", "ForeignName": "MDA-USDT", "Ignore": false, "Symbol": "MDA"}, {"Exchange": "OKEx", "ForeignName": "MDT-BTC", "Ignore": false, "Symbol": "MDT"}, {"Exchange": "OKEx", "ForeignName": "MDT-ETH", "Ignore": false, "Symbol": "MDT"}, {"Exchange": "OKEx", "ForeignName": "MDT-USDT", "Ignore": false, "Symbol": "MDT"}, {"Exchange": "OKEx", "ForeignName": "METIS-USDT", "Ignore": false, "Symbol": "METIS"}, {"Exchange": "OKEx", "ForeignName": "IOTA-BTC", "Ignore": false, "Symbol": "MIOTA"}, {"Exchange": "OKEx", "ForeignName": "IOTA-ETH", "Ignore": false, "Symbol": "MIOTA"}, {"Exchange": "OKEx", "ForeignName": "IOTA-OKB", "Ignore": false, "Symbol": "MIOTA"}, {"Exchange": "OKEx", "ForeignName": "IOTA-USDT", "Ignore": false, "Symbol": "MIOTA"}, {"Exchange": "OKEx", "ForeignName": "MITH-BTC", "Ignore": false, "Symbol": "MITH"}, {"Exchange": "OKEx", "ForeignName": "MITH-ETH", "Ignore": false, "Symbol": "MITH"}, {"Exchange": "OKEx", "ForeignName": "MITH-USDT", "Ignore": false, "Symbol": "MITH"}, {"Exchange": "OKEx", "ForeignName": "MKR-BTC", "Ignore": false, "Symbol": "MKR"}, {"Exchange": "OKEx", "ForeignName": "MKR-ETH", "Ignore": false, "Symbol": "MKR"}, {"Exchange": "OKEx", "ForeignName": "MKR-USDT", "Ignore": false, "Symbol": "MKR"}, {"Exchange": "OKEx", "ForeignName": "MOF-BTC", "Ignore": false, "Symbol": "MOF"}, {"Exchange": "OKEx", "ForeignName": "MOF-ETH", "Ignore": false, "Symbol": "MOF"}, {"Exchange": "OKEx", "ForeignName": "MOF-USDT", "Ignore": false, "Symbol": "MOF"}, {"Exchange": "OKEx", "Ignore": false, "ForeignName": "MORPHO-USDT", "Symbol": "MORPHO"}, {"Exchange": "OKEx", "ForeignName": "MOT-USDT", "Ignore": false, "Symbol": "MOT"}, {"Exchange": "OKEx", "ForeignName": "MTH-ETH", "Ignore": false, "Symbol": "MTH"}, {"Exchange": "OKEx", "ForeignName": "MTL-BTC", "Ignore": false, "Symbol": "MTL"}, {"Exchange": "OKEx", "ForeignName": "MTL-ETH", "Ignore": false, "Symbol": "MTL"}, {"Exchange": "OKEx", "ForeignName": "MVP-BTC", "Ignore": false, "Symbol": "MVP"}, {"Exchange": "OKEx", "ForeignName": "MVP-ETH", "Ignore": false, "Symbol": "MVP"}, {"Exchange": "OKEx", "ForeignName": "MVP-OKB", "Ignore": false, "Symbol": "MVP"}, {"Exchange": "OKEx", "ForeignName": "MVP-USDT", "Ignore": false, "Symbol": "MVP"}, {"Exchange": "OKEx", "ForeignName": "NANO-BTC", "Ignore": false, "Symbol": "NANO"}, {"Exchange": "OKEx", "ForeignName": "NANO-ETH", "Ignore": false, "Symbol": "NANO"}, {"Exchange": "OKEx", "ForeignName": "NANO-USDT", "Ignore": false, "Symbol": "NANO"}, {"Exchange": "OKEx", "ForeignName": "NAS-BTC", "Ignore": false, "Symbol": "NAS"}, {"Exchange": "OKEx", "ForeignName": "NAS-ETH", "Ignore": false, "Symbol": "NAS"}, {"Exchange": "OKEx", "ForeignName": "NAS-OKB", "Ignore": false, "Symbol": "NAS"}, {"Exchange": "OKEx", "ForeignName": "NAS-USDT", "Ignore": false, "Symbol": "NAS"}, {"Exchange": "OKEx", "ForeignName": "NEAR-USDT", "Ignore": false, "Symbol": "NEAR"}, {"Exchange": "OKEx", "ForeignName": "NEO-BTC", "Ignore": false, "Symbol": "NEO"}, {"Exchange": "OKEx", "ForeignName": "NEO-ETH", "Ignore": false, "Symbol": "NEO"}, {"Exchange": "OKEx", "ForeignName": "NEO-OKB", "Ignore": false, "Symbol": "NEO"}, {"Exchange": "OKEx", "ForeignName": "NEO-USDT", "Ignore": false, "Symbol": "NEO"}, {"Exchange": "OKEx", "ForeignName": "NGC-BTC", "Ignore": false, "Symbol": "NGC"}, {"Exchange": "OKEx", "ForeignName": "NULS-BTC", "Ignore": false, "Symbol": "NULS"}, {"Exchange": "OKEx", "ForeignName": "NULS-ETH", "Ignore": false, "Symbol": "NULS"}, {"Exchange": "OKEx", "ForeignName": "NULS-USDT", "Ignore": false, "Symbol": "NULS"}, {"Exchange": "OKEx", "ForeignName": "NXT-BTC", "Ignore": false, "Symbol": "NXT"}, {"Exchange": "OKEx", "ForeignName": "OAX-USDT", "Ignore": false, "Symbol": "OAX"}, {"Exchange": "OKEx", "ForeignName": "OF-BTC", "Ignore": false, "Symbol": "OF"}, {"Exchange": "OKEx", "ForeignName": "OF-ETH", "Ignore": false, "Symbol": "OF"}, {"Exchange": "OKEx", "ForeignName": "OF-USDT", "Ignore": false, "Symbol": "OF"}, {"Exchange": "OKEx", "ForeignName": "OKB-BTC", "Ignore": false, "Symbol": "OKB"}, {"Exchange": "OKEx", "ForeignName": "OKB-ETH", "Ignore": false, "Symbol": "OKB"}, {"Exchange": "OKEx", "ForeignName": "OKB-USDT", "Ignore": false, "Symbol": "OKB"}, {"Exchange": "OKEx", "ForeignName": "OMG-BTC", "Ignore": false, "Symbol": "OMG"}, {"Exchange": "OKEx", "ForeignName": "OMG-ETH", "Ignore": false, "Symbol": "OMG"}, {"Exchange": "OKEx", "ForeignName": "OMG-USDT", "Ignore": false, "Symbol": "OMG"}, {"Exchange": "OKEx", "ForeignName": "ONT-BTC", "Ignore": false, "Symbol": "ONT"}, {"Exchange": "OKEx", "ForeignName": "ONT-ETH", "Ignore": false, "Symbol": "ONT"}, {"Exchange": "OKEx", "ForeignName": "ONT-USDT", "Ignore": false, "Symbol": "ONT"}, {"Exchange": "OKEx", "ForeignName": "OP-USDT", "Ignore": false, "Symbol": "OP"}, {"Exchange": "OKEx", "ForeignName": "ORDI-USDT", "Ignore": false, "Symbol": "ORDI"}, {"Exchange": "OKEx", "ForeignName": "OST-BTC", "Ignore": false, "Symbol": "OST"}, {"Exchange": "OKEx", "ForeignName": "OST-ETH", "Ignore": false, "Symbol": "OST"}, {"Exchange": "OKEx", "ForeignName": "OST-USDT", "Ignore": false, "Symbol": "OST"}, {"Exchange": "OKEx", "ForeignName": "PAX-BTC", "Ignore": false, "Symbol": "PAX"}, {"Exchange": "OKEx", "ForeignName": "PAX-USDT", "Ignore": false, "Symbol": "PAX"}, {"Exchange": "OKEx", "ForeignName": "PAY-BTC", "Ignore": false, "Symbol": "PAY"}, {"Exchange": "OKEx", "ForeignName": "PAY-ETH", "Ignore": false, "Symbol": "PAY"}, {"Exchange": "OKEx", "ForeignName": "PAY-USDT", "Ignore": false, "Symbol": "PAY"}, {"Exchange": "OKEx", "ForeignName": "PEPE-USDT", "Ignore": false, "Symbol": "PEPE"}, {"Exchange": "OKEx", "ForeignName": "PERP-USDT", "Ignore": false, "Symbol": "PERP"}, {"Exchange": "OKEx", "ForeignName": "PHA-USDT", "Ignore": false, "Symbol": "PHA"}, {"Exchange": "OKEx", "ForeignName": "POE-BTC", "Ignore": false, "Symbol": "POE"}, {"Exchange": "OKEx", "ForeignName": "POE-ETH", "Ignore": false, "Symbol": "POE"}, {"Exchange": "OKEx", "ForeignName": "POE-USDT", "Ignore": false, "Symbol": "POE"}, {"Exchange": "OKEx", "ForeignName": "POL-USDT", "Ignore": false, "Symbol": "POL"}, {"Exchange": "OKEx", "ForeignName": "POL-USDC", "Ignore": false, "Symbol": "POL"}, {"Exchange": "OKEx", "ForeignName": "PPT-BTC", "Ignore": false, "Symbol": "PPT"}, {"Exchange": "OKEx", "ForeignName": "PPT-ETH", "Ignore": false, "Symbol": "PPT"}, {"Exchange": "OKEx", "ForeignName": "PPT-USDT", "Ignore": false, "Symbol": "PPT"}, {"Exchange": "OKEx", "ForeignName": "PRA-ETH", "Ignore": false, "Symbol": "PRA"}, {"Exchange": "OKEx", "ForeignName": "PRA-USDT", "Ignore": false, "Symbol": "PRA"}, {"Exchange": "OKEx", "ForeignName": "PST-BTC", "Ignore": false, "Symbol": "PST"}, {"Exchange": "OKEx", "ForeignName": "PST-ETH", "Ignore": false, "Symbol": "PST"}, {"Exchange": "OKEx", "ForeignName": "PST-USDT", "Ignore": false, "Symbol": "PST"}, {"Exchange": "OKEx", "ForeignName": "QTUM-BTC", "Ignore": false, "Symbol": "QTUM"}, {"Exchange": "OKEx", "ForeignName": "QTUM-ETH", "Ignore": false, "Symbol": "QTUM"}, {"Exchange": "OKEx", "ForeignName": "QTUM-OKB", "Ignore": false, "Symbol": "QTUM"}, {"Exchange": "OKEx", "ForeignName": "QTUM-USDT", "Ignore": false, "Symbol": "QTUM"}, {"Exchange": "OKEx", "ForeignName": "QUN-BTC", "Ignore": false, "Symbol": "QUN"}, {"Exchange": "OKEx", "ForeignName": "QUN-ETH", "Ignore": false, "Symbol": "QUN"}, {"Exchange": "OKEx", "ForeignName": "QUN-USDT", "Ignore": false, "Symbol": "QUN"}, {"Exchange": "OKEx", "ForeignName": "QVT-USDT", "Ignore": false, "Symbol": "QVT"}, {"Exchange": "OKEx", "ForeignName": "R-BTC", "Ignore": false, "Symbol": "R"}, {"Exchange": "OKEx", "ForeignName": "R-ETH", "Ignore": false, "Symbol": "R"}, {"Exchange": "OKEx", "ForeignName": "R-USDT", "Ignore": false, "Symbol": "R"}, {"Exchange": "OKEx", "ForeignName": "RAY-USDT", "Ignore": false, "Symbol": "RAY"}, {"Exchange": "OKEx", "ForeignName": "RCT-ETH", "Ignore": false, "Symbol": "RCT"}, {"Exchange": "OKEx", "ForeignName": "RDN-BTC", "Ignore": false, "Symbol": "RDN"}, {"Exchange": "OKEx", "ForeignName": "RDN-ETH", "Ignore": false, "Symbol": "RDN"}, {"Exchange": "OKEx", "ForeignName": "RDN-USDT", "Ignore": false, "Symbol": "RDN"}, {"Exchange": "OKEx", "ForeignName": "REF-ETH", "Ignore": false, "Symbol": "REF"}, {"Exchange": "OKEx", "ForeignName": "REN-BTC", "Ignore": false, "Symbol": "REN"}, {"Exchange": "OKEx", "ForeignName": "REN-ETH", "Ignore": false, "Symbol": "REN"}, {"Exchange": "OKEx", "ForeignName": "REN-USDT", "Ignore": false, "Symbol": "REN"}, {"Exchange": "OKEx", "ForeignName": "REQ-ETH", "Ignore": false, "Symbol": "REQ"}, {"Exchange": "OKEx", "ForeignName": "REQ-USDT", "Ignore": false, "Symbol": "REQ"}, {"Exchange": "OKEx", "ForeignName": "RFR-BTC", "Ignore": false, "Symbol": "RFR"}, {"Exchange": "OKEx", "ForeignName": "RFR-ETH", "Ignore": false, "Symbol": "RFR"}, {"Exchange": "OKEx", "ForeignName": "RFR-USDT", "Ignore": false, "Symbol": "RFR"}, {"Exchange": "OKEx", "ForeignName": "RNT-BTC", "Ignore": false, "Symbol": "RNT"}, {"Exchange": "OKEx", "ForeignName": "RNT-ETH", "Ignore": false, "Symbol": "RNT"}, {"Exchange": "OKEx", "ForeignName": "RNT-USDT", "Ignore": false, "Symbol": "RNT"}, {"Exchange": "OKEx", "Ignore": false, "ForeignName": "S-USDT", "Symbol": "S"}, {"Exchange": "OKEx", "ForeignName": "SALT-BTC", "Ignore": false, "Symbol": "SALT"}, {"Exchange": "OKEx", "ForeignName": "SALT-ETH", "Ignore": false, "Symbol": "SALT"}, {"Exchange": "OKEx", "ForeignName": "SALT-USDT", "Ignore": false, "Symbol": "SALT"}, {"Exchange": "OKEx", "ForeignName": "SAMO-USDT", "Ignore": false, "Symbol": "SAMO"}, {"Exchange": "OKEx", "ForeignName": "SAN-USDT", "Ignore": false, "Symbol": "SAN"}, {"Symbol": "SATS", "ForeignName": "SATS-USDT", "Exchange": "OKEx", "Ignore": false}, {"Exchange": "OKEx", "ForeignName": "SBTC-BTC", "Ignore": false, "Symbol": "SBTC"}, {"Exchange": "OKEx", "ForeignName": "SC-BTC", "Ignore": false, "Symbol": "SC"}, {"Exchange": "OKEx", "ForeignName": "SC-ETH", "Ignore": false, "Symbol": "SC"}, {"Exchange": "OKEx", "ForeignName": "SC-OKB", "Ignore": false, "Symbol": "SC"}, {"Exchange": "OKEx", "ForeignName": "SC-USDT", "Ignore": false, "Symbol": "SC"}, {"Exchange": "OKEx", "ForeignName": "SDA-ETH", "Ignore": false, "Symbol": "SDA"}, {"Exchange": "OKEx", "ForeignName": "SDA-OKB", "Ignore": false, "Symbol": "SDA"}, {"Exchange": "OKEx", "ForeignName": "SHIB-USDT", "Ignore": false, "Symbol": "SHIB"}, {"Exchange": "OKEx", "ForeignName": "SHOW-BTC", "Ignore": false, "Symbol": "SHOW"}, {"Exchange": "OKEx", "ForeignName": "SHOW-ETH", "Ignore": false, "Symbol": "SHOW"}, {"Exchange": "OKEx", "ForeignName": "SHOW-USDT", "Ignore": false, "Symbol": "SHOW"}, {"Exchange": "OKEx", "Ignore": false, "ForeignName": "SKY-USDT", "Symbol": "SKY"}, {"Exchange": "OKEx", "ForeignName": "SNC-BTC", "Ignore": false, "Symbol": "SNC"}, {"Exchange": "OKEx", "ForeignName": "SNC-ETH", "Ignore": false, "Symbol": "SNC"}, {"Exchange": "OKEx", "ForeignName": "SNC-USDT", "Ignore": false, "Symbol": "SNC"}, {"Exchange": "OKEx", "ForeignName": "SNGLS-BTC", "Ignore": false, "Symbol": "SNGLS"}, {"Exchange": "OKEx", "ForeignName": "SNGLS-ETH", "Ignore": false, "Symbol": "SNGLS"}, {"Exchange": "OKEx", "ForeignName": "SNGLS-USDT", "Ignore": false, "Symbol": "SNGLS"}, {"Exchange": "OKEx", "ForeignName": "SNM-ETH", "Ignore": false, "Symbol": "SNM"}, {"Exchange": "OKEx", "ForeignName": "SNT-BTC", "Ignore": false, "Symbol": "SNT"}, {"Exchange": "OKEx", "ForeignName": "SNT-ETH", "Ignore": false, "Symbol": "SNT"}, {"Exchange": "OKEx", "ForeignName": "SNT-USDT", "Ignore": false, "Symbol": "SNT"}, {"Exchange": "OKEx", "ForeignName": "SOC-BTC", "Ignore": false, "Symbol": "SOC"}, {"Exchange": "OKEx", "ForeignName": "SOC-ETH", "Ignore": false, "Symbol": "SOC"}, {"Exchange": "OKEx", "ForeignName": "SOC-USDT", "Ignore": false, "Symbol": "SOC"}, {"Exchange": "OKEx", "ForeignName": "SPELL-USDT", "Ignore": false, "Symbol": "SPELL"}, {"Exchange": "OKEx", "ForeignName": "SPF-BTC", "Ignore": false, "Symbol": "SPF"}, {"Exchange": "OKEx", "ForeignName": "SPF-USDT", "Ignore": false, "Symbol": "SPF"}, {"Exchange": "OKEx", "ForeignName": "SSC-BTC", "Ignore": false, "Symbol": "SSC"}, {"Exchange": "OKEx", "ForeignName": "SSC-ETH", "Ignore": false, "Symbol": "SSC"}, {"Exchange": "OKEx", "ForeignName": "SSC-USDT", "Ignore": false, "Symbol": "SSC"}, {"Exchange": "OKEx", "Ignore": false, "ForeignName": "SSV-USDT", "Symbol": "SSV"}, {"Exchange": "OKEx", "ForeignName": "STC-BTC", "Ignore": false, "Symbol": "STC"}, {"Exchange": "OKEx", "ForeignName": "STC-USDT", "Ignore": false, "Symbol": "STC"}, {"Exchange": "OKEx", "ForeignName": "STETH-USDT", "Ignore": false, "Symbol": "STETH"}, {"Exchange": "OKEx", "ForeignName": "STORJ-BTC", "Ignore": false, "Symbol": "STORJ"}, {"Exchange": "OKEx", "ForeignName": "STORJ-ETH", "Ignore": false, "Symbol": "STORJ"}, {"Exchange": "OKEx", "ForeignName": "STORJ-USDT", "Ignore": false, "Symbol": "STORJ"}, {"Exchange": "OKEx", "ForeignName": "STRK-USDT", "Ignore": false, "Symbol": "STRK"}, {"Exchange": "OKEx", "Ignore": false, "ForeignName": "STX-USDT", "Symbol": "STX"}, {"Exchange": "OKEx", "Ignore": false, "ForeignName": "STX-USDC", "Symbol": "STX"}, {"Exchange": "OKEx", "ForeignName": "SUB-BTC", "Ignore": false, "Symbol": "SUB"}, {"Exchange": "OKEx", "ForeignName": "SUB-ETH", "Ignore": false, "Symbol": "SUB"}, {"Exchange": "OKEx", "ForeignName": "SUI-USDT", "Ignore": false, "Symbol": "SUI"}, {"Exchange": "OKEx", "ForeignName": "SWFTC-BTC", "Ignore": false, "Symbol": "SWFTC"}, {"Exchange": "OKEx", "ForeignName": "SWFTC-ETH", "Ignore": false, "Symbol": "SWFTC"}, {"Exchange": "OKEx", "ForeignName": "SWFTC-USDT", "Ignore": false, "Symbol": "SWFTC"}, {"Exchange": "OKEx", "ForeignName": "TCT-BTC", "Ignore": false, "Symbol": "TCT"}, {"Exchange": "OKEx", "ForeignName": "TCT-ETH", "Ignore": false, "Symbol": "TCT"}, {"Exchange": "OKEx", "ForeignName": "TCT-USDT", "Ignore": false, "Symbol": "TCT"}, {"Exchange": "OKEx", "ForeignName": "THETA-BTC", "Ignore": false, "Symbol": "THETA"}, {"Exchange": "OKEx", "ForeignName": "THETA-ETH", "Ignore": false, "Symbol": "THETA"}, {"Exchange": "OKEx", "ForeignName": "THETA-USDT", "Ignore": false, "Symbol": "THETA"}, {"Exchange": "OKEx", "ForeignName": "TIA-USDT", "Ignore": false, "Symbol": "TIA"}, {"Exchange": "OKEx", "ForeignName": "TNB-BTC", "Ignore": false, "Symbol": "TNB"}, {"Exchange": "OKEx", "ForeignName": "TNB-ETH", "Ignore": false, "Symbol": "TNB"}, {"Exchange": "OKEx", "ForeignName": "TNB-USDT", "Ignore": false, "Symbol": "TNB"}, {"Exchange": "OKEx", "ForeignName": "TON-USDT", "Ignore": false, "Symbol": "TON"}, {"Exchange": "OKEx", "ForeignName": "TOPC-ETH", "Ignore": false, "Symbol": "TOPC"}, {"Exchange": "OKEx", "ForeignName": "TOPC-USDT", "Ignore": false, "Symbol": "TOPC"}, {"Exchange": "OKEx", "ForeignName": "TRA-ETH", "Ignore": false, "Symbol": "TRA"}, {"Exchange": "OKEx", "ForeignName": "TRA-USDT", "Ignore": false, "Symbol": "TRA"}, {"Exchange": "OKEx", "ForeignName": "TRIO-BTC", "Ignore": false, "Symbol": "TRIO"}, {"Exchange": "OKEx", "ForeignName": "TRIO-ETH", "Ignore": false, "Symbol": "TRIO"}, {"Exchange": "OKEx", "ForeignName": "TRIO-USDT", "Ignore": false, "Symbol": "TRIO"}, {"Exchange": "OKEx", "ForeignName": "TRX-BTC", "Ignore": false, "Symbol": "TRX"}, {"Exchange": "OKEx", "ForeignName": "TRX-ETH", "Ignore": false, "Symbol": "TRX"}, {"Exchange": "OKEx", "ForeignName": "TRX-OKB", "Ignore": false, "Symbol": "TRX"}, {"Exchange": "OKEx", "ForeignName": "TRX-USDT", "Ignore": false, "Symbol": "TRX"}, {"Exchange": "OKEx", "Ignore": false, "ForeignName": "TURBO-USDT", "Symbol": "TURBO"}, {"Exchange": "OKEx", "Ignore": false, "ForeignName": "TURBO-USDC", "Symbol": "TURBO"}, {"Exchange": "OKEx", "ForeignName": "TUSD-BTC", "Ignore": false, "Symbol": "TUSD"}, {"Exchange": "OKEx", "ForeignName": "TUSD-USDT", "Ignore": false, "Symbol": "TUSD"}, {"Exchange": "OKEx", "ForeignName": "UBTC-USDT", "Ignore": false, "Symbol": "UBTC"}, {"Exchange": "OKEx", "ForeignName": "UCT-ETH", "Ignore": false, "Symbol": "UCT"}, {"Exchange": "OKEx", "ForeignName": "UCT-USDT", "Ignore": false, "Symbol": "UCT"}, {"Exchange": "OKEx", "ForeignName": "UGC-BTC", "Ignore": false, "Symbol": "UGC"}, {"Exchange": "OKEx", "ForeignName": "UGC-ETH", "Ignore": false, "Symbol": "UGC"}, {"Exchange": "OKEx", "ForeignName": "UGC-USDT", "Ignore": false, "Symbol": "UGC"}, {"Exchange": "OKEx", "ForeignName": "UKG-ETH", "Ignore": false, "Symbol": "UKG"}, {"Exchange": "OKEx", "ForeignName": "UNI-USDT", "Ignore": false, "Symbol": "UNI"}, {"Exchange": "OKEx", "ForeignName": "USDC-BTC", "Ignore": false, "Symbol": "USDC"}, {"Exchange": "OKEx", "ForeignName": "USDC-USDT", "Ignore": false, "Symbol": "USDC"}, {"Exchange": "OKEx", "ForeignName": "UST-USDT", "Ignore": false, "Symbol": "UST"}, {"Exchange": "OKEx", "ForeignName": "UTK-USDT", "Ignore": false, "Symbol": "UTK"}, {"Exchange": "OKEx", "ForeignName": "VEE-ETH", "Ignore": false, "Symbol": "VEE"}, {"Exchange": "OKEx", "ForeignName": "VELA-USDT", "Ignore": false, "Symbol": "VELA"}, {"Exchange": "OKEx", "ForeignName": "VELODROME-USDT", "Ignore": false, "Symbol": "VELODROME"}, {"Exchange": "OKEx", "ForeignName": "VIB-BTC", "Ignore": false, "Symbol": "VIB"}, {"Exchange": "OKEx", "ForeignName": "VIB-ETH", "Ignore": false, "Symbol": "VIB"}, {"Exchange": "OKEx", "ForeignName": "VIB-USDT", "Ignore": false, "Symbol": "VIB"}, {"Exchange": "OKEx", "ForeignName": "VITE-BTC", "Ignore": false, "Symbol": "VITE"}, {"Exchange": "OKEx", "ForeignName": "VITE-ETH", "Ignore": false, "Symbol": "VITE"}, {"Exchange": "OKEx", "ForeignName": "VITE-OKB", "Ignore": false, "Symbol": "VITE"}, {"Exchange": "OKEx", "ForeignName": "WAVES-BTC", "Ignore": false, "Symbol": "WAVES"}, {"Exchange": "OKEx", "ForeignName": "WAVES-ETH", "Ignore": false, "Symbol": "WAVES"}, {"Exchange": "OKEx", "ForeignName": "WAVES-OKB", "Ignore": false, "Symbol": "WAVES"}, {"Exchange": "OKEx", "ForeignName": "WAVES-USDT", "Ignore": false, "Symbol": "WAVES"}, {"Exchange": "OKEx", "ForeignName": "WBTC-USDT", "Ignore": false, "Symbol": "WBTC"}, {"Exchange": "OKEx", "ForeignName": "WBTC-ETH", "Ignore": false, "Symbol": "WBTC"}, {"Exchange": "OKEx", "ForeignName": "WIF-USDT", "Ignore": false, "Symbol": "WIF"}, {"Exchange": "OKEx", "ForeignName": "WIN-BTC", "Ignore": false, "Symbol": "WIN"}, {"Exchange": "OKEx", "ForeignName": "WIN-ETH", "Ignore": false, "Symbol": "WIN"}, {"Exchange": "OKEx", "ForeignName": "WIN-OKB", "Ignore": false, "Symbol": "WIN"}, {"Exchange": "OKEx", "ForeignName": "WIN-USDT", "Ignore": false, "Symbol": "WIN"}, {"Exchange": "OKEx", "ForeignName": "WLD-USDT", "Ignore": false, "Symbol": "WLD"}, {"Exchange": "OKEx", "ForeignName": "WRC-USDT", "Ignore": false, "Symbol": "WRC"}, {"Exchange": "OKEx", "ForeignName": "WTC-BTC", "Ignore": false, "Symbol": "WTC"}, {"Exchange": "OKEx", "ForeignName": "WTC-ETH", "Ignore": false, "Symbol": "WTC"}, {"Exchange": "OKEx", "ForeignName": "WTC-USDT", "Ignore": false, "Symbol": "WTC"}, {"Exchange": "OKEx", "ForeignName": "XAS-BTC", "Ignore": false, "Symbol": "XAS"}, {"Exchange": "OKEx", "ForeignName": "XAS-OKB", "Ignore": false, "Symbol": "XAS"}, {"Exchange": "OKEx", "ForeignName": "XAS-USDT", "Ignore": false, "Symbol": "XAS"}, {"Exchange": "OKEx", "Ignore": false, "ForeignName": "XAUT-USDT", "Symbol": "XAUT"}, {"Exchange": "OKEx", "ForeignName": "XEM-BTC", "Ignore": false, "Symbol": "XEM"}, {"Exchange": "OKEx", "ForeignName": "XEM-ETH", "Ignore": false, "Symbol": "XEM"}, {"Exchange": "OKEx", "ForeignName": "XEM-USDT", "Ignore": false, "Symbol": "XEM"}, {"Exchange": "OKEx", "ForeignName": "XLM-BTC", "Ignore": false, "Symbol": "XLM"}, {"Exchange": "OKEx", "ForeignName": "XLM-ETH", "Ignore": false, "Symbol": "XLM"}, {"Exchange": "OKEx", "ForeignName": "XLM-USDT", "Ignore": false, "Symbol": "XLM"}, {"Exchange": "OKEx", "ForeignName": "XMR-BTC", "Ignore": false, "Symbol": "XMR"}, {"Exchange": "OKEx", "ForeignName": "XMR-ETH", "Ignore": false, "Symbol": "XMR"}, {"Exchange": "OKEx", "ForeignName": "XMR-USDT", "Ignore": false, "Symbol": "XMR"}, {"Exchange": "OKEx", "ForeignName": "XRP-BTC", "Ignore": false, "Symbol": "XRP"}, {"Exchange": "OKEx", "ForeignName": "XRP-ETH", "Ignore": false, "Symbol": "XRP"}, {"Exchange": "OKEx", "ForeignName": "XRP-OKB", "Ignore": false, "Symbol": "XRP"}, {"Exchange": "OKEx", "ForeignName": "XRP-USDT", "Ignore": false, "Symbol": "XRP"}, {"Exchange": "OKEx", "ForeignName": "XUC-BTC", "Ignore": false, "Symbol": "XUC"}, {"Exchange": "OKEx", "ForeignName": "XUC-ETH", "Ignore": false, "Symbol": "XUC"}, {"Exchange": "OKEx", "ForeignName": "XUC-USDT", "Ignore": false, "Symbol": "XUC"}, {"Exchange": "OKEx", "ForeignName": "YEE-BTC", "Ignore": false, "Symbol": "YEE"}, {"Exchange": "OKEx", "ForeignName": "YEE-ETH", "Ignore": false, "Symbol": "YEE"}, {"Exchange": "OKEx", "ForeignName": "YEE-USDT", "Ignore": false, "Symbol": "YEE"}, {"Exchange": "OKEx", "ForeignName": "YFI-USDT", "Ignore": false, "Symbol": "YFI"}, {"Exchange": "OKEx", "ForeignName": "YFI-USDC", "Ignore": false, "Symbol": "YFI"}, {"Exchange": "OKEx", "ForeignName": "YGG-USDT", "Ignore": false, "Symbol": "YGG"}, {"Exchange": "OKEx", "ForeignName": "YOU-BTC", "Ignore": false, "Symbol": "YOU"}, {"Exchange": "OKEx", "ForeignName": "YOU-ETH", "Ignore": false, "Symbol": "YOU"}, {"Exchange": "OKEx", "ForeignName": "YOU-OKB", "Ignore": false, "Symbol": "YOU"}, {"Exchange": "OKEx", "ForeignName": "YOU-USDT", "Ignore": false, "Symbol": "YOU"}, {"Exchange": "OKEx", "ForeignName": "YOYO-BTC", "Ignore": false, "Symbol": "YOYOW"}, {"Exchange": "OKEx", "ForeignName": "YOYO-ETH", "Ignore": false, "Symbol": "YOYOW"}, {"Exchange": "OKEx", "ForeignName": "YOYO-USDT", "Ignore": false, "Symbol": "YOYOW"}, {"Exchange": "OKEx", "ForeignName": "ZCO-BTC", "Ignore": false, "Symbol": "ZCO"}, {"Exchange": "OKEx", "ForeignName": "ZCO-ETH", "Ignore": false, "Symbol": "ZCO"}, {"Exchange": "OKEx", "ForeignName": "ZCO-OKB", "Ignore": false, "Symbol": "ZCO"}, {"Exchange": "OKEx", "ForeignName": "ZEC-BTC", "Ignore": false, "Symbol": "ZEC"}, {"Exchange": "OKEx", "ForeignName": "ZEC-ETH", "Ignore": false, "Symbol": "ZEC"}, {"Exchange": "OKEx", "ForeignName": "ZEC-OKB", "Ignore": false, "Symbol": "ZEC"}, {"Exchange": "OKEx", "ForeignName": "ZEC-USDT", "Ignore": false, "Symbol": "ZEC"}, {"Exchange": "OKEx", "ForeignName": "ZEN-BTC", "Ignore": false, "Symbol": "ZEN"}, {"Exchange": "OKEx", "ForeignName": "ZEN-ETH", "Ignore": false, "Symbol": "ZEN"}, {"Exchange": "OKEx", "ForeignName": "ZEN-USDT", "Ignore": false, "Symbol": "ZEN"}, {"Exchange": "OKEx", "ForeignName": "ZIL-BTC", "Ignore": false, "Symbol": "ZIL"}, {"Exchange": "OKEx", "ForeignName": "ZIL-ETH", "Ignore": false, "Symbol": "ZIL"}, {"Exchange": "OKEx", "ForeignName": "ZIL-USDT", "Ignore": false, "Symbol": "ZIL"}, {"Exchange": "OKEx", "ForeignName": "ZIP-BTC", "Ignore": false, "Symbol": "ZIP"}, {"Exchange": "OKEx", "ForeignName": "ZIP-ETH", "Ignore": false, "Symbol": "ZIP"}, {"Exchange": "OKEx", "ForeignName": "ZIP-USDT", "Ignore": false, "Symbol": "ZIP"}, {"Exchange": "OKEx", "ForeignName": "ZRO-USDT", "Ignore": false, "Symbol": "ZRO"}, {"Exchange": "OKEx", "ForeignName": "ZRX-BTC", "Ignore": false, "Symbol": "ZRX"}, {"Exchange": "OKEx", "ForeignName": "ZRX-ETH", "Ignore": false, "Symbol": "ZRX"}, {"Exchange": "OKEx", "ForeignName": "ZRX-USDT", "Ignore": false, "Symbol": "ZRX"}]}
+{
+    "Coins": [
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "1ST-USDT",
+            "Ignore": false,
+            "Symbol": "1ST"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "AAC-BTC",
+            "Ignore": false,
+            "Symbol": "AAC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "AAC-ETH",
+            "Ignore": false,
+            "Symbol": "AAC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "AAC-USDT",
+            "Ignore": false,
+            "Symbol": "AAC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "AAVE-USDC",
+            "Ignore": false,
+            "Symbol": "AAVE"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "AAVE-USDT",
+            "Ignore": false,
+            "Symbol": "AAVE"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ABL-BTC",
+            "Ignore": false,
+            "Symbol": "ABL"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ABL-ETH",
+            "Ignore": false,
+            "Symbol": "ABL"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ABT-BTC",
+            "Ignore": false,
+            "Symbol": "ABT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ABT-ETH",
+            "Ignore": false,
+            "Symbol": "ABT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ABT-USDT",
+            "Ignore": false,
+            "Symbol": "ABT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ACA-USDT",
+            "Ignore": false,
+            "Symbol": "ACA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ACE-BTC",
+            "Ignore": false,
+            "Symbol": "ACE"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ACE-USDT",
+            "Ignore": false,
+            "Symbol": "ACE"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ACT-BTC",
+            "Ignore": false,
+            "Symbol": "ACT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ACT-ETH",
+            "Ignore": false,
+            "Symbol": "ACT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ACT-USDT",
+            "Ignore": false,
+            "Symbol": "ACT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ADA-BTC",
+            "Ignore": false,
+            "Symbol": "ADA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ADA-ETH",
+            "Ignore": false,
+            "Symbol": "ADA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ADA-OKB",
+            "Ignore": false,
+            "Symbol": "ADA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ADA-USDT",
+            "Ignore": false,
+            "Symbol": "ADA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "AE-BTC",
+            "Ignore": false,
+            "Symbol": "AE"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "AE-ETH",
+            "Ignore": false,
+            "Symbol": "AE"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "AE-OKB",
+            "Ignore": false,
+            "Symbol": "AE"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "AE-USDT",
+            "Ignore": false,
+            "Symbol": "AE"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "AIDOC-ETH",
+            "Ignore": false,
+            "Symbol": "AIDOC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "AIDOC-USDT",
+            "Ignore": false,
+            "Symbol": "AIDOC"
+        },
+        {
+            "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "AIXBT-USDT",
+            "Symbol": "AIXBT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "AMM-USDT",
+            "Ignore": false,
+            "Symbol": "AMM"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ANT-USDT",
+            "Ignore": false,
+            "Symbol": "ANT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "AR-USDT",
+            "Ignore": false,
+            "Symbol": "AR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ARB-USDT",
+            "Ignore": false,
+            "Symbol": "ARB"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ARDR-BTC",
+            "Ignore": false,
+            "Symbol": "ARDR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ARK-BTC",
+            "Ignore": false,
+            "Symbol": "ARK"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ARK-ETH",
+            "Ignore": false,
+            "Symbol": "ARK"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ARK-USDT",
+            "Ignore": false,
+            "Symbol": "ARK"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "AST-USDT",
+            "Ignore": false,
+            "Symbol": "AST"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ASTR-USDT",
+            "Ignore": false,
+            "Symbol": "ASTR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ATL-ETH",
+            "Ignore": false,
+            "Symbol": "ATL"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ATOM-USDT",
+            "Ignore": false,
+            "Symbol": "ATOM"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ATOM-USDC",
+            "Ignore": false,
+            "Symbol": "ATOM"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "AUTO-ETH",
+            "Ignore": false,
+            "Symbol": "AUTO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "AVT-BTC",
+            "Ignore": false,
+            "Symbol": "AVT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "AXS-USDT",
+            "Ignore": false,
+            "Symbol": "AXS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "BADGER-USDT",
+            "Ignore": false,
+            "Symbol": "BADGER"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "BAL-USDT",
+            "Ignore": false,
+            "Symbol": "BAL"
+        },
+        {
+            "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "BANANA-USDT",
+            "Symbol": "BANANA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "BCD-BTC",
+            "Ignore": false,
+            "Symbol": "BCD"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "BCD-USDT",
+            "Ignore": false,
+            "Symbol": "BCD"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "BCX-BTC",
+            "Ignore": false,
+            "Symbol": "BCX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "BEC-BTC",
+            "Ignore": false,
+            "Symbol": "BEC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "BEC-ETH",
+            "Ignore": false,
+            "Symbol": "BEC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "BEC-USDT",
+            "Ignore": false,
+            "Symbol": "BEC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "BKX-BTC",
+            "Ignore": false,
+            "Symbol": "BKX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "BKX-ETH",
+            "Ignore": false,
+            "Symbol": "BKX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "BKX-USDT",
+            "Ignore": false,
+            "Symbol": "BKX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "BNT-BTC",
+            "Ignore": false,
+            "Symbol": "BNT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "BNT-ETH",
+            "Ignore": false,
+            "Symbol": "BNT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "BNT-USDT",
+            "Ignore": false,
+            "Symbol": "BNT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "BONK-USDT",
+            "Ignore": false,
+            "Symbol": "BONK"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "BRD-ETH",
+            "Ignore": false,
+            "Symbol": "BRD"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "BTC-USDT",
+            "Ignore": false,
+            "Symbol": "BTC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "BTG-BTC",
+            "Ignore": false,
+            "Symbol": "BTG"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "BTG-USDT",
+            "Ignore": false,
+            "Symbol": "BTG"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CAG-USDT",
+            "Ignore": false,
+            "Symbol": "CAG"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CAI-BTC",
+            "Ignore": false,
+            "Symbol": "CAI"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CAI-ETH",
+            "Ignore": false,
+            "Symbol": "CAI"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CAI-OKB",
+            "Ignore": false,
+            "Symbol": "CAI"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CAI-USDT",
+            "Ignore": false,
+            "Symbol": "CAI"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CBT-BTC",
+            "Ignore": false,
+            "Symbol": "CBT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CHAT-BTC",
+            "Ignore": false,
+            "Symbol": "CHAT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CHAT-USDT",
+            "Ignore": false,
+            "Symbol": "CHAT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CIC-BTC",
+            "Ignore": false,
+            "Symbol": "CIC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CIC-ETH",
+            "Ignore": false,
+            "Symbol": "CIC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CIC-USDT",
+            "Ignore": false,
+            "Symbol": "CIC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CIT-BTC",
+            "Ignore": false,
+            "Symbol": "CIT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CIT-ETH",
+            "Ignore": false,
+            "Symbol": "CIT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CIT-OKB",
+            "Ignore": false,
+            "Symbol": "CIT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "COMP-USDT",
+            "Ignore": false,
+            "Symbol": "COMP"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CTXC-BTC",
+            "Ignore": false,
+            "Symbol": "CTXC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CTXC-ETH",
+            "Ignore": false,
+            "Symbol": "CTXC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CTXC-USDT",
+            "Ignore": false,
+            "Symbol": "CTXC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CVC-BTC",
+            "Ignore": false,
+            "Symbol": "CVC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CVC-ETH",
+            "Ignore": false,
+            "Symbol": "CVC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CVC-USDT",
+            "Ignore": false,
+            "Symbol": "CVC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CVT-BTC",
+            "Ignore": false,
+            "Symbol": "CVT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CVT-ETH",
+            "Ignore": false,
+            "Symbol": "CVT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CVT-OKB",
+            "Ignore": false,
+            "Symbol": "CVT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "CVT-USDT",
+            "Ignore": false,
+            "Symbol": "CVT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DADI-BTC",
+            "Ignore": false,
+            "Symbol": "DADI"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DADI-ETH",
+            "Ignore": false,
+            "Symbol": "DADI"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DADI-USDT",
+            "Ignore": false,
+            "Symbol": "DADI"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DASH-BTC",
+            "Ignore": false,
+            "Symbol": "DASH"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DASH-ETH",
+            "Ignore": false,
+            "Symbol": "DASH"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DASH-OKB",
+            "Ignore": false,
+            "Symbol": "DASH"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DASH-USDT",
+            "Ignore": false,
+            "Symbol": "DASH"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DAT-BTC",
+            "Ignore": false,
+            "Symbol": "DAT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DAT-ETH",
+            "Ignore": false,
+            "Symbol": "DAT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DAT-USDT",
+            "Ignore": false,
+            "Symbol": "DAT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DCR-BTC",
+            "Ignore": false,
+            "Symbol": "DCR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DCR-ETH",
+            "Ignore": false,
+            "Symbol": "DCR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DCR-OKB",
+            "Ignore": false,
+            "Symbol": "DCR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DCR-USDT",
+            "Ignore": false,
+            "Symbol": "DCR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DEGEN-USDT",
+            "Ignore": false,
+            "Symbol": "DEGEN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DENT-BTC",
+            "Ignore": false,
+            "Symbol": "DENT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DENT-ETH",
+            "Ignore": false,
+            "Symbol": "DENT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DENT-USDT",
+            "Ignore": false,
+            "Symbol": "DENT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DGB-BTC",
+            "Ignore": false,
+            "Symbol": "DGB"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DGB-ETH",
+            "Ignore": false,
+            "Symbol": "DGB"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DGB-USDT",
+            "Ignore": false,
+            "Symbol": "DGB"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DGD-BTC",
+            "Ignore": false,
+            "Symbol": "DGD"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DGD-ETH",
+            "Ignore": false,
+            "Symbol": "DGD"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DGD-USDT",
+            "Ignore": false,
+            "Symbol": "DGD"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DIA-USDT",
+            "Ignore": false,
+            "Symbol": "DIA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DNA-USDT",
+            "Ignore": false,
+            "Symbol": "DNA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DNT-USDT",
+            "Ignore": false,
+            "Symbol": "DNT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DOGE-USDT",
+            "Ignore": false,
+            "Symbol": "DOGE"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DOT-USDT",
+            "Ignore": false,
+            "Symbol": "DOT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "DOT-USDC",
+            "Ignore": false,
+            "Symbol": "DOT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "EDO-BTC",
+            "Ignore": false,
+            "Symbol": "EDO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "EDO-ETH",
+            "Ignore": false,
+            "Symbol": "EDO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "EDO-USDT",
+            "Ignore": false,
+            "Symbol": "EDO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "EGT-BTC",
+            "Ignore": false,
+            "Symbol": "EGT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "EGT-ETH",
+            "Ignore": false,
+            "Symbol": "EGT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "EGT-OKB",
+            "Ignore": false,
+            "Symbol": "EGT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "EGT-USDT",
+            "Ignore": false,
+            "Symbol": "EGT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ELF-BTC",
+            "Ignore": false,
+            "Symbol": "ELF"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ELF-ETH",
+            "Ignore": false,
+            "Symbol": "ELF"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ELF-USDT",
+            "Ignore": false,
+            "Symbol": "ELF"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ENG-BTC",
+            "Ignore": false,
+            "Symbol": "ENG"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ENG-ETH",
+            "Ignore": false,
+            "Symbol": "ENG"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ENG-USDT",
+            "Ignore": false,
+            "Symbol": "ENG"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ENJ-BTC",
+            "Ignore": false,
+            "Symbol": "ENJ"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ENJ-ETH",
+            "Ignore": false,
+            "Symbol": "ENJ"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ENJ-USDT",
+            "Ignore": false,
+            "Symbol": "ENJ"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "EOS-BTC",
+            "Ignore": false,
+            "Symbol": "EOS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "EOS-ETH",
+            "Ignore": false,
+            "Symbol": "EOS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "EOS-OKB",
+            "Ignore": false,
+            "Symbol": "EOS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "EOS-USDT",
+            "Ignore": false,
+            "Symbol": "EOS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ETC-BTC",
+            "Ignore": false,
+            "Symbol": "ETC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ETC-ETH",
+            "Ignore": false,
+            "Symbol": "ETC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ETC-OKB",
+            "Ignore": false,
+            "Symbol": "ETC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ETC-USDT",
+            "Ignore": false,
+            "Symbol": "ETC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ETH-BTC",
+            "Ignore": false,
+            "Symbol": "ETH"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ETH-USDT",
+            "Ignore": false,
+            "Symbol": "ETH"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ETHFI-USDT",
+            "Ignore": false,
+            "Symbol": "ETHFI"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "EVX-ETH",
+            "Ignore": false,
+            "Symbol": "EVX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "EVX-USDT",
+            "Ignore": false,
+            "Symbol": "EVX"
+        },
+        {
+            "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "FLOKI-USDT",
+            "Symbol": "FLOKI"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "FLOW-USDT",
+            "Ignore": false,
+            "Symbol": "FLOW"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "FUN-BTC",
+            "Ignore": false,
+            "Symbol": "FUN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "FUN-ETH",
+            "Ignore": false,
+            "Symbol": "FUN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "FUN-USDT",
+            "Ignore": false,
+            "Symbol": "FUN"
+        },
+        {
+            "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "GALA-USDT",
+            "Symbol": "GALA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "GAS-BTC",
+            "Ignore": false,
+            "Symbol": "GAS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "GAS-ETH",
+            "Ignore": false,
+            "Symbol": "GAS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "GAS-USDT",
+            "Ignore": false,
+            "Symbol": "GAS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "GHST-USDT",
+            "Ignore": false,
+            "Symbol": "GHST"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "GLM-USDT",
+            "Ignore": false,
+            "Symbol": "GLM"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "GMT-USDT",
+            "Ignore": false,
+            "Symbol": "GMT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "GMX-USDT",
+            "Ignore": false,
+            "Symbol": "GMX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "GMX-USDC",
+            "Ignore": false,
+            "Symbol": "GMX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "GNT-BTC",
+            "Ignore": false,
+            "Symbol": "GNT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "GNT-ETH",
+            "Ignore": false,
+            "Symbol": "GNT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "GNT-USDT",
+            "Ignore": false,
+            "Symbol": "GNT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "GNX-BTC",
+            "Ignore": false,
+            "Symbol": "GNX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "GNX-ETH",
+            "Ignore": false,
+            "Symbol": "GNX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "GNX-USDT",
+            "Ignore": false,
+            "Symbol": "GNX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "GRT-USDT",
+            "Ignore": false,
+            "Symbol": "GRT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "GSC-ETH",
+            "Ignore": false,
+            "Symbol": "GSC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "GSC-USDT",
+            "Ignore": false,
+            "Symbol": "GSC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "GTO-BTC",
+            "Ignore": false,
+            "Symbol": "GTO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "GTO-ETH",
+            "Ignore": false,
+            "Symbol": "GTO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "GTO-USDT",
+            "Ignore": false,
+            "Symbol": "GTO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "GUSD-BTC",
+            "Ignore": false,
+            "Symbol": "GUSD"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "GUSD-USDT",
+            "Ignore": false,
+            "Symbol": "GUSD"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "HIT-BTC",
+            "Ignore": false,
+            "Symbol": "HIT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "HIT-ETH",
+            "Ignore": false,
+            "Symbol": "HIT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "HPB-BTC",
+            "Ignore": false,
+            "Symbol": "HPB"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "HPB-ETH",
+            "Ignore": false,
+            "Symbol": "HPB"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "HPB-OKB",
+            "Ignore": false,
+            "Symbol": "HPB"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "HPB-USDT",
+            "Ignore": false,
+            "Symbol": "HPB"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "HSR-BTC",
+            "Ignore": false,
+            "Symbol": "HSR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "HSR-ETH",
+            "Ignore": false,
+            "Symbol": "HSR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "HSR-USDT",
+            "Ignore": false,
+            "Symbol": "HSR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "HYC-BTC",
+            "Ignore": false,
+            "Symbol": "HYC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "HYC-ETH",
+            "Ignore": false,
+            "Symbol": "HYC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "HYC-USDT",
+            "Ignore": false,
+            "Symbol": "HYC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ICX-BTC",
+            "Ignore": false,
+            "Symbol": "ICX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ICX-ETH",
+            "Ignore": false,
+            "Symbol": "ICX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ICX-USDT",
+            "Ignore": false,
+            "Symbol": "ICX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ILV-USDT",
+            "Ignore": false,
+            "Symbol": "ILV"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "IMX-USDT",
+            "Ignore": false,
+            "Symbol": "IMX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "INJ-USDT",
+            "Ignore": false,
+            "Symbol": "INJ"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "INS-BTC",
+            "Ignore": false,
+            "Symbol": "INS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "INS-ETH",
+            "Ignore": false,
+            "Symbol": "INS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "INS-USDT",
+            "Ignore": false,
+            "Symbol": "INS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "INSUR-BTC",
+            "Ignore": false,
+            "Symbol": "INSUR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "INSUR-ETH",
+            "Ignore": false,
+            "Symbol": "INSUR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "INSUR-USDT",
+            "Ignore": false,
+            "Symbol": "INSUR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "INT-BTC",
+            "Ignore": false,
+            "Symbol": "INT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "INT-ETH",
+            "Ignore": false,
+            "Symbol": "INT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "INT-USDT",
+            "Ignore": false,
+            "Symbol": "INT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "IOST-BTC",
+            "Ignore": false,
+            "Symbol": "IOST"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "IOST-ETH",
+            "Ignore": false,
+            "Symbol": "IOST"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "IOST-USDT",
+            "Ignore": false,
+            "Symbol": "IOST"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "IPC-USDT",
+            "Ignore": false,
+            "Symbol": "IPC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ITC-BTC",
+            "Ignore": false,
+            "Symbol": "ITC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ITC-ETH",
+            "Ignore": false,
+            "Symbol": "ITC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ITC-USDT",
+            "Ignore": false,
+            "Symbol": "ITC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "JOE-USDT",
+            "Ignore": false,
+            "Symbol": "JOE"
+        },
+        {
+            "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "KAITO-USDT",
+            "Symbol": "KAITO"
+        },
+        {
+            "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "KAITO-USD",
+            "Symbol": "KAITO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "KAN-BTC",
+            "Ignore": false,
+            "Symbol": "KAN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "KAN-ETH",
+            "Ignore": false,
+            "Symbol": "KAN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "KAN-OKB",
+            "Ignore": false,
+            "Symbol": "KAN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "KAN-USDT",
+            "Ignore": false,
+            "Symbol": "KAN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "KCASH-BTC",
+            "Ignore": false,
+            "Symbol": "KCASH"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "KCASH-ETH",
+            "Ignore": false,
+            "Symbol": "KCASH"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "KCASH-USDT",
+            "Ignore": false,
+            "Symbol": "KCASH"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "KDA-USDT",
+            "Ignore": false,
+            "Symbol": "KDA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "KNC-USDT",
+            "Ignore": false,
+            "Symbol": "KNC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "KNC-USDC",
+            "Ignore": false,
+            "Symbol": "KNC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "KP3R-USDT",
+            "Ignore": false,
+            "Symbol": "KP3R"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "KSM-USDT",
+            "Ignore": false,
+            "Symbol": "KSM"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LA-ETH",
+            "Ignore": false,
+            "Symbol": "LA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LBA-BTC",
+            "Ignore": false,
+            "Symbol": "LBA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LBA-ETH",
+            "Ignore": false,
+            "Symbol": "LBA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LBA-OKB",
+            "Ignore": false,
+            "Symbol": "LBA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LBA-USDT",
+            "Ignore": false,
+            "Symbol": "LBA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LDO-USDT",
+            "Ignore": false,
+            "Symbol": "LDO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LEND-BTC",
+            "Ignore": false,
+            "Symbol": "LEND"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LEND-ETH",
+            "Ignore": false,
+            "Symbol": "LEND"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LEND-USDT",
+            "Ignore": false,
+            "Symbol": "LEND"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LET-BTC",
+            "Ignore": false,
+            "Symbol": "LET"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LET-ETH",
+            "Ignore": false,
+            "Symbol": "LET"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LET-OKB",
+            "Ignore": false,
+            "Symbol": "LET"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LET-USDT",
+            "Ignore": false,
+            "Symbol": "LET"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LEV-BTC",
+            "Ignore": false,
+            "Symbol": "LEV"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LEV-ETH",
+            "Ignore": false,
+            "Symbol": "LEV"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LEV-USDT",
+            "Ignore": false,
+            "Symbol": "LEV"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LIGHT-BTC",
+            "Ignore": false,
+            "Symbol": "LIGHT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LIGHT-ETH",
+            "Ignore": false,
+            "Symbol": "LIGHT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LIGHT-USDT",
+            "Ignore": false,
+            "Symbol": "LIGHT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LINK-BTC",
+            "Ignore": false,
+            "Symbol": "LINK"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LINK-ETH",
+            "Ignore": false,
+            "Symbol": "LINK"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LINK-USDT",
+            "Ignore": false,
+            "Symbol": "LINK"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LRC-BTC",
+            "Ignore": false,
+            "Symbol": "LRC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LRC-ETH",
+            "Ignore": false,
+            "Symbol": "LRC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LRC-USDT",
+            "Ignore": false,
+            "Symbol": "LRC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LSK-BTC",
+            "Ignore": false,
+            "Symbol": "LSK"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LSK-ETH",
+            "Ignore": false,
+            "Symbol": "LSK"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LSK-USDT",
+            "Ignore": false,
+            "Symbol": "LSK"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LTC-BTC",
+            "Ignore": false,
+            "Symbol": "LTC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LTC-ETH",
+            "Ignore": false,
+            "Symbol": "LTC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LTC-OKB",
+            "Ignore": false,
+            "Symbol": "LTC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LTC-USDT",
+            "Ignore": false,
+            "Symbol": "LTC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "LUNA-USDT",
+            "Ignore": false,
+            "Symbol": "LUNA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MANA-BTC",
+            "Ignore": false,
+            "Symbol": "MANA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MANA-ETH",
+            "Ignore": false,
+            "Symbol": "MANA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MANA-USDT",
+            "Ignore": false,
+            "Symbol": "MANA"
+        },
+        {
+            "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "MAVIA-USDT",
+            "Symbol": "MAVIA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MCO-BTC",
+            "Ignore": false,
+            "Symbol": "MCO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MCO-ETH",
+            "Ignore": false,
+            "Symbol": "MCO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MCO-USDT",
+            "Ignore": false,
+            "Symbol": "MCO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MDA-BTC",
+            "Ignore": false,
+            "Symbol": "MDA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MDA-ETH",
+            "Ignore": false,
+            "Symbol": "MDA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MDA-USDT",
+            "Ignore": false,
+            "Symbol": "MDA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MDT-BTC",
+            "Ignore": false,
+            "Symbol": "MDT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MDT-ETH",
+            "Ignore": false,
+            "Symbol": "MDT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MDT-USDT",
+            "Ignore": false,
+            "Symbol": "MDT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "METIS-USDT",
+            "Ignore": false,
+            "Symbol": "METIS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "IOTA-BTC",
+            "Ignore": false,
+            "Symbol": "MIOTA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "IOTA-ETH",
+            "Ignore": false,
+            "Symbol": "MIOTA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "IOTA-OKB",
+            "Ignore": false,
+            "Symbol": "MIOTA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "IOTA-USDT",
+            "Ignore": false,
+            "Symbol": "MIOTA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MITH-BTC",
+            "Ignore": false,
+            "Symbol": "MITH"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MITH-ETH",
+            "Ignore": false,
+            "Symbol": "MITH"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MITH-USDT",
+            "Ignore": false,
+            "Symbol": "MITH"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MKR-BTC",
+            "Ignore": false,
+            "Symbol": "MKR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MKR-ETH",
+            "Ignore": false,
+            "Symbol": "MKR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MKR-USDT",
+            "Ignore": false,
+            "Symbol": "MKR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MOF-BTC",
+            "Ignore": false,
+            "Symbol": "MOF"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MOF-ETH",
+            "Ignore": false,
+            "Symbol": "MOF"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MOF-USDT",
+            "Ignore": false,
+            "Symbol": "MOF"
+        },
+        {
+            "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "MORPHO-USDT",
+            "Symbol": "MORPHO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MOT-USDT",
+            "Ignore": false,
+            "Symbol": "MOT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MTH-ETH",
+            "Ignore": false,
+            "Symbol": "MTH"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MTL-BTC",
+            "Ignore": false,
+            "Symbol": "MTL"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MTL-ETH",
+            "Ignore": false,
+            "Symbol": "MTL"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MVP-BTC",
+            "Ignore": false,
+            "Symbol": "MVP"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MVP-ETH",
+            "Ignore": false,
+            "Symbol": "MVP"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MVP-OKB",
+            "Ignore": false,
+            "Symbol": "MVP"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "MVP-USDT",
+            "Ignore": false,
+            "Symbol": "MVP"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "NANO-BTC",
+            "Ignore": false,
+            "Symbol": "NANO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "NANO-ETH",
+            "Ignore": false,
+            "Symbol": "NANO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "NANO-USDT",
+            "Ignore": false,
+            "Symbol": "NANO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "NAS-BTC",
+            "Ignore": false,
+            "Symbol": "NAS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "NAS-ETH",
+            "Ignore": false,
+            "Symbol": "NAS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "NAS-OKB",
+            "Ignore": false,
+            "Symbol": "NAS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "NAS-USDT",
+            "Ignore": false,
+            "Symbol": "NAS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "NEAR-USDT",
+            "Ignore": false,
+            "Symbol": "NEAR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "NEO-BTC",
+            "Ignore": false,
+            "Symbol": "NEO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "NEO-ETH",
+            "Ignore": false,
+            "Symbol": "NEO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "NEO-OKB",
+            "Ignore": false,
+            "Symbol": "NEO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "NEO-USDT",
+            "Ignore": false,
+            "Symbol": "NEO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "NGC-BTC",
+            "Ignore": false,
+            "Symbol": "NGC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "NULS-BTC",
+            "Ignore": false,
+            "Symbol": "NULS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "NULS-ETH",
+            "Ignore": false,
+            "Symbol": "NULS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "NULS-USDT",
+            "Ignore": false,
+            "Symbol": "NULS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "NXT-BTC",
+            "Ignore": false,
+            "Symbol": "NXT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "OAX-USDT",
+            "Ignore": false,
+            "Symbol": "OAX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "OF-BTC",
+            "Ignore": false,
+            "Symbol": "OF"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "OF-ETH",
+            "Ignore": false,
+            "Symbol": "OF"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "OF-USDT",
+            "Ignore": false,
+            "Symbol": "OF"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "OKB-BTC",
+            "Ignore": false,
+            "Symbol": "OKB"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "OKB-ETH",
+            "Ignore": false,
+            "Symbol": "OKB"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "OKB-USDT",
+            "Ignore": false,
+            "Symbol": "OKB"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "OMG-BTC",
+            "Ignore": false,
+            "Symbol": "OMG"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "OMG-ETH",
+            "Ignore": false,
+            "Symbol": "OMG"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "OMG-USDT",
+            "Ignore": false,
+            "Symbol": "OMG"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ONT-BTC",
+            "Ignore": false,
+            "Symbol": "ONT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ONT-ETH",
+            "Ignore": false,
+            "Symbol": "ONT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ONT-USDT",
+            "Ignore": false,
+            "Symbol": "ONT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "OP-USDT",
+            "Ignore": false,
+            "Symbol": "OP"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ORDI-USDT",
+            "Ignore": false,
+            "Symbol": "ORDI"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "OST-BTC",
+            "Ignore": false,
+            "Symbol": "OST"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "OST-ETH",
+            "Ignore": false,
+            "Symbol": "OST"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "OST-USDT",
+            "Ignore": false,
+            "Symbol": "OST"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "PAX-BTC",
+            "Ignore": false,
+            "Symbol": "PAX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "PAX-USDT",
+            "Ignore": false,
+            "Symbol": "PAX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "PAY-BTC",
+            "Ignore": false,
+            "Symbol": "PAY"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "PAY-ETH",
+            "Ignore": false,
+            "Symbol": "PAY"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "PAY-USDT",
+            "Ignore": false,
+            "Symbol": "PAY"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "PEPE-USDT",
+            "Ignore": false,
+            "Symbol": "PEPE"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "PERP-USDT",
+            "Ignore": false,
+            "Symbol": "PERP"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "PHA-USDT",
+            "Ignore": false,
+            "Symbol": "PHA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "POE-BTC",
+            "Ignore": false,
+            "Symbol": "POE"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "POE-ETH",
+            "Ignore": false,
+            "Symbol": "POE"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "POE-USDT",
+            "Ignore": false,
+            "Symbol": "POE"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "POL-USDT",
+            "Ignore": false,
+            "Symbol": "POL"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "POL-USDC",
+            "Ignore": false,
+            "Symbol": "POL"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "PPT-BTC",
+            "Ignore": false,
+            "Symbol": "PPT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "PPT-ETH",
+            "Ignore": false,
+            "Symbol": "PPT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "PPT-USDT",
+            "Ignore": false,
+            "Symbol": "PPT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "PRA-ETH",
+            "Ignore": false,
+            "Symbol": "PRA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "PRA-USDT",
+            "Ignore": false,
+            "Symbol": "PRA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "PST-BTC",
+            "Ignore": false,
+            "Symbol": "PST"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "PST-ETH",
+            "Ignore": false,
+            "Symbol": "PST"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "PST-USDT",
+            "Ignore": false,
+            "Symbol": "PST"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "QTUM-BTC",
+            "Ignore": false,
+            "Symbol": "QTUM"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "QTUM-ETH",
+            "Ignore": false,
+            "Symbol": "QTUM"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "QTUM-OKB",
+            "Ignore": false,
+            "Symbol": "QTUM"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "QTUM-USDT",
+            "Ignore": false,
+            "Symbol": "QTUM"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "QUN-BTC",
+            "Ignore": false,
+            "Symbol": "QUN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "QUN-ETH",
+            "Ignore": false,
+            "Symbol": "QUN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "QUN-USDT",
+            "Ignore": false,
+            "Symbol": "QUN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "QVT-USDT",
+            "Ignore": false,
+            "Symbol": "QVT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "R-BTC",
+            "Ignore": false,
+            "Symbol": "R"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "R-ETH",
+            "Ignore": false,
+            "Symbol": "R"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "R-USDT",
+            "Ignore": false,
+            "Symbol": "R"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "RAY-USDT",
+            "Ignore": false,
+            "Symbol": "RAY"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "RCT-ETH",
+            "Ignore": false,
+            "Symbol": "RCT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "RDN-BTC",
+            "Ignore": false,
+            "Symbol": "RDN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "RDN-ETH",
+            "Ignore": false,
+            "Symbol": "RDN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "RDN-USDT",
+            "Ignore": false,
+            "Symbol": "RDN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "REF-ETH",
+            "Ignore": false,
+            "Symbol": "REF"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "REN-BTC",
+            "Ignore": false,
+            "Symbol": "REN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "REN-ETH",
+            "Ignore": false,
+            "Symbol": "REN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "REN-USDT",
+            "Ignore": false,
+            "Symbol": "REN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "REQ-ETH",
+            "Ignore": false,
+            "Symbol": "REQ"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "REQ-USDT",
+            "Ignore": false,
+            "Symbol": "REQ"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "RFR-BTC",
+            "Ignore": false,
+            "Symbol": "RFR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "RFR-ETH",
+            "Ignore": false,
+            "Symbol": "RFR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "RFR-USDT",
+            "Ignore": false,
+            "Symbol": "RFR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "RNT-BTC",
+            "Ignore": false,
+            "Symbol": "RNT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "RNT-ETH",
+            "Ignore": false,
+            "Symbol": "RNT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "RNT-USDT",
+            "Ignore": false,
+            "Symbol": "RNT"
+        },
+        {
+            "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "S-USDT",
+            "Symbol": "S"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SALT-BTC",
+            "Ignore": false,
+            "Symbol": "SALT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SALT-ETH",
+            "Ignore": false,
+            "Symbol": "SALT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SALT-USDT",
+            "Ignore": false,
+            "Symbol": "SALT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SAMO-USDT",
+            "Ignore": false,
+            "Symbol": "SAMO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SAN-USDT",
+            "Ignore": false,
+            "Symbol": "SAN"
+        },
+        {
+            "Symbol": "SATS",
+            "ForeignName": "SATS-USDT",
+            "Exchange": "OKEx",
+            "Ignore": false
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SBTC-BTC",
+            "Ignore": false,
+            "Symbol": "SBTC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SC-BTC",
+            "Ignore": false,
+            "Symbol": "SC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SC-ETH",
+            "Ignore": false,
+            "Symbol": "SC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SC-OKB",
+            "Ignore": false,
+            "Symbol": "SC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SC-USDT",
+            "Ignore": false,
+            "Symbol": "SC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SDA-ETH",
+            "Ignore": false,
+            "Symbol": "SDA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SDA-OKB",
+            "Ignore": false,
+            "Symbol": "SDA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SHIB-USDT",
+            "Ignore": false,
+            "Symbol": "SHIB"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SHOW-BTC",
+            "Ignore": false,
+            "Symbol": "SHOW"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SHOW-ETH",
+            "Ignore": false,
+            "Symbol": "SHOW"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SHOW-USDT",
+            "Ignore": false,
+            "Symbol": "SHOW"
+        },
+        {
+            "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "SKY-USDT",
+            "Symbol": "SKY"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SNC-BTC",
+            "Ignore": false,
+            "Symbol": "SNC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SNC-ETH",
+            "Ignore": false,
+            "Symbol": "SNC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SNC-USDT",
+            "Ignore": false,
+            "Symbol": "SNC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SNGLS-BTC",
+            "Ignore": false,
+            "Symbol": "SNGLS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SNGLS-ETH",
+            "Ignore": false,
+            "Symbol": "SNGLS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SNGLS-USDT",
+            "Ignore": false,
+            "Symbol": "SNGLS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SNM-ETH",
+            "Ignore": false,
+            "Symbol": "SNM"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SNT-BTC",
+            "Ignore": false,
+            "Symbol": "SNT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SNT-ETH",
+            "Ignore": false,
+            "Symbol": "SNT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SNT-USDT",
+            "Ignore": false,
+            "Symbol": "SNT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SOC-BTC",
+            "Ignore": false,
+            "Symbol": "SOC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SOC-ETH",
+            "Ignore": false,
+            "Symbol": "SOC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SOC-USDT",
+            "Ignore": false,
+            "Symbol": "SOC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SPELL-USDT",
+            "Ignore": false,
+            "Symbol": "SPELL"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SPF-BTC",
+            "Ignore": false,
+            "Symbol": "SPF"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SPF-USDT",
+            "Ignore": false,
+            "Symbol": "SPF"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SSC-BTC",
+            "Ignore": false,
+            "Symbol": "SSC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SSC-ETH",
+            "Ignore": false,
+            "Symbol": "SSC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SSC-USDT",
+            "Ignore": false,
+            "Symbol": "SSC"
+        },
+        {
+            "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "SSV-USDT",
+            "Symbol": "SSV"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "STC-BTC",
+            "Ignore": false,
+            "Symbol": "STC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "STC-USDT",
+            "Ignore": false,
+            "Symbol": "STC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "STETH-USDT",
+            "Ignore": false,
+            "Symbol": "STETH"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "STORJ-BTC",
+            "Ignore": false,
+            "Symbol": "STORJ"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "STORJ-ETH",
+            "Ignore": false,
+            "Symbol": "STORJ"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "STORJ-USDT",
+            "Ignore": false,
+            "Symbol": "STORJ"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "STRK-USDT",
+            "Ignore": false,
+            "Symbol": "STRK"
+        },
+        {
+            "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "STX-USDT",
+            "Symbol": "STX"
+        },
+        {
+            "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "STX-USDC",
+            "Symbol": "STX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SUB-BTC",
+            "Ignore": false,
+            "Symbol": "SUB"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SUB-ETH",
+            "Ignore": false,
+            "Symbol": "SUB"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SUI-USDT",
+            "Ignore": false,
+            "Symbol": "SUI"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SWFTC-BTC",
+            "Ignore": false,
+            "Symbol": "SWFTC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SWFTC-ETH",
+            "Ignore": false,
+            "Symbol": "SWFTC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "SWFTC-USDT",
+            "Ignore": false,
+            "Symbol": "SWFTC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "TCT-BTC",
+            "Ignore": false,
+            "Symbol": "TCT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "TCT-ETH",
+            "Ignore": false,
+            "Symbol": "TCT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "TCT-USDT",
+            "Ignore": false,
+            "Symbol": "TCT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "THETA-BTC",
+            "Ignore": false,
+            "Symbol": "THETA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "THETA-ETH",
+            "Ignore": false,
+            "Symbol": "THETA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "THETA-USDT",
+            "Ignore": false,
+            "Symbol": "THETA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "TIA-USDT",
+            "Ignore": false,
+            "Symbol": "TIA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "TNB-BTC",
+            "Ignore": false,
+            "Symbol": "TNB"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "TNB-ETH",
+            "Ignore": false,
+            "Symbol": "TNB"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "TNB-USDT",
+            "Ignore": false,
+            "Symbol": "TNB"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "TON-USDT",
+            "Ignore": false,
+            "Symbol": "TON"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "TOPC-ETH",
+            "Ignore": false,
+            "Symbol": "TOPC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "TOPC-USDT",
+            "Ignore": false,
+            "Symbol": "TOPC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "TRA-ETH",
+            "Ignore": false,
+            "Symbol": "TRA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "TRA-USDT",
+            "Ignore": false,
+            "Symbol": "TRA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "TRIO-BTC",
+            "Ignore": false,
+            "Symbol": "TRIO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "TRIO-ETH",
+            "Ignore": false,
+            "Symbol": "TRIO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "TRIO-USDT",
+            "Ignore": false,
+            "Symbol": "TRIO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "TRX-BTC",
+            "Ignore": false,
+            "Symbol": "TRX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "TRX-ETH",
+            "Ignore": false,
+            "Symbol": "TRX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "TRX-OKB",
+            "Ignore": false,
+            "Symbol": "TRX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "TRX-USDT",
+            "Ignore": false,
+            "Symbol": "TRX"
+        },
+        {
+            "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "TURBO-USDT",
+            "Symbol": "TURBO"
+        },
+        {
+            "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "TURBO-USDC",
+            "Symbol": "TURBO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "TUSD-BTC",
+            "Ignore": false,
+            "Symbol": "TUSD"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "TUSD-USDT",
+            "Ignore": false,
+            "Symbol": "TUSD"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "UBTC-USDT",
+            "Ignore": false,
+            "Symbol": "UBTC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "UCT-ETH",
+            "Ignore": false,
+            "Symbol": "UCT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "UCT-USDT",
+            "Ignore": false,
+            "Symbol": "UCT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "UGC-BTC",
+            "Ignore": false,
+            "Symbol": "UGC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "UGC-ETH",
+            "Ignore": false,
+            "Symbol": "UGC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "UGC-USDT",
+            "Ignore": false,
+            "Symbol": "UGC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "UKG-ETH",
+            "Ignore": false,
+            "Symbol": "UKG"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "UNI-USDT",
+            "Ignore": false,
+            "Symbol": "UNI"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "USDC-BTC",
+            "Ignore": false,
+            "Symbol": "USDC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "USDC-USDT",
+            "Ignore": false,
+            "Symbol": "USDC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "UST-USDT",
+            "Ignore": false,
+            "Symbol": "UST"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "UTK-USDT",
+            "Ignore": false,
+            "Symbol": "UTK"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "VEE-ETH",
+            "Ignore": false,
+            "Symbol": "VEE"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "VELA-USDT",
+            "Ignore": false,
+            "Symbol": "VELA"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "VELODROME-USDT",
+            "Ignore": false,
+            "Symbol": "VELODROME"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "VIB-BTC",
+            "Ignore": false,
+            "Symbol": "VIB"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "VIB-ETH",
+            "Ignore": false,
+            "Symbol": "VIB"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "VIB-USDT",
+            "Ignore": false,
+            "Symbol": "VIB"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "VITE-BTC",
+            "Ignore": false,
+            "Symbol": "VITE"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "VITE-ETH",
+            "Ignore": false,
+            "Symbol": "VITE"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "VITE-OKB",
+            "Ignore": false,
+            "Symbol": "VITE"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "WAVES-BTC",
+            "Ignore": false,
+            "Symbol": "WAVES"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "WAVES-ETH",
+            "Ignore": false,
+            "Symbol": "WAVES"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "WAVES-OKB",
+            "Ignore": false,
+            "Symbol": "WAVES"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "WAVES-USDT",
+            "Ignore": false,
+            "Symbol": "WAVES"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "WBTC-USDT",
+            "Ignore": false,
+            "Symbol": "WBTC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "WBTC-ETH",
+            "Ignore": false,
+            "Symbol": "WBTC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "WIF-USDT",
+            "Ignore": false,
+            "Symbol": "WIF"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "WIN-BTC",
+            "Ignore": false,
+            "Symbol": "WIN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "WIN-ETH",
+            "Ignore": false,
+            "Symbol": "WIN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "WIN-OKB",
+            "Ignore": false,
+            "Symbol": "WIN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "WIN-USDT",
+            "Ignore": false,
+            "Symbol": "WIN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "WLD-USDT",
+            "Ignore": false,
+            "Symbol": "WLD"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "WRC-USDT",
+            "Ignore": false,
+            "Symbol": "WRC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "WTC-BTC",
+            "Ignore": false,
+            "Symbol": "WTC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "WTC-ETH",
+            "Ignore": false,
+            "Symbol": "WTC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "WTC-USDT",
+            "Ignore": false,
+            "Symbol": "WTC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "XAS-BTC",
+            "Ignore": false,
+            "Symbol": "XAS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "XAS-OKB",
+            "Ignore": false,
+            "Symbol": "XAS"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "XAS-USDT",
+            "Ignore": false,
+            "Symbol": "XAS"
+        },
+        {
+            "Exchange": "OKEx",
+            "Ignore": false,
+            "ForeignName": "XAUT-USDT",
+            "Symbol": "XAUT"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "XEM-BTC",
+            "Ignore": false,
+            "Symbol": "XEM"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "XEM-ETH",
+            "Ignore": false,
+            "Symbol": "XEM"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "XEM-USDT",
+            "Ignore": false,
+            "Symbol": "XEM"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "XLM-BTC",
+            "Ignore": false,
+            "Symbol": "XLM"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "XLM-ETH",
+            "Ignore": false,
+            "Symbol": "XLM"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "XLM-USDT",
+            "Ignore": false,
+            "Symbol": "XLM"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "XMR-BTC",
+            "Ignore": false,
+            "Symbol": "XMR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "XMR-ETH",
+            "Ignore": false,
+            "Symbol": "XMR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "XMR-USDT",
+            "Ignore": false,
+            "Symbol": "XMR"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "XRP-BTC",
+            "Ignore": false,
+            "Symbol": "XRP"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "XRP-ETH",
+            "Ignore": false,
+            "Symbol": "XRP"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "XRP-OKB",
+            "Ignore": false,
+            "Symbol": "XRP"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "XRP-USDT",
+            "Ignore": false,
+            "Symbol": "XRP"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "XUC-BTC",
+            "Ignore": false,
+            "Symbol": "XUC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "XUC-ETH",
+            "Ignore": false,
+            "Symbol": "XUC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "XUC-USDT",
+            "Ignore": false,
+            "Symbol": "XUC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "YEE-BTC",
+            "Ignore": false,
+            "Symbol": "YEE"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "YEE-ETH",
+            "Ignore": false,
+            "Symbol": "YEE"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "YEE-USDT",
+            "Ignore": false,
+            "Symbol": "YEE"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "YFI-USDT",
+            "Ignore": false,
+            "Symbol": "YFI"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "YFI-USDC",
+            "Ignore": false,
+            "Symbol": "YFI"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "YGG-USDT",
+            "Ignore": false,
+            "Symbol": "YGG"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "YOU-BTC",
+            "Ignore": false,
+            "Symbol": "YOU"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "YOU-ETH",
+            "Ignore": false,
+            "Symbol": "YOU"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "YOU-OKB",
+            "Ignore": false,
+            "Symbol": "YOU"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "YOU-USDT",
+            "Ignore": false,
+            "Symbol": "YOU"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "YOYO-BTC",
+            "Ignore": false,
+            "Symbol": "YOYOW"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "YOYO-ETH",
+            "Ignore": false,
+            "Symbol": "YOYOW"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "YOYO-USDT",
+            "Ignore": false,
+            "Symbol": "YOYOW"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ZCO-BTC",
+            "Ignore": false,
+            "Symbol": "ZCO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ZCO-ETH",
+            "Ignore": false,
+            "Symbol": "ZCO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ZCO-OKB",
+            "Ignore": false,
+            "Symbol": "ZCO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ZEC-BTC",
+            "Ignore": false,
+            "Symbol": "ZEC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ZEC-ETH",
+            "Ignore": false,
+            "Symbol": "ZEC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ZEC-OKB",
+            "Ignore": false,
+            "Symbol": "ZEC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ZEC-USDT",
+            "Ignore": false,
+            "Symbol": "ZEC"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ZEN-BTC",
+            "Ignore": false,
+            "Symbol": "ZEN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ZEN-ETH",
+            "Ignore": false,
+            "Symbol": "ZEN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ZEN-USDT",
+            "Ignore": false,
+            "Symbol": "ZEN"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ZIL-BTC",
+            "Ignore": false,
+            "Symbol": "ZIL"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ZIL-ETH",
+            "Ignore": false,
+            "Symbol": "ZIL"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ZIL-USDT",
+            "Ignore": false,
+            "Symbol": "ZIL"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ZIP-BTC",
+            "Ignore": false,
+            "Symbol": "ZIP"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ZIP-ETH",
+            "Ignore": false,
+            "Symbol": "ZIP"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ZIP-USDT",
+            "Ignore": false,
+            "Symbol": "ZIP"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ZRO-USDT",
+            "Ignore": false,
+            "Symbol": "ZRO"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ZRX-BTC",
+            "Ignore": false,
+            "Symbol": "ZRX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ZRX-ETH",
+            "Ignore": false,
+            "Symbol": "ZRX"
+        },
+        {
+            "Exchange": "OKEx",
+            "ForeignName": "ZRX-USDT",
+            "Ignore": false,
+            "Symbol": "ZRX"
+        }
+    ]
+}
