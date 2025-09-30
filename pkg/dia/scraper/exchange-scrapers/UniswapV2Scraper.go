@@ -520,6 +520,7 @@ func (s *UniswapScraper) GetSwapsChannel(pairAddress common.Address) (chan *unis
 
 }
 
+// TO DO: This should be in some helper library.
 // getReverseTokensFromConfig returns a list of addresses from config file.
 func getReverseTokensFromConfig(filename string) (*[]string, error) {
 

@@ -39,6 +39,10 @@ const (
 	ChannelFull      = "full"
 )
 
+var (
+	reversePairsCoinBase *[]string
+)
+
 // NewCoinBaseScraper returns a new CoinBaseScraper initialized with default values.
 // The instance is asynchronously scraping as soon as it is created.
 func NewCoinBaseScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) *CoinBaseScraper {
@@ -68,6 +72,11 @@ func (s *CoinBaseScraper) mainLoop() {
 	var err error
 	tmFalseDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
 	tmDuplicateTrades := timedmap.New(duplicateTradesScanFrequency)
+
+	reversePairsCoinBase, err = getReverseTokensFromConfig("coinbase/reverse_pairs")
+	if err != nil {
+		log.Error("error getting tokens for which pairs should be reversed: ", err)
+	}
 
 	for {
 		message := gdax.Message{}
@@ -108,6 +117,12 @@ func (s *CoinBaseScraper) mainLoop() {
 							}
 							if t.VerifiedPair {
 								log.Info("got verified trade: ", t)
+							}
+							if utils.Contains(reversePairsCoinBase, t.Pair) {
+								*t, err = dia.SwapTrade(*t)
+								if err != nil {
+									log.Fatal("SwapTrade: ", t)
+								}
 							}
 							// Handle duplicate trades.
 							discardTrade := t.IdentifyDuplicateFull(tmFalseDuplicateTrades, duplicateTradesMemory)
