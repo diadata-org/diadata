@@ -15,13 +15,29 @@ import (
 )
 
 const (
-	krakenRefreshDelay  = time.Second * 30 * 1
-	krakenMaxSubPerConn = 90
+	krakenRefreshDelay         = time.Second * 30 * 1
+	krakenMaxSubPerConnDefault = 30
 )
 
 var (
-	krakenWSBaseString = utils.Getenv("KRAKEN_WS_BASE_STRING", "wss://ws.kraken.com/v2")
+	krakenWSBaseString  = utils.Getenv("KRAKEN_WS_BASE_STRING", "wss://ws.kraken.com/v2")
+	krakenMaxSubPerConn int
+	reversePairsKraken  *[]string
 )
+
+func init() {
+	var err error
+	krakenMaxSubPerConn, err = strconv.Atoi(utils.Getenv("MAX_SUB_PER_CONNECTION", "30"))
+	if err != nil {
+		log.Errorf("krakenMaxSubPerConn: %v. Set to default %v", err, krakenMaxSubPerConnDefault)
+		krakenMaxSubPerConn = krakenMaxSubPerConnDefault
+	}
+	reversePairsKraken, err = getReverseTokensFromConfig("kraken/reverse_pairs")
+	if err != nil {
+		log.Error("error getting tokens for which pairs should be reversed: ", err)
+	}
+
+}
 
 type KrakenScraper struct {
 	connections map[int]KrakenWSConnection
@@ -88,6 +104,7 @@ func NewKrakenScraper(key string, secret string, exchange dia.Exchange, scrape b
 		chanTrades:   make(chan *dia.Trade),
 		db:           relDB,
 	}
+
 	err := s.newConn()
 	if err != nil {
 		log.Fatal("newConn: ", err)
@@ -149,6 +166,13 @@ func (s *KrakenScraper) subLoop(client *ws.Conn) {
 					ForeignTradeID: foreignTradeID,
 					Source:         s.exchangeName,
 					VerifiedPair:   exchangePair.Verified,
+				}
+
+				if utils.Contains(reversePairsKraken, trade.Pair) {
+					trade, err = dia.SwapTradeSeparator(trade, "/")
+					if err != nil {
+						log.Fatal("SwapTrade: ", trade)
+					}
 				}
 
 				// Handle duplicate trades.

@@ -52,18 +52,22 @@ func (t *Trade) GetBaseToken() string {
 	return strings.TrimPrefix(pair, strings.ToUpper(t.Symbol))
 }
 
-// SwapTrade swaps base and quote token of a trade and inverts the price accordingly
-func SwapTrade(t Trade) (Trade, error) {
+func SwapTradeSeparator(t Trade, separator string) (Trade, error) {
 	if t.Price == 0 {
 		return t, errors.New("zero price. cannot swap trade")
 	}
 	t.BaseToken, t.QuoteToken = t.QuoteToken, t.BaseToken
 	t.Symbol = t.QuoteToken.Symbol
-	t.Pair = t.QuoteToken.Symbol + "-" + t.BaseToken.Symbol
+	t.Pair = t.QuoteToken.Symbol + separator + t.BaseToken.Symbol
 	t.Volume = -t.Price * t.Volume
 	t.Price = 1 / t.Price
 
 	return t, nil
+}
+
+// SwapTrade swaps base and quote token of a trade and inverts the price accordingly
+func SwapTrade(t Trade) (Trade, error) {
+	return SwapTradeSeparator(t, "-")
 }
 
 // IdentifyDuplicateFull returns true in case a trade is fully identical to one stored in the timed map @falseDuplicateTrades.
