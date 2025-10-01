@@ -458,6 +458,12 @@
         },
         {
             "Exchange": "Binance2",
+            "Symbol": "SKY",
+            "Blockchain": "Ethereum",
+            "Address": "0x56072C95FAA701256059aa122697B133aDEd9279"
+        },
+        {
+            "Exchange": "Binance2",
             "Symbol": "SNX",
             "Blockchain": "Ethereum",
             "Address": "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F"

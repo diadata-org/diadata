@@ -405,6 +405,18 @@
         {
             "Exchange": "Binance",
             "Ignore": false,
+            "ForeignName": "SKYUSDT",
+            "Symbol": "SKY"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "SKYUSDC",
+            "Symbol": "SKY"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
             "ForeignName": "SNXUSDT",
             "Symbol": "SNX"
         },

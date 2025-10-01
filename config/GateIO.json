@@ -2438,6 +2438,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "SKY_USDT",
+            "Symbol": "SKY"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "SMT_ETH",
             "Ignore": false,
             "Symbol": "SMT"

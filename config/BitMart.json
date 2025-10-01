@@ -626,6 +626,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "SKY_USDT",
+            "Symbol": "SKY"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "SNX_USDT",
             "Ignore": false,
             "Symbol": "SNX"

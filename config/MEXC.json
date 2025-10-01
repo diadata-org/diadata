@@ -919,6 +919,12 @@
             "Symbol": "SKI"
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "SKYUSDT",
+            "Symbol": "SKY"
+        },
+        {
             "Symbol": "SOL",
             "ForeignName": "SOLUSDT",
             "Exchange": "MEXC",

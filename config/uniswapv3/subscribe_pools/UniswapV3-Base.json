@@ -1,6 +1,10 @@
 {
     "Pools": [
         {
+            "Address": "0x59a0be5Dd05A4Fe07b81F150643227aC8b44695F",
+            "ForeignName": "WETH-OPENX"
+        },
+        {
             "Address": "0x9c087Eb773291e50CF6c6a90ef0F4500e349B903",
             "ForeignName": "VIRTUAL-WETH"
         },
