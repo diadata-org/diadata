@@ -362,6 +362,12 @@
         },
         {
             "Exchange": "Binance2",
+            "Symbol": "NEIRO",
+            "Blockchain": "Ethereum",
+            "Address": "0x812Ba41e071C7b7fA4EBcFB62dF5F45f6fA853Ee"
+        },
+        {
+            "Exchange": "Binance2",
             "Symbol": "OMG",
             "Blockchain": "Ethereum",
             "Address": "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07"

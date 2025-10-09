@@ -506,6 +506,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Symbol": "NEIRO",
+            "Blockchain": "Ethereum",
+            "Address": "0x812Ba41e071C7b7fA4EBcFB62dF5F45f6fA853Ee"
+        },
+        {
+            "Exchange": "BitMart",
             "Symbol": "NPC",
             "Blockchain": "Ethereum",
             "Address": "0x8eD97a637A790Be1feff5e888d43629dc05408F6"
