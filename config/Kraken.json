@@ -447,6 +447,18 @@
         {
             "Exchange": "Kraken",
             "Ignore": false,
+            "ForeignName": "NEIROUSD",
+            "Symbol": "NEIRO"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "NEIROEUR",
+            "Symbol": "NEIRO"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
             "ForeignName": "ONDOUSD",
             "Symbol": "ONDO"
         },

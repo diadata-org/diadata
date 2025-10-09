@@ -721,6 +721,12 @@
             "Symbol": "NEIROETH"
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "NEIROCTOUSDT",
+            "Symbol": "NEIROCTO"
+        },
+        {
             "Symbol": "NETT",
             "ForeignName": "NETTUSDT",
             "Exchange": "MEXC",
@@ -753,6 +759,12 @@
         {
             "Symbol": "OP",
             "ForeignName": "OPUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
+            "Symbol": "OPENX",
+            "ForeignName": "OPENXUSDT",
             "Exchange": "MEXC",
             "Ignore": false
         },

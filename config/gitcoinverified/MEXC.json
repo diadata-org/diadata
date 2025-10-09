@@ -685,10 +685,22 @@
             "Address": "0x0B010000b7624eb9B3DfBC279673C76E9D29D5F7"
         },
         {
+            "Exchange": "MEXC",
+            "Symbol": "NEIROCTO",
+            "Blockchain": "Ethereum",
+            "Address": "0x812Ba41e071C7b7fA4EBcFB62dF5F45f6fA853Ee"
+        },
+        {
             "Symbol": "OP",
             "Exchange": "MEXC",
             "Blockchain": "Optimism",
             "Address": "0x4200000000000000000000000000000000000042"
+        },
+        {
+            "Symbol": "OPENX",
+            "Exchange": "MEXC",
+            "Blockchain": "Base",
+            "Address": "0xA66B448f97CBf58D12f00711C02bAC2d9EAC6f7f"            
         },
         {
             "Symbol": "ORDI",

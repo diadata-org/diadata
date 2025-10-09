@@ -337,6 +337,12 @@
             "Address": "0x5d65D971895Edc438f465c17DB6992698a52318D"
         },
         {
+            "Exchange": "OKEx",
+            "Symbol": "NEIRO",
+            "Blockchain": "Ethereum",
+            "Address": "0x812Ba41e071C7b7fA4EBcFB62dF5F45f6fA853Ee"
+        },
+        {
             "Symbol": "OP",
             "Exchange": "OKEx",
             "Blockchain": "Optimism",
