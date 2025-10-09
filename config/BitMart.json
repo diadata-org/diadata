@@ -506,6 +506,12 @@
         },
         {
             "Exchange": "BitMart",
+            "ForeignName": "NEIRO_USDT",
+            "Ignore": false,
+            "Symbol": "NEIRO"
+        },
+        {
+            "Exchange": "BitMart",
             "Ignore": false,
             "ForeignName": "NPC_USDT",
             "Symbol": "NPC"

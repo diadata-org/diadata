@@ -363,6 +363,18 @@
         {
             "Exchange": "Bitget",
             "Ignore": false,
+            "ForeignName": "NEIROCTOUSDT",
+            "Symbol": "NEIROCTO"
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "NEIROCTOEUR",
+            "Symbol": "NEIROCTO"
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
             "ForeignName": "NPCUSDT",
             "Symbol": "NPC"
         },
