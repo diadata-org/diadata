@@ -342,6 +342,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewBifrostScraper(Exchanges[dia.BifrostExchange], scrape, relDB)
 	case dia.HydrationExchange:
 		return NewHydrationScraper(Exchanges[dia.HydrationExchange], scrape, relDB)
+	case dia.OndoFinanceExchange:
+		return NewOndoFinanceScraper(Exchanges[dia.OndoFinanceExchange], scrape, relDB)
 	default:
 		return nil
 	}

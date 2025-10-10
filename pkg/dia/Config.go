@@ -142,6 +142,7 @@ const (
 	HydrationExchange                  = "Hydration"
 	VelodromeExchangeSwellchain        = "Velodrome-Swellchain"
 	CoinExExchange                     = "CoinEx"
+	OndoFinanceExchange                = "OndoFinance"
 	// FinageForex        = "FinageForex"
 )
 
