@@ -99,11 +99,11 @@ func (env *Env) GetAssetQuotation(c *gin.Context) {
 		quotationExtended.PriceYesterday = quotationYesterday.Price
 	}
 
-	volumeYesterday, err := env.DataStore.Get24HoursAssetVolume(asset)
+	volumeYesterday, err := env.RelDB.GetLastAssetVolume24H(asset)
 	if err != nil {
 		log.Warn("get volume yesterday: ", err)
 	} else {
-		quotationExtended.VolumeYesterdayUSD = *volumeYesterday
+		quotationExtended.VolumeYesterdayUSD = volumeYesterday
 	}
 
 	// Appropriate formatting.
