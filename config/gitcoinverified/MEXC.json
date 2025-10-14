@@ -1027,6 +1027,12 @@
             "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
         },
         {
+            "Exchange": "MEXC",
+            "Symbol": "USDUC",
+            "Blockchain": "Solana",
+            "Address": "CB9dDufT3ZuQXqqSfa1c5kY935TEreyBw9XJXxHKpump"
+        },
+        {
             "Symbol": "VELA",
             "Exchange": "MEXC",
             "Blockchain": "Arbitrum",

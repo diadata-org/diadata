@@ -1105,6 +1105,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "USDUC",
+            "ForeignName": "USDUCUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
             "Symbol": "VELA",
             "ForeignName": "VELAUSDT",
             "Exchange": "MEXC",
