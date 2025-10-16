@@ -168,7 +168,7 @@ func (s *UniswapV4Scraper) mainLoop() {
 					continue
 				}
 				if slippage > s.thresholdSlippage {
-					log.Warn("slippage above threshold: ", slippage)
+					log.Warnf("slippage for %s above threshold: %v", swap.Pair.ForeignName(), slippage)
 					continue
 				}
 
