@@ -2,7 +2,7 @@ module github.com/diadata-org/diadata/assetCollectionService
 
 go 1.22
 require (
-	github.com/diadata-org/diadata v1.4.654
+	github.com/diadata-org/diadata v1.4.659
 	github.com/sirupsen/logrus v1.9.3
 )
 

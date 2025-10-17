@@ -145,7 +145,7 @@ func (uas *UniswapV4AssetSource) fetchAssets() {
 
 			blocknumber = int64(poolCreated.Event.Raw.BlockNumber)
 			address0 := poolCreated.Event.Currency0
-			address1 := poolCreated.Event.Currency0
+			address1 := poolCreated.Event.Currency1
 			// Don't repeat sending already sent assets.
 			// Take into account that UniswapV4 allows for trading unwrapped ETH.
 			if (address0 != common.Address{}) {
