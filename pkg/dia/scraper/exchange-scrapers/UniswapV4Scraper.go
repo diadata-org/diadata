@@ -159,12 +159,13 @@ func (s *UniswapV4Scraper) mainLoop() {
 			rawSwap, ok := <-sink
 			if ok {
 
+				poolID := hex.EncodeToString(rawSwap.Id[:])
 				slippage := computeSlippage(rawSwap.SqrtPriceX96, rawSwap.Amount0, rawSwap.Amount1, rawSwap.Liquidity)
-				log.Infof("slippage: %v", slippage)
+				log.Infof("slippage for pool %s: %v", poolID, slippage)
 
 				swap, err := s.normalizeRawSwap(rawSwap)
 				if err != nil {
-					log.Error("normalizeRawSwap: ", err)
+					log.Errorf("normalizeRawSwap for %s: %v", poolID, err)
 					continue
 				}
 				if slippage > s.thresholdSlippage {
@@ -172,7 +173,7 @@ func (s *UniswapV4Scraper) mainLoop() {
 					continue
 				}
 
-				s.sendTrade(swap, hex.EncodeToString(rawSwap.Id[:]))
+				s.sendTrade(swap, poolID)
 
 			}
 		}
