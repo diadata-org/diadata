@@ -25,7 +25,6 @@ import (
 
 const (
 	balancerV3RateLimitPerSec = 50
-	balancerV3FilterPageSize  = 5000
 	balancerV3RestDial        = ""
 	balancerV3WSDial          = ""
 )

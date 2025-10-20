@@ -26,6 +26,7 @@ var (
 		dia.CurveFIExchangeMoonbeam,
 		dia.CurveFIExchangePolygon,
 		dia.CurveFIExchangeArbitrum,
+		dia.CurveFIExchangeSonic,
 		dia.DiffusionExchange,
 		dia.HermesExchange,
 		dia.HuckleberryExchange,
@@ -50,6 +51,7 @@ var (
 		dia.BeetsV2ExchangeSonic,
 		dia.BeetsV3ExchangeSonic,
 		dia.BalancerV3ExchangeBase,
+		dia.BalancerV3ExchangeAvalanche,
 		dia.UniswapExchangeV3Arbitrum,
 	}
 

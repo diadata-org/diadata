@@ -19,11 +19,7 @@ import (
 )
 
 const (
-	curveRestDialEth      = ""
-	curveRestDialFantom   = ""
-	curveRestDialMoonbeam = ""
-	curveRestDialPolygon  = ""
-	curveRestDialArbitrum = ""
+	curveRestDial = ""
 
 	polygonWaitMilliseconds  = "500"
 	fantomWaitMilliseconds   = "250"
@@ -59,34 +55,40 @@ func NewCurvefiAssetSource(exchange dia.Exchange) *CurvefiAssetSource {
 		factoryPools := curveRegistry{Type: 3, Address: common.HexToAddress("0xF18056Bbd320E96A48e3Fbf8bC061322531aac99")}
 		factory2Pools := curveRegistry{Type: 3, Address: common.HexToAddress("0x4F8846Ae9380B90d2E71D5e3D042dff3E7ebb40d")}
 		registries := []curveRegistry{factoryPools, twocryptoNGPools, factory2Pools, basePools, cryptoswapPools, metaPools, stableSwapRegistry}
-		cas = makeCurvefiAssetSource(exchange, registries, curveRestDialEth, uniswapWaitMilliseconds)
+		cas = makeCurvefiAssetSource(exchange, registries, curveRestDial, uniswapWaitMilliseconds)
 	case dia.CurveFIExchangeFantom:
 		exchange.Contract = ""
 		// basePools := curveRegistry{Type: 1, Address: common.HexToAddress(exchange.Contract)}
 		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x686d67265703D1f124c45E33d47d794c566889Ba")}
 		registries := []curveRegistry{stableSwapFactory}
-		cas = makeCurvefiAssetSource(exchange, registries, curveRestDialFantom, fantomWaitMilliseconds)
+		cas = makeCurvefiAssetSource(exchange, registries, curveRestDial, fantomWaitMilliseconds)
 
 	case dia.CurveFIExchangeMoonbeam:
 		exchange.Contract = ""
 		// basePools := curveRegistry{Type: 1, Address: common.HexToAddress(exchange.Contract)}
 		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x4244eB811D6e0Ef302326675207A95113dB4E1F8")}
 		registries := []curveRegistry{stableSwapFactory}
-		cas = makeCurvefiAssetSource(exchange, registries, curveRestDialMoonbeam, moonbeamWaitMilliseconds)
+		cas = makeCurvefiAssetSource(exchange, registries, curveRestDial, moonbeamWaitMilliseconds)
 
 	case dia.CurveFIExchangePolygon:
 		exchange.Contract = ""
 		// basePools := curveRegistry{Type: 1, Address: common.HexToAddress(exchange.Contract)}
 		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x722272D36ef0Da72FF51c5A65Db7b870E2e8D4ee")}
 		registries := []curveRegistry{stableSwapFactory}
-		cas = makeCurvefiAssetSource(exchange, registries, curveRestDialPolygon, polygonWaitMilliseconds)
+		cas = makeCurvefiAssetSource(exchange, registries, curveRestDial, polygonWaitMilliseconds)
 
 	case dia.CurveFIExchangeArbitrum:
 		exchange.Contract = ""
 		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0xb17b674D9c5CB2e441F8e196a2f048A81355d031")}
 		stableSwapNGFactory := curveRegistry{Type: 3, Address: common.HexToAddress("0x9AF14D26075f142eb3F292D5065EB3faa646167b")}
 		registries := []curveRegistry{stableSwapFactory, stableSwapNGFactory}
-		cas = makeCurvefiAssetSource(exchange, registries, curveRestDialArbitrum, arbitrumWaitMilliseconds)
+		cas = makeCurvefiAssetSource(exchange, registries, curveRestDial, arbitrumWaitMilliseconds)
+
+	case dia.CurveFIExchangeSonic:
+		stableSwapFactory := curveRegistry{Type: 3, Address: common.HexToAddress("0x7C2085419BE6a04f4ad88ea91bC9F5C6E6C463D8")}
+		registries := []curveRegistry{stableSwapFactory}
+		cas = makeCurvefiAssetSource(exchange, registries, curveRestDial, arbitrumWaitMilliseconds)
+
 	}
 
 	go func() {
@@ -203,7 +205,7 @@ func (cas *CurvefiAssetSource) loadPoolsAndCoins(registry curveRegistry) (err er
 
 			err = cas.loadPoolData(pool.Hex(), registry)
 			if err != nil {
-				log.Info("load pool data: ", err)
+				log.Error("load pool data: ", err)
 				// return err
 			}
 		}

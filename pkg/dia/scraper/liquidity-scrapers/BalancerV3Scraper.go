@@ -38,7 +38,7 @@ type BalancerV3Scraper struct {
 	cachedAssets           map[string]dia.Asset
 }
 
-// NewBalancerV2Scraper returns a Balancer V2 scraper
+// NewBalancerV2Scraper returns a Balancer V3 scraper
 func NewBalancerV3Scraper(exchange dia.Exchange, relDB *models.RelDB, datastore *models.DB) *BalancerV3Scraper {
 	var (
 		restClient  *ethclient.Client
@@ -69,6 +69,8 @@ func NewBalancerV3Scraper(exchange dia.Exchange, relDB *models.RelDB, datastore 
 	switch exchange.Name {
 	case dia.BalancerV3Exchange:
 		scraper.startblockPoolRegister = 21332121
+	case dia.BalancerV3ExchangeAvalanche:
+		scraper.startblockPoolRegister = 59955604
 	case dia.BalancerV3ExchangeBase:
 		scraper.startblockPoolRegister = 25343854
 	case dia.BeetsV3ExchangeSonic:
