@@ -174,6 +174,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewCurveFIScraper(Exchanges[dia.CurveFIExchangePolygon], scrape, relDB)
 	case dia.CurveFIExchangeArbitrum:
 		return NewCurveFIScraper(Exchanges[dia.CurveFIExchangeArbitrum], scrape, relDB)
+	case dia.CurveFIExchangeSonic:
+		return NewCurveFIScraper(Exchanges[dia.CurveFIExchangeSonic], scrape, relDB)
 	case dia.BalancerV2Exchange:
 		return NewBalancerV2Scraper(Exchanges[dia.BalancerV2Exchange], scrape, relDB)
 	case dia.BalancerV2ExchangeArbitrum:
@@ -182,6 +184,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewBalancerV2Scraper(Exchanges[dia.BalancerV2ExchangePolygon], scrape, relDB)
 	case dia.BalancerV3Exchange:
 		return NewBalancerV3Scraper(Exchanges[dia.BalancerV3Exchange], scrape, relDB)
+	case dia.BalancerV3ExchangeAvalanche:
+		return NewBalancerV3Scraper(Exchanges[dia.BalancerV3ExchangeAvalanche], scrape, relDB)
 	case dia.BalancerV3ExchangeBase:
 		return NewBalancerV3Scraper(Exchanges[dia.BalancerV3ExchangeBase], scrape, relDB)
 	case dia.BeetsExchange:
