@@ -46,7 +46,7 @@ spec:
           imagePullPolicy: Never
           command: ["assetCollectionService"]
           args:
-            ["-source=assetlists", "-secret=non_eth_assets", "-caching=true"]
+            ["-source=assetlists", "-secret=non_eth_assets", "-caching=true"] # skipcq: SCT-A000
           env:
             - name: USE_ENV
               value: "true"
@@ -64,7 +64,7 @@ spec:
           image: dia.assetcollectionservice.dev:latest
           imagePullPolicy: Never
           command: ["assetCollectionService"]
-          args: ["-source=assetlists", "-secret=fiat_assets", "-caching=true"]
+          args: ["-source=assetlists", "-secret=fiat_assets", "-caching=true"] # skipcq: SCT-A000
           env:
             - name: USE_ENV
               value: "true"

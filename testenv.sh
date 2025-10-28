@@ -231,7 +231,7 @@ function main() {
     local minikube_driver=docker
     local snapshot_docker_registry=https://registry.hub.docker.com/v2/
     local snapshot_docker_username=dia_contributor
-    local snapshot_docker_password=dia_contributor_pw
+    local snapshot_docker_password=dia_contributor_pw # skipcq: SCT-A000
     local snapshot_docker_email=dia_contributor@example.com
     local data_docker_registry=docker.io
     local data_docker_username=dia
@@ -417,7 +417,7 @@ function main() {
         read -r -p "Enter Postgres Server: " PGHOST_EXTRACT
         read -r -p "Enter Postgres Port: " PGPORT_EXTRACT
         read -r -p "Enter Postgres User: " PGUSER_EXTRACT
-        read -r -s -p "Enter Postgres Password: " PGPASSWORD_EXTRACT
+        read -r -s -p "Enter Postgres Password: " PGPASSWORD_EXTRACT # skipcq: SCT-A000
         read -r -p "Enter Postgres Database: " PGDB_EXTRACT
 
         export PGHOST=${PGHOST_EXTRACT}
