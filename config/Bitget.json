@@ -357,12 +357,6 @@
         {
             "Exchange": "Bitget",
             "Ignore": false,
-            "ForeignName": "NEIROETHUSDT",
-            "Symbol": "NEIROETH"
-        },
-        {
-            "Exchange": "Bitget",
-            "Ignore": false,
             "ForeignName": "NEIROCTOUSDT",
             "Symbol": "NEIROCTO"
         },
@@ -371,6 +365,12 @@
             "Ignore": false,
             "ForeignName": "NEIROCTOEUR",
             "Symbol": "NEIROCTO"
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "NEIROETHUSDT",
+            "Symbol": "NEIROETH"
         },
         {
             "Exchange": "Bitget",
@@ -407,6 +407,12 @@
             "ForeignName": "POLUSDT",
             "Exchange": "Bitget",
             "Ignore": false
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "RAREUSDT",
+            "Symbol": "RARE"
         },
         {
             "Exchange": "Bitget",

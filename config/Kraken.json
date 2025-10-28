@@ -501,6 +501,18 @@
         {
             "Exchange": "Kraken",
             "Ignore": false,
+            "ForeignName": "RAREUSD",
+            "Symbol": "RARE"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "RAREEUR",
+            "Symbol": "RARE"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
             "ForeignName": "SAGAUSD",
             "Symbol": "SAGA"
         },

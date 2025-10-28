@@ -1,6 +1,10 @@
 {
     "Pools": [
         {
+            "Address": "0xD3d9f0f7D0d477e0A19222965B59233Ad7f6Bc6b",
+            "ForeignName": "USDC-frxUSD"
+        },
+        {
             "Address": "0x1c6511ef0ec38b5b91208D1A21eF9f9D1aA532B3",
             "ForeignName": "SUPR-WETH"
         },

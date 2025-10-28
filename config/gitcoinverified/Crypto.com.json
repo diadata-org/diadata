@@ -475,6 +475,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "Crypto.com",
+            "Symbol": "RARE",
+            "Blockchain": "Ethereum",
+            "Address": "0xba5BDe662c17e2aDFF1075610382B9B691296350"
+        },
+        {
             "Symbol": "RARI",
             "Exchange": "Crypto.com",
             "Blockchain": "Ethereum",

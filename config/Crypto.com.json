@@ -895,6 +895,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "Crypto.com",
+            "Ignore": false,
+            "ForeignName": "RARE_USD",
+            "Symbol": "RARE"
+        },
+        {
             "Symbol": "RARI",
             "ForeignName": "RARI_USDT",
             "Exchange": "Crypto.com",

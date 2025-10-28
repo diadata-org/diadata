@@ -661,6 +661,12 @@
             "Address": "0xA8b919680258d369114910511cc87595aec0be6D"
         },
         {
+            "Symbol": "MAIGA",
+            "Exchange": "KuCoin",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xcd1679f117E81DEfc4f0009311DDc23fC1AE4a5E"
+        },
+        {
             "Symbol": "MAP",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
