@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #
-# Description: This script is used to manage the DIA development environment. Helpful on start/stop the platform, and create/remove resources
+# Name: testenv.sh
 # Vesion: 0.1.1
+# Description: This script is used to manage the DIA development environment. Helpful on start/stop the platform, and create/remove resources
 
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do
@@ -239,7 +240,7 @@ function main() {
     # shellcheck disable=SC1091
     # TODO: this will break the script?
     if [ -e testenv.local ]; then
-    source ./testspace/.testenv.local
+        source ./testspace/.testenv.local
     fi
     if [[ "$arg_cpus" != "" ]]; then
         minikube_hw_cpus="${arg_cpus}"
@@ -413,11 +414,11 @@ function main() {
         fi
 
         # Ask for variables with _EXTRACT and export them
-        read -p "Enter Postgres Server: " PGHOST_EXTRACT
-        read -p "Enter Postgres Port: " PGPORT_EXTRACT
-        read -p "Enter Postgres User: " PGUSER_EXTRACT
-        read -p "Enter Postgres Password: " PGPASSWORD_EXTRACT
-        read -p "Enter Postgres Database: " PGDB_EXTRACT
+        read -r -p "Enter Postgres Server: " PGHOST_EXTRACT
+        read -r -p "Enter Postgres Port: " PGPORT_EXTRACT
+        read -r -p "Enter Postgres User: " PGUSER_EXTRACT
+        read -r -s -p "Enter Postgres Password: " PGPASSWORD_EXTRACT
+        read -r -p "Enter Postgres Database: " PGDB_EXTRACT
 
         export PGHOST=${PGHOST_EXTRACT}
         export PGUSER=${PGUSER_EXTRACT}
@@ -430,20 +431,20 @@ function main() {
         unzip -o snapshot.zip
 
         # Run the psql commands
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "truncate table blockchain cascade"
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "truncate table asset cascade"
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "truncate table exchange cascade"
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "truncate table exchangepair cascade"
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "truncate table pool cascade"
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "truncate table poolasset cascade"
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "\copy asset FROM 'output_assets.csv' DELIMITER ';' CSV"
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "\copy blockchain FROM 'output_blockchain.csv' DELIMITER ';' CSV"
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "\copy exchangepair FROM 'output_exchangepair.csv' DELIMITER ';' CSV"
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "\copy exchange FROM 'output_cex.csv' DELIMITER ';' CSV"
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "\copy exchange FROM 'output_dex.csv' DELIMITER ';' CSV"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "truncate table blockchain cascade"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "truncate table asset cascade"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "truncate table exchange cascade"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "truncate table exchangepair cascade"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "truncate table pool cascade"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "truncate table poolasset cascade"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "\copy asset FROM 'output_assets.csv' DELIMITER ';' CSV"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "\copy blockchain FROM 'output_blockchain.csv' DELIMITER ';' CSV"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "\copy exchangepair FROM 'output_exchangepair.csv' DELIMITER ';' CSV"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "\copy exchange FROM 'output_cex.csv' DELIMITER ';' CSV"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "\copy exchange FROM 'output_dex.csv' DELIMITER ';' CSV"
         # FIXME: this will raise: ERROR:  invalid input syntax for type numeric: "2023-09-07 09:05:45.012443"
-        # psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "\copy poolasset FROM 'output_poolasset.csv' DELIMITER ';' CSV"
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "\copy pool FROM 'output_pool.csv' DELIMITER ';' CSV"
+        # psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "\copy poolasset FROM 'output_poolasset.csv' DELIMITER ';' CSV"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "\copy pool FROM 'output_pool.csv' DELIMITER ';' CSV"
 
 
         # Delete the output-*.sql and snapshot.zip files
