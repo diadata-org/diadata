@@ -421,6 +421,12 @@
             "Address": "0xb23d80f5FefcDDaa212212F028021B41DEd428CF"
         },
         {
+            "Exchange": "Binance2",
+            "Symbol": "RARE",
+            "Blockchain": "Ethereum",
+            "Address": "0xba5BDe662c17e2aDFF1075610382B9B691296350"
+        },
+        {
             "Symbol": "RDNT",
             "Exchange": "Binance2",
             "Blockchain": "Arbitrum",

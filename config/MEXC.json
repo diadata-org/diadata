@@ -243,6 +243,12 @@
         {
             "Exchange": "MEXC",
             "Ignore": false,
+            "ForeignName": "COINONUSDT",
+            "Symbol": "COINON"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
             "ForeignName": "COOKIEUSDT",
             "Symbol": "COOKIE"
         },
@@ -455,6 +461,12 @@
             "ForeignName": "GNSUSDT",
             "Exchange": "MEXC",
             "Ignore": false
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "GOOGLONUSDT",
+            "Symbol": "GOOGLON"
         },
         {
             "Symbol": "GRAIL",
@@ -717,14 +729,14 @@
         {
             "Exchange": "MEXC",
             "Ignore": false,
-            "ForeignName": "NEIROETHUSDT",
-            "Symbol": "NEIROETH"
+            "ForeignName": "NEIROCTOUSDT",
+            "Symbol": "NEIROCTO"
         },
         {
             "Exchange": "MEXC",
             "Ignore": false,
-            "ForeignName": "NEIROCTOUSDT",
-            "Symbol": "NEIROCTO"
+            "ForeignName": "NEIROETHUSDT",
+            "Symbol": "NEIROETH"
         },
         {
             "Symbol": "NETT",
@@ -851,6 +863,24 @@
             "ForeignName": "PSPUSDT",
             "Exchange": "MEXC",
             "Ignore": false
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "QQQONUSDT",
+            "Symbol": "QQQON"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "RAREUSDT",
+            "Symbol": "RARE"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "RAREUSDC",
+            "Symbol": "RARE"
         },
         {
             "Symbol": "RAY",
@@ -981,6 +1011,12 @@
         {
             "Exchange": "MEXC",
             "Ignore": false,
+            "ForeignName": "SPYONUSDT",
+            "Symbol": "SPYON"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
             "ForeignName": "SSVUSDT",
             "Symbol": "SSV"
         },
@@ -1055,6 +1091,12 @@
             "ForeignName": "TRXUSDT",
             "Exchange": "MEXC",
             "Ignore": false
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "TSLAONUSDT",
+            "Symbol": "TSLAON"
         },
         {
             "Exchange": "MEXC",

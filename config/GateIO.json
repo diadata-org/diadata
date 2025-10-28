@@ -561,6 +561,12 @@
         {
             "Exchange": "GateIO",
             "Ignore": false,
+            "ForeignName": "COINON_USDT",
+            "Symbol": "COINON"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
             "ForeignName": "COOKIE_USDT",
             "Symbol": "COOKIE"
         },
@@ -1127,6 +1133,12 @@
             "ForeignName": "GOD_USDT",
             "Ignore": false,
             "Symbol": "GOD"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "GOOGLON_USDT",
+            "Symbol": "GOOGLON"
         },
         {
             "Exchange": "GateIO",
@@ -1863,14 +1875,14 @@
         {
             "Exchange": "GateIO",
             "Ignore": false,
-            "ForeignName": "NEIROETH_USDT",
-            "Symbol": "NEIROETH"
+            "ForeignName": "NEIROCTO_USDT",
+            "Symbol": "NEIROCTO"
         },
         {
             "Exchange": "GateIO",
             "Ignore": false,
-            "ForeignName": "NEIROCTO_USDT",
-            "Symbol": "NEIROCTO"
+            "ForeignName": "NEIROETH_USDT",
+            "Symbol": "NEIROETH"
         },
         {
             "Exchange": "GateIO",
@@ -2192,6 +2204,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "QQQON_USDT",
+            "Symbol": "QQQON"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "QTUM_BTC",
             "Ignore": false,
             "Symbol": "QTUM"
@@ -2207,6 +2225,12 @@
             "ForeignName": "QTUM_USDT",
             "Ignore": false,
             "Symbol": "QTUM"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "RARE_USDT",
+            "Symbol": "RARE"
         },
         {
             "Exchange": "GateIO",
@@ -2571,6 +2595,12 @@
         {
             "Exchange": "GateIO",
             "Ignore": false,
+            "ForeignName": "SPYON_USDT",
+            "Symbol": "SPYON"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
             "ForeignName": "SSV_USDT",
             "Symbol": "SSV"
         },
@@ -2801,6 +2831,12 @@
             "ForeignName": "TSL_USDT",
             "Ignore": false,
             "Symbol": "TSL"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "TSLAON_USDT",
+            "Symbol": "TSLAON"
         },
         {
             "Exchange": "GateIO",
