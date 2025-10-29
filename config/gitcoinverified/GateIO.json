@@ -811,6 +811,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "MAIGA",
+            "Exchange": "GateIO",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xcd1679f117E81DEfc4f0009311DDc23fC1AE4a5E"
+        },
+        {
             "Symbol": "MANA",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
