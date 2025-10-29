@@ -643,6 +643,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "MAIGA",
+            "ForeignName": "MAIGAUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
             "Symbol": "MANA",
             "ForeignName": "MANAUSDT",
             "Exchange": "MEXC",

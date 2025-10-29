@@ -1586,6 +1586,12 @@
         },
         {
             "Exchange": "GateIO",
+            "ForeignName": "MAIGA_USDT",
+            "Ignore": false,
+            "Symbol": "MAIGA"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "MAN_ETH",
             "Ignore": false,
             "Symbol": "MAN"
