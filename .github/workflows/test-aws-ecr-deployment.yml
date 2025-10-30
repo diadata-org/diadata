@@ -342,23 +342,23 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - name: Production Deployment Summary
+      - name: Test Deployment Summary
         run: |
           if [ "${{ needs.detect-service-changes.outputs.has-changes }}" = "true" ]; then
             services='${{ needs.detect-service-changes.outputs.services }}'
             count=$(echo "$services" | jq length)
-            
-            echo "## 🚀 Production Deployment Summary"
+
+            echo "## 🧪 TEST Deployment Summary"
             echo ""
             echo "**Services deployed:** $count"
             echo ""
-            echo "### Services deployed to production:"
+            echo "### Services deployed to TEST:"
             echo "$services" | jq -r '.[] | "- **\(.name)** version \(.version)"'
             echo ""
             echo "## 📊 Deployment Results:"
             echo "- **Release:** ${{ needs.verify_release.result }}"
             echo "- **Build & Deploy:** ${{ needs.build-and-deploy.result }}"
-            
+
             echo ""
             echo "## 🔍 Audit Report"
             echo "**Triggered by:** ${{ github.actor }}"
@@ -368,16 +368,16 @@ jobs:
             echo "**Timestamp:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
             echo "**Workflow:** ${{ github.workflow }}"
             echo "**Run ID:** ${{ github.run_id }}"
-            
+
             if [ "${{ needs.build-and-deploy.result }}" = "success" ]; then
               echo ""
-              echo "🎉 **All services deployed successfully!**"
+              echo "🎉 **All TEST services deployed successfully!**"
               echo ""
-              echo "### Services in production:"
-              echo "$services" | jq -r '.[] | "- **\(.name)** → IBM: us.icr.io/dia-registry/\(.name | ascii_downcase):\(.version)"'
+              echo "### IBM Cloud Registry:"
+              echo "$services" | jq -r '.[] | "- **\(.name)** → us.icr.io/dia-registry/\(.name | ascii_downcase):\(.version)"'
               echo ""
-              echo "### AWS ECR:"
-              echo "$services" | jq -r '.[] | "- **\(.name)** → AWS: 912394946097.dkr.ecr.eu-west-1.amazonaws.com/nexus/services/\(.name | ascii_downcase):\(.version)"'
+              echo "### AWS ECR (service mapping applied):"
+              echo "$services" | jq -r '.[] | "- **\(.name)** → Check logs for ECR path mapping"'
             else
               echo ""
               echo "❌ **Deployment failed. Check logs above.**"
