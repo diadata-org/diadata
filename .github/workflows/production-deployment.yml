@@ -12,8 +12,7 @@ permissions:
   checks: write
 
 env:
-  IBM_REGISTRY: us.icr.io/dia-registry
-  AWS_REGION: eu-west-1
+  REGISTRY: us.icr.io/dia-registry
   
 jobs:
   detect-service-changes:
@@ -249,92 +248,33 @@ jobs:
           
           # Convert service name to lowercase for Docker registry
           service_name_lower=$(echo "$service_name" | tr '[:upper:]' '[:lower:]')
-
-          ibm_version_tag="$IBM_REGISTRY/$service_name_lower:$version"
-          ibm_latest_tag="$IBM_REGISTRY/$service_name_lower:latest"
+          
+          version_tag="$REGISTRY/$service_name_lower:$version"
+          latest_tag="$REGISTRY/$service_name_lower:latest"
           
           echo "Building and pushing Docker image:"
           echo "  Service: $service_name"
           echo "  Version: $version"
           echo "  Dockerfile: $dockerfile"
-          echo "  IBM Tags: $ibm_version_tag, $ibm_latest_tag"
-
-          # Build the image with IBM tags
+          echo "  Tags: $version_tag, $latest_tag"
+          
+          # Build the image
           docker build \
             -f "$dockerfile" \
-            -t "$ibm_version_tag" \
-            -t "$ibm_latest_tag" \
+            -t "$version_tag" \
+            -t "$latest_tag" \
             --build-arg SERVICE_NAME="$service_name_lower" \
             --build-arg VERSION="$version" \
             .
-
-          # Push both tags to IBM
-          echo "Pushing Docker images to IBM Cloud Registry..."
-          docker push "$ibm_version_tag"
-          docker push "$ibm_latest_tag"
-
-          echo "✅ Successfully built and pushed to IBM CR:"
-          echo "  - $ibm_version_tag"
-          echo "  - $ibm_latest_tag"
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Tag and push images to AWS ECR
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          service_name="${{ steps.version.outputs.service-name }}"
-          version="${{ steps.version.outputs.version }}"
-          service_name_lower=$(echo "$service_name" | tr '[:upper:]' '[:lower:]')
-
-          # Map service names to correct ECR repository paths
-          case "$service_name_lower" in
-            collector)
-              ecr_repo="nexus/scrapers/trades-scrapers"
-              ;;
-            liquidityscraper)
-              ecr_repo="nexus/scrapers/liquidity-scrapers"
-              ;;
-            foreignscraper)
-              ecr_repo="nexus/scrapers/foreign-scrapers"
-              ;;
-            assetcollectionservice)
-              ecr_repo="nexus/scrapers/asset-scrapers"
-              ;;
-            *)
-              # Default: all other services go to nexus/services/
-              ecr_repo="nexus/services/${service_name_lower}"
-              ;;
-          esac
-
-          aws_version_tag="${ECR_REGISTRY}/${ecr_repo}:${version}"
-          aws_latest_tag="${ECR_REGISTRY}/${ecr_repo}:latest"
-
-          echo "Tagging images for AWS ECR:"
-          echo "  - ${aws_version_tag}"
-          echo "  - ${aws_latest_tag}"
-
-          # Tag the IBM images for AWS ECR
-          docker tag us.icr.io/dia-registry/${service_name_lower}:${version} ${aws_version_tag}
-          docker tag us.icr.io/dia-registry/${service_name_lower}:latest ${aws_latest_tag}
-
-          # Push to AWS ECR
-          echo "Pushing images to AWS ECR..."
-          docker push ${aws_version_tag}
-          docker push ${aws_latest_tag}
-
-          echo "✅ Successfully pushed to AWS ECR:"
-          echo "  - ${aws_version_tag}"
-          echo "  - ${aws_latest_tag}"
+          
+          # Push both tags
+          echo "Pushing Docker images..."
+          docker push "$version_tag"
+          docker push "$latest_tag"
+          
+          echo "✅ Successfully built and pushed:"
+          echo "  - $version_tag"
+          echo "  - $latest_tag"
 
   deployment-summary:
     needs: [detect-service-changes, verify_release, build-and-deploy]
@@ -373,10 +313,7 @@ jobs:
               echo "🎉 **All services deployed successfully!**"
               echo ""
               echo "### Services in production:"
-              echo "$services" | jq -r '.[] | "- **\(.name)** → IBM: us.icr.io/dia-registry/\(.name | ascii_downcase):\(.version)"'
-              echo ""
-              echo "### AWS ECR:"
-              echo "$services" | jq -r '.[] | "- **\(.name)** → AWS: 912394946097.dkr.ecr.eu-west-1.amazonaws.com/nexus/services/\(.name | ascii_downcase):\(.version)"'
+              echo "$services" | jq -r '.[] | "- **\(.name)** → us.icr.io/dia-registry/\(.name | ascii_downcase):\(.version)"'
             else
               echo ""
               echo "❌ **Deployment failed. Check logs above.**"
