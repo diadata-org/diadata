@@ -1,0 +1,394 @@
+name: Test AWS ECR Deployment
+
+on:
+  push:
+    branches: [aws-ecr-pipeline]
+    paths:
+      - 'cmd/**/go.mod'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+  checks: write
+
+env:
+  IBM_REGISTRY: us.icr.io/dia-registry
+  AWS_REGION: eu-west-1
+  
+jobs:
+  detect-service-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      services: ${{ steps.detect.outputs.services }}
+      has-changes: ${{ steps.detect.outputs.has-changes }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect go.mod changes in services
+        id: detect
+        run: |
+          # Get changed go.mod files in cmd directory
+          changed_files=$(git diff --name-only HEAD~1 HEAD | grep '^cmd/.*/go\.mod$' || true)
+          
+          if [ -z "$changed_files" ]; then
+            echo "has-changes=false" >> $GITHUB_OUTPUT
+            echo "services=[]" >> $GITHUB_OUTPUT
+            echo "No service go.mod files changed"
+            exit 0
+          fi
+          
+          echo "has-changes=true" >> $GITHUB_OUTPUT
+          echo "Changed go.mod files:"
+          echo "$changed_files"
+          
+          # Build services array
+          services="["
+          first=true
+          
+          for file in $changed_files; do
+            service_dir=$(dirname "$file")
+            service_name=$(basename "$service_dir")
+            
+            # Extract version from go.mod module line
+            version=$(grep -E "^module.*" "$file" | grep -o 'v[0-9]\+\.[0-9]\+\.[0-9]\+[^[:space:]]*' || echo "")
+            
+            # If no version in module line, try to extract from require section
+            if [ -z "$version" ]; then
+              version=$(grep "github.com/diadata-org/diadata" "$file" | grep -o 'v[0-9]\+\.[0-9]\+\.[0-9]\+[^[:space:]]*' | head -1 || echo "")
+            fi
+            
+            if [ -z "$version" ]; then
+              echo "Warning: Could not extract version from $file"
+              continue
+            fi
+            
+            if [ "$first" = true ]; then
+              first=false
+            else
+              services="$services,"
+            fi
+            
+            services="$services{\"name\":\"$service_name\",\"path\":\"$service_dir\",\"version\":\"$version\"}"
+          done
+          
+          services="$services]"
+          
+          echo "services=$services" >> $GITHUB_OUTPUT
+          echo "Detected services: $services"
+
+  verify_release:
+    name: "Verify combined release"
+    needs: detect-service-changes
+    if: needs.detect-service-changes.outputs.has-changes == 'true'
+    runs-on: ubuntu-latest
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract and validate version
+        id: version
+        run: |
+          services='${{ needs.detect-service-changes.outputs.services }}'
+          
+          # Extract version from first service (all should have same version)
+          version=$(echo "$services" | jq -r '.[0].version')
+          
+          echo "Processing release verification for version: $version"
+          echo "Services in this release:"
+          echo "$services" | jq -r '.[] | "- \(.name) (\(.path))"'
+          
+          # Validate version format
+          if [[ ! "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: Invalid version format '$version'. Expected format: v1.2.3"
+            exit 1
+          fi
+          
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+      - name: Verify release exists
+        id: verify_release
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          
+          # Check if release exists
+          if gh release view "$version" >/dev/null 2>&1; then
+            echo "✅ Release $version exists and is ready for production deployment"
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Release $version does not exist. It should have been created during PR validation."
+            echo "exists=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update release for test deployment
+        if: steps.verify_release.outputs.exists == 'true'
+        run: |
+          services='${{ needs.detect-service-changes.outputs.services }}'
+          version="${{ steps.version.outputs.version }}"
+
+          echo "Updating release $version with TEST deployment info"
+
+          # Create test release notes
+          cat > test_notes.md << EOF
+          ## 🧪 TEST Service Release $version
+
+          **Services Deployed to TEST:**
+          EOF
+
+                    # Add each service to the test notes
+                    echo "$services" | jq -r '.[] | "- **\(.name)** (\(.path))"' >> test_notes.md
+
+                    cat >> test_notes.md << EOF
+
+          ### Status
+          🧪 **Deployed to TEST Environment**
+
+          ### Changes
+          TEST deployment to validate AWS ECR push functionality.
+          EOF
+
+          echo "Test release notes:"
+          cat test_notes.md
+
+          gh release edit "$version" \
+            --title "$version - TEST" \
+            --notes "$(cat test_notes.md)"
+
+          echo "Release $version updated with TEST deployment notes"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-and-deploy:
+    name: "Build & Deploy ${{ matrix.service.name }}"
+    needs: [detect-service-changes, verify_release]
+    if: needs.detect-service-changes.outputs.has-changes == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.detect-service-changes.outputs.services) }}
+      fail-fast: false
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract and validate version
+        id: version
+        run: |
+          service_name="${{ matrix.service.name }}"
+          service_path="${{ matrix.service.path }}"
+          version="${{ matrix.service.version }}"
+          
+          echo "Processing service: $service_name"
+          echo "Service path: $service_path"
+          echo "Extracted version: $version"
+          
+          # Validate version format
+          if [[ ! "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: Invalid version format '$version'. Expected format: v1.2.3"
+            exit 1
+          fi
+          
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "service-name=$service_name" >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to IBM Cloud Container Registry
+        run: |
+          echo "${{ secrets.IBM_CLOUD_API_KEY }}" | docker login us.icr.io -u iamapikey --password-stdin
+
+      - name: Find Dockerfile for service
+        id: dockerfile
+        run: |
+          service_name="${{ steps.version.outputs.service-name }}"
+          service_path="${{ matrix.service.path }}"
+          
+          # Look for Dockerfile in multiple locations
+          dockerfile=""
+          
+          # Check service directory first
+          if [ -f "$service_path/Dockerfile" ]; then
+            dockerfile="$service_path/Dockerfile"
+          # Check for Dockerfile-{service} pattern in root
+          elif [ -f "Dockerfile-$service_name" ]; then
+            dockerfile="Dockerfile-$service_name"
+          # Check for dockerfile in service directory with service name
+          elif [ -f "$service_path/Dockerfile-$service_name" ]; then
+            dockerfile="$service_path/Dockerfile-$service_name"
+          # Check build directory for Dockerfile-{service} pattern
+          elif [ -f "build/Dockerfile-$service_name" ]; then
+            dockerfile="build/Dockerfile-$service_name"
+          fi
+          
+          if [ -z "$dockerfile" ]; then
+            echo "Error: Could not find Dockerfile for service $service_name"
+            echo "Searched locations:"
+            echo "  - $service_path/Dockerfile"
+            echo "  - Dockerfile-$service_name"
+            echo "  - $service_path/Dockerfile-$service_name"
+            echo "  - build/Dockerfile-$service_name"
+            exit 1
+          fi
+          
+          echo "dockerfile=$dockerfile" >> $GITHUB_OUTPUT
+          echo "Found Dockerfile: $dockerfile"
+
+      - name: Build and push Docker image
+        run: |
+          service_name="${{ steps.version.outputs.service-name }}"
+          version="${{ steps.version.outputs.version }}"
+          dockerfile="${{ steps.dockerfile.outputs.dockerfile }}"
+          
+          # Convert service name to lowercase for Docker registry
+          service_name_lower=$(echo "$service_name" | tr '[:upper:]' '[:lower:]')
+
+          ibm_version_tag="$IBM_REGISTRY/$service_name_lower:$version"
+          ibm_latest_tag="$IBM_REGISTRY/$service_name_lower:latest"
+          
+          echo "Building and pushing Docker image:"
+          echo "  Service: $service_name"
+          echo "  Version: $version"
+          echo "  Dockerfile: $dockerfile"
+          echo "  IBM Tags: $ibm_version_tag, $ibm_latest_tag"
+
+          # Build the image with IBM tags
+          docker build \
+            -f "$dockerfile" \
+            -t "$ibm_version_tag" \
+            -t "$ibm_latest_tag" \
+            --build-arg SERVICE_NAME="$service_name_lower" \
+            --build-arg VERSION="$version" \
+            .
+
+          # Push both tags to IBM
+          echo "Pushing Docker images to IBM Cloud Registry..."
+          docker push "$ibm_version_tag"
+          docker push "$ibm_latest_tag"
+
+          echo "✅ Successfully built and pushed to IBM CR:"
+          echo "  - $ibm_version_tag"
+          echo "  - $ibm_latest_tag"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Tag and push images to AWS ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          service_name="${{ steps.version.outputs.service-name }}"
+          version="${{ steps.version.outputs.version }}"
+          service_name_lower=$(echo "$service_name" | tr '[:upper:]' '[:lower:]')
+
+          # Map service names to correct ECR repository paths
+          case "$service_name_lower" in
+            collector)
+              ecr_repo="nexus/scrapers/trades-scrapers"
+              ;;
+            liquidityscraper)
+              ecr_repo="nexus/scrapers/liquidity-scrapers"
+              ;;
+            foreignscraper)
+              ecr_repo="nexus/scrapers/foreign-scrapers"
+              ;;
+            assetcollectionservice)
+              ecr_repo="nexus/scrapers/asset-scrapers"
+              ;;
+            *)
+              # Default: all other services go to nexus/services/
+              ecr_repo="nexus/services/${service_name_lower}"
+              ;;
+          esac
+
+          aws_version_tag="${ECR_REGISTRY}/${ecr_repo}:${version}"
+          aws_latest_tag="${ECR_REGISTRY}/${ecr_repo}:latest"
+
+          echo "Tagging images for AWS ECR:"
+          echo "  - ${aws_version_tag}"
+          echo "  - ${aws_latest_tag}"
+
+          # Tag the IBM images for AWS ECR
+          docker tag us.icr.io/dia-registry/${service_name_lower}:${version} ${aws_version_tag}
+          docker tag us.icr.io/dia-registry/${service_name_lower}:latest ${aws_latest_tag}
+
+          # Push to AWS ECR
+          echo "Pushing images to AWS ECR..."
+          docker push ${aws_version_tag}
+          docker push ${aws_latest_tag}
+
+          echo "✅ Successfully pushed to AWS ECR:"
+          echo "  - ${aws_version_tag}"
+          echo "  - ${aws_latest_tag}"
+
+  deployment-summary:
+    needs: [detect-service-changes, verify_release, build-and-deploy]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test Deployment Summary
+        run: |
+          if [ "${{ needs.detect-service-changes.outputs.has-changes }}" = "true" ]; then
+            services='${{ needs.detect-service-changes.outputs.services }}'
+            count=$(echo "$services" | jq length)
+
+            echo "## 🧪 TEST Deployment Summary"
+            echo ""
+            echo "**Services deployed:** $count"
+            echo ""
+            echo "### Services deployed to TEST:"
+            echo "$services" | jq -r '.[] | "- **\(.name)** version \(.version)"'
+            echo ""
+            echo "## 📊 Deployment Results:"
+            echo "- **Release:** ${{ needs.verify_release.result }}"
+            echo "- **Build & Deploy:** ${{ needs.build-and-deploy.result }}"
+
+            echo ""
+            echo "## 🔍 Audit Report"
+            echo "**Triggered by:** ${{ github.actor }}"
+            echo "**Branch:** ${{ github.ref }}"
+            echo "**Commit:** ${{ github.sha }}"
+            echo "**Repository:** ${{ github.repository }}"
+            echo "**Timestamp:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+            echo "**Workflow:** ${{ github.workflow }}"
+            echo "**Run ID:** ${{ github.run_id }}"
+
+            if [ "${{ needs.build-and-deploy.result }}" = "success" ]; then
+              echo ""
+              echo "🎉 **All TEST services deployed successfully!**"
+              echo ""
+              echo "### IBM Cloud Registry:"
+              echo "$services" | jq -r '.[] | "- **\(.name)** → us.icr.io/dia-registry/\(.name | ascii_downcase):\(.version)"'
+              echo ""
+              echo "### AWS ECR (service mapping applied):"
+              echo "$services" | jq -r '.[] | "- **\(.name)** → Check logs for ECR path mapping"'
+            else
+              echo ""
+              echo "❌ **Deployment failed. Check logs above.**"
+              echo ""
+              echo "**Failed stages:**"
+              [ "${{ needs.verify_release.result }}" != "success" ] && echo "- 🔴 Release verification failed"
+              [ "${{ needs.build-and-deploy.result }}" != "success" ] && echo "- 🔴 Build/Deploy failed"
+            fi
+          else
+            echo "## ℹ️ No Service Changes Detected"
+            echo ""
+            echo "No service go.mod files were modified in this push."
+            echo "Deployment pipeline was skipped."
+          fi
