@@ -2,7 +2,7 @@ name: Test AWS ECR Deployment
 
 on:
   push:
-    branches: [test/aws-ecr-push]
+    branches: [aws-ecr-pipeline]
     paths:
       - 'cmd/**/go.mod'
   workflow_dispatch:
