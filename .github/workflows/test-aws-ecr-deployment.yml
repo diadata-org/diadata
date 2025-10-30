@@ -1,10 +1,11 @@
-name: Production Deployment
+name: Test AWS ECR Deployment
 
 on:
   push:
-    branches: [master]
+    branches: [test/aws-ecr-push]
     paths:
       - 'cmd/**/go.mod'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -126,41 +127,41 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update release for production
+      - name: Update release for test deployment
         if: steps.verify_release.outputs.exists == 'true'
         run: |
           services='${{ needs.detect-service-changes.outputs.services }}'
           version="${{ steps.version.outputs.version }}"
-          
-          echo "Updating release $version with production deployment info"
-          
-          # Create production release notes
-          cat > production_notes.md << EOF
-          ## Production Service Release $version
 
-          **Services Deployed:**
+          echo "Updating release $version with TEST deployment info"
+
+          # Create test release notes
+          cat > test_notes.md << EOF
+          ## 🧪 TEST Service Release $version
+
+          **Services Deployed to TEST:**
           EOF
-                      
-                    # Add each service to the production notes
-                    echo "$services" | jq -r '.[] | "- **\(.name)** (\(.path))"' >> production_notes.md
-                    
-                    cat >> production_notes.md << EOF
+
+                    # Add each service to the test notes
+                    echo "$services" | jq -r '.[] | "- **\(.name)** (\(.path))"' >> test_notes.md
+
+                    cat >> test_notes.md << EOF
 
           ### Status
-          ✅ **Deployed to Production**
+          🧪 **Deployed to TEST Environment**
 
           ### Changes
-          Production deployment of all updated services.
+          TEST deployment to validate AWS ECR push functionality.
           EOF
-          
-          echo "Production release notes:"
-          cat production_notes.md
-          
+
+          echo "Test release notes:"
+          cat test_notes.md
+
           gh release edit "$version" \
-            --title "$version" \
-            --notes "$(cat production_notes.md)"
-          
-          echo "Release $version updated with production deployment notes"
+            --title "$version - TEST" \
+            --notes "$(cat test_notes.md)"
+
+          echo "Release $version updated with TEST deployment notes"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
