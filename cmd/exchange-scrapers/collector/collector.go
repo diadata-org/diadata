@@ -64,6 +64,7 @@ var (
 	// mode==assetmap:   	Bridged Trades, asstes are mapped and trades are not saved.
 	mode              = flag.String("mode", "current", "either storeTrades, current, historical or estimation.")
 	pairsfile         = flag.Bool("pairsfile", false, "read pairs from json file in config folder.")
+	scraperNum        = flag.String("scraperNum", "", "which config file to use for markets")
 	replicaKafkaTopic string
 
 	startupDone bool
@@ -120,8 +121,11 @@ func main() {
 			log.Fatal("fetch pairs from database: ", err)
 		}
 	} else {
-		log.Error("error on GetExchangePairSymbols", err)
+		log.Info("use config file for markets.")
 		cc := configCollectors.NewConfigCollectors(*exchange, ".json")
+		if *scraperNum != "" {
+			cc = configCollectors.NewConfigCollectors(*exchange+*scraperNum, ".json")
+		}
 		pairsExchange = cc.AllPairs()
 	}
 	log.Info("available exchangePairs:", len(pairsExchange))
