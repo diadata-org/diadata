@@ -497,7 +497,7 @@ func retrieveAssetPrice(asset Asset, useGql bool, gqlWindowSize int, gqlMethodol
 		return price, nil
 	}
 	// Check if the asset is USDp
-	if strings.ToLower(strings.TrimSpace(asset.blockchain)) == "fairvalue" && strings.ToLower(strings.TrimSpace(asset.address)) == "usdp" {
+	if strings.ToLower(strings.TrimSpace(asset.blockchain)) == "fairvalue" && (strings.ToLower(strings.TrimSpace(asset.address)) == "usdp" || strings.ToLower(strings.TrimSpace(asset.address)) == "usdr") {
 		var issuanceAccumulator float64
 		var rawPriceAggregator float64
 		for i, dataNode := range dataNodes {
