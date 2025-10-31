@@ -57,6 +57,22 @@ CREATE TABLE exchange (
     UNIQUE (name)
 );
 
+CREATE TABLE nftexchange (
+    exchange_id UUID DEFAULT gen_random_uuid(),
+    name text NOT NULL,
+    centralized boolean default false,
+    bridge boolean default false,
+    contract text,
+    blockchain text,
+    rest_api text,
+    ws_api text,
+    pairs_api text,
+    watchdog_delay numeric NOT NULL,
+    scraper_active boolean,
+    UNIQUE(exchange_id),
+    UNIQUE (name)
+);
+
 CREATE TABLE pool (
     pool_id UUID DEFAULT gen_random_uuid(),
     exchange text NOT NULL,
@@ -269,9 +285,19 @@ CREATE TABLE exchange_pairs (
 
 
 
+CREATE TABLE plans (
+    plan_id SERIAL PRIMARY KEY,
+    plan_name VARCHAR(50) NOT NULL UNIQUE,
+    plan_description TEXT,
+    plan_price NUMERIC(10, 2) NOT NULL,
+    plan_features TEXT
+);
+
+ALTER TABLE plans ADD COLUMN total_feeds integer default 3;
+ALTER TABLE plans ADD COLUMN total_oracles integer default 3;
 
 
- CREATE TABLE customers (
+CREATE TABLE customers (
     customer_id SERIAL PRIMARY KEY,
     email VARCHAR(255) NOT NULL,
     account_creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -398,18 +424,6 @@ CREATE TABLE loop_payment_responses (
     invoice_id TEXT,
     metadata JSONB DEFAULT '{}'::jsonb
 );
-
-
-CREATE TABLE plans (
-    plan_id SERIAL PRIMARY KEY,
-    plan_name VARCHAR(50) NOT NULL UNIQUE,
-    plan_description TEXT,
-    plan_price NUMERIC(10, 2) NOT NULL,
-    plan_features TEXT
-);
-
-ALTER TABLE plans ADD COLUMN total_feeds integer default 3;
-ALTER TABLE plans ADD COLUMN total_oracles integer default 3;
 
 
 
