@@ -1,0 +1,166 @@
+{
+    "Coins": [
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "ALEXUSDT",
+            "Symbol": "ALEX"
+        },
+        {
+            "Symbol": "ALPH",
+            "ForeignName": "ALPHUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "COINONUSDT",
+            "Symbol": "COINON"
+        },
+        {
+            "Symbol": "DIKO",
+            "ForeignName": "DIKOUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "DOGINMEUSDT",
+            "Symbol": "DOGINME"
+        },
+        {
+            "Symbol": "EDU",
+            "ForeignName": "EDUUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "FLOKIUSDT",
+            "Symbol": "FLOKI"
+        },
+        {
+            "Symbol": "GLMR",
+            "ForeignName": "GLMRUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "GOOGLONUSDT",
+            "Symbol": "GOOGLON"
+        },
+        {
+            "Symbol": "GRAIL",
+            "ForeignName": "GRAILUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MAVIA",
+            "ForeignName": "MAVIAUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
+            "Symbol": "MOVR",
+            "ForeignName": "MOVRUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "NEIROCTOUSDT",
+            "Symbol": "NEIROCTO"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "NEIROETHUSDT",
+            "Symbol": "NEIROETH"
+        },
+        {
+            "Symbol": "NETT",
+            "ForeignName": "NETTUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "NPCUSDT",
+            "Symbol": "NPC"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "NPCUSDC",
+            "Symbol": "NPC"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "PELLUSDT",
+            "Symbol": "PELL"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "PELLUSDC",
+            "Symbol": "PELL"
+        },
+        {
+            "Symbol": "PIN",
+            "ForeignName": "PINUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "QQQONUSDT",
+            "Symbol": "QQQON"
+        },
+        {
+            "Symbol": "SDN",
+            "ForeignName": "SDNUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "SPYONUSDT",
+            "Symbol": "SPYON"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "TSLAONUSDT",
+            "Symbol": "TSLAON"
+        },
+        {
+            "Symbol": "USDP",
+            "ForeignName": "USDPUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
+            "Symbol": "USDUC",
+            "ForeignName": "USDUCUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
+            "Symbol": "WELSH",
+            "ForeignName": "WELSHUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        }
+    ]
+}
