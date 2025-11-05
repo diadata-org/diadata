@@ -7,6 +7,7 @@ import (
 	"math/big"
 	"sort"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -341,6 +342,17 @@ func (s *BalancerV2Scraper) ScrapePair(pair dia.ExchangePair) (PairScraper, erro
 // fetchAdmissiblePools fetches all pools from postgres with native liquidity > liquidityThreshold and
 // (if available) liquidity in USD > liquidityThresholdUSD.
 func (s *BalancerV2Scraper) fetchAdmissiblePools(liquidityThreshold float64, liquidityThresholdUSD float64) {
+	whitelistedPools := utils.Getenv("POOLS_WHITELIST", "")
+	if whitelistedPools != "" {
+		log.Warn("only taking into account pools from POOLS_WHITELIST")
+		pools := strings.Split(whitelistedPools, ",")
+		for _, p := range pools {
+			log.Info(p)
+			s.admissiblePools[common.HexToAddress(p)] = struct{}{}
+		}
+		return
+	}
+
 	poolsPreselection, err := s.relDB.GetAllPoolsExchange(s.exchangeName, liquidityThreshold)
 	if err != nil {
 		log.Error("fetch all admissible pools: ", err)
