@@ -43,6 +43,12 @@
             "Symbol": "FLOKI"
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "FXSUSDT",
+            "Symbol": "FXS"
+        },
+        {
             "Symbol": "GLMR",
             "ForeignName": "GLMRUSDT",
             "Exchange": "MEXC",

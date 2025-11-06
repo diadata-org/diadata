@@ -397,6 +397,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "FXSUSDT",
+            "Symbol": "FXS"
+        },
+        {
             "Symbol": "GALA",
             "ForeignName": "GALAUSDT",
             "Exchange": "ByBit",
