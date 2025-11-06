@@ -567,6 +567,12 @@
         {
             "Exchange": "Crypto.com",
             "Ignore": false,
+            "ForeignName": "FXS_USD",
+            "Symbol": "FXS"
+        },
+        {
+            "Exchange": "Crypto.com",
+            "Ignore": false,
             "ForeignName": "GALA_USDT",
             "Symbol": "GALA"
         },

@@ -921,6 +921,12 @@
         {
             "Exchange": "OKEx",
             "Ignore": false,
+            "ForeignName": "FXS-USDT",
+            "Symbol": "FXS"
+        },
+        {
+            "Exchange": "OKEx",
+            "Ignore": false,
             "ForeignName": "GALA-USDT",
             "Symbol": "GALA"
         },

@@ -1,6 +1,14 @@
 {
     "Pools": [
         {
+            "Address": "0x5C0D76fab1822bDeb47308eD6028231761ED723E",
+            "ForeignName": "kVCM-USDC"
+        },
+        {
+            "Address": "0x5e710Fe3C079182a6a2be9cA3c200317d6C34A5D",
+            "ForeignName": "kVCM-WETH"
+        },
+        {
             "Address": "0x4F9Dc2229f2357B27C22db56cB39582c854Ad6d5",
             "ForeignName": "WETH-fBOMB"
         },

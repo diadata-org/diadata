@@ -980,6 +980,12 @@
         },
         {
             "Exchange": "GateIO",
+            "ForeignName": "FRAX_USDT",
+            "Ignore": false,
+            "Symbol": "FRAX"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "FUEL_ETH",
             "Ignore": false,
             "Symbol": "FUEL"
