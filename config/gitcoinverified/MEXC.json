@@ -403,6 +403,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "FXS",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0"
+        },
+        {
             "Symbol": "GEL",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",

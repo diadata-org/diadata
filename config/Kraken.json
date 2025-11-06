@@ -320,6 +320,18 @@
         },
         {
             "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "FXSUSD",
+            "Symbol": "FXS"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "FXSEUR",
+            "Symbol": "FXS"
+        },
+        {
+            "Exchange": "Kraken",
             "ForeignName": "GBPUSD",
             "Ignore": false,
             "Symbol": "GBP"
