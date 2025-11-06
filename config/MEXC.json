@@ -427,6 +427,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "FXS",
+            "ForeignName": "FXSUSDT",
+            "Exchange": "MEXC",
+            "Ignore": false
+        },
+        {
             "Symbol": "GEL",
             "ForeignName": "GELUSDT",
             "Exchange": "MEXC",
