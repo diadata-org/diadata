@@ -461,7 +461,7 @@ jobs:
 
           git add helmcharts/
           git commit -m "🤖 Update ${service_name} to ${version} (TEST)"
-          git push origin master
+          git push origin main
 
           echo "✅ Successfully pushed helm values update to aws-cluster-backend"
 
