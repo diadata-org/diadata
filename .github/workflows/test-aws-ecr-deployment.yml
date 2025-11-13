@@ -117,10 +117,10 @@ jobs:
           
           # Check if release exists
           if gh release view "$version" >/dev/null 2>&1; then
-            echo "✅ Release $version exists and is ready for production deployment"
+            echo "Release $version exists and is ready for production deployment"
             echo "exists=true" >> $GITHUB_OUTPUT
           else
-            echo "❌ Release $version does not exist. It should have been created during PR validation."
+            echo "Release $version does not exist. It should have been created during PR validation."
             echo "exists=false" >> $GITHUB_OUTPUT
             exit 1
           fi
@@ -137,7 +137,7 @@ jobs:
 
           # Create test release notes
           cat > test_notes.md << EOF
-          ## 🧪 TEST Service Release $version
+          ## TEST Service Release $version
 
           **Services Deployed to TEST:**
           EOF
@@ -148,7 +148,7 @@ jobs:
                     cat >> test_notes.md << EOF
 
           ### Status
-          🧪 **Deployed to TEST Environment**
+          **Deployed to TEST Environment**
 
           ### Changes
           TEST deployment to validate AWS ECR push functionality.
@@ -274,7 +274,7 @@ jobs:
           docker push "$ibm_version_tag"
           docker push "$ibm_latest_tag"
 
-          echo "✅ Successfully built and pushed to IBM CR:"
+          echo "Successfully built and pushed to IBM CR:"
           echo "  - $ibm_version_tag"
           echo "  - $ibm_latest_tag"
 
@@ -333,7 +333,7 @@ jobs:
           docker push ${aws_version_tag}
           docker push ${aws_latest_tag}
 
-          echo "✅ Successfully pushed to AWS ECR:"
+          echo "Successfully pushed to AWS ECR:"
           echo "  - ${aws_version_tag}"
           echo "  - ${aws_latest_tag}"
 
@@ -369,72 +369,72 @@ jobs:
 
           case "$service_name_lower" in
             collector)
-              echo "📦 Updating ALL trades-scrapers to use collector:${version}"
+              echo "Updating ALL trades-scrapers to use collector:${version}"
               for file in helmcharts/apps/trades-scrapers/*/values.yaml; do
                 if [ -f "$file" ] && grep -q 'tag:' "$file"; then
                   sed -i "s|tag: \".*\"|tag: \"${version}\"|" "$file"
                   updated_count=$((updated_count + 1))
-                  echo "  ✅ Updated: $file"
+                  echo "  Updated: $file"
                 fi
               done
               ;;
 
             assetcollectionservice)
-              echo "📦 Updating ALL asset-scraper cronjobs to use assetCollectionService:${version}"
+              echo "Updating ALL asset-scraper cronjobs to use assetCollectionService:${version}"
               for file in helmcharts/apps/cronjobs/asset-scrapers/templates/*.yaml; do
                 if [ -f "$file" ]; then
                   sed -i "s|nexus/scrapers/asset-scrapers:[^\"]*\"|nexus/scrapers/asset-scrapers:${version}\"|g" "$file"
                   updated_count=$((updated_count + 1))
-                  echo "  ✅ Updated: $file"
+                  echo "  Updated: $file"
                 fi
               done
               ;;
 
             liquidityscraper)
-              echo "📦 Updating ALL liquidity-scraper cronjobs to use liquidityScraper:${version}"
+              echo "Updating ALL liquidity-scraper cronjobs to use liquidityScraper:${version}"
               for file in helmcharts/apps/cronjobs/liquidity-scrapers/templates/*.yaml; do
                 if [ -f "$file" ]; then
                   sed -i "s|nexus/scrapers/liquidity-scrapers:[^\"]*\"|nexus/scrapers/liquidity-scrapers:${version}\"|g" "$file"
                   updated_count=$((updated_count + 1))
-                  echo "  ✅ Updated: $file"
+                  echo "  Updated: $file"
                 fi
               done
               ;;
 
             foreignscraper)
-              echo "📦 Updating ALL foreign-scrapers to use foreignScraper:${version}"
+              echo "Updating ALL foreign-scrapers to use foreignScraper:${version}"
               for file in helmcharts/apps/foreign-scrapers/*/values.yaml; do
                 if [ -f "$file" ] && grep -q 'tag:' "$file"; then
                   sed -i "s|tag: \".*\"|tag: \"${version}\"|" "$file"
                   updated_count=$((updated_count + 1))
-                  echo "  ✅ Updated: $file"
+                  echo "  Updated: $file"
                 fi
               done
               ;;
 
             tradesblockservice|filtersblockservice)
-              echo "📦 Updating blue/green services for: ${service_name_lower}"
+              echo "Updating blue/green services for: ${service_name_lower}"
               for variant in blue green; do
                 values_file="helmcharts/apps/services/${service_name_lower}-${variant}/values.yaml"
                 if [ -f "$values_file" ]; then
                   sed -i "s|tag: \".*\"|tag: \"${version}\"|" "$values_file"
                   updated_count=$((updated_count + 1))
-                  echo "  ✅ Updated: $values_file"
+                  echo "  Updated: $values_file"
                 else
-                  echo "  ⚠️ Not found: $values_file"
+                  echo "  Not found: $values_file"
                 fi
               done
               ;;
 
             *)
-              echo "📦 Updating single service: ${service_name_lower}"
+              echo "Updating single service: ${service_name_lower}"
               values_file="helmcharts/apps/services/${service_name_lower}/values.yaml"
               if [ -f "$values_file" ]; then
                 sed -i "s|tag: \".*\"|tag: \"${version}\"|" "$values_file"
                 updated_count=$((updated_count + 1))
-                echo "  ✅ Updated: $values_file"
+                echo "  Updated: $values_file"
               else
-                echo "  ⚠️ Helm chart not found for ${service_name_lower}, skipping"
+                echo "  Helm chart not found for ${service_name_lower}, skipping"
                 exit 0
               fi
               ;;
@@ -460,10 +460,10 @@ jobs:
           fi
 
           git add helmcharts/
-          git commit -m "🤖 Update ${service_name} to ${version} (TEST)"
+          git commit -m "Update ${service_name} to ${version} (TEST)"
           git push origin main
 
-          echo "✅ Successfully pushed helm values update to aws-cluster-backend"
+          echo "Successfully pushed helm values update to aws-cluster-backend"
 
   deployment-summary:
     needs: [detect-service-changes, verify_release, build-and-deploy, update-aws-values]
@@ -476,20 +476,20 @@ jobs:
             services='${{ needs.detect-service-changes.outputs.services }}'
             count=$(echo "$services" | jq length)
 
-            echo "## 🧪 TEST Deployment Summary"
+            echo "## TEST Deployment Summary"
             echo ""
             echo "**Services deployed:** $count"
             echo ""
             echo "### Services deployed to TEST:"
             echo "$services" | jq -r '.[] | "- **\(.name)** version \(.version)"'
             echo ""
-            echo "## 📊 Deployment Results:"
+            echo "## Deployment Results:"
             echo "- **Release:** ${{ needs.verify_release.result }}"
             echo "- **Build & Deploy:** ${{ needs.build-and-deploy.result }}"
             echo "- **Helm Values Update:** ${{ needs.update-aws-values.result }}"
 
             echo ""
-            echo "## 🔍 Audit Report"
+            echo "## Audit Report"
             echo "**Triggered by:** ${{ github.actor }}"
             echo "**Branch:** ${{ github.ref }}"
             echo "**Commit:** ${{ github.sha }}"
@@ -500,23 +500,23 @@ jobs:
 
             if [ "${{ needs.build-and-deploy.result }}" = "success" ]; then
               echo ""
-              echo "🎉 **All TEST services deployed successfully!**"
+              echo "**All TEST services deployed successfully!**"
               echo ""
               echo "### IBM Cloud Registry:"
-              echo "$services" | jq -r '.[] | "- **\(.name)** → us.icr.io/dia-registry/\(.name | ascii_downcase):\(.version)"'
+              echo "$services" | jq -r '.[] | "- **\(.name)** -> us.icr.io/dia-registry/\(.name | ascii_downcase):\(.version)"'
               echo ""
               echo "### AWS ECR (service mapping applied):"
-              echo "$services" | jq -r '.[] | "- **\(.name)** → Check logs for ECR path mapping"'
+              echo "$services" | jq -r '.[] | "- **\(.name)** -> Check logs for ECR path mapping"'
             else
               echo ""
-              echo "❌ **Deployment failed. Check logs above.**"
+              echo "**Deployment failed. Check logs above.**"
               echo ""
               echo "**Failed stages:**"
-              [ "${{ needs.verify_release.result }}" != "success" ] && echo "- 🔴 Release verification failed"
-              [ "${{ needs.build-and-deploy.result }}" != "success" ] && echo "- 🔴 Build/Deploy failed"
+              [ "${{ needs.verify_release.result }}" != "success" ] && echo "- Release verification failed"
+              [ "${{ needs.build-and-deploy.result }}" != "success" ] && echo "- Build/Deploy failed"
             fi
           else
-            echo "## ℹ️ No Service Changes Detected"
+            echo "## No Service Changes Detected"
             echo ""
             echo "No service go.mod files were modified in this push."
             echo "Deployment pipeline was skipped."
