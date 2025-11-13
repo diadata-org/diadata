@@ -434,8 +434,8 @@ jobs:
                 updated_count=$((updated_count + 1))
                 echo "  Updated: $values_file"
               else
-                echo "  Helm chart not found for ${service_name_lower}, skipping"
-                exit 0
+                echo "  Helm chart not found for ${service_name_lower}. Failing pipeline."
+                exit 1
               fi
               ;;
           esac
