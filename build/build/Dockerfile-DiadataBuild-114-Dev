@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/golang:1.14 as build
+FROM public.ecr.aws/docker/library/golang:1.14 AS build
 
 RUN apt update && apt upgrade -y
 
