@@ -429,6 +429,17 @@ jobs:
               done
               ;;
 
+            diaoraclev2multiupdateservice)
+              echo "Updating ALL demo oracles to use diaoraclev2multiupdateservice:${version}"
+              for file in helmcharts/apps/oracles/demo/*/values.yaml; do
+                if [ -f "$file" ] && grep -q 'tag:' "$file"; then
+                  sed -i "s|tag: \".*\"|tag: \"${version}\"|" "$file"
+                  updated_count=$((updated_count + 1))
+                  echo "  Updated: $file"
+                fi
+              done
+              ;;
+
             *)
               echo "Updating single service: ${service_name_lower}"
               values_file="helmcharts/apps/services/${service_name_lower}/values.yaml"
