@@ -311,6 +311,9 @@ jobs:
             assetcollectionservice)
               ecr_repo="nexus/scrapers/asset-scrapers"
               ;;
+            diaoraclev2multiupdateservice)
+              ecr_repo="nexus/oracles/diaoraclev2multiupdateservice"
+              ;;
             *)
               # Default: all other services go to nexus/services/
               ecr_repo="nexus/services/${service_name_lower}"
