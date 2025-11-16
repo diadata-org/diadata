@@ -5,6 +5,10 @@
             "ForeignName": "JOE-WETH"
         },
         {
+            "Address": "0x0da7096f14303eddd634c0241963c064e0244984",
+            "ForeignName": "XMW-WETH"
+        },
+        {
             "Address": "0xCFfDdeD873554F362Ac02f8Fb1f02E5ada10516f",
             "ForeignName": "COMP-WETH"
         },
