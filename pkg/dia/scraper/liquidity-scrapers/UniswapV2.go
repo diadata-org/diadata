@@ -71,15 +71,16 @@ const (
 )
 
 type UniswapScraper struct {
-	RestClient   *ethclient.Client
-	relDB        *models.RelDB
-	datastore    *models.DB
-	poolChannel  chan dia.Pool
-	doneChannel  chan bool
-	blockchain   string
-	waitTime     int
-	exchangeName string
-	pathToPools  string
+	RestClient      *ethclient.Client
+	relDB           *models.RelDB
+	datastore       *models.DB
+	poolChannel     chan dia.Pool
+	doneChannel     chan bool
+	blockchain      string
+	waitTime        int
+	exchangeName    string
+	pathToPools     string
+	writeIndexBatch int
 }
 
 var exchangeFactoryContractAddress string
@@ -203,6 +204,13 @@ func makeUniswapPoolScraper(exchange dia.Exchange, pathToPools string, restDial 
 		exchangeName: exchange.Name,
 		pathToPools:  pathToPools,
 	}
+
+	us.writeIndexBatch, err = strconv.Atoi(utils.Getenv("WRITE_INDEX_BATCH", "1000"))
+	if err != nil {
+		log.Error("parse WRITE_INDEX_BATCH: ", err)
+		us.writeIndexBatch = 1000
+	}
+
 	return us
 }
 
@@ -234,21 +242,41 @@ func (us *UniswapScraper) fetchPools() {
 
 		numPairs, err := us.getNumPairs()
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("getNumPairs", err)
 		}
 		log.Info("Found ", numPairs, " pools")
 
-		for i := 0; i < numPairs; i++ {
+		_, index, err := us.relDB.GetScraperIndex(us.exchangeName, dia.SCRAPER_TYPE_LIQUIDITYSCRAPER)
+		if err != nil {
+			log.Error("GetScraperIndex: ", err)
+		}
+		log.Infof("current scraper index: %v", index)
+
+		for i := int(index); i < numPairs; i++ {
 			time.Sleep(time.Duration(us.waitTime) * time.Millisecond)
-			pool, err := us.GetPoolByID(int64(numPairs - 1 - i))
+			pool, err := us.GetPoolByID(int64(i))
 			if err != nil {
-				log.Errorf("Error getting pair with ID %v: %v", numPairs-1-i, err)
+				log.Errorf("Error getting pair with ID %v: %v", i, err)
 				continue
 			} else {
 				log.Info("found pool: ", pool)
 			}
+
+			if i%us.writeIndexBatch == 0 {
+				log.Info("set scraper index: ", i)
+				err = us.relDB.SetScraperIndex(us.exchangeName, dia.SCRAPER_TYPE_LIQUIDITYSCRAPER, dia.INDEX_TYPE_INDEX, int64(i))
+				if err != nil {
+					log.Error("SetScraperIndex: ", err)
+				}
+			}
 			us.poolChannel <- pool
 		}
+	}
+
+	// reset scraper index after successfull run.
+	err := us.relDB.SetScraperIndex(us.exchangeName, dia.SCRAPER_TYPE_LIQUIDITYSCRAPER, dia.INDEX_TYPE_INDEX, int64(0))
+	if err != nil {
+		log.Error("reset ScraperIndex: ", err)
 	}
 	us.doneChannel <- true
 }
