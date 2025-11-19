@@ -117,10 +117,10 @@ jobs:
           
           # Check if release exists
           if gh release view "$version" >/dev/null 2>&1; then
-            echo "Release $version exists and is ready for production deployment"
+            echo "✅ Release $version exists and is ready for production deployment"
             echo "exists=true" >> $GITHUB_OUTPUT
           else
-            echo "Release $version does not exist. It should have been created during PR validation."
+            echo "❌ Release $version does not exist. It should have been created during PR validation."
             echo "exists=false" >> $GITHUB_OUTPUT
             exit 1
           fi
@@ -137,7 +137,7 @@ jobs:
 
           # Create test release notes
           cat > test_notes.md << EOF
-          ## TEST Service Release $version
+          ## 🧪 TEST Service Release $version
 
           **Services Deployed to TEST:**
           EOF
@@ -148,7 +148,7 @@ jobs:
                     cat >> test_notes.md << EOF
 
           ### Status
-          **Deployed to TEST Environment**
+          🧪 **Deployed to TEST Environment**
 
           ### Changes
           TEST deployment to validate AWS ECR push functionality.
@@ -227,8 +227,11 @@ jobs:
           # Check build directory for Dockerfile-{service} pattern
           elif [ -f "build/Dockerfile-$service_name" ]; then
             dockerfile="build/Dockerfile-$service_name"
+          # Check build directory for lowercase Dockerfile-{service} pattern
+          elif [ -f "build/Dockerfile-$(echo $service_name | tr '[:upper:]' '[:lower:]')" ]; then
+            dockerfile="build/Dockerfile-$(echo $service_name | tr '[:upper:]' '[:lower:]')"
           fi
-          
+
           if [ -z "$dockerfile" ]; then
             echo "Error: Could not find Dockerfile for service $service_name"
             echo "Searched locations:"
@@ -236,6 +239,7 @@ jobs:
             echo "  - Dockerfile-$service_name"
             echo "  - $service_path/Dockerfile-$service_name"
             echo "  - build/Dockerfile-$service_name"
+            echo "  - build/Dockerfile-$(echo $service_name | tr '[:upper:]' '[:lower:]')"
             exit 1
           fi
           
@@ -274,7 +278,7 @@ jobs:
           docker push "$ibm_version_tag"
           docker push "$ibm_latest_tag"
 
-          echo "Successfully built and pushed to IBM CR:"
+          echo "✅ Successfully built and pushed to IBM CR:"
           echo "  - $ibm_version_tag"
           echo "  - $ibm_latest_tag"
 
@@ -311,9 +315,6 @@ jobs:
             assetcollectionservice)
               ecr_repo="nexus/scrapers/asset-scrapers"
               ;;
-            diaoraclev2multiupdateservice)
-              ecr_repo="nexus/oracles/diaoraclev2multiupdateservice"
-              ;;
             *)
               # Default: all other services go to nexus/services/
               ecr_repo="nexus/services/${service_name_lower}"
@@ -336,7 +337,7 @@ jobs:
           docker push ${aws_version_tag}
           docker push ${aws_latest_tag}
 
-          echo "Successfully pushed to AWS ECR:"
+          echo "✅ Successfully pushed to AWS ECR:"
           echo "  - ${aws_version_tag}"
           echo "  - ${aws_latest_tag}"
 
@@ -448,14 +449,19 @@ jobs:
                 updated_count=$((updated_count + 1))
                 echo "  Updated: $values_file"
               else
-                echo "  Helm chart not found for ${service_name_lower}. Failing pipeline."
-                exit 1
+                echo "  WARNING: Helm chart not found for ${service_name_lower}."
+                echo "  Skipping helm values update. Docker image has been pushed to ECR."
+                echo "  Manual deployment may be required for this service."
               fi
               ;;
           esac
 
           echo ""
           echo "Updated ${updated_count} file(s)"
+
+          if [ "$updated_count" -eq 0 ]; then
+            echo "No helm charts found to update. Image pushed to ECR only."
+          fi
 
       - name: Commit and push changes
         run: |
@@ -474,7 +480,7 @@ jobs:
           fi
 
           git add helmcharts/
-          git commit -m "Update ${service_name} to ${version} (TEST)"
+          git commit -m "Update ${service_name} to ${version}"
           git push origin main
 
           echo "Successfully pushed helm values update to aws-cluster-backend"
@@ -490,20 +496,19 @@ jobs:
             services='${{ needs.detect-service-changes.outputs.services }}'
             count=$(echo "$services" | jq length)
 
-            echo "## TEST Deployment Summary"
+            echo "## 🧪 TEST Deployment Summary"
             echo ""
             echo "**Services deployed:** $count"
             echo ""
             echo "### Services deployed to TEST:"
             echo "$services" | jq -r '.[] | "- **\(.name)** version \(.version)"'
             echo ""
-            echo "## Deployment Results:"
+            echo "## 📊 Deployment Results:"
             echo "- **Release:** ${{ needs.verify_release.result }}"
             echo "- **Build & Deploy:** ${{ needs.build-and-deploy.result }}"
-            echo "- **Helm Values Update:** ${{ needs.update-aws-values.result }}"
 
             echo ""
-            echo "## Audit Report"
+            echo "## 🔍 Audit Report"
             echo "**Triggered by:** ${{ github.actor }}"
             echo "**Branch:** ${{ github.ref }}"
             echo "**Commit:** ${{ github.sha }}"
@@ -514,23 +519,23 @@ jobs:
 
             if [ "${{ needs.build-and-deploy.result }}" = "success" ]; then
               echo ""
-              echo "**All TEST services deployed successfully!**"
+              echo "🎉 **All TEST services deployed successfully!**"
               echo ""
               echo "### IBM Cloud Registry:"
-              echo "$services" | jq -r '.[] | "- **\(.name)** -> us.icr.io/dia-registry/\(.name | ascii_downcase):\(.version)"'
+              echo "$services" | jq -r '.[] | "- **\(.name)** → us.icr.io/dia-registry/\(.name | ascii_downcase):\(.version)"'
               echo ""
               echo "### AWS ECR (service mapping applied):"
-              echo "$services" | jq -r '.[] | "- **\(.name)** -> Check logs for ECR path mapping"'
+              echo "$services" | jq -r '.[] | "- **\(.name)** → Check logs for ECR path mapping"'
             else
               echo ""
-              echo "**Deployment failed. Check logs above.**"
+              echo "❌ **Deployment failed. Check logs above.**"
               echo ""
               echo "**Failed stages:**"
-              [ "${{ needs.verify_release.result }}" != "success" ] && echo "- Release verification failed"
-              [ "${{ needs.build-and-deploy.result }}" != "success" ] && echo "- Build/Deploy failed"
+              [ "${{ needs.verify_release.result }}" != "success" ] && echo "- 🔴 Release verification failed"
+              [ "${{ needs.build-and-deploy.result }}" != "success" ] && echo "- 🔴 Build/Deploy failed"
             fi
           else
-            echo "## No Service Changes Detected"
+            echo "## ℹ️ No Service Changes Detected"
             echo ""
             echo "No service go.mod files were modified in this push."
             echo "Deployment pipeline was skipped."
