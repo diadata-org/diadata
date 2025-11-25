@@ -44,6 +44,8 @@ func NewBalancerV3AssetSource(exchange dia.Exchange) (bas *BalancerV3AssetSource
 	switch exchange.Name {
 	case dia.BalancerV3Exchange:
 		bas.startblockPoolRegister = 21332121
+	case dia.BalancerV3ExchangeAvalanche:
+		bas.startblockPoolRegister = 59955604
 	case dia.BalancerV3ExchangeBase:
 		bas.startblockPoolRegister = 25343854
 	case dia.BeetsV3ExchangeSonic:

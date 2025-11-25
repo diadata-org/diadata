@@ -176,6 +176,12 @@
         },
         {
             "Exchange": "OKEx",
+            "Symbol": "FXS",
+            "Blockchain": "Ethereum",
+            "Address": "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0"
+        },
+        {
+            "Exchange": "OKEx",
             "Symbol": "GALA",
             "Blockchain": "Ethereum",
             "Address": "0xd1d2Eb1B1e90B638588728b4130137D262C87cae"
@@ -335,6 +341,12 @@
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
             "Address": "0x5d65D971895Edc438f465c17DB6992698a52318D"
+        },
+        {
+            "Exchange": "OKEx",
+            "Symbol": "NEIRO",
+            "Blockchain": "Ethereum",
+            "Address": "0x812Ba41e071C7b7fA4EBcFB62dF5F45f6fA853Ee"
         },
         {
             "Symbol": "OP",

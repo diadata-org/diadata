@@ -236,6 +236,12 @@
         },
         {
             "Exchange": "Kraken",
+            "Symbol": "FXS",
+            "Blockchain": "Ethereum",
+            "Address": "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0"
+        },
+        {
+            "Exchange": "Kraken",
             "Symbol": "GALA",
             "Blockchain": "Ethereum",
             "Address": "0xd1d2Eb1B1e90B638588728b4130137D262C87cae"
@@ -356,6 +362,12 @@
         },
         {
             "Exchange": "Kraken",
+            "Symbol": "NEIRO",
+            "Blockchain": "Ethereum",
+            "Address": "0x812Ba41e071C7b7fA4EBcFB62dF5F45f6fA853Ee"
+        },
+        {
+            "Exchange": "Kraken",
             "Symbol": "OMG",
             "Blockchain": "Ethereum",
             "Address": "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07"
@@ -401,6 +413,12 @@
             "Exchange": "Kraken",
             "Blockchain": "Qtum",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Kraken",
+            "Symbol": "RARE",
+            "Blockchain": "Ethereum",
+            "Address": "0xba5BDe662c17e2aDFF1075610382B9B691296350"
         },
         {
             "Exchange": "Kraken",

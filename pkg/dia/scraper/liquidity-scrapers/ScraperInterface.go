@@ -129,6 +129,8 @@ func NewLiquidityScraper(source string, relDB *models.RelDB, datastore *models.D
 		return NewCurveFIScraper(exchanges[dia.CurveFIExchangeMoonbeam], relDB, datastore)
 	case dia.CurveFIExchangeArbitrum:
 		return NewCurveFIScraper(exchanges[dia.CurveFIExchangeArbitrum], relDB, datastore)
+	case dia.CurveFIExchangeSonic:
+		return NewCurveFIScraper(exchanges[dia.CurveFIExchangeSonic], relDB, datastore)
 
 	case dia.BalancerV2Exchange:
 		return NewBalancerV2Scraper(exchanges[dia.BalancerV2Exchange], relDB, datastore)
@@ -145,6 +147,8 @@ func NewLiquidityScraper(source string, relDB *models.RelDB, datastore *models.D
 
 	case dia.BalancerV3Exchange:
 		return NewBalancerV3Scraper(exchanges[dia.BalancerV3Exchange], relDB, datastore)
+	case dia.BalancerV3ExchangeAvalanche:
+		return NewBalancerV3Scraper(exchanges[dia.BalancerV3ExchangeAvalanche], relDB, datastore)
 	case dia.BalancerV3ExchangeBase:
 		return NewBalancerV3Scraper(exchanges[dia.BalancerV3ExchangeBase], relDB, datastore)
 

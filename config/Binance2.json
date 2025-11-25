@@ -302,6 +302,18 @@
         },
         {
             "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "NEIROUSDT",
+            "Symbol": "NEIRO"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "NEIROUSDC",
+            "Symbol": "NEIRO"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "OPUSDT",
             "Ignore": false,
             "Symbol": "OP"
@@ -353,6 +365,18 @@
             "Ignore": false,
             "ForeignName": "POLUSDT",
             "Symbol": "POL"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "RAREUSDT",
+            "Symbol": "RARE"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "RAREUSDC",
+            "Symbol": "RARE"
         },
         {
             "Exchange": "Binance",

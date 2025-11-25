@@ -28,16 +28,8 @@ import (
 )
 
 const (
-	curveRestDialEth      = ""
-	curveWsDialEth        = ""
-	curveRestDialFantom   = ""
-	curveWsDialFantom     = ""
-	curveRestDialMoonbeam = ""
-	curveWsDialMoonbeam   = ""
-	curveRestDialPolygon  = ""
-	curveWsDialPolygon    = ""
-	curveRestDialArbitrum = ""
-	curveWsDialArbitrum   = ""
+	curveRestDial = ""
+	curveWsDial   = ""
 )
 
 type CurveCoin struct {
@@ -178,7 +170,7 @@ func NewCurveFIScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 
 	switch exchange.Name {
 	case dia.CurveFIExchange:
-		scraper = makeCurvefiScraper(exchange, curveRestDialEth, curveWsDialEth, relDB)
+		scraper = makeCurvefiScraper(exchange, curveRestDial, curveWsDial, relDB)
 		basePoolRegistry := curveRegistry{Type: 1, Address: common.HexToAddress(exchange.Contract)}
 		cryptoswapPools := curveRegistry{Type: 1, Address: common.HexToAddress("0x8F942C20D02bEfc377D41445793068908E2250D0")}
 		metaPoolRegistry := curveRegistry{Type: 2, Address: common.HexToAddress("0xB9fC157394Af804a3578134A6585C0dc9cc990d4")}
@@ -198,28 +190,33 @@ func NewCurveFIScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		scraper.screenPools = true
 
 	case dia.CurveFIExchangeFantom:
-		scraper = makeCurvefiScraper(exchange, curveRestDialFantom, curveWsDialFantom, relDB)
+		scraper = makeCurvefiScraper(exchange, curveRestDial, curveWsDial, relDB)
 		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x686d67265703d1f124c45e33d47d794c566889ba")}
 		scraper.registriesUnderlying = []curveRegistry{stableSwapFactory}
 		scraper.screenPools = false
 
 	case dia.CurveFIExchangeMoonbeam:
-		scraper = makeCurvefiScraper(exchange, curveRestDialMoonbeam, curveWsDialMoonbeam, relDB)
+		scraper = makeCurvefiScraper(exchange, curveRestDial, curveWsDial, relDB)
 		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x4244eB811D6e0Ef302326675207A95113dB4E1F8")}
 		scraper.registriesUnderlying = []curveRegistry{stableSwapFactory}
 		scraper.screenPools = false
 
 	case dia.CurveFIExchangePolygon:
-		scraper = makeCurvefiScraper(exchange, curveRestDialPolygon, curveWsDialPolygon, relDB)
+		scraper = makeCurvefiScraper(exchange, curveRestDial, curveWsDial, relDB)
 		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x722272D36ef0Da72FF51c5A65Db7b870E2e8D4ee")}
 		scraper.registriesUnderlying = []curveRegistry{stableSwapFactory}
 		scraper.screenPools = false
 
 	case dia.CurveFIExchangeArbitrum:
-		scraper = makeCurvefiScraper(exchange, curveRestDialArbitrum, curveWsDialArbitrum, relDB)
+		scraper = makeCurvefiScraper(exchange, curveRestDial, curveWsDial, relDB)
 		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0xb17b674D9c5CB2e441F8e196a2f048A81355d031")}
 		stableSwapNGFactory := curveRegistry{Type: 3, Address: common.HexToAddress("0x9AF14D26075f142eb3F292D5065EB3faa646167b")}
 		scraper.registriesUnderlying = []curveRegistry{stableSwapFactory, stableSwapNGFactory}
+
+	case dia.CurveFIExchangeSonic:
+		scraper = makeCurvefiScraper(exchange, curveRestDial, curveWsDial, relDB)
+		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x7C2085419BE6a04f4ad88ea91bC9F5C6E6C463D8")}
+		scraper.registriesUnderlying = []curveRegistry{stableSwapFactory}
 	}
 
 	if scrape {

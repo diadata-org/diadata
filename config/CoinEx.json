@@ -381,6 +381,12 @@
         {
             "Exchange": "CoinEx",
             "Ignore": false,
+            "ForeignName": "JOECOINUSDT",
+            "Symbol": "JOECOIN"
+        },
+        {
+            "Exchange": "CoinEx",
+            "Ignore": false,
             "ForeignName": "JONESUSDT",
             "Symbol": "JONES"
         },

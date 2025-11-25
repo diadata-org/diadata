@@ -1,10 +1,11 @@
-name: Production Deployment
+name: Test AWS ECR Deployment
 
 on:
   push:
-    branches: [master]
+    branches: [aws-ecr-pipeline]
     paths:
       - 'cmd/**/go.mod'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -116,51 +117,51 @@ jobs:
           
           # Check if release exists
           if gh release view "$version" >/dev/null 2>&1; then
-            echo "Release $version exists and is ready for production deployment"
+            echo "✅ Release $version exists and is ready for production deployment"
             echo "exists=true" >> $GITHUB_OUTPUT
           else
-            echo "Release $version does not exist. It should have been created during PR validation."
+            echo "❌ Release $version does not exist. It should have been created during PR validation."
             echo "exists=false" >> $GITHUB_OUTPUT
             exit 1
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update release for production
+      - name: Update release for test deployment
         if: steps.verify_release.outputs.exists == 'true'
         run: |
           services='${{ needs.detect-service-changes.outputs.services }}'
           version="${{ steps.version.outputs.version }}"
-          
-          echo "Updating release $version with production deployment info"
-          
-          # Create production release notes
-          cat > production_notes.md << EOF
-          ## Production Service Release $version
 
-          **Services Deployed:**
+          echo "Updating release $version with TEST deployment info"
+
+          # Create test release notes
+          cat > test_notes.md << EOF
+          ## 🧪 TEST Service Release $version
+
+          **Services Deployed to TEST:**
           EOF
-                      
-                    # Add each service to the production notes
-                    echo "$services" | jq -r '.[] | "- **\(.name)** (\(.path))"' >> production_notes.md
-                    
-                    cat >> production_notes.md << EOF
+
+                    # Add each service to the test notes
+                    echo "$services" | jq -r '.[] | "- **\(.name)** (\(.path))"' >> test_notes.md
+
+                    cat >> test_notes.md << EOF
 
           ### Status
-          **Deployed to Production**
+          🧪 **Deployed to TEST Environment**
 
           ### Changes
-          Production deployment of all updated services.
+          TEST deployment to validate AWS ECR push functionality.
           EOF
-          
-          echo "Production release notes:"
-          cat production_notes.md
-          
+
+          echo "Test release notes:"
+          cat test_notes.md
+
           gh release edit "$version" \
-            --title "$version" \
-            --notes "$(cat production_notes.md)"
-          
-          echo "Release $version updated with production deployment notes"
+            --title "$version - TEST" \
+            --notes "$(cat test_notes.md)"
+
+          echo "Release $version updated with TEST deployment notes"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -230,7 +231,7 @@ jobs:
           elif [ -f "build/Dockerfile-$(echo $service_name | tr '[:upper:]' '[:lower:]')" ]; then
             dockerfile="build/Dockerfile-$(echo $service_name | tr '[:upper:]' '[:lower:]')"
           fi
-          
+
           if [ -z "$dockerfile" ]; then
             echo "Error: Could not find Dockerfile for service $service_name"
             echo "Searched locations:"
@@ -238,24 +239,25 @@ jobs:
             echo "  - Dockerfile-$service_name"
             echo "  - $service_path/Dockerfile-$service_name"
             echo "  - build/Dockerfile-$service_name"
+            echo "  - build/Dockerfile-$(echo $service_name | tr '[:upper:]' '[:lower:]')"
             exit 1
           fi
           
           echo "dockerfile=$dockerfile" >> $GITHUB_OUTPUT
           echo "Found Dockerfile: $dockerfile"
 
-      - name: Build and push Docker image to IBM
+      - name: Build and push Docker image
         run: |
           service_name="${{ steps.version.outputs.service-name }}"
           version="${{ steps.version.outputs.version }}"
           dockerfile="${{ steps.dockerfile.outputs.dockerfile }}"
-
+          
           # Convert service name to lowercase for Docker registry
           service_name_lower=$(echo "$service_name" | tr '[:upper:]' '[:lower:]')
 
           ibm_version_tag="$IBM_REGISTRY/$service_name_lower:$version"
           ibm_latest_tag="$IBM_REGISTRY/$service_name_lower:latest"
-
+          
           echo "Building and pushing Docker image:"
           echo "  Service: $service_name"
           echo "  Version: $version"
@@ -276,7 +278,7 @@ jobs:
           docker push "$ibm_version_tag"
           docker push "$ibm_latest_tag"
 
-          echo "Successfully built and pushed to IBM CR:"
+          echo "✅ Successfully built and pushed to IBM CR:"
           echo "  - $ibm_version_tag"
           echo "  - $ibm_latest_tag"
 
@@ -338,7 +340,7 @@ jobs:
           docker push ${aws_version_tag}
           docker push ${aws_latest_tag}
 
-          echo "Successfully pushed to AWS ECR:"
+          echo "✅ Successfully pushed to AWS ECR:"
           echo "  - ${aws_version_tag}"
           echo "  - ${aws_latest_tag}"
 
@@ -491,26 +493,25 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - name: Production Deployment Summary
+      - name: Test Deployment Summary
         run: |
           if [ "${{ needs.detect-service-changes.outputs.has-changes }}" = "true" ]; then
             services='${{ needs.detect-service-changes.outputs.services }}'
             count=$(echo "$services" | jq length)
-            
-            echo "## Production Deployment Summary"
+
+            echo "## 🧪 TEST Deployment Summary"
             echo ""
             echo "**Services deployed:** $count"
             echo ""
-            echo "### Services deployed to production:"
+            echo "### Services deployed to TEST:"
             echo "$services" | jq -r '.[] | "- **\(.name)** version \(.version)"'
             echo ""
-            echo "## Deployment Results:"
+            echo "## 📊 Deployment Results:"
             echo "- **Release:** ${{ needs.verify_release.result }}"
             echo "- **Build & Deploy:** ${{ needs.build-and-deploy.result }}"
-            echo "- **Helm Values Update:** ${{ needs.update-aws-values.result }}"
-            
+
             echo ""
-            echo "## Audit Report"
+            echo "## 🔍 Audit Report"
             echo "**Triggered by:** ${{ github.actor }}"
             echo "**Branch:** ${{ github.ref }}"
             echo "**Commit:** ${{ github.sha }}"
@@ -518,10 +519,10 @@ jobs:
             echo "**Timestamp:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
             echo "**Workflow:** ${{ github.workflow }}"
             echo "**Run ID:** ${{ github.run_id }}"
-            
+
             if [ "${{ needs.build-and-deploy.result }}" = "success" ]; then
               echo ""
-              echo "**All services deployed successfully!**"
+              echo "🎉 **All TEST services deployed successfully!**"
               echo ""
               echo "### IBM Cloud Registry:"
               echo "$services" | jq -r '.[] | "- **\(.name)** → us.icr.io/dia-registry/\(.name | ascii_downcase):\(.version)"'
@@ -530,14 +531,14 @@ jobs:
               echo "$services" | jq -r '.[] | "- **\(.name)** → Check logs for ECR path mapping"'
             else
               echo ""
-              echo "**Deployment failed. Check logs above.**"
+              echo "❌ **Deployment failed. Check logs above.**"
               echo ""
               echo "**Failed stages:**"
-              [ "${{ needs.verify_release.result }}" != "success" ] && echo "- Release verification failed"
-              [ "${{ needs.build-and-deploy.result }}" != "success" ] && echo "- Build/Deploy failed"
+              [ "${{ needs.verify_release.result }}" != "success" ] && echo "- 🔴 Release verification failed"
+              [ "${{ needs.build-and-deploy.result }}" != "success" ] && echo "- 🔴 Build/Deploy failed"
             fi
           else
-            echo "## No Service Changes Detected"
+            echo "## ℹ️ No Service Changes Detected"
             echo ""
             echo "No service go.mod files were modified in this push."
             echo "Deployment pipeline was skipped."

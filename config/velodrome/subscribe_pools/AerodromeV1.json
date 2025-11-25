@@ -1,6 +1,30 @@
 {
     "Pools": [
         {
+            "Address": "0x5C0D76fab1822bDeb47308eD6028231761ED723E",
+            "ForeignName": "kVCM-USDC"
+        },
+        {
+            "Address": "0x5e710Fe3C079182a6a2be9cA3c200317d6C34A5D",
+            "ForeignName": "kVCM-WETH"
+        },
+        {
+            "Address": "0x4F9Dc2229f2357B27C22db56cB39582c854Ad6d5",
+            "ForeignName": "WETH-fBOMB"
+        },
+        {
+            "Address": "0xBd1F3d188de7eE07B1b323C0D26D6720CAfB8780",
+            "ForeignName": "fBOMB-wstETH"
+        },
+        {
+            "Address": "0xFf8e0bD2d8F02904e7e18Dd00ea50aeC68f37A10",
+            "ForeignName": "fBOMB-USDC"
+        },
+        {
+            "Address": "0xbBf71AAD6E1F8D180D3B1D898528654c1d18b2fF",
+            "ForeignName": "fBOMB-AERO"
+        },
+        {
             "Address": "0x1DDa8b6469df243971381f1f3F4137814ca68722",
             "ForeignName": "WMTX-WETH"
         },
