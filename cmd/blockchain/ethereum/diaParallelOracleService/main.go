@@ -502,13 +502,24 @@ func retrieveAssetPrice(asset Asset, useGql bool, gqlWindowSize int, gqlMethodol
 		var rawPriceAggregator float64
 		for i, dataNode := range dataNodes {
 			usdpDataAddress := usdpDataAddresses[i]
-			usdpIssued := getChainSpecificUsdpIssued(dataNode, usdpDataAddress)
-			usdpPrice := getChainSpecificUsdpPrice(dataNode, usdpDataAddress)
+			usdpIssued, err := getChainSpecificUsdpIssued(dataNode, usdpDataAddress)
+			if err != nil {
+				log.Printf("Error getting chain-specific USDP issuance for address %s: %v",usdpDataAddress, err)
+				continue
+			}
+			usdpPrice, err := getChainSpecificUsdpPrice(dataNode, usdpDataAddress)
+			if err != nil {
+				log.Printf("Error getting chain-specific USDP price for address %s: %v",usdpDataAddress, err)
+				continue
+			}
 			log.Printf("USDp query for address %s returns price %f and tokens minted %f.", usdpDataAddress, usdpPrice, usdpIssued)
 
 			issuanceAccumulator += usdpIssued
 			rawPriceAggregator += usdpIssued * usdpPrice
 	  }
+	  if issuanceAccumulator == 0 {
+	  	return 0.0, errors.New("No valid USDp data found") 
+		}
 		return float64(rawPriceAggregator / issuanceAccumulator), nil
 	}
 	// Get quotation for token and update Oracle
@@ -923,43 +934,50 @@ func getCmcPrice(assetName, cmcApiKey string) (float64, error) {
 	return price, nil
 }
 
-func getChainSpecificUsdpPrice(dataNode string, diaOracleAddress string) (float64) {
+func getChainSpecificUsdpPrice(dataNode string, diaOracleAddress string) (float64, error) {
 	dataConn, err := ethclient.Dial(dataNode)
 	if err != nil {
-		log.Fatalf("Failed to connect to the data client: %v", err)
+		log.Printf("Failed to connect to the data client: %v", err)
+		return 0.0, err
 	}
 	diaOracleConn, err := NewMain(common.HexToAddress(diaOracleAddress), dataConn)
 	if err != nil {
-		log.Fatalf("Failed to instantiate DIAParallelOracle instance: %v", err)
+		log.Printf("Failed to instantiate DIAParallelOracle instance: %v", err)
+		return 0.0, err
 	}
 	chainSpecificUsdpPrice, err := diaOracleConn.GetChainSpecificUsdpPrice(&bind.CallOpts{})
 	if err != nil {
-		log.Fatalf("Failed to call getChainSpecificUsdpPrice in smart contract: %v", err)
+		log.Printf("Failed to call getChainSpecificUsdpPrice in smart contract: %v", err)
+		return 0.0, err
 	}
 	outputDecimalsBI, err := diaOracleConn.OutputDecimals(&bind.CallOpts{})
 	if err != nil {
-		log.Fatalf("Failed to call outputDecimals in smart contract: %v", err)
+		log.Printf("Failed to call outputDecimals in smart contract: %v", err)
+		return 0.0, err
 	}
 
 	outputDecimals := outputDecimalsBI.Int64()
 	price, _ := chainSpecificUsdpPrice.Float64()
 
-	return price / math.Pow(10, float64(outputDecimals))
+	return price / math.Pow(10, float64(outputDecimals)), nil
 }
 
-func getChainSpecificUsdpIssued(dataNode string, diaOracleAddress string) (float64) {
+func getChainSpecificUsdpIssued(dataNode string, diaOracleAddress string) (float64, error) {
 	dataConn, err := ethclient.Dial(dataNode)
 	if err != nil {
-		log.Fatalf("Failed to connect to the data client: %v", err)
+		log.Printf("Failed to connect to the data client: %v", err)
+		return 0.0, err
 	}
 	diaOracleConn, err := NewMain(common.HexToAddress(diaOracleAddress), dataConn)
 	if err != nil {
-		log.Fatalf("Failed to instantiate DIAParallelOracle instance: %v", err)
+		log.Printf("Failed to instantiate DIAParallelOracle instance: %v", err)
+		return 0.0, err
 	}
 	chainSpecificUsdpIssued, err := diaOracleConn.GetChainSpecificUsdpIssued(&bind.CallOpts{})
 	if err != nil {
-		log.Fatalf("Failed to call getChainSpecificUsdpIssued in smart contract: %v", err)
+		log.Printf("Failed to call getChainSpecificUsdpIssued in smart contract: %v", err)
+		return 0.0, err
 	}
 	retval, _ := chainSpecificUsdpIssued.Float64()
-	return retval / math.Pow(10, 18)
+	return retval / math.Pow(10, 18), nil
 }
