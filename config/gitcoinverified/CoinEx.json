@@ -242,6 +242,12 @@
         },
         {
             "Exchange": "CoinEx",
+            "Symbol": "JOECOIN",
+            "Blockchain": "Ethereum",
+            "Address": "0x76e222b07C53D28b89b0bAc18602810Fc22B49A8"
+        },
+        {
+            "Exchange": "CoinEx",
             "Symbol": "JONES",
             "Blockchain": "Arbitrum",
             "Address": "0x10393c20975cF177a3513071bC110f7962CD67da"

@@ -320,6 +320,18 @@
         },
         {
             "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "FXSUSD",
+            "Symbol": "FXS"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "FXSEUR",
+            "Symbol": "FXS"
+        },
+        {
+            "Exchange": "Kraken",
             "ForeignName": "GBPUSD",
             "Ignore": false,
             "Symbol": "GBP"
@@ -447,6 +459,18 @@
         {
             "Exchange": "Kraken",
             "Ignore": false,
+            "ForeignName": "NEIROUSD",
+            "Symbol": "NEIRO"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "NEIROEUR",
+            "Symbol": "NEIRO"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
             "ForeignName": "ONDOUSD",
             "Symbol": "ONDO"
         },
@@ -485,6 +509,18 @@
             "ForeignName": "QTUMUSD",
             "Ignore": false,
             "Symbol": "QTUM"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "RAREUSD",
+            "Symbol": "RARE"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "RAREEUR",
+            "Symbol": "RARE"
         },
         {
             "Exchange": "Kraken",

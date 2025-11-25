@@ -106,6 +106,8 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 		return source.NewBalancerV2AssetSource(exchanges[dia.BalancerV2ExchangePolygon])
 	case dia.BalancerV3Exchange:
 		return source.NewBalancerV3AssetSource(exchanges[dia.BalancerV3Exchange])
+	case dia.BalancerV3ExchangeAvalanche:
+		return source.NewBalancerV3AssetSource(exchanges[dia.BalancerV3ExchangeAvalanche])
 	case dia.BalancerV3ExchangeBase:
 		return source.NewBalancerV3AssetSource(exchanges[dia.BalancerV3ExchangeBase])
 	case dia.HuckleberryExchange:
@@ -156,6 +158,8 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 		return source.NewCurvefiAssetSource(exchanges[dia.CurveFIExchangePolygon])
 	case dia.CurveFIExchangeArbitrum:
 		return source.NewCurvefiAssetSource(exchanges[dia.CurveFIExchangeArbitrum])
+	case dia.CurveFIExchangeSonic:
+		return source.NewCurvefiAssetSource(exchanges[dia.CurveFIExchangeSonic])
 	case dia.PlatypusExchange:
 		return source.NewPlatypusScraper(exchanges[dia.PlatypusExchange])
 	case dia.OrcaExchange:
@@ -206,6 +210,8 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 		return source.NewHydrationAssetSource(exchanges[dia.HydrationExchange], relDB)
 	case dia.BifrostExchange:
 		return source.NewBifrostAssetSource(exchanges[dia.BifrostExchange], relDB)
+	case dia.OndoFinanceExchange:
+		return source.NewOndoFinanceAssetSource(exchanges[dia.OndoFinanceExchange], relDB)
 	default:
 		return nil
 	}

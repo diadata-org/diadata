@@ -296,6 +296,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Symbol": "COINON",
+            "Blockchain": "Ethereum",
+            "Address": "0xF042cfa86cf1D598a75Bdb55c3507a1F39f9493b"
+        },
+        {
+            "Exchange": "GateIO",
             "Symbol": "COOKIE",
             "Blockchain": "BinanceSmartChain",
             "Address": "0xC0041EF357B183448B235a8Ea73Ce4E4eC8c265F"
@@ -487,6 +493,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "FRAX",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0"
+        },
+        {
             "Symbol": "FTM",
             "Exchange": "GateIO",
             "Blockchain": "Fantom",
@@ -575,6 +587,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x6EC8a24CaBdc339A06a172F8223ea557055aDAa5"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "GOOGLON",
+            "Blockchain": "Ethereum",
+            "Address": "0xbA47214eDd2bb43099611b208f75E4b42FDcfEDc"
         },
         {
             "Symbol": "GRAIL",
@@ -799,6 +817,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "MAIGA",
+            "Exchange": "GateIO",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xcd1679f117E81DEfc4f0009311DDc23fC1AE4a5E"
+        },
+        {
             "Symbol": "MANA",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -941,6 +965,12 @@
             "Symbol": "NEAR",
             "Blockchain": "NEAR",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "NEIROCTO",
+            "Blockchain": "Ethereum",
+            "Address": "0x812Ba41e071C7b7fA4EBcFB62dF5F45f6fA853Ee"
         },
         {
             "Exchange": "GateIO",
@@ -1103,6 +1133,18 @@
             "Exchange": "GateIO",
             "Blockchain": "NEO",
             "Address": "0d821bd7b6d53f5c2b40e217c6defc8bbe896cf5"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "QQQON",
+            "Blockchain": "Ethereum",
+            "Address": "0x0e397938C1Aa0680954093495B70A9F5e2249aBa"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "RARE",
+            "Blockchain": "Ethereum",
+            "Address": "0xba5BDe662c17e2aDFF1075610382B9B691296350"
         },
         {
             "Symbol": "RARI",
@@ -1316,6 +1358,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Symbol": "SPYON",
+            "Blockchain": "Ethereum",
+            "Address": "0xFeDC5f4a6c38211c1338aa411018DFAf26612c08"
+        },
+        {
+            "Exchange": "GateIO",
             "Symbol": "SSV",
             "Blockchain": "Ethereum",
             "Address": "0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54"
@@ -1439,6 +1487,12 @@
             "Symbol": "TRX",
             "Blockchain": "Tron",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "TSLAON",
+            "Blockchain": "Ethereum",
+            "Address": "0xf6b1117ec07684D3958caD8BEb1b302bfD21103f"
         },
         {
             "Exchange": "GateIO",

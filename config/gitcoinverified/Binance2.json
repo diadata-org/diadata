@@ -362,6 +362,12 @@
         },
         {
             "Exchange": "Binance2",
+            "Symbol": "NEIRO",
+            "Blockchain": "Ethereum",
+            "Address": "0x812Ba41e071C7b7fA4EBcFB62dF5F45f6fA853Ee"
+        },
+        {
+            "Exchange": "Binance2",
             "Symbol": "OMG",
             "Blockchain": "Ethereum",
             "Address": "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07"
@@ -413,6 +419,12 @@
             "Symbol": "PRIME",
             "Blockchain": "Ethereum",
             "Address": "0xb23d80f5FefcDDaa212212F028021B41DEd428CF"
+        },
+        {
+            "Exchange": "Binance2",
+            "Symbol": "RARE",
+            "Blockchain": "Ethereum",
+            "Address": "0xba5BDe662c17e2aDFF1075610382B9B691296350"
         },
         {
             "Symbol": "RDNT",
@@ -661,7 +673,7 @@
             "Address": "0x6985884C4392D348587B19cb9eAAf157F13271cd"
         },
         {
-            "Exchange": "Binance",
+            "Exchange": "Binance2",
             "Symbol": "ZRO",
             "Blockchain": "Ethereum",
             "Address": "0x6985884C4392D348587B19cb9eAAf157F13271cd"

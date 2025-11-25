@@ -13,12 +13,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "AINU",
-            "ForeignName": "AINUUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
             "Exchange": "MEXC",
             "Ignore": false,
             "ForeignName": "AIXBTUSDT",
@@ -33,26 +27,8 @@
         {
             "Exchange": "MEXC",
             "Ignore": false,
-            "ForeignName": "ALEXUSDT",
-            "Symbol": "ALEX"
-        },
-        {
-            "Symbol": "ALPH",
-            "ForeignName": "ALPHUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
-            "Exchange": "MEXC",
-            "Ignore": false,
             "ForeignName": "AMPEDUSDT",
             "Symbol": "AMPED"
-        },
-        {
-            "Symbol": "ANY",
-            "ForeignName": "ANYUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
         },
         {
             "Symbol": "APE",
@@ -91,12 +67,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "ATID",
-            "ForeignName": "ATIDUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
             "Symbol": "ATOM",
             "ForeignName": "ATOMUSDT",
             "Exchange": "MEXC",
@@ -111,12 +81,6 @@
         {
             "Symbol": "AXS",
             "ForeignName": "AXSUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
-            "Symbol": "AYIN",
-            "ForeignName": "AYINUSDT",
             "Exchange": "MEXC",
             "Ignore": false
         },
@@ -161,12 +125,6 @@
             "Ignore": false,
             "ForeignName": "BEAMXUSDT",
             "Symbol": "BEAMX"
-        },
-        {
-            "Symbol": "BFR",
-            "ForeignName": "BFRUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
         },
         {
             "Symbol": "BLEND",
@@ -217,12 +175,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "BUSD",
-            "ForeignName": "BUSDUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
             "Symbol": "CELO",
             "ForeignName": "CELOUSDT",
             "Exchange": "MEXC",
@@ -239,12 +191,6 @@
             "Ignore": false,
             "ForeignName": "CLANKERUSDT",
             "Symbol": "CLANKER"
-        },
-        {
-            "Exchange": "MEXC",
-            "Ignore": false,
-            "ForeignName": "COINONUSDT",
-            "Symbol": "COINON"
         },
         {
             "Exchange": "MEXC",
@@ -289,22 +235,10 @@
             "Ignore": false
         },
         {
-            "Symbol": "DIKO",
-            "ForeignName": "DIKOUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
             "Symbol": "DOGE",
             "ForeignName": "DOGEUSDT",
             "Exchange": "MEXC",
             "Ignore": false
-        },
-        {
-            "Exchange": "MEXC",
-            "Ignore": false,
-            "ForeignName": "DOGINMEUSDT",
-            "Symbol": "DOGINME"
         },
         {
             "Symbol": "DOT",
@@ -313,20 +247,8 @@
             "Ignore": false
         },
         {
-            "Symbol": "DPX",
-            "ForeignName": "DPXUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
             "Symbol": "DUST",
             "ForeignName": "DUSTUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
-            "Symbol": "EDU",
-            "ForeignName": "EDUUSDT",
             "Exchange": "MEXC",
             "Ignore": false
         },
@@ -339,12 +261,6 @@
         {
             "Symbol": "ENA",
             "ForeignName": "ENAUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
-            "Symbol": "EOS",
-            "ForeignName": "EOSUSDT",
             "Exchange": "MEXC",
             "Ignore": false
         },
@@ -391,22 +307,10 @@
             "Symbol": "FAI"
         },
         {
-            "Symbol": "FEI",
-            "ForeignName": "FEIUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
             "Symbol": "FIL",
             "ForeignName": "FILUSDT",
             "Exchange": "MEXC",
             "Ignore": false
-        },
-        {
-            "Exchange": "MEXC",
-            "Ignore": false,
-            "ForeignName": "FLOKIUSDT",
-            "Symbol": "FLOKI"
         },
         {
             "Symbol": "FLOW",
@@ -423,12 +327,6 @@
         {
             "Symbol": "FUSE",
             "ForeignName": "FUSEUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
-            "Symbol": "FXS",
-            "ForeignName": "FXSUSDT",
             "Exchange": "MEXC",
             "Ignore": false
         },
@@ -451,12 +349,6 @@
             "Symbol": "GIZA"
         },
         {
-            "Symbol": "GLMR",
-            "ForeignName": "GLMRUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
             "Symbol": "GMX",
             "ForeignName": "GMXUSDT",
             "Exchange": "MEXC",
@@ -465,18 +357,6 @@
         {
             "Symbol": "GNS",
             "ForeignName": "GNSUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
-            "Exchange": "MEXC",
-            "Ignore": false,
-            "ForeignName": "GOOGLONUSDT",
-            "Symbol": "GOOGLON"
-        },
-        {
-            "Symbol": "GRAIL",
-            "ForeignName": "GRAILUSDT",
             "Exchange": "MEXC",
             "Ignore": false
         },
@@ -503,18 +383,6 @@
             "ForeignName": "HOPUSDT",
             "Exchange": "MEXC",
             "Ignore": false
-        },
-        {
-            "Symbol": "HOP",
-            "ForeignName": "HOPUSDC",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
-            "Exchange": "MEXC",
-            "Ignore": false,
-            "ForeignName": "HPOS10IUSDT",
-            "Symbol": "HPOS10I"
         },
         {
             "Exchange": "MEXC",
@@ -547,12 +415,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "JONES",
-            "ForeignName": "JONESUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
             "Exchange": "MEXC",
             "Ignore": false,
             "ForeignName": "KAITOUSDT",
@@ -577,12 +439,6 @@
             "Symbol": "KEYCAT"
         },
         {
-            "Symbol": "KLIMA",
-            "ForeignName": "KLIMAUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
             "Symbol": "KNC",
             "ForeignName": "KNCUSDT",
             "Exchange": "MEXC",
@@ -590,19 +446,7 @@
         },
         {
             "Symbol": "KSM",
-            "ForeignName": "KSMBTC",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
-            "Symbol": "KSM",
             "ForeignName": "KSMUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
-            "Symbol": "KWENTA",
-            "ForeignName": "KWENTAUSDT",
             "Exchange": "MEXC",
             "Ignore": false
         },
@@ -673,12 +517,6 @@
             "Ignore": false
         },
         {
-            "Symbol": "MAVIA",
-            "ForeignName": "MAVIAUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
             "Symbol": "MCB",
             "ForeignName": "MCBUSDT",
             "Exchange": "MEXC",
@@ -721,12 +559,6 @@
             "Symbol": "MORPHO"
         },
         {
-            "Symbol": "MOVR",
-            "ForeignName": "MOVRUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
             "Exchange": "MEXC",
             "Ignore": false,
             "ForeignName": "NAKAUSDT",
@@ -739,40 +571,10 @@
             "Ignore": false
         },
         {
-            "Exchange": "MEXC",
-            "Ignore": false,
-            "ForeignName": "NEIROCTOUSDT",
-            "Symbol": "NEIROCTO"
-        },
-        {
-            "Exchange": "MEXC",
-            "Ignore": false,
-            "ForeignName": "NEIROETHUSDT",
-            "Symbol": "NEIROETH"
-        },
-        {
-            "Symbol": "NETT",
-            "ForeignName": "NETTUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
             "Symbol": "NFTY",
             "ForeignName": "NFTYUSDT",
             "Exchange": "MEXC",
             "Ignore": false
-        },
-        {
-            "Exchange": "MEXC",
-            "Ignore": false,
-            "ForeignName": "NPCUSDT",
-            "Symbol": "NPC"
-        },
-        {
-            "Exchange": "MEXC",
-            "Ignore": false,
-            "ForeignName": "NPCUSDC",
-            "Symbol": "NPC"
         },
         {
             "Exchange": "MEXC",
@@ -811,18 +613,6 @@
             "Ignore": false
         },
         {
-            "Exchange": "MEXC",
-            "Ignore": false,
-            "ForeignName": "PELLUSDT",
-            "Symbol": "PELL"
-        },
-        {
-            "Exchange": "MEXC",
-            "Ignore": false,
-            "ForeignName": "PELLUSDC",
-            "Symbol": "PELL"
-        },
-        {
             "Symbol": "PENDULUM",
             "ForeignName": "PENDULUMUSDT",
             "Exchange": "MEXC",
@@ -843,12 +633,6 @@
         {
             "Symbol": "PHX",
             "ForeignName": "PHXUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
-            "Symbol": "PIN",
-            "ForeignName": "PINUSDT",
             "Exchange": "MEXC",
             "Ignore": false
         },
@@ -875,12 +659,6 @@
             "ForeignName": "PSPUSDT",
             "Exchange": "MEXC",
             "Ignore": false
-        },
-        {
-            "Exchange": "MEXC",
-            "Ignore": false,
-            "ForeignName": "QQQONUSDT",
-            "Symbol": "QQQON"
         },
         {
             "Exchange": "MEXC",
@@ -939,12 +717,6 @@
         {
             "Symbol": "SATS",
             "ForeignName": "SATSUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
-            "Symbol": "SDN",
-            "ForeignName": "SDNUSDT",
             "Exchange": "MEXC",
             "Ignore": false
         },
@@ -1019,12 +791,6 @@
             "Ignore": false,
             "ForeignName": "SPXUSDT",
             "Symbol": "SPX"
-        },
-        {
-            "Exchange": "MEXC",
-            "Ignore": false,
-            "ForeignName": "SPYONUSDT",
-            "Symbol": "SPYON"
         },
         {
             "Exchange": "MEXC",
@@ -1107,12 +873,6 @@
         {
             "Exchange": "MEXC",
             "Ignore": false,
-            "ForeignName": "TSLAONUSDT",
-            "Symbol": "TSLAON"
-        },
-        {
-            "Exchange": "MEXC",
-            "Ignore": false,
             "ForeignName": "TURBOUSDT",
             "Symbol": "TURBO"
         },
@@ -1149,18 +909,6 @@
         {
             "Symbol": "USDJ",
             "ForeignName": "USDJUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
-            "Symbol": "USDP",
-            "ForeignName": "USDPUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
-            "Symbol": "USDUC",
-            "ForeignName": "USDUCUSDT",
             "Exchange": "MEXC",
             "Ignore": false
         },
@@ -1215,12 +963,6 @@
         {
             "Symbol": "WCO",
             "ForeignName": "WCOUSDT",
-            "Exchange": "MEXC",
-            "Ignore": false
-        },
-        {
-            "Symbol": "WELSH",
-            "ForeignName": "WELSHUSDT",
             "Exchange": "MEXC",
             "Ignore": false
         },

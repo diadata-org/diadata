@@ -1,0 +1,92 @@
+{
+    "Pools": [
+        {
+            "Address": "0x704aD8d95C12D7FEA531738faA94402725acB035",
+            "ForeignName": "JOE-WETH"
+        },
+        {
+            "Address": "0x0da7096f14303eddd634c0241963c064e0244984",
+            "ForeignName": "XMW-WETH"
+        },
+        {
+            "Address": "0xCFfDdeD873554F362Ac02f8Fb1f02E5ada10516f",
+            "ForeignName": "COMP-WETH"
+        },
+        {
+            "Address": "0xAEF16913b6C50EBCf627a394921F306985FC8604",
+            "ForeignName": "STORJ-WETH"
+        },
+        {
+            "Address": "0xca7c2771D248dCBe09EABE0CE57A62e18dA178c0",
+            "ForeignName": "WETH-FLOKI"
+        },
+        {
+            "Address": "0xA43fe16908251ee70EF74718545e4FE6C5cCEc9f",
+            "ForeignName": "PEPE-WETH"
+        },
+        {
+            "Address": "0x811beEd0119b4AfCE20D2583EB608C6F7AF1954f",
+            "ForeignName": "SHIB-WETH"
+        },
+        {
+            "Address": "0xC555D55279023E732CcD32D812114cAF5838fD46",
+            "ForeignName": "Neiro-WETH"
+        },
+        {
+            "Address": "0xd3d2E2692501A5c9Ca623199D38826e513033a17",
+            "ForeignName": "UNI-WETH"
+        },
+        {
+            "Address": "0x43DE4318b6EB91a7cF37975dBB574396A7b5B5c6",
+            "ForeignName": "BANANA-WETH"
+        },
+        {
+            "Address": "0x52c77b0CB827aFbAD022E6d6CAF2C44452eDbc39",
+            "ForeignName": "WETH-SPX"
+        },
+        {
+            "Address": "0xa2107FA5B38d9bbd2C461D6EDf11B11A50F6b974",
+            "ForeignName": "LINK-WETH"
+        },
+        {
+            "Address": "0x180EFC1349A69390aDE25667487a826164C9c6E4",
+            "ForeignName": "BEAM-WETH"
+        },
+        {
+            "Address": "0x67324985B5014B36B960273353DEb3D96F2F18C2",
+            "ForeignName": "WOLF-WETH"
+        },
+        {
+            "Address": "0xc2eaB7d33d3cB97692eCB231A5D0e4A649Cb539d",
+            "ForeignName": "Mog-WETH"
+        },
+        {
+            "Address": "0x8d547a3E42828093E31a8c3F2a864036984B64Ee",
+            "ForeignName": "Pin-WETH"
+        },
+        {
+            "Address": "0x9C4Fe5FFD9A9fC5678cFBd93Aa2D4FD684b67C4C",
+            "ForeignName": "PAXG-WETH"
+        },
+        {
+            "Address": "0xcaA004418eB42cdf00cB057b7C9E28f0FfD840a5",
+            "ForeignName": "WILD-WETH"
+        },
+        {
+            "Address": "0x4028DAAC072e492d34a3Afdbef0ba7e35D8b55C4",
+            "ForeignName": "stETH-WETH"
+        },
+        {
+            "Address": "0xa1bF0e900FB272089c9fd299EA14BFccb1D1C2c0",
+            "ForeignName": "ANDY-WETH"
+        },
+        {
+            "Address": "0x5CEd44F03ff443BBE14d8eA23bc24425FB89E3ED",
+            "ForeignName": "APU-WETH"
+        },
+        {
+            "Address": "0xe945683B3462D2603a18BDfBB19261C6a4f03aD1",
+            "ForeignName": "BOBO-WETH"
+        }
+    ]
+}

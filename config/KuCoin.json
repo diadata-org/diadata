@@ -1225,6 +1225,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "MAIGA",
+            "ForeignName": "MAIGA-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "MANA",
             "ForeignName": "MANA-BTC",
             "Exchange": "KuCoin",

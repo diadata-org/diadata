@@ -1,6 +1,10 @@
 {
     "Tokens": [
         {
+            "Address": "0xD3d9f0f7D0d477e0A19222965B59233Ad7f6Bc6b",
+            "ForeignName": "USDC-frxUSD"
+        },
+        {
             "Address": "0x95Ff4985af7ED78421215be100c18a2b987f7E90",
             "ForeignName": "cbXRP-cbBTC"
         },
