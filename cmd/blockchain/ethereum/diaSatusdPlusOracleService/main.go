@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"math"
 	"math/big"
@@ -15,9 +15,9 @@ import (
 	"sync"
 	"time"
 
+	vault "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/Erc4646Vault"
 	diaOracleV2MultiupdateService "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleV2MultiupdateService"
 	models "github.com/diadata-org/diadata/pkg/model"
-	vault "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/Erc4646Vault"
 	"github.com/diadata-org/diadata/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -79,7 +79,7 @@ func main() {
 	}
 	mutexSeconds, err := strconv.Atoi(utils.Getenv("MUTEX_SECONDS", "10"))
 	if err != nil {
-		log.Fatalf("Failed to parse mutexSeconds: %v")
+		log.Fatalf("Failed to parse mutexSeconds: %v", err)
 	}
 	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "1"), 10, 64)
 	if err != nil {
@@ -259,12 +259,12 @@ func main() {
 					}
 					log.Println(newAssetPrices)
 					// update all prices
-					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, coingeckoApiKey, cmcApiKey, auth, contract, conn, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, oracleDecimals, mutexSeconds, oracleUpdateMutex)
+					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, coingeckoApiKey, cmcApiKey, auth, contract, conn, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, oracleDecimals, mutexSeconds, &oracleUpdateMutex)
 					if err != nil {
 						log.Printf("Failed to execute oracle update using primary connection: %v. Retrying with backup connection...", err)
 
 						// Attempt using the backup connection
-						publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, coingeckoApiKey, cmcApiKey, auth, contractBackup, connBackup, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, oracleDecimals, mutexSeconds, oracleUpdateMutex)
+						publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, coingeckoApiKey, cmcApiKey, auth, contractBackup, connBackup, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, oracleDecimals, mutexSeconds, &oracleUpdateMutex)
 						if err != nil {
 							log.Fatalf("Failed to execute oracle update using backup connection: %v", err)
 						}
@@ -289,40 +289,38 @@ func main() {
 					}
 					// update all prices, regardless of deviation
 					emptyMap := make(map[string]float64)
-					publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, coingeckoApiKey, cmcApiKey, auth, contract, conn, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, oracleDecimals, mutexSeconds, oracleUpdateMutex)
+					publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, coingeckoApiKey, cmcApiKey, auth, contract, conn, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, oracleDecimals, mutexSeconds, &oracleUpdateMutex)
 					if err != nil {
 						log.Printf("Failed to execute oracle update using primary connection: %v. Retrying with backup connection...", err)
 
 						// Attempt using the backup connection
-						publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, coingeckoApiKey, cmcApiKey, auth, contractBackup, connBackup, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, oracleDecimals, mutexSeconds, oracleUpdateMutex)
+						publishedPrices, err = oracleUpdateExecutor(emptyMap, newAssetPrices, coingeckoApiKey, cmcApiKey, auth, contractBackup, connBackup, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, oracleDecimals, mutexSeconds, &oracleUpdateMutex)
 						if err != nil {
 							log.Fatalf("Failed to execute oracle update using backup connection: %v", err)
 						}
 					}
 				}
 			} else {
-				select {
-				case <-ticker.C:
-					// Get prices for all assets from the API
-					newAssetPrices := make(map[string]float64)
-					for _, asset := range assets {
-						newAssetPrice, err := retrieveAssetPrice(asset, useGql, gqlWindowSize, gqlMethodology, asset.gqlParams, dataNode, oracleDecimals)
-						if err != nil {
-							log.Println(err)
-							continue
-						}
-						newAssetPrices[asset.symbol] = newAssetPrice
-					}
-					// update all prices
-					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, coingeckoApiKey, cmcApiKey, auth, contract, conn, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, oracleDecimals, mutexSeconds, oracleUpdateMutex)
+				<-ticker.C
+				// Get prices for all assets from the API
+				newAssetPrices := make(map[string]float64)
+				for _, asset := range assets {
+					newAssetPrice, err := retrieveAssetPrice(asset, useGql, gqlWindowSize, gqlMethodology, asset.gqlParams, dataNode, oracleDecimals)
 					if err != nil {
-						log.Printf("Failed to execute oracle update using primary connection: %v. Retrying with backup connection...", err)
+						log.Println(err)
+						continue
+					}
+					newAssetPrices[asset.symbol] = newAssetPrice
+				}
+				// update all prices
+				publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, coingeckoApiKey, cmcApiKey, auth, contract, conn, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, oracleDecimals, mutexSeconds, &oracleUpdateMutex)
+				if err != nil {
+					log.Printf("Failed to execute oracle update using primary connection: %v. Retrying with backup connection...", err)
 
-						// Attempt using the backup connection
-						publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, coingeckoApiKey, cmcApiKey, auth, contractBackup, connBackup, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, oracleDecimals, mutexSeconds, oracleUpdateMutex)
-						if err != nil {
-							log.Fatalf("Failed to execute oracle update using backup connection: %v", err)
-						}
+					// Attempt using the backup connection
+					publishedPrices, err = oracleUpdateExecutor(publishedPrices, newAssetPrices, coingeckoApiKey, cmcApiKey, auth, contractBackup, connBackup, gasMultiplier, chainId, compatibilityMode, assets, conditionalPairs, oracleDecimals, mutexSeconds, &oracleUpdateMutex)
+					if err != nil {
+						log.Fatalf("Failed to execute oracle update using backup connection: %v", err)
 					}
 				}
 			}
@@ -347,7 +345,7 @@ func oracleUpdateExecutor(
 	conditionalAssets []ConditionalPair,
 	oracleDecimals int,
 	mutexSeconds int,
-	oracleUpdateMutex sync.Mutex) (map[string]float64, error) {
+	oracleUpdateMutex *sync.Mutex) (map[string]float64, error) {
 	// Check for deviation and collect all new prices in a map
 	// If a published price is 0, update in any case
 	updateCollector := make(map[string]float64)
@@ -576,10 +574,10 @@ func updateOracleCompatibilityMode(
 		}
 
 		defer response.Body.Close()
-		if 200 != response.StatusCode {
+		if response.StatusCode != 200 {
 			return err
 		}
-		contents, err := ioutil.ReadAll(response.Body)
+		contents, err := io.ReadAll(response.Body)
 		if err != nil {
 			return err
 		}
@@ -644,10 +642,10 @@ func updateOracleMultiValues(
 		}
 
 		defer response.Body.Close()
-		if 200 != response.StatusCode {
+		if response.StatusCode != 200 {
 			return err
 		}
-		contents, err := ioutil.ReadAll(response.Body)
+		contents, err := io.ReadAll(response.Body)
 		if err != nil {
 			return err
 		}
@@ -709,10 +707,10 @@ func getAssetQuotationFromDia(blockchain, address string) (float64, error) {
 	}
 
 	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return 0.0, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	if response.StatusCode != 200 {
+		return 0.0, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
 	}
-	contents, err := ioutil.ReadAll(response.Body)
+	contents, err := io.ReadAll(response.Body)
 	if err != nil {
 		return 0.0, err
 	}
@@ -830,10 +828,10 @@ func getRwaEquityPriceFromDia(address string) (float64, error) {
 	}
 
 	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return 0.0, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	if response.StatusCode != 200 {
+		return 0.0, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
 	}
-	contents, err := ioutil.ReadAll(response.Body)
+	contents, err := io.ReadAll(response.Body)
 	if err != nil {
 		return 0.0, err
 	}
@@ -853,10 +851,10 @@ func getRwaCommodityPriceFromDia(address string) (float64, error) {
 	}
 
 	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return 0.0, fmt.Errorf("Error on dia api with return code %d", response.StatusCode)
+	if response.StatusCode != 200 {
+		return 0.0, fmt.Errorf("error on dia api with return code %d", response.StatusCode)
 	}
-	contents, err := ioutil.ReadAll(response.Body)
+	contents, err := io.ReadAll(response.Body)
 	if err != nil {
 		return 0.0, err
 	}
@@ -876,11 +874,11 @@ func getCoingeckoPrice(assetName, coingeckoApiKey string) (float64, error) {
 	}
 
 	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return 0.0, fmt.Errorf("Error on coingecko API call with return code %d", response.StatusCode)
+	if response.StatusCode != 200 {
+		return 0.0, fmt.Errorf("error on coingecko API call with return code %d", response.StatusCode)
 	}
 
-	contents, err := ioutil.ReadAll(response.Body)
+	contents, err := io.ReadAll(response.Body)
 	if err != nil {
 		return 0.0, err
 	}
@@ -896,11 +894,11 @@ func getCmcPrice(assetName, cmcApiKey string) (float64, error) {
 	}
 
 	defer response.Body.Close()
-	if 200 != response.StatusCode {
-		return 0.0, fmt.Errorf("Error on CMC API call with return code %d", response.StatusCode)
+	if response.StatusCode != 200 {
+		return 0.0, fmt.Errorf("error on CMC API call with return code %d", response.StatusCode)
 	}
 
-	contents, err := ioutil.ReadAll(response.Body)
+	contents, err := io.ReadAll(response.Body)
 	if err != nil {
 		return 0.0, err
 	}
@@ -908,7 +906,7 @@ func getCmcPrice(assetName, cmcApiKey string) (float64, error) {
 	return price, nil
 }
 
-func getConvertToSharesFrom4646Vault(dataNode string, vaultAddress string, decimals int) (int64) {
+func getConvertToSharesFrom4646Vault(dataNode string, vaultAddress string, decimals int) int64 {
 	dataConn, err := ethclient.Dial(dataNode)
 	if err != nil {
 		log.Fatalf("Failed to connect to the data client: %v", err)
