@@ -3,7 +3,7 @@ module github.com/diadata-org/diadata/blockchain/diaParallelOracleService
 go 1.22
 
 require (
-	github.com/diadata-org/diadata v1.4.650
+	github.com/diadata-org/diadata v1.4.675
 	github.com/ethereum/go-ethereum v1.10.26
 	github.com/machinebox/graphql v0.2.2
 	github.com/tidwall/gjson v1.17.0
