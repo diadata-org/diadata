@@ -638,6 +638,18 @@
         },
         {
             "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "TGBPGBP",
+            "Symbol": "TGBP"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "TGBPUSD",
+            "Symbol": "TGBP"
+        },
+        {
+            "Exchange": "Kraken",
             "ForeignName": "TIAUSD",
             "Ignore": false,
             "Symbol": "TIA"
