@@ -535,6 +535,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "TGBP",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0x27f6c8289550fCE67f6B50BeD1F519966aFE5287"
+        },
+        {
             "Symbol": "TIA",
             "Exchange": "Kraken",
             "Blockchain": "Osmosis",

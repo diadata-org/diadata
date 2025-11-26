@@ -506,12 +506,6 @@
         },
         {
             "Exchange": "Huobi",
-            "ForeignName": "STRKUSDT",
-            "Ignore": false,
-            "Symbol": "STRK"
-        },
-        {
-            "Exchange": "Huobi",
             "ForeignName": "SUIUSDT",
             "Ignore": false,
             "Symbol": "SUI"
