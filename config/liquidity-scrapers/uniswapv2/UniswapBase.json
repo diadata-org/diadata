@@ -1,7 +1,11 @@
 {
     "Pools": [
         {
-            "Address": "0x7ad1db1b8a8ce3040bc1807d7af6a8bc88584600",
+            "Address": "0x39a72B1292AAED73B9B5633e14f88fE9a89F400b",
+            "ForeignName": "BTCB-WETH"
+        },
+        {
+            "Address": "0x7aD1dB1b8A8ce3040BC1807d7Af6A8BC88584600",
             "ForeignName": "WETH-OPENX"
         },
         {
