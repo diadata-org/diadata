@@ -1,6 +1,10 @@
 {
     "Pools": [
         {
+            "Address": "0x8665A78ccC84D6Df2ACaA4b207d88c6Bc9b70Ec5",
+            "ForeignName": "wkeyDAO-USDT"
+        },
+        {
             "Address": "0xf8209291B074dc74d39C906386f0037718A15072",
             "ForeignName": "MCRT-WBNB"
         },
