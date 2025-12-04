@@ -489,6 +489,12 @@
         {
             "Exchange": "BitMart",
             "Ignore": false,
+            "ForeignName": "MON_USDT",
+            "Symbol": "MON"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
             "ForeignName": "MORPHO_USDT",
             "Symbol": "MORPHO"
         },

@@ -296,6 +296,12 @@
         },
         {
             "Exchange": "Bitget",
+            "Symbol": "MON",
+            "Blockchain": "Monad",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Bitget",
             "Symbol": "MORPHO",
             "Blockchain": "Ethereum",
             "Address": "0x58D97B57BB95320F9a05dC918Aef65434969c2B2"
