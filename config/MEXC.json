@@ -189,6 +189,18 @@
         {
             "Exchange": "MEXC",
             "Ignore": false,
+            "ForeignName": "BOBUSDT",
+            "Symbol": "BOB"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "BOBUSDC",
+            "Symbol": "BOB"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
             "ForeignName": "BOBOUSDT",
             "Symbol": "BOBO"
         },
@@ -713,6 +725,18 @@
             "ForeignName": "MOGUSDT",
             "Exchange": "MEXC",
             "Ignore": false
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "MONUSDT",
+            "Symbol": "MON"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "MONUSDC",
+            "Symbol": "MON"
         },
         {
             "Exchange": "MEXC",
