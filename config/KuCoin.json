@@ -343,6 +343,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "BOB-USDT",
+            "Symbol": "BOB"
+        },
+        {
             "Symbol": "BOBA",
             "ForeignName": "BOBA-USDT",
             "Exchange": "KuCoin",
@@ -1319,6 +1325,12 @@
             "Ignore": false,
             "ForeignName": "MNT-USDT",
             "Symbol": "MNT"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "MON-USDT",
+            "Symbol": "MON"
         },
         {
             "Exchange": "KuCoin",

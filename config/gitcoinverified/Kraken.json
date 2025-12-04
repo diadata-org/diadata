@@ -104,6 +104,12 @@
         },
         {
             "Exchange": "Kraken",
+            "Symbol": "BOB",
+            "Blockchain": "Bob",
+            "Address": "0xB0BD54846a92b214C04A63B26AD7Dc5e19A60808"
+        },
+        {
+            "Exchange": "Kraken",
             "Symbol": "BONK",
             "Blockchain": "Solana",
             "Address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"
@@ -341,6 +347,12 @@
             "Symbol": "MNT",
             "Blockchain": "Mantle",
             "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
+        },
+        {
+            "Exchange": "Kraken",
+            "Symbol": "MON",
+            "Blockchain": "Monad",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Exchange": "Kraken",

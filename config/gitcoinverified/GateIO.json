@@ -217,6 +217,12 @@
             "Address": "0xd2d6158683aeE4Cc838067727209a0aAF4359de3"
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "BOB",
+            "Blockchain": "Bob",
+            "Address": "0xB0BD54846a92b214C04A63B26AD7Dc5e19A60808"
+        },
+        {
             "Symbol": "BOBA",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -929,6 +935,12 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a"
+        },
+        {
+            "Exchange": "GateIO",
+            "Symbol": "MON",
+            "Blockchain": "Monad",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Exchange": "GateIO",

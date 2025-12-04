@@ -603,6 +603,12 @@
         {
             "Exchange": "ByBit",
             "Ignore": false,
+            "ForeignName": "MONUSDT",
+            "Symbol": "MON"
+        },
+        {
+            "Exchange": "ByBit",
+            "Ignore": false,
             "ForeignName": "MORPHOUSDT",
             "Symbol": "MORPHO"
         },

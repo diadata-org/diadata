@@ -368,6 +368,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "BOB_USDT",
+            "Symbol": "BOB"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "BOBA_USDT",
             "Ignore": false,
             "Symbol": "BOBA"
@@ -968,6 +974,12 @@
         },
         {
             "Exchange": "GateIO",
+            "ForeignName": "FRAX_USDT",
+            "Ignore": false,
+            "Symbol": "FRAX"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "FTI_ETH",
             "Ignore": false,
             "Symbol": "FTI"
@@ -977,12 +989,6 @@
             "ForeignName": "FTI_USDT",
             "Ignore": false,
             "Symbol": "FTI"
-        },
-        {
-            "Exchange": "GateIO",
-            "ForeignName": "FRAX_USDT",
-            "Ignore": false,
-            "Symbol": "FRAX"
         },
         {
             "Exchange": "GateIO",
@@ -1799,6 +1805,12 @@
             "ForeignName": "MOG_USDT",
             "Ignore": false,
             "Symbol": "MOG"
+        },
+        {
+            "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "MON_USDT",
+            "Symbol": "MON"
         },
         {
             "Exchange": "GateIO",

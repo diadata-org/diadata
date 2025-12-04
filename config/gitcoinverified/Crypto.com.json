@@ -416,6 +416,12 @@
         },
         {
             "Exchange": "Crypto.com",
+            "Symbol": "MON",
+            "Blockchain": "Monad",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "Crypto.com",
             "Symbol": "MOVR",
             "Blockchain": "Moonriver",
             "Address": "0x0000000000000000000000000000000000000000"

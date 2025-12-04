@@ -86,6 +86,12 @@
         },
         {
             "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "BOB-USD",
+            "Symbol": "BOB"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "BOBA-USD",
             "Ignore": false,
             "Symbol": "BOBA"
@@ -395,6 +401,12 @@
             "Ignore": false,
             "ForeignName": "MKR-USD",
             "Symbol": "MKR"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "MON-USD",
+            "Symbol": "MON"
         },
         {
             "Exchange": "CoinBase",

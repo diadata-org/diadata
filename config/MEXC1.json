@@ -15,6 +15,18 @@
         {
             "Exchange": "MEXC",
             "Ignore": false,
+            "ForeignName": "BOBUSDT",
+            "Symbol": "BOB"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "BOBUSDC",
+            "Symbol": "BOB"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
             "ForeignName": "COINONUSDT",
             "Symbol": "COINON"
         },
@@ -71,6 +83,18 @@
             "ForeignName": "MAVIAUSDT",
             "Exchange": "MEXC",
             "Ignore": false
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "MONUSDT",
+            "Symbol": "MON"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "MONUSDC",
+            "Symbol": "MON"
         },
         {
             "Symbol": "MOVR",

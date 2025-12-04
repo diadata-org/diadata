@@ -333,6 +333,12 @@
         {
             "Exchange": "Bitget",
             "Ignore": false,
+            "ForeignName": "MONUSDT",
+            "Symbol": "MON"
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
             "ForeignName": "MORPHOUSDT",
             "Symbol": "MORPHO"
         },

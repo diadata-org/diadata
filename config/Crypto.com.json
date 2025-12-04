@@ -801,6 +801,12 @@
         {
             "Exchange": "Crypto.com",
             "Ignore": false,
+            "ForeignName": "MON_USD",
+            "Symbol": "MON"
+        },
+        {
+            "Exchange": "Crypto.com",
+            "Ignore": false,
             "ForeignName": "MOVR_USD",
             "Symbol": "MOVR"
         },

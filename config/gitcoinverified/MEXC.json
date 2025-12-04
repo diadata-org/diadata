@@ -176,6 +176,12 @@
         },
         {
             "Exchange": "MEXC",
+            "Symbol": "BOB",
+            "Blockchain": "Bob",
+            "Address": "0xB0BD54846a92b214C04A63B26AD7Dc5e19A60808"
+        },
+        {
+            "Exchange": "MEXC",
             "Symbol": "BOBO",
             "Blockchain": "Ethereum",
             "Address": "0xB90B2A35C65dBC466b04240097Ca756ad2005295"
@@ -653,6 +659,12 @@
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
             "Address": "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a"
+        },
+        {
+            "Exchange": "MEXC",
+            "Symbol": "MON",
+            "Blockchain": "Monad",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Exchange": "MEXC",
