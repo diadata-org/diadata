@@ -141,6 +141,18 @@
         {
             "Exchange": "Kraken",
             "Ignore": false,
+            "ForeignName": "BOBUSD",
+            "Symbol": "BOB"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "BOBEUR",
+            "Symbol": "BOB"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
             "ForeignName": "BONKUSD",
             "Symbol": "BONK"
         },
@@ -437,6 +449,18 @@
             "Ignore": false,
             "ForeignName": "MNTUSD",
             "Symbol": "MNT"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "MONUSD",
+            "Symbol": "MON"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "MONEUR",
+            "Symbol": "MON"
         },
         {
             "Exchange": "Kraken",
