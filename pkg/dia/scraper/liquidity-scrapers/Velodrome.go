@@ -184,6 +184,7 @@ func (us *VelodromePoolScraper) GetPoolByAddress(pairAddress common.Address) (po
 	pool.Address = pairAddress.Hex()
 	pool.Blockchain = dia.BlockChain{Name: us.blockchain}
 	pool.Exchange = dia.Exchange{Name: us.exchange.Name}
+	pool.Time = time.Now()
 
 	return pool, nil
 }
@@ -196,9 +197,6 @@ func (us *VelodromePoolScraper) GetLiquidityUniV2Type(token0 dia.Asset, token1 d
 	}
 	amount0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(liquidity.Reserve0), new(big.Float).SetFloat64(math.Pow10(int(token0.Decimals)))).Float64()
 	amount1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(liquidity.Reserve1), new(big.Float).SetFloat64(math.Pow10(int(token1.Decimals)))).Float64()
-
-	// TO DO: Fetch timestamp using block number?
-	pool.Time = time.Now()
 
 	// Fill Pool type with the above data
 	pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{
