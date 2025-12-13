@@ -1,14 +1,14 @@
 apiVersion: "v1"
 kind: Pod
 metadata:
-  name: scraper-exchange-coinbase
+  name: scraper-exchange-kraken
 spec:
   containers:
-    - name: scraper-exchange-coinbase
+    - name: scraper-exchange-kraken
       image: dia.genericcollector.dev:latest
       imagePullPolicy: Never
       command: ["collector"]
-      args: ["-exchange=CoinBase"] # "-mode=storeTrades|current", "-pairsfile=true|false"
+      args: ["-exchange=Kraken"] # "-mode=storeTrades|current", "-pairsfile=true|false"
       env:
         - name: USE_ENV
           value: "true"
@@ -77,32 +77,32 @@ spec:
           value: "data-kafka.default.svc.cluster.local:9094"
       command:
         ["sh", "-c", "until kafkacat -b $KAFKA_BROKER_URL -L; do sleep 1; done"]
-    - name: scraper-exchange-example-coinbase-pairdiscovery
-      image: dia.pairdiscoveryservice.dev:latest
-      imagePullPolicy: Never
-      command: ["pairDiscoveryService"]
-      args: ["-exchange=CoinBase", "-mode=verification"]
-      env:
-        - name: USE_ENV
-          value: "true"
-        - name: POSTGRES_USER
-          value: "postgres"
-        - name: POSTGRES_PASSWORD
-          value: "password"
-        - name: POSTGRES_DB
-          value: "postgres"
-        - name: POSTGRES_HOST
-          value: "data-postgres.default.svc.cluster.local"
-        - name: INFLUXURL
-          value: "http://data-influx.default.svc.cluster.local:8086"
-        - name: INFLUXUSER
-          value: "test"
-        - name: INFLUXPASSWORD
-          value: "testtest"
-        - name: REDISURL
-          value: "data-redis.default.svc.cluster.local:6379"
-        - name: KAFKAURL
-          value: "data-kafka.default.svc.cluster.local:9094"
+    # - name: scraper-exchange-example-kraken-pairdiscovery
+    #   image: dia.pairdiscoveryservice.dev:latest
+    #   imagePullPolicy: Never
+    #   command: ["pairDiscoveryService"]
+    #   args: ["-exchange=Kraken", "-mode=verification"]
+    #   env:
+    #     - name: USE_ENV
+    #       value: "true"
+    #     - name: POSTGRES_USER
+    #       value: "postgres"
+    #     - name: POSTGRES_PASSWORD
+    #       value: "password"
+    #     - name: POSTGRES_DB
+    #       value: "postgres"
+    #     - name: POSTGRES_HOST
+    #       value: "data-postgres.default.svc.cluster.local"
+    #     - name: INFLUXURL
+    #       value: "http://data-influx.default.svc.cluster.local:8086"
+    #     - name: INFLUXUSER
+    #       value: "test"
+    #     - name: INFLUXPASSWORD
+    #       value: "testtest"
+    #     - name: REDISURL
+    #       value: "data-redis.default.svc.cluster.local:6379"
+    #     - name: KAFKAURL
+    #       value: "data-kafka.default.svc.cluster.local:9094"
   volumes:
     - name: env-context
       hostPath:
