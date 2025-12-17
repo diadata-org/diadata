@@ -131,17 +131,20 @@ func (scraper *CurveFIScraper) fetchPoolAddresses(registry curveRegistry) (poolA
 		contract, err = curvefi.NewCurvefiCaller(registry.Address, scraper.RestClient)
 		if err != nil {
 			log.Error("NewCurvefiCaller: ", err)
+			return
 		}
 
 		poolCount, err = contract.PoolCount(&bind.CallOpts{})
 		if err != nil {
 			log.Error("PoolCount: ", err)
+			return
 		}
 		log.Infof("poolCount in registry %s: %v ", registry.Address.Hex(), int(poolCount.Int64()))
 		for i := 0; i < int(poolCount.Int64()); i++ {
 			poolAddress, errPool := contract.PoolList(&bind.CallOpts{}, big.NewInt(int64(i)))
 			if errPool != nil {
 				log.Error("PoolList: ", err)
+				continue
 			}
 			poolAddresses = append(poolAddresses, poolAddress)
 		}
@@ -156,16 +159,19 @@ func (scraper *CurveFIScraper) fetchPoolAddresses(registry curveRegistry) (poolA
 		contract, err = curvefimeta.NewCurvefimetaCaller(registry.Address, scraper.RestClient)
 		if err != nil {
 			log.Error("NewCurvefiCaller: ", err)
+			return
 		}
 		poolCount, err = contract.PoolCount(&bind.CallOpts{})
 		if err != nil {
 			log.Error("PoolCount: ", err)
+			return
 		}
 		log.Infof("poolCount in registry %s: %v ", registry.Address.Hex(), int(poolCount.Int64()))
 		for i := 0; i < int(poolCount.Int64()); i++ {
 			poolAddress, err := contract.PoolList(&bind.CallOpts{}, big.NewInt(int64(i)))
 			if err != nil {
 				log.Error("PoolList: ", err)
+				continue
 			}
 			poolAddresses = append(poolAddresses, poolAddress)
 		}
@@ -272,6 +278,7 @@ func (scraper *CurveFIScraper) loadPoolData(poolAddress string, registry curveRe
 		contract, err := curvefifactory.NewCurvefifactoryCaller(common.HexToAddress(poolAddress), scraper.RestClient)
 		if err != nil {
 			log.Error("loadPoolData - NewCurvefiCaller: ", err)
+			return
 		}
 
 		var i int64
@@ -292,6 +299,7 @@ func (scraper *CurveFIScraper) loadPoolData(poolAddress string, registry curveRe
 			liquidityBig, err := contract.Balances(&bind.CallOpts{}, big.NewInt(i))
 			if err != nil {
 				log.Error("Get Balances: ", err)
+				return
 			}
 
 			asset, err := scraper.relDB.GetAsset(poolAssetAddress.Hex(), scraper.blockchain)
