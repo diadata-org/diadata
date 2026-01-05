@@ -1,4 +1,4 @@
-module github.com/diadata-org/diadata/blockchain/diaAzosOracleService
+module github.com/diadata-org/diadata/blockchain/diaAzosNavOracleService
 
 go 1.22
 
