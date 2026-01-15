@@ -1178,6 +1178,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Symbol": "REACT",
+            "Blockchain": "React",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "GateIO",
             "Symbol": "REKTCOIN",
             "Blockchain": "Solana",
             "Address": "vQoYWru2pbUdcVkUrRH74ktQDJgVjRcDvsoDbUzM5n9"

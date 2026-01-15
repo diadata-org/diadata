@@ -931,6 +931,12 @@
             "Address": "0xb23d80f5FefcDDaa212212F028021B41DEd428CF"
         },
         {
+            "Exchange": "KuCoin",
+            "Symbol": "REACT",
+            "Blockchain": "React",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "REAP",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
