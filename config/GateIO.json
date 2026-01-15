@@ -2276,6 +2276,12 @@
         },
         {
             "Exchange": "GateIO",
+            "ForeignName": "REACT_USDT",
+            "Ignore": false,
+            "Symbol": "REACT"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "RDN_ETH",
             "Ignore": false,
             "Symbol": "RDN"
