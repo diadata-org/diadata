@@ -499,6 +499,12 @@
             "Address": "0xFca59Cd816aB1eaD66534D82bc21E7515cE441CF"
         },
         {
+            "Exchange": "Crypto.com",
+            "Symbol": "REACT",
+            "Blockchain": "React",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "REN",
             "Exchange": "Crypto.com",
             "Blockchain": "Ethereum",

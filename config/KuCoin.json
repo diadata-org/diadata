@@ -1593,6 +1593,12 @@
         {
             "Exchange": "KuCoin",
             "Ignore": false,
+            "ForeignName": "REACT-USDT",
+            "Symbol": "REACT"
+        },
+        {
+            "Exchange": "KuCoin",
+            "Ignore": false,
             "ForeignName": "REKT-USDT",
             "Symbol": "REKT"
         },
