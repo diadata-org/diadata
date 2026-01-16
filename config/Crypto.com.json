@@ -919,6 +919,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "REACT",
+            "ForeignName": "REACT_USD",
+            "Exchange": "Crypto.com",
+            "Ignore": false
+        },
+        {
             "Symbol": "REN",
             "ForeignName": "REN_USDT",
             "Exchange": "Crypto.com",
