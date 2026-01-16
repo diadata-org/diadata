@@ -68,7 +68,7 @@ func main() {
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
 	backupNode := utils.Getenv("BACKUP_NODE", "")
 	dataNode := utils.Getenv("DATA_NODE", "")
-	canaInstanceAddress := utils.Getenv("CANA_INSTANCE__ADDRESS", "")
+	canaInstanceAddress := utils.Getenv("CANA_INSTANCE_ADDRESS", "")
 	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "120"))
 	if err != nil {
 		log.Fatalf("Failed to parse frequencySeconds: %v", err)
@@ -495,7 +495,7 @@ func retrieveAssetPrice(asset Asset, useGql bool, gqlWindowSize int, gqlMethodol
 			log.Printf("Error getting Cana NAV price for address %s: %v", canaInstanceAddress, err)
 			return 0.0, err
 		}
-		return float64(navprice / 1e6), nil
+		return float64(navprice) / 1e6, nil
 	}
 	// Get quotation for token and update Oracle
 	if useGql {
