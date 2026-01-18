@@ -238,7 +238,11 @@ func GetAssetsJson() (map[string]*OsmosisAsset, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
+	defer func() {
+		if err := res.Body.Close(); err != nil {
+			log.Warn("Error closing file: ", err)
+		}
+	}()
 	data, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
