@@ -91,7 +91,7 @@ contract DIARandomOracle {
 }
 ```
 
-Users can call `getLastRound()`to obtain the ID of the latest published round. To obtain the randomness of a certain round, users can call `getRandomValueFromRound(uint256 _round)`using the obtaines round ID.
+Users can call `getLastRound()`to obtain the ID of the latest published round. To obtain the randomness of a certain round, users can call `getRandomValueFromRound(uint256 _round)`using the obtains round ID.
 
 The signature can also be requested by calling `getRandomValueFromRoundWithSignature(uint256 _round)`.&#x20;
 
@@ -190,4 +190,4 @@ Additionally, there are new risks introduced by using the oracle.
 | -------------------------------------- | ------------------------------------------------------------------------------------------------- |
 | Oracle stops serving data              | Check that the oracle has recent updates in its history.                                          |
 | Specific Round is missed by the oracle | Have your dApp use the next round if a certain round is unavailable (but later ones exist).       |
-| Oracle serves compromised data         | Check the associated BLS signature provided by drand (Note: Currently not availabe on most EVMs). |
+| Oracle serves compromised data         | Check the associated BLS signature provided by drand (Note: Currently not available on most EVMs). |
