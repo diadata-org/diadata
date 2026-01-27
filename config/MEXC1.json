@@ -153,6 +153,18 @@
         {
             "Exchange": "MEXC",
             "Ignore": false,
+            "ForeignName": "PLUMEUSDT",
+            "Symbol": "PLUME"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "PLUMEUSDC",
+            "Symbol": "PLUME"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
             "ForeignName": "QQQONUSDT",
             "Symbol": "QQQON"
         },

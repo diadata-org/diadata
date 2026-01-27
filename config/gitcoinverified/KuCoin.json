@@ -895,6 +895,12 @@
             "Address": "0xD8912C10681D8B21Fd3742244f44658dBA12264E"
         },
         {
+            "Exchange": "KuCoin",
+            "Symbol": "PLUME",
+            "Blockchain": "Ethereum",
+            "Address": "0x4C1746A800D224393fE2470C70A35717eD4eA5F1"
+        },
+        {
             "Symbol": "PMGT",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

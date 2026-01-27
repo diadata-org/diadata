@@ -877,6 +877,12 @@
             "Symbol": "PENDLE"
         },
         {
+            "Exchange": "Crypto.com",
+            "Ignore": false,
+            "ForeignName": "PLUME_USD",
+            "Symbol": "PLUME"
+        },
+        {
             "Symbol": "POL",
             "ForeignName": "POL_USDT",
             "Exchange": "Crypto.com",
