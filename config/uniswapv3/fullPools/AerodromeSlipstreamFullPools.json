@@ -1,5 +1,9 @@
 {
     "Tokens": [
+         {
+            "Address": "0x14dcCDd311Ab827c42CCA448ba87B1ac1039e2A4",
+            "ForeignName": "wstETH-wrsETH"
+        },
         {
             "Address": "0xD3d9f0f7D0d477e0A19222965B59233Ad7f6Bc6b",
             "ForeignName": "USDC-frxUSD"

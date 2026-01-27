@@ -637,6 +637,12 @@
             "Address": "0x7A58c0Be72BE218B41C608b7Fe7C5bB630736C71"
         },
         {
+            "Exchange": "ByBit",
+            "Symbol": "PLUME",
+            "Blockchain": "Ethereum",
+            "Address": "0x4C1746A800D224393fE2470C70A35717eD4eA5F1"
+        },
+        {
             "Symbol": "POL",
             "Exchange": "ByBit",
             "Blockchain": "Polygon",

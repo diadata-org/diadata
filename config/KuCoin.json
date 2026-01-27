@@ -1549,6 +1549,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "PLUME-USDT",
+            "Symbol": "PLUME"
+        },
+        {
             "Symbol": "POL",
             "ForeignName": "POL-USDT",
             "Exchange": "KuCoin",

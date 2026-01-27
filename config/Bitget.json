@@ -409,6 +409,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "Bitget",
+            "Ignore": false,
+            "ForeignName": "PLUMEUSDT",
+            "Symbol": "PLUME"
+        },
+        {
             "Symbol": "POL",
             "ForeignName": "POLUSDT",
             "Exchange": "Bitget",

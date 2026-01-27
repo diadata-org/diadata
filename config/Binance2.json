@@ -363,6 +363,18 @@
         {
             "Exchange": "Binance",
             "Ignore": false,
+            "ForeignName": "PLUMEUSDT",
+            "Symbol": "PLUME"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "PLUMEUSDC",
+            "Symbol": "PLUME"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
             "ForeignName": "POLUSDT",
             "Symbol": "POL"
         },

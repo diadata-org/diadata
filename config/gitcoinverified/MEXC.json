@@ -793,6 +793,12 @@
             "Address": "0x2e44f3f609ff5aA4819B323FD74690f07C3607c4"
         },
         {
+            "Exchange": "MEXC",
+            "Symbol": "PLUME",
+            "Blockchain": "Ethereum",
+            "Address": "0x4C1746A800D224393fE2470C70A35717eD4eA5F1"
+        },
+        {
             "Symbol": "PNG",
             "Exchange": "MEXC",
             "Blockchain": "Avalanche",

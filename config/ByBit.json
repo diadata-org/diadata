@@ -673,6 +673,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "ByBit",
+            "Ignore": false,
+            "ForeignName": "PLUMEUSDT",
+            "Symbol": "PLUME"
+        },
+        {
             "Symbol": "POL",
             "ForeignName": "POLUSDT",
             "Exchange": "ByBit",

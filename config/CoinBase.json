@@ -440,6 +440,12 @@
         },
         {
             "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "PLUME-USD",
+            "Symbol": "PLUME"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "PNG-USD",
             "Ignore": false,
             "Symbol": "PNG"
