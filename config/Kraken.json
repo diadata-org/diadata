@@ -518,6 +518,18 @@
         },
         {
             "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "PLUMEUSD",
+            "Symbol": "PLUME"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "PLUMEEUR",
+            "Symbol": "PLUME"
+        },
+        {
+            "Exchange": "Kraken",
             "ForeignName": "POLUSD",
             "Ignore": false,
             "Symbol": "POL"

@@ -2114,6 +2114,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "PLUME_USDT",
+            "Symbol": "PLUME"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "PNG_USDT",
             "Ignore": false,
             "Symbol": "PNG"
@@ -2276,12 +2282,6 @@
         },
         {
             "Exchange": "GateIO",
-            "ForeignName": "REACT_USDT",
-            "Ignore": false,
-            "Symbol": "REACT"
-        },
-        {
-            "Exchange": "GateIO",
             "ForeignName": "RDN_ETH",
             "Ignore": false,
             "Symbol": "RDN"
@@ -2297,6 +2297,12 @@
             "ForeignName": "RDNT_USDT",
             "Ignore": false,
             "Symbol": "RDNT"
+        },
+        {
+            "Exchange": "GateIO",
+            "ForeignName": "REACT_USDT",
+            "Ignore": false,
+            "Symbol": "REACT"
         },
         {
             "Exchange": "GateIO",

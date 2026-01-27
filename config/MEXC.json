@@ -877,6 +877,18 @@
             "Ignore": false
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "PLUMEUSDT",
+            "Symbol": "PLUME"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "PLUMEUSDC",
+            "Symbol": "PLUME"
+        },
+        {
             "Symbol": "PNG",
             "ForeignName": "PNGUSDT",
             "Exchange": "MEXC",
