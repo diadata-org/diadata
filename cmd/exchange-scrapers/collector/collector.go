@@ -45,6 +45,7 @@ var (
 		dia.HydrationExchange,
 		dia.UniswapExchangeV3Celo,
 		dia.UniswapExchangeV4,
+		dia.UniswapExchangeV4Base,
 		dia.VelodromeExchangeSwellchain,
 		dia.ShadowV2Exchange,
 		dia.ShadowV3Exchange,

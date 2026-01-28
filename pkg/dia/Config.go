@@ -71,6 +71,7 @@ const (
 	UniswapExchangeV3Base              = "UniswapV3-Base"
 	UniswapExchangeV3Celo              = "UniswapV3-Celo"
 	UniswapExchangeV4                  = "UniswapV4"
+	UniswapExchangeV4Base              = "UniswapV4-Base"
 	LoopringExchange                   = "Loopring"
 	ShadowV2Exchange                   = "ShadowV2"
 	ShadowV3Exchange                   = "ShadowV3"

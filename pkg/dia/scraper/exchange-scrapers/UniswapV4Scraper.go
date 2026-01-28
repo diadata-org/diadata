@@ -49,8 +49,7 @@ type UniswapV4Scraper struct {
 	pairRecieved chan *UniswapPair
 	poolMap      map[[32]byte]dia.Pool
 
-	exchangeName           string
-	startBlock             uint64
+	exchange               dia.Exchange
 	waitTime               int
 	chanTrades             chan *dia.Trade
 	factoryContractAddress common.Address
@@ -69,8 +68,9 @@ func NewUniswapV4Scraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 
 	switch exchange.Name {
 	case dia.UniswapExchangeV4:
-		s = makeUniswapV4Scraper(exchange, "", "", "200", uint64(12369621))
-
+		s = makeUniswapV4Scraper(exchange, "", "", "200")
+	case dia.UniswapExchangeV4Base:
+		s = makeUniswapV4Scraper(exchange, "", "", "200")
 	}
 
 	s.relDB = relDB
@@ -91,7 +91,7 @@ func NewUniswapV4Scraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB
 }
 
 // makeUniswapV4Scraper returns a uniswap scraper as used in NewUniswapV4Scraper.
-func makeUniswapV4Scraper(exchange dia.Exchange, restDial string, wsDial string, waitMilliseconds string, startBlock uint64) *UniswapV4Scraper {
+func makeUniswapV4Scraper(exchange dia.Exchange, restDial string, wsDial string, waitMilliseconds string) *UniswapV4Scraper {
 	var restClient, wsClient *ethclient.Client
 	var err error
 	var s *UniswapV4Scraper
@@ -120,16 +120,15 @@ func makeUniswapV4Scraper(exchange dia.Exchange, restDial string, wsDial string,
 		shutdown:               make(chan nothing),
 		shutdownDone:           make(chan nothing),
 		pairScrapers:           make(map[string]*UniswapPairV4Scraper),
-		exchangeName:           exchange.Name,
+		exchange:               exchange,
 		pairRecieved:           make(chan *UniswapPair),
 		error:                  nil,
 		chanTrades:             make(chan *dia.Trade),
 		waitTime:               waitTime,
-		startBlock:             startBlock,
 		factoryContractAddress: common.HexToAddress(exchange.Contract),
 	}
 
-	s.thresholdSlippage, err = strconv.ParseFloat(utils.Getenv(strings.ToUpper(s.exchangeName)+"_THRESHOLD_SLIPPAGE", "0.005"), 64)
+	s.thresholdSlippage, err = strconv.ParseFloat(utils.Getenv(strings.ToUpper(s.exchange.Name)+"_THRESHOLD_SLIPPAGE", "0.005"), 64)
 	if err != nil {
 		log.Error("Parse THRESHOLD_SLIPPAGE: ", err)
 		s.thresholdSlippage = 0.001
@@ -208,7 +207,7 @@ func (s *UniswapV4Scraper) sendTrade(swap UniswapV4Swap, poolID string) {
 		Time:           time.Unix(swap.Timestamp, 0),
 		ForeignTradeID: swap.ID,
 		PoolAddress:    poolID,
-		Source:         s.exchangeName,
+		Source:         s.exchange.Name,
 		VerifiedPair:   true,
 	}
 
@@ -230,7 +229,7 @@ func (s *UniswapV4Scraper) normalizeRawSwap(rawSwap *uniswapcontractv4.Poolmanag
 
 	pool, ok := s.poolMap[rawSwap.Id]
 	if !ok {
-		pool, err = s.relDB.GetPoolByAddress(dia.ETHEREUM, hex.EncodeToString(rawSwap.Id[:]))
+		pool, err = s.relDB.GetPoolByAddress(s.exchange.BlockChain.Name, hex.EncodeToString(rawSwap.Id[:]))
 		if err != nil {
 			return
 		}
