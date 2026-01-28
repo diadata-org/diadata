@@ -116,18 +116,18 @@ const allowedTokens = [
     source: "stDOT",
     issuer: "Lido",
   },
-  {
-    vtoken: "rETH",
-    token: "ETH",
-    source: "rETH",
-    issuer: "RocketPool",
-  },
-  {
-    vtoken: "stETH",
-    token: "ETH",
-    source: "stETH",
-    issuer: "Lido",
-  },
+  // {
+  //   vtoken: "rETH",
+  //   token: "ETH",
+  //   source: "rETH",
+  //   issuer: "RocketPool",
+  // },
+  // {
+  //   vtoken: "stETH",
+  //   token: "ETH",
+  //   source: "stETH",
+  //   issuer: "Lido",
+  // },
   // {
   //   vtoken: "cbETH",
   //   token: "ETH",
@@ -144,9 +144,10 @@ const allowedTokens = [
 ];
 
 async function getPrice(asset) {
-  var providerurl = process.env.DIADATA_API || "https://api.diadata.org/v1/quotation/";
+  var providerurl = process.env.DIADATA_API || "https://api.diadata.org/v1";
 
   let response = await fetch(providerurl + "/quotation/" + asset);
+  console.log(providerurl + "/quotation/" + asset);
   let ethprice = await response.json();
   return ethprice.Price;
 }
