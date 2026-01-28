@@ -43,7 +43,8 @@ func NewUniswapV4AssetSource(exchange dia.Exchange, relDB *models.RelDB) *Uniswa
 	switch exchange.Name {
 	case dia.UniswapExchangeV4:
 		uas = makeUniswapV4AssetSource(exchange, "", "", relDB, "200", uint64(21688329))
-
+	case dia.UniswapExchangeV4Base:
+		uas = makeUniswapV4AssetSource(exchange, "", "", relDB, "200", uint64(25350988))
 	}
 
 	go func() {

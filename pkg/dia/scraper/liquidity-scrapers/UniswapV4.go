@@ -46,6 +46,8 @@ func NewUniswapV4Scraper(exchange dia.Exchange, relDB *models.RelDB, datastore *
 	switch exchange.Name {
 	case dia.UniswapExchangeV4:
 		uls = makeUniswapV4Scraper(exchange, "", "", relDB, datastore, "200", univ4_start_block)
+	case dia.UniswapExchangeV4Base:
+		uls = makeUniswapV4Scraper(exchange, "", "", relDB, datastore, "200", uint64(25350988))
 	}
 
 	go func() {
@@ -160,7 +162,7 @@ func (uls *UniswapV4Scraper) fetchPools() {
 			if err != nil {
 				asset0, err = ethhelper.ETHAddressToAsset(poolCreated.Event.Currency0, uls.RestClient, uls.blockchain)
 				if err != nil {
-					log.Warn("cannot fetch asset from address ", poolCreated.Event.Currency0.Hex())
+					log.Warn("Currency0: cannot fetch asset with address ", poolCreated.Event.Currency0.Hex())
 					continue
 				}
 			}
@@ -168,7 +170,7 @@ func (uls *UniswapV4Scraper) fetchPools() {
 			if err != nil {
 				asset1, err = ethhelper.ETHAddressToAsset(poolCreated.Event.Currency1, uls.RestClient, uls.blockchain)
 				if err != nil {
-					log.Warn("cannot fetch asset from address ", poolCreated.Event.Currency1.Hex())
+					log.Warn("Currency1: cannot fetch asset with address ", poolCreated.Event.Currency1.Hex())
 					continue
 				}
 			}
