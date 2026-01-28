@@ -18,7 +18,7 @@ spec:
           image: dia.filtersblockservice.dev:latest
           imagePullPolicy: Never
           command: ["filtersBlockService"]
-          args: ["-replayInflux=false", "-historical=true", "-testing=true"]
+          args: ["-replayInflux=false", "-historical=true", "-testing=true"] # "-testing=true|false"
           env:
             - name: USE_ENV
               value: "true"

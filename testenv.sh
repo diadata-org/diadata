@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #
+# Name: testenv.sh
+# Vesion: 0.1.1
 # Description: This script is used to manage the DIA development environment. Helpful on start/stop the platform, and create/remove resources
-# Vesion: 0.1.0
 
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do
@@ -80,21 +81,41 @@ function _build_ifnotexist(){
     if [ "$arg_single_mode" = true ]; then
         docker_query="$(docker images -q "$2:latest" 2> /dev/null)"
         if [[ "${docker_query}" == "" ]]; then
-            echo "Image $2 is not present, building ..."
-            docker buildx build -f "build/$1" -t "$2:latest" .
+            echo "Image $2 is not present, building to local docker env ..."
+            docker buildx build -f "build/$1" -t "$2:latest" . > /dev/null 2>&1
         else
             echo "Image $2 is present"
         fi
     else
         minikube_docker_query="$(minikube -p "${minikube_profile}" ssh -- "docker images -q $2:latest" 2> /dev/null)"
         if [[ "${minikube_docker_query}" == "" ]]; then
-            echo "Image $2 is not present, building ..."
-            if [[ "$minikube_driver" == "docker" ]]; then
-                eval "$(minikube -p "${minikube_profile}" docker-env)"
-                docker buildx build -f "build/$1" -t "$2:latest" .
-                eval "$(minikube -p "${minikube_profile}" docker-env --unset)"
+            if [[ -f "testenv-artifacts/$2.tar.gz" ]]; then
+                echo "Image tarball testenv-artifacts/$2.tar.gz exists. Loading into Minikube..."
+                if [[ "$minikube_driver" == "docker" ]]; then
+                    eval "$(minikube -p "${minikube_profile}" docker-env)"
+                    docker load -i "testenv-artifacts/$2.tar.gz"
+                    eval "$(minikube -p "${minikube_profile}" docker-env --unset)"
+                else
+                    minikube -p "${minikube_profile}" image load "testenv-artifacts/$2.tar.gz"
+                fi
+                echo "Image $2 loaded successfully"
             else
-                minikube -p "${minikube_profile}" image build -f "build/$1" -t "$2:latest" .
+                echo "Image $2 is not present, building to minikube docker env..."
+                if [[ "$minikube_driver" == "docker" ]]; then
+                    eval "$(minikube -p "${minikube_profile}" docker-env)"
+                    docker_build_output=$(docker buildx build -f "build/$1" -t "$2:latest" . 2>&1)
+                    docker_build_status=$?
+                    eval "$(minikube -p "${minikube_profile}" docker-env --unset)"
+                    if [ $docker_build_status -ne 0 ]; then
+                        echo "Image $2 build failed:"
+                        echo "$docker_build_output"
+                        exit $docker_build_status
+                    else
+                        echo "Image $2 build succeeded"
+                    fi
+                else
+                    minikube -p "${minikube_profile}" image build -f "build/$1" -t "$2:latest" .
+                fi
             fi
         else
             echo "Image $2 is present"
@@ -203,14 +224,14 @@ function main() {
 
     # Variables
     local minikube_profile=dia
-    local minikube_k8s_version=v1.25.7
+    local minikube_k8s_version=v1.28
     local minikube_hw_cpus=4
     local minikube_hw_ram=8g
     local minikube_hw_disk=50g
     local minikube_driver=docker
     local snapshot_docker_registry=https://registry.hub.docker.com/v2/
     local snapshot_docker_username=dia_contributor
-    local snapshot_docker_password=dia_contributor_pw
+    local snapshot_docker_password=dia_contributor_pw # skipcq: SCT-A000
     local snapshot_docker_email=dia_contributor@example.com
     local data_docker_registry=docker.io
     local data_docker_username=dia
@@ -219,29 +240,28 @@ function main() {
     # shellcheck disable=SC1091
     # TODO: this will break the script?
     if [ -e testenv.local ]; then
-    source ./testspace/.testenv.local
+        source ./testspace/.testenv.local
     fi
     if [[ "$arg_cpus" != "" ]]; then
         minikube_hw_cpus="${arg_cpus}"
     fi
     local version_detected
     version_detected=$(git describe --tags --abbrev=0)
-    declare -a demos_scraper_cex=("bitfinex" "bittrex" "coinbase" "mexc")
-    declare -a demos_scraper_dex=("platypus" "orca", "curve")
+    declare -a demos_scraper_cex=("bitfinex" "bittrex" "coinbase" "mexc" "kraken")
+    declare -a demos_scraper_dex=("platypus" "orca" "curve")
     declare -a demos_scraper_liquidity=("platypus" "orca")
     declare -a demos_scraper_foreign=("yahoofinance")
 
     # Command
     case "${command[0]}" in
     start)
-      echo "running start"
+        echo "Starting cluster ..."
         if [ "${#command[@]}" -eq 1 ]; then
             if [ "$arg_verbose_mode" = true ]; then _info; fi
             if [ "$arg_single_mode" = true ]; then
                 echo "WIP"
             else
                 if ! _minikube_profile_isrunning "${minikube_profile}"; then
-                    echo "Starting cluster ..."
                     minikube --profile "${minikube_profile}" start \
                         --kubernetes-version "${minikube_k8s_version}" \
                         --driver "${minikube_driver}" \
@@ -263,8 +283,8 @@ function main() {
         fi
         ;;
     stop)
+        echo "Stopping cluster ..."
         if [ "${#command[@]}" -eq 1 ]; then
-            echo "Stopping cluster ..."
             minikube -p "${minikube_profile}" stop
         else
             echo "Unknown command" >&2
@@ -272,8 +292,8 @@ function main() {
         fi
         ;;
     delete)
+        echo "Deleting cluster ..."
         if [ "${#command[@]}" -eq 1 ]; then
-            echo "Deleting cluster ..."
             minikube delete -p "${minikube_profile}"
         else
             echo "Unknown command" >&2
@@ -281,12 +301,14 @@ function main() {
         fi
         ;;
     build)
+        echo "Building images ..."
         if [ "${#command[@]}" -eq 1 ]; then
-            echo "Building images ..."
             _build_ifnotexist build/Dockerfile-DiadataBuild-114-Dev dia.build-114.dev
             _build_ifnotexist build/Dockerfile-DiadataBuild-117-Dev dia.build-117.dev
             _build_ifnotexist build/Dockerfile-DiadataBuild-119-Dev dia.build-119.dev
             _build_ifnotexist build/Dockerfile-DiadataBuild-120-Dev dia.build-120.dev
+            _build_ifnotexist build/Dockerfile-DiadataBuild-121-Dev dia.build-121.dev
+            _build_ifnotexist build/Dockerfile-DiadataBuild-122-Dev dia.build-122.dev
             _build_ifnotexist Dockerfile-filtersBlockService-Dev dia.filtersblockservice.dev
             _build_ifnotexist Dockerfile-tradesBlockService-Dev dia.tradesblockservice.dev
             _build_ifnotexist Dockerfile-pairDiscoveryService-Dev dia.pairdiscoveryservice.dev
@@ -298,17 +320,22 @@ function main() {
             if [ "$arg_full_mode" = true ]; then
                 _build_ifnotexist Dockerfile-blockchainservice-Dev dia.blockchainservice.dev
             fi
+            echo "Images built with success"
         else
             echo "Unknown command" >&2
             exit 1
         fi
         ;;
     install)
+        echo "Installing services ..."
         if [ "${#command[@]}" -eq 1 ]; then
+            echo "Checking requirements before installing services ..."
             _image_exist dia.build-114.dev || exit 1
             _image_exist dia.build-117.dev || exit 1
             _image_exist dia.build-119.dev || exit 1
             _image_exist dia.build-120.dev || exit 1
+            _image_exist dia.build-121.dev || exit 1
+            _image_exist dia.build-122.dev || exit 1
             _image_exist dia.filtersblockservice.dev || exit 1
             _image_exist dia.tradesblockservice.dev || exit 1
             _image_exist dia.pairdiscoveryservice.dev || exit 1
@@ -320,10 +347,11 @@ function main() {
             if [ "$arg_full_mode" = true ]; then
                 _image_exist dia.blockchainservice.dev || exit 1
             fi
-            echo "Installing services ..."
+            echo "Creating services via kubectl ..."
             minikube -p "${minikube_profile}" kubectl -- create -f deployments/k8s-yaml/service-filtersblockservice.yaml
             minikube -p "${minikube_profile}" kubectl -- create -f deployments/k8s-yaml/service-tradesblockservice.yaml
             minikube -p "${minikube_profile}" kubectl -- create -f deployments/k8s-yaml/data-kafka.yaml
+            minikube -p "${minikube_profile}" kubectl -- create -f deployments/k8s-yaml/data-kafka-ui.yaml
             minikube -p "${minikube_profile}" kubectl -- create -f deployments/k8s-yaml/data-redis.yaml
             minikube -p "${minikube_profile}" kubectl -- create -f deployments/k8s-yaml/data-influx.yaml
             if [ "$arg_full_mode" = true ]; then
@@ -351,6 +379,7 @@ function main() {
             minikube -p "${minikube_profile}" kubectl -- delete -f deployments/k8s-yaml/service-filtersblockservice.yaml || true
             minikube -p "${minikube_profile}" kubectl -- delete -f deployments/k8s-yaml/service-tradesblockservice.yaml || true
             minikube -p "${minikube_profile}" kubectl -- delete -f deployments/k8s-yaml/data-kafka.yaml || true
+            minikube -p "${minikube_profile}" kubectl -- delete -f deployments/k8s-yaml/data-kafka-ui.yaml || true
             minikube -p "${minikube_profile}" kubectl -- delete -f deployments/k8s-yaml/data-redis.yaml || true
             minikube -p "${minikube_profile}" kubectl -- delete -f deployments/k8s-yaml/data-influx.yaml || true
             if [ "$arg_full_mode" = true ]; then
@@ -385,11 +414,11 @@ function main() {
         fi
 
         # Ask for variables with _EXTRACT and export them
-        read -p "Enter Postgres Server: " PGHOST_EXTRACT
-        read -p "Enter Postgres Port: " PGPORT_EXTRACT
-        read -p "Enter Postgres User: " PGUSER_EXTRACT
-        read -p "Enter Postgres Password: " PGPASSWORD_EXTRACT
-        read -p "Enter Postgres Database: " PGDB_EXTRACT
+        read -r -p "Enter Postgres Server: " PGHOST_EXTRACT
+        read -r -p "Enter Postgres Port: " PGPORT_EXTRACT
+        read -r -p "Enter Postgres User: " PGUSER_EXTRACT
+        read -r -s -p "Enter Postgres Password: " PGPASSWORD_EXTRACT # skipcq: SCT-A000
+        read -r -p "Enter Postgres Database: " PGDB_EXTRACT
 
         export PGHOST=${PGHOST_EXTRACT}
         export PGUSER=${PGUSER_EXTRACT}
@@ -402,20 +431,20 @@ function main() {
         unzip -o snapshot.zip
 
         # Run the psql commands
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "truncate table blockchain cascade"
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "truncate table asset cascade"
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "truncate table exchange cascade"
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "truncate table exchangepair cascade"
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "truncate table pool cascade"
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "truncate table poolasset cascade"
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "\copy asset FROM 'output_assets.csv' DELIMITER ';' CSV"
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "\copy blockchain FROM 'output_blockchain.csv' DELIMITER ';' CSV"
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "\copy exchangepair FROM 'output_exchangepair.csv' DELIMITER ';' CSV"
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "\copy exchange FROM 'output_cex.csv' DELIMITER ';' CSV"
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "\copy exchange FROM 'output_dex.csv' DELIMITER ';' CSV"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "truncate table blockchain cascade"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "truncate table asset cascade"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "truncate table exchange cascade"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "truncate table exchangepair cascade"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "truncate table pool cascade"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "truncate table poolasset cascade"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "\copy asset FROM 'output_assets.csv' DELIMITER ';' CSV"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "\copy blockchain FROM 'output_blockchain.csv' DELIMITER ';' CSV"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "\copy exchangepair FROM 'output_exchangepair.csv' DELIMITER ';' CSV"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "\copy exchange FROM 'output_cex.csv' DELIMITER ';' CSV"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "\copy exchange FROM 'output_dex.csv' DELIMITER ';' CSV"
         # FIXME: this will raise: ERROR:  invalid input syntax for type numeric: "2023-09-07 09:05:45.012443"
-        # psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "\copy poolasset FROM 'output_poolasset.csv' DELIMITER ';' CSV"
-        psql --port ${PGPORT} --username ${PGUSER} --dbname ${PGDB} -c "\copy pool FROM 'output_pool.csv' DELIMITER ';' CSV"
+        # psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "\copy poolasset FROM 'output_poolasset.csv' DELIMITER ';' CSV"
+        psql --port "${PGPORT}" --username "${PGUSER}" --dbname "${PGDB}" -c "\copy pool FROM 'output_pool.csv' DELIMITER ';' CSV"
 
 
         # Delete the output-*.sql and snapshot.zip files
