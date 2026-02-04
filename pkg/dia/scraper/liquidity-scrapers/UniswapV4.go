@@ -67,6 +67,11 @@ func makeUniswapV4Scraper(exchange dia.Exchange, restDial string, wsDial string,
 		uls         *UniswapV4Scraper
 	)
 
+	sb, err := strconv.ParseInt(utils.Getenv("START_BLOCK", strconv.Itoa(int(startBlock))), 10, 64)
+	if err != nil {
+		log.Fatal("parse START_BLOCK: ", err)
+	}
+
 	log.Infof("Init rest and ws client for %s.", exchange.BlockChain.Name)
 	restClient, err = ethclient.Dial(utils.Getenv(strings.ToUpper(exchange.BlockChain.Name)+"_URI_REST", restDial))
 	if err != nil {
@@ -93,7 +98,7 @@ func makeUniswapV4Scraper(exchange dia.Exchange, restDial string, wsDial string,
 		poolChannel:     poolChannel,
 		doneChannel:     doneChannel,
 		blockchain:      exchange.BlockChain.Name,
-		startBlock:      startBlock,
+		startBlock:      uint64(sb),
 		factoryContract: exchange.Contract,
 		exchangeName:    exchange.Name,
 		waitTime:        waitTime,
@@ -156,7 +161,7 @@ func (uls *UniswapV4Scraper) fetchPools() {
 				asset0 dia.Asset
 				asset1 dia.Asset
 			)
-			log.Info("pools count: ", poolsCount)
+			log.Infof("batch block %v pools count: %v", startblock, poolsCount)
 
 			asset0, err = uls.relDB.GetAsset(poolCreated.Event.Currency0.Hex(), uls.blockchain)
 			if err != nil {
