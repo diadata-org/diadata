@@ -380,6 +380,12 @@
         },
         {
             "Exchange": "Bitget",
+            "Symbol": "PYUSD",
+            "Blockchain": "Ethereum",
+            "Address": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8"
+        },
+        {
+            "Exchange": "Bitget",
             "Symbol": "RARE",
             "Blockchain": "Ethereum",
             "Address": "0xba5BDe662c17e2aDFF1075610382B9B691296350"

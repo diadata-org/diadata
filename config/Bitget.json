@@ -423,6 +423,12 @@
         {
             "Exchange": "Bitget",
             "Ignore": false,
+            "ForeignName": "PYUSDUSDT",
+            "Symbol": "PYUSD"
+        },
+        {
+            "Exchange": "Bitget",
+            "Ignore": false,
             "ForeignName": "RAREUSDT",
             "Symbol": "RARE"
         },
