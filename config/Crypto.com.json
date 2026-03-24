@@ -901,6 +901,12 @@
             "Symbol": "PRIME"
         },
         {
+            "Exchange": "Crypto.com",
+            "Ignore": false,
+            "ForeignName": "PYUSD_USD",
+            "Symbol": "PYUSD"
+        },
+        {
             "Symbol": "QTUM",
             "ForeignName": "QTUM_USDT",
             "Exchange": "Crypto.com",

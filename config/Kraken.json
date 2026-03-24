@@ -542,6 +542,12 @@
         },
         {
             "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "PYUSDUSD",
+            "Symbol": "PYUSD"
+        },
+        {
+            "Exchange": "Kraken",
             "ForeignName": "QTUMUSD",
             "Ignore": false,
             "Symbol": "QTUM"

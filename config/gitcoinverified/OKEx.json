@@ -397,6 +397,12 @@
             "Address": "0xE3feDAeCD47aa8EAb6b23227b0eE56F092C967a9"
         },
         {
+            "Exchange": "OKEx",
+            "Symbol": "PYUSD",
+            "Blockchain": "Ethereum",
+            "Address": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8"
+        },
+        {
             "Symbol": "RAY",
             "Exchange": "OKEx",
             "Blockchain": "Solana",
