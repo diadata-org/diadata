@@ -1573,6 +1573,12 @@
             "Ignore": false
         },
         {
+            "Exchange": "KuCoin",
+            "Ignore": false,
+            "ForeignName": "PYUSD-USDT",
+            "Symbol": "PYUSD"
+        },
+        {
             "Symbol": "QKC",
             "ForeignName": "QKC-BTC",
             "Exchange": "KuCoin",

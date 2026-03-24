@@ -2186,6 +2186,12 @@
         },
         {
             "Exchange": "GateIO",
+            "Ignore": false,
+            "ForeignName": "PYUSD_USDT",
+            "Symbol": "PYUSD"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "QASH_BTC",
             "Ignore": false,
             "Symbol": "QASH"
