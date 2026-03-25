@@ -572,6 +572,12 @@
         },
         {
             "Exchange": "BitMart",
+            "ForeignName": "PYUSD_USDT",
+            "Ignore": false,
+            "Symbol": "PYUSD"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "QNT_USDT",
             "Ignore": false,
             "Symbol": "QNT"
