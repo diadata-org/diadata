@@ -571,6 +571,12 @@
             "Address": "0xb23d80f5FefcDDaa212212F028021B41DEd428CF"
         },
         {
+            "Symbol": "PYUSD",
+            "Exchange": "BitMart",
+            "Blockchain": "Ethereum",
+            "Address": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8"
+        },
+        {
             "Symbol": "QNT",
             "Exchange": "BitMart",
             "Blockchain": "Ethereum",
