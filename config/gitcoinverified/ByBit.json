@@ -661,6 +661,12 @@
             "Address": "0xcAfE001067cDEF266AfB7Eb5A286dCFD277f3dE5"
         },
         {
+            "Symbol": "PYUSD",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8"
+        },
+        {
             "Symbol": "QTUM",
             "Exchange": "ByBit",
             "Blockchain": "Qtum",
