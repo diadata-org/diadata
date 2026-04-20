@@ -121,6 +121,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "BDAG",
+            "Exchange": "BitMart",
+            "Blockchain": "BlockDAG",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Exchange": "BitMart",
             "Symbol": "BEAM",
             "Blockchain": "Ethereum",

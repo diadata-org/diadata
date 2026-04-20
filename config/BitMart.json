@@ -117,6 +117,12 @@
         {
             "Exchange": "BitMart",
             "Ignore": false,
+            "ForeignName": "BDAG_USDT",
+            "Symbol": "BDAG"
+        },
+        {
+            "Exchange": "BitMart",
+            "Ignore": false,
             "ForeignName": "BEAM_USDT",
             "Symbol": "BEAM"
         },

@@ -67,6 +67,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "BDAG",
+            "Exchange": "Bitmax",
+            "Blockchain": "BlockDAG",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
             "Symbol": "BEPRO",
             "Exchange": "Bitmax",
             "Blockchain": "Ethereum",

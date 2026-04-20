@@ -217,6 +217,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "BDAG",
+            "ForeignName": "BDAG/USDT",
+            "Exchange": "Bitmax",
+            "Ignore": false
+        },
+        {
             "Symbol": "BEPRO",
             "ForeignName": "BEPRO/USDT",
             "Exchange": "Bitmax",
