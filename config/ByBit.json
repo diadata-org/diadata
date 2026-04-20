@@ -523,6 +523,12 @@
             "Symbol": "LA"
         },
         {
+            "Symbol": "LBTC",
+            "ForeignName": "LBTCUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "LINK",
             "ForeignName": "LINKUSDT",
             "Exchange": "ByBit",
