@@ -1,6 +1,10 @@
 {
   "Tokens": [
     {
+      "Address": "0x8236a87084f8B84306f72007F36F2618A5634494",
+      "Symbol": "LBTC"
+    },
+    {
       "Address": "0xdd3B11eF34cd511a2DA159034a05fcb94D806686",
       "Symbol": "REKT"
     },
