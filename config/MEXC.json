@@ -78,6 +78,12 @@
             "ForeignName": "ASTERUSDT",
             "Symbol": "ASTER"
         },
+          {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "ASTEROIDUSDT",
+            "Symbol": "ASTEROID"
+        },
         {
             "Exchange": "MEXC",
             "Ignore": false,

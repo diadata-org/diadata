@@ -73,6 +73,12 @@
             "Address": "0x000Ae314E2A2172a039B26378814C252734f556A"
         },
         {
+            "Exchange": "MEXC",
+            "Symbol": "ASTEROID",
+            "Blockchain": "Ethereum",
+            "Address": "0xf280B16EF293D8e534e370794ef26bF312694126"
+        },
+        {
             "Symbol": "ASTR",
             "Exchange": "MEXC",
             "Blockchain": "Astar",
