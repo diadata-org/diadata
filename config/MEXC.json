@@ -78,7 +78,7 @@
             "ForeignName": "ASTERUSDT",
             "Symbol": "ASTER"
         },
-          {
+        {
             "Exchange": "MEXC",
             "Ignore": false,
             "ForeignName": "ASTEROIDUSDT",

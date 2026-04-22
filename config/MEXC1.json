@@ -15,6 +15,12 @@
         {
             "Exchange": "MEXC",
             "Ignore": false,
+            "ForeignName": "ASTEROIDUSDT",
+            "Symbol": "ASTEROID"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
             "ForeignName": "BOBUSDT",
             "Symbol": "BOB"
         },
