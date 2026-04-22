@@ -1,6 +1,10 @@
 {
     "Pools": [
         {
+            "Address": "0x76A411f14A704099Ba476CE8dFFC288a53295218",
+            "ForeignName": "WETH-ASTEROID"
+        },
+        {
             "Address": "0x704aD8d95C12D7FEA531738faA94402725acB035",
             "ForeignName": "JOE-WETH"
         },
