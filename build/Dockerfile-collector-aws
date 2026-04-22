@@ -1,0 +1,13 @@
+FROM 912394946097.dkr.ecr.eu-west-1.amazonaws.com/nexus/base-image/build-122:v1.4.2 as build
+
+WORKDIR $GOPATH/src/
+
+COPY ./cmd/exchange-scrapers/collector ./
+RUN go mod tidy && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go install
+
+FROM gcr.io/distroless/base
+
+COPY --from=build /go/bin/collector /bin/collector
+COPY --from=build /config/ /config/
+
+CMD ["collector"]
