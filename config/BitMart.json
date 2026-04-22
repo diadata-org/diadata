@@ -56,6 +56,12 @@
         },
         {
             "Exchange": "BitMart",
+            "Ignore": false,
+            "ForeignName": "ASTEROID_USDT",
+            "Symbol": "ASTEROID"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "ASTR_USDT",
             "Ignore": false,
             "Symbol": "ASTR"
