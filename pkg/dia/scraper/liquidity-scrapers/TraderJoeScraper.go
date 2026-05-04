@@ -1,6 +1,7 @@
 package liquidityscrapers
 
 import (
+	"context"
 	"math"
 	"math/big"
 	"strconv"
@@ -30,6 +31,7 @@ type TraderJoeLiquidityScraper struct {
 	startBlock      uint64
 	factoryContract string
 	exchangeName    string
+	chunksBlockSize uint64
 	waitTime        int
 }
 
@@ -104,6 +106,12 @@ func makeTraderJoeScraper(exchange dia.Exchange, restDial string, wsDial string,
 		exchangeName:    exchange.Name,
 		waitTime:        waitTime,
 	}
+	blockSize := utils.Getenv("CHUNKS_BLOCK_SIZE", "10000")
+	tjls.chunksBlockSize, err = strconv.ParseUint(blockSize, 10, 64)
+	if err != nil {
+		log.Error("Parse CHUNKS_BLOCK_SIZE: ", err)
+		tjls.chunksBlockSize = uint64(10000)
+	}
 	return tjls
 }
 
@@ -122,82 +130,103 @@ func (tjls *TraderJoeLiquidityScraper) fetchPools() {
 		log.Error(err)
 	}
 
-	// Retrieve LBPairCreated events using the event filter.
-	lbPairCreated, err := contractFilter.FilterLBPairCreated(
-		&bind.FilterOpts{Start: tjls.startBlock},
-		[]common.Address{},
-		[]common.Address{},
-		[]*big.Int{},
-	)
+	// Iterate over chunks of blocks.
+	currentBlockNumber, err := tjls.RestClient.BlockNumber(context.Background())
 	if err != nil {
-		log.Error("filter pool created: ", err)
+		log.Fatal("Get current block number: ", err)
 	}
+	var startblock, endblock uint64
+	startblock = tjls.startBlock
+	endblock = tjls.startBlock + tjls.chunksBlockSize
 
-	// Iterate through the LBPairCreated events.
-	for lbPairCreated.Next() {
-		pairCount++
-		var (
-			pool   dia.Pool
-			asset0 dia.Asset
-			asset1 dia.Asset
+	for endblock < currentBlockNumber+tjls.chunksBlockSize {
+
+		// Retrieve LBPairCreated events using the event filter.
+		lbPairCreated, err := contractFilter.FilterLBPairCreated(
+			&bind.FilterOpts{
+				Start: startblock,
+				End:   &endblock,
+			},
+			[]common.Address{},
+			[]common.Address{},
+			[]*big.Int{},
 		)
-		log.Info("pairs count: ", pairCount)
-		time.Sleep(time.Duration(tjls.waitTime) * time.Millisecond)
-
-		// Retrieve information about the first token of the liquidity pool.
-		asset0, err = tjls.relDB.GetAsset(lbPairCreated.Event.TokenX.Hex(), tjls.blockchain)
 		if err != nil {
-			// If asset information cannot be retrieved from the database, try fetching it from the Ethereum network.
-			asset0, err = ethhelper.ETHAddressToAsset(lbPairCreated.Event.TokenX, tjls.RestClient, tjls.blockchain)
+			log.Error("filter pool created: ", err)
+			startblock = endblock
+			endblock = startblock + tjls.chunksBlockSize
+			continue
+		}
+
+		// Iterate through the LBPairCreated events.
+		for lbPairCreated.Next() {
+			pairCount++
+			var (
+				pool   dia.Pool
+				asset0 dia.Asset
+				asset1 dia.Asset
+			)
+			log.Info("pairs count: ", pairCount)
+			time.Sleep(time.Duration(tjls.waitTime) * time.Millisecond)
+
+			// Retrieve information about the first token of the liquidity pool.
+			asset0, err = tjls.relDB.GetAsset(lbPairCreated.Event.TokenX.Hex(), tjls.blockchain)
 			if err != nil {
-				log.Warn("cannot fetch asset from address ", lbPairCreated.Event.TokenX.Hex())
-				continue
+				// If asset information cannot be retrieved from the database, try fetching it from the Ethereum network.
+				asset0, err = ethhelper.ETHAddressToAsset(lbPairCreated.Event.TokenX, tjls.RestClient, tjls.blockchain)
+				if err != nil {
+					log.Warn("cannot fetch asset from address ", lbPairCreated.Event.TokenX.Hex())
+					continue
+				}
 			}
-		}
 
-		// Retrieve information about the second token of the liquidity pool.
-		asset1, err = tjls.relDB.GetAsset(lbPairCreated.Event.TokenY.Hex(), tjls.blockchain)
-		if err != nil {
-			// If asset information cannot be retrieved from the database, try fetching it from the Ethereum network.
-			asset1, err = ethhelper.ETHAddressToAsset(lbPairCreated.Event.TokenY, tjls.RestClient, tjls.blockchain)
+			// Retrieve information about the second token of the liquidity pool.
+			asset1, err = tjls.relDB.GetAsset(lbPairCreated.Event.TokenY.Hex(), tjls.blockchain)
 			if err != nil {
-				log.Warn("cannot fetch asset from address ", lbPairCreated.Event.TokenY.Hex())
-				continue
+				// If asset information cannot be retrieved from the database, try fetching it from the Ethereum network.
+				asset1, err = ethhelper.ETHAddressToAsset(lbPairCreated.Event.TokenY, tjls.RestClient, tjls.blockchain)
+				if err != nil {
+					log.Warn("cannot fetch asset from address ", lbPairCreated.Event.TokenY.Hex())
+					continue
+				}
 			}
+
+			// Populate pool information.
+			pool.Exchange = dia.Exchange{Name: tjls.exchangeName}
+			pool.Blockchain = dia.BlockChain{Name: tjls.blockchain}
+			pool.Address = lbPairCreated.Event.LBPair.Hex()
+
+			pairFiltererContract, err := traderjoeILBPair.NewILBPairCaller(lbPairCreated.Event.LBPair, tjls.RestClient)
+			if err != nil {
+				log.Fatal(err)
+			}
+			reserves, err := pairFiltererContract.GetReserves(&bind.CallOpts{})
+			if err != nil {
+				log.Fatal("get reserves on pool ", lbPairCreated.Event.LBPair.Hex())
+			}
+
+			// Calculate token balances in floating-point format.
+			balance0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(reserves.ReserveX), new(big.Float).SetFloat64(math.Pow10(int(asset0.Decimals)))).Float64()
+			balance1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(reserves.ReserveY), new(big.Float).SetFloat64(math.Pow10(int(asset1.Decimals)))).Float64()
+
+			// Append asset volumes to the pool.
+			pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset0, Volume: balance0, Index: uint8(0)})
+			pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset1, Volume: balance1, Index: uint8(1)})
+
+			// Determine USD liquidity for the pool if both token balances meet the threshold.
+			if balance0 > GLOBAL_NATIVE_LIQUIDITY_THRESHOLD && balance1 > GLOBAL_NATIVE_LIQUIDITY_THRESHOLD {
+				tjls.datastore.GetPoolLiquiditiesUSD(&pool, priceCache)
+			}
+
+			// Set the timestamp for the pool.
+			pool.Time = time.Now()
+
+			// Send the processed pool information to the channel.
+			tjls.poolChannel <- pool
+
 		}
-
-		// Populate pool information.
-		pool.Exchange = dia.Exchange{Name: tjls.exchangeName}
-		pool.Blockchain = dia.BlockChain{Name: tjls.blockchain}
-		pool.Address = lbPairCreated.Event.LBPair.Hex()
-
-		pairFiltererContract, err := traderjoeILBPair.NewILBPairCaller(lbPairCreated.Event.LBPair, tjls.RestClient)
-		if err != nil {
-			log.Fatal(err)
-		}
-		reserves, err := pairFiltererContract.GetReserves(&bind.CallOpts{})
-		if err != nil {
-			log.Fatal("get reserves on pool ", lbPairCreated.Event.LBPair.Hex())
-		}
-
-		// Calculate token balances in floating-point format.
-		balance0, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(reserves.ReserveX), new(big.Float).SetFloat64(math.Pow10(int(asset0.Decimals)))).Float64()
-		balance1, _ := new(big.Float).Quo(big.NewFloat(0).SetInt(reserves.ReserveY), new(big.Float).SetFloat64(math.Pow10(int(asset1.Decimals)))).Float64()
-
-		// Append asset volumes to the pool.
-		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset0, Volume: balance0, Index: uint8(0)})
-		pool.Assetvolumes = append(pool.Assetvolumes, dia.AssetVolume{Asset: asset1, Volume: balance1, Index: uint8(1)})
-
-		// Determine USD liquidity for the pool if both token balances meet the threshold.
-		if balance0 > GLOBAL_NATIVE_LIQUIDITY_THRESHOLD && balance1 > GLOBAL_NATIVE_LIQUIDITY_THRESHOLD {
-			tjls.datastore.GetPoolLiquiditiesUSD(&pool, priceCache)
-		}
-
-		// Set the timestamp for the pool.
-		pool.Time = time.Now()
-
-		// Send the processed pool information to the channel.
-		tjls.poolChannel <- pool
+		startblock = endblock
+		endblock = startblock + tjls.chunksBlockSize
 	}
 
 	// Signal that pool retrieval and processing is complete.
