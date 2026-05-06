@@ -1561,6 +1561,12 @@
             "Address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn"
         },
         {
+            "Symbol": "USDG",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0xe343167631d89B6Ffc58B88d6b7fB0228795491D"
+        },
+        {
             "Symbol": "USDT",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
