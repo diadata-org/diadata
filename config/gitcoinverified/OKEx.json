@@ -541,6 +541,12 @@
             "Address": "840"
         },
         {
+            "Symbol": "USDG",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0xe343167631d89B6Ffc58B88d6b7fB0228795491D"
+        },
+        {
             "Symbol": "UST",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",

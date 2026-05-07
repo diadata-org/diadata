@@ -782,6 +782,12 @@
         },
         {
             "Exchange": "BitMart",
+            "ForeignName": "USDG_USDT",
+            "Ignore": false,
+            "Symbol": "USDG"
+        },
+        {
+            "Exchange": "BitMart",
             "ForeignName": "USDP_USDT",
             "Ignore": false,
             "Symbol": "USDP"
