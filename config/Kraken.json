@@ -176,6 +176,12 @@
         },
         {
             "Exchange": "Kraken",
+            "Ignore": false,
+            "ForeignName": "CASHUSD",
+            "Symbol": "CASH"
+        },
+        {
+            "Exchange": "Kraken",
             "ForeignName": "CFGUSD",
             "Ignore": false,
             "Symbol": "CFG"
@@ -743,6 +749,24 @@
             "ForeignName": "USDCUSDT",
             "Ignore": false,
             "Symbol": "USDC"
+        },
+        {
+            "Exchange": "Kraken",
+            "ForeignName": "USDGUSD",
+            "Ignore": false,
+            "Symbol": "USDG"
+        },
+        {
+            "Exchange": "Kraken",
+            "ForeignName": "USDGUSDC",
+            "Ignore": false,
+            "Symbol": "USDG"
+        },
+        {
+            "Exchange": "Kraken",
+            "ForeignName": "USDGUSDT",
+            "Ignore": false,
+            "Symbol": "USDG"
         },
         {
             "Exchange": "Kraken",
