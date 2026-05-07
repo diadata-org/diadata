@@ -2828,6 +2828,12 @@
         },
         {
             "Exchange": "OKEx",
+            "ForeignName": "USDG-USDT",
+            "Ignore": false,
+            "Symbol": "USDG"
+        },
+        {
+            "Exchange": "OKEx",
             "ForeignName": "UST-USDT",
             "Ignore": false,
             "Symbol": "UST"

@@ -2918,6 +2918,12 @@
         },
         {
             "Exchange": "GateIO",
+            "ForeignName": "USDG_USDT",
+            "Ignore": false,
+            "Symbol": "USDG"
+        },
+        {
+            "Exchange": "GateIO",
             "ForeignName": "USDT_USD",
             "Ignore": false,
             "Symbol": "USDT"
