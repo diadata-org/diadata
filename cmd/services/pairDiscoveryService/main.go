@@ -17,23 +17,27 @@ import (
 )
 
 var (
-	log      *logrus.Logger
-	exchange string
-	exch     = flag.String("exchange", "", "which exchange")
-	mode     = flag.String("mode", "verification", "verification or remoteFetch: fetching pairs from exchange's API.")
+	log       *logrus.Logger
+	exchanges []string
+	exch      = flag.String("exchanges", "", "comma separated list of exchanges")
+	mode      = flag.String("mode", "verification", "verification or remoteFetch: fetching pairs from exchange's API.")
 )
+
+const EXCHANGE_SEPARATOR = ","
 
 func init() {
 	log = logrus.New()
 	flag.Parse()
 
-	exchange = *exch
-	exchangeStruct, ok := scrapers.Exchanges[exchange]
-	if (!exchangeStruct.Centralized || !ok) && *mode == "verification" {
-		log.Warnf("%s cannot be found in the list of centralized exchanges.", exchange)
-		exchangeStruct, ok := scrapers.ExchangeDuplicates[exchange]
+	exchanges = strings.Split(*exch, EXCHANGE_SEPARATOR)
+	for _, exchange := range exchanges {
+		exchangeStruct, ok := scrapers.Exchanges[exchange]
 		if (!exchangeStruct.Centralized || !ok) && *mode == "verification" {
-			log.Fatalf("%s cannot be found in exchange scraper duplicates either.", exchange)
+			log.Warnf("%s cannot be found in the list of centralized exchanges.", exchange)
+			exchangeStruct, ok := scrapers.ExchangeDuplicates[exchange]
+			if (!exchangeStruct.Centralized || !ok) && *mode == "verification" {
+				log.Fatalf("%s cannot be found in exchange scraper duplicates either.", exchange)
+			}
 		}
 	}
 }
@@ -47,14 +51,18 @@ func main() {
 
 	switch *mode {
 	case "verification":
-		err = updateExchangePairs(relDB)
-		if err != nil {
-			log.Fatalf("update exchange pairs for %s: %v", exchange, err)
+		for _, exchange := range exchanges {
+			err = updateExchangePairs(relDB, exchange)
+			if err != nil {
+				log.Fatalf("update exchange pairs for %s: %v", exchange, err)
+			}
 		}
 	case "remoteFetch":
-		err = fetchFromExchangeAndStore(relDB)
-		if err != nil {
-			log.Fatalf("update exchange pairs for %s: %v", exchange, err)
+		for _, exchange := range exchanges {
+			err = fetchFromExchangeAndStore(relDB, exchange)
+			if err != nil {
+				log.Fatalf("update exchange pairs for %s: %v", exchange, err)
+			}
 		}
 	default:
 		log.Fatal("unknown mode.")
@@ -62,7 +70,7 @@ func main() {
 
 }
 
-func updateExchangePairs(relDB *models.RelDB) (err error) {
+func updateExchangePairs(relDB *models.RelDB, exchange string) (err error) {
 
 	// --------- Collect pairs from DB and config file ---------
 	var pairs []dia.ExchangePair
@@ -168,7 +176,7 @@ func updateExchangePairs(relDB *models.RelDB) (err error) {
 	return nil
 }
 
-func fetchFromExchangeAndStore(relDB *models.RelDB) error {
+func fetchFromExchangeAndStore(relDB *models.RelDB, exchange string) error {
 	var scraper scrapers.APIScraper
 	var pairs []dia.ExchangePair
 
