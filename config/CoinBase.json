@@ -338,6 +338,12 @@
         },
         {
             "Exchange": "CoinBase",
+            "ForeignName": "JITOSOL-USD",
+            "Ignore": false,
+            "Symbol": "JITOSOL"
+        },
+        {
+            "Exchange": "CoinBase",
             "Ignore": false,
             "ForeignName": "KAITO-USD",
             "Symbol": "KAITO"

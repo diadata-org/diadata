@@ -399,6 +399,12 @@
         {
             "Exchange": "Kraken",
             "Ignore": false,
+            "ForeignName": "JITOSOLUSD",
+            "Symbol": "JITOSOL"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
             "ForeignName": "KAITOUSD",
             "Symbol": "KAITO"
         },

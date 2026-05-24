@@ -241,6 +241,12 @@
             "Address": "0xe28b3B32B6c345A34Ff64674606124Dd5Aceca30"
         },
         {
+            "Symbol": "JITOSOL",
+            "Exchange": "OKEx",
+            "Blockchain": "Solana",
+            "Address": "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn"
+        },
+        {
             "Symbol": "JOE",
             "Exchange": "OKEx",
             "Blockchain": "Avalanche",
