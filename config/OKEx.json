@@ -1268,6 +1268,12 @@
         },
         {
             "Exchange": "OKEx",
+            "ForeignName": "JITOSOL-USDT",
+            "Ignore": false,
+            "Symbol": "JITOSOL"
+        },
+        {
+            "Exchange": "OKEx",
             "ForeignName": "JOE-USDT",
             "Ignore": false,
             "Symbol": "JOE"
