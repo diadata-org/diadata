@@ -301,6 +301,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Symbol": "JITOSOL",
+            "Exchange": "Kraken",
+            "Blockchain": "Solana",
+            "Address": "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn"
+        },
+        {
             "Exchange": "Kraken",
             "Symbol": "KAITO",
             "Blockchain": "Base",
