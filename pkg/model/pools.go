@@ -381,29 +381,27 @@ func (rdb *RelDB) GetPoolsByAsset(asset dia.Asset, liquidityThreshold float64, l
 	)
 
 	query = fmt.Sprintf(`
-		SELECT exch_pools.exchange,exch_pools.address,a.address,a.blockchain,a.decimals,a.symbol,a.name,pa.token_index,pa.liquidity,pa.liquidity_usd,pa.time_stamp
-		FROM (
-			SELECT p.exchange,p.pool_id,p.address, SUM(CASE WHEN pa.liquidity>=$1 THEN 0 ELSE 1 END) AS no_liqui, SUM(CASE WHEN a.address=$2 THEN 1 ELSE 0 END) AS correct_asset
-			FROM %s p
-			INNER JOIN %s pa
-			ON p.pool_id=pa.pool_id
-			INNER JOIN %s a
-			ON pa.asset_id=a.asset_id
-			WHERE p.blockchain=$3
-			GROUP BY p.exchange,p.pool_id,p.address
-			) exch_pools
-		INNER JOIN %s pa
-		ON exch_pools.pool_id=pa.pool_id
-		INNER JOIN %s a ON pa.asset_id=a.asset_id
-		WHERE exch_pools.no_liqui=0
-		AND exch_pools.correct_asset=1
-		AND pa.time_stamp IS NOT NULL;
+		SELECT p.exchange,p.address AS pool_address,a.address,a.blockchain,a.decimals,a.symbol,a.name,pa.token_index,pa.liquidity,pa.liquidity_usd,pa.time_stamp
+		FROM %s p
+		INNER JOIN %s pa ON pa.pool_id = p.pool_id
+		INNER JOIN %s a ON pa.asset_id = a.asset_id
+		WHERE p.blockchain = $3
+		AND pa.time_stamp IS NOT NULL
+		AND NOT EXISTS (
+			SELECT 1 FROM %s pa2 
+			WHERE pa2.pool_id = p.pool_id AND pa2.liquidity < $1
+		)
+		AND EXISTS (
+			SELECT 1 FROM %s pa3 
+			JOIN asset a3 ON pa3.asset_id = a3.asset_id
+			WHERE pa3.pool_id = p.pool_id AND a3.address = $2
+		);
 	`,
 		poolTable,
 		poolassetTable,
 		assetTable,
 		poolassetTable,
-		assetTable,
+		poolassetTable,
 	)
 	rows, err := rdb.postgresClient.Query(context.Background(), query, liquidityThreshold, asset.Address, asset.Blockchain)
 	if err != nil {
