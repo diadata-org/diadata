@@ -9,6 +9,7 @@ RUN go mod tidy && go install
 FROM gcr.io/distroless/base
 
 COPY --from=build /go/bin/graphqlServer /bin/graphqlServer
+COPY --from=build /config/ /config/
 COPY ./cmd/http/graphqlServer/schema/ /schema/
 
 CMD ["graphqlServer"]
