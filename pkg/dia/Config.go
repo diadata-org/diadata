@@ -97,7 +97,6 @@ const (
 	ZeroxExchange                      = "0x"
 	KyberExchange                      = "Kyber"
 	BitMartExchange                    = "BitMart"
-	BitMaxExchange                     = "Bitmax"
 	MEXCExchange                       = "MEXC"
 	BKEXExchange                       = "BKEX"
 	BKEX2Exchange                      = "BKEX2"
