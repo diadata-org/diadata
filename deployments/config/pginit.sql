@@ -6,7 +6,7 @@ CREATE EXTENSION "pgcrypto";
 -- be all lowercase for consistency reasons.
 -- Otherwise it must be as defined in the underlying contract.
 CREATE TABLE asset (
-    asset_id UUID DEFAULT gen_random_uuid(),
+    asset_id UUID NOT NULL DEFAULT gen_random_uuid(),
     symbol text NOT NULL,
     name text NOT NULL,
     decimals text,
@@ -77,6 +77,7 @@ CREATE TABLE poolasset (
     UNIQUE (poolasset_id),
     UNIQUE(pool_id,asset_id)
 );
+CREATE INDEX ON poolasset (pool_id, liquidity);
 
 CREATE TABLE scraper_cronjob_state (
     scraper_cronjob_state_id UUID DEFAULT gen_random_uuid(),
@@ -423,3 +424,12 @@ INSERT INTO  "plans"("plan_id","plan_name","plan_description","plan_price","plan
 VALUES
 (2,E'Plan 1',E'default',0,E'desc',3);
 
+ALTER TABLE asset SET (autovacuum_analyze_scale_factor = 0.02);
+ALTER TABLE assetvolume SET (autovacuum_analyze_scale_factor = 0.02);
+ALTER TABLE poolasset SET (autovacuum_analyze_scale_factor = 0.02);
+ALTER TABLE pool SET (autovacuum_analyze_scale_factor = 0.02);
+
+ALTER TABLE asset SET (autovacuum_vacuum_scale_factor = 0.05);
+ALTER TABLE assetvolume SET (autovacuum_vacuum_scale_factor = 0.05);
+ALTER TABLE poolasset SET (autovacuum_vacuum_scale_factor = 0.05);
+ALTER TABLE pool SET (autovacuum_vacuum_scale_factor = 0.05);
