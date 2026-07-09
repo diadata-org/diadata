@@ -198,8 +198,6 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewKuCoinScraper(key, secret, Exchanges[dia.KuCoinExchange], scrape, relDB)
 	case dia.BitMartExchange:
 		return NewBitMartScraper(Exchanges[dia.BitMartExchange], scrape, relDB)
-	case dia.BitMaxExchange:
-		return NewBitMaxScraper(Exchanges[dia.BitMaxExchange], scrape, relDB)
 	case dia.MEXCExchange:
 		return NewMEXCScraper(Exchanges[dia.MEXCExchange], scrape, relDB)
 	case dia.BKEXExchange:

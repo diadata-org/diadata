@@ -183,20 +183,6 @@
             "ScraperActive": true
         },
         {
-            "Name": "Bitmax",
-            "Centralized": true,
-            "Bridge": false,
-            "Contract": "",
-            "Blockchain": {
-                "Name": ""
-            },
-            "RestAPI": "https://ascendex.com/api/pro/v1",
-            "WsAPI": "wss://ascendex.com/0/api/pro/v1/stream",
-            "pairsAPI": "https://ascendex.com/api/pro/v1/products",
-            "WatchdogDelay": 1200,
-            "ScraperActive": true
-        },
-        {
             "Name": "MEXC",
             "Centralized": true,
             "Bridge": false,
