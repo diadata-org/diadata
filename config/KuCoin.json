@@ -49,6 +49,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "ADI",
+            "ForeignName": "ADI-USDT",
+            "Exchange": "KuCoin",
+            "Ignore": false
+        },
+        {
             "Symbol": "AERGO",
             "ForeignName": "AERGO-BTC",
             "Exchange": "KuCoin",
