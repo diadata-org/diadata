@@ -33,6 +33,12 @@
         {
             "Exchange": "Kraken",
             "Ignore": false,
+            "ForeignName": "ADIUSDT",
+            "Symbol": "ADI"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
             "ForeignName": "AIXBTUSD",
             "Symbol": "AIXBT"
         },
