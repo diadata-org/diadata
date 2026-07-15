@@ -13,8 +13,8 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
-            "Exchange": "MEXC",
             "Symbol": "ADI",
+            "Exchange": "MEXC",
             "Blockchain": "Ethereum",
             "Address": "0x8B1484d57abBE239bB280661377363b03c89CaEa"
         },
