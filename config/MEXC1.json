@@ -3,6 +3,12 @@
         {
             "Exchange": "MEXC",
             "Ignore": false,
+            "ForeignName": "ADIUSDT",
+            "Symbol": "ADI"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
             "ForeignName": "ALEXUSDT",
             "Symbol": "ALEX"
         },
