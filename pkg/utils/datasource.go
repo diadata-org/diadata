@@ -32,7 +32,12 @@ func (cg *Coingecko) Price(assetName string) (float64, error) {
 		return 0.0, err
 	}
 
-	defer response.Body.Close()
+	defer func() {
+		if err := response.Body.Close(); err != nil {
+			log.Warn("Error closing file: ", err)
+		}
+	}()
+
 	if 200 != response.StatusCode {
 		return 0.0, fmt.Errorf("Error on coingecko API call with return code %d", response.StatusCode)
 	}
