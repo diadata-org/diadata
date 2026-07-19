@@ -14,7 +14,7 @@ Thus, conversion between assets from incompatible blockchains is restricted to c
 
 ## Price Determination
 
-The vast majority of recorded trades by DIA are between two crypto assets. Only a minority of trades against fiat currencies is recorded on CEXes. Nontheless, DIA reports all asset prices in USD, even for numerous assets where only crypto-crypto pairs exist.
+The vast majority of recorded trades by DIA are between two crypto assets. Only a minority of trades against fiat currencies is recorded on CEXes. Nonetheless, DIA reports all asset prices in USD, even for numerous assets where only crypto-crypto pairs exist.
 
 To retrieve a USD price for each and every asset, DIA uses a _price estimator._ The price estimator is updated with every recorded trade. Each trade consists of a _base token_ and a _quote token_. The price of a quote token is measured in base tokens. Because the order in a trade of base token and quote token is arbitrary, USD is always considered as base token. Other fiat currencies are also always base tokens, except when measuring the [ECB exchange rates](../../traditional-assets/ecb-foriegn-exchange-data.md). An asset needs to be a quote token in at least one market for us to be able to determine a USD price.
 
