@@ -1,9 +1,9 @@
-module github.com/diadata-org/diadata/blockchain/diaStroomOracleService
+module github.com/diadata-org/diadata/blockchain/diaFxOracleV2MultiupdateService
 
 go 1.22
 
 require (
-	github.com/diadata-org/diadata v1.4.676
+	github.com/diadata-org/diadata v1.4.623
 	github.com/ethereum/go-ethereum v1.10.26
 	github.com/machinebox/graphql v0.2.2
 	github.com/tidwall/gjson v1.17.0

@@ -69,8 +69,8 @@ github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1 h1:YLtO71vCjJRCBcrPMtQ9nqBsqpA1
 github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1/go.mod h1:hyedUtir6IdtD/7lIxGeCxkaw7y45JueMRL4DIyJDKs=
 github.com/decred/dcrd/lru v1.0.0/go.mod h1:mxKOwFd7lFjN2GZYsiz/ecgqR6kkYAl+0pz0tEMk218=
 github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZmtrrCbhqsmaPHjLKYnJCaQ=
-github.com/diadata-org/diadata v1.4.650 h1:Oe3IRJbOYgNATfTpa4jK9JKxaRwdQrK4W9vHv8nBwu8=
-github.com/diadata-org/diadata v1.4.650/go.mod h1:zaNvDMj0WbAeBWvVar9Rwdt9rG4MGgmME7Uy0nfYyuQ=
+github.com/diadata-org/diadata v1.4.623 h1:qKO6N5aiT7mzW1k/7llMkxY2bA8Zx67pB7i/Xtth88g=
+github.com/diadata-org/diadata v1.4.623/go.mod h1:zaNvDMj0WbAeBWvVar9Rwdt9rG4MGgmME7Uy0nfYyuQ=
 github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
 github.com/eapache/go-resiliency v1.1.0/go.mod h1:kFI+JgMyC7bLPUVY133qvEBtVayf5mFgVsvEsIPBvNs=
 github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21/go.mod h1:+020luEh2TKB4/GOp8oxxtq0Daoen/Cii55CzbTV6DU=
