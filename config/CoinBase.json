@@ -405,6 +405,12 @@
         {
             "Exchange": "CoinBase",
             "Ignore": false,
+            "ForeignName": "METIS-USD",
+            "Symbol": "METIS"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
             "ForeignName": "MKR-USD",
             "Symbol": "MKR"
         },
@@ -617,6 +623,12 @@
             "Ignore": false,
             "ForeignName": "TURBO-USD",
             "Symbol": "TURBO"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "TOSHI-USD",
+            "Symbol": "TOSHI"
         },
         {
             "Exchange": "CoinBase",

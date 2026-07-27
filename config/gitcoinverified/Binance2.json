@@ -337,6 +337,12 @@
             "Address": "0x0000000000000000000000000000000000001010"
         },
         {
+            "Symbol": "METIS",
+            "Exchange": "Binance2",
+            "Blockchain": "Metis",
+            "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
+        },
+        {
             "Exchange": "Binance2",
             "Symbol": "MKR",
             "Blockchain": "Ethereum",
