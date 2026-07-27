@@ -296,6 +296,12 @@
         },
         {
             "Exchange": "Binance",
+            "ForeignName": "METISUSDT",
+            "Ignore": false,
+            "Symbol": "METIS"
+        },
+        {
+            "Exchange": "Binance",
             "Ignore": false,
             "ForeignName": "MKRUSDT",
             "Symbol": "MKR"

@@ -889,6 +889,12 @@
             "Ignore": false
         },
         {
+            "Symbol": "TOSHI",
+            "ForeignName": "TOSHIUSDT",
+            "Exchange": "ByBit",
+            "Ignore": false
+        },
+        {
             "Symbol": "TON",
             "ForeignName": "TONUSDT",
             "Exchange": "ByBit",
