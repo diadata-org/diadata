@@ -199,6 +199,18 @@
             "Symbol": "COOKIE"
         },
         {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "COTIUSDT",
+            "Symbol": "COTI"
+        },
+        {
+            "Exchange": "MEXC",
+            "Ignore": false,
+            "ForeignName": "COTIUSDC",
+            "Symbol": "COTI"
+        },
+        {
             "Symbol": "CRO",
             "ForeignName": "CROUSDT",
             "Exchange": "MEXC",

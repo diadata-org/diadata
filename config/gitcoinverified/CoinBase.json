@@ -373,6 +373,12 @@
             "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
         },
         {
+            "Symbol": "METIS",
+            "Exchange": "CoinBase",
+            "Blockchain": "Metis",
+            "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
+        },
+        {
             "Exchange": "CoinBase",
             "Symbol": "MKR",
             "Blockchain": "Ethereum",
@@ -593,6 +599,12 @@
             "Symbol": "TON",
             "Blockchain": "Ton",
             "Address": "0x0000000000000000000000000000000000000000"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Symbol": "TOSHI",
+            "Blockchain": "Base",
+            "Address": "0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4"
         },
         {
             "Exchange": "CoinBase",

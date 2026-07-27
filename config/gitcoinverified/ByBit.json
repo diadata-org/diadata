@@ -859,6 +859,12 @@
             "Address": "0x888888848B652B3E3a0f34c96E00EEC0F3a23F72"
         },
         {
+            "Symbol": "TOSHI",
+            "Exchange": "ByBit",           
+            "Blockchain": "Base",
+            "Address": "0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4"
+        },
+        {
             "Symbol": "TON",
             "Exchange": "ByBit",
             "Blockchain": "Ton",
