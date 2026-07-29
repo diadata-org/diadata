@@ -13,7 +13,6 @@ permissions:
   checks: write
 
 env:
-  IBM_REGISTRY: us.icr.io/dia-registry
   AWS_REGION: eu-west-1
   
 jobs:
@@ -202,9 +201,18 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to IBM Cloud Container Registry
-        run: |
-          echo "${{ secrets.IBM_CLOUD_API_KEY }}" | docker login us.icr.io -u iamapikey --password-stdin
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # ECR login must happen before docker build: the build base images
+      # (nexus/base-image/build) are pulled from ECR.
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Find Dockerfile for service
         id: dockerfile
@@ -246,59 +254,15 @@ jobs:
           echo "dockerfile=$dockerfile" >> $GITHUB_OUTPUT
           echo "Found Dockerfile: $dockerfile"
 
-      - name: Build and push Docker image
-        run: |
-          service_name="${{ steps.version.outputs.service-name }}"
-          version="${{ steps.version.outputs.version }}"
-          dockerfile="${{ steps.dockerfile.outputs.dockerfile }}"
-          
-          # Convert service name to lowercase for Docker registry
-          service_name_lower=$(echo "$service_name" | tr '[:upper:]' '[:lower:]')
-
-          ibm_version_tag="$IBM_REGISTRY/$service_name_lower:$version"
-          ibm_latest_tag="$IBM_REGISTRY/$service_name_lower:latest"
-          
-          echo "Building and pushing Docker image:"
-          echo "  Service: $service_name"
-          echo "  Version: $version"
-          echo "  Dockerfile: $dockerfile"
-          echo "  IBM Tags: $ibm_version_tag, $ibm_latest_tag"
-
-          # Build the image with IBM tags
-          docker build \
-            -f "$dockerfile" \
-            -t "$ibm_version_tag" \
-            -t "$ibm_latest_tag" \
-            --build-arg SERVICE_NAME="$service_name_lower" \
-            --build-arg VERSION="$version" \
-            .
-
-          # Push both tags to IBM
-          echo "Pushing Docker images to IBM Cloud Registry..."
-          docker push "$ibm_version_tag"
-          docker push "$ibm_latest_tag"
-
-          echo "✅ Successfully built and pushed to IBM CR:"
-          echo "  - $ibm_version_tag"
-          echo "  - $ibm_latest_tag"
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Tag and push images to AWS ECR
+      - name: Build and push Docker image to AWS ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           service_name="${{ steps.version.outputs.service-name }}"
           version="${{ steps.version.outputs.version }}"
+          dockerfile="${{ steps.dockerfile.outputs.dockerfile }}"
+
+          # Convert service name to lowercase for Docker registry
           service_name_lower=$(echo "$service_name" | tr '[:upper:]' '[:lower:]')
 
           # Map service names to correct ECR repository paths
@@ -327,13 +291,19 @@ jobs:
           aws_version_tag="${ECR_REGISTRY}/${ecr_repo}:${version}"
           aws_latest_tag="${ECR_REGISTRY}/${ecr_repo}:latest"
 
-          echo "Tagging images for AWS ECR:"
-          echo "  - ${aws_version_tag}"
-          echo "  - ${aws_latest_tag}"
+          echo "Building and pushing Docker image:"
+          echo "  Service: $service_name"
+          echo "  Version: $version"
+          echo "  Dockerfile: $dockerfile"
+          echo "  Tags: ${aws_version_tag}, ${aws_latest_tag}"
 
-          # Tag the IBM images for AWS ECR
-          docker tag us.icr.io/dia-registry/${service_name_lower}:${version} ${aws_version_tag}
-          docker tag us.icr.io/dia-registry/${service_name_lower}:latest ${aws_latest_tag}
+          docker build \
+            -f "$dockerfile" \
+            -t "${aws_version_tag}" \
+            -t "${aws_latest_tag}" \
+            --build-arg SERVICE_NAME="$service_name_lower" \
+            --build-arg VERSION="$version" \
+            .
 
           # Push to AWS ECR
           echo "Pushing images to AWS ECR..."
@@ -523,9 +493,6 @@ jobs:
             if [ "${{ needs.build-and-deploy.result }}" = "success" ]; then
               echo ""
               echo "🎉 **All TEST services deployed successfully!**"
-              echo ""
-              echo "### IBM Cloud Registry:"
-              echo "$services" | jq -r '.[] | "- **\(.name)** → us.icr.io/dia-registry/\(.name | ascii_downcase):\(.version)"'
               echo ""
               echo "### AWS ECR (service mapping applied):"
               echo "$services" | jq -r '.[] | "- **\(.name)** → Check logs for ECR path mapping"'
