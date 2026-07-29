@@ -127,20 +127,6 @@
             "ScraperActive": true
         },
         {
-            "Name": "BinanceUS",
-            "Centralized": true,
-            "Bridge": false,
-            "Contract": "",
-            "Blockchain": {
-                "Name": ""
-            },
-            "RestAPI": "",
-            "WsAPI": "wss://stream.binance.us:9443/ws",
-            "pairsAPI": "https://api.binance.us/api/v1/exchangeInfo",
-            "WatchdogDelay": 300,
-            "ScraperActive": true
-        },
-        {
             "Name": "Biswap",
             "Centralized": false,
             "Bridge": false,
@@ -169,20 +155,6 @@
             "ScraperActive": true
         },
         {
-            "Name": "BitMart",
-            "Centralized": true,
-            "Bridge": false,
-            "Contract": "",
-            "Blockchain": {
-                "Name": ""
-            },
-            "RestAPI": "https://api-cloud.bitmart.com/spot/v1/",
-            "WsAPI": "wss://ws-manager-compress.bitmart.com/api?protocol=1.1",
-            "pairsAPI": "https://api-cloud.bitmart.com/spot/v1/symbols",
-            "WatchdogDelay": 300,
-            "ScraperActive": true
-        },
-        {
             "Name": "MEXC",
             "Centralized": true,
             "Bridge": false,
@@ -193,20 +165,6 @@
             "RestAPI": "https://api.mexc.com/api/v3",
             "WsAPI": "wss://wbs.mexc.com/ws",
             "pairsAPI": "https://api.mexc.com/api/v3/exchangeInfo",
-            "WatchdogDelay": 300,
-            "ScraperActive": true
-        },
-        {
-            "Name": "BKEX",
-            "Centralized": true,
-            "Bridge": false,
-            "Contract": "",
-            "Blockchain": {
-                "Name": ""
-            },
-            "RestAPI": "https://api.bkex.com/v2",
-            "WsAPI": "wss://api.bkex.com/socket.io/?EIO=3&transport=websocket",
-            "pairsAPI": "https://api.bkex.com/v2/common/symbols",
             "WatchdogDelay": 300,
             "ScraperActive": true
         },
@@ -643,20 +601,6 @@
             "pairsAPI": "",
             "WatchdogDelay": 7200,
             "ScraperActive": true
-        },
-        {
-            "Name": "Quoine",
-            "Centralized": true,
-            "Bridge": false,
-            "Contract": "",
-            "Blockchain": {
-                "Name": ""
-            },
-            "RestAPI": "http://api.liquid.com",
-            "WsAPI": "wss://tap.liquid.com/app/LiquidTapClient",
-            "pairsAPI": "http://api.liquid.com/products",
-            "WatchdogDelay": 1200,
-            "ScraperActive": false
         },
         {
             "Name": "Orca",
