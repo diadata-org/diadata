@@ -74,7 +74,6 @@ func init() {
 
 	ExchangeDuplicates[dia.Binance2Exchange] = dia.Exchange{Name: "Binance2", Centralized: true, WatchdogDelay: 300}
 	ExchangeDuplicates[dia.Binance3Exchange] = dia.Exchange{Name: "Binance3", Centralized: true, WatchdogDelay: 300}
-	ExchangeDuplicates[dia.BKEX2Exchange] = dia.Exchange{Name: "BKEX2", Centralized: true, WatchdogDelay: 1200}
 
 }
 
@@ -124,8 +123,6 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewBinanceScraper(key, secret, Exchanges[dia.BinanceExchange], dia.Binance2Exchange, scrape, relDB)
 	case dia.Binance3Exchange:
 		return NewBinanceScraper(key, secret, Exchanges[dia.BinanceExchange], dia.Binance3Exchange, scrape, relDB)
-	case dia.BinanceExchangeUS:
-		return NewBinanceScraperUS(key, secret, Exchanges[dia.BinanceExchangeUS], scrape, relDB)
 	case dia.BitfinexExchange:
 		return NewBitfinexScraper(key, secret, Exchanges[dia.BitfinexExchange], scrape, relDB)
 	case dia.CoinBaseExchange:
@@ -196,14 +193,8 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewBalancerV3Scraper(Exchanges[dia.BeetsV3ExchangeSonic], scrape, relDB)
 	case dia.KuCoinExchange:
 		return NewKuCoinScraper(key, secret, Exchanges[dia.KuCoinExchange], scrape, relDB)
-	case dia.BitMartExchange:
-		return NewBitMartScraper(Exchanges[dia.BitMartExchange], scrape, relDB)
 	case dia.MEXCExchange:
 		return NewMEXCScraper(Exchanges[dia.MEXCExchange], scrape, relDB)
-	case dia.BKEXExchange:
-		return NewBKEXScraper(Exchanges[dia.BKEXExchange], dia.BKEXExchange, scrape, relDB)
-	case dia.BKEX2Exchange:
-		return NewBKEXScraper(Exchanges[dia.BKEXExchange], dia.BKEX2Exchange, scrape, relDB)
 	case dia.UniswapExchangeV3:
 		return NewUniswapV3Scraper(Exchanges[dia.UniswapExchangeV3], scrape, relDB)
 	case dia.UniswapExchangeV3Base:
@@ -257,8 +248,6 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewAnyswapScraper(Exchanges[dia.AnyswapExchange], scrape, relDB)
 	case dia.NetswapExchange:
 		return NewUniswapScraper(Exchanges[dia.NetswapExchange], scrape, relDB)
-	case dia.BitMexExchange:
-		return NewBitMexScraper(Exchanges[dia.BitMexExchange], scrape, relDB)
 	case dia.TethysExchange:
 		return NewUniswapScraper(Exchanges[dia.TethysExchange], scrape, relDB)
 	case dia.HermesExchange:
