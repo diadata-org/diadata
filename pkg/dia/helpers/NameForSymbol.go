@@ -3224,8 +3224,6 @@ func NameForSymbol(symbol string) string {
 		return "Engagement Token"
 	case "NOBS":
 		return "No BS Crypto"
-	case "BMX":
-		return "BitMart Token"
 	case "KAN":
 		return "BitKan"
 	case "CDM":
