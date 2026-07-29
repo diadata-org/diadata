@@ -68,14 +68,6 @@ func GetTrades(c *gin.Context) {
 
 var identityKey = "id"
 
-func helloHandler(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	c.JSON(200, gin.H{
-		"userID": claims["id"],
-		"text":   "Hello World.",
-	})
-}
-
 func main() {
 
 	r := gin.New()
@@ -166,7 +158,6 @@ func main() {
 	auth := r.Group(urlFolderPrefix + "/auth")
 	auth.Use(authMiddleware.MiddlewareFunc())
 	{
-		auth.GET("/hello", helloHandler)
 		auth.GET("/refresh_token", authMiddleware.RefreshHandler)
 	}
 
