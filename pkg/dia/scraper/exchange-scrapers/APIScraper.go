@@ -257,8 +257,6 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewAnyswapScraper(Exchanges[dia.AnyswapExchange], scrape, relDB)
 	case dia.NetswapExchange:
 		return NewUniswapScraper(Exchanges[dia.NetswapExchange], scrape, relDB)
-	case dia.BitMexExchange:
-		return NewBitMexScraper(Exchanges[dia.BitMexExchange], scrape, relDB)
 	case dia.TethysExchange:
 		return NewUniswapScraper(Exchanges[dia.TethysExchange], scrape, relDB)
 	case dia.HermesExchange:
