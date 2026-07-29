@@ -280,6 +280,9 @@ jobs:
             diaoraclev2multiupdateservice)
               ecr_repo="nexus/oracles/diaoraclev2multiupdateservice"
               ;;
+            diafxoraclev2multiupdateservice)
+              ecr_repo="nexus/oracles/diafxoraclev2multiupdateservice"
+              ;;
             *)
               # Default: all other services go to nexus/services/
               ecr_repo="nexus/services/${service_name_lower}"
