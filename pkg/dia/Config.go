@@ -113,7 +113,6 @@ const (
 	SolarbeamExchange                  = "Solarbeam"
 	TrisolarisExchange                 = "Trisolaris"
 	ByBitExchange                      = "ByBit"
-	BitMexExchange                     = "BitMex"
 	MultiChain                         = "MultiChain"
 	StellaswapExchange                 = "Stellaswap"
 	WanswapExchange                    = "Wanswap"

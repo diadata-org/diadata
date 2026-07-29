@@ -211,20 +211,6 @@
             "ScraperActive": true
         },
         {
-            "Name": "BitMex",
-            "Centralized": true,
-            "Bridge": false,
-            "Contract": "",
-            "Blockchain": {
-                "Name": ""
-            },
-            "RestAPI": "https://www.bitMex.com/api/v1",
-            "WsAPI": "wss://ws.bitMex.com/realtime",
-            "pairsAPI": "https://www.bitMex.com/api/v1/instruments",
-            "WatchdogDelay": 300,
-            "ScraperActive": true
-        },
-        {
             "Name": "Bitstamp",
             "Centralized": true,
             "Bridge": false,
