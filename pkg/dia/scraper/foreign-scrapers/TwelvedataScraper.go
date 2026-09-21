@@ -27,10 +27,6 @@ type twelvedataAPIFXResponse struct {
 	Timestamp int64   `json:"timestamp"`
 }
 
-type twelvedataAPIStockResponse struct {
-	Price string `json:"price"`
-}
-
 type twelvedataQuoteResponse struct {
 	Symbol    string `json:"symbol"`
 	Name      string `json:"name"`
@@ -126,7 +122,7 @@ func (scraper *TwelvedataScraper) UpdateQuotation() error {
 			Symbol: symbol,
 			Price:  price,
 			Source: sourceTwelvedata,
-			Time:   time.Now(),
+			Time:   time.Unix(quotation.Timestamp, 0),
 		}
 		scraper.foreignScrapper.chanQuotation <- &foreignQuotation
 	}
@@ -221,10 +217,10 @@ func (scraper *TwelvedataScraper) getTwelveFXData(symbol string) (fxRate twelved
 	return
 }
 
-func (scraper *TwelvedataScraper) getTwelveStockData(symbol string) (stockPrice twelvedataAPIStockResponse, err error) {
+func (scraper *TwelvedataScraper) getTwelveStockData(symbol string) (stockPrice twelvedataQuoteResponse, err error) {
 	var response []byte
 
-	apiURL := twelvedataApiBaseString + "price?symbol=" + symbol + "&apikey=" + scraper.apiKey
+	apiURL := twelvedataApiBaseString + "quote?symbol=" + symbol + "&apikey=" + scraper.apiKey
 	response, _, err = utils.GetRequest(apiURL)
 	if err != nil {
 		return
