@@ -4,169 +4,204 @@ const bignumber = ethers.BigNumber;
 
 
 async function tokenPool(api, token) {
-    const tokenPoolMap = new Map();
-    const tokenPoolEntries = await api.query.vtokenMinting.tokenPool.entries();
+  const tokenPoolMap = new Map();
+  const tokenPoolEntries = await api.query.vtokenMinting.tokenPool.entries();
 
-  
-    tokenPoolEntries.forEach((tokenPool) => {
-      let key = tokenPool[0].toHuman();
-      console.log("tokenPool",key)
 
-      let value = tokenPool[1].toHuman();
-      if (key[0].Token) {
-        tokenPoolMap.set(key[0].Token, value);
-      } else if (key[0].Native) {
-        tokenPoolMap.set(key[0].Native, value);
-      }
-    });
+  tokenPoolEntries.forEach((tokenPool) => {
+    let key = tokenPool[0].toHuman();
+    console.log("tokenPool", key)
 
-    console.log("tokenPoolMap",tokenPoolMap);
+    let value = tokenPool[1].toHuman();
+    if (key[0].Token) {
+      tokenPoolMap.set(key[0].Token, value);
+    } else if (key[0].VToken) {
+      // bifrost >= 25003 encodes tokenPool keys as VToken
+      tokenPoolMap.set(key[0].VToken, value);
+    } else if (key[0].Native) {
+      tokenPoolMap.set(key[0].Native, value);
+    }
+  });
 
-  
-    return tokenPoolMap.get(token);
-  }
+  console.log("tokenPoolMap", tokenPoolMap);
 
-  async function token2Pool(api, token) {
-    const tokenPoolMap = new Map();
-    const tokenPoolEntries = await api.query.vtokenMinting.tokenPool.entries();
 
-  
-    tokenPoolEntries.forEach((tokenPool) => {
-      let key = tokenPool[0].toHuman();
- 
-      let value = tokenPool[1].toHuman();
-      if (key[0].Token2) {
-        tokenPoolMap.set(key[0].Token2, value);
-      }
-    });
+  return tokenPoolMap.get(token);
+}
 
- 
-  
-    return tokenPoolMap.get(token);
-  }
+async function token2Pool(api, token) {
+  const tokenPoolMap = new Map();
+  const tokenPoolEntries = await api.query.vtokenMinting.tokenPool.entries();
+
+
+
+  tokenPoolEntries.forEach((tokenPool) => {
+    let key = tokenPool[0].toHuman();
+
+    console.log("key", key)
+
+    let value = tokenPool[1].toHuman();
+    if (key[0].Token2) {
+      tokenPoolMap.set(key[0].Token2, value);
+    }
+  });
+
+  console.log("token2PoolMap", tokenPoolMap);
+
+
+
+  return tokenPoolMap.get(token);
+}
+
+
+async function vTokenPool(api, token) {
+  const tokenPoolMap = new Map();
+  const tokenPoolEntries = await api.query.vtokenMinting.tokenPool.entries();
+
+
+
+  tokenPoolEntries.forEach((tokenPool) => {
+    let key = tokenPool[0].toHuman();
+
+    console.log("key", key)
+
+    let value = tokenPool[1].toHuman();
+    if (key[0].VToken2) {
+      tokenPoolMap.set(key[0].VToken2, value);
+    }
+  });
+
+  console.log("token2PoolMap", tokenPoolMap);
+
+
+
+  return tokenPoolMap.get(token);
+}
 
 async function tokenIssuance(api, token) {
-    const tokenIssuanceMap = new Map();
-    const totalIssuance = await api.query.tokens.totalIssuance.entries();
-  
-    totalIssuance.forEach((totalIssuance) => {
-      let key = totalIssuance[0].toHuman();
-      let value = totalIssuance[1].toHuman();
-  
-      if (key[0].Token) {
-        tokenIssuanceMap.set(key[0].Token, value);
-      } else if (key[0].Native) {
-        tokenIssuanceMap.set(key[0].Native, value);
-      }
-    });
-  
-    return tokenIssuanceMap.get(token);
-  }
+  const tokenIssuanceMap = new Map();
+  const totalIssuance = await api.query.tokens.totalIssuance.entries();
 
-  async function vTokenIssuance(api, token) {
-    const totalIssuance = await api.query.tokens.totalIssuance({vToken:token});
-  
-    return totalIssuance;
-  }
-  async function vToken2Issuance(api, token) {
-    const totalIssuance = await api.query.tokens.totalIssuance({vToken2:token});
-  
-    return totalIssuance;
-  }
+  totalIssuance.forEach((totalIssuance) => {
+    let key = totalIssuance[0].toHuman();
+    let value = totalIssuance[1].toHuman();
 
-  async function getBiFrostValues(token) {
-    let providerurl = "";
-  
-    switch (token.toLowerCase()) {
-      case "KSM".toLowerCase():
-      case "MOVR".toLowerCase():
-      case "BNC".toLowerCase():
-        providerurl = process.env.BIFROST_PARACHAIN_NODE_URL || "wss://bifrost-parachain.api.onfinality.io/public-ws";
-        break;
-      case "DOT".toLowerCase():
-      case "GLMR".toLowerCase():
-      case "ASTR".toLowerCase():
-      case "FIL".toLowerCase():
-        providerurl = process.env.BIFROST_POLKADOT_NODE_URL ||"wss://bifrost-polkadot.api.onfinality.io/public-ws"
+    if (key[0].Token) {
+      tokenIssuanceMap.set(key[0].Token, value);
+    } else if (key[0].Native) {
+      tokenIssuanceMap.set(key[0].Native, value);
     }
-  
-    const wsProvider = new WsProvider(
-      providerurl
-    );
-    let api;
-    try{
-      api = await ApiPromise.create({
+  });
+
+  return tokenIssuanceMap.get(token);
+}
+
+async function vTokenIssuance(api, token) {
+  const totalIssuance = await api.query.tokens.totalIssuance({ vToken: token });
+
+  return totalIssuance;
+}
+async function vToken2Issuance(api, token) {
+  const totalIssuance = await api.query.tokens.totalIssuance({ vToken2: token });
+
+  return totalIssuance;
+}
+
+async function getBiFrostValues(token) {
+  let providerurl = "";
+
+  switch (token.toLowerCase()) {
+    case "KSM".toLowerCase():
+    case "MOVR".toLowerCase():
+    case "BNC".toLowerCase():
+      providerurl = process.env.BIFROST_PARACHAIN_NODE_URL || "wss://bifrost-parachain.api.onfinality.io/public-ws";
+      break;
+    case "DOT".toLowerCase():
+    case "GLMR".toLowerCase():
+    case "ASTR".toLowerCase():
+    case "FIL".toLowerCase():
+      providerurl = process.env.BIFROST_POLKADOT_NODE_URL || "wss://bifrost-polkadot.api.onfinality.io/public-ws"
+  }
+
+  const wsProvider = new WsProvider(
+    providerurl
+  );
+  let api;
+  try {
+    api = await ApiPromise.create({
       provider: wsProvider,
       throwOnConnect: true,
-      throwOnUnknown:true
+      throwOnUnknown: true
     });
-  }catch(e){
-    console.log("throw bifrost api token",token.toLowerCase())
-
+  } catch (e) {
+    console.log("throw bifrost api token", token.toLowerCase())
+    console.log(e)
     throw e
 
   }
-    let tokeninpool;
-    let vtokenIssuance;
-    let decimal;
-  
-    if (token.toLowerCase() == "DOT".toLowerCase()){
-     // 0 represents dot token in bifrost polkadot
-      tokeninpool = await token2Pool(api, "0");
-      vtokenIssuance = await vToken2Issuance(api, "0");
-      decimal =  10
+  let tokeninpool;
+  let vtokenIssuance;
+  let decimal;
 
-    } else if (token.toLowerCase() == "GLMR".toLowerCase()){
-      // 1 represents glmr token in bifrost polkadot
-       tokeninpool = await token2Pool(api, "1");
-       vtokenIssuance = await vToken2Issuance(api, "1");
-       decimal =  18
+  if (token.toLowerCase() == "DOT".toLowerCase()) {
+    // 0 represents dot token in bifrost polkadot
+    tokeninpool = await vTokenPool(api, "0");
+    vtokenIssuance = await vToken2Issuance(api, "0");
+    decimal = 10
 
-    } else if (token.toLowerCase() == "ASTR".toLowerCase()){
-      // 3 represents astr token in bifrost polkadot
-       tokeninpool = await token2Pool(api, "3");
-       vtokenIssuance = await vToken2Issuance(api, "3");
-       decimal =  18
+  } else if (token.toLowerCase() == "GLMR".toLowerCase()) {
+    // 1 represents glmr token in bifrost polkadot
+    tokeninpool = await vTokenPool(api, "1");
+    vtokenIssuance = await vToken2Issuance(api, "1");
+    decimal = 18
 
-    } else if (token.toLowerCase() == "FIL".toLowerCase()){
-      // 4 represents fil token in bifrost polkadot
-       tokeninpool = await token2Pool(api, "4");
-       vtokenIssuance = await vToken2Issuance(api, "4");
-       decimal =  18
+  } else if (token.toLowerCase() == "ASTR".toLowerCase()) {
+    // 3 represents astr token in bifrost polkadot
+    tokeninpool = await vTokenPool(api, "3");
+    vtokenIssuance = await vToken2Issuance(api, "3");
+    decimal = 18
 
-    } else if (token.toLowerCase() == "MOVR".toLowerCase()){
-       tokeninpool = await tokenPool(api, token);
+  } else if (token.toLowerCase() == "FIL".toLowerCase()) {
+    // 4 represents fil token in bifrost polkadot
+    tokeninpool = await vTokenPool(api, "4");
+    vtokenIssuance = await vToken2Issuance(api, "4");
+    decimal = 18
 
-       vtokenIssuance = await vTokenIssuance(api, token);
-       decimal =  18
+  } else if (token.toLowerCase() == "MOVR".toLowerCase()) {
+    tokeninpool = await tokenPool(api, token);
 
-    }else{
-      tokeninpool = await tokenPool(api, token);
-      // let tokenIssuance = await bifrosttokenIssuance(api, token);
-        vtokenIssuance = await vTokenIssuance(api, token);
-        decimal = 12
+    vtokenIssuance = await vTokenIssuance(api, token);
+    decimal = 18
 
-    }
-     
-  
- 
-  
-    return {
-      total_backable: bignumber.from(tokeninpool.replaceAll(",", "")).toString(),
-      total_issued: vtokenIssuance.toString(),
-      decimal: decimal,
-      token: token,
-      time: Date.now(),
-    };
+  } else {
+    tokeninpool = await tokenPool(api, token);
+    // let tokenIssuance = await bifrosttokenIssuance(api, token);
+    vtokenIssuance = await vTokenIssuance(api, token);
+    decimal = 12
+
   }
-  
-  
+
+
+  console.log("tokeninpool", tokeninpool)
+
+  await api.disconnect();
+
+  return {
+    total_backable: bignumber.from(tokeninpool.replaceAll(",", "")).toString(),
+    total_issued: vtokenIssuance.toString(),
+    decimal: decimal,
+    token: token,
+    time: Date.now(),
+  };
+}
+
+
 
 module.exports = {
   tokenPool: tokenPool,
-  bifrosttokenIssuance:tokenIssuance,
-  vTokenIssuance:vTokenIssuance,
-  getBiFrostValues:getBiFrostValues,
+  bifrosttokenIssuance: tokenIssuance,
+  vTokenIssuance: vTokenIssuance,
+  getBiFrostValues: getBiFrostValues,
 };
 
 // {
