@@ -23,6 +23,8 @@ function pricekey(token) {
   return "BASE_PARICE_" + token;
 }
 
+const cacheTTLSeconds = parseInt(process.env.CACHE_TTL_SECONDS, 10) || 600;
+
 let cache;
 
 let isRedisStarted;
@@ -116,18 +118,18 @@ const allowedTokens = [
     source: "stDOT",
     issuer: "Lido",
   },
-  {
-    vtoken: "rETH",
-    token: "ETH",
-    source: "rETH",
-    issuer: "RocketPool",
-  },
-  {
-    vtoken: "stETH",
-    token: "ETH",
-    source: "stETH",
-    issuer: "Lido",
-  },
+  // {
+  //   vtoken: "rETH",
+  //   token: "ETH",
+  //   source: "rETH",
+  //   issuer: "RocketPool",
+  // },
+  // {
+  //   vtoken: "stETH",
+  //   token: "ETH",
+  //   source: "stETH",
+  //   issuer: "Lido",
+  // },
   // {
   //   vtoken: "cbETH",
   //   token: "ETH",
@@ -151,6 +153,22 @@ async function getPrice(asset) {
   return ethprice.Price;
 }
 
+const { ethers } = require("ethers");
+
+const luminaOracleAbi = [
+  "function getValue(string memory key) external view returns (uint128, uint128)",
+];
+
+async function getPriceFromLumina(asset) {
+  const luminaOracleAddress = process.env.LUMINA_ORACLE_ADDRESS || "0xBd82Fc0067CA5977b86c6EDB579f90DFcFb62D7d";
+  const provider = new ethers.providers.JsonRpcProvider(process.env.DIA_RPC_URL);
+  const oracle = new ethers.Contract(luminaOracleAddress, luminaOracleAbi, provider);
+
+  const [price] = await oracle.getValue(asset + "/USD");
+
+  return parseFloat(ethers.utils.formatUnits(price, 18));
+}
+
 module.exports = {
   collaterlaratio: collaterlaratio,
   tokenkey: tokenkey,
@@ -158,5 +176,7 @@ module.exports = {
   createResponse: createResponse,
   allowedTokens: allowedTokens,
   getPrice: getPrice,
+  getPriceFromLumina: getPriceFromLumina,
   pricekey: pricekey,
+  cacheTTLSeconds: cacheTTLSeconds,
 };

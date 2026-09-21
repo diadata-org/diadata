@@ -16,8 +16,9 @@ const {
   tokenkey,
   redis,
   allowedTokens,
-  getPrice,
+  getPriceFromLumina,
   pricekey,
+  cacheTTLSeconds,
 } = require("./utils");
 
 let cache = redis();
@@ -25,25 +26,31 @@ let cache = redis();
 async function cronstart() {
   for (const value of allowedTokens) {
 
-    console.log("allowedTokens",value);
+    console.log("allowedTokens", value);
     switch (value.source) {
       case "interlay":
         {
           let saved
-          try{
-             saved = await getInterlayValues(value.vtoken);
-              if (saved){
-              cache.set("interlayraw"+ value.vtoken,JSON.stringify(saved))
-             }else{
+          try {
+            saved = await getInterlayValues(value.vtoken);
+            if (saved) {
+              cache.set("interlayraw" + value.vtoken, JSON.stringify(saved), { EX: cacheTTLSeconds })
+            } else {
               continue
-             }
-          }catch(e){
+            }
+          } catch (e) {
             console.log("interlay cron error", value.vtoken, e.message);
             continue;
           }
-          let btcprice = await getPrice("BTC");
- 
- 
+          let btcprice;
+          try {
+            btcprice = await getPriceFromLumina("BTC");
+          } catch (e) {
+            console.log("lumina price error", "BTC", e.message);
+            continue;
+          }
+
+
           cache.set(
             tokenkey("interlay", value.vtoken),
             JSON.stringify({
@@ -55,37 +62,44 @@ async function cronstart() {
               },
               timestamp: Date.now(),
               fair_price:
-                (saved.total_backable/1e8) / (saved.total_issued/1e8) > 1
+                (saved.total_backable / 1e8) / (saved.total_issued / 1e8) > 1
                   ? btcprice
                   : (btcprice * saved.total_backable) / saved.total_issued,
-            })
+            }),
+            { EX: cacheTTLSeconds }
           );
         }
         break;
       case "bifrost":
         {
           let saved;
-          try{
-             saved = await getBiFrostValues(value.token);
-         }catch(e){
-          console.log("bifrost cron error", value.token, e.message);
-          continue;
-         }
-          let btcprice = await getPrice(value.token);
+          try {
+            saved = await getBiFrostValues(value.token);
+          } catch (e) {
+            console.log("bifrost cron error", value.token, e.message);
+            continue;
+          }
+          let btcprice;
+          try {
+            btcprice = await getPriceFromLumina(value.token);
+          } catch (e) {
+            console.log("lumina price error", value.token, e.message);
+            continue;
+          }
 
- 
-          let ratio = saved.total_backable/saved.total_issued;
 
-          let fairprice =  ratio  *btcprice
+          let ratio = saved.total_backable / saved.total_issued;
+
+          let fairprice = ratio * btcprice
 
           let decimal = Math.pow(10, saved.decimal);
- 
-           if(value.token=="DOT"){
+
+          if (value.token == "DOT") {
             decimal = 1e10
           }
 
 
-         
+
 
           cache.set(
             tokenkey("bifrost", value.vtoken),
@@ -96,9 +110,10 @@ async function cronstart() {
                 ratio: saved.total_backable / saved.total_issued,
                 // decimal: saved.decimal,
               },
-              fair_price:fairprice,
+              fair_price: fairprice,
               timestamp: Date.now()
-            })
+            }),
+            { EX: cacheTTLSeconds }
           );
         }
         break;
@@ -108,7 +123,8 @@ async function cronstart() {
             let stDOTcollateral = await getValuestdot();
             cache.set(
               tokenkey("stDOT", value.vtoken),
-              JSON.stringify(stDOTcollateral)
+              JSON.stringify(stDOTcollateral),
+              { EX: cacheTTLSeconds }
             );
           } catch (e) {
             console.log("stDOT cron error", e.message);
@@ -121,7 +137,8 @@ async function cronstart() {
           let astarcollateral = await getValueAstar();
           cache.set(
             tokenkey("astar", value.vtoken),
-            JSON.stringify(astarcollateral)
+            JSON.stringify(astarcollateral),
+            { EX: cacheTTLSeconds }
           );
         }
         break;
@@ -130,7 +147,8 @@ async function cronstart() {
           let stETHcollateral = await getValuesteth();
           cache.set(
             tokenkey("stETH", value.vtoken),
-            JSON.stringify(stETHcollateral)
+            JSON.stringify(stETHcollateral),
+            { EX: cacheTTLSeconds }
           );
         }
         break;
@@ -146,16 +164,21 @@ async function cronstart() {
         let rETHcollateral = await getValuereth();
         cache.set(
           tokenkey("rETH", value.vtoken),
-          JSON.stringify(rETHcollateral)
+          JSON.stringify(rETHcollateral),
+          { EX: cacheTTLSeconds }
         );
       }
     }
 
-    let baseAssetPrice = await getPrice(value.token);
-    await cache.set(pricekey(value.token), baseAssetPrice);
+    try {
+      let baseAssetPrice = await getPriceFromLumina(value.token);
+      await cache.set(pricekey(value.token), baseAssetPrice, { EX: cacheTTLSeconds });
+    } catch (e) {
+      console.log("lumina price error", value.token, e.message);
+    }
   }
 
-   
+
 }
 
 module.exports = {
