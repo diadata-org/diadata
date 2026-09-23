@@ -4,6 +4,8 @@ const ethers = require("ethers");
 const bignumber = ethers.BigNumber;
 const {createResponse,getPrice} = require("./utils")
 
+// for exchange rate decoding
+const FIXEDI128_SCALING_FACTOR = 18;
 
 async function collateralCurrencies(api) {
     const collateralCurrencies =
@@ -30,8 +32,13 @@ async function collateralCurrencies(api) {
     const totalUserVaultCollateralsmap = new Map();
   
     totalUserVaultCollaterals.map((totalUserVaultCollateral) => {
-      let key = totalUserVaultCollateral[0].toHuman();
+
+       let key = totalUserVaultCollateral[0].toHuman();
+      console.log("totalUserVaultCollaterals----key-----",key)
+
       let value = totalUserVaultCollateral[1].toHuman();
+      console.log("totalUserVaultCollaterals-----value----",value)
+
       totalUserVaultCollateralsmap.set(JSON.stringify(key[0].collateral), value);
     });
     return totalUserVaultCollateralsmap;
@@ -53,6 +60,74 @@ async function collateralCurrencies(api) {
     return oracleaggregratemap;
   }
   
+  async function lending(api,oracleaggregatormap){
+    const data = (await api.query.loans.markets.entries());
+
+    for (let i = 0; i < data.length; i++) {
+      const [underlyingId, marketData] = data[i];
+  
+      const isActive = marketData?.toJSON().state == "Active";
+      console.log("---------")
+
+      console.log("lending",isActive)
+      console.log("underlyingId",i)
+      console.log("---------")
+
+
+      if (!isActive) {
+        continue;
+      }
+  
+      const lendTokenId = marketData.toJSON().lendTokenId;
+      
+      const [issuanceExchangeRate, totalIssuance, totalBorrows]  = await Promise.all([
+        api.query.loans.exchangeRate(underlyingId.toHuman()[0]).then((rawExchangeRate) => 
+          parseInt(rawExchangeRate)  / (10 ** FIXEDI128_SCALING_FACTOR)
+        ),
+        api.query.tokens.totalIssuance(lendTokenId),
+        api.query.loans.totalBorrows(underlyingId.toHuman()[0]),
+      ]);
+  
+      const totalTvl = (totalIssuance * issuanceExchangeRate) - totalBorrows;
+
+      console.log("--------")
+
+      let oac = oracleaggregatormap.get(JSON.stringify(underlyingId.toHuman()[0]))
+      try{
+
+      
+      if(oac){
+
+        const data = lendTokenId;
+        const matchData = {};
+
+        matchData.LendToken = data.lendToken.toString(); // converting 4 to string
+         
+        oracleaggregatormap.set(JSON.stringify(matchData),oac)
+
+      }
+    } catch(e){
+        console.log("err",e)
+        console.log(lendTokenId)
+      }
+
+
+
+      console.log("underlyingId",underlyingId.toHuman()[0])
+      console.log("underlyingId o",oac)
+
+
+      console.log("lendTokenId",lendTokenId)
+      console.log("totalIssuance",totalIssuance.toString())
+      console.log("issuanceExchangeRate",issuanceExchangeRate)
+
+
+
+      console.log("totalTvl",totalTvl)
+    }
+
+return oracleaggregatormap
+  }
   async function totalIssuance(api) {
     const totalIssuances = await api.query.tokens.totalIssuance.entries();
     const totalIssuancesemap = new Map();
@@ -67,14 +142,14 @@ async function collateralCurrencies(api) {
   }
   
   async function getInterlayValues(token) {
-    let providerurl = "";
+     let providerurl = "";
   
     switch (token) {
       case "IBTC":
         providerurl = process.env.INTERLAY_NODE_URL || "wss://interlay-rpc.dwellir.com";
         break;
       case "KBTC":
-        providerurl = process.env.KITSUNGI_NODE_URL || "wss://kintsugi-rpc.dwellir.com";
+        providerurl = process.env.KITSUNGI_NODE_URL || "wss://kintsugi.api.onfinality.io/public-ws";
         break;
     }
     const wsProvider = new WsProvider(
@@ -95,7 +170,6 @@ async function collateralCurrencies(api) {
 throw e
   }
 
- 
   
     let collateralCurrenciesmap = new Map();
     let totalUserVaultCollateralmap = new Map();
@@ -109,6 +183,9 @@ throw e
     console.log("totalUserVaultCollateral", totalUserVaultCollateralmap);
   
     oracleaggregatormap = await oracleaggregrate(api);
+
+    oracleaggregatormap = await lending(api,oracleaggregatormap)
+
     console.log("oracleaggregrate", oracleaggregatormap);
   
     totalIssuancesemap = await totalIssuance(api);
@@ -123,16 +200,25 @@ throw e
   */
   
     let total_backable = bignumber.from(0);
+
+    let consideredTokens = [];
   
     for (let [collateralCurrency,value] of collateralCurrenciesmap) {
       console.log("collateralCurrency", collateralCurrency);
 
       let  collateralCurrencyString = totalUserVaultCollateralmap.get(collateralCurrency)
+
+      console.log("collateralCurrencycollateralCurrencyString", collateralCurrency);
+
+
       let totalUserVaultCollateralcurrency;
       if(collateralCurrencyString){
         totalUserVaultCollateralcurrency = bignumber.from(
           totalUserVaultCollateralmap.get(collateralCurrency).replaceAll(",", "")
         );
+      }else{
+        console.log("collateralCurrency not found in totalUserVaultCollateralmap", collateralCurrency);
+          
       }
 
       
@@ -141,13 +227,16 @@ throw e
      let oracleaggregatecurrency;
 
      if(oac){
-      console.log("----------",collateralCurrency,oac)
 
+      console.log("oac of",collateralCurrency)
+ 
       oracleaggregatecurrency = bignumber.from(
         oracleaggregatormap.get(collateralCurrency).replaceAll(",", "")
       );
      }else{
-      continue
+      console.log("oac not found for", collateralCurrency);
+
+       continue
      }
      
         
@@ -170,15 +259,18 @@ throw e
 
   
       if(totalUserVaultCollateralcurrency){
-        console.log("adding ---------this ---",totalUserVaultCollateralcurrency.div(oracleaggregatecurrency).toString())
-        console.log(" ---------oracleaggregatecurrency ---",oracleaggregatecurrency.toString())
-
-        console.log(" ---------totalUserVaultCollateralcurrency ---",totalUserVaultCollateralcurrency.toString())
 
 
-        total_backable = total_backable.add(
-          totalUserVaultCollateralcurrency.div(oracleaggregatecurrency)
+     
+        let by = totalUserVaultCollateralcurrency.div(oracleaggregatecurrency).toString()
+        consideredTokens.push({collateralCurrency,by})
+
+
+         total_backable = total_backable.add(
+          by
         );
+       
+
       }
 
       console.log("total_backable",total_backable.toString())
@@ -186,8 +278,7 @@ throw e
       
     }
   
-    console.log("totalIssuancesemap", totalIssuancesemap);
-
+ 
     let t = {}
     t.Token = token
     let total_issued = bignumber.from(
@@ -205,6 +296,7 @@ throw e
       total_issued: total_issued.toString(),
       decimal: 8,
       token: token,
+      consideredTokens,
     };
   
     // return total_backable,total_issued;
