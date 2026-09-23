@@ -267,7 +267,7 @@ func (datastore *DB) GetAssetPriceUSDCache(asset dia.Asset) (price float64, err 
 	return
 }
 
-// GetSortedQuotations returns quotations for all assets in @assets, sorted by 24h volume
+// GetSortedAssetQuotations returns quotations for all assets in @assets, sorted by 24h volume
 // in descending order.
 func (datastore *DB) GetSortedAssetQuotations(assets []dia.Asset) ([]AssetQuotation, error) {
 	var quotations []AssetQuotation
@@ -343,7 +343,7 @@ func (datastore *DB) GetOldestQuotation(asset dia.Asset) (quotation AssetQuotati
 // HISTORICAL QUOTES
 // ------------------------------------------------------------------------------
 
-// SetHistoricalQuote stores a historical quote for an asset symbol at a specific time into postgres.
+// SetHistoricalQuotation stores a historical quote for an asset symbol at a specific time into postgres.
 func (rdb *RelDB) SetHistoricalQuotation(quotation AssetQuotation) error {
 	queryString := `
 	INSERT INTO %s (asset_id,price,quote_time,source) 
