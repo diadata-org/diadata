@@ -308,8 +308,6 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapV3Scraper(Exchanges[dia.AerodromeSlipstreamExchange], scrape, relDB)
 	case dia.VelodromeSlipstreamExchange:
 		return NewUniswapV3Scraper(Exchanges[dia.VelodromeSlipstreamExchange], scrape, relDB)
-	case dia.CoinExExchange:
-		return NewCoinExScraper(Exchanges[dia.CoinExExchange], scrape, relDB)
 	case dia.ShadowV2Exchange:
 		return NewUniswapScraper(Exchanges[dia.ShadowV2Exchange], scrape, relDB)
 	case dia.ShadowV3Exchange:
