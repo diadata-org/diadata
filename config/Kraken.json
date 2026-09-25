@@ -393,6 +393,12 @@
         {
             "Exchange": "Kraken",
             "Ignore": false,
+            "ForeignName": "HYPEUSD",
+            "Symbol": "HYPE"
+        },
+        {
+            "Exchange": "Kraken",
+            "Ignore": false,
             "ForeignName": "ICPUSD",
             "Symbol": "ICP"
         },
@@ -908,7 +914,7 @@
         },
         {
             "Exchange": "Kraken",
-            "ForeignName": "ZECBTC",
+            "ForeignName": "ZECUSD",
             "Ignore": false,
             "Symbol": "ZEC"
         }

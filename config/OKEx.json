@@ -1136,6 +1136,12 @@
         },
         {
             "Exchange": "OKEx",
+            "ForeignName": "HYPE-USDT",
+            "Ignore": false,
+            "Symbol": "HYPE"
+        },
+        {
+            "Exchange": "OKEx",
             "ForeignName": "ICX-BTC",
             "Ignore": false,
             "Symbol": "ICX"
@@ -3218,19 +3224,7 @@
         },
         {
             "Exchange": "OKEx",
-            "ForeignName": "ZEC-BTC",
-            "Ignore": false,
-            "Symbol": "ZEC"
-        },
-        {
-            "Exchange": "OKEx",
-            "ForeignName": "ZEC-ETH",
-            "Ignore": false,
-            "Symbol": "ZEC"
-        },
-        {
-            "Exchange": "OKEx",
-            "ForeignName": "ZEC-OKB",
+            "ForeignName": "ZEC-USDC",
             "Ignore": false,
             "Symbol": "ZEC"
         },
