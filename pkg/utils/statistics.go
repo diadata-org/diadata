@@ -40,7 +40,7 @@ func ComputeMedian(samples []float64) (median float64) {
 	return
 }
 
-// vwap returns the volume weighted average price for the slices @prices and @volumes.
+// Vwap returns the volume weighted average price for the slices @prices and @volumes.
 func Vwap(prices []float64, volumes []float64) (float64, error) {
 	//log.Info("prices, volumes: ", prices, volumes)
 	if len(prices) != len(volumes) {
