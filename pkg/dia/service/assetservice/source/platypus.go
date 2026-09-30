@@ -121,7 +121,7 @@ func (scraper *PlatypusAssetSource) fetchPools(registry platypusRegistry) error 
 		asset, errPoolInfo := contractMaster.PoolInfo(&bind.CallOpts{}, big.NewInt(int64(i)))
 		if errPoolInfo != nil {
 			log.Error("PoolInfo: ", errPoolInfo)
-			return err
+			return errPoolInfo
 		}
 
 		errPoolData := scraper.loadPoolData(asset.LpToken.Hex())
