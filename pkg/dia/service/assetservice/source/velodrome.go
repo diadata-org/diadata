@@ -51,8 +51,6 @@ func NewVelodromeAssetSource(exchange dia.Exchange, relDB *models.RelDB) (uas *V
 		uas = makeVelodromeAssetSource(exchange, restDialBase, relDB, velodromeWaitMilliseconds)
 	case dia.AerodromeV1Exchange:
 		uas = makeVelodromeAssetSource(exchange, restDialBase, relDB, velodromeWaitMilliseconds)
-	case dia.VelodromeExchangeSwellchain:
-		uas = makeVelodromeAssetSource(exchange, restDialSwellchain, relDB, velodromeWaitMilliseconds)
 	}
 
 	velodromeExchangeFactoryContractAddress = exchange.Contract
