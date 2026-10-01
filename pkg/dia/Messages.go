@@ -54,7 +54,6 @@ const (
 	FILECOIN                                = "Filecoin"
 	HYDRATION                               = "Hydration"
 	STACKS                                  = "Stacks"
-	SWELLCHAIN                              = "Swellchain"
 	SONIC                                   = "Sonic"
 )
 
