@@ -131,8 +131,6 @@ func NewUniswapAssetSource(exchange dia.Exchange, relDB *models.RelDB) (uas *Uni
 		uas = makeUniswapAssetSource(exchange, restDialEvmos, relDB, evmosWaitMilliseconds)
 	case dia.ArthswapExchange:
 		uas = makeUniswapAssetSource(exchange, restDialAstar, relDB, astarWaitMilliseconds)
-	case dia.StellaswapExchange:
-		uas = makeUniswapAssetSource(exchange, restDialMoonbeam, relDB, moonbeamWaitMilliseconds)
 	case dia.WanswapExchange:
 		uas = makeUniswapAssetSource(exchange, restDialWanchain, relDB, wanchainWaitMilliseconds)
 	case dia.PearlfiExchangeTestnet:
