@@ -144,8 +144,6 @@ func NewUniswapScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *mo
 		us = makeUniswapPoolScraper(exchange, pathToPools, restDialAstar, relDB, datastore, astarWaitMilliseconds)
 	case dia.BiswapExchange:
 		us = makeUniswapPoolScraper(exchange, pathToPools, restDialAstar, relDB, datastore, astarWaitMilliseconds)
-	case dia.StellaswapExchange:
-		us = makeUniswapPoolScraper(exchange, pathToPools, restDialMoonbeam, relDB, datastore, moonbeamWaitMilliseconds)
 	case dia.WanswapExchange:
 		us = makeUniswapPoolScraper(exchange, pathToPools, restDialWanchain, relDB, datastore, wanchainWaitMilliseconds)
 	case dia.NileV1Exchange:
