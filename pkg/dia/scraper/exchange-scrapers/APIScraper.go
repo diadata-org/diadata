@@ -49,8 +49,6 @@ func init() {
 	evmID["250"] = dia.FANTOM
 	evmID["56"] = dia.BINANCESMARTCHAIN
 	evmID["43114"] = dia.BINANCESMARTCHAIN
-	evmID["1284"] = dia.MOONBEAM
-	evmID["1285"] = dia.MOONRIVER
 	evmID["42161"] = dia.ARBITRUM
 	evmID["43114"] = dia.AVALANCHE
 
@@ -165,8 +163,6 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewCurveFIScraper(Exchanges[dia.CurveFIExchange], scrape, relDB)
 	case dia.CurveFIExchangeFantom:
 		return NewCurveFIScraper(Exchanges[dia.CurveFIExchangeFantom], scrape, relDB)
-	case dia.CurveFIExchangeMoonbeam:
-		return NewCurveFIScraper(Exchanges[dia.CurveFIExchangeMoonbeam], scrape, relDB)
 	case dia.CurveFIExchangePolygon:
 		return NewCurveFIScraper(Exchanges[dia.CurveFIExchangePolygon], scrape, relDB)
 	case dia.CurveFIExchangeArbitrum:
@@ -262,8 +258,6 @@ func NewAPIScraper(exchange string, scrape bool, key string, secret string, relD
 		return NewUniswapScraper(Exchanges[dia.BiswapExchange], scrape, relDB)
 	case dia.ArthswapExchange:
 		return NewUniswapScraper(Exchanges[dia.ArthswapExchange], scrape, relDB)
-	case dia.StellaswapExchange:
-		return NewUniswapScraper(Exchanges[dia.StellaswapExchange], scrape, relDB)
 	case dia.WanswapExchange:
 		return NewUniswapScraper(Exchanges[dia.WanswapExchange], scrape, relDB)
 	case dia.TraderJoeExchangeV2_1:

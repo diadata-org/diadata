@@ -77,10 +77,6 @@ func NewCurveFIScraper(exchange dia.Exchange, relDB *models.RelDB, datastore *mo
 		// basePools := curveRegistry{Type: 1, Address: common.HexToAddress(exchange.Contract)}
 		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x686d67265703D1f124c45E33d47d794c566889Ba")}
 		registries = []curveRegistry{stableSwapFactory}
-	case dia.CurveFIExchangeMoonbeam:
-		// basePools := curveRegistry{Type: 1, Address: common.HexToAddress(exchange.Contract)}
-		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x4244eB811D6e0Ef302326675207A95113dB4E1F8")}
-		registries = []curveRegistry{stableSwapFactory}
 	case dia.CurveFIExchangePolygon:
 		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x722272D36ef0Da72FF51c5A65Db7b870E2e8D4ee")}
 		registries = []curveRegistry{stableSwapFactory}

@@ -63,13 +63,6 @@ func NewCurvefiAssetSource(exchange dia.Exchange) *CurvefiAssetSource {
 		registries := []curveRegistry{stableSwapFactory}
 		cas = makeCurvefiAssetSource(exchange, registries, curveRestDial, fantomWaitMilliseconds)
 
-	case dia.CurveFIExchangeMoonbeam:
-		exchange.Contract = ""
-		// basePools := curveRegistry{Type: 1, Address: common.HexToAddress(exchange.Contract)}
-		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x4244eB811D6e0Ef302326675207A95113dB4E1F8")}
-		registries := []curveRegistry{stableSwapFactory}
-		cas = makeCurvefiAssetSource(exchange, registries, curveRestDial, moonbeamWaitMilliseconds)
-
 	case dia.CurveFIExchangePolygon:
 		exchange.Contract = ""
 		// basePools := curveRegistry{Type: 1, Address: common.HexToAddress(exchange.Contract)}

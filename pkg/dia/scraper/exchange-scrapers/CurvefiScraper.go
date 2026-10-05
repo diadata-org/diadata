@@ -195,12 +195,6 @@ func NewCurveFIScraper(exchange dia.Exchange, scrape bool, relDB *models.RelDB) 
 		scraper.registriesUnderlying = []curveRegistry{stableSwapFactory}
 		scraper.screenPools = false
 
-	case dia.CurveFIExchangeMoonbeam:
-		scraper = makeCurvefiScraper(exchange, curveRestDial, curveWsDial, relDB)
-		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x4244eB811D6e0Ef302326675207A95113dB4E1F8")}
-		scraper.registriesUnderlying = []curveRegistry{stableSwapFactory}
-		scraper.screenPools = false
-
 	case dia.CurveFIExchangePolygon:
 		scraper = makeCurvefiScraper(exchange, curveRestDial, curveWsDial, relDB)
 		stableSwapFactory := curveRegistry{Type: 2, Address: common.HexToAddress("0x722272D36ef0Da72FF51c5A65Db7b870E2e8D4ee")}
