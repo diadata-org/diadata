@@ -233,7 +233,7 @@ func (scraper *TwelvedataScraper) getTwelveStockData(symbol string) (stockPrice 
 func (scraper *TwelvedataScraper) getTwelveQuote(symbol string) (commodity twelvedataQuoteResponse, err error) {
 	var response []byte
 
-	apiURL := twelvedataApiBaseString + "quote?symbol=" + symbol + "&apikey=" + scraper.apiKey
+	apiURL := twelvedataApiBaseString + "quote?symbol=" + symbol + "&exchange=commodity" + "&apikey=" + scraper.apiKey
 	response, _, err = utils.GetRequest(apiURL)
 	if err != nil {
 		return
