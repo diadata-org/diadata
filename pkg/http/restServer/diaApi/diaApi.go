@@ -1321,23 +1321,22 @@ func (env *Env) GetTwelvedataFiatQuotations(c *gin.Context) {
 	)
 
 	q, err = env.DataStore.GetForeignQuotationInflux(symbol, "TwelveData", timestamp)
-	if err != nil || q.Price == 0 {
+	if err != nil {
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
+	}
+	if q.Time.IsZero() || q.Price == 0 {
 		reverse = true
 		symbol = assets[1] + "/" + assets[0]
 		log.Info("try reverse order: ", symbol)
 		q, errRev = env.DataStore.GetForeignQuotationInflux(symbol, "TwelveData", timestamp)
-		if errRev != nil || q.Price == 0 {
-			if q.Price == 0 {
-				errRev = errors.New("not found")
-			}
-			if errors.Is(errRev, redis.Nil) {
-				restApi.SendError(c, http.StatusNotFound, errRev)
-				return
-			} else {
-				log.Info(c)
-				restApi.SendError(c, http.StatusInternalServerError, errRev)
-				return
-			}
+		if errRev != nil {
+			restApi.SendError(c, http.StatusInternalServerError, errRev)
+			return
+		}
+		if q.Time.IsZero() || q.Price == 0 {
+			restApi.SendError(c, http.StatusNotFound, fmt.Errorf("no quotation found for symbol %s", c.Param("symbol")))
+			return
 		}
 	}
 
@@ -1350,14 +1349,17 @@ func (env *Env) GetTwelvedataFiatQuotations(c *gin.Context) {
 		Price:     q.Price,
 		Timestamp: q.Time,
 	}
-	if err == nil && !reverse {
+	if !reverse {
 		c.JSON(http.StatusOK, response)
 		return
 	}
 	if errRev == nil && q.Price != 0 {
 		response.Price = 1 / q.Price
 		c.JSON(http.StatusOK, response)
+		return
 	}
+
+	restApi.SendError(c, http.StatusNotFound, fmt.Errorf("no quotation found for symbol %s", c.Param("symbol")))
 }
 
 // -----------------------------------------------------------------------------
@@ -1379,24 +1381,26 @@ func (env *Env) GetTwelvedataStockQuotations(c *gin.Context) {
 
 	q, err := env.DataStore.GetForeignQuotationInflux(c.Param("symbol"), "TwelveData", timestamp)
 	if err != nil {
-		if errors.Is(err, redis.Nil) {
-			restApi.SendError(c, http.StatusNotFound, err)
-		} else {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		}
-	} else {
-		// Format response.
-		response := struct {
-			Ticker    string
-			Price     float64
-			Timestamp time.Time
-		}{
-			Ticker:    c.Param("symbol"),
-			Price:     q.Price,
-			Timestamp: q.Time,
-		}
-		c.JSON(http.StatusOK, response)
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
 	}
+
+	if q.Time.IsZero() {
+		restApi.SendError(c, http.StatusNotFound, fmt.Errorf("no quotation found for symbol %s", c.Param("symbol")))
+		return
+	}
+
+	// Format response.
+	response := struct {
+		Ticker    string
+		Price     float64
+		Timestamp time.Time
+	}{
+		Ticker:    c.Param("symbol"),
+		Price:     q.Price,
+		Timestamp: q.Time,
+	}
+	c.JSON(http.StatusOK, response)
 }
 
 func (env *Env) GetStockSymbols(c *gin.Context) {
@@ -1501,34 +1505,35 @@ func (env *Env) GetTwelvedataCommodityQuotation(c *gin.Context) {
 		return
 	}
 	timestamp := time.Unix(timestampInt, 0)
-	if len(strings.Split(c.Param("symbol"), "-")) != 2 {
-		restApi.SendError(c, http.StatusNotFound, errors.New("symbol format not known"))
-		return
+	symbol := c.Param("symbol")
+	if len(strings.Split(symbol, "-")) == 2 {
+		symbol = strings.Split(c.Param("symbol"), "-")[0] + "/" + strings.Split(c.Param("symbol"), "-")[1]
 	}
-	symbol := strings.Split(c.Param("symbol"), "-")[0] + "/" + strings.Split(c.Param("symbol"), "-")[1]
 
 	q, err := env.DataStore.GetForeignQuotationInflux(symbol, "TwelveData", timestamp)
 	if err != nil {
-		if errors.Is(err, redis.Nil) {
-			restApi.SendError(c, http.StatusNotFound, err)
-		} else {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		}
-	} else {
-		// Format response.
-		response := struct {
-			Ticker    string
-			Name      string
-			Price     float64
-			Timestamp time.Time
-		}{
-			Ticker:    c.Param("symbol"),
-			Name:      q.Name,
-			Price:     q.Price,
-			Timestamp: q.Time,
-		}
-		c.JSON(http.StatusOK, response)
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
 	}
+
+	if q.Time.IsZero() {
+		restApi.SendError(c, http.StatusNotFound, fmt.Errorf("no quotation found for symbol %s", c.Param("symbol")))
+		return
+	}
+
+	// Format response.
+	response := struct {
+		Ticker    string
+		Name      string
+		Price     float64
+		Timestamp time.Time
+	}{
+		Ticker:    c.Param("symbol"),
+		Name:      q.Name,
+		Price:     q.Price,
+		Timestamp: q.Time,
+	}
+	c.JSON(http.StatusOK, response)
 }
 
 func (env *Env) GetTwelvedataETFQuotation(c *gin.Context) {
@@ -1545,26 +1550,28 @@ func (env *Env) GetTwelvedataETFQuotation(c *gin.Context) {
 
 	q, err := env.DataStore.GetForeignQuotationInflux(c.Param("symbol"), "TwelveData", timestamp)
 	if err != nil {
-		if errors.Is(err, redis.Nil) {
-			restApi.SendError(c, http.StatusNotFound, err)
-		} else {
-			restApi.SendError(c, http.StatusInternalServerError, err)
-		}
-	} else {
-		// Format response.
-		response := struct {
-			Ticker    string
-			Name      string
-			Price     float64
-			Timestamp time.Time
-		}{
-			Ticker:    c.Param("symbol"),
-			Name:      q.Name,
-			Price:     q.Price,
-			Timestamp: q.Time,
-		}
-		c.JSON(http.StatusOK, response)
+		restApi.SendError(c, http.StatusInternalServerError, err)
+		return
 	}
+
+	if q.Time.IsZero() {
+		restApi.SendError(c, http.StatusNotFound, fmt.Errorf("no quotation found for symbol %s", c.Param("symbol")))
+		return
+	}
+
+	// Format response.
+	response := struct {
+		Ticker    string
+		Name      string
+		Price     float64
+		Timestamp time.Time
+	}{
+		Ticker:    c.Param("symbol"),
+		Name:      q.Name,
+		Price:     q.Price,
+		Timestamp: q.Time,
+	}
+	c.JSON(http.StatusOK, response)
 }
 
 // -----------------------------------------------------------------------------
