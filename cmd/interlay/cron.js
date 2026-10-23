@@ -24,6 +24,8 @@ let cache = redis();
 
 async function cronstart() {
   for (const value of allowedTokens) {
+
+    console.log("allowedTokens",value);
     switch (value.source) {
       case "interlay":
         {
@@ -36,8 +38,8 @@ async function cronstart() {
               continue
              }
           }catch(e){
-             saved = 0
-            return
+            console.log("interlay cron error", value.vtoken, e.message);
+            continue;
           }
           let btcprice = await getPrice("BTC");
  
@@ -66,7 +68,8 @@ async function cronstart() {
           try{
              saved = await getBiFrostValues(value.token);
          }catch(e){
-          return
+          console.log("bifrost cron error", value.token, e.message);
+          continue;
          }
           let btcprice = await getPrice(value.token);
 
@@ -101,11 +104,16 @@ async function cronstart() {
         break;
       case "stDOT":
         {
-          let stDOTcollateral = await getValuestdot();
-          cache.set(
-            tokenkey("stDOT", value.vtoken),
-            JSON.stringify(stDOTcollateral)
-          );
+          try {
+            let stDOTcollateral = await getValuestdot();
+            cache.set(
+              tokenkey("stDOT", value.vtoken),
+              JSON.stringify(stDOTcollateral)
+            );
+          } catch (e) {
+            console.log("stDOT cron error", e.message);
+            continue;
+          }
         }
         break;
       case "astar":

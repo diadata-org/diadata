@@ -143,12 +143,27 @@ const allowedTokens = [
   },
 ];
 
-async function getPrice(asset) {
-  var providerurl = process.env.DIADATA_API || "https://api.diadata.org/v1/quotation/";
+const assetQuotationKeys = {
+  MOVR: { blockchain: "Moonriver", address: "0x0000000000000000000000000000000000000000" },
+  BNC: { blockchain: "Bifrost", address: "0" },
+  GLMR: { blockchain: "Moonbeam", address: "0x0000000000000000000000000000000000000000" },
+  ASTR: { blockchain: "Astar", address: "0x0000000000000000000000000000000000000000" },
+  FIL: { blockchain: "Filecoin", address: "0x0000000000000000000000000000000000000000" },
+  BTC: { blockchain: "Bitcoin", address: "0x0000000000000000000000000000000000000000" },
+  KSM: { blockchain: "Kusama", address: "0x0000000000000000000000000000000000000000" },
+  DOT: { blockchain: "Polkadot", address: "0x0000000000000000000000000000000000000000" },
+  ETH: { blockchain: "Ethereum", address: "0x0000000000000000000000000000000000000000" },
+};
 
-  let response = await fetch(providerurl + "/quotation/" + asset);
-  let ethprice = await response.json();
-  return ethprice.Price;
+async function getPrice(asset) {
+  var providerurl = process.env.DIADATA_API || "https://api.diadata.org/v1/assetQuotation";
+
+  const key = assetQuotationKeys[asset];
+  if (!key) throw new Error("no assetQuotation mapping for " + asset);
+
+  let response = await fetch(providerurl + "/" + key.blockchain + "/" + key.address);
+  let quotation = await response.json();
+  return quotation.Price;
 }
 
 module.exports = {

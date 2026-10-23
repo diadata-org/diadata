@@ -60,6 +60,7 @@ app.get("/customer/bifrost/state/:token", async function (req, res) {
       let values = await getBiFrostValues(token);
       res.send(values);
     }catch(e){
+      console.log(e)
       res.send({ err: "err getting value from bifrost" });
     }
    
