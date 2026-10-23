@@ -524,24 +524,6 @@ func buildBridge(t dia.Trade) dia.Asset {
 			}
 		}
 	}
-	if t.Source == dia.StellaswapExchange && basetoken.Blockchain == dia.MOONBEAM {
-		if basetoken.Address == common.HexToAddress("0xAcc15dC74880C9944775448304B263D191c6077F").Hex() {
-			basetoken = dia.Asset{
-				Symbol:     "GLMR",
-				Address:    "0x0000000000000000000000000000000000000000",
-				Blockchain: dia.MOONBEAM,
-			}
-		}
-	}
-	if t.Source == dia.CurveFIExchangeMoonbeam && basetoken.Blockchain == dia.MOONBEAM {
-		if basetoken.Address == common.HexToAddress("0xFFFFFFfFea09FB06d082fd1275CD48b191cbCD1d").Hex() {
-			basetoken = dia.Asset{
-				Symbol:     "USDT",
-				Address:    "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-				Blockchain: dia.ETHEREUM,
-			}
-		}
-	}
 	if (t.Source == dia.UniswapExchangeV3Polygon || t.Source == dia.QuickswapExchange || t.Source == dia.SushiSwapExchangePolygon || t.Source == dia.DfynNetwork) && basetoken.Blockchain == dia.POLYGON {
 		if basetoken.Address == common.HexToAddress("0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174").Hex() {
 			basetoken = dia.Asset{
@@ -748,15 +730,6 @@ func buildBridge(t dia.Trade) dia.Asset {
 			basetoken = dia.Asset{
 				Symbol:     "USDC",
 				Address:    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-				Blockchain: dia.ETHEREUM,
-			}
-		}
-	}
-	if basetoken.Blockchain == dia.SWELLCHAIN && t.Source == dia.VelodromeExchangeSwellchain {
-		if basetoken.Address == "0x4200000000000000000000000000000000000006" {
-			basetoken = dia.Asset{
-				Symbol:     "WETH",
-				Address:    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
 				Blockchain: dia.ETHEREUM,
 			}
 		}

@@ -314,6 +314,12 @@
         },
         {
             "Exchange": "CoinBase",
+            "ForeignName": "HYPE-USD",
+            "Ignore": false,
+            "Symbol": "HYPE"
+        },
+        {
+            "Exchange": "CoinBase",
             "ForeignName": "ICP-USD",
             "Ignore": false,
             "Symbol": "ICP"
@@ -713,6 +719,12 @@
             "ForeignName": "YFI-USD",
             "Ignore": false,
             "Symbol": "YFI"
+        },
+        {
+            "Exchange": "CoinBase",
+            "Ignore": false,
+            "ForeignName": "ZEC-USD",
+            "Symbol": "ZEC"
         },
         {
             "Exchange": "CoinBase",

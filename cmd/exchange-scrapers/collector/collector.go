@@ -23,7 +23,6 @@ var (
 		dia.AnyswapExchange,
 		dia.CurveFIExchange,
 		dia.CurveFIExchangeFantom,
-		dia.CurveFIExchangeMoonbeam,
 		dia.CurveFIExchangePolygon,
 		dia.CurveFIExchangeArbitrum,
 		dia.CurveFIExchangeSonic,

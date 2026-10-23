@@ -146,16 +146,12 @@ func NewAssetScraper(exchange string, secret string, relDB *models.RelDB) source
 		return source.NewUniswapV3AssetSource(exchanges[dia.RamsesV2Exchange], relDB)
 	case dia.NileV2Exchange:
 		return source.NewUniswapV3AssetSource(exchanges[dia.NileV2Exchange], relDB)
-	case dia.StellaswapExchange:
-		return source.NewUniswapAssetSource(exchanges[dia.StellaswapExchange], relDB)
 	case dia.WanswapExchange:
 		return source.NewUniswapAssetSource(exchanges[dia.WanswapExchange], relDB)
 	case dia.CurveFIExchange:
 		return source.NewCurvefiAssetSource(exchanges[dia.CurveFIExchange])
 	case dia.CurveFIExchangeFantom:
 		return source.NewCurvefiAssetSource(exchanges[dia.CurveFIExchangeFantom])
-	case dia.CurveFIExchangeMoonbeam:
-		return source.NewCurvefiAssetSource(exchanges[dia.CurveFIExchangeMoonbeam])
 	case dia.CurveFIExchangePolygon:
 		return source.NewCurvefiAssetSource(exchanges[dia.CurveFIExchangePolygon])
 	case dia.CurveFIExchangeArbitrum:

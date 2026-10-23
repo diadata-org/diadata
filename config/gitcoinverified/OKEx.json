@@ -223,6 +223,12 @@
             "Address": "0x056Fd409E1d7A124BD7017459dFEa2F387b6d5Cd"
         },
         {
+            "Exchange": "OKEx",
+            "Symbol": "HYPE",
+            "Blockchain": "Hyperliquid",
+            "Address": "0x0d01dc56dcaaca66ad901c959b4011ec"
+        },
+        {
             "Symbol": "ILV",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",

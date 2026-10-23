@@ -277,6 +277,12 @@
             "Address": "0x0000000000000000000000000000000000000000"
         },
         {
+            "Exchange": "Binance2",
+            "Symbol": "HYPE",
+            "Blockchain": "Hyperliquid",
+            "Address": "0x0d01dc56dcaaca66ad901c959b4011ec"
+        },
+        {
             "Symbol": "ICP",
             "Exchange": "Binance2",
             "Blockchain": "InternetComputer",
@@ -665,6 +671,12 @@
             "Symbol": "YFI",
             "Blockchain": "Ethereum",
             "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
+        },
+        {
+            "Exchange": "Binance2",
+            "Symbol": "ZEC",
+            "Blockchain": "Zcash",
+            "Address": "0x0000000000000000000000000000000000000000"
         },
         {
             "Exchange": "Binance2",

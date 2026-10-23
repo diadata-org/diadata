@@ -224,6 +224,18 @@
         },
         {
             "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "HYPEUSDC",
+            "Symbol": "HYPE"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "HYPEUSDT",
+            "Symbol": "HYPE"
+        },
+        {
+            "Exchange": "Binance",
             "ForeignName": "ICPUSDT",
             "Ignore": false,
             "Symbol": "ICP"
@@ -653,6 +665,12 @@
             "Ignore": false,
             "ForeignName": "XVGUSDT",
             "Symbol": "XVG"
+        },
+        {
+            "Exchange": "Binance",
+            "Ignore": false,
+            "ForeignName": "ZECUSDT",
+            "Symbol": "ZEC"
         },
         {
             "Exchange": "Binance",
