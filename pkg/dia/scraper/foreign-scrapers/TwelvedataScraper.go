@@ -111,11 +111,13 @@ func (scraper *TwelvedataScraper) UpdateQuotation() error {
 		}
 		quotation, err := scraper.getTwelveQuote(symbol)
 		if err != nil {
-			log.Error("getTwelveQuote: ", err)
+			log.Errorf("getTwelveQuote for %s: %v. Continue without publication", symbol, err)
+			continue
 		}
 		price, err := strconv.ParseFloat(quotation.Price, 64)
 		if err != nil {
-			log.Error("Parse Float for: ", symbol)
+			log.Errorf("Parse Float for %s: %v. Continue without publication", symbol, err)
+			continue
 		}
 
 		foreignQuotation := models.ForeignQuotation{
@@ -134,7 +136,8 @@ func (scraper *TwelvedataScraper) UpdateQuotation() error {
 		}
 		quotation, err := scraper.getTwelveFXData(ticker)
 		if err != nil {
-			log.Error("getTwelveFXData: ", err)
+			log.Errorf("getTwelveFXData for %s: %v. Continue without publication", ticker, err)
+			continue
 		}
 
 		foreignQuotation := models.ForeignQuotation{
@@ -153,12 +156,14 @@ func (scraper *TwelvedataScraper) UpdateQuotation() error {
 		}
 		quotation, err := scraper.getTwelveCommodityQuote(ticker)
 		if err != nil {
-			log.Error("getTwelveFXData: ", err)
+			log.Errorf("getTwelveCommodityQuote for %s: %v. Continue without publication", ticker, err)
+			continue
 		}
 
 		price, err := strconv.ParseFloat(quotation.Price, 64)
 		if err != nil {
-			log.Errorf("parse price for %s", quotation.Symbol)
+			log.Errorf("parse price for %s: %v. Continue without publication", quotation.Symbol, err)
+			continue
 		}
 
 		foreignQuotation := models.ForeignQuotation{
@@ -178,12 +183,14 @@ func (scraper *TwelvedataScraper) UpdateQuotation() error {
 		}
 		quotation, err := scraper.getTwelveQuote(ticker)
 		if err != nil {
-			log.Error("getTwelveQuote: ", err)
+			log.Errorf("getTwelveQuote for %s: %v. Continue without publication", ticker, err)
+			continue
 		}
 
 		price, err := strconv.ParseFloat(quotation.Price, 64)
 		if err != nil {
-			log.Errorf("parse price for %s", quotation.Symbol)
+			log.Errorf("parse price for %s: %v. Continue without publication", quotation.Symbol, err)
+			continue
 		}
 
 		foreignQuotation := models.ForeignQuotation{
