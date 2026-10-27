@@ -24,6 +24,8 @@ let cache = redis();
 
 async function cronstart() {
   for (const value of allowedTokens) {
+
+    console.log("allowedTokens",value);
     switch (value.source) {
       case "interlay":
         {
@@ -36,8 +38,8 @@ async function cronstart() {
               continue
              }
           }catch(e){
-             saved = 0
-            return
+            console.log("interlay cron error", value.vtoken, e.message);
+            continue;
           }
           let btcprice = await getPrice("BTC");
  
@@ -66,7 +68,8 @@ async function cronstart() {
           try{
              saved = await getBiFrostValues(value.token);
          }catch(e){
-          return
+          console.log("bifrost cron error", value.token, e.message);
+          continue;
          }
           let btcprice = await getPrice(value.token);
 
@@ -101,29 +104,44 @@ async function cronstart() {
         break;
       case "stDOT":
         {
-          let stDOTcollateral = await getValuestdot();
-          cache.set(
-            tokenkey("stDOT", value.vtoken),
-            JSON.stringify(stDOTcollateral)
-          );
+          try {
+            let stDOTcollateral = await getValuestdot();
+            cache.set(
+              tokenkey("stDOT", value.vtoken),
+              JSON.stringify(stDOTcollateral)
+            );
+          } catch (e) {
+            console.log("stDOT cron error", e.message);
+            continue;
+          }
         }
         break;
       case "astar":
         {
-          let astarcollateral = await getValueAstar();
-          cache.set(
-            tokenkey("astar", value.vtoken),
-            JSON.stringify(astarcollateral)
-          );
+          try {
+            let astarcollateral = await getValueAstar();
+            cache.set(
+              tokenkey("astar", value.vtoken),
+              JSON.stringify(astarcollateral)
+            );
+          } catch (e) {
+            console.log("astar cron error", value.vtoken, e.message);
+            continue;
+          }
         }
         break;
       case "stETH":
         {
-          let stETHcollateral = await getValuesteth();
-          cache.set(
-            tokenkey("stETH", value.vtoken),
-            JSON.stringify(stETHcollateral)
-          );
+          try {
+            let stETHcollateral = await getValuesteth();
+            cache.set(
+              tokenkey("stETH", value.vtoken),
+              JSON.stringify(stETHcollateral)
+            );
+          } catch (e) {
+            console.log("stETH cron error", value.vtoken, e.message);
+            continue;
+          }
         }
         break;
       // case "cbETH": {
@@ -135,11 +153,16 @@ async function cronstart() {
       // }
       //   break;
       case "rETH": {
-        let rETHcollateral = await getValuereth();
-        cache.set(
-          tokenkey("rETH", value.vtoken),
-          JSON.stringify(rETHcollateral)
-        );
+        try {
+          let rETHcollateral = await getValuereth();
+          cache.set(
+            tokenkey("rETH", value.vtoken),
+            JSON.stringify(rETHcollateral)
+          );
+        } catch (e) {
+          console.log("rETH cron error", value.vtoken, e.message);
+          continue;
+        }
       }
     }
 

@@ -1,6 +1,10 @@
 const Web3 = require("web3");
 const web3 = new Web3(
-  new Web3.providers.HttpProvider("https://rpc.api.moonbeam.network/")
+  new Web3.providers.HttpProvider(
+    process.env.MOONBEAM_NODE_URL ||
+      "https://api-moonbeam.n.dwellir.com",
+    { timeout: 15000 }
+  )
 );
 
 let abi = [
