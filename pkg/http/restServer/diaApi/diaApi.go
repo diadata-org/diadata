@@ -1578,6 +1578,11 @@ func (env *Env) GetTwelvedataETFQuotation(c *gin.Context) {
 // FOREIGN QUOTATIONS
 // -----------------------------------------------------------------------------
 
+// foreignQuotationHistoryStart is the unix time from which foreign quotations are available.
+const foreignQuotationHistoryStart = 1689847252
+
+var errNoForeignQuotation = errors.New("no quotation available for the requested time")
+
 // GetForeignQuotation returns several quotations vs USD as published by the ECB
 func (env *Env) GetForeignQuotation(c *gin.Context) {
 	if !validateInputParams(c) {
@@ -1595,25 +1600,28 @@ func (env *Env) GetForeignQuotation(c *gin.Context) {
 	if date == "noRange" {
 		timestamp = time.Now()
 	} else {
-		t, err := strconv.Atoi(date)
+		t, err := strconv.ParseInt(date, 10, 64)
 		if err != nil {
-			log.Error(err)
+			restApi.SendError(c, http.StatusBadRequest, errors.New("invalid time parameter, expected unix timestamp in seconds"))
+			return
 		}
-		timestamp = time.Unix(int64(t), 0)
+		timestamp = time.Unix(t, 0)
 	}
 
 	var err error
 	q, err = env.DataStore.GetForeignQuotationInflux(symbol, source, timestamp)
-	if err != nil || q.Time.Before(time.Unix(1689847252, 0)) {
+	if err != nil || q.Time.Before(time.Unix(foreignQuotationHistoryStart, 0)) {
 		// Attempt to fetch quotation for reversed order of symbol string.
 		assetsSymbols := strings.Split(symbol, "-")
 		if source == "YahooFinance" && len(assetsSymbols) == 2 {
 			symbolInflux := assetsSymbols[1] + "-" + assetsSymbols[0]
 			q, err = env.DataStore.GetForeignQuotationInflux(symbolInflux, source, timestamp)
 			if err != nil {
+				// Genuine backend failure: keep 500 so monitoring still sees outages.
 				restApi.SendError(c, http.StatusInternalServerError, err)
 				return
 			}
+			// No data for the reversed pair keeps the previous behaviour: 200 with zero values.
 			if q.Price != 0 {
 				q.Price = 1 / q.Price
 			}
@@ -1624,7 +1632,14 @@ func (env *Env) GetForeignQuotation(c *gin.Context) {
 			q.Name = symbol
 			c.JSON(http.StatusOK, q)
 		} else {
-			restApi.SendError(c, http.StatusInternalServerError, err)
+			if err != nil {
+				// Genuine backend failure: keep 500 so monitoring still sees outages.
+				restApi.SendError(c, http.StatusInternalServerError, err)
+				return
+			}
+			// err == nil and no data at the requested time (e.g. before history starts): 404.
+			// A nil error must never reach SendError (panic).
+			restApi.SendError(c, http.StatusNotFound, errNoForeignQuotation)
 			return
 		}
 	} else {
@@ -2034,18 +2049,18 @@ func (env *Env) GetAssetUpdates(c *gin.Context) {
 	// Deviation in per mille.
 	deviation, err := strconv.Atoi(c.Param("deviation"))
 	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
+		restApi.SendError(c, http.StatusBadRequest, err)
 		return
 	}
 	FrequencySeconds, err := strconv.Atoi(c.Param("frequencySeconds"))
 	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
+		restApi.SendError(c, http.StatusBadRequest, err)
 		return
 	}
 
 	starttime, endtime, err := utils.MakeTimerange(c.Query("starttime"), c.Query("endtime"), time.Duration(24*60)*time.Minute)
 	if err != nil {
-		restApi.SendError(c, http.StatusInternalServerError, err)
+		restApi.SendError(c, http.StatusBadRequest, err)
 		return
 	}
 	if endtime.Sub(starttime) > time.Duration(7*24*60)*time.Minute {
@@ -2053,7 +2068,7 @@ func (env *Env) GetAssetUpdates(c *gin.Context) {
 		return
 	}
 	if ok := utils.ValidTimeRange(starttime, endtime, 30*24*time.Hour); !ok {
-		restApi.SendError(c, http.StatusInternalServerError, fmt.Errorf("time-range too big. max duration is %v", 30*24*time.Hour))
+		restApi.SendError(c, http.StatusBadRequest, fmt.Errorf("time-range too big. max duration is %v", 30*24*time.Hour))
 		return
 	}
 
@@ -2066,6 +2081,11 @@ func (env *Env) GetAssetUpdates(c *gin.Context) {
 	quotations, errGetAssetQuotations := env.DataStore.GetAssetQuotations(asset, starttime, endtime)
 	if errGetAssetQuotations != nil {
 		restApi.SendError(c, http.StatusInternalServerError, errGetAssetQuotations)
+		return
+	}
+	if len(quotations) == 0 {
+		// Out-of-range or pre-history queries yield no data; indexing below would panic (500).
+		restApi.SendError(c, http.StatusNotFound, errors.New("no quotations available for the requested time range"))
 		return
 	}
 
@@ -2329,7 +2349,7 @@ func validateInputParams(c *gin.Context) bool {
 	// Validate input parameters.
 	for _, input := range c.Params {
 		if containsSpecialChars(input.Value) {
-			restApi.SendError(c, http.StatusInternalServerError, errors.New("invalid input params"))
+			restApi.SendError(c, http.StatusBadRequest, errors.New("invalid input params"))
 			return false
 		}
 	}
@@ -2338,7 +2358,7 @@ func validateInputParams(c *gin.Context) bool {
 	for _, value := range c.Request.URL.Query() {
 		for _, input := range value {
 			if containsSpecialChars(input) {
-				restApi.SendError(c, http.StatusInternalServerError, errors.New("invalid input params"))
+				restApi.SendError(c, http.StatusBadRequest, errors.New("invalid input params"))
 				return false
 			}
 		}
