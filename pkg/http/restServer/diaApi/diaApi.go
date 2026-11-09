@@ -1617,13 +1617,11 @@ func (env *Env) GetForeignQuotation(c *gin.Context) {
 			symbolInflux := assetsSymbols[1] + "-" + assetsSymbols[0]
 			q, err = env.DataStore.GetForeignQuotationInflux(symbolInflux, source, timestamp)
 			if err != nil {
-				restApi.SendError(c, http.StatusNotFound, err)
+				// Genuine backend failure: keep 500 so monitoring still sees outages.
+				restApi.SendError(c, http.StatusInternalServerError, err)
 				return
 			}
-			if q.Time.Before(time.Unix(foreignQuotationHistoryStart, 0)) {
-				restApi.SendError(c, http.StatusNotFound, errNoForeignQuotation)
-				return
-			}
+			// No data for the reversed pair keeps the previous behaviour: 200 with zero values.
 			if q.Price != 0 {
 				q.Price = 1 / q.Price
 			}
@@ -1634,11 +1632,14 @@ func (env *Env) GetForeignQuotation(c *gin.Context) {
 			q.Name = symbol
 			c.JSON(http.StatusOK, q)
 		} else {
-			// No data at the requested time (e.g. before historic data starts) is a client-side miss, not a server error.
-			if err == nil {
-				err = errNoForeignQuotation
+			if err != nil {
+				// Genuine backend failure: keep 500 so monitoring still sees outages.
+				restApi.SendError(c, http.StatusInternalServerError, err)
+				return
 			}
-			restApi.SendError(c, http.StatusNotFound, err)
+			// err == nil and no data at the requested time (e.g. before history starts): 404.
+			// A nil error must never reach SendError (panic).
+			restApi.SendError(c, http.StatusNotFound, errNoForeignQuotation)
 			return
 		}
 	} else {
