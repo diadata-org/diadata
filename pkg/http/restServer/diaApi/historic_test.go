@@ -14,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// stubStore is a datastore stub that returns canned quotation results.
 type stubStore struct {
 	models.Datastore
 	fq    models.ForeignQuotation
@@ -22,15 +23,18 @@ type stubStore struct {
 	aqErr error
 }
 
+// GetForeignQuotationInflux returns the stubbed foreign quotation and error.
 func (s stubStore) GetForeignQuotationInflux(symbol, source string, timestamp time.Time) (models.ForeignQuotation, error) {
 	// Zero value with nil error mirrors the datastore behavior for times before data exists.
 	return s.fq, s.fqErr
 }
 
+// GetAssetQuotations returns the stubbed asset quotations and error.
 func (s stubStore) GetAssetQuotations(asset dia.Asset, starttime time.Time, endtime time.Time) ([]models.AssetQuotation, error) {
 	return s.aq, s.aqErr
 }
 
+// doRequest serves one GET request through handler h and returns the status code and JSON body.
 func doRequest(t *testing.T, route, target string, h gin.HandlerFunc) (int, map[string]interface{}) {
 	t.Helper()
 	gin.SetMode(gin.TestMode)
@@ -45,12 +49,14 @@ func doRequest(t *testing.T, route, target string, h gin.HandlerFunc) (int, map[
 	return w.Code, body
 }
 
+// Routes and URL used by the status code tests.
 const (
 	fqRoute = "/foreignQuotation/:source/:symbol"
 	auRoute = "/assetUpdates/:blockchain/:address/:deviation/:frequencySeconds"
 	auURL   = "/assetUpdates/Ethereum/0x0000000000000000000000000000000000000000/20/120"
 )
 
+// TestForeignQuotationStatusCodes checks that foreign quotation errors map to 400, 404 or 500.
 func TestForeignQuotationStatusCodes(t *testing.T) {
 	backendErr := errors.New("influx unavailable")
 	cases := []struct {
@@ -84,7 +90,7 @@ func TestForeignQuotationStatusCodes(t *testing.T) {
 	}
 }
 
-// assetUpdates needs a RelDB; GetAsset is served from the redis cache, so a throwaway redis
+// newCachedRelDB returns a RelDB for assetUpdates tests; GetAsset is served from the redis cache, so a throwaway redis
 // (REDISURL) is enough. Skipped when none is reachable.
 func newCachedRelDB(t *testing.T) models.RelDB {
 	t.Helper()
@@ -102,6 +108,7 @@ func newCachedRelDB(t *testing.T) models.RelDB {
 	return *rdb
 }
 
+// TestAssetUpdatesStatusCodes checks that asset update errors map to 400, 404 or 500.
 func TestAssetUpdatesStatusCodes(t *testing.T) {
 	rdb := newCachedRelDB(t)
 	cases := []struct {
