@@ -98,7 +98,7 @@ func main() {
 		"dai",
 		"binance-usd",
 		"binancecoin",
-		"matic-network",
+		"polygon-ecosystem-token",
 		"polkadot",
 		"liquid-astr",
 		"voucher-dot",
