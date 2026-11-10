@@ -22,6 +22,9 @@ const {
 
 let cache = redis();
 
+const CACHE_TTL_SECONDS = Number(process.env.CACHE_TTL_SECONDS) || 3600; // default 1 hour
+console.log("CACHE_TTL_SECONDS:", CACHE_TTL_SECONDS);
+
 async function cronstart() {
   for (const value of allowedTokens) {
 
@@ -33,7 +36,7 @@ async function cronstart() {
           try{
              saved = await getInterlayValues(value.vtoken);
               if (saved){
-              cache.set("interlayraw"+ value.vtoken,JSON.stringify(saved))
+              cache.set("interlayraw"+ value.vtoken,JSON.stringify(saved),{EX: CACHE_TTL_SECONDS})
              }else{
               continue
              }
@@ -58,7 +61,8 @@ async function cronstart() {
                 (saved.total_backable/1e8) / (saved.total_issued/1e8) > 1
                   ? btcprice
                   : (btcprice * saved.total_backable) / saved.total_issued,
-            })
+            }),
+            {EX: CACHE_TTL_SECONDS}
           );
         }
         break;
@@ -98,7 +102,8 @@ async function cronstart() {
               },
               fair_price:fairprice,
               timestamp: Date.now()
-            })
+            }),
+            {EX: CACHE_TTL_SECONDS}
           );
         }
         break;
@@ -108,7 +113,8 @@ async function cronstart() {
             let stDOTcollateral = await getValuestdot();
             cache.set(
               tokenkey("stDOT", value.vtoken),
-              JSON.stringify(stDOTcollateral)
+              JSON.stringify(stDOTcollateral),
+              {EX: CACHE_TTL_SECONDS}
             );
           } catch (e) {
             console.log("stDOT cron error", e.message);
@@ -122,7 +128,8 @@ async function cronstart() {
             let astarcollateral = await getValueAstar();
             cache.set(
               tokenkey("astar", value.vtoken),
-              JSON.stringify(astarcollateral)
+              JSON.stringify(astarcollateral),
+              {EX: CACHE_TTL_SECONDS}
             );
           } catch (e) {
             console.log("astar cron error", value.vtoken, e.message);
@@ -136,7 +143,8 @@ async function cronstart() {
             let stETHcollateral = await getValuesteth();
             cache.set(
               tokenkey("stETH", value.vtoken),
-              JSON.stringify(stETHcollateral)
+              JSON.stringify(stETHcollateral),
+              {EX: CACHE_TTL_SECONDS}
             );
           } catch (e) {
             console.log("stETH cron error", value.vtoken, e.message);
@@ -157,7 +165,8 @@ async function cronstart() {
           let rETHcollateral = await getValuereth();
           cache.set(
             tokenkey("rETH", value.vtoken),
-            JSON.stringify(rETHcollateral)
+            JSON.stringify(rETHcollateral),
+            {EX: CACHE_TTL_SECONDS}
           );
         } catch (e) {
           console.log("rETH cron error", value.vtoken, e.message);
@@ -167,7 +176,7 @@ async function cronstart() {
     }
 
     let baseAssetPrice = await getPrice(value.token);
-    await cache.set(pricekey(value.token), baseAssetPrice);
+    await cache.set(pricekey(value.token), baseAssetPrice, {EX: CACHE_TTL_SECONDS});
   }
 
    
