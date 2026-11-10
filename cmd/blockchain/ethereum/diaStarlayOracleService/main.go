@@ -25,6 +25,7 @@ import (
 )
 
 var diaBaseUrl string
+var fairPriceStalenessTimeout time.Duration
 
 func main() {
 	key := utils.Getenv("PRIVATE_KEY", "")
@@ -33,6 +34,11 @@ func main() {
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
 	coingeckoApiKey := utils.Getenv("COINGECKO_API_KEY", "")
 	diaBaseUrl = utils.Getenv("DIA_BASE_URL", "https://api.diadata.org")
+	fairPriceStalenessSeconds, err := strconv.Atoi(utils.Getenv("FAIR_PRICE_STALENESS_SECONDS", "3600"))
+	if err != nil {
+		log.Fatalf("Failed to parse fairPriceStalenessSeconds: %v", err)
+	}
+	fairPriceStalenessTimeout = time.Duration(fairPriceStalenessSeconds) * time.Second
 	sleepSeconds, err := strconv.Atoi(utils.Getenv("SLEEP_SECONDS", "10"))
 	if err != nil {
 		log.Fatalf("Failed to parse sleepSeconds: %v")
@@ -156,8 +162,8 @@ func periodicOracleUpdateHelper(oldPrice float64, deviationPermille int, auth *b
 	if (address == "vASTR" || address == "vDOT") && blockchain == "Bifrost" {
 		fairPrice, err := getFairPriceFromDia(address)
 		if err != nil {
-			log.Fatalf("Failed to retrieve %s fair price data from DIA: %v", address, err)
-			return oldPrice, err
+			// Skip only this update; the caller logs the error and moves on to the next asset.
+			return oldPrice, fmt.Errorf("skipping %s update, failed to retrieve fair price data from DIA: %w", address, err)
 		}
 		rawQ.Price = fairPrice
 		rawQ.Symbol = address
@@ -442,7 +448,23 @@ func getFairPriceFromDia(symbol string) (float64, error) {
 	if err != nil {
 		return 0.0, err
 	}
-	fairPrice := gjson.Get(string(contents), "FairPrice").Float()
+
+	result := gjson.ParseBytes(contents)
+	fairPriceResult := result.Get("FairPrice")
+	if !fairPriceResult.Exists() {
+		return 0.0, fmt.Errorf("no fair price for %s in dia api response", symbol)
+	}
+	fairPrice := fairPriceResult.Float()
+
+	// Staleness check: TimeStamp is unix time in milliseconds.
+	timestamp := result.Get("TimeStamp")
+	if !timestamp.Exists() {
+		return 0.0, fmt.Errorf("missing timestamp for %s in dia api response", symbol)
+	}
+	priceTime := time.UnixMilli(timestamp.Int())
+	if age := time.Since(priceTime); fairPriceStalenessTimeout > 0 && age > fairPriceStalenessTimeout {
+		return 0.0, fmt.Errorf("fair price for %s is stale: last update %s (%s ago), timeout %s", symbol, priceTime.UTC().Format(time.RFC3339), age.Round(time.Second), fairPriceStalenessTimeout)
+	}
 
 	return fairPrice, nil
 }
