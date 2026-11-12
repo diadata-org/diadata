@@ -31,7 +31,7 @@ The workflow presented below represents the configuration of the DIA Solana Orac
 
 ### DIA Data Feeder
 
-The feeder gets symbol price informaton available from DIA.
+The feeder gets symbol price information available from DIA.
 
 1. The feeder calls the API https://api.diadata.org/v1/quotation/\_symbol\_ with each asset obtained from the configured asset list.
 2. For each symbol that the feeder calls to quote, it verifies that the data has been received correctly. If for some reason, the feeder does not obtain the data or the data is incorrect, it continues with the next symbol, and so on, until it ends with all the configured asset symbols.
